@@ -1,4 +1,0 @@
-set(__QT_DEPLOY_TARGET_punchidockintegration_FILE /home/CMUNOZJ/Escritorio/Aprendizaje/punchi-dock-remastered/build/bin/libpunchidockintegration.so)
-set(__QT_DEPLOY_TARGET_punchidockintegration_TYPE SHARED_LIBRARY)
-set(__QT_DEPLOY_TARGET_punchidockintegrationplugin_FILE /home/CMUNOZJ/Escritorio/Aprendizaje/punchi-dock-remastered/build/bin/org/punchi/dock/libpunchidockintegrationplugin.so)
-set(__QT_DEPLOY_TARGET_punchidockintegrationplugin_TYPE MODULE_LIBRARY)

@@ -14,7 +14,12 @@
 /.idea/
 
 # Archivos de bitácora y logs no trackeados
+/bitacora/
+/scratch/
 *.log
+
+# Binarios compilados
+*.so
 
 # Archivos del sistema operativo
 .DS_Store

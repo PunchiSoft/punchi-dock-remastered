@@ -1,8 +1,0 @@
-module org.punchi.dock
-linktarget punchidockintegrationplugin
-optional plugin punchidockintegrationplugin
-classname org_punchi_dockPlugin
-typeinfo punchidockintegration.qmltypes
-depends QtCore
-prefer :/qt/qml/org/punchi/dock/
-
