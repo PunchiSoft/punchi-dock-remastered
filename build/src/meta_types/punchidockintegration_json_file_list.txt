@@ -1,0 +1,2 @@
+/home/CMUNOZJ/Escritorio/Aprendizaje/punchi-dock-remastered/build/src/punchidockintegration_autogen/include/../EWIEGA46WW/moc_systemdiscovery.cpp.json
+/home/CMUNOZJ/Escritorio/Aprendizaje/punchi-dock-remastered/build/src/punchidockintegration_autogen/include/../EWIEGA46WW/moc_trashintegration.cpp.json

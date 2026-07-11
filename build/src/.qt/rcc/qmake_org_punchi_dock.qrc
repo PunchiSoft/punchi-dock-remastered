@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/qt/qml/org/punchi/dock">
+    <file alias="qmldir">/home/CMUNOZJ/Escritorio/Aprendizaje/punchi-dock-remastered/build/bin/org/punchi/dock/qmldir</file>
+  </qresource>
+</RCC>
+

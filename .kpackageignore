@@ -1,0 +1,15 @@
+/bitacora/
+/docs/
+/Img/
+.agents/
+*.sh
+kde-sdk/
+dist/
+*.md
+*.log
+*.py
+/.kpackageignore
+/build/
+/src/
+/tests/
+/CMakeLists.txt

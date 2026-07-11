@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/CMUNOZJ/Escritorio/Aprendizaje/punchi-dock-remastered/build/cmake_install.cmake",
+		"/home/CMUNOZJ/Escritorio/Aprendizaje/punchi-dock-remastered/build/src/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

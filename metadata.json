@@ -1,0 +1,25 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "",
+                "Name": "Punchi Dock Contributors"
+            }
+        ],
+        "Category": "Application Launchers",
+        "Description": "A customizable launcher dock for KDE Plasma 6 with a modular and clean architecture.",
+        "Description[es]": "Un dock personalizable de lanzadores para KDE Plasma 6 con una arquitectura modular y limpia.",
+        "Icon": "dock",
+        "Id": "org.kde.plasma.punchi-dock-remastered",
+        "License": "GPL-3.0-or-later",
+        "Name": "Punchi Dock Remastered",
+        "Name[es]": "Punchi Dock Remastered",
+        "ServiceTypes": [
+            "Plasma/Applet"
+        ],
+        "Version": "0.1.0",
+        "Website": "https://github.com/PunchiSoft/punchi-dock-plasmoid"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

@@ -1,0 +1,93 @@
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls as Controls
+import org.kde.plasma.components as PlasmaComponents
+import org.kde.kirigami as Kirigami
+
+Item {
+    id: trashMenuRoot
+    width: 220
+    height: 136
+    
+    implicitWidth: width
+    implicitHeight: height
+
+    signal openTrashClicked()
+    signal emptyTrashClicked()
+    signal closeRequested()
+
+    ColumnLayout {
+        anchors.fill: parent
+        anchors.margins: 12
+        spacing: 8
+
+        // Cabecera / Título
+        RowLayout {
+            Layout.fillWidth: true
+            
+            PlasmaComponents.Label {
+                text: i18n("Trash")
+                font.family: Kirigami.Theme.defaultFont.family
+                font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                font.weight: Font.Bold
+                color: Kirigami.Theme.textColor
+                Layout.fillWidth: true
+            }
+            
+            // Botón de cerrar
+            Rectangle {
+                width: 20
+                height: 20
+                radius: 10
+                color: closeMouse.containsMouse || closeMouse.activeFocus ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.backgroundColor
+                
+                PlasmaComponents.Label {
+                    text: "×"
+                    anchors.centerIn: parent
+                    color: Kirigami.Theme.textColor
+                }
+                
+                MouseArea {
+                    id: closeMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    activeFocusOnTab: true
+                    Accessible.role: Accessible.Button
+                    Accessible.name: i18n("Close")
+                    onClicked: {
+                        console.log("TrashMenuPopup: Close button clicked")
+                        trashMenuRoot.closeRequested()
+                    }
+                }
+            }
+        }
+
+        // Opción: Abrir Papelera
+        Controls.ItemDelegate {
+            id: openOption
+            Layout.fillWidth: true
+            Layout.preferredHeight: 36
+            text: i18n("Open trash")
+            icon.name: "folder-open"
+            
+            onClicked: {
+                console.log("TrashMenuPopup: Clicked Open Trash (ItemDelegate)")
+                trashMenuRoot.openTrashClicked()
+            }
+        }
+
+        // Opción: Vaciar Papelera
+        Controls.ItemDelegate {
+            id: emptyOption
+            Layout.fillWidth: true
+            Layout.preferredHeight: 36
+            text: i18n("Empty trash")
+            icon.name: "trash-empty"
+            
+            onClicked: {
+                console.log("TrashMenuPopup: Clicked Empty Trash (ItemDelegate)")
+                trashMenuRoot.emptyTrashClicked()
+            }
+        }
+    }
+}

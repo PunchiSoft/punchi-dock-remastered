@@ -1,0 +1,184 @@
+{
+    "classes": [
+        {
+            "classInfos": [
+                {
+                    "name": "QML.Element",
+                    "value": "auto"
+                }
+            ],
+            "className": "SystemDiscovery",
+            "lineNumber": 15,
+            "methods": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "path",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 4,
+                    "lineNumber": 23,
+                    "name": "requestFolderEntries",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "category",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 5,
+                    "lineNumber": 24,
+                    "name": "requestApplications",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "index": 6,
+                    "isCloned": true,
+                    "lineNumber": 24,
+                    "name": "requestApplications",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "query",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 7,
+                    "lineNumber": 25,
+                    "name": "requestApplication",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "applicationId",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 8,
+                    "isConst": true,
+                    "lineNumber": 26,
+                    "name": "iconForApplication",
+                    "returnType": "QString"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "storageId",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 9,
+                    "lineNumber": 27,
+                    "name": "launchApplication",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "command",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 10,
+                    "lineNumber": 28,
+                    "name": "launchApplicationByCommand",
+                    "returnType": "bool"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "url",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 11,
+                    "lineNumber": 29,
+                    "name": "openUrl",
+                    "returnType": "void"
+                }
+            ],
+            "object": true,
+            "qualifiedClassName": "SystemDiscovery",
+            "signals": [
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "entries",
+                            "type": "QVariantList"
+                        }
+                    ],
+                    "index": 0,
+                    "lineNumber": 32,
+                    "name": "folderEntriesReady",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "applications",
+                            "type": "QVariantList"
+                        }
+                    ],
+                    "index": 1,
+                    "lineNumber": 33,
+                    "name": "applicationsReady",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "application",
+                            "type": "QVariantMap"
+                        }
+                    ],
+                    "index": 2,
+                    "lineNumber": 34,
+                    "name": "applicationReady",
+                    "returnType": "void"
+                },
+                {
+                    "access": "public",
+                    "arguments": [
+                        {
+                            "name": "operation",
+                            "type": "QString"
+                        },
+                        {
+                            "name": "message",
+                            "type": "QString"
+                        }
+                    ],
+                    "index": 3,
+                    "lineNumber": 35,
+                    "name": "operationFailed",
+                    "returnType": "void"
+                }
+            ],
+            "superClasses": [
+                {
+                    "access": "public",
+                    "name": "QObject"
+                }
+            ]
+        }
+    ],
+    "inputFile": "systemdiscovery.h",
+    "outputRevision": 69
+}

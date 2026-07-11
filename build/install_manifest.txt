@@ -1,0 +1,5 @@
+/home/CMUNOZJ/.local/lib64/libpunchidockintegration.so
+/home/CMUNOZJ/.local/lib64/qml/org/punchi/dock/libpunchidockintegrationplugin.so
+/home/CMUNOZJ/.local/lib64/qml/org/punchi/dock/qmldir
+/home/CMUNOZJ/.local/lib64/qml/org/punchi/dock/punchidockintegration.qmltypes
+/home/CMUNOZJ/.local/lib64/qml/org/punchi/dock/kde-qmlmodule.version
