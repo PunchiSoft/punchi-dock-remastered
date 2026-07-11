@@ -1,33 +1,40 @@
 # Punchi-dock Remastered
 
-Una versión modularizada, optimizada y profesional del clásico Punchi-dock para KDE Plasma 6.
+**Punchi-dock Remastered** es un plasmoide nativo para **KDE Plasma 6 (Wayland)** diseñado bajo una ideología clara: proporcionar un dock altamente funcional, de rendimiento excepcional y extremadamente fácil de personalizar para el usuario final. 
 
-## Instalación (Fedora 44+)
+Nacido como la evolución profesional del proyecto [punchi-dock-plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid) original, esta versión ha sido reestructurada desde sus cimientos para aprovechar al máximo las tecnologías modernas. Actualmente, el proyecto goza de una base arquitectónica **muy estable**, estando enfocado en el pulido final de la experiencia de usuario y la simplificación de sus menús de configuración.
 
-1. Asegúrate de tener las dependencias de desarrollo instaladas:
+### Historia y Refactorización (De *Spaghetti* a Modular)
+El proyecto original creció tan rápido que su código terminó convirtiéndose en un "frankenstein" o código *spaghetti*. La falta de separación de responsabilidades (*Separation of Concerns*) hacía abrumador y peligroso arreglar bugs o auditar el código, ya que modificar una parte solía romper otras. 
+Para solucionar esto de raíz, se tomó la decisión de pausar el desarrollo antiguo y extraer cuidadosamente ("con bisturí") las funciones al nuevo repositorio **Remastered**. Este nuevo proyecto se convertirá en la **versión oficial 1.0** una vez terminada la reestructuración, dejando al proyecto original como un archivo *Legacy*.
+
+## Características Principales
+
+- **Nativo para Wayland y Plasma 6**: Integración profunda con KWin y Plasma, garantizando animaciones a 60fps sin cuelgues (lag).
+- **Dualidad de Formato**: Opera con total fluidez tanto en formato **dock flotante** como anclado al borde de la pantalla actuando como **panel tradicional**.
+- **Simplicidad ante todo**: Filosofía centrada en que el usuario final pueda adaptar el aspecto y el comportamiento del dock sin lidiar con opciones abrumadoras o confusas.
+- **Arquitectura Modular Robusta**: Separación estricta entre la lógica de negocio y la interfaz visual, garantizando escalabilidad y un bajo consumo de recursos.
+
+---
+
+## Instalación (Orientada a Fedora 44+)
+
+1. **Instalación de dependencias**:
    ```bash
    sudo dnf install plasma-sdk extra-cmake-modules kf6-kcoreaddons-devel kf6-kdeclarative-devel kf6-ki18n-devel qt6-qtdeclarative-devel libplasma-devel
    ```
-2. Instala el plasmoide usando la herramienta nativa:
+
+2. **Instalación del plasmoide** mediante la herramienta nativa de KDE:
    ```bash
    kpackagetool6 -t Plasma/Applet -i .
-   # O si ya está instalado y quieres actualizar:
+   
+   # Para actualizar una instalación previa en el sistema:
    kpackagetool6 -t Plasma/Applet -u .
    ```
 
-## Desarrollo
+## Estructura de Desarrollo
 
-- El módulo C++ auxiliar se documenta en [docs/guias-usuario/compilacion-adaptador-cpp.md](/home/CMUNOZJ/Escritorio/Aprendizaje/punchi-dock-remastered/docs/guias-usuario/compilacion-adaptador-cpp.md:1).
-- El paquete incluye un módulo QML compilado bajo `contents/ui/org/punchi/dock`, actualizado mediante `cmake --build build --target stage_plasmoid_module`.
-- La validación automática actual es mínima; `ctest` solo cubre `appstreamtest`.
-
-## Internacionalización
-
-- El idioma fuente del proyecto es inglés.
-- Todo texto visible nuevo debe escribirse en inglés y envolverse con `i18n(...)`, `i18nc(...)` o `i18np(...)` según corresponda.
-- Si no existen catálogos de traducción instalados, la interfaz se mostrará en inglés. Ese comportamiento es esperado.
-- La infraestructura completa de traducción compilada aún está pendiente.
-
-## Estructura Modular
-
-El código está dividido en componentes UI reutilizables dentro de `contents/ui/components/` y lógica pura en `contents/code/`.
+- **Organización**: El código UI reside de forma modular en `contents/ui/components/`, mientras que la lógica pura se concentra en `contents/code/`.
+- **Módulo C++**: Para interactuar con partes más profundas del sistema operativo. [Leer guía de compilación](docs/guias-usuario/compilacion-adaptador-cpp.md).
+- **Distribución Limpia**: Se utiliza `probar-plasmoid.sh` para generar un `.plasmoid` puro (solo `metadata.json`, `LICENSE` y `contents/`), sin incluir ficheros basura o logs de desarrollo (`build/`, `docs/`, `bitacora/`).
+- **Internacionalización**: Desarrollado con el inglés como idioma fuente (`i18n`), listo para incorporar catálogos de traducción globales.

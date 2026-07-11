@@ -1,2 +1,2 @@
-appstreamtest 20 0.000569465
+appstreamtest 31 0.000330253
 ---

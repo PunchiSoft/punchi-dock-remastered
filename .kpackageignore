@@ -1,15 +1,26 @@
-/bitacora/
+# Directorios de desarrollo interno (NO deben ir en el plasmoide)
+/build/
+/dist/
+/backup/
 /docs/
-/Img/
-.agents/
+/bitacora/
+/kde-sdk/
+/.agents/
+/.gemini/
+/.git/
+/.github/
+
+# Código fuente C++ (ya se compila, no se distribuye)
+/src/
+/CMakeLists.txt
+
+# Scripts de desarrollo locales (NO deben instalarse en la máquina del usuario)
 *.sh
-kde-sdk/
-dist/
+*.py
+
+# Archivos sueltos que no aportan al plasmoide instalado
+/.gitignore
+/.kpackageignore
 *.md
 *.log
-*.py
-/.kpackageignore
-/build/
-/src/
 /tests/
-/CMakeLists.txt

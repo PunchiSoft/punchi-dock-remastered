@@ -1,0 +1,21 @@
+# Build y distribuciones
+/build/
+/dist/
+*.plasmoid
+
+# Entornos de desarrollo locales de KDE
+/kde-sdk/
+/backup/
+
+# Herramientas y agentes locales
+/.agents/
+/.gemini/
+/.vscode/
+/.idea/
+
+# Archivos de bitácora y logs no trackeados
+*.log
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

@@ -14,14 +14,56 @@
     <entry name="hoverScale" type="Double">
       <default>1.35</default>
     </entry>
-    <entry name="hoverAnimation" type="String">
-      <default>wave</default>
-    </entry>
     <entry name="virtualDesktopMode" type="String">
       <default>all</default>
     </entry>
     <entry name="targetVirtualDesktop" type="String">
       <default></default>
+    </entry>
+    <entry name="showActiveTasks" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="showTasksCurrentDesktopOnly" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="panelLengthMode" type="String">
+      <default>content</default>
+    </entry>
+  </group>
+  <group name="Appearance">
+    <entry name="showLabels" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="indicatorType" type="String">
+      <default>line</default>
+    </entry>
+    <entry name="indicatorPosition" type="String">
+      <default>bottom</default>
+    </entry>
+    <entry name="indicatorColor" type="String">
+      <default></default>
+    </entry>
+    <entry name="indicatorOpacity" type="Int">
+      <default>100</default>
+    </entry>
+    <entry name="indicatorThickness" type="Int">
+      <default>4</default>
+    </entry>
+  </group>
+  <group name="Mouse">
+    <entry name="hoverAnimation" type="String">
+      <default>wave</default>
+    </entry>
+    <entry name="clickEffect" type="String">
+      <default>none</default>
+    </entry>
+    <entry name="globalMouseCursor" type="Bool">
+      <default>false</default>
+    </entry>
+  </group>
+  <group name="Windows">
+    <entry name="windowPreviewStyle" type="String">
+      <default>thumbnail</default>
     </entry>
   </group>
 </kcfg>

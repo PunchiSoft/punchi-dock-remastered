@@ -8,7 +8,6 @@ import org.kde.plasma.plasmoid
 import "../org/punchi/dock" as Punchi
 
 import "code/configItemsController.js" as ConfigItemsControllerJS
-import "code/iconPickerController.js" as IconPickerJS
 import "code/configItems.js" as ConfigItemsJS
 import "code/configScripts.js" as ConfigScriptsJS
 import "code/configUi.js" as ConfigUiJS
@@ -44,13 +43,7 @@ KCM.SimpleKCM {
     property alias cfg_actionPopupLimitRows: actionDialog.actionPopupLimitRowsChecked
     property alias cfg_actionPopupMaxVisibleRows: actionDialog.actionPopupMaxVisibleRowsValue
     property bool pendingEditConsumed: false
-    readonly property var iconDialog: iconDialogLoader.item
-    property alias iconDialogLoader: iconDialogLoader
-    property alias iconPickerTarget: iconPickerController.target
-    property alias systemIconsRequested: iconPickerController.systemIconsRequested
-    property alias systemIconNames: iconPickerController.systemIconNames
-    property alias systemIconPaths: iconPickerController.systemIconPaths
-    property alias filteredIconTotal: iconPickerController.filteredIconTotal
+    property string iconFileDialogTarget: "item"
     property real listRowHeight: Kirigami.Units.gridUnit * 2.4
     property real listFooterHeight: Kirigami.Units.gridUnit * 2.4
     property real listFramePadding: Kirigami.Units.largeSpacing * 2
@@ -84,23 +77,6 @@ KCM.SimpleKCM {
     property alias calendarAccentColor: timedDialog.calendarAccentColorControl
     property alias calendarBorderColor: timedDialog.calendarBorderColorControl
     property alias calendarRadius: timedDialog.calendarRadiusControl
-    property var commonIconNames: [
-        "firefox", "system-file-manager", "user-home", "folder", "folder-documents",
-        "applications-office", "applications-development", "applications-internet",
-        "utilities-terminal", "preferences-system", "systemsettings", "settings-configure", "knotes", "preferences-system-time", "x-office-calendar",
-        "user-trash", "libreoffice-writer", "libreoffice-calc", "libreoffice-impress",
-        "libreoffice-draw", "libreoffice-math", "libreoffice-base", "libreoffice-startcenter", "folder-pictures", "draw-line", "application-x-executable"
-    ]
-    property var iconCategories: [
-        { "text": i18n("All icons"), "value": "all" },
-        { "text": i18n("Applications"), "value": "applications" },
-        { "text": i18n("Places"), "value": "places" },
-        { "text": i18n("Actions"), "value": "actions" },
-        { "text": i18n("Devices"), "value": "devices" },
-        { "text": i18n("Status"), "value": "status" },
-        { "text": i18n("Mimetypes"), "value": "mimetypes" },
-        { "text": i18n("Other"), "value": "other" }
-    ]
     function configInstanceId() {
         var value = ""
         try {
@@ -292,16 +268,12 @@ KCM.SimpleKCM {
         return ConfigScriptsJS.shellQuote(text)
     }
 
-    function iconValueForName(name) {
-        return ConfigItemsJS.iconValueForName(name, systemIconPaths)
-    }
-
     function iconPreviewSource(name) {
         return ConfigItemsJS.iconPreviewSource(name)
     }
 
     function appIconWithCommandFallback(icon, command) {
-        return ConfigItemsJS.appIconWithCommandFallback(icon, command, systemIconPaths)
+        return ConfigItemsJS.appIconWithCommandFallback(icon, command)
     }
 
     function autofillAppIconFromCommand() {
@@ -309,7 +281,16 @@ KCM.SimpleKCM {
         if (icon !== actionDialog.appIconText) {
             actionDialog.appIconText = icon
         }
-        var appId = ConfigItemsJS.flatpakAppIdFromCommand(actionDialog.appCommandText)
+        var appId = ConfigItemsJS.applicationIdForCommand(actionDialog.appCommandText)
+        var currentStoredId = ConfigItemsJS.normalizedApplicationId(actionDialog.appStorageId || actionDialog.appApplicationId)
+        if (appId.length > 0) {
+            if (actionDialog.appStorageId.length > 0 && currentStoredId !== appId) {
+                actionDialog.appStorageId = ""
+            }
+            actionDialog.appApplicationId = appId
+        } else if (actionDialog.appStorageId.length === 0) {
+            actionDialog.appApplicationId = ""
+        }
         if (appId.length === 0) {
             return
         }
@@ -317,7 +298,6 @@ KCM.SimpleKCM {
             return
         }
         actionDialog.appIconText = appId
-        iconPickerController.resolveFlatpakIcon(appId)
     }
 
     function clone(value) {
@@ -438,31 +418,36 @@ KCM.SimpleKCM {
     function addItem(type) { WorkflowHelper.addItem(type) }
 
     function openIconPicker(target) {
-        iconPickerController.open(target)
-    }
-
-    function chooseIcon(name) {
-        iconPickerController.choose(name)
-    }
-
-    function setSystemIcons(text) {
-        iconPickerController.setSystemIcons(text)
-    }
-
-    function loadSystemIcons() {
-        iconPickerController.loadSystemIcons()
-    }
-
-    function openIconFileDialog() {
-        iconPickerController.openIconFileDialog()
+        iconFileDialogTarget = target || "item"
+        iconFileDialog.open()
     }
 
     function chooseIconFile(fileUrl) {
-        iconPickerController.chooseIconFile(fileUrl)
-    }
+        var selectedIcon = String(fileUrl || "")
+        if (selectedIcon.length === 0) {
+            return
+        }
 
-    function updateIconFilter() {
-        iconPickerController.updateIconFilter()
+        if (iconFileDialogTarget === "action") {
+            actionDialog.actionIconText = selectedIcon
+            applyActionForm()
+            return
+        }
+
+        if (iconFileDialogTarget === "trashFull") {
+            trashDialog.fullIconText = selectedIcon
+            applyItemForm()
+            return
+        }
+
+        if (iconFileDialogTarget === "trash") {
+            trashDialog.emptyIconText = selectedIcon
+            applyItemForm()
+            return
+        }
+
+        actionDialog.appIconText = selectedIcon
+        applyItemForm()
     }
 
     function applyTimedColor(value) { WorkflowHelper.applyTimedColor(value) }
@@ -483,7 +468,6 @@ KCM.SimpleKCM {
 
     Component.onCompleted: {
         loadItems()
-        setSystemIcons("")
     }
 
     onCfg_dockItemsJsonChanged: syncItemsFromConfigJson()
@@ -525,29 +509,6 @@ KCM.SimpleKCM {
         id: containerFolderDialog
         titleText: i18n("Choose folder")
         onFolderChosen: page.setContainerFolder(path)
-    }
-
-    IconPickerController {
-        id: iconPickerController
-        page: page
-    }
-
-    Loader {
-        id: iconDialogLoader
-        active: false
-        sourceComponent: Component {
-            IconPickerDialog {
-                width: Math.min(page.width - Kirigami.Units.largeSpacing * 2, Kirigami.Units.gridUnit * 39)
-                height: Kirigami.Units.gridUnit * 26
-                controller: iconPickerController
-                filteredIconModel: iconPickerController.filteredIconModel
-                onIconAccepted: function(iconName) { iconPickerController.choose(iconName) }
-                onBrowseRequested: iconPickerController.openIconFileDialog()
-                onReloadRequested: iconPickerController.loadSystemIcons()
-                onFilterChanged: iconPickerController.updateIconFilter()
-                onClosed: iconDialogLoader.active = false
-            }
-        }
     }
 
     ColorPaletteDialog {
@@ -655,7 +616,7 @@ KCM.SimpleKCM {
         height: Math.min(page.height - Kirigami.Units.largeSpacing * 2, implicitHeight + Kirigami.Units.gridUnit * 2)
         controller: page
         onFormChanged: page.applyItemForm()
-        onEmptyIconPickerRequested: page.openIconPicker("item")
+        onEmptyIconPickerRequested: page.openIconPicker("trash")
         onFullIconPickerRequested: page.openIconPicker("trashFull")
         onSoundPreviewRequested: page.playTrashEmptySoundPreview()
         onSoundResetRequested: {

@@ -18,6 +18,15 @@ namespace
 {
 constexpr qsizetype maximumResults = 80;
 
+QString normalizedApplicationId(QString applicationId)
+{
+    applicationId = applicationId.trimmed();
+    if (applicationId.endsWith(QLatin1String(".desktop"))) {
+        applicationId.chop(8);
+    }
+    return applicationId;
+}
+
 QVariantMap serviceMap(const KService::Ptr &service)
 {
     if (!service) {
@@ -31,16 +40,8 @@ QVariantMap serviceMap(const KService::Ptr &service)
         {QStringLiteral("command"), service->exec()},
         {QStringLiteral("description"), service->comment()},
         {QStringLiteral("storageId"), service->storageId()},
+        {QStringLiteral("appId"), normalizedApplicationId(service->storageId())},
     };
-}
-
-QString normalizedApplicationId(QString applicationId)
-{
-    applicationId = applicationId.trimmed();
-    if (applicationId.endsWith(QLatin1String(".desktop"))) {
-        applicationId.chop(8);
-    }
-    return applicationId;
 }
 
 QString unquoteToken(QString text)
@@ -97,6 +98,14 @@ QString commandLookupKey(QString command)
     return normalizedApplicationId(executable);
 }
 
+QString serviceExecLookupKey(const KService::Ptr &service)
+{
+    if (!service) {
+        return {};
+    }
+    return commandLookupKey(service->exec());
+}
+
 KService::Ptr findApplicationService(const QString &query)
 {
     const QString needle = normalizedApplicationId(query);
@@ -114,15 +123,54 @@ KService::Ptr findApplicationService(const QString &query)
     }
 
     const KService::List services = KService::allServices();
+    KService::Ptr exactNameMatch;
+    KService::Ptr exactExecMatch;
+    KService::Ptr partialNameMatch;
+    KService::Ptr partialStorageIdMatch;
+
     for (const KService::Ptr &service : services) {
         if (!service || service->noDisplay() || !service->isApplication()) {
             continue;
         }
-        if (service->name().contains(needle, Qt::CaseInsensitive)
-            || service->storageId().contains(needle, Qt::CaseInsensitive)
-            || service->exec().contains(needle, Qt::CaseInsensitive)) {
+
+        const QString serviceName = service->name().trimmed();
+        const QString serviceStorageId = normalizedApplicationId(service->storageId());
+        const QString serviceDesktopName = normalizedApplicationId(service->desktopEntryName());
+        const QString serviceExecKey = serviceExecLookupKey(service);
+
+        if (serviceStorageId.compare(needle, Qt::CaseInsensitive) == 0
+            || serviceDesktopName.compare(needle, Qt::CaseInsensitive) == 0) {
             return service;
         }
+
+        if (!exactNameMatch && serviceName.compare(needle, Qt::CaseInsensitive) == 0) {
+            exactNameMatch = service;
+        }
+
+        if (!exactExecMatch && serviceExecKey.compare(needle, Qt::CaseInsensitive) == 0) {
+            exactExecMatch = service;
+        }
+
+        if (!partialNameMatch && serviceName.contains(needle, Qt::CaseInsensitive)) {
+            partialNameMatch = service;
+        }
+
+        if (!partialStorageIdMatch && serviceStorageId.contains(needle, Qt::CaseInsensitive)) {
+            partialStorageIdMatch = service;
+        }
+    }
+
+    if (exactNameMatch) {
+        return exactNameMatch;
+    }
+    if (exactExecMatch) {
+        return exactExecMatch;
+    }
+    if (partialNameMatch) {
+        return partialNameMatch;
+    }
+    if (partialStorageIdMatch) {
+        return partialStorageIdMatch;
     }
 
     return {};
@@ -229,6 +277,12 @@ QString SystemDiscovery::iconForApplication(const QString &applicationId) const
         service = KService::serviceByDesktopName(normalizedId);
     }
     return service ? service->icon() : QString{};
+}
+
+QString SystemDiscovery::applicationIdForCommand(const QString &command) const
+{
+    const KService::Ptr service = findApplicationService(commandLookupKey(command));
+    return service ? normalizedApplicationId(service->storageId()) : QString{};
 }
 
 void SystemDiscovery::launchApplication(const QString &storageId)

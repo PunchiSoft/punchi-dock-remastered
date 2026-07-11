@@ -22,6 +22,8 @@ Controls.Dialog {
     property alias appDescriptionText: itemEditor.appDescriptionText
     property alias appIconText: itemEditor.appIconText
     property alias appCommandText: itemEditor.appCommandText
+    property string appStorageId: ""
+    property string appApplicationId: ""
     readonly property string itemModeValue: itemEditor.itemModeValue
     property alias itemModeIndex: itemEditor.itemModeIndex
     readonly property string containerLayoutValue: itemEditor.containerLayoutValue

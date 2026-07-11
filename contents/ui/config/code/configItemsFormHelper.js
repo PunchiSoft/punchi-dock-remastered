@@ -27,6 +27,8 @@ function refreshItemForm() {
         actionDialog.appDescriptionText = ""
         actionDialog.appIconText = ""
         actionDialog.appCommandText = ""
+        actionDialog.appStorageId = ""
+        actionDialog.appApplicationId = ""
         actionDialog.itemModeIndex = 0
         actionDialog.spacerSizeValue = 24
         actionDialog.containerSourceIndex = 0
@@ -63,6 +65,8 @@ function refreshItemForm() {
     actionDialog.appDescriptionText = item.description || ""
     actionDialog.appIconText = item.icon || ""
     actionDialog.appCommandText = item.command || ""
+    actionDialog.appStorageId = item.storageId || ""
+    actionDialog.appApplicationId = item.appId || ConfigItemsJS.applicationIdForCommand(item.command || "")
     actionDialog.itemModeIndex = item.type === "folder" ? 1 : (item.type === "note" ? 2 : (item.type === "separator" ? 3 : (item.type === "spacer" ? 4 : 0)))
     actionDialog.containerLayoutIndex = actionDialog.layoutIndexFor(item.layout || "grid")
     actionDialog.containerShowLabelsChecked = item.showLabels === undefined ? true : item.showLabels
@@ -189,6 +193,12 @@ function applyItemForm(force) {
         item.description = actionDialog.appDescriptionText || ""
         item.command = actionDialog.appCommandText
         item.icon = appIconWithCommandFallback(actionDialog.appIconText, item.command)
+        item.storageId = String(actionDialog.appStorageId || "").trim()
+        item.appId = ConfigItemsJS.normalizedApplicationId(
+            String(actionDialog.appApplicationId || "")
+            || String(item.storageId || "")
+            || ConfigItemsJS.applicationIdForCommand(item.command)
+        )
         if (actionDialog.actionsEnabledChecked) {
             item.actions = item.actions instanceof Array ? item.actions : []
             delete item.actionsEnabled
@@ -233,6 +243,8 @@ function applyDiscoveredApplication(application) {
     actionDialog.appDescriptionText = application.description || ""
     actionDialog.appIconText = application.icon || ""
     actionDialog.appCommandText = application.command || ""
+    actionDialog.appStorageId = application.storageId || ""
+    actionDialog.appApplicationId = application.appId || ConfigItemsJS.normalizedApplicationId(application.storageId || "")
     applyItemForm(true)
 }
 

@@ -43,6 +43,39 @@ function flatpakAppIdFromCommand(command) {
     return ""
 }
 
+function normalizedApplicationId(value) {
+    var text = String(value || "").trim()
+    text = text.replace(/^applications:/, "")
+    text = text.replace(/\.desktop$/, "")
+    return text
+}
+
+function applicationIdForCommand(command) {
+    var parts = String(command || "").split(/\s+/)
+    for (var index = 0; index < parts.length; index++) {
+        var executable = parts[index].replace(/^['"]|['"]$/g, "")
+        var slash = executable.lastIndexOf("/")
+        var executableName = slash >= 0 ? executable.substring(slash + 1) : executable
+        if (executableName === "gtk-launch" && index < parts.length - 1) {
+            return normalizedApplicationId(parts[index + 1].replace(/^['"]|['"]$/g, ""))
+        }
+        if (index < parts.length - 1 && executableName === "flatpak"
+                && parts[index + 1].replace(/^['"]|['"]$/g, "") === "run") {
+            for (var runIndex = index + 2; runIndex < parts.length; runIndex++) {
+                var part = parts[runIndex].replace(/^['"]|['"]$/g, "")
+                if (part.length === 0 || part.indexOf("-") === 0) {
+                    continue
+                }
+                return normalizedApplicationId(part)
+            }
+        }
+        if (executableName.length > 0) {
+            return normalizedApplicationId(executableName)
+        }
+    }
+    return ""
+}
+
 function isFlatpakLikeIconName(name) {
     var text = String(name || "").toLowerCase()
     return text.indexOf("org.") === 0 || text.indexOf("com.") === 0 || text.indexOf("io.") === 0
@@ -50,30 +83,48 @@ function isFlatpakLikeIconName(name) {
         || text.indexOf("page.") === 0 || text.indexOf("md.") === 0
 }
 
-function iconValueForName(name, systemIconPaths) {
+function iconValueForName(name) {
     var text = String(name || "")
-    if (text.length === 0 || text.indexOf("/") >= 0) {
+    if (text.length === 0) {
         return text
     }
-    return isFlatpakLikeIconName(text) ? (systemIconPaths[text] || text) : text
+    return text
 }
 
 function iconPreviewSource(name) {
     var text = String(name || "")
+    if (text.indexOf("/") === 0) {
+        return "file://" + text
+    }
     return text.length === 0 ? "application-x-executable" : text
 }
 
-function iconValueForCommand(command, systemIconPaths) {
-    var appId = flatpakAppIdFromCommand(command)
-    return appId.length > 0 ? iconValueForName(appId, systemIconPaths) : ""
+function iconValueForCommand(command) {
+    var appId = applicationIdForCommand(command)
+    return appId.length > 0 ? iconValueForName(appId) : ""
 }
 
-function appIconWithCommandFallback(icon, command, systemIconPaths) {
+function appIconWithCommandFallback(icon, command) {
     var text = String(icon || "")
     if (text.length > 0 && text !== "application-x-executable") {
         return text
     }
-    return iconValueForCommand(command, systemIconPaths) || text || "application-x-executable"
+    return iconValueForCommand(command) || text || "application-x-executable"
+}
+
+function syncAppIdentity(item, command, storageId, appId) {
+    var normalizedStorageId = normalizedApplicationId(storageId || "")
+    var inferredAppId = normalizedApplicationId(appId || "")
+    var commandAppId = applicationIdForCommand(command || "")
+
+    if (normalizedStorageId.length > 0) {
+        item.storageId = storageId
+        item.appId = normalizedStorageId
+        return
+    }
+
+    delete item.storageId
+    item.appId = inferredAppId.length > 0 ? inferredAppId : commandAppId
 }
 
 function itemTitle(item, translate) {
@@ -256,6 +307,14 @@ function pruneNote(item) {
 
 function pruneApp(item) {
     removeKeys(item, ["apps"])
+    if (!item.storageId || String(item.storageId).trim().length === 0) {
+        delete item.storageId
+    }
+    if (!item.appId || String(item.appId).trim().length === 0) {
+        delete item.appId
+    } else {
+        item.appId = normalizedApplicationId(item.appId)
+    }
 }
 
 function pruneFolder(item) {
@@ -368,110 +427,24 @@ function newItem(type, defaultTrashEmptySound) {
 }
 
 function newAction(item) {
-    return {
+    var nextAction = {
         "name": "New action",
         "icon": item && item.icon ? item.icon : "application-x-executable",
         "command": item && item.command ? item.command : ""
     }
+    syncAppIdentity(nextAction, nextAction.command, "", "")
+    return nextAction
 }
 
 function newContainerApp(item) {
-    return {
+    var nextApp = {
         "type": "app",
         "name": "New App",
         "icon": item && item.icon ? item.icon : "application-x-executable",
         "command": item && item.command ? item.command : ""
     }
-}
-
-function parseSystemIcons(text, commonIconNames) {
-    var seen = {}
-    var paths = {}
-    var icons = []
-
-    for (var commonIndex = 0; commonIndex < commonIconNames.length; commonIndex++) {
-        seen[commonIconNames[commonIndex]] = true
-        icons.push(commonIconNames[commonIndex])
-    }
-
-    var lines = String(text || "").split(/\n/)
-    for (var index = 0; index < lines.length; index++) {
-        var line = lines[index].trim()
-        var separator = line.indexOf("|")
-        var name = separator >= 0 ? line.substring(0, separator) : line
-        var path = separator >= 0 ? line.substring(separator + 1) : ""
-        if (name.length === 0) {
-            continue
-        }
-        if (path.length > 0 && !paths[name]) {
-            paths[name] = path
-        }
-        if (seen[name]) {
-            continue
-        }
-        seen[name] = true
-        icons.push(name)
-    }
-
-    return {
-        "icons": icons,
-        "paths": paths
-    }
-}
-
-function iconCategoryForName(name) {
-    var text = String(name || "").toLowerCase()
-    if (text.indexOf("application") >= 0 || text.indexOf("app") >= 0 || text.indexOf("firefox") >= 0 || text.indexOf("libreoffice") >= 0 || isFlatpakLikeIconName(text)) {
-        return "applications"
-    }
-    if (text.indexOf("folder") >= 0 || text.indexOf("user-home") >= 0 || text.indexOf("document") >= 0 || text.indexOf("download") >= 0 || text.indexOf("music") >= 0 || text.indexOf("video") >= 0 || text.indexOf("image") >= 0 || text.indexOf("place") >= 0) {
-        return "places"
-    }
-    if (text.indexOf("edit-") === 0 || text.indexOf("go-") === 0 || text.indexOf("view-") === 0 || text.indexOf("list-") === 0 || text.indexOf("dialog-") === 0 || text.indexOf("document-") === 0) {
-        return "actions"
-    }
-    if (text.indexOf("drive") >= 0 || text.indexOf("disk") >= 0 || text.indexOf("device") >= 0 || text.indexOf("printer") >= 0 || text.indexOf("battery") >= 0 || text.indexOf("camera") >= 0 || text.indexOf("phone") >= 0) {
-        return "devices"
-    }
-    if (text.indexOf("network") >= 0 || text.indexOf("audio") >= 0 || text.indexOf("notification") >= 0 || text.indexOf("security") >= 0 || text.indexOf("weather") >= 0 || text.indexOf("task") >= 0) {
-        return "status"
-    }
-    if (text.indexOf("text-") === 0 || text.indexOf("image-") === 0 || text.indexOf("audio-") === 0 || text.indexOf("video-") === 0 || text.indexOf("x-") >= 0) {
-        return "mimetypes"
-    }
-    return "other"
-}
-
-function iconMatchesCategory(name, category) {
-    return !category || category === "all" || iconCategoryForName(name) === category
-}
-
-function filteredIcons(systemIconNames, commonIconNames, query, category, limit) {
-    var normalizedQuery = String(query || "").toLowerCase()
-    var selectedCategory = category || "all"
-    var icons = systemIconNames && systemIconNames.length > 0 ? systemIconNames : commonIconNames
-    var rows = []
-    var total = 0
-
-    for (var index = 0; index < icons.length; index++) {
-        var name = icons[index]
-        if (!iconMatchesCategory(name, selectedCategory)) {
-            continue
-        }
-        if (normalizedQuery.length > 0 && name.toLowerCase().indexOf(normalizedQuery) < 0) {
-            continue
-        }
-
-        total++
-        if (rows.length < limit) {
-            rows.push({ "iconName": name })
-        }
-    }
-
-    return {
-        "rows": rows,
-        "total": total
-    }
+    syncAppIdentity(nextApp, nextApp.command, "", "")
+    return nextApp
 }
 
 function parseJsonArray(text) {
@@ -603,6 +576,7 @@ function applyAction(items, selectedIndex, selectedActionIndex, name, icon, comm
     action.name = name || "New action"
     action.icon = icon || nextItems[selectedIndex].icon || "application-x-executable"
     action.command = command
+    syncAppIdentity(action, action.command, action.storageId, action.appId)
     return nextItems
 }
 
@@ -642,6 +616,7 @@ function applyContainerApp(items, selectedIndex, selectedActionIndex, name, icon
     app.name = name || "Application"
     app.icon = icon || nextItems[selectedIndex].icon || "application-x-executable"
     app.command = command || ""
+    syncAppIdentity(app, app.command, app.storageId, app.appId)
     pruneApp(app)
     return nextItems
 }

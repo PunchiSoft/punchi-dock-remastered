@@ -12,6 +12,24 @@ ConfigModel {
         icon: "systemsettings"
         source: "config/ConfigGeneral.qml"
     }
+
+    ConfigCategory {
+        name: i18n("Appearance")
+        icon: "preferences-desktop-theme"
+        source: "config/ConfigAspect.qml"
+    }
+
+    ConfigCategory {
+        name: i18n("Mouse")
+        icon: "input-mouse"
+        source: "config/ConfigMouse.qml"
+    }
+
+    ConfigCategory {
+        name: i18n("Windows")
+        icon: "window"
+        source: "config/ConfigWindows.qml"
+    }
     
     ConfigCategory {
         name: i18n("Files")

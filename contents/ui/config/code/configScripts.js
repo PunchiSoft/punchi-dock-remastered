@@ -58,24 +58,6 @@ function saveItemsScript(configDirectory, configFile, formattedJson) {
         + " && cat " + shellQuote(configFile)
 }
 
-function iconIndexScript() {
-    return "roots=\"$HOME/.local/share/icons /usr/local/share/icons /usr/share/icons\"; "
-        + "current_theme=\"\"; "
-        + "if command -v kreadconfig6 >/dev/null 2>&1; then current_theme=$(kreadconfig6 --group Icons --key Theme 2>/dev/null); "
-        + "elif command -v kreadconfig5 >/dev/null 2>&1; then current_theme=$(kreadconfig5 --group Icons --key Theme 2>/dev/null); fi; "
-        + "theme_dirs() { theme_name=\"$1\"; seen_names=\" $2 \"; [ -z \"$theme_name\" ] && return; "
-        + "case \"$seen_names\" in *\" $theme_name \"*) return;; esac; seen_names=\"$seen_names$theme_name \"; "
-        + "for root in $roots; do [ -d \"$root/$theme_name\" ] && printf '%s\\n' \"$root/$theme_name\"; done; "
-        + "inherits=\"\"; for root in $roots; do index_file=\"$root/$theme_name/index.theme\"; "
-        + "[ -f \"$index_file\" ] && inherits=$(awk -F= '/^Inherits=/ { print $2; exit }' \"$index_file\") && break; done; "
-        + "old_ifs=$IFS; IFS=','; for inherited in $inherits; do inherited=$(printf '%s' \"$inherited\" | sed 's/^ *//; s/ *$//'); "
-        + "[ -n \"$inherited\" ] && theme_dirs \"$inherited\" \"$seen_names\"; done; IFS=$old_ifs; }; "
-        + "{ theme_dirs \"$current_theme\" \"\"; theme_dirs hicolor \"\"; } "
-        + "| while IFS= read -r dir; do [ -d \"$dir\" ] && find \"$dir\" -type f \\( -name '*.svg' -o -name '*.svgz' -o -name '*.png' -o -name '*.xpm' \\); done; "
-        + "2>/dev/null | while IFS= read -r path; do base=${path##*/}; name=${base%.*}; printf '%s|%s\\n' \"$name\" \"$path\"; done "
-        + "| awk -F'|' '!seen[$1]++' | sort | head -n 12000"
-}
-
 function trashSoundPreviewScript(configuredSound, fallbackSound, applicationName) {
     return "sound_file=" + shellQuote(configuredSound) + "; "
         + "if [ ! -f \"$sound_file\" ]; then sound_file=" + shellQuote(fallbackSound) + "; fi; "

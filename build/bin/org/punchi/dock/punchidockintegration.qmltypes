@@ -16,22 +16,22 @@ Module {
         exportMetaObjectRevisions: [256]
         Signal {
             name: "folderEntriesReady"
-            lineNumber: 32
+            lineNumber: 33
             Parameter { name: "entries"; type: "QVariantList" }
         }
         Signal {
             name: "applicationsReady"
-            lineNumber: 33
+            lineNumber: 34
             Parameter { name: "applications"; type: "QVariantList" }
         }
         Signal {
             name: "applicationReady"
-            lineNumber: 34
+            lineNumber: 35
             Parameter { name: "application"; type: "QVariantMap" }
         }
         Signal {
             name: "operationFailed"
-            lineNumber: 35
+            lineNumber: 36
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
@@ -59,19 +59,26 @@ Module {
             Parameter { name: "applicationId"; type: "QString" }
         }
         Method {
-            name: "launchApplication"
+            name: "applicationIdForCommand"
+            type: "QString"
+            isMethodConstant: true
             lineNumber: 27
+            Parameter { name: "command"; type: "QString" }
+        }
+        Method {
+            name: "launchApplication"
+            lineNumber: 28
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
             name: "launchApplicationByCommand"
             type: "bool"
-            lineNumber: 28
+            lineNumber: 29
             Parameter { name: "command"; type: "QString" }
         }
         Method {
             name: "openUrl"
-            lineNumber: 29
+            lineNumber: 30
             Parameter { name: "url"; type: "QString" }
         }
     }

@@ -2,8 +2,10 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import org.kde.plasma.components as PlasmaComponents
+import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
+import org.kde.ksvg as KSvg
 
 Item {
     id: folderRoot
@@ -24,6 +26,7 @@ Item {
     property bool circularMode: layoutMode === "circular" || layoutMode === "fan"
     property var apps: folderItem.apps || []
     property int itemCount: apps.length
+    readonly property string popupBackgroundPath: layoutMode === "fan" ? "dialogs/background" : "widgets/background"
 
     // Animación de despliegue para circular/fan
     property real openProgress: isOpen ? 1.0 : 0.0
@@ -88,12 +91,11 @@ Item {
         // Título de la carpeta
         RowLayout {
             Layout.fillWidth: true
-            PlasmaComponents.Label {
+            PlasmaExtras.ShadowedLabel {
                 text: folderItem.name || i18n("Folder")
                 font.family: Kirigami.Theme.defaultFont.family
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize
                 font.weight: Font.Bold
-                color: Kirigami.Theme.textColor
                 Layout.fillWidth: true
             }
             // Botón de cerrar
@@ -153,12 +155,11 @@ Item {
                     }
                     Column {
                         Layout.fillWidth: true
-                        PlasmaComponents.Label {
+                        PlasmaExtras.ShadowedLabel {
                             text: modelData.name
                             font.family: Kirigami.Theme.defaultFont.family
                             font.pointSize: Kirigami.Theme.defaultFont.pointSize
                             font.weight: Font.DemiBold
-                            color: Kirigami.Theme.textColor
                             elide: Text.ElideRight
                             width: parent.width
                         }
@@ -188,11 +189,10 @@ Item {
                         Layout.alignment: Qt.AlignHCenter
                         source: modelData.icon || "application-x-executable"
                     }
-                    PlasmaComponents.Label {
+                    PlasmaExtras.ShadowedLabel {
                         text: modelData.name
                         font.family: Kirigami.Theme.smallFont.family
                         font.pointSize: Kirigami.Theme.smallFont.pointSize
-                        color: Kirigami.Theme.textColor
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
                         elide: Text.ElideRight
@@ -223,13 +223,12 @@ Item {
         visible: circularMode
 
         // Fondo decorativo en modo circular completo
-        Rectangle {
+        KSvg.FrameSvgItem {
             anchors.centerIn: parent
-            width: 180; height: 180; radius: 90
-            color: Kirigami.Theme.backgroundColor
+            width: 196
+            height: 196
+            imagePath: folderRoot.popupBackgroundPath
             opacity: 0.8 * openProgress
-            border.width: 1
-            border.color: Kirigami.Theme.textColor
             visible: layoutMode === "circular" && openProgress > 0.1
         }
 
@@ -259,13 +258,17 @@ Item {
                 opacity: folderRoot.openProgress
                 scale: 0.6 + 0.4 * folderRoot.openProgress
 
+                KSvg.FrameSvgItem {
+                    anchors.fill: parent
+                    imagePath: folderRoot.popupBackgroundPath
+                }
+
                 Rectangle {
                     anchors.fill: parent
                     radius: 26
-                    color: itemCircMouse.containsMouse || itemCircMouse.activeFocus ? Kirigami.Theme.highlightColor : Kirigami.Theme.backgroundColor
-                    border.width: 1
-                    border.color: itemCircMouse.activeFocus ? Kirigami.Theme.highlightedTextColor : Kirigami.Theme.textColor
-                    
+                    color: itemCircMouse.containsMouse || itemCircMouse.activeFocus ? Kirigami.Theme.highlightColor : "transparent"
+                    opacity: itemCircMouse.containsMouse || itemCircMouse.activeFocus ? 0.18 : 0.0
+
                     Kirigami.Icon {
                         anchors.centerIn: parent
                         width: 32; height: 32
@@ -294,14 +297,21 @@ Item {
         }
 
         // Botón central para cerrar en modo circular o abanico
-        Rectangle {
-            width: 38; height: 38; radius: 19
-            color: circCloseMouse.containsMouse || circCloseMouse.activeFocus ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.backgroundColor
-            border.width: 1
-            border.color: Kirigami.Theme.textColor
+        KSvg.FrameSvgItem {
+            width: 38; height: 38
+            imagePath: folderRoot.popupBackgroundPath
             x: folderRoot.getCloseX() - width/2
             y: folderRoot.getCloseY() - height/2
             opacity: openProgress
+        }
+
+        Rectangle {
+            width: 38; height: 38; radius: 19
+            color: circCloseMouse.containsMouse || circCloseMouse.activeFocus ? Kirigami.Theme.negativeTextColor : "transparent"
+            opacity: circCloseMouse.containsMouse || circCloseMouse.activeFocus ? 0.18 : 0.0
+            x: folderRoot.getCloseX() - width/2
+            y: folderRoot.getCloseY() - height/2
+            z: 1
 
             Kirigami.Icon {
                 anchors.centerIn: parent

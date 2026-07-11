@@ -1,3 +1,13 @@
-jul 11 02:08:06 FedoraLaptod plasmashell[125938]: Member enabled of the object HoverBackground_QMLTYPE_181 overrides a member of the base object. Consider renaming it or adding final or override specifier
-jul 11 02:08:09 FedoraLaptod plasmashell[125938]: Final member StackingOrder is overridden in class QQmlDMAbstractItemModelData. The override won't be used.
-jul 11 02:08:09 FedoraLaptod plasmashell[125938]: Final member StackingOrder is overridden in class QQmlDMAbstractItemModelData. The override won't be used.
+jul 11 16:03:55 FedoraLaptod plasmashell[32389]: file:///home/CMUNOZJ/.local/share/plasma/plasmoids/org.kde.plasma.punchi-dock-remastered/contents/ui/main.qml:63: ReferenceError: mainContainer is not defined
+jul 11 16:03:55 FedoraLaptod plasmashell[32389]: file:///home/CMUNOZJ/.local/share/plasma/plasmoids/org.kde.plasma.punchi-dock-remastered/contents/ui/main.qml:562: ReferenceError: taskWindowsDialog is not defined
+jul 11 16:03:57 FedoraLaptod plasmashell[32389]: file:///home/CMUNOZJ/.local/share/plasma/plasmoids/org.kde.plasma.punchi-dock-remastered/contents/ui/main.qml:63: ReferenceError: mainContainer is not defined
+jul 11 16:03:57 FedoraLaptod plasmashell[32389]: file:///home/CMUNOZJ/.local/share/plasma/plasmoids/org.kde.plasma.punchi-dock-remastered/contents/ui/main.qml:562: ReferenceError: taskWindowsDialog is not defined
+jul 11 16:04:00 FedoraLaptod plasmashell[32389]: qrc:/qt/qml/plasma/applet/org/kde/plasma/volume/main.qml:695:17: QML PlasmoidHeading: Binding loop detected for property "leftInset":
+                                                 qrc:/qt/qml/org/kde/plasma/extras/PlasmoidHeading.qml:33:5
+jul 11 16:04:00 FedoraLaptod plasmashell[32389]: qrc:/qt/qml/plasma/applet/org/kde/plasma/volume/main.qml:312:17: QML PlasmoidHeading: Binding loop detected for property "leftInset":
+                                                 qrc:/qt/qml/org/kde/plasma/extras/PlasmoidHeading.qml:33:5
+jul 11 16:04:00 FedoraLaptod plasmashell[32389]: qrc:/qt/qml/plasma/applet/org/kde/plasma/bluetooth/FullRepresentation.qml:86:13: QML Toolbar: Binding loop detected for property "leftInset":
+                                                 qrc:/qt/qml/org/kde/plasma/extras/PlasmoidHeading.qml:33:5
+jul 11 16:04:00 FedoraLaptod plasmashell[32389]: qrc:/qt/qml/org/kde/plasma/private/clipboard/ClipboardMenu.qml:244:51: QML PlasmoidHeading: Binding loop detected for property "leftInset":
+                                                 qrc:/qt/qml/org/kde/plasma/extras/PlasmoidHeading.qml:33:5
+jul 11 16:04:02 FedoraLaptod plasmashell[38004]: Final member StackingOrder is overridden in class QQmlDMAbstractItemModelData. The override won't be used.

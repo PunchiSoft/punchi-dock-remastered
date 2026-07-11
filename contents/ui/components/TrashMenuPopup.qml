@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import org.kde.plasma.components as PlasmaComponents
+import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
 
 Item {
@@ -25,12 +26,11 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             
-            PlasmaComponents.Label {
+            PlasmaExtras.ShadowedLabel {
                 text: i18n("Trash")
                 font.family: Kirigami.Theme.defaultFont.family
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize
                 font.weight: Font.Bold
-                color: Kirigami.Theme.textColor
                 Layout.fillWidth: true
             }
             

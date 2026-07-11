@@ -6,6 +6,7 @@ import org.kde.kcmutils as KCM
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 import org.kde.taskmanager as TaskManager
+import "components"
 
 KCM.SimpleKCM {
     id: page
@@ -13,9 +14,9 @@ KCM.SimpleKCM {
     // Variables prefijadas con "cfg_" para mapear automáticamente a KConfig (main.xml)
     property alias cfg_iconSize: iconSizeSlider.value
     property alias cfg_hoverScale: hoverScaleSlider.value
-    property string cfg_hoverAnimation: "wave"
     property string cfg_virtualDesktopMode: "all"
     property string cfg_targetVirtualDesktop: ""
+    readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property int detectedPanelThickness: {
@@ -127,6 +128,11 @@ KCM.SimpleKCM {
                 to: page.inPanel ? page.safePanelIconSizeMax : 96
                 stepSize: 2
                 Layout.fillWidth: true
+
+                ConfigCursorBehavior {
+                    active: page.interactiveCursorEnabled
+                    role: "slider"
+                }
             }
             
             Controls.Label {
@@ -156,31 +162,17 @@ KCM.SimpleKCM {
                 to: 2.0
                 stepSize: 0.05
                 Layout.fillWidth: true
+
+                ConfigCursorBehavior {
+                    active: page.interactiveCursorEnabled
+                    role: "slider"
+                }
             }
-            
+
             Controls.Label {
                 text: hoverScaleSlider.value.toFixed(2) + "x"
                 font.bold: true
                 Layout.preferredWidth: 50
-            }
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Hover animation:")
-
-            Controls.ComboBox {
-                id: hoverAnimationCombo
-                textRole: "text"
-                valueRole: "value"
-                model: [
-                    { "text": i18n("None"), "value": "none" },
-                    { "text": i18n("Wave"), "value": "wave" },
-                    { "text": i18n("Single"), "value": "single" },
-                    { "text": i18n("Paragraph"), "value": "paragraph" }
-                ]
-                currentIndex: Math.max(0, indexOfValue(page.cfg_hoverAnimation))
-                Layout.fillWidth: true
-                onActivated: page.cfg_hoverAnimation = currentValue
             }
         }
 
@@ -205,6 +197,10 @@ KCM.SimpleKCM {
                         page.cfg_targetVirtualDesktop = page.defaultTargetVirtualDesktopId
                     }
                 }
+
+                ConfigCursorBehavior {
+                    active: page.interactiveCursorEnabled
+                }
             }
         }
 
@@ -228,6 +224,10 @@ KCM.SimpleKCM {
                 }
                 onActivated: {
                     page.cfg_targetVirtualDesktop = currentValue
+                }
+
+                ConfigCursorBehavior {
+                    active: page.interactiveCursorEnabled
                 }
             }
         }

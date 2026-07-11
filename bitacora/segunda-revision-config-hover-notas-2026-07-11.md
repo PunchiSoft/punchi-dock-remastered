@@ -25,6 +25,8 @@ Fecha: 2026-07-11
   - una estimación en el KCM cuando Plasma expone geometría suficiente;
   - un clamp efectivo en runtime para garantizar estabilidad visual.
 - En las notas se optó por HTML básico (`b`, `i`, `u`) para mantener el alcance acotado y compatible con `TextEdit.RichText`.
+- El conflicto de hover reportado posteriormente quedó clasificado como específico de `plasmoidviewer`.
+- Por esa razón, se conservó la mejora del watcher para simular un panel real en pruebas, pero se descartó congelar el hover del dock cuando hubiera popups abiertos, ya que eso modificaba el runtime real para compensar un fallo del visor.
 
 ## Validación pendiente
 

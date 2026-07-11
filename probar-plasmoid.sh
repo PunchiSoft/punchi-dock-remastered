@@ -17,7 +17,9 @@ echo "✅ Sintaxis QML correcta."
 echo "==> [2/5] Empaquetando Punchi Dock Remastered..."
 mkdir -p dist
 rm -f "$ZIP_FILE"
-zip -rq "$ZIP_FILE" . -x \*.git\* -x \*dist\* -x \*.sh\* -x \*.md -x \*bitacora\* -x \*docs\* -x \*Img\* -x \*.agents\* -x \*debug.log\* -x \*kde-sdk\*
+# El paquete distribuible debe contener solo la estructura valida del plasmoide.
+zip -rq "$ZIP_FILE" metadata.json LICENSE contents
+unzip -tq "$ZIP_FILE" >/dev/null
 
 echo "==> [3/5] Instalando paquete en KDE..."
 kpackagetool6 --type Plasma/Applet -u "$ZIP_FILE" 2>/dev/null || kpackagetool6 --type Plasma/Applet -i "$ZIP_FILE"

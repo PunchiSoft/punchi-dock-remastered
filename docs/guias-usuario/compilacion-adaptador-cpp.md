@@ -29,6 +29,27 @@ qmlplugindump-qt6 -nonrelocatable org.punchi.dock 1.0 "$HOME/.local/lib64/qml"
 
 Tras modificar el adaptador, volver a compilar, instalar y ejecutar `stage_plasmoid_module`. Este target copia el plugin, su biblioteca, `qmldir` y los metadatos QML a `contents/ui/org/punchi/dock` con RPATH `$ORIGIN`. Después se debe reconstruir el paquete del plasmoide.
 
+## Empaquetado correcto del plasmoide
+
+El artefacto distribuible `.plasmoid` debe contener solo:
+
+- `metadata.json`
+- `LICENSE`
+- `contents/`
+
+No debe incluir `build/`, `src/`, `docs/`, `bitacora/`, `backup/`, `kde-sdk/` ni scripts auxiliares del repositorio. Empaquetar el directorio completo vuelve el archivo innecesariamente grande y lento de generar e instalar.
+
+La forma minima recomendada es:
+
+```bash
+mkdir -p dist
+rm -f dist/punchi-dock-remastered.plasmoid
+zip -rq dist/punchi-dock-remastered.plasmoid metadata.json LICENSE contents
+unzip -tq dist/punchi-dock-remastered.plasmoid
+```
+
+El script [probar-plasmoid.sh](/home/CMUNOZJ/Escritorio/Aprendizaje/punchi-dock-remastered/probar-plasmoid.sh:1) ya usa este criterio.
+
 ## Alcance del adaptador
 
 `SystemDiscovery` proporciona:

@@ -76,12 +76,26 @@
                         "access": "public",
                         "arguments": [
                             {
-                                "name": "storageId",
+                                "name": "command",
                                 "type": "QString"
                             }
                         ],
                         "index": 9,
+                        "isConst": true,
                         "lineNumber": 27,
+                        "name": "applicationIdForCommand",
+                        "returnType": "QString"
+                    },
+                    {
+                        "access": "public",
+                        "arguments": [
+                            {
+                                "name": "storageId",
+                                "type": "QString"
+                            }
+                        ],
+                        "index": 10,
+                        "lineNumber": 28,
                         "name": "launchApplication",
                         "returnType": "void"
                     },
@@ -93,8 +107,8 @@
                                 "type": "QString"
                             }
                         ],
-                        "index": 10,
-                        "lineNumber": 28,
+                        "index": 11,
+                        "lineNumber": 29,
                         "name": "launchApplicationByCommand",
                         "returnType": "bool"
                     },
@@ -106,8 +120,8 @@
                                 "type": "QString"
                             }
                         ],
-                        "index": 11,
-                        "lineNumber": 29,
+                        "index": 12,
+                        "lineNumber": 30,
                         "name": "openUrl",
                         "returnType": "void"
                     }
@@ -124,7 +138,7 @@
                             }
                         ],
                         "index": 0,
-                        "lineNumber": 32,
+                        "lineNumber": 33,
                         "name": "folderEntriesReady",
                         "returnType": "void"
                     },
@@ -137,7 +151,7 @@
                             }
                         ],
                         "index": 1,
-                        "lineNumber": 33,
+                        "lineNumber": 34,
                         "name": "applicationsReady",
                         "returnType": "void"
                     },
@@ -150,7 +164,7 @@
                             }
                         ],
                         "index": 2,
-                        "lineNumber": 34,
+                        "lineNumber": 35,
                         "name": "applicationReady",
                         "returnType": "void"
                     },
@@ -167,7 +181,7 @@
                             }
                         ],
                         "index": 3,
-                        "lineNumber": 35,
+                        "lineNumber": 36,
                         "name": "operationFailed",
                         "returnType": "void"
                     }
