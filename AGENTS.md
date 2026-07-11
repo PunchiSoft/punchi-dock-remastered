@@ -181,6 +181,18 @@ Toda modificación debe verificarse en proporción a su riesgo.
 
 No declarar que algo funciona en runtime si solo fue inspeccionado estáticamente. Informar qué se verificó y qué quedó pendiente.
 
+## Cierre de Sesión y Respaldo (Git)
+
+Cualquier asistente de IA o agente autónomo (ej. Antigravity, Codex, Copilot) debe obedecer este protocolo estricto cuando el usuario solicite terminar la sesión de trabajo, finalizar el día o preparar el código para subir:
+
+1. **Escribir la Bitácora**: Antes de tocar Git, crear un resumen técnico del progreso del día en `bitacora/YYYY-MM-DD-resumen-sesion.md`.
+2. **Revisar estado**: Ejecutar `git status` asegurando que no haya basura expuesta (el `.gitignore` debe proteger esto).
+3. **Añadir cambios**: Ejecutar `git add .`
+4. **Commit Profesional**: Ejecutar `git commit -m "feat/fix/docs/refactor: <resumen claro del trabajo>"`.
+5. **Sincronización**: Ejecutar `git push` para respaldar el código en remoto.
+
+Nunca se debe usar git para forzar la subida de binarios u ocultar errores. Este proceso automatiza el fin del día del usuario.
+
 ## Lista de cierre
 
 Antes de finalizar una modificación, comprobar lo que aplique:
