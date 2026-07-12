@@ -6,10 +6,10 @@ import org.kde.plasma.components as PlasmaComponents
 
 Item {
     id: confirmRoot
-    width: 260
-    height: 124
-    implicitWidth: width
-    implicitHeight: height
+    implicitWidth: 260
+    implicitHeight: 124
+    width: implicitWidth
+    height: implicitHeight
 
     signal confirmRequested()
     signal cancelRequested()

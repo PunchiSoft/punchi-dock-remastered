@@ -17,6 +17,8 @@ set_target_properties(punchidockintegrationplugin PROPERTIES
 )
 
 target_sources(punchidockintegration PRIVATE
+    dockruntimeservice.cpp
+    dockruntimeservice.h
     systemdiscovery.cpp
     systemdiscovery.h
     trashintegration.cpp
@@ -39,7 +41,12 @@ ecm_finalize_qml_module(punchidockintegration
     DESTINATION ${KDE_INSTALL_QMLDIR}
 )
 
-set(PUNCHI_PACKAGE_QML_MODULE_DIR "${CMAKE_SOURCE_DIR}/contents/ui/org/punchi/dock")
+set(
+    PUNCHI_PACKAGE_QML_MODULE_DIR
+    "${CMAKE_BINARY_DIR}/package-root/contents/ui/org/punchi/dock"
+    CACHE PATH
+    "Destination used to stage the native QML module for plasmoid packaging"
+)
 add_custom_target(stage_plasmoid_module
     COMMAND ${CMAKE_COMMAND} -E make_directory "${PUNCHI_PACKAGE_QML_MODULE_DIR}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different

@@ -11,11 +11,24 @@ WATCH_ROOT="${1:-contents}"
 POLL_INTERVAL="${POLL_INTERVAL:-1}"
 VIEWER_FORMFACTOR="${VIEWER_FORMFACTOR:-horizontal}"
 VIEWER_LOCATION="${VIEWER_LOCATION:-bottomedge}"
+PACKAGE_FILE="$PROJECT_ROOT/dist/punchi-dock-remastered.plasmoid"
 
 if ! command -v plasmoidviewer >/dev/null 2>&1; then
     echo "plasmoidviewer no está disponible en PATH." >&2
     exit 1
 fi
+
+if ! command -v kpackagetool6 >/dev/null 2>&1; then
+    echo "kpackagetool6 no esta disponible en PATH." >&2
+    exit 1
+fi
+
+install_current_package() {
+    "$SCRIPT_DIR/empaquetar-plasmoid.sh"
+    if ! kpackagetool6 --type Plasma/Applet -u "$PACKAGE_FILE" 2>/dev/null; then
+        kpackagetool6 --type Plasma/Applet -i "$PACKAGE_FILE"
+    fi
+}
 
 start_viewer() {
     plasmoidviewer -a "$APPLET_ID" -f "$VIEWER_FORMFACTOR" -l "$VIEWER_LOCATION" >/dev/null 2>&1 &
@@ -49,6 +62,8 @@ else
     watcher_backend="polling"
 fi
 
+echo "Empaquetando e instalando la revision actual..."
+install_current_package
 echo "Iniciando plasmoidviewer para $APPLET_ID ($VIEWER_FORMFACTOR, $VIEWER_LOCATION)"
 start_viewer
 
@@ -70,7 +85,8 @@ while true; do
         last_snapshot="$current_snapshot"
     fi
 
-    echo "Cambio detectado. Reiniciando plasmoidviewer..."
+    echo "Cambio detectado. Actualizando el paquete y reiniciando plasmoidviewer..."
     stop_viewer
+    install_current_package
     start_viewer
 done

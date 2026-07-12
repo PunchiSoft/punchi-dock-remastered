@@ -138,3 +138,11 @@ Ejemplo funcional esperado:
 - seguir afinando el tamaño reportado del plasmoide en modo edición para que coincida con total precisión con la cápsula visual completa del dock;
 - seguir observando el comportamiento de popups en panel, especialmente en orientaciones menos comunes;
 - validar en más casos el lanzamiento nativo de aplicaciones y Flatpak.
+
+## Cierre documental 2026-07-12
+
+Estado: cerrada.
+
+- esta revision conserva el diagnostico y las recomendaciones de la primera jornada;
+- el trabajo posterior y el cierre de las fases de ventanas continuaron en `revision_11-07-26-2.md`;
+- las recomendaciones de observacion que no tienen un defecto reproducible confirmado no se trasladan automaticamente como pendientes a la nueva revision.

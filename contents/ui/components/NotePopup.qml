@@ -15,10 +15,10 @@ Item {
     readonly property int activeHeight: Math.max(160, noteItem && noteItem.popupHeight ? noteItem.popupHeight : 260)
     readonly property int maximumNoteLength: 2000
 
-    width: activeWidth
-    height: activeHeight
-    implicitWidth: width
-    implicitHeight: height
+    implicitWidth: activeWidth
+    implicitHeight: activeHeight
+    width: implicitWidth
+    height: implicitHeight
 
     signal noteChanged(string noteText, int popupWidth, int popupHeight)
     signal clearRequested(string noteText, int popupWidth, int popupHeight)

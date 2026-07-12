@@ -7,11 +7,10 @@ import org.kde.kirigami as Kirigami
 
 Item {
     id: trashMenuRoot
-    width: 220
-    height: 136
-    
-    implicitWidth: width
-    implicitHeight: height
+    implicitWidth: 220
+    implicitHeight: 136
+    width: implicitWidth
+    height: implicitHeight
 
     signal openTrashClicked()
     signal emptyTrashClicked()
@@ -55,7 +54,6 @@ Item {
                     Accessible.role: Accessible.Button
                     Accessible.name: i18n("Close")
                     onClicked: {
-                        console.log("TrashMenuPopup: Close button clicked")
                         trashMenuRoot.closeRequested()
                     }
                 }
@@ -71,7 +69,6 @@ Item {
             icon.name: "folder-open"
             
             onClicked: {
-                console.log("TrashMenuPopup: Clicked Open Trash (ItemDelegate)")
                 trashMenuRoot.openTrashClicked()
             }
         }
@@ -85,7 +82,6 @@ Item {
             icon.name: "trash-empty"
             
             onClicked: {
-                console.log("TrashMenuPopup: Clicked Empty Trash (ItemDelegate)")
                 trashMenuRoot.emptyTrashClicked()
             }
         }

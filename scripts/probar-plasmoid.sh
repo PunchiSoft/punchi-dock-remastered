@@ -1,30 +1,42 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Cambiar al directorio del script para evitar fallos si se ejecuta desde fuera
-cd "$(dirname "$0")"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+ZIP_FILE="$PROJECT_ROOT/dist/punchi-dock-remastered.plasmoid"
+DEBUG_LOG="$PROJECT_ROOT/debug.log"
+PLUGIN_ID="org.kde.plasma.punchi-dock-remastered"
+DATA_ROOT="$(qtpaths6 --writable-path GenericDataLocation)"
+INSTALL_DIR="$DATA_ROOT/plasma/plasmoids/$PLUGIN_ID"
+BROKEN_INSTALL_BACKUP=""
 
-PLASMOID_NAME="org.kde.plasma.punchi-dock-remastered"
-ZIP_FILE="dist/punchi-dock-remastered.plasmoid"
-
-echo "==> [1/5] Validando código QML (qmllint)..."
-find contents/ui -name "*.qml" -exec qmllint {} + || {
-    echo "❌ Se encontraron errores de sintaxis en los archivos QML. Abortando."
-    exit 1
+restore_broken_install() {
+    if [[ -n "$BROKEN_INSTALL_BACKUP" && -d "$BROKEN_INSTALL_BACKUP" && ! -e "$INSTALL_DIR" ]]; then
+        mv "$BROKEN_INSTALL_BACKUP" "$INSTALL_DIR"
+    fi
 }
-echo "✅ Sintaxis QML correcta."
 
-echo "==> [2/5] Empaquetando Punchi Dock Remastered..."
-mkdir -p dist
-rm -f "$ZIP_FILE"
-# El paquete distribuible debe contener solo la estructura valida del plasmoide.
-zip -rq "$ZIP_FILE" metadata.json LICENSE contents
-unzip -tq "$ZIP_FILE" >/dev/null
+"$SCRIPT_DIR/empaquetar-plasmoid.sh"
 
-echo "==> [3/5] Instalando paquete en KDE..."
-kpackagetool6 --type Plasma/Applet -u "$ZIP_FILE" 2>/dev/null || kpackagetool6 --type Plasma/Applet -i "$ZIP_FILE"
+echo "==> [1/3] Installing the local test package"
+if [[ -d "$INSTALL_DIR" && ! -f "$INSTALL_DIR/metadata.json" ]]; then
+    BROKEN_INSTALL_BACKUP="$DATA_ROOT/${PLUGIN_ID}.broken.$$"
+    echo "Repairing incomplete local installation: $INSTALL_DIR"
+    mv "$INSTALL_DIR" "$BROKEN_INSTALL_BACKUP"
+fi
 
-echo "==> [4/5] Reiniciando Plasma Shell..."
+if [[ -n "$BROKEN_INSTALL_BACKUP" ]]; then
+    if ! kpackagetool6 --type Plasma/Applet -i "$ZIP_FILE"; then
+        restore_broken_install
+        exit 1
+    fi
+    cmake -E remove_directory "$BROKEN_INSTALL_BACKUP"
+    BROKEN_INSTALL_BACKUP=""
+elif ! kpackagetool6 --type Plasma/Applet -u "$ZIP_FILE" 2>/dev/null; then
+    kpackagetool6 --type Plasma/Applet -i "$ZIP_FILE"
+fi
+
+echo "==> [2/3] Restarting Plasma Shell"
 if command -v kquitapp6 >/dev/null 2>&1; then
     kquitapp6 plasmashell >/dev/null 2>&1 || true
 else
@@ -41,9 +53,8 @@ else
     plasmashell >/dev/null 2>&1 &
 fi
 
-echo "==> [5/5] Recopilando logs de inicialización (esperando 4 segundos)..."
+echo "==> [3/3] Collecting local startup diagnostics"
 sleep 4
-# Filtramos todo el journal de usuario, no solo el servicio
-journalctl --user --since "10 seconds ago" | grep -iE "punchi|qml|typeerror|referenceerror|dockmodel" > debug.log || true
+journalctl --user --since "10 seconds ago" | grep -iE "punchi|qml|typeerror|referenceerror|dockmodel" > "$DEBUG_LOG" || true
 
-echo "==> ¡Listo! Instalación completada. Los logs han sido guardados en 'debug.log'."
+echo "Local test installation completed. Diagnostics: $DEBUG_LOG"

@@ -9,12 +9,10 @@ import org.kde.ksvg as KSvg
 
 Item {
     id: folderRoot
-    width: circularMode ? 320 : 280
-    height: circularMode ? 320 : 340
-    
-    // Plasma 6 Dialog requiere implicitWidth e implicitHeight para dimensionar la ventana
-    implicitWidth: width
-    implicitHeight: height
+    implicitWidth: circularMode ? 320 : 280
+    implicitHeight: circularMode ? 320 : 340
+    width: implicitWidth
+    height: implicitHeight
 
     // Propiedades inyectadas por la UI principal
     property var folderItem: ({})

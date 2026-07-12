@@ -7,6 +7,33 @@ import QtQuick.tooling 1.2
 
 Module {
     Component {
+        file: "dockruntimeservice.h"
+        lineNumber: 8
+        name: "DockRuntimeService"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/DockRuntimeService 1.0"]
+        exportMetaObjectRevisions: [256]
+        Signal {
+            name: "operationFailed"
+            lineNumber: 20
+            Parameter { name: "operation"; type: "QString" }
+            Parameter { name: "message"; type: "QString" }
+        }
+        Method {
+            name: "persistDockItemsJson"
+            type: "bool"
+            lineNumber: 16
+            Parameter { name: "json"; type: "QString" }
+        }
+        Method {
+            name: "launchCommand"
+            type: "bool"
+            lineNumber: 17
+            Parameter { name: "command"; type: "QString" }
+        }
+    }
+    Component {
         file: "systemdiscovery.h"
         lineNumber: 15
         name: "SystemDiscovery"

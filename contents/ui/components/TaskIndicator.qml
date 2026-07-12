@@ -18,9 +18,12 @@ Item {
     readonly property color resolvedColor: customColor.a > 0
         ? customColor
         : (demandsAttention ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.highlightColor)
-    readonly property real resolvedOpacity: Math.max(0.0, Math.min(1.0, indicatorOpacity)) * (active ? 1.0 : 0.72)
+    readonly property real stateOpacity: active || demandsAttention ? 1.0 : 0.5
+    readonly property real resolvedOpacity: Math.max(0.0,
+        Math.min(1.0, indicatorOpacity)) * stateOpacity
     readonly property real sizeHint: Math.max(2, thickness)
-    readonly property real lineWidth: Math.min(root.width - 12, Math.max(sizeHint * 2.5, 8 + Math.min(count, 3) * 5))
+    readonly property real lineWidth: Math.max(0,
+        Math.min(root.width - 12, Math.max(sizeHint * 2.5, 8 + Math.min(count, 3) * 5)))
     readonly property real dotSize: Math.max(sizeHint + 3, Math.min(iconSize * 0.18, 12))
     readonly property real ringSize: Math.min(root.width - 8, iconSize + 8)
 
@@ -28,41 +31,13 @@ Item {
     opacity: resolvedOpacity
 
     Rectangle {
-        visible: root.type === "line"
-        width: root.lineWidth
-        height: root.sizeHint
-        radius: height / 2
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: root.position === "bottom" ? parent.bottom : undefined
-        anchors.bottomMargin: root.position === "bottom" ? 1 : 0
-        anchors.top: root.position === "top" ? parent.top : undefined
-        anchors.topMargin: root.position === "top" ? 1 : 0
-        color: root.resolvedColor
-    }
-
-    Rectangle {
-        visible: root.type === "dot"
-        width: root.dotSize
-        height: root.dotSize
-        radius: width / 2
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: root.position === "bottom" ? parent.bottom : undefined
-        anchors.bottomMargin: root.position === "bottom" ? 1 : 0
-        anchors.top: root.position === "top" ? parent.top : undefined
-        anchors.topMargin: root.position === "top" ? 1 : 0
-        color: root.resolvedColor
-    }
-
-    Rectangle {
-        visible: root.type === "square"
-        width: root.dotSize + 2
-        height: root.dotSize + 2
-        radius: Math.max(2, root.dotSize * 0.28)
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.bottom: root.position === "bottom" ? parent.bottom : undefined
-        anchors.bottomMargin: root.position === "bottom" ? 1 : 0
-        anchors.top: root.position === "top" ? parent.top : undefined
-        anchors.topMargin: root.position === "top" ? 1 : 0
+        id: edgeIndicator
+        visible: root.type === "line" || root.type === "dot" || root.type === "square"
+        width: root.type === "line" ? root.lineWidth : root.dotSize + (root.type === "square" ? 2 : 0)
+        height: root.type === "line" ? root.sizeHint : width
+        x: Math.round((root.width - width) / 2)
+        y: root.position === "top" ? 1 : Math.max(1, root.height - height - 1)
+        radius: root.type === "square" ? Math.max(2, root.dotSize * 0.28) : height / 2
         color: root.resolvedColor
     }
 
@@ -70,8 +45,9 @@ Item {
         visible: root.type === "ring"
         width: root.ringSize
         height: root.ringSize
+        x: Math.round((root.width - width) / 2)
+        y: Math.round((root.height - height) / 2)
         radius: width / 2
-        anchors.centerIn: parent
         color: "transparent"
         border.width: Math.max(1, Math.min(4, root.sizeHint))
         border.color: root.resolvedColor

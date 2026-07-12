@@ -43,12 +43,11 @@ La forma minima recomendada es:
 
 ```bash
 mkdir -p dist
-rm -f dist/punchi-dock-remastered.plasmoid
-zip -rq dist/punchi-dock-remastered.plasmoid metadata.json LICENSE contents
-unzip -tq dist/punchi-dock-remastered.plasmoid
+scripts/empaquetar-plasmoid.sh
+scripts/validar-empaquetado-limpio.sh
 ```
 
-El script [probar-plasmoid.sh](/home/CMUNOZJ/Escritorio/Aprendizaje/punchi-dock-remastered/probar-plasmoid.sh:1) ya usa este criterio.
+El primer comando compila y empaqueta sin instalar ni reiniciar Plasma. El segundo repite el flujo desde una copia temporal que excluye todo lo ignorado por Git. Para una instalacion local de prueba se usa [probar-plasmoid.sh](/home/CMUNOZJ/Escritorio/Aprendizaje/punchi-dock-remastered/scripts/probar-plasmoid.sh:1).
 
 ## Alcance del adaptador
 

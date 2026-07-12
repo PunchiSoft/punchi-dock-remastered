@@ -148,3 +148,110 @@
 - eso hacia que el paquete incluyera `build/`, `src/`, `backup/`, `scripts/`, `scratch/` y otros artefactos de desarrollo, inflando el peso hasta `520M` y ralentizando el proceso.
 - el criterio correcto de distribucion queda reducido a `metadata.json`, `LICENSE` y `contents/`.
 - al reconstruirse con esa lista blanca, el artefacto quedo en aproximadamente `1.2M`.
+
+## sexta revision
+
+- los menus popop no se ven en el dock modo panel zona inferior chocan desapareciendo de la visual de usuario por que el panel recorta su vista.
+- las ventanas vista previa necesitan mejora solo visual no poseen icono de cierrre, en lo posible hay que imitar a win 7 .
+- si se habren muchas ventanas de un mismo app no se acoplan como tal. se requiere esa opcion en config-ventanas parrafo comportamiento de venantas.
+- no hay configuracion para determinar el numero maximo de items a mostrar al tener muchas ventanas abiertas para no colapsar el dock.
+- dejar pendiendiente el modo vertical del docl y poner nota respectiva en config que aun esta apendiente el comportamiento vertical. para trabajar de forma limpia con horizontal.
+- los item del dock no apilan las ventanas del mismo app ejemplo:
+si tengo mas de 4 ventans de konsole se deberian apilar y estas no deben ecceder el alto maximo de la pantalla se debe calcular y debe ser configurable.
+
+### plan de accion sexta revision
+
+#### fase 6.1 - corregir posicion y recorte de popups
+
+- corregir `popupDialogLocation`: `PlasmaCore.Dialog.location` debe recibir el borde real del panel, no el borde opuesto. En un panel inferior, `BottomEdge` posiciona el popup por encima del item.
+- aplicar el mismo criterio a carpetas, calendario, papelera, notas y selector de ventanas, manteniendo siempre `visualParent` en el item que origino la accion.
+- validar primero panel horizontal inferior y despues horizontal superior, incluyendo items cercanos a ambos extremos de la pantalla.
+- criterio de aceptacion: ningun popup queda dentro del area recortada del panel ni fuera de la geometria disponible.
+
+#### fase 6.2 - mejorar visualmente las tarjetas de ventanas
+
+- conservar el boton de cierre general del popup y reubicar el cierre individual existente como accion superpuesta en la esquina superior derecha de cada miniatura.
+- usar icono simbolico del tema, fondo de contraste y estado hover/foco, tomando como referencia la claridad de Windows 7 sin copiar su apariencia literalmente.
+- mantener el tooltip ligero como vista informativa; las acciones de activar y cerrar deben concentrarse en el popup interactivo para evitar cierres accidentales durante hover.
+- validar tarjeta con miniatura disponible, miniatura ausente, ventana activa, titulo largo y tema claro/oscuro.
+
+### implementacion fase 6.2 2026-07-11
+
+- antes de intervenir se creo `backup/punchi-dock-remastered-thumbnails-working-2026-07-11.tar.gz`; este respaldo corresponde al estado confirmado donde las miniaturas funcionan.
+- el hover abre el `AppletPopup` interactivo despues de una espera corta; si el puntero sale antes de abrirse se cancela, pero una vez visible no existe temporizador de cierre durante el trayecto hacia las miniaturas.
+- el selector usa exactamente `popupDirection`, `floating` y `removeBorderStrategy` del popup Grid, de modo que nace junto al borde del panel con la separacion administrada por Plasma.
+- el selector no se oculta al cambiar la ventana activa, porque Plasma interpreta el cruce desde el panel como una desactivacion antes de registrar la entrada del puntero; se cierra al activar una ventana o mediante el cierre general.
+- el tooltip queda suprimido mientras el selector de ese item esta visible.
+- el cierre individual se superpone en la esquina superior derecha de la miniatura sin modificar `WindowLiveThumbnail` ni su `Loader`.
+
+#### fase 6.3 - agrupar ventanas por aplicacion
+
+- agregar en `ConfigWindows.qml` el bloque `Comportamiento de ventanas` con una opcion de agrupacion: `Agrupar por aplicacion` como valor predeterminado y `Mostrar cada ventana` como alternativa.
+- mantener el modelo nativo sin reordenamiento por activacion y realizar la agrupacion estable en `TaskModelController.qml` mediante `AppId`.
+- representar cada grupo dinamico con un solo item, contador e indicador; un clic con varias ventanas abre el selector y un clic con una sola ventana activa o minimiza.
+- conservar el comportamiento ya existente para lanzadores fijados, que actualmente si acumulan sus filas por aplicacion.
+- validar aplicaciones nativas, Flatpak, `gtk-launch`, ventanas sin `AppId` y cambios al abrir o cerrar ventanas.
+
+#### fase 6.4 - limitar densidad del dock y del popup
+
+- agregar configuraciones separadas para `maximo de grupos dinamicos en el dock` y `maximo de filas visibles en el popup`.
+- no ocultar ventanas silenciosamente: cuando se supere el maximo del dock, mostrar un item de desbordamiento que abra la lista restante.
+- mantener orden estable y aplicar el limite despues de agrupar, evitando que cuatro ventanas de Konsole consuman cuatro posiciones.
+- calcular la altura maxima del popup con la geometria disponible de la pantalla y el numero configurado de filas; conservar `ScrollView` para el contenido adicional.
+- usar rangos seguros iniciales: 3 a 20 grupos dinamicos y 1 a 8 filas visibles, sujetos a validacion visual local.
+
+#### fase 6.5 - declarar alcance horizontal temporal
+
+- mostrar en `ConfigWindows.qml` una nota informativa cuando el plasmoide este en un panel vertical: el comportamiento vertical continua disponible, pero su ajuste visual avanzado queda pendiente.
+- no eliminar ni bloquear el modo vertical; evitar introducir nuevas reglas especificas hasta completar y validar el flujo horizontal.
+
+### implementacion fase 6.4 2026-07-12
+
+- se agregan limites configurables independientes para grupos dinamicos (`3` a `20`, predeterminado `8`) y filas visibles de popup (`1` a `8`, predeterminado `4`);
+- `TaskModelController` aplica el limite despues de construir la agrupacion estable y publica por separado los grupos visibles y los grupos desbordados;
+- el dock representa el excedente con un item explicito que abre una lista desplazable; ninguna ventana se descarta silenciosamente;
+- una entrada del desbordamiento activa directamente una ventana simple o abre el visor principal de miniaturas cuando contiene varias;
+- el visor de miniaturas limita su altura usando el numero de filas configurado y `availableScreenRect`, conservando `ScrollView` para el contenido adicional.
+
+### implementacion fase 6.5 2026-07-12
+
+- `ConfigWindows.qml` muestra una nota informativa cuando el plasmoide esta en un panel vertical;
+- la nota aclara que el modo vertical sigue disponible y que el ajuste visual avanzado se concentra temporalmente en paneles horizontales;
+- ninguna opcion ni interaccion vertical se elimina, bloquea o modifica como parte de esta fase.
+
+#### orden de implementacion y pruebas
+
+1. implementar y probar solamente la posicion de popups;
+2. mejorar la tarjeta y el cierre individual sin cambiar agrupacion;
+3. agregar agrupacion configurable en el controlador;
+4. agregar limites y desbordamiento;
+5. incorporar la nota de alcance vertical y completar documentacion;
+6. ejecutar `qmllint`, compilacion, empaquetado limpio y pruebas locales despues de cada bloque.
+
+La primera fase se apoya en `kde-sdk/frameworks/plasma-framework/src/plasmaquick/dialog.cpp`, donde `BottomEdge` coloca el dialogo sobre el `visualParent` y `TopEdge` debajo. Las fases restantes se consideran cambios de comportamiento y requieren validacion local antes de avanzar al siguiente bloque.
+
+### avance fase 6.1 2026-07-11
+
+- la primera correccion, basada solamente en igualar `PlasmaCore.Dialog.location` con el borde del panel, no resolvio el recorte en el panel inferior.
+- se corrige el diagnostico anterior: la captura inferior corresponde al popup de carpeta `Favorites (Grid)`, no al tooltip de `DockItem`.
+- como prueba controlada, solo `folderPopupDialog` migra a `PlasmaCore.AppletPopup`, con direccion explicita hacia el exterior del panel y `visualParent` conservado en el item que abre la carpeta.
+- para el panel inferior se usa `Qt.TopEdge`; para el superior `Qt.BottomEdge`; para el izquierdo `Qt.RightEdge`; y para el derecho `Qt.LeftEdge`.
+- `floating: false` en modo panel permite que Plasma extienda el area de anclaje hasta el borde visible de la ventana del panel, evitando posicionar el popup dentro de ella.
+- la prueba local del popup de carpeta fue confirmada como correcta en el panel.
+- tras esa confirmacion, calendario, papelera, confirmacion de vaciado, notas y selector de ventanas adoptan el mismo contenedor `PlasmaCore.AppletPopup`.
+- `popupDialogLocation` se elimina porque ya no quedan popups interactivos basados en `PlasmaCore.Dialog` dentro de `main.qml`.
+- el tooltip informativo de `DockItem` permanece separado: no forma parte de los popups interactivos cubiertos por esta correccion.
+- durante la extension se detecto en Plasma 6.7.2 que `AppletPopup.StandardBackground` y `AppletPopup.NoBackground` se evaluaban como `undefined`; se mantienen los valores compatibles `PlasmaCore.Types.StandardBackground` y `PlasmaCore.Types.NoBackground`.
+- calendario y papelera seguian sin aparecer; el journal confirmo `trying to show an empty dialog`.
+- la causa era el patron `implicitWidth: width` e `implicitHeight: height`: `AppletPopup` asigna inicialmente el tamaño del `mainItem`, el ancho y alto podian pasar por cero y arrastraban tambien el tamaño implicito a cero.
+- todos los contenidos de popup calculan ahora su tamaño implicito de manera independiente; `width` y `height` siguen ese tamaño solo como valor inicial.
+
+## Cierre documental 2026-07-12
+
+Estado: cerrada.
+
+- las fases 6.1 a 6.5 quedaron implementadas, documentadas, empaquetadas e instaladas en Plasma local;
+- el selector agrupado queda como visor principal de miniaturas, con tarjetas compactas, cierre individual externo al marco y escala configurable;
+- la agrupacion estable, los limites de densidad, el item de desbordamiento y la nota de alcance horizontal quedaron integrados;
+- las comprobaciones visuales en panel vertical, escalas extremas y cantidades altas de grupos permanecen como validacion manual no bloqueante, no como implementacion pendiente;
+- cualquier defecto nuevo o ajuste adicional se registrara desde `revision_12-07-26.md` para no mezclarlo con este ciclo ya cerrado.

@@ -5,12 +5,10 @@ import org.kde.kirigami as Kirigami
 
 Item {
     id: calendarRoot
-    width: 320
-    height: 300
-    
-    // Requerido por Plasma 6 Dialog para calcular el tamaño de la ventana
-    implicitWidth: width
-    implicitHeight: height
+    implicitWidth: 320
+    implicitHeight: 300
+    width: implicitWidth
+    height: implicitHeight
 
     property date displayedDate: new Date()
     property date today: new Date()

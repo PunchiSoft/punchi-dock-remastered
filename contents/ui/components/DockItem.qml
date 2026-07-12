@@ -86,21 +86,6 @@ Item {
     property bool inPanel: false
     property int panelLocation: PlasmaCore.Types.BottomEdge
     readonly property int tooltipLocation: {
-        if (!inPanel) {
-            return panelLocation
-        }
-        if (panelLocation === PlasmaCore.Types.TopEdge) {
-            return PlasmaCore.Types.BottomEdge
-        }
-        if (panelLocation === PlasmaCore.Types.BottomEdge) {
-            return PlasmaCore.Types.TopEdge
-        }
-        if (panelLocation === PlasmaCore.Types.LeftEdge) {
-            return PlasmaCore.Types.RightEdge
-        }
-        if (panelLocation === PlasmaCore.Types.RightEdge) {
-            return PlasmaCore.Types.LeftEdge
-        }
         return panelLocation
     }
     readonly property real hoverTravel: waveScale <= 1.0 ? 0.0 : Math.round(iconSize * 0.32 * ((waveScale - 1.0) / hoverScaleDelta))
@@ -139,7 +124,9 @@ Item {
     property bool taskIsActive: false
     property bool taskDemandsAttention: false
     property string taskPreviewStyle: "thumbnail"
+    property real taskPreviewScale: 1.0
     property string taskPreviewWindowUuid: ""
+    property bool preferTaskPopupOnHover: false
     property bool suppressTooltip: false
     readonly property bool containsMouse: mouseArea.containsMouse
     readonly property bool separatorItem: itemType === "separator"
@@ -150,9 +137,16 @@ Item {
         && taskPreviewWindowUuid.length > 0
     readonly property bool textTooltipItem: !separatorItem && !spacerItem && itemName.length > 0 && !activeTaskItem
     readonly property bool richTooltipItem: !separatorItem && !spacerItem && itemName.length > 0 && activeTaskItem
-    readonly property bool showAnyTooltip: !separatorItem && !spacerItem && itemName.length > 0 && !suppressTooltip
+    readonly property bool showAnyTooltip: !separatorItem
+        && !spacerItem
+        && itemName.length > 0
+        && !suppressTooltip
+        && !preferTaskPopupOnHover
     readonly property real separatorLength: Math.max(20, Math.round(iconSize * 0.72))
     readonly property real separatorThickness: 2
+    readonly property real effectiveTaskPreviewScale: Math.max(0.5, Math.min(2.0, taskPreviewScale))
+    readonly property int richTooltipPreviewWidth: Math.round(176 * effectiveTaskPreviewScale)
+    readonly property int richTooltipPreviewHeight: Math.round(richTooltipPreviewWidth / 1.6)
 
     Timer {
         id: clockTimer
@@ -252,7 +246,8 @@ Item {
 
         TaskIndicator {
             anchors.fill: parent
-            visible: itemType !== "calendar"
+            visible: itemType === "app"
+                && taskIndicatorCount > 0
             count: taskIndicatorCount
             active: taskIsActive
             demandsAttention: taskDemandsAttention
@@ -396,7 +391,6 @@ Item {
                 } else if (clickEffect === "press") {
                     clickPressAnimation.restart()
                 }
-                console.log("Item clickeado: " + itemName)
                 dockItemContainer.itemClicked(itemCommand)
             }
         }
@@ -455,8 +449,8 @@ Item {
             }
 
             Rectangle {
-                Layout.preferredWidth: 160
-                Layout.preferredHeight: 90
+                Layout.preferredWidth: dockItemContainer.richTooltipPreviewWidth
+                Layout.preferredHeight: dockItemContainer.richTooltipPreviewHeight
                 radius: 5
                 color: Qt.rgba(Kirigami.Theme.backgroundColor.r,
                     Kirigami.Theme.backgroundColor.g,

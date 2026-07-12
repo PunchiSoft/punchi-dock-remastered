@@ -65,5 +65,17 @@
     <entry name="windowPreviewStyle" type="String">
       <default>thumbnail</default>
     </entry>
+    <entry name="windowPreviewScale" type="Double">
+      <default>1.0</default>
+    </entry>
+    <entry name="windowGroupingMode" type="String">
+      <default>application</default>
+    </entry>
+    <entry name="maxDynamicTaskGroups" type="Int">
+      <default>8</default>
+    </entry>
+    <entry name="maxPopupRows" type="Int">
+      <default>4</default>
+    </entry>
   </group>
 </kcfg>

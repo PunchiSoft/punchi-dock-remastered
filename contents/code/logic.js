@@ -38,27 +38,6 @@ function shellQuote(text) {
     return "'" + String(text).replace(/'/g, "'\\''") + "'"
 }
 
-function detachedCommand(command) {
-    var text = String(command || "").trim();
-    if (text.length === 0) return "";
-    
-    // Si ya es un comando auto-encapsulado (como el script de la papelera)
-    if (text.indexOf("kioclient") !== -1 || text.indexOf("gio open") !== -1) {
-        return "sh -c " + shellQuote(text);
-    }
-    
-    var quoted = shellQuote(text);
-    return "sh -c " + shellQuote(
-        "if command -v setsid >/dev/null 2>&1; then "
-            + "setsid -f sh -c " + quoted + " >/dev/null 2>&1; "
-            + "else nohup sh -c " + quoted + " >/dev/null 2>&1 & fi"
-    );
-}
-
-function readConfigScript() {
-    return "configDir=\"${XDG_CONFIG_HOME:-$HOME/.config}/punchi-dock-remastered\" && mkdir -p \"$configDir\" && if [ -f \"$configDir/dock_items.json\" ]; then cat \"$configDir/dock_items.json\"; else echo 'DEFAULT'; fi";
-}
-
 function launchTrash() {
     return "if command -v kioclient6 >/dev/null 2>&1; then kioclient6 exec trash:/; else gio open trash:///; fi";
 }
@@ -78,7 +57,6 @@ function launchItem(item, commandRunner) {
     if (!item) return;
 
     if (item.type === "trash") {
-        console.log("Running: Trash");
         commandRunner(launchTrash());
         return;
     }
@@ -91,8 +69,6 @@ function launchItem(item, commandRunner) {
     var command = item.command.trim();
     if (command.length === 0) return;
 
-    console.log("Running:", command);
-    
     // Delegamos la ejecución real a un DataEngine o componente que la UI nos provea
     if (typeof commandRunner === "function") {
         commandRunner(command);

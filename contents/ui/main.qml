@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
-import org.kde.plasma.plasma5support as Plasma5Support
 import org.kde.taskmanager as TaskManager
 import "org/punchi/dock" as Punchi
 import "components"
@@ -23,24 +22,18 @@ PlasmoidItem {
     // Detector de entorno (Panel vs Flotante)
     property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     property bool trashHasItems: false
-    property var visibleTaskRows: []
-    property int taskVisualRevision: 0
-    property bool pendingTaskStructureRefresh: false
+    readonly property var visibleTaskRows: taskController.visibleTaskRows
+    readonly property var overflowTaskRows: taskController.overflowTaskRows
+    readonly property int taskVisualRevision: taskController.visualRevision
     property var activeTaskPopupData: ({ "name": "", "windows": [] })
-    property string hoverTaskPopupAppName: ""
-    property var hoverTaskPopupRows: []
-    property var hoverTaskPopupVisualParent: null
+    property string pendingTaskPopupAppName: ""
+    property var pendingTaskPopupRows: []
+    property var taskPopupVisualParent: null
+    property bool taskPopupHovered: false
 
     // Visibilidad por Escritorios Virtuales
     TaskManager.VirtualDesktopInfo {
         id: virtualDesktopInfo
-    }
-    TaskManager.TasksModel {
-        id: tasksModel
-        groupMode: TaskManager.TasksModel.GroupDisabled
-        sortMode: TaskManager.TasksModel.SortDisabled
-        filterByCurrentVirtualDesktop: Plasmoid.configuration.showActiveTasks
-            && Plasmoid.configuration.showTasksCurrentDesktopOnly
     }
     Punchi.SystemDiscovery {
         id: systemDiscovery
@@ -48,48 +41,42 @@ PlasmoidItem {
             console.warn("Punchi Dock:", operation, message)
         }
     }
-    Timer {
-        id: refreshTasksTimer
-        interval: 50
-        repeat: false
-        onTriggered: root.flushTaskRefresh()
-    }
-    Timer {
-        id: hoverTaskPopupOpenTimer
-        interval: 280
-        repeat: false
-        onTriggered: {
-            if (root.hoverTaskPopupVisualParent && root.hoverTaskPopupRows.length > 0) {
-                mainContainer.openTaskWindowsPopup(root.hoverTaskPopupAppName, root.hoverTaskPopupRows, root.hoverTaskPopupVisualParent)
-            }
+    Punchi.DockRuntimeService {
+        id: runtimeService
+        onOperationFailed: function(operation, message) {
+            console.warn("Punchi Dock:", operation, message)
         }
     }
-    Timer {
-        id: hoverTaskPopupCloseTimer
-        interval: 220
-        repeat: false
-        onTriggered: {
-            if (!root.taskWindowsPopupShouldStayOpen()) {
-                taskWindowsDialog.visible = false
-                root.hoverTaskPopupVisualParent = null
-                root.hoverTaskPopupRows = []
-                root.hoverTaskPopupAppName = ""
-            }
-        }
+    TaskModelController {
+        id: taskController
+        dockItems: root.dockItems
+        showActiveTasks: Plasmoid.configuration.showActiveTasks
+        currentDesktopOnly: Plasmoid.configuration.showTasksCurrentDesktopOnly
+        windowGroupingMode: String(Plasmoid.configuration.windowGroupingMode || "application")
+        maxDynamicGroups: Math.max(1, Math.min(20,
+            Number(Plasmoid.configuration.maxDynamicTaskGroups || 8)))
+        systemDiscovery: systemDiscovery
     }
     readonly property string currentVirtualDesktopId: String(virtualDesktopInfo.currentDesktop || "")
     readonly property bool singleVirtualDesktopMode: Plasmoid.configuration.virtualDesktopMode === "single"
         && Plasmoid.configuration.targetVirtualDesktop !== ""
     readonly property bool hiddenByVirtualDesktop: singleVirtualDesktopMode
         && currentVirtualDesktopId !== Plasmoid.configuration.targetVirtualDesktop
-    readonly property int visibleDockItemCount: (dockItems ? dockItems.length : 0) + visibleTaskRows.length
+    readonly property int visibleDockItemCount: (dockItems ? dockItems.length : 0)
+        + visibleTaskRows.length + (overflowTaskRows.length > 0 ? 1 : 0)
     readonly property int dockSpacing: 8
     readonly property int dockBackgroundHorizontalPadding: 18
     readonly property int dockBackgroundVerticalPadding: 12
     readonly property int floatingExtraWidth: 48
     readonly property int floatingExtraHeight: 32
     readonly property string windowPreviewStyle: String(Plasmoid.configuration.windowPreviewStyle || "thumbnail")
+    readonly property real windowPreviewScale: Math.max(0.5, Math.min(2.0,
+        Number(Plasmoid.configuration.windowPreviewScale || 1.0)))
     readonly property bool showWindowThumbnails: windowPreviewStyle === "thumbnail"
+    readonly property int maxPopupRows: Math.max(1, Math.min(8,
+        Number(Plasmoid.configuration.maxPopupRows || 4)))
+    readonly property int taskPopupAvailableHeight: Math.max(240,
+        Number(root.availableScreenRect.height || 640) - (root.inPanel ? root.panelPreferredHeight : 0) - 24)
     readonly property bool dockShowLabels: !!Plasmoid.configuration.showLabels
     readonly property int dockLabelFontSize: Math.max(10, Math.round(effectiveIconSize * 0.22))
     readonly property int dockLabelAreaHeight: dockShowLabels ? (dockLabelFontSize + 12) : 0
@@ -107,23 +94,20 @@ PlasmoidItem {
     readonly property bool bottomPanel: panelLocation === PlasmaCore.Types.BottomEdge
     readonly property bool leftPanel: panelLocation === PlasmaCore.Types.LeftEdge
     readonly property bool rightPanel: panelLocation === PlasmaCore.Types.RightEdge
-    readonly property int popupDialogLocation: {
-        if (!inPanel) {
-            return Plasmoid.location
+    readonly property int popupDirection: {
+        if (topPanel) {
+            return Qt.BottomEdge
         }
-        if (panelLocation === PlasmaCore.Types.TopEdge) {
-            return PlasmaCore.Types.BottomEdge
+        if (bottomPanel) {
+            return Qt.TopEdge
         }
-        if (panelLocation === PlasmaCore.Types.BottomEdge) {
-            return PlasmaCore.Types.TopEdge
+        if (leftPanel) {
+            return Qt.RightEdge
         }
-        if (panelLocation === PlasmaCore.Types.LeftEdge) {
-            return PlasmaCore.Types.RightEdge
+        if (rightPanel) {
+            return Qt.LeftEdge
         }
-        if (panelLocation === PlasmaCore.Types.RightEdge) {
-            return PlasmaCore.Types.LeftEdge
-        }
-        return Plasmoid.location
+        return Qt.BottomEdge
     }
     readonly property int detectedPanelThickness: {
         try {
@@ -202,14 +186,6 @@ PlasmoidItem {
     Layout.preferredWidth: inPanel ? panelPreferredWidth : -1
     Layout.preferredHeight: inPanel ? panelPreferredHeight : -1
 
-    Plasma5Support.DataSource {
-        id: executableDataSource
-        engine: "executable"
-        connectedSources: []
-        onNewData: function(sourceName, _data) {
-            disconnectSource(sourceName)
-        }
-    }
     Punchi.TrashIntegration {
         id: trashIntegration
         onOperationFailed: function(operation, message) {
@@ -226,51 +202,11 @@ PlasmoidItem {
             var raw = Plasmoid.configuration.dockItemsJson || ""
             if (raw.trim().length > 0) {
                 root.dockItems = Logic.loadItems(raw)
-                // Sincronizar el archivo externo para scripts externos
-                var writeCmd = "configDir=\"${XDG_CONFIG_HOME:-$HOME/.config}/punchi-dock-remastered\" && mkdir -p \"$configDir\" && printf %s " + Logic.shellQuote(raw) + " > \"$configDir/dock_items.json\""
-                executableDataSource.connectSource(writeCmd)
             } else {
                 root.dockItems = []
-                var clearCmd = "configDir=\"${XDG_CONFIG_HOME:-$HOME/.config}/punchi-dock-remastered\" && mkdir -p \"$configDir\" && printf %s '[]' > \"$configDir/dock_items.json\""
-                executableDataSource.connectSource(clearCmd)
             }
+            runtimeService.persistDockItemsJson(raw)
             trashIntegration.refresh()
-            root.refreshVisibleTaskRows()
-            root.bumpTaskVisualRevision()
-        }
-
-        function onShowActiveTasksChanged() {
-            root.refreshVisibleTaskRows()
-            root.bumpTaskVisualRevision()
-        }
-
-        function onShowTasksCurrentDesktopOnlyChanged() {
-            root.refreshVisibleTaskRows()
-            root.bumpTaskVisualRevision()
-        }
-    }
-
-    Connections {
-        target: tasksModel
-
-        function onCountChanged() {
-            root.scheduleTaskRefresh(true)
-        }
-
-        function onDataChanged() {
-            root.scheduleTaskRefresh(false)
-        }
-
-        function onRowsInserted() {
-            root.scheduleTaskRefresh(true)
-        }
-
-        function onRowsRemoved() {
-            root.scheduleTaskRefresh(true)
-        }
-
-        function onModelReset() {
-            root.scheduleTaskRefresh(true)
         }
     }
 
@@ -282,22 +218,10 @@ PlasmoidItem {
             root.dockItems = Logic.loadItems("")
         }
         trashIntegration.refresh()
-        refreshVisibleTaskRows()
-        bumpTaskVisualRevision()
     }
 
-    onDockItemsChanged: {
-        refreshVisibleTaskRows()
-        bumpTaskVisualRevision()
-    }
-
-    // Función puente para ejecutar comandos con doble escape seguro
     function runCommand(command) {
-        var detachedCmd = Logic.detachedCommand(command)
-        if (detachedCmd.length === 0) return
-        
-        console.log("Dock ejecutando nativamente:", detachedCmd)
-        executableDataSource.connectSource(detachedCmd)
+        runtimeService.launchCommand(command)
     }
 
     function launchDockItem(item) {
@@ -312,257 +236,23 @@ PlasmoidItem {
         }
     }
 
-    function normalizeApplicationId(value) {
-        var text = String(value || "").trim()
-        if (text.endsWith(".desktop")) {
-            text = text.slice(0, -8)
-        }
-        return text
-    }
-
-    function dockItemApplicationId(item) {
-        if (!item || item.type !== "app") {
-            return ""
-        }
-
-        var persistedStorageId = normalizeApplicationId(item.storageId || "")
-        if (persistedStorageId.length > 0) {
-            return persistedStorageId
-        }
-
-        var persistedAppId = normalizeApplicationId(item.appId || "")
-        if (persistedAppId.length > 0) {
-            return persistedAppId
-        }
-
-        return normalizeApplicationId(systemDiscovery.applicationIdForCommand(item.command || ""))
-    }
-
-    function taskAppIdForRow(row) {
-        var taskIndex = tasksModel.index(row, 0)
-        return normalizeApplicationId(tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.AppId))
-    }
-
-    function taskIconNameForRow(row) {
-        var taskIndex = tasksModel.index(row, 0)
-        var taskAppId = taskAppIdForRow(row)
-        var iconName = taskAppId.length > 0 ? systemDiscovery.iconForApplication(taskAppId) : ""
-        if (iconName.length > 0) {
-            return iconName
-        }
-
-        var launcherUrl = String(tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.LauncherUrlWithoutIcon) || "")
-        if (launcherUrl.indexOf("applications:") === 0) {
-            iconName = systemDiscovery.iconForApplication(launcherUrl.slice("applications:".length))
-            if (iconName.length > 0) {
-                return iconName
-            }
-        }
-
-        return "application-x-executable"
-    }
-
-    function taskWindowUuidForRow(row) {
-        var taskIndex = tasksModel.index(row, 0)
-        if (!taskIndex.valid) {
-            return ""
-        }
-
-        var winIds = tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.WinIdList) || []
-        return winIds.length > 0 ? String(winIds[0]) : ""
-    }
-
-    function isTaskRowVisible(row) {
-        if (!Plasmoid.configuration.showActiveTasks) {
-            return false
-        }
-
-        var taskIndex = tasksModel.index(row, 0)
-        if (!taskIndex.valid) {
-            return false
-        }
-        if (!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsWindow)) {
-            return false
-        }
-        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.SkipTaskbar)) {
-            return false
-        }
-
-        var taskAppId = taskAppIdForRow(row)
-        if (taskAppId.length === 0) {
-            return true
-        }
-
-        for (var index = 0; index < root.dockItems.length; index++) {
-            if (dockItemApplicationId(root.dockItems[index]) === taskAppId) {
-                return false
-            }
-        }
-
-        return true
-    }
-
-    function refreshVisibleTaskRows() {
-        var rows = []
-        if (Plasmoid.configuration.showActiveTasks) {
-            for (var row = 0; row < tasksModel.count; row++) {
-                if (isTaskRowVisible(row)) {
-                    rows.push(row)
-                }
-            }
-        }
-
-        if (rows.length !== visibleTaskRows.length) {
-            visibleTaskRows = rows
-            return
-        }
-
-        for (var index = 0; index < rows.length; index++) {
-            if (rows[index] !== visibleTaskRows[index]) {
-                visibleTaskRows = rows
-                return
-            }
-        }
-    }
-
-    function bumpTaskVisualRevision() {
-        taskVisualRevision += 1
-    }
-
-    function scheduleTaskRefresh(needsStructureRefresh) {
-        pendingTaskStructureRefresh = pendingTaskStructureRefresh || !!needsStructureRefresh
-        refreshTasksTimer.restart()
-    }
-
-    function flushTaskRefresh() {
-        if (pendingTaskStructureRefresh) {
-            refreshVisibleTaskRows()
-            pendingTaskStructureRefresh = false
-        }
-        bumpTaskVisualRevision()
-    }
-
-    function taskStateForDockItem(item) {
-        var appId = dockItemApplicationId(item)
-        var result = {
-            "count": 0,
-            "isActive": false,
-            "demandsAttention": false,
-            "firstRow": -1,
-            "rows": []
-        }
-        if (appId.length === 0) {
-            return result
-        }
-
-        for (var row = 0; row < tasksModel.count; row++) {
-            var taskIndex = tasksModel.index(row, 0)
-            if (!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsWindow)) {
-                continue
-            }
-            if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.SkipTaskbar)) {
-                continue
-            }
-            if (taskAppIdForRow(row) !== appId) {
-                continue
-            }
-            if (result.firstRow === -1) {
-                result.firstRow = row
-            }
-            result.count += 1
-            result.rows.push(row)
-            result.isActive = result.isActive || !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsActive)
-            result.demandsAttention = result.demandsAttention || !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsDemandingAttention)
-        }
-
-        return result
-    }
-
-    function taskWindowsForRows(rows) {
-        var windows = []
-        for (var index = 0; index < rows.length; index++) {
-            var row = rows[index]
-            var taskIndex = tasksModel.index(row, 0)
-            var windowUuid = root.taskWindowUuidForRow(row)
-            windows.push({
-                "row": row,
-                "title": String(tasksModel.data(taskIndex, Qt.DisplayRole) || ""),
-                "name": String(tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.AppName) || ""),
-                "subtitle": String(tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.GenericName) || ""),
-                "active": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsActive),
-                "closable": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsClosable),
-                "icon": root.taskIconNameForRow(row),
-                "windowUuid": windowUuid
-            })
-        }
-        return windows
-    }
-
-    function activateTaskRow(row) {
-        var taskIndex = tasksModel.index(row, 0)
-        if (!taskIndex.valid) {
-            return
-        }
-
-        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsActive)
-                && tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimizable)) {
-            tasksModel.requestToggleMinimized(taskIndex)
-            return
-        }
-
-        tasksModel.requestActivate(taskIndex)
-    }
-
-    function closeTaskRow(row) {
-        var taskIndex = tasksModel.index(row, 0)
-        if (!taskIndex.valid || !tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsClosable)) {
-            return
-        }
-        tasksModel.requestClose(taskIndex)
-    }
-
     function handleDockItemActivation(item, visualParent) {
         if (!item || item.type !== "app") {
             root.launchDockItem(item)
             return
         }
 
-        var taskState = taskStateForDockItem(item)
+        var taskState = taskController.taskStateForDockItem(item)
         if (taskState.count > 1) {
-            mainContainer.openTaskWindowsPopup(item.name || "", taskState.rows, visualParent)
+            taskController.activatePreferredTaskRow(taskState.rows)
             return
         }
         if (taskState.firstRow >= 0) {
-            activateTaskRow(taskState.firstRow)
+            taskController.activateTaskRow(taskState.firstRow)
             return
         }
 
         root.launchDockItem(item)
-    }
-
-    function scheduleHoverTaskWindowsPopup(appName, rows, visualParent) {
-        hoverTaskPopupAppName = appName || ""
-        hoverTaskPopupRows = rows || []
-        hoverTaskPopupVisualParent = visualParent || null
-        hoverTaskPopupCloseTimer.stop()
-        if (hoverTaskPopupRows.length > 0 && hoverTaskPopupVisualParent) {
-            hoverTaskPopupOpenTimer.restart()
-        }
-    }
-
-    function cancelHoverTaskWindowsPopup(visualParent) {
-        if (visualParent && hoverTaskPopupVisualParent && visualParent !== hoverTaskPopupVisualParent) {
-            return
-        }
-        hoverTaskPopupOpenTimer.stop()
-        hoverTaskPopupCloseTimer.restart()
-    }
-
-    function taskWindowsPopupShouldStayOpen() {
-        return !!(taskWindowsDialog.visible
-            && hoverTaskPopupVisualParent
-            && (hoverTaskPopupVisualParent.containsMouse
-                || (taskWindowsPopupContent && taskWindowsPopupContent.containsMouse)))
     }
 
     function updateTrashState(hasItems) {
@@ -572,8 +262,7 @@ PlasmoidItem {
     function syncDockItemsConfiguration() {
         var raw = JSON.stringify(root.dockItems)
         Plasmoid.configuration.dockItemsJson = raw
-        var writeCmd = "configDir=\"${XDG_CONFIG_HOME:-$HOME/.config}/punchi-dock-remastered\" && mkdir -p \"$configDir\" && printf %s " + Logic.shellQuote(raw) + " > \"$configDir/dock_items.json\""
-        executableDataSource.connectSource(writeCmd)
+        runtimeService.persistDockItemsJson(raw)
     }
 
     function updateNoteItem(noteItem, noteText, popupWidth, popupHeight) {
@@ -616,6 +305,70 @@ PlasmoidItem {
         Layout.preferredWidth: root.panelPreferredWidth
         Layout.preferredHeight: root.panelPreferredHeight
 
+        Timer {
+            id: taskPopupOpenTimer
+            interval: 280
+            repeat: false
+            onTriggered: {
+                if (root.taskPopupVisualParent && root.pendingTaskPopupRows.length > 0) {
+                    mainContainer.openTaskWindowsPopup(root.pendingTaskPopupAppName,
+                        root.pendingTaskPopupRows, root.taskPopupVisualParent)
+                }
+            }
+        }
+
+        Timer {
+            id: taskPopupCloseTimer
+            interval: 260
+            repeat: false
+            onTriggered: {
+                if (!root.taskPopupHovered && !mainContainer.taskPopupSourceContainsMouse()) {
+                    taskWindowsDialog.visible = false
+                }
+            }
+        }
+
+        function scheduleTaskWindowsPopup(appName, rows, visualParent) {
+            root.pendingTaskPopupAppName = appName || ""
+            root.pendingTaskPopupRows = rows || []
+            root.taskPopupVisualParent = visualParent || null
+            taskPopupCloseTimer.stop()
+            if (root.pendingTaskPopupRows.length > 0 && root.taskPopupVisualParent) {
+                taskPopupOpenTimer.restart()
+            }
+        }
+
+        function cancelPendingTaskWindowsPopup(visualParent) {
+            if (visualParent && root.taskPopupVisualParent
+                    && visualParent !== root.taskPopupVisualParent) {
+                return
+            }
+            if (!taskWindowsDialog.visible) {
+                taskPopupOpenTimer.stop()
+                root.pendingTaskPopupAppName = ""
+                root.pendingTaskPopupRows = []
+                root.taskPopupVisualParent = null
+                root.taskPopupHovered = false
+                taskPopupCloseTimer.stop()
+                return
+            }
+            if (!root.taskPopupHovered) {
+                taskPopupCloseTimer.restart()
+            }
+        }
+
+        function taskPopupSourceContainsMouse() {
+            try {
+                return !!(root.taskPopupVisualParent && root.taskPopupVisualParent.containsMouse)
+            } catch (error) {
+                return false
+            }
+        }
+
+        function popupAnchor(visualParent) {
+            return root.inPanel ? visualParent : dockWrapper
+        }
+
         function closeAllPopups(exceptDialog) {
             if (folderPopupDialog !== exceptDialog) {
                 folderPopupDialog.visible = false
@@ -629,6 +382,9 @@ PlasmoidItem {
             if (notePopupDialog !== exceptDialog) {
                 notePopupDialog.visible = false
             }
+            if (taskOverflowDialog !== exceptDialog) {
+                taskOverflowDialog.visible = false
+            }
             if (taskWindowsDialog !== exceptDialog) {
                 taskWindowsDialog.visible = false
             }
@@ -636,39 +392,43 @@ PlasmoidItem {
                 trashConfirmDialog.visible = false
             }
             if (exceptDialog !== taskWindowsDialog) {
-                hoverTaskPopupOpenTimer.stop()
-                hoverTaskPopupCloseTimer.stop()
-                root.hoverTaskPopupVisualParent = null
-                root.hoverTaskPopupRows = []
-                root.hoverTaskPopupAppName = ""
+                taskPopupOpenTimer.stop()
+                taskPopupCloseTimer.stop()
             }
         }
 
         function openTrashMenu(visualParent) {
             mainContainer.closeAllPopups(trashMenuDialog)
-            trashMenuDialog.visualParent = visualParent
-            trashConfirmDialog.visualParent = visualParent
+            trashMenuDialog.visualParent = mainContainer.popupAnchor(visualParent)
+            trashConfirmDialog.visualParent = mainContainer.popupAnchor(visualParent)
             trashMenuDialog.visible = !trashMenuDialog.visible
+        }
+
+        function openTrashConfirmation() {
+            trashMenuDialog.visible = false
+            Qt.callLater(function() {
+                trashConfirmDialog.visible = true
+            })
         }
 
         function openFolderPopup(itemData, itemIndex, visualParent) {
             mainContainer.closeAllPopups(folderPopupDialog)
             root.activeFolderData = itemData
             root.activeFolderIndex = itemIndex
-            folderPopupDialog.visualParent = visualParent
+            folderPopupDialog.visualParent = mainContainer.popupAnchor(visualParent)
             folderPopupDialog.visible = !folderPopupDialog.visible
         }
 
         function openCalendarPopup(visualParent) {
             mainContainer.closeAllPopups(calendarPopupDialog)
-            calendarPopupDialog.visualParent = visualParent
+            calendarPopupDialog.visualParent = mainContainer.popupAnchor(visualParent)
             calendarPopupDialog.visible = !calendarPopupDialog.visible
         }
 
         function openNotePopup(itemData, visualParent) {
             mainContainer.closeAllPopups(null)
             root.activeNoteData = itemData
-            notePopupDialog.visualParent = visualParent
+            notePopupDialog.visualParent = mainContainer.popupAnchor(visualParent)
             notePopupDialog.visible = true
             Qt.callLater(function() {
                 notePopupContent.focusEditor()
@@ -676,14 +436,21 @@ PlasmoidItem {
         }
 
         function openTaskWindowsPopup(appName, rows, visualParent) {
-            hoverTaskPopupCloseTimer.stop()
+            taskPopupOpenTimer.stop()
             mainContainer.closeAllPopups(taskWindowsDialog)
             root.activeTaskPopupData = {
                 "name": appName || "",
-                "windows": root.taskWindowsForRows(rows || [])
+                "windows": taskController.taskWindowsForRows(rows || [])
             }
-            taskWindowsDialog.visualParent = visualParent
+            taskWindowsDialog.visualParent = mainContainer.popupAnchor(visualParent)
+            root.taskPopupVisualParent = visualParent
             taskWindowsDialog.visible = true
+        }
+
+        function openTaskOverflowPopup(visualParent) {
+            mainContainer.closeAllPopups(taskOverflowDialog)
+            taskOverflowDialog.visualParent = mainContainer.popupAnchor(visualParent)
+            taskOverflowDialog.visible = true
         }
 
         Item {
@@ -787,7 +554,7 @@ PlasmoidItem {
                         readonly property int taskRevision: root.taskVisualRevision
                         readonly property var taskState: {
                             taskRevision
-                            return root.taskStateForDockItem(modelData)
+                            return taskController.taskStateForDockItem(modelData)
                         }
                         
                         itemType: modelData.type || "app"
@@ -800,10 +567,12 @@ PlasmoidItem {
                         taskIsActive: taskState.isActive
                         taskDemandsAttention: taskState.demandsAttention
                         taskPreviewStyle: root.windowPreviewStyle
+                        taskPreviewScale: root.windowPreviewScale
                         taskPreviewWindowUuid: taskState.firstRow >= 0
-                            ? root.taskWindowUuidForRow(taskState.firstRow)
+                            ? taskController.taskWindowUuidForRow(taskState.firstRow)
                             : ""
-                        suppressTooltip: taskWindowsDialog.visible && root.hoverTaskPopupVisualParent === dockItemDelegate
+                        preferTaskPopupOnHover: taskState.count > 1
+                        suppressTooltip: taskWindowsDialog.visible && root.taskPopupVisualParent === dockItemDelegate
                         
                         onItemClicked: function(cmd) {
                             if (modelData.type === "folder") {
@@ -824,11 +593,11 @@ PlasmoidItem {
                         }
                         onHoverEntered: function(visualParent) {
                             if (taskState.count > 0) {
-                                root.scheduleHoverTaskWindowsPopup(modelData.name || "", taskState.rows, visualParent)
+                                mainContainer.scheduleTaskWindowsPopup(modelData.name || "", taskState.rows, visualParent)
                             }
                         }
                         onHoverExited: function(visualParent) {
-                            root.cancelHoverTaskWindowsPopup(visualParent)
+                            mainContainer.cancelPendingTaskWindowsPopup(visualParent)
                         }
                     }
                 }
@@ -837,17 +606,15 @@ PlasmoidItem {
                     model: root.visibleTaskRows
                     delegate: DockItem {
                         id: taskDockItemDelegate
-                        required property int modelData
-
-                        readonly property int taskRow: modelData
+                        required property var modelData
+                        required property int index
                         readonly property int taskRevision: root.taskVisualRevision
-                        readonly property var taskIndex: tasksModel.index(taskRow, 0)
-                        readonly property int taskVisualIndex: {
-                            var position = root.visibleTaskRows.indexOf(taskRow)
-                            return position >= 0 ? position : 0
+                        readonly property var taskData: {
+                            taskRevision
+                            return taskController.taskDataForEntry(modelData)
                         }
 
-                        itemIndex: root.dockItems.length + taskVisualIndex
+                        itemIndex: root.dockItems.length + index
                         hoveredIndex: dockLayout.hoveredIndex
                         inPanel: root.inPanel
                         panelLocation: root.panelLocation
@@ -866,57 +633,76 @@ PlasmoidItem {
                         lastMouseOffset: dockLayout.lastMouseOffset
 
                         itemType: "app"
-                        iconName: {
-                            taskRevision
-                            return root.taskIconNameForRow(taskRow)
-                        }
-                        itemName: {
-                            taskRevision
-                            return tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.AppName)
-                                || tasksModel.data(taskIndex, Qt.DisplayRole)
-                                || ""
-                        }
-                        taskIndicatorCount: 1
-                        taskIsActive: {
-                            taskRevision
-                            return !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsActive)
-                        }
-                        taskDemandsAttention: {
-                            taskRevision
-                            return !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsDemandingAttention)
-                        }
+                        iconName: taskData.icon
+                        itemName: taskData.name
+                        taskIndicatorCount: taskData.count
+                        taskIsActive: taskData.active
+                        taskDemandsAttention: taskData.demandsAttention
                         taskPreviewStyle: root.windowPreviewStyle
-                        taskPreviewWindowUuid: {
-                            taskRevision
-                            return root.taskWindowUuidForRow(taskRow)
-                        }
-                        suppressTooltip: taskWindowsDialog.visible && root.hoverTaskPopupVisualParent === taskDockItemDelegate
+                        taskPreviewScale: root.windowPreviewScale
+                        taskPreviewWindowUuid: taskData.windowUuid
+                        preferTaskPopupOnHover: taskData.count > 1
+                        suppressTooltip: taskWindowsDialog.visible && root.taskPopupVisualParent === taskDockItemDelegate
 
                         onItemClicked: function() {
                             mainContainer.closeAllPopups(null)
-                            root.activateTaskRow(taskRow)
+                            if (taskData.count > 1) {
+                                taskController.activatePreferredTaskRow(taskData.rows)
+                            } else if (taskData.firstRow >= 0) {
+                                taskController.activateTaskRow(taskData.firstRow)
+                            }
                         }
                         onHoverEntered: function(visualParent) {
-                            root.scheduleHoverTaskWindowsPopup(itemName, [taskRow], visualParent)
+                            if (taskData.count > 0) {
+                                mainContainer.scheduleTaskWindowsPopup(itemName, taskData.rows, visualParent)
+                            }
                         }
                         onHoverExited: function(visualParent) {
-                            root.cancelHoverTaskWindowsPopup(visualParent)
+                            mainContainer.cancelPendingTaskWindowsPopup(visualParent)
                         }
                     }
+                }
+
+                DockItem {
+                    id: taskOverflowDockItem
+                    visible: root.overflowTaskRows.length > 0
+                    itemIndex: root.dockItems.length + root.visibleTaskRows.length
+                    hoveredIndex: dockLayout.hoveredIndex
+                    inPanel: root.inPanel
+                    panelLocation: root.panelLocation
+                    iconSize: root.effectiveIconSize
+                    hoverScaleSetting: root.panelHoverScale
+                    hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "wave"
+                    clickEffect: root.dockClickEffect
+                    hoverZoomProgress: dockLayout.hoverZoomProgress
+                    lastHoveredIndex: dockLayout.lastHoveredIndex
+                    lastMouseOffset: dockLayout.lastMouseOffset
+                    itemType: "overflow"
+                    iconName: "view-more-symbolic"
+                    itemName: i18np("%1 more window group", "%1 more window groups",
+                        root.overflowTaskRows.length)
+                    taskIndicatorCount: root.overflowTaskRows.length
+
+                    onItemClicked: mainContainer.openTaskOverflowPopup(taskOverflowDockItem)
                 }
             }
         }
 
-        // Diálogo emergente para Carpetas (FolderPopup)
-        PlasmaCore.Dialog {
+        // Prueba controlada de AppletPopup: Plasma ancla el popup fuera del panel.
+        PlasmaCore.AppletPopup {
             id: folderPopupDialog
-            location: root.popupDialogLocation
+            popupDirection: root.popupDirection
+            margin: 2
+            floating: !root.inPanel
+            removeBorderStrategy: root.inPanel
+                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
+                : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
             hideOnWindowDeactivate: true
             // Si es circular/abanico desactivamos el fondo nativo para el vuelo de iconos.
             // Si es lista/grid/detalle, usamos el fondo nativo estándar del tema de KDE (tipo Kickoff)
             backgroundHints: (root.activeFolderData.layout === "circular" || root.activeFolderData.layout === "fan") 
-                ? PlasmaCore.Types.NoBackground 
+                ? PlasmaCore.Types.NoBackground
                 : PlasmaCore.Types.StandardBackground
 
             mainItem: FolderPopup {
@@ -938,9 +724,14 @@ PlasmoidItem {
         }
 
         // Diálogo emergente para el Calendario (CalendarPopup)
-        PlasmaCore.Dialog {
+        PlasmaCore.AppletPopup {
             id: calendarPopupDialog
-            location: root.popupDialogLocation
+            popupDirection: root.popupDirection
+            margin: 2
+            floating: !root.inPanel
+            removeBorderStrategy: root.inPanel
+                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
+                : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
             hideOnWindowDeactivate: true
             // El calendario siempre utiliza el fondo nativo del tema de KDE (Kickoff)
@@ -959,9 +750,14 @@ PlasmoidItem {
         }
 
         // Diálogo emergente para el Menú Contextual de la Papelera (TrashMenuPopup)
-        PlasmaCore.Dialog {
+        PlasmaCore.AppletPopup {
             id: trashMenuDialog
-            location: root.popupDialogLocation
+            popupDirection: root.popupDirection
+            margin: 2
+            floating: !root.inPanel
+            removeBorderStrategy: root.inPanel
+                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
+                : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
             hideOnWindowDeactivate: true
             backgroundHints: PlasmaCore.Types.StandardBackground
@@ -969,27 +765,28 @@ PlasmoidItem {
             mainItem: TrashMenuPopup {
                 id: trashMenuContent
                 onOpenTrashClicked: {
-                    console.log("main.qml: onOpenTrashClicked received")
                     trashMenuDialog.visible = false
                     trashIntegration.openTrash()
                 }
                 onEmptyTrashClicked: {
-                    console.log("main.qml: onEmptyTrashClicked received")
-                    trashMenuDialog.visible = false
-                    trashConfirmDialog.visible = true
+                    mainContainer.openTrashConfirmation()
                 }
                 onCloseRequested: {
-                    console.log("main.qml: onCloseRequested received")
                     trashMenuDialog.visible = false
                 }
             }
         }
 
-        PlasmaCore.Dialog {
+        PlasmaCore.AppletPopup {
             id: notePopupDialog
-            location: root.popupDialogLocation
+            popupDirection: root.popupDirection
+            margin: 2
+            floating: !root.inPanel
+            removeBorderStrategy: root.inPanel
+                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
+                : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
-            hideOnWindowDeactivate: false
+            hideOnWindowDeactivate: true
             backgroundHints: PlasmaCore.Types.StandardBackground
             onVisibleChanged: {
                 if (!visible && notePopupContent.currentText !== notePopupContent.initialText) {
@@ -1010,44 +807,98 @@ PlasmoidItem {
             }
         }
 
-        PlasmaCore.Dialog {
+        PlasmaCore.AppletPopup {
             id: taskWindowsDialog
-            location: root.popupDialogLocation
+            popupDirection: root.popupDirection
+            margin: 2
+            floating: !root.inPanel
+            removeBorderStrategy: root.inPanel
+                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
+                : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
             hideOnWindowDeactivate: false
             backgroundHints: PlasmaCore.Types.StandardBackground
+            onVisibleChanged: {
+                if (!visible) {
+                    root.pendingTaskPopupAppName = ""
+                    root.pendingTaskPopupRows = []
+                    root.taskPopupVisualParent = null
+                    root.taskPopupHovered = false
+                    taskPopupCloseTimer.stop()
+                }
+            }
 
             mainItem: TaskWindowsPopup {
                 id: taskWindowsPopupContent
                 appName: root.activeTaskPopupData.name || ""
                 windows: root.activeTaskPopupData.windows || []
                 previewStyle: root.windowPreviewStyle
+                previewScale: root.windowPreviewScale
+                popupDirection: root.popupDirection
+                inPanel: root.inPanel
+                maxVisibleRows: root.maxPopupRows
+                maximumAvailableHeight: root.taskPopupAvailableHeight
+
+                onContainsMouseChanged: {
+                    root.taskPopupHovered = containsMouse
+                    if (containsMouse) {
+                        taskPopupCloseTimer.stop()
+                    } else if (!mainContainer.taskPopupSourceContainsMouse()) {
+                        taskPopupCloseTimer.restart()
+                    }
+                }
 
                 onActivateRequested: function(taskRow) {
                     taskWindowsDialog.visible = false
-                    root.activateTaskRow(taskRow)
+                    taskController.activateTaskRow(taskRow)
                 }
                 onCloseWindowRequested: function(taskRow) {
-                    root.closeTaskRow(taskRow)
+                    taskController.closeTaskRow(taskRow)
                 }
                 onCloseRequested: {
                     taskWindowsDialog.visible = false
                 }
-                onContainsMouseChanged: {
-                    if (!containsMouse && !root.taskWindowsPopupShouldStayOpen()) {
-                        hoverTaskPopupCloseTimer.restart()
-                    } else if (containsMouse) {
-                        hoverTaskPopupCloseTimer.stop()
-                    }
-                }
             }
         }
 
-        PlasmaCore.Dialog {
-            id: trashConfirmDialog
-            location: root.popupDialogLocation
+        PlasmaCore.AppletPopup {
+            id: taskOverflowDialog
+            popupDirection: root.popupDirection
+            margin: 2
+            floating: !root.inPanel
+            removeBorderStrategy: root.inPanel
+                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
+                : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
             hideOnWindowDeactivate: true
+            backgroundHints: PlasmaCore.Types.StandardBackground
+
+            mainItem: TaskOverflowPopup {
+                entries: root.overflowTaskRows
+                maxVisibleRows: root.maxPopupRows
+
+                onEntryActivated: function(entry) {
+                    taskOverflowDialog.visible = false
+                    if (entry.count > 1) {
+                        mainContainer.openTaskWindowsPopup(entry.name, entry.rows, taskOverflowDockItem)
+                    } else if (entry.firstRow >= 0) {
+                        taskController.activateTaskRow(entry.firstRow)
+                    }
+                }
+                onCloseRequested: taskOverflowDialog.visible = false
+            }
+        }
+
+        PlasmaCore.AppletPopup {
+            id: trashConfirmDialog
+            popupDirection: root.popupDirection
+            margin: 2
+            floating: !root.inPanel
+            removeBorderStrategy: root.inPanel
+                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
+                : PlasmaCore.AppletPopup.AtScreenEdges
+            visible: false
+            hideOnWindowDeactivate: false
             backgroundHints: PlasmaCore.Types.StandardBackground
 
             mainItem: ConfirmTrashEmptyPopup {

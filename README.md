@@ -36,5 +36,5 @@ Para solucionar esto de raíz, se tomó la decisión de pausar el desarrollo ant
 
 - **Organización**: El código UI reside de forma modular en `contents/ui/components/`, mientras que la lógica pura se concentra en `contents/code/`.
 - **Módulo C++**: Para interactuar con partes más profundas del sistema operativo. [Leer guía de compilación](docs/guias-usuario/compilacion-adaptador-cpp.md).
-- **Distribución Limpia**: Se utiliza `probar-plasmoid.sh` para generar un `.plasmoid` puro (solo `metadata.json`, `LICENSE` y `contents/`), sin incluir ficheros basura o logs de desarrollo (`build/`, `docs/`, `bitacora/`).
+- **Distribucion limpia**: `scripts/empaquetar-plasmoid.sh` compila el modulo nativo y genera un `.plasmoid` reproducible con solo `metadata.json`, `LICENSE` y `contents/`. `scripts/probar-plasmoid.sh` queda reservado para instalarlo y probarlo localmente.
 - **Internacionalización**: Desarrollado con el inglés como idioma fuente (`i18n`), listo para incorporar catálogos de traducción globales.
