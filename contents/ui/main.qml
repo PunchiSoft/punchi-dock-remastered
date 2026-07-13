@@ -50,6 +50,9 @@ PlasmoidItem {
             console.warn("Punchi Dock:", operation, message)
         }
     }
+    Punchi.ThemeIntegration {
+        id: themeIntegration
+    }
     TaskModelController {
         id: taskController
         dockItems: root.dockItems
@@ -626,10 +629,25 @@ PlasmoidItem {
             width: root.inPanel ? root.panelPreferredWidth : dockLayout.implicitWidth + root.floatingExtraWidth
             height: root.inPanel ? root.panelPreferredHeight : dockLayout.implicitHeight + root.floatingExtraHeight
 
+            WindowIntersectionController {
+                id: windowIntersectionController
+                targetItem: dockWrapper
+                monitoringEnabled: !root.inPanel
+                    && mainContainer.visible
+                    && themeIntegration.adaptiveTransparencyEnabled
+                screenGeometry: {
+                    const containment = Plasmoid.containment
+                    return containment && containment.screenGeometry
+                        ? containment.screenGeometry
+                        : Qt.rect(0, 0, 0, 0)
+                }
+            }
+
             DockBackground {
                 anchors.fill: parent
-                radius: 12
-                opacity: 0.85
+                preferOpaque: !!(Plasmoid.containmentDisplayHints
+                    & PlasmaCore.Types.ContainmentPrefersOpaqueBackground)
+                    || windowIntersectionController.touchingWindow
                 visible: !root.inPanel
             }
 

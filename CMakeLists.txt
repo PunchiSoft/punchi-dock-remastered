@@ -16,5 +16,6 @@ include(ECMQmlModule)
 
 find_package(Qt6 6.6 REQUIRED COMPONENTS Core Qml)
 find_package(KF6 6.0 REQUIRED COMPONENTS CoreAddons KIO Service)
+find_package(Plasma 6.0 REQUIRED)
 
 add_subdirectory(src)

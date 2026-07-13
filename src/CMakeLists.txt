@@ -21,6 +21,8 @@ target_sources(punchidockintegration PRIVATE
     dockruntimeservice.h
     systemdiscovery.cpp
     systemdiscovery.h
+    themeintegration.cpp
+    themeintegration.h
     trashintegration.cpp
     trashintegration.h
 )
@@ -33,6 +35,7 @@ target_link_libraries(punchidockintegration
         KF6::KIOCore
         KF6::KIOGui
         KF6::Service
+        Plasma::Plasma
 )
 
 install(TARGETS punchidockintegration ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
