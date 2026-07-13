@@ -199,11 +199,19 @@ function applyItemForm(force) {
             || String(item.storageId || "")
             || ConfigItemsJS.applicationIdForCommand(item.command)
         )
+        var hadActions = item.actions instanceof Array && item.actions.length > 0
+        var autoSeeded = false
         if (actionDialog.actionsEnabledChecked) {
             item.actions = item.actions instanceof Array ? item.actions : []
             delete item.actionsEnabled
-        } else {
+            autoSeeded = ConfigItemsJS.maybeSeedSuggestedActions(item, item.command, item.storageId, item.appId)
+        } else if (hadActions) {
             item.actionsEnabled = false
+        } else {
+            autoSeeded = ConfigItemsJS.maybeSeedSuggestedActions(item, item.command, item.storageId, item.appId)
+            if (!autoSeeded) {
+                delete item.actionsEnabled
+            }
         }
         ConfigItemsJS.pruneApp(item)
     }
@@ -260,6 +268,10 @@ function applyContainerApps(apps) {
     }
 
     item.apps = apps instanceof Array ? apps : []
+    if ((item.sourceType || "manual") === "category") {
+        var resolvedCategoryIcon = systemDiscovery.iconForCategory(item.sourceCategory || "Development")
+        item.icon = resolvedCategoryIcon || ConfigItemsJS.categoryIcon(item.sourceCategory || "Development")
+    }
     ConfigItemsJS.pruneFolder(item)
     items = nextItems
     refreshFromItems()

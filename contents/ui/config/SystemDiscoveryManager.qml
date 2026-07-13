@@ -21,6 +21,10 @@ Item {
         systemDiscovery.requestApplication(alias)
     }
 
+    function iconForCategory(category) {
+        return systemDiscovery.iconForCategory(category)
+    }
+
     Punchi.SystemDiscovery {
         id: systemDiscovery
 

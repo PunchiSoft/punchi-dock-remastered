@@ -10,8 +10,10 @@
 
 #include <QDir>
 #include <QFileInfo>
+#include <QSettings>
 #include <QRegularExpression>
 #include <QSet>
+#include <QStandardPaths>
 #include <QUrl>
 
 namespace
@@ -175,6 +177,64 @@ KService::Ptr findApplicationService(const QString &query)
 
     return {};
 }
+
+QString iconFromDesktopDirectory(const QStringList &fileNames)
+{
+    const QStringList searchDirs = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
+    for (const QString &baseDir : searchDirs) {
+        const QString directoryPath = baseDir + QStringLiteral("/desktop-directories");
+        for (const QString &fileName : fileNames) {
+            const QString fullPath = directoryPath + QLatin1Char('/') + fileName;
+            if (!QFileInfo::exists(fullPath)) {
+                continue;
+            }
+
+            QSettings desktopFile(fullPath, QSettings::IniFormat);
+            desktopFile.beginGroup(QStringLiteral("Desktop Entry"));
+            const QString icon = desktopFile.value(QStringLiteral("Icon")).toString().trimmed();
+            desktopFile.endGroup();
+            if (!icon.isEmpty()) {
+                return icon;
+            }
+        }
+    }
+    return {};
+}
+
+QString desktopDirectoryIconForCategory(const QString &category)
+{
+    const QString normalizedCategory = category.trimmed();
+    if (normalizedCategory.isEmpty()) {
+        return {};
+    }
+
+    if (normalizedCategory.compare(QStringLiteral("Development"), Qt::CaseInsensitive) == 0) {
+        return iconFromDesktopDirectory({QStringLiteral("kf5-development.directory"), QStringLiteral("Development-More.directory")});
+    }
+    if (normalizedCategory.compare(QStringLiteral("Game"), Qt::CaseInsensitive) == 0) {
+        return iconFromDesktopDirectory({QStringLiteral("kf5-games.directory"), QStringLiteral("Games-More.directory")});
+    }
+    if (normalizedCategory.compare(QStringLiteral("AudioVideo"), Qt::CaseInsensitive) == 0) {
+        return iconFromDesktopDirectory({QStringLiteral("kf5-multimedia.directory"), QStringLiteral("Multimedia-More.directory")});
+    }
+    if (normalizedCategory.compare(QStringLiteral("Network"), Qt::CaseInsensitive) == 0) {
+        return iconFromDesktopDirectory({QStringLiteral("kf5-internet.directory"), QStringLiteral("kf5-network.directory"), QStringLiteral("Internet-More.directory")});
+    }
+    if (normalizedCategory.compare(QStringLiteral("Office"), Qt::CaseInsensitive) == 0) {
+        return iconFromDesktopDirectory({QStringLiteral("kf5-office.directory"), QStringLiteral("Office-More.directory")});
+    }
+    if (normalizedCategory.compare(QStringLiteral("System"), Qt::CaseInsensitive) == 0) {
+        return iconFromDesktopDirectory({QStringLiteral("kf5-system.directory"), QStringLiteral("System-More.directory")});
+    }
+    if (normalizedCategory.compare(QStringLiteral("Utility"), Qt::CaseInsensitive) == 0) {
+        return iconFromDesktopDirectory({QStringLiteral("kf5-utilities.directory"), QStringLiteral("Utilities.directory"), QStringLiteral("Utilities-More.directory")});
+    }
+    if (normalizedCategory.compare(QStringLiteral("Graphics"), Qt::CaseInsensitive) == 0) {
+        return iconFromDesktopDirectory({QStringLiteral("kf5-graphics.directory"), QStringLiteral("Graphics-More.directory")});
+    }
+
+    return {};
+}
 }
 
 SystemDiscovery::SystemDiscovery(QObject *parent)
@@ -277,6 +337,11 @@ QString SystemDiscovery::iconForApplication(const QString &applicationId) const
         service = KService::serviceByDesktopName(normalizedId);
     }
     return service ? service->icon() : QString{};
+}
+
+QString SystemDiscovery::iconForCategory(const QString &category) const
+{
+    return desktopDirectoryIconForCategory(category);
 }
 
 QString SystemDiscovery::applicationIdForCommand(const QString &command) const

@@ -128,6 +128,12 @@ Item {
     property string taskPreviewWindowUuid: ""
     property bool preferTaskPopupOnHover: false
     property bool suppressTooltip: false
+    property bool supportsContextMenu: false
+    property int popupDirection: Qt.BottomEdge
+    readonly property Item dockWrapperItem: dockItemContainer.parent && dockItemContainer.parent.parent ? dockItemContainer.parent.parent : null
+    readonly property bool verticalPopupFlow: popupDirection === Qt.TopEdge || popupDirection === Qt.BottomEdge
+    readonly property real popupAnchorExtent: Math.max(1, Math.min(width, iconSize + 12))
+    readonly property Item popupAnchorItem: popupAnchorProxy
     readonly property bool containsMouse: mouseArea.containsMouse
     readonly property bool separatorItem: itemType === "separator"
     readonly property bool spacerItem: itemType === "spacer"
@@ -274,6 +280,22 @@ Item {
         opacity: mouseArea.containsMouse || taskIsActive ? 1.0 : 0.88
     }
 
+    Item {
+        id: popupAnchorProxy
+        parent: dockWrapperItem
+        visible: false
+        width: verticalPopupFlow ? dockItemContainer.popupAnchorExtent : (dockWrapperItem ? dockWrapperItem.width : dockItemContainer.width)
+        height: verticalPopupFlow ? (dockWrapperItem ? dockWrapperItem.height : dockItemContainer.height) : dockItemContainer.implicitHeight
+        x: verticalPopupFlow
+            ? ((dockItemContainer.parent ? dockItemContainer.parent.x : 0)
+                + dockItemContainer.x
+                + Math.round((dockItemContainer.width - width) / 2))
+            : 0
+        y: verticalPopupFlow
+            ? 0
+            : ((dockItemContainer.parent ? dockItemContainer.parent.y : 0) + dockItemContainer.y)
+    }
+
     SequentialAnimation {
         id: clickPulseAnimation
         running: false
@@ -345,7 +367,11 @@ Item {
         activeFocusOnTab: true
         Accessible.role: separatorItem || spacerItem ? Accessible.StaticText : Accessible.Button
         Accessible.name: itemName
-        acceptedButtons: separatorItem || spacerItem ? Qt.NoButton : (itemType === "trash" ? Qt.LeftButton | Qt.RightButton : Qt.LeftButton)
+        acceptedButtons: separatorItem || spacerItem
+            ? Qt.NoButton
+            : ((itemType === "trash" || supportsContextMenu)
+                ? Qt.LeftButton | Qt.RightButton
+                : Qt.LeftButton)
         
         onContainsMouseChanged: {
             if (separatorItem || spacerItem || itemType === "calendar") {
@@ -397,7 +423,7 @@ Item {
         Keys.onReturnPressed: if (!separatorItem && !spacerItem) dockItemContainer.itemClicked(itemCommand)
         Keys.onSpacePressed: if (!separatorItem && !spacerItem) dockItemContainer.itemClicked(itemCommand)
         Keys.onPressed: function(event) {
-            if (itemType === "trash" && (event.key === Qt.Key_Menu
+            if ((itemType === "trash" || supportsContextMenu) && (event.key === Qt.Key_Menu
                     || (event.key === Qt.Key_F10 && (event.modifiers & Qt.ShiftModifier)))) {
                 dockItemContainer.contextMenuRequested(dockItemContainer)
                 event.accepted = true

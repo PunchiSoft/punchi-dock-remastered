@@ -127,6 +127,123 @@ function syncAppIdentity(item, command, storageId, appId) {
     item.appId = inferredAppId.length > 0 ? inferredAppId : commandAppId
 }
 
+function commandStartsWith(command, executable) {
+    var text = String(command || "").trim()
+    if (text.length === 0) {
+        return false
+    }
+    var parts = text.split(/\s+/)
+    if (parts.length === 0) {
+        return false
+    }
+    var first = parts[0].replace(/^['"]|['"]$/g, "")
+    var slash = first.lastIndexOf("/")
+    var executableName = slash >= 0 ? first.substring(slash + 1) : first
+    return executableName === executable
+}
+
+function appActionPreset(command, storageId, appId) {
+    var commandId = normalizedApplicationId(applicationIdForCommand(command || ""))
+    var normalizedStorageId = normalizedApplicationId(storageId || "")
+    var normalizedAppId = normalizedApplicationId(appId || "")
+    var identities = [normalizedStorageId, normalizedAppId, commandId]
+
+    function hasIdentity(candidates) {
+        for (var candidateIndex = 0; candidateIndex < candidates.length; candidateIndex++) {
+            var candidate = normalizedApplicationId(candidates[candidateIndex])
+            if (candidate.length === 0) {
+                continue
+            }
+            for (var identityIndex = 0; identityIndex < identities.length; identityIndex++) {
+                if (identities[identityIndex] === candidate) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
+    if (hasIdentity(["firefox", "org.mozilla.firefox"])) {
+        return {
+            "baseCommand": commandStartsWith(command, "flatpak") ? "flatpak run org.mozilla.firefox" : "firefox",
+            "actions": [
+                { "name": "New window", "icon": "window-new", "args": "--new-window" },
+                { "name": "New private window", "icon": "view-private", "args": "--private-window" }
+            ]
+        }
+    }
+
+    if (hasIdentity(["org.kde.konsole", "konsole"])) {
+        return {
+            "baseCommand": commandStartsWith(command, "flatpak") ? "flatpak run org.kde.konsole" : "konsole",
+            "actions": [
+                { "name": "New window", "icon": "window-new", "args": "--new-window" },
+                { "name": "New tab", "icon": "tab-new", "args": "--new-tab" }
+            ]
+        }
+    }
+
+    if (hasIdentity(["org.kde.dolphin", "dolphin"])) {
+        return {
+            "baseCommand": commandStartsWith(command, "flatpak") ? "flatpak run org.kde.dolphin" : "dolphin",
+            "actions": [
+                { "name": "New window", "icon": "window-new", "args": "--new-window" },
+                { "name": "Home", "icon": "go-home", "args": "~" }
+            ]
+        }
+    }
+
+    return null
+}
+
+function suggestedActionsForApp(command, storageId, appId) {
+    var preset = appActionPreset(command, storageId, appId)
+    if (!preset || !(preset.actions instanceof Array) || preset.actions.length === 0) {
+        return []
+    }
+
+    var baseCommand = String(preset.baseCommand || "").trim()
+    if (baseCommand.length === 0) {
+        return []
+    }
+
+    var actions = []
+    for (var index = 0; index < preset.actions.length; index++) {
+        var template = preset.actions[index]
+        if (!template) {
+            continue
+        }
+
+        var suffix = String(template.args || "").trim()
+        var action = {
+            "name": template.name || "Custom action",
+            "icon": template.icon || "system-run",
+            "command": suffix.length > 0 ? (baseCommand + " " + suffix) : baseCommand
+        }
+        syncAppIdentity(action, action.command, "", "")
+        actions.push(action)
+    }
+    return actions
+}
+
+function maybeSeedSuggestedActions(item, command, storageId, appId) {
+    if (!item || (item.type || "app") !== "app" || item.actionsEnabled === false) {
+        return false
+    }
+    if (item.actions instanceof Array && item.actions.length > 0) {
+        return false
+    }
+
+    var actions = suggestedActionsForApp(command, storageId, appId)
+    if (actions.length === 0) {
+        return false
+    }
+
+    item.actions = actions
+    delete item.actionsEnabled
+    return true
+}
+
 function itemTitle(item, translate) {
     if (!item) {
         return ""
@@ -234,6 +351,35 @@ function itemIcon(item) {
         return !item.icon || item.icon === "note" ? "knotes" : item.icon
     }
     return item.icon || "application-x-executable"
+}
+
+function categoryIcon(category) {
+    var value = String(category || "").trim()
+    if (value === "Development") {
+        return "applications-development"
+    }
+    if (value === "Game") {
+        return "applications-games"
+    }
+    if (value === "AudioVideo") {
+        return "applications-multimedia"
+    }
+    if (value === "Network") {
+        return "applications-internet"
+    }
+    if (value === "Office") {
+        return "applications-office"
+    }
+    if (value === "System") {
+        return "applications-system"
+    }
+    if (value === "Utility") {
+        return "applications-utilities"
+    }
+    if (value === "Graphics") {
+        return "applications-graphics"
+    }
+    return "folder"
 }
 
 function itemModelRow(item, translate, translatePlural) {

@@ -24,6 +24,7 @@ public:
     Q_INVOKABLE void requestApplications(const QString &category = {});
     Q_INVOKABLE void requestApplication(const QString &query);
     Q_INVOKABLE QString iconForApplication(const QString &applicationId) const;
+    Q_INVOKABLE QString iconForCategory(const QString &category) const;
     Q_INVOKABLE QString applicationIdForCommand(const QString &command) const;
     Q_INVOKABLE void launchApplication(const QString &storageId);
     Q_INVOKABLE bool launchApplicationByCommand(const QString &command);

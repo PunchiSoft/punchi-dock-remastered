@@ -26,6 +26,7 @@ PlasmoidItem {
     readonly property var overflowTaskRows: taskController.overflowTaskRows
     readonly property int taskVisualRevision: taskController.visualRevision
     property var activeTaskPopupData: ({ "name": "", "windows": [] })
+    property var activeAppContextMenuData: ({ "name": "", "actions": [], "maxVisibleRows": 6 })
     property string pendingTaskPopupAppName: ""
     property var pendingTaskPopupRows: []
     property var taskPopupVisualParent: null
@@ -109,6 +110,7 @@ PlasmoidItem {
         }
         return Qt.BottomEdge
     }
+    readonly property int popupMargin: root.inPanel ? 2 : 10
     readonly property int detectedPanelThickness: {
         try {
             var containment = Plasmoid.containment
@@ -259,6 +261,21 @@ PlasmoidItem {
         root.trashHasItems = hasItems
     }
 
+    function itemContextActions(item) {
+        if (!item || (item.type || "app") !== "app" || item.actionsEnabled === false) {
+            return []
+        }
+        return item.actions instanceof Array
+            ? item.actions.filter(function(action) {
+                return action && String(action.command || "").trim().length > 0
+            })
+            : []
+    }
+
+    function itemHasContextMenu(item) {
+        return itemContextActions(item).length > 0
+    }
+
     function syncDockItemsConfiguration() {
         var raw = JSON.stringify(root.dockItems)
         Plasmoid.configuration.dockItemsJson = raw
@@ -366,7 +383,13 @@ PlasmoidItem {
         }
 
         function popupAnchor(visualParent) {
-            return root.inPanel ? visualParent : dockWrapper
+            if (!visualParent) {
+                return dockWrapper
+            }
+            if (!root.inPanel && visualParent.popupAnchorItem) {
+                return visualParent.popupAnchorItem
+            }
+            return visualParent
         }
 
         function closeAllPopups(exceptDialog) {
@@ -381,6 +404,9 @@ PlasmoidItem {
             }
             if (notePopupDialog !== exceptDialog) {
                 notePopupDialog.visible = false
+            }
+            if (appActionsDialog !== exceptDialog) {
+                appActionsDialog.visible = false
             }
             if (taskOverflowDialog !== exceptDialog) {
                 taskOverflowDialog.visible = false
@@ -402,6 +428,23 @@ PlasmoidItem {
             trashMenuDialog.visualParent = mainContainer.popupAnchor(visualParent)
             trashConfirmDialog.visualParent = mainContainer.popupAnchor(visualParent)
             trashMenuDialog.visible = !trashMenuDialog.visible
+        }
+
+        function openAppContextMenu(itemData, visualParent) {
+            var actions = root.itemContextActions(itemData)
+            if (actions.length === 0) {
+                return
+            }
+
+            mainContainer.closeAllPopups(appActionsDialog)
+            root.activeAppContextMenuData = {
+                "name": itemData && itemData.name ? itemData.name : "",
+                "actions": actions,
+                "maxVisibleRows": Math.max(1, Math.min(12,
+                    Number(itemData && itemData.actionPopupMaxVisibleRows ? itemData.actionPopupMaxVisibleRows : 6)))
+            }
+            appActionsDialog.visualParent = mainContainer.popupAnchor(visualParent)
+            appActionsDialog.visible = true
         }
 
         function openTrashConfirmation() {
@@ -546,6 +589,7 @@ PlasmoidItem {
                         indicatorPosition: root.dockIndicatorPosition
                         indicatorThickness: root.dockIndicatorThickness
                         indicatorOpacity: root.dockIndicatorOpacity
+                        popupDirection: root.popupDirection
                         
                         // Variables de animación de la ola
                         hoverZoomProgress: dockLayout.hoverZoomProgress
@@ -573,6 +617,7 @@ PlasmoidItem {
                             : ""
                         preferTaskPopupOnHover: taskState.count > 1
                         suppressTooltip: taskWindowsDialog.visible && root.taskPopupVisualParent === dockItemDelegate
+                        supportsContextMenu: root.itemHasContextMenu(modelData)
                         
                         onItemClicked: function(cmd) {
                             if (modelData.type === "folder") {
@@ -589,6 +634,8 @@ PlasmoidItem {
                         onContextMenuRequested: function(visualParent) {
                             if (modelData.type === "trash") {
                                 mainContainer.openTrashMenu(visualParent)
+                            } else if (root.itemHasContextMenu(modelData)) {
+                                mainContainer.openAppContextMenu(modelData, visualParent)
                             }
                         }
                         onHoverEntered: function(visualParent) {
@@ -628,6 +675,7 @@ PlasmoidItem {
                         indicatorPosition: root.dockIndicatorPosition
                         indicatorThickness: root.dockIndicatorThickness
                         indicatorOpacity: root.dockIndicatorOpacity
+                        popupDirection: root.popupDirection
                         hoverZoomProgress: dockLayout.hoverZoomProgress
                         lastHoveredIndex: dockLayout.lastHoveredIndex
                         lastMouseOffset: dockLayout.lastMouseOffset
@@ -674,6 +722,7 @@ PlasmoidItem {
                     hoverScaleSetting: root.panelHoverScale
                     hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "wave"
                     clickEffect: root.dockClickEffect
+                    popupDirection: root.popupDirection
                     hoverZoomProgress: dockLayout.hoverZoomProgress
                     lastHoveredIndex: dockLayout.lastHoveredIndex
                     lastMouseOffset: dockLayout.lastMouseOffset
@@ -692,7 +741,7 @@ PlasmoidItem {
         PlasmaCore.AppletPopup {
             id: folderPopupDialog
             popupDirection: root.popupDirection
-            margin: 2
+            margin: root.popupMargin
             floating: !root.inPanel
             removeBorderStrategy: root.inPanel
                 ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
@@ -727,7 +776,7 @@ PlasmoidItem {
         PlasmaCore.AppletPopup {
             id: calendarPopupDialog
             popupDirection: root.popupDirection
-            margin: 2
+            margin: root.popupMargin
             floating: !root.inPanel
             removeBorderStrategy: root.inPanel
                 ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
@@ -753,7 +802,7 @@ PlasmoidItem {
         PlasmaCore.AppletPopup {
             id: trashMenuDialog
             popupDirection: root.popupDirection
-            margin: 2
+            margin: root.popupMargin
             floating: !root.inPanel
             removeBorderStrategy: root.inPanel
                 ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
@@ -778,9 +827,39 @@ PlasmoidItem {
         }
 
         PlasmaCore.AppletPopup {
+            id: appActionsDialog
+            popupDirection: root.popupDirection
+            margin: root.popupMargin
+            floating: !root.inPanel
+            removeBorderStrategy: root.inPanel
+                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
+                : PlasmaCore.AppletPopup.AtScreenEdges
+            visible: false
+            hideOnWindowDeactivate: true
+            backgroundHints: PlasmaCore.Types.StandardBackground
+
+            mainItem: AppActionsPopup {
+                id: appActionsContent
+                itemName: root.activeAppContextMenuData.name || ""
+                actions: root.activeAppContextMenuData.actions || []
+                maxVisibleRows: root.activeAppContextMenuData.maxVisibleRows || 6
+
+                onActionTriggered: function(action) {
+                    appActionsDialog.visible = false
+                    if (action && String(action.command || "").trim().length > 0) {
+                        root.runCommand(action.command)
+                    }
+                }
+                onCloseRequested: {
+                    appActionsDialog.visible = false
+                }
+            }
+        }
+
+        PlasmaCore.AppletPopup {
             id: notePopupDialog
             popupDirection: root.popupDirection
-            margin: 2
+            margin: root.popupMargin
             floating: !root.inPanel
             removeBorderStrategy: root.inPanel
                 ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
@@ -810,7 +889,7 @@ PlasmoidItem {
         PlasmaCore.AppletPopup {
             id: taskWindowsDialog
             popupDirection: root.popupDirection
-            margin: 2
+            margin: root.popupMargin
             floating: !root.inPanel
             removeBorderStrategy: root.inPanel
                 ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
@@ -864,7 +943,7 @@ PlasmoidItem {
         PlasmaCore.AppletPopup {
             id: taskOverflowDialog
             popupDirection: root.popupDirection
-            margin: 2
+            margin: root.popupMargin
             floating: !root.inPanel
             removeBorderStrategy: root.inPanel
                 ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
@@ -892,7 +971,7 @@ PlasmoidItem {
         PlasmaCore.AppletPopup {
             id: trashConfirmDialog
             popupDirection: root.popupDirection
-            margin: 2
+            margin: root.popupMargin
             floating: !root.inPanel
             removeBorderStrategy: root.inPanel
                 ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
