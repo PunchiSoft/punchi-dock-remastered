@@ -7,11 +7,18 @@ import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCM
 import "code/configItems.js" as ConfigItemsJS
 import "code/items.js" as ItemsJS
+import "components"
 
 KCM.SimpleKCM {
     id: page
 
     title: i18n("JSON Configuration")
+    implicitWidth: layoutMetrics.pageImplicitWidth
+
+    ConfigLayoutMetrics {
+        id: layoutMetrics
+        availableWidth: page.width
+    }
 
     property string cfg_dockItemsJson: ""
     property string editorDockItemsJson: ""

@@ -10,7 +10,7 @@ import org.kde.ksvg as KSvg
 Item {
     id: folderRoot
     implicitWidth: circularMode ? 320 : 280
-    implicitHeight: circularMode ? 320 : 340
+    implicitHeight: circularMode ? 320 : classicPopupHeight
     width: implicitWidth
     height: implicitHeight
 
@@ -19,12 +19,33 @@ Item {
     property string layoutMode: "grid" // "list", "grid", "detailed", "circular", "fan"
     property int virtualEdge: PlasmaCore.Types.BottomEdge
     property bool isOpen: false
+    property int maximumAvailableHeight: 640
 
     // Accesos rápidos
     property bool circularMode: layoutMode === "circular" || layoutMode === "fan"
     property var apps: folderItem.apps || []
     property int itemCount: apps.length
     readonly property string popupBackgroundPath: layoutMode === "fan" ? "dialogs/background" : "widgets/background"
+    readonly property int classicMargin: 12
+    readonly property int classicSpacing: 8
+    readonly property int gridCellWidth: 80
+    readonly property int classicCellHeight: layoutMode === "detailed" ? 56 : (layoutMode === "list" ? 40 : 72)
+    readonly property int classicContentWidth: implicitWidth - classicMargin * 2
+    readonly property int gridColumnCount: Math.max(1, Math.floor(classicContentWidth / gridCellWidth))
+    readonly property int classicRowCount: layoutMode === "grid"
+        ? Math.ceil(itemCount / gridColumnCount)
+        : itemCount
+    readonly property int configuredRowLimit: Math.max(0, Number(folderItem.rows || 0))
+    readonly property int visibleClassicRows: Math.max(1, configuredRowLimit > 0
+        ? Math.min(classicRowCount, configuredRowLimit)
+        : classicRowCount)
+    readonly property int classicChromeHeight: classicMargin * 2 + classicHeader.implicitHeight + classicSpacing
+    readonly property int classicNaturalHeight: classicChromeHeight + visibleClassicRows * classicCellHeight
+    readonly property int configuredMaximumHeight: Math.max(0, Number(folderItem.popupMaxHeight || 0))
+    readonly property int effectiveMaximumHeight: configuredMaximumHeight > 0
+        ? Math.min(maximumAvailableHeight, Math.max(classicChromeHeight + classicCellHeight, configuredMaximumHeight))
+        : maximumAvailableHeight
+    readonly property int classicPopupHeight: Math.min(classicNaturalHeight, effectiveMaximumHeight)
 
     // Animación de despliegue para circular/fan
     property real openProgress: isOpen ? 1.0 : 0.0
@@ -82,12 +103,13 @@ Item {
     // ── INTERFAZ CLÁSICA (LISTA, REJILLA, DETALLADA) ─────────────────────
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
+        anchors.margins: folderRoot.classicMargin
         visible: !circularMode
-        spacing: 8
+        spacing: folderRoot.classicSpacing
 
         // Título de la carpeta
         RowLayout {
+            id: classicHeader
             Layout.fillWidth: true
             PlasmaExtras.ShadowedLabel {
                 text: folderItem.name || i18n("Folder")
@@ -120,8 +142,10 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             // Corregir cellWidth para evitar scrollbars o recortes horizontales
-            cellWidth: layoutMode === "list" || layoutMode === "detailed" ? gridView.width : 80
-            cellHeight: layoutMode === "detailed" ? 56 : (layoutMode === "list" ? 40 : 72)
+            cellWidth: layoutMode === "list" || layoutMode === "detailed"
+                ? gridView.width
+                : folderRoot.gridCellWidth
+            cellHeight: folderRoot.classicCellHeight
             model: folderRoot.apps
             clip: true
 
@@ -235,7 +259,7 @@ Item {
             model: folderRoot.apps
             delegate: Item {
                 property real progress: folderRoot.itemCount <= 1 ? 0.5 : index / (folderRoot.itemCount - 1)
-                property real angleDegrees: layoutMode === "circular" 
+                property real angleDegrees: layoutMode === "circular"
                     ? -90 + index * (360 / Math.max(1, folderRoot.itemCount))
                     : folderRoot.getStartAngle() + progress * folderRoot.getSweepAngle()
                 property real angleRad: angleDegrees * Math.PI / 180

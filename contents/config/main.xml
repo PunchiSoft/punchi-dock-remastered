@@ -63,10 +63,16 @@
   </group>
   <group name="Windows">
     <entry name="windowPreviewStyle" type="String">
-      <default>thumbnail</default>
+      <default>card</default>
     </entry>
     <entry name="windowPreviewScale" type="Double">
       <default>1.0</default>
+    </entry>
+    <entry name="taskPopupRadiusAuto" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="taskPopupRadius" type="Int">
+      <default>4</default>
     </entry>
     <entry name="windowGroupingMode" type="String">
       <default>application</default>

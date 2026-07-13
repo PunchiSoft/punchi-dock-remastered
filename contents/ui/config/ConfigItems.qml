@@ -23,6 +23,12 @@ KCM.SimpleKCM {
     id: page
 
     title: i18n("Items")
+    implicitWidth: layoutMetrics.pageImplicitWidth
+
+    ConfigLayoutMetrics {
+        id: layoutMetrics
+        availableWidth: page.width
+    }
 
     property string configDirectory: ConfigScriptsJS.localPath(StandardPaths.writableLocation(StandardPaths.ConfigLocation)) + "/punchi-dock"
     property string legacyConfigFile: ConfigScriptsJS.localPath(configDirectory + "/dock_items.json")

@@ -7,6 +7,12 @@ import "components"
 
 KCM.SimpleKCM {
     id: page
+    implicitWidth: layoutMetrics.pageImplicitWidth
+
+    ConfigLayoutMetrics {
+        id: layoutMetrics
+        availableWidth: page.width
+    }
 
     property alias cfg_showLabels: showLabelsCheck.checked
     property string cfg_indicatorType: "line"
@@ -17,10 +23,8 @@ KCM.SimpleKCM {
     readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool indicatorPositionApplicable: cfg_indicatorType !== "ring"
         && cfg_indicatorType !== "none"
-    readonly property int contentWidthHint: Math.max(320,
-        Math.min(560, width - (Kirigami.Units.gridUnit * 6)))
-    readonly property int selectorWidthHint: Math.max(220,
-        Math.min(340, contentWidthHint - (Kirigami.Units.gridUnit * 6)))
+    readonly property int contentWidthHint: layoutMetrics.contentWidth
+    readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     readonly property var indicatorTypeOptions: [
         { "text": i18n("Line"), "value": "line" },
         { "text": i18n("Dot"), "value": "dot" },
@@ -60,7 +64,6 @@ KCM.SimpleKCM {
     Component.onCompleted: syncIndicatorSelectors()
 
     Kirigami.FormLayout {
-        wideMode: true
 
         SectionTitle {
             Kirigami.FormData.isSection: true
@@ -82,7 +85,7 @@ KCM.SimpleKCM {
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
+            leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
         }
 
@@ -123,7 +126,7 @@ KCM.SimpleKCM {
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
+            leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
         }
 
@@ -157,7 +160,7 @@ KCM.SimpleKCM {
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
+            leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
         }
 

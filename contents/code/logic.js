@@ -1,24 +1,7 @@
 .pragma library
+.import "defaultItems.js" as DockDefaults
 
 // Módulo central de lógica de negocio (desacoplado de la UI)
-
-var defaultItems = [
-    { type: "app", name: "Files", icon: "system-file-manager", command: "dolphin" },
-    { type: "app", name: "Terminal", icon: "utilities-terminal", command: "konsole" },
-    { type: "folder", name: "Favorites (Grid)", icon: "folder-favorites", layout: "grid", apps: [
-        { type: "app", name: "Files", icon: "system-file-manager", command: "dolphin" },
-        { type: "app", name: "Terminal", icon: "utilities-terminal", command: "konsole" },
-        { type: "app", name: "Settings", icon: "preferences-system", command: "systemsettings" }
-    ]},
-    { type: "folder", name: "Tools (Fan)", icon: "folder-download", layout: "fan", apps: [
-        { type: "app", name: "Files", icon: "system-file-manager", command: "dolphin" },
-        { type: "app", name: "Terminal", icon: "utilities-terminal", command: "konsole" },
-        { type: "app", name: "Settings", icon: "preferences-system", command: "systemsettings" },
-        { type: "trash", name: "Trash", icon: "user-trash" }
-    ]},
-    { type: "calendar", name: "Calendar", icon: "x-office-calendar" },
-    { type: "trash", name: "Trash", icon: "user-trash" }
-];
 
 function loadItems(jsonString) {
     if (jsonString && typeof jsonString === "string" && jsonString.trim().length > 0) {
@@ -31,7 +14,7 @@ function loadItems(jsonString) {
             console.warn("Punchi Dock: Failed to parse dockItemsJson. Falling back to defaults.", e);
         }
     }
-    return defaultItems;
+    return DockDefaults.cloneItems();
 }
 
 function shellQuote(text) {

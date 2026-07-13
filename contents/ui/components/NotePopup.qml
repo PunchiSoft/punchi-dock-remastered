@@ -11,9 +11,15 @@ Item {
     property var noteItem: ({})
     property string initialText: ""
     property alias currentText: editor.text
+    property string transientStatus: ""
+    property bool enforcingLength: false
+    property bool maximumLengthWarning: false
     readonly property int activeWidth: Math.max(220, noteItem && noteItem.popupWidth ? noteItem.popupWidth : 360)
     readonly property int activeHeight: Math.max(160, noteItem && noteItem.popupHeight ? noteItem.popupHeight : 260)
-    readonly property int maximumNoteLength: 2000
+    readonly property int maximumNoteLength: 6000
+    readonly property int effectiveMaximumLength: Math.max(maximumNoteLength, initialText.length)
+    readonly property bool hasPendingChanges: editor.text !== initialText
+    readonly property bool showingSavedStatus: transientStatus.length === 0 && !hasPendingChanges
 
     implicitWidth: activeWidth
     implicitHeight: activeHeight
@@ -26,42 +32,78 @@ Item {
 
     function syncFromItem() {
         var nextText = noteItem && noteItem.note ? noteItem.note : ""
+        initialText = nextText
         editor.text = nextText
-        initialText = editor.text
+        transientStatus = ""
+        maximumLengthWarning = false
     }
 
     function focusEditor() {
         editor.forceActiveFocus()
     }
 
-    function wrapSelectionWithTag(tagName) {
-        var start = Math.min(editor.selectionStart, editor.selectionEnd)
-        var end = Math.max(editor.selectionStart, editor.selectionEnd)
-        var openingTag = "<" + tagName + ">"
-        var closingTag = "</" + tagName + ">"
+    function copyNote() {
+        var selectionStart = editor.selectionStart
+        var selectionEnd = editor.selectionEnd
+        var cursorPosition = editor.cursorPosition
 
-        if (start === end) {
-            editor.insert(start, openingTag + closingTag)
-            editor.cursorPosition = start + openingTag.length
+        editor.selectAll()
+        editor.copy()
+
+        if (selectionStart !== selectionEnd) {
+            editor.select(selectionStart, selectionEnd)
+        } else {
+            editor.deselect()
+            editor.cursorPosition = cursorPosition
+        }
+
+        transientStatus = i18n("Copied")
+        maximumLengthWarning = false
+        statusResetTimer.restart()
+    }
+
+    function enforceMaximumLength() {
+        if (enforcingLength || editor.text.length <= effectiveMaximumLength) {
             return
         }
 
-        var selectedContent = editor.text.slice(start, end)
-        editor.remove(start, end)
-        editor.insert(start, openingTag + selectedContent + closingTag)
-        editor.select(start, start + openingTag.length + selectedContent.length + closingTag.length)
+        var previousCursor = editor.cursorPosition
+        enforcingLength = true
+        editor.text = editor.text.slice(0, effectiveMaximumLength)
+        editor.cursorPosition = Math.min(previousCursor, editor.text.length)
+        enforcingLength = false
+        transientStatus = i18n("Maximum length reached")
+        maximumLengthWarning = true
+        statusResetTimer.restart()
     }
 
     onNoteItemChanged: syncFromItem()
     Component.onCompleted: syncFromItem()
 
+    Timer {
+        id: statusResetTimer
+        interval: 2500
+        onTriggered: {
+            noteRoot.transientStatus = ""
+            noteRoot.maximumLengthWarning = false
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 10
+        anchors.margins: Kirigami.Units.smallSpacing * 2
+        spacing: Kirigami.Units.smallSpacing
 
         RowLayout {
             Layout.fillWidth: true
+            spacing: Kirigami.Units.smallSpacing
+
+            Kirigami.Icon {
+                source: "view-pim-notes"
+                color: Kirigami.Theme.textColor
+                Layout.preferredWidth: Kirigami.Units.iconSizes.smallMedium
+                Layout.preferredHeight: Kirigami.Units.iconSizes.smallMedium
+            }
 
             PlasmaExtras.ShadowedLabel {
                 text: noteRoot.noteItem && noteRoot.noteItem.name ? noteRoot.noteItem.name : i18n("Note")
@@ -72,84 +114,160 @@ Item {
             }
 
             Controls.ToolButton {
-                icon.name: "edit-clear-all-symbolic"
-                display: Controls.AbstractButton.IconOnly
+                id: clearNoteButton
+                Layout.preferredWidth: 28
+                Layout.preferredHeight: 28
+                padding: 2
+                focusPolicy: Qt.StrongFocus
                 Accessible.name: i18n("Clear")
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Clear")
+                Controls.ToolTip.visible: hovered || activeFocus
+                Controls.ToolTip.text: Accessible.name
+                Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
+                contentItem: Kirigami.Icon {
+                    source: "edit-clear"
+                    color: Kirigami.Theme.textColor
+                    implicitWidth: 16
+                    implicitHeight: 16
+                }
+                background: Rectangle {
+                    radius: 6
+                    color: clearNoteButton.hovered || clearNoteButton.activeFocus
+                        ? Qt.rgba(Kirigami.Theme.highlightColor.r,
+                            Kirigami.Theme.highlightColor.g,
+                            Kirigami.Theme.highlightColor.b, 0.24)
+                        : "transparent"
+                    border.width: clearNoteButton.activeFocus ? 1 : 0
+                    border.color: Kirigami.Theme.textColor
+                }
                 onClicked: {
                     editor.text = ""
                     noteRoot.initialText = editor.text
+                    noteRoot.transientStatus = i18n("Cleared")
+                    noteRoot.maximumLengthWarning = false
+                    statusResetTimer.restart()
                     noteRoot.clearRequested("", noteRoot.activeWidth, noteRoot.activeHeight)
                 }
             }
 
             Controls.ToolButton {
-                icon.name: "window-close-symbolic"
-                display: Controls.AbstractButton.IconOnly
+                id: copyNoteButton
+                Layout.preferredWidth: 28
+                Layout.preferredHeight: 28
+                padding: 2
+                focusPolicy: Qt.StrongFocus
+                enabled: editor.text.length > 0
+                Accessible.name: i18n("Copy note")
+                Controls.ToolTip.visible: hovered || activeFocus
+                Controls.ToolTip.text: Accessible.name
+                Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
+                contentItem: Kirigami.Icon {
+                    source: "edit-copy"
+                    color: Kirigami.Theme.textColor
+                    implicitWidth: 16
+                    implicitHeight: 16
+                }
+                background: Rectangle {
+                    radius: 6
+                    color: copyNoteButton.hovered || copyNoteButton.activeFocus
+                        ? Qt.rgba(Kirigami.Theme.highlightColor.r,
+                            Kirigami.Theme.highlightColor.g,
+                            Kirigami.Theme.highlightColor.b, 0.24)
+                        : "transparent"
+                    border.width: copyNoteButton.activeFocus ? 1 : 0
+                    border.color: Kirigami.Theme.textColor
+                }
+                onClicked: noteRoot.copyNote()
+            }
+
+            Controls.ToolButton {
+                id: closeNoteButton
+                Layout.preferredWidth: 28
+                Layout.preferredHeight: 28
+                padding: 2
+                focusPolicy: Qt.StrongFocus
                 Accessible.name: i18n("Close")
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Close")
+                Controls.ToolTip.visible: hovered || activeFocus
+                Controls.ToolTip.text: Accessible.name
+                Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
+                contentItem: Kirigami.Icon {
+                    source: "window-close"
+                    color: Kirigami.Theme.textColor
+                    implicitWidth: 16
+                    implicitHeight: 16
+                }
+                background: Rectangle {
+                    radius: 6
+                    color: closeNoteButton.hovered || closeNoteButton.activeFocus
+                        ? Qt.rgba(Kirigami.Theme.negativeTextColor.r,
+                            Kirigami.Theme.negativeTextColor.g,
+                            Kirigami.Theme.negativeTextColor.b, 0.24)
+                        : "transparent"
+                    border.width: closeNoteButton.activeFocus ? 1 : 0
+                    border.color: Kirigami.Theme.textColor
+                }
                 onClicked: noteRoot.closeRequested()
                 Keys.onReturnPressed: noteRoot.closeRequested()
                 Keys.onSpacePressed: noteRoot.closeRequested()
             }
         }
 
+        Controls.ScrollView {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Controls.ScrollBar.horizontal.policy: Controls.ScrollBar.AlwaysOff
+            Controls.ScrollBar.vertical.policy: Controls.ScrollBar.AsNeeded
+
+            Controls.TextArea {
+                id: editor
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                textFormat: TextEdit.PlainText
+                wrapMode: TextEdit.Wrap
+                placeholderText: i18n("Write a quick note")
+                color: Kirigami.Theme.textColor
+                selectByMouse: true
+                activeFocusOnTab: true
+                Accessible.name: i18n("Note content")
+
+                onTextChanged: noteRoot.enforceMaximumLength()
+            }
+        }
+
         RowLayout {
             Layout.fillWidth: true
-            spacing: 6
+            spacing: Kirigami.Units.smallSpacing
 
-            Controls.ToolButton {
-                text: i18n("B")
-                font.bold: true
-                Accessible.name: i18n("Bold")
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Bold")
-                onClicked: noteRoot.wrapSelectionWithTag("b")
-            }
-
-            Controls.ToolButton {
-                text: i18n("I")
-                font.italic: true
-                Accessible.name: i18n("Italic")
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Italic")
-                onClicked: noteRoot.wrapSelectionWithTag("i")
-            }
-
-            Controls.ToolButton {
-                text: i18n("U")
-                font.underline: true
-                Accessible.name: i18n("Underline")
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Underline")
-                onClicked: noteRoot.wrapSelectionWithTag("u")
+            Rectangle {
+                visible: noteRoot.showingSavedStatus
+                Layout.preferredWidth: 7
+                Layout.preferredHeight: 7
+                Layout.alignment: Qt.AlignVCenter
+                radius: width / 2
+                color: Kirigami.Theme.positiveTextColor
             }
 
             Controls.Label {
                 Layout.fillWidth: true
-                horizontalAlignment: Text.AlignRight
-                text: i18n("Basic rich text")
-                color: Kirigami.Theme.disabledTextColor
+                text: noteRoot.transientStatus.length > 0
+                    ? noteRoot.transientStatus
+                    : (noteRoot.hasPendingChanges ? i18n("Changes pending") : i18n("Saved"))
+                color: noteRoot.maximumLengthWarning
+                    ? Kirigami.Theme.negativeTextColor
+                    : Kirigami.Theme.disabledTextColor
+                font.family: Kirigami.Theme.smallFont.family
+                font.pointSize: Kirigami.Theme.smallFont.pointSize
+                elide: Text.ElideRight
+                Accessible.name: text
             }
-        }
 
-        Controls.TextArea {
-            id: editor
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            textFormat: TextEdit.RichText
-            wrapMode: TextEdit.Wrap
-            placeholderText: i18n("Write a quick note")
-            color: Kirigami.Theme.textColor
-            selectByMouse: true
-            activeFocusOnTab: true
-
-            onTextChanged: {
-                if (text.length > noteRoot.maximumNoteLength) {
-                    text = text.slice(0, noteRoot.maximumNoteLength)
-                }
+            Controls.Label {
+                text: i18n("%1 / %2", editor.text.length, noteRoot.maximumNoteLength)
+                color: editor.text.length >= noteRoot.maximumNoteLength
+                    ? Kirigami.Theme.neutralTextColor
+                    : Kirigami.Theme.disabledTextColor
+                font.family: Kirigami.Theme.smallFont.family
+                font.pointSize: Kirigami.Theme.smallFont.pointSize
+                Accessible.name: i18n("%1 of %2 characters", editor.text.length, noteRoot.maximumNoteLength)
             }
         }
     }

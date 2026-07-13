@@ -9,47 +9,35 @@ import "components"
 
 KCM.SimpleKCM {
     id: page
+    implicitWidth: layoutMetrics.pageImplicitWidth
+
+    ConfigLayoutMetrics {
+        id: layoutMetrics
+        availableWidth: page.width
+    }
 
     property alias cfg_showActiveTasks: showActiveTasksCheck.checked
     property alias cfg_showTasksCurrentDesktopOnly: currentDesktopOnlyCheck.checked
-    property string cfg_windowPreviewStyle: "thumbnail"
+    property string cfg_windowPreviewStyle: "card"
     property alias cfg_windowPreviewScale: previewScaleSlider.value
+    property alias cfg_taskPopupRadiusAuto: taskPopupRadiusAutoCheck.checked
+    property alias cfg_taskPopupRadius: taskPopupRadiusSlider.value
     property string cfg_windowGroupingMode: "application"
     property alias cfg_maxDynamicTaskGroups: maxDynamicTaskGroupsSpin.value
     property alias cfg_maxPopupRows: maxPopupRowsSpin.value
-    property string cfg_panelLengthMode: "content"
     readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
-    readonly property int contentWidthHint: Math.max(340,
-        Math.min(620, width - (Kirigami.Units.gridUnit * 6)))
-    readonly property int selectorWidthHint: Math.max(220,
-        Math.min(360, contentWidthHint - (Kirigami.Units.gridUnit * 8)))
-    readonly property bool panelSeemsToFillEdge: {
-        try {
-            var containment = Plasmoid.containment
-            if (!containment || !containment.availableScreenRect) {
-                return false
-            }
-            if (verticalPanel) {
-                return containment.height >= containment.availableScreenRect.height * 0.92
-            }
-            return containment.width >= containment.availableScreenRect.width * 0.92
-        } catch (error) {
-            return false
-        }
-    }
+    readonly property int contentWidthHint: layoutMetrics.contentWidth
+    readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     readonly property var previewStyleOptions: [
-        { "text": i18n("Window thumbnail"), "value": "thumbnail" },
-        { "text": i18n("Icon card only"), "value": "card" }
+        { "text": i18n("Cards (recommended)"), "value": "card" },
+        { "text": i18n("Window previews"), "value": "thumbnail" },
+        { "text": i18n("None"), "value": "none" }
     ]
     readonly property var groupingModeOptions: [
         { "text": i18n("Group by application"), "value": "application" },
         { "text": i18n("Show each window"), "value": "window" }
-    ]
-    readonly property var panelLengthOptions: [
-        { "text": i18n("Fit content"), "value": "content" },
-        { "text": i18n("Fill panel edge"), "value": "fill" }
     ]
 
     component SectionTitle: Kirigami.Heading {
@@ -72,16 +60,13 @@ KCM.SimpleKCM {
     function syncSelectors() {
         syncComboValue(previewStyleCombo, page.cfg_windowPreviewStyle)
         syncComboValue(groupingModeCombo, page.cfg_windowGroupingMode)
-        syncComboValue(panelLengthModeCombo, page.cfg_panelLengthMode)
     }
 
     onCfg_windowPreviewStyleChanged: syncSelectors()
     onCfg_windowGroupingModeChanged: syncSelectors()
-    onCfg_panelLengthModeChanged: syncSelectors()
     Component.onCompleted: syncSelectors()
 
     Kirigami.FormLayout {
-        wideMode: true
 
         Kirigami.InlineMessage {
             visible: page.verticalPanel
@@ -111,7 +96,31 @@ KCM.SimpleKCM {
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+            enabled: showActiveTasksCheck.checked
+        }
+
+        Controls.SpinBox {
+            id: maxDynamicTaskGroupsSpin
+            Kirigami.FormData.label: i18n("Dynamic groups:")
+            from: 1
+            to: 20
+            enabled: showActiveTasksCheck.checked
+            Layout.preferredWidth: page.selectorWidthHint
+            Accessible.name: i18n("Maximum dynamic groups shown in the dock")
+
+            ConfigCursorBehavior {
+                active: page.interactiveCursorEnabled
+            }
+        }
+
+        Controls.Label {
+            text: i18n("Limits how many dynamic task groups are shown directly in the dock so it does not become overcrowded. Additional groups remain available from the overflow item.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
             enabled: showActiveTasksCheck.checked
         }
@@ -134,7 +143,7 @@ KCM.SimpleKCM {
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
+            leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
             enabled: showActiveTasksCheck.checked
         }
@@ -146,7 +155,6 @@ KCM.SimpleKCM {
 
         RowLayout {
             Kirigami.FormData.label: i18n("Preview popup:")
-            enabled: showActiveTasksCheck.checked
             Layout.maximumWidth: page.contentWidthHint
 
             Controls.ComboBox {
@@ -171,18 +179,19 @@ KCM.SimpleKCM {
         Controls.Label {
             text: page.cfg_windowPreviewStyle === "thumbnail"
                 ? i18n("Window selectors and hover previews use live thumbnails when the compositor can provide them.")
-                : i18n("Window selectors and hover previews keep the preview-card layout but always show the app icon.")
+                : (page.cfg_windowPreviewStyle === "card"
+                    ? i18n("Window selectors and hover previews use cards with the app icon and no live window content.")
+                    : i18n("Active applications do not show hover previews or grouped-window popups."))
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
+            leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
-            enabled: showActiveTasksCheck.checked
         }
 
         RowLayout {
             Kirigami.FormData.label: i18n("Preview size:")
-            enabled: showActiveTasksCheck.checked
+            enabled: page.cfg_windowPreviewStyle !== "none"
             Layout.maximumWidth: page.contentWidthHint
 
             Controls.Slider {
@@ -211,9 +220,57 @@ KCM.SimpleKCM {
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
+            leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
-            enabled: showActiveTasksCheck.checked
+            enabled: page.cfg_windowPreviewStyle !== "none"
+        }
+
+        Controls.CheckBox {
+            id: taskPopupRadiusAutoCheck
+            Kirigami.FormData.label: i18n("Preview corners:")
+            text: i18n("Automatic (recommended 4 px)")
+            enabled: page.cfg_windowPreviewStyle !== "none"
+
+            ConfigCursorBehavior {
+                active: page.interactiveCursorEnabled
+            }
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Preview radius:")
+            enabled: page.cfg_windowPreviewStyle !== "none" && !taskPopupRadiusAutoCheck.checked
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: taskPopupRadiusSlider
+                from: 4
+                to: 32
+                stepSize: 1
+                snapMode: Controls.Slider.SnapAlways
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+
+                Accessible.name: i18n("Window preview card corner radius")
+
+                ConfigCursorBehavior {
+                    active: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: i18n("%1 px", Math.round(taskPopupRadiusSlider.value))
+                font.bold: true
+                Layout.preferredWidth: 54
+            }
+        }
+
+        Kirigami.InlineMessage {
+            visible: page.cfg_windowPreviewStyle !== "none" && !taskPopupRadiusAutoCheck.checked
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            type: Kirigami.MessageType.Information
+            text: i18n("Manual mode starts from 4 px and adjusts the internal preview card and thumbnail corners while preserving Plasma's native popup blur and shadow.")
         }
 
         SectionTitle {
@@ -252,30 +309,7 @@ KCM.SimpleKCM {
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
-            color: Kirigami.Theme.disabledTextColor
-            enabled: showActiveTasksCheck.checked
-        }
-
-        Controls.SpinBox {
-            id: maxDynamicTaskGroupsSpin
-            Kirigami.FormData.label: i18n("Dynamic groups:")
-            from: 1
-            to: 20
-            enabled: showActiveTasksCheck.checked
-            Layout.preferredWidth: page.selectorWidthHint
-
-            ConfigCursorBehavior {
-                active: page.interactiveCursorEnabled
-            }
-        }
-
-        Controls.Label {
-            text: i18n("Extra groups remain available from an overflow item in the dock.")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
+            leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
             enabled: showActiveTasksCheck.checked
         }
@@ -285,7 +319,7 @@ KCM.SimpleKCM {
             Kirigami.FormData.label: i18n("Popup rows:")
             from: 1
             to: 8
-            enabled: showActiveTasksCheck.checked
+            enabled: page.cfg_windowPreviewStyle !== "none"
             Layout.preferredWidth: page.selectorWidthHint
 
             ConfigCursorBehavior {
@@ -298,59 +332,10 @@ KCM.SimpleKCM {
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
+            leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
-            enabled: showActiveTasksCheck.checked
+            enabled: page.cfg_windowPreviewStyle !== "none"
         }
 
-        SectionTitle {
-            Kirigami.FormData.isSection: true
-            visible: page.inPanel
-            text: i18n("Panel integration")
-        }
-
-        RowLayout {
-            visible: page.inPanel && page.panelSeemsToFillEdge
-            Kirigami.FormData.label: i18n("Panel length:")
-            Layout.maximumWidth: page.contentWidthHint
-
-            Controls.ComboBox {
-                id: panelLengthModeCombo
-                Layout.preferredWidth: page.selectorWidthHint
-                Layout.maximumWidth: page.selectorWidthHint
-                textRole: "text"
-                valueRole: "value"
-                model: page.panelLengthOptions
-                onActivated: {
-                    if (page.cfg_panelLengthMode !== currentValue) {
-                        page.cfg_panelLengthMode = currentValue
-                    }
-                }
-
-                ConfigCursorBehavior {
-                    active: page.interactiveCursorEnabled
-                }
-            }
-        }
-
-        Controls.Label {
-            visible: page.inPanel && page.panelSeemsToFillEdge
-            text: i18n("When the Plasma panel already fills the full edge, the dock can either keep its compact width or stretch across that edge.")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
-            color: Kirigami.Theme.disabledTextColor
-        }
-
-        Controls.Label {
-            visible: page.inPanel && !page.panelSeemsToFillEdge
-            text: i18n("The panel fill option appears only when the current Plasma panel seems to span the full screen edge.")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: Kirigami.Units.largeSpacing
-            color: Kirigami.Theme.disabledTextColor
-        }
     }
 }

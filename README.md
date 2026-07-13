@@ -1,40 +1,88 @@
-# Punchi-dock Remastered
+# Punchi Dock Remastered
 
-**Punchi-dock Remastered** es un plasmoide nativo para **KDE Plasma 6 (Wayland)** diseñado bajo una ideología clara: proporcionar un dock altamente funcional, de rendimiento excepcional y extremadamente fácil de personalizar para el usuario final. 
+[English](README.md) | [Español](README.es.md)
 
-Nacido como la evolución profesional del proyecto [punchi-dock-plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid) original, esta versión ha sido reestructurada desde sus cimientos para aprovechar al máximo las tecnologías modernas. Actualmente, el proyecto goza de una base arquitectónica **muy estable**, estando enfocado en el pulido final de la experiencia de usuario y la simplificación de sus menús de configuración.
+Punchi Dock Remastered is a native launcher dock and task interface for KDE Plasma 6, designed primarily for Wayland. It can operate as a floating dock or integrate with a Plasma panel while following the active theme.
 
-### Historia y Refactorización (De *Spaghetti* a Modular)
-El proyecto original creció tan rápido que su código terminó convirtiéndose en un "frankenstein" o código *spaghetti*. La falta de separación de responsabilidades (*Separation of Concerns*) hacía abrumador y peligroso arreglar bugs o auditar el código, ya que modificar una parte solía romper otras. 
-Para solucionar esto de raíz, se tomó la decisión de pausar el desarrollo antiguo y extraer cuidadosamente ("con bisturí") las funciones al nuevo repositorio **Remastered**. Este nuevo proyecto se convertirá en la **versión oficial 1.0** una vez terminada la reestructuración, dejando al proyecto original como un archivo *Legacy*.
+This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
-## Características Principales
+## Features
 
-- **Nativo para Wayland y Plasma 6**: Integración profunda con KWin y Plasma, garantizando animaciones a 60fps sin cuelgues (lag).
-- **Dualidad de Formato**: Opera con total fluidez tanto en formato **dock flotante** como anclado al borde de la pantalla actuando como **panel tradicional**.
-- **Simplicidad ante todo**: Filosofía centrada en que el usuario final pueda adaptar el aspecto y el comportamiento del dock sin lidiar con opciones abrumadoras o confusas.
-- **Arquitectura Modular Robusta**: Separación estricta entre la lógica de negocio y la interfaz visual, garantizando escalabilidad y un bajo consumo de recursos.
+- Floating dock and Plasma panel modes.
+- Pinned launchers and optional dynamic task entries.
+- Window cards, live previews, and grouped-window controls.
+- Configurable folders, quick notes, trash, separators, and calendar items.
+- Plasma-themed popups and a compact configuration interface.
+- Native C++ QML integration for application discovery, runtime services, and trash operations.
 
----
+## Requirements
 
-## Instalación (Orientada a Fedora 44+)
+- Linux with KDE Plasma 6.
+- Wayland is the primary supported session.
+- Fedora 44 or later is the main development and testing environment.
 
-1. **Instalación de dependencias**:
-   ```bash
-   sudo dnf install plasma-sdk extra-cmake-modules kf6-kcoreaddons-devel kf6-kdeclarative-devel kf6-ki18n-devel qt6-qtdeclarative-devel libplasma-devel
-   ```
+## Install a Release Package
 
-2. **Instalación del plasmoide** mediante la herramienta nativa de KDE:
-   ```bash
-   kpackagetool6 -t Plasma/Applet -i .
-   
-   # Para actualizar una instalación previa en el sistema:
-   kpackagetool6 -t Plasma/Applet -u .
-   ```
+End users should install a prebuilt `.plasmoid` release. Development packages and a compiler are not required.
 
-## Estructura de Desarrollo
+On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already available on a Plasma installation:
 
-- **Organización**: El código UI reside de forma modular en `contents/ui/components/`, mientras que la lógica pura se concentra en `contents/code/`.
-- **Módulo C++**: Para interactuar con partes más profundas del sistema operativo. [Leer guía de compilación](docs/guias-usuario/compilacion-adaptador-cpp.md).
-- **Distribucion limpia**: `scripts/empaquetar-plasmoid.sh` compila el modulo nativo y genera un `.plasmoid` reproducible con solo `metadata.json`, `LICENSE` y `contents/`. `scripts/probar-plasmoid.sh` queda reservado para instalarlo y probarlo localmente.
-- **Internacionalización**: Desarrollado con el inglés como idioma fuente (`i18n`), listo para incorporar catálogos de traducción globales.
+```bash
+sudo dnf install kf6-kpackage
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered.plasmoid
+```
+
+To update an existing installation:
+
+```bash
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered.plasmoid
+```
+
+Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
+
+## Build from Source on Fedora 44+
+
+The source tree contains a native C++ QML module. Installing the repository directory directly with `kpackagetool6` does not compile that module.
+
+Install the build dependencies:
+
+```bash
+sudo dnf install \
+    cmake gcc-c++ ninja-build extra-cmake-modules \
+    qt6-qtdeclarative-devel \
+    kf6-kcoreaddons-devel kf6-kio-devel kf6-kservice-devel \
+    zip unzip
+```
+
+Build the native module and create the package:
+
+```bash
+PATH="/usr/lib64/qt6/bin:$PATH" scripts/empaquetar-plasmoid.sh
+```
+
+The resulting package is written to:
+
+```text
+dist/punchi-dock-remastered.plasmoid
+```
+
+To build, install, and restart Plasma for a local development test:
+
+```bash
+PATH="/usr/lib64/qt6/bin:$PATH" scripts/probar-plasmoid.sh
+```
+
+## Project Structure
+
+- `contents/`: runtime plasmoid package.
+- `contents/ui/components/`: reusable QML interface components.
+- `contents/code/`: shared JavaScript logic and defaults.
+- `src/`: native C++ QML integration module.
+- `scripts/`: packaging and local testing tools.
+- `metadata.json`: KPackage metadata and Plasma compatibility declaration.
+
+Internal development notes and audit logs are intentionally excluded from the public repository and release package.
+
+## License
+
+Punchi Dock Remastered is licensed under the [GNU General Public License v3.0 or later](LICENSE).

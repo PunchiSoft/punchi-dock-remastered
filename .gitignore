@@ -13,7 +13,8 @@
 /.vscode/
 /.idea/
 
-# Archivos de bitácora y logs no trackeados
+# Documentacion interna, bitacoras y logs no trackeados
+/docs/
 /bitacora/
 /scratch/
 *.log

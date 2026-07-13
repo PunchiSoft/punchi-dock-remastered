@@ -4,6 +4,8 @@ import org.kde.taskmanager as TaskManager
 Item {
     id: root
 
+    signal structureChanged()
+
     property var dockItems: []
     property bool showActiveTasks: true
     property bool currentDesktopOnly: true
@@ -14,6 +16,7 @@ Item {
     property var visibleTaskRows: []
     property var overflowTaskRows: []
     property int visualRevision: 0
+    property int structureRevision: 0
     property bool pendingStructureRefresh: false
 
     TaskManager.TasksModel {
@@ -66,6 +69,7 @@ Item {
 
     Component.onCompleted: {
         refreshVisibleRows()
+        bumpStructureRevision()
         bumpVisualRevision()
     }
 
@@ -234,6 +238,11 @@ Item {
         root.visualRevision += 1
     }
 
+    function bumpStructureRevision() {
+        root.structureRevision += 1
+        root.structureChanged()
+    }
+
     function scheduleRefresh(needsStructureRefresh) {
         root.pendingStructureRefresh = root.pendingStructureRefresh || !!needsStructureRefresh
         refreshTimer.restart()
@@ -243,6 +252,7 @@ Item {
         if (root.pendingStructureRefresh) {
             refreshVisibleRows()
             root.pendingStructureRefresh = false
+            bumpStructureRevision()
         }
         bumpVisualRevision()
     }
@@ -292,11 +302,68 @@ Item {
                 "subtitle": String(tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.GenericName) || ""),
                 "active": isTaskRowActive(row),
                 "closable": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsClosable),
+                "minimizable": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimizable),
+                "minimized": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimized),
+                "maximizable": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMaximizable),
+                "maximized": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMaximized),
                 "icon": taskIconNameForRow(row),
                 "windowUuid": taskWindowUuidForRow(row)
             })
         }
         return windows
+    }
+
+    function taskApplicationIdForRows(rows) {
+        for (let index = 0; index < rows.length; index++) {
+            const row = Number(rows[index])
+            const taskIndex = tasksModel.index(row, 0)
+            if (!taskIndex.valid
+                    || !tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsWindow)
+                    || tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.SkipTaskbar)) {
+                continue
+            }
+
+            const appId = taskAppIdForRow(row)
+            if (appId.length > 0) {
+                return appId
+            }
+        }
+
+        return ""
+    }
+
+    function taskWindowsForIdentity(applicationId, windowUuids) {
+        const normalizedAppId = normalizeApplicationId(applicationId)
+        const acceptedUuids = {}
+        const uuids = windowUuids instanceof Array ? windowUuids : []
+        for (let index = 0; index < uuids.length; index++) {
+            const uuid = String(uuids[index] || "")
+            if (uuid.length > 0) {
+                acceptedUuids[uuid] = true
+            }
+        }
+
+        const rows = []
+        for (let row = 0; row < tasksModel.count; row++) {
+            const taskIndex = tasksModel.index(row, 0)
+            if (!taskIndex.valid
+                    || !tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsWindow)
+                    || tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.SkipTaskbar)) {
+                continue
+            }
+
+            const matchesApplication = normalizedAppId.length > 0
+                && taskAppIdForRow(row) === normalizedAppId
+            const windowUuid = taskWindowUuidForRow(row)
+            const matchesWindow = normalizedAppId.length === 0
+                && windowUuid.length > 0
+                && acceptedUuids[windowUuid] === true
+            if (matchesApplication || matchesWindow) {
+                rows.push(row)
+            }
+        }
+
+        return taskWindowsForRows(rows)
     }
 
     function taskDataForEntry(entry) {
@@ -388,8 +455,46 @@ Item {
     function closeTaskRow(row) {
         const taskIndex = tasksModel.index(row, 0)
         if (!taskIndex.valid || !tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsClosable)) {
-            return
+            return false
         }
         tasksModel.requestClose(taskIndex)
+        return true
+    }
+
+    function requestWindowPresentation(row) {
+        const taskIndex = tasksModel.index(row, 0)
+        if (!taskIndex.valid) {
+            return
+        }
+
+        tasksModel.requestActivate(taskIndex)
+    }
+
+    function minimizeTaskRow(row) {
+        const taskIndex = tasksModel.index(row, 0)
+        if (!taskIndex.valid || !tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimizable)) {
+            return
+        }
+
+        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimized)) {
+            tasksModel.requestActivate(taskIndex)
+            return
+        }
+
+        tasksModel.requestToggleMinimized(taskIndex)
+    }
+
+    function toggleMaximizedTaskRow(row) {
+        const taskIndex = tasksModel.index(row, 0)
+        if (!taskIndex.valid || !tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMaximizable)) {
+            return
+        }
+
+        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimized)) {
+            tasksModel.requestActivate(taskIndex)
+        }
+
+        tasksModel.requestToggleMaximized(taskIndex)
+        tasksModel.requestActivate(taskIndex)
     }
 }

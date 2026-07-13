@@ -123,7 +123,7 @@ Item {
     property int taskIndicatorCount: 0
     property bool taskIsActive: false
     property bool taskDemandsAttention: false
-    property string taskPreviewStyle: "thumbnail"
+    property string taskPreviewStyle: "card"
     property real taskPreviewScale: 1.0
     property string taskPreviewWindowUuid: ""
     property bool preferTaskPopupOnHover: false
@@ -142,12 +142,14 @@ Item {
         && taskPreviewStyle === "thumbnail"
         && taskPreviewWindowUuid.length > 0
     readonly property bool textTooltipItem: !separatorItem && !spacerItem && itemName.length > 0 && !activeTaskItem
-    readonly property bool richTooltipItem: !separatorItem && !spacerItem && itemName.length > 0 && activeTaskItem
+    readonly property bool richTooltipItem: !separatorItem && !spacerItem && itemName.length > 0
+        && activeTaskItem && taskPreviewStyle !== "none"
     readonly property bool showAnyTooltip: !separatorItem
         && !spacerItem
         && itemName.length > 0
         && !suppressTooltip
         && !preferTaskPopupOnHover
+        && (!activeTaskItem || taskPreviewStyle !== "none")
     readonly property real separatorLength: Math.max(20, Math.round(iconSize * 0.72))
     readonly property real separatorThickness: 2
     readonly property real effectiveTaskPreviewScale: Math.max(0.5, Math.min(2.0, taskPreviewScale))

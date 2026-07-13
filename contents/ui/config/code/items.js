@@ -1,4 +1,5 @@
 .pragma library
+.import "../../../code/defaultItems.js" as DockDefaults
 
 // #######################
 // Default dock layout.
@@ -11,23 +12,7 @@ var configureDockItem = {
     "command": "punchi-dock://configure"
 }
 
-var defaultItems = [
-    { type: "app", name: "Files", icon: "system-file-manager", command: "dolphin" },
-    { type: "app", name: "Terminal", icon: "utilities-terminal", command: "konsole" },
-    { type: "folder", name: "Favorites (Grid)", icon: "folder-favorites", layout: "grid", apps: [
-        { type: "app", name: "Files", icon: "system-file-manager", command: "dolphin" },
-        { type: "app", name: "Terminal", icon: "utilities-terminal", command: "konsole" },
-        { type: "app", name: "Settings", icon: "preferences-system", command: "systemsettings" }
-    ]},
-    { type: "folder", name: "Tools (Fan)", icon: "folder-download", layout: "fan", apps: [
-        { type: "app", name: "Files", icon: "system-file-manager", command: "dolphin" },
-        { type: "app", name: "Terminal", icon: "utilities-terminal", command: "konsole" },
-        { type: "app", name: "Settings", icon: "preferences-system", command: "systemsettings" },
-        { type: "trash", name: "Trash", icon: "user-trash" }
-    ]},
-    { type: "calendar", name: "Calendar/Clock", icon: "x-office-calendar" },
-    { type: "trash", name: "Trash", icon: "user-trash" }
-]
+var defaultItems = DockDefaults.cloneItems()
 
 function cloneJson(value) {
     return JSON.parse(JSON.stringify(value))

@@ -10,15 +10,24 @@ import "components"
 
 KCM.SimpleKCM {
     id: page
+    implicitWidth: layoutMetrics.pageImplicitWidth
+
+    ConfigLayoutMetrics {
+        id: layoutMetrics
+        availableWidth: page.width
+    }
 
     // Variables prefijadas con "cfg_" para mapear automáticamente a KConfig (main.xml)
     property alias cfg_iconSize: iconSizeSlider.value
     property alias cfg_hoverScale: hoverScaleSlider.value
     property string cfg_virtualDesktopMode: "all"
     property string cfg_targetVirtualDesktop: ""
+    property string cfg_panelLengthMode: "content"
     readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    readonly property int contentWidthHint: layoutMetrics.contentWidth
+    readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     readonly property int detectedPanelThickness: {
         try {
             var containment = Plasmoid.containment
@@ -40,6 +49,24 @@ KCM.SimpleKCM {
     readonly property int safePanelIconSizeMax: detectedPanelThickness > 0
         ? Math.max(32, detectedPanelThickness - panelCrossAxisPadding - 12)
         : 96
+    readonly property bool panelSeemsToFillEdge: {
+        try {
+            var containment = Plasmoid.containment
+            if (!inPanel || !containment || !containment.availableScreenRect) {
+                return false
+            }
+            if (verticalPanel) {
+                return containment.height >= containment.availableScreenRect.height * 0.92
+            }
+            return containment.width >= containment.availableScreenRect.width * 0.92
+        } catch (error) {
+            return false
+        }
+    }
+    readonly property var panelLengthOptions: [
+        { "text": i18n("Fit content"), "value": "content" },
+        { "text": i18n("Fill panel edge"), "value": "fill" }
+    ]
     readonly property var virtualDesktopModel: {
         var result = []
         var ids = virtualDesktopInfo.desktopIds
@@ -96,31 +123,46 @@ KCM.SimpleKCM {
     }
 
     Kirigami.FormLayout {
-        Item {
+        Kirigami.InlineMessage {
             Kirigami.FormData.isSection: true
-            implicitHeight: 1
+            visible: true
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            type: Kirigami.MessageType.Warning
+            showCloseButton: false
+            text: !page.inPanel
+                ? i18n("Current dock state: Floating mode. Panel-only sizing and integration options are unavailable.")
+                : page.panelSeemsToFillEdge
+                    ? i18n("Current dock state: Panel mode. The Plasma panel spans the full screen edge, so compact or full-edge length can be selected.")
+                    : i18n("Current dock state: Panel mode. The current Plasma panel does not span the full screen edge, so the full-edge length option is unavailable.")
+            Accessible.name: text
         }
 
-        Controls.Label {
-            Kirigami.FormData.label: page.inPanel ? i18n("Mode:") : i18n("Mode:")
-            text: page.inPanel ? i18n("Panel mode") : i18n("Floating mode")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            font.bold: true
-        }
+        RowLayout {
+            visible: page.inPanel && page.panelSeemsToFillEdge
+            Kirigami.FormData.label: i18n("Panel length:")
+            Layout.maximumWidth: page.contentWidthHint
 
-        Controls.Label {
-            Kirigami.FormData.label: i18n("Behavior:")
-            text: page.inPanel
-                ? i18n("Icon size is adapted for the current panel thickness to avoid visual overflow.")
-                : i18n("Floating mode uses a freer icon size because it is not constrained by panel thickness.")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
+            Controls.ComboBox {
+                id: panelLengthModeCombo
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                textRole: "text"
+                valueRole: "value"
+                model: page.panelLengthOptions
+                currentIndex: Math.max(0, indexOfValue(page.cfg_panelLengthMode))
+                onActivated: page.cfg_panelLengthMode = currentValue
+
+                ConfigCursorBehavior {
+                    active: page.interactiveCursorEnabled
+                }
+            }
         }
 
         // Control del Tamaño de Iconos
         RowLayout {
             Kirigami.FormData.label: page.inPanel ? i18n("Panel icon size:") : i18n("Floating icon size:")
+            Layout.maximumWidth: page.contentWidthHint
             
             Controls.Slider {
                 id: iconSizeSlider
@@ -128,6 +170,7 @@ KCM.SimpleKCM {
                 to: page.inPanel ? page.safePanelIconSizeMax : 96
                 stepSize: 2
                 Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 60
 
                 ConfigCursorBehavior {
                     active: page.interactiveCursorEnabled
@@ -145,6 +188,7 @@ KCM.SimpleKCM {
         Kirigami.InlineMessage {
             Kirigami.FormData.label: page.inPanel ? i18n("Limit:") : ""
             Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
             visible: page.inPanel
             type: Kirigami.MessageType.Information
             text: page.detectedPanelThickness > 0
@@ -155,6 +199,7 @@ KCM.SimpleKCM {
         // Control del Escala del Zoom de Ola
         RowLayout {
             Kirigami.FormData.label: i18n("Hover zoom scale:")
+            Layout.maximumWidth: page.contentWidthHint
             
             Controls.Slider {
                 id: hoverScaleSlider
@@ -162,6 +207,7 @@ KCM.SimpleKCM {
                 to: 2.0
                 stepSize: 0.05
                 Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 60
 
                 ConfigCursorBehavior {
                     active: page.interactiveCursorEnabled
@@ -179,9 +225,12 @@ KCM.SimpleKCM {
         // Control de Visibilidad en Escritorios Virtuales
         RowLayout {
             Kirigami.FormData.label: i18n("Desktop visibility:")
+            Layout.maximumWidth: page.contentWidthHint
             
             Controls.ComboBox {
                 id: desktopModeCombo
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
                 textRole: "text"
                 valueRole: "value"
                 model: [
@@ -208,9 +257,12 @@ KCM.SimpleKCM {
         RowLayout {
             Kirigami.FormData.label: i18n("Target desktop:")
             visible: page.cfg_virtualDesktopMode === "single"
+            Layout.maximumWidth: page.contentWidthHint
             
             Controls.ComboBox {
                 id: desktopCombo
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
                 textRole: "name"
                 valueRole: "id"
                 model: page.virtualDesktopModel
@@ -235,6 +287,7 @@ KCM.SimpleKCM {
         Kirigami.InlineMessage {
             Kirigami.FormData.isSection: true
             Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
             visible: page.cfg_virtualDesktopMode === "single"
                 && (page.virtualDesktopModel.length === 0 || !page.targetVirtualDesktopAvailable)
             type: Kirigami.MessageType.Warning

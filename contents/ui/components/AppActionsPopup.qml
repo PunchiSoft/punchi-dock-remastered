@@ -11,6 +11,7 @@ Item {
     property string itemName: ""
     property var actions: []
     property int maxVisibleRows: 6
+    property bool embedded: false
     readonly property int rowHeight: 40
     readonly property int visibleRows: Math.max(1, Math.min(maxVisibleRows, actions.length > 0 ? actions.length : 1))
 
@@ -46,9 +47,11 @@ Item {
                     ? Kirigami.Theme.negativeTextColor
                     : Kirigami.Theme.backgroundColor
 
-                PlasmaComponents.Label {
+                Kirigami.Icon {
                     anchors.centerIn: parent
-                    text: "×"
+                    width: 14
+                    height: 14
+                    source: appActionsRoot.embedded ? "go-previous" : "window-close"
                     color: Kirigami.Theme.textColor
                 }
 
@@ -58,7 +61,9 @@ Item {
                     hoverEnabled: true
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
-                    Accessible.name: i18n("Close")
+                    Accessible.name: appActionsRoot.embedded
+                        ? i18n("Back to window previews")
+                        : i18n("Close")
                     onClicked: appActionsRoot.closeRequested()
                 }
             }
