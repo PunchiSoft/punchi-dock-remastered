@@ -1,0 +1,245 @@
+import QtQuick
+import QtQuick.Effects as Effects
+import QtQuick.Layouts
+import org.kde.plasma.components as PlasmaComponents
+import org.kde.kirigami as Kirigami
+
+// Plasma provides the translation functions in the applet context.
+// qmllint disable unqualified
+Item {
+    id: root
+
+    property var controller: null
+    property string fallbackIcon: "emblem-music-symbolic"
+    property bool compact: false
+    readonly property bool available: !!controller && controller.available
+    readonly property string artUrl: controller && controller.artUrl
+        ? String(controller.artUrl)
+        : ""
+    readonly property bool ambientMode: !compact
+        && ambientSource.status === Image.Ready
+        && artUrl.length > 0
+    readonly property real preferredExpandedHeight: artUrl.length > 0 ? 120 : 88
+    readonly property string title: controller && controller.track
+        ? controller.track
+        : controller && controller.identity
+            ? controller.identity
+            : i18n("Media playback")
+    readonly property string subtitle: controller && controller.artist
+        ? controller.artist
+        : controller && controller.identity && controller.identity !== title
+            ? controller.identity
+            : i18n("MPRIS controls")
+    readonly property real cornerRadius: 12
+
+    implicitHeight: compact ? 56 : (ambientMode ? 120 : 88)
+    visible: available
+    Accessible.role: Accessible.Grouping
+    Accessible.name: i18nc("@info:accessible", "Media controls for %1", title)
+
+    Rectangle {
+        anchors.fill: parent
+        radius: root.cornerRadius
+        color: Kirigami.Theme.alternateBackgroundColor
+        border.width: 1
+        border.color: Kirigami.Theme.disabledTextColor
+    }
+
+    Image {
+        id: ambientSource
+        anchors.fill: parent
+        source: root.artUrl
+        fillMode: Image.PreserveAspectCrop
+        asynchronous: true
+        cache: true
+        visible: false
+        layer.enabled: true
+    }
+
+    Item {
+        id: ambientMask
+        anchors.fill: parent
+        visible: false
+        layer.enabled: true
+
+        Rectangle {
+            anchors.fill: parent
+            radius: root.cornerRadius
+            color: "black"
+        }
+    }
+
+    Effects.MultiEffect {
+        anchors.fill: parent
+        source: ambientSource
+        maskEnabled: true
+        maskSource: ambientMask
+        opacity: root.ambientMode ? 1 : 0
+        visible: opacity > 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: Kirigami.Units.longDuration
+                easing.type: Easing.OutCubic
+            }
+        }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        radius: root.cornerRadius
+        visible: root.ambientMode
+        gradient: Gradient {
+            GradientStop {
+                position: 0
+                color: Qt.rgba(0, 0, 0, 0.08)
+            }
+            GradientStop {
+                position: 0.5
+                color: Qt.rgba(0, 0, 0, 0.3)
+            }
+            GradientStop {
+                position: 1
+                color: Qt.rgba(0, 0, 0, 0.9)
+            }
+        }
+    }
+
+    RowLayout {
+        anchors.fill: parent
+        anchors.margins: Kirigami.Units.smallSpacing
+        spacing: Kirigami.Units.smallSpacing
+        opacity: root.ambientMode ? 0 : 1
+        visible: opacity > 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: Kirigami.Units.shortDuration
+            }
+        }
+
+        Item {
+            Layout.preferredWidth: root.compact ? 40 : 64
+            Layout.preferredHeight: root.compact ? 40 : 64
+
+            Rectangle {
+                anchors.fill: parent
+                radius: 8
+                color: Kirigami.Theme.backgroundColor
+                clip: true
+
+                Image {
+                    id: coverImage
+                    anchors.fill: parent
+                    source: root.artUrl
+                    fillMode: Image.PreserveAspectCrop
+                    asynchronous: true
+                    cache: true
+                }
+
+                Kirigami.Icon {
+                    anchors.centerIn: parent
+                    width: 36
+                    height: 36
+                    source: root.fallbackIcon.length > 0 ? root.fallbackIcon : "emblem-music-symbolic"
+                    visible: coverImage.status !== Image.Ready
+                }
+            }
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            spacing: 0
+
+            PlasmaComponents.Label {
+                Layout.fillWidth: true
+                text: root.title
+                font.weight: Font.DemiBold
+                elide: Text.ElideRight
+                maximumLineCount: 1
+            }
+
+            PlasmaComponents.Label {
+                Layout.fillWidth: true
+                text: root.subtitle
+                opacity: 0.72
+                elide: Text.ElideRight
+                maximumLineCount: 1
+                visible: !root.compact
+            }
+
+            Item {
+                Layout.fillHeight: true
+            }
+
+            MediaTransportControls {
+                Layout.fillWidth: true
+                controller: root.controller
+            }
+        }
+    }
+
+    Item {
+        anchors.fill: parent
+        opacity: root.ambientMode ? 1 : 0
+        visible: opacity > 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: Kirigami.Units.longDuration
+                easing.type: Easing.OutCubic
+            }
+        }
+
+        ColumnLayout {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: ambientControls.top
+            anchors.leftMargin: 14
+            anchors.rightMargin: 14
+            anchors.bottomMargin: 4
+            spacing: 1
+
+            PlasmaComponents.Label {
+                Layout.fillWidth: true
+                text: root.title
+                color: "white"
+                font.weight: Font.Bold
+                elide: Text.ElideRight
+                maximumLineCount: 1
+            }
+
+            PlasmaComponents.Label {
+                Layout.fillWidth: true
+                text: root.subtitle
+                color: Qt.rgba(1, 1, 1, 0.78)
+                elide: Text.ElideRight
+                maximumLineCount: 1
+            }
+        }
+
+        MediaTransportControls {
+            id: ambientControls
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 10
+            anchors.rightMargin: 10
+            anchors.bottomMargin: 4
+            controller: root.controller
+            lightAppearance: true
+        }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        radius: root.cornerRadius
+        color: "transparent"
+        border.width: 1
+        border.color: root.ambientMode
+            ? Qt.rgba(1, 1, 1, 0.16)
+            : Kirigami.Theme.disabledTextColor
+    }
+}
+// qmllint enable unqualified

@@ -421,6 +421,159 @@ Item {
         }
     }
 
+    // qmllint disable unqualified
+    function contextActionsForRows(taskRows) {
+        const sourceRows = taskRows instanceof Array ? taskRows : []
+        const rows = []
+        for (let index = 0; index < sourceRows.length; index++) {
+            const row = Number(sourceRows[index])
+            if (tasksModel.index(row, 0).valid) {
+                rows.push(row)
+            }
+        }
+        if (rows.length === 0) {
+            return []
+        }
+
+        let preferredRow = rows[0]
+        for (let index = 0; index < rows.length; index++) {
+            if (isTaskRowActive(rows[index])) {
+                preferredRow = rows[index]
+                break
+            }
+        }
+
+        const taskIndex = tasksModel.index(preferredRow, 0)
+        const actions = []
+        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.CanLaunchNewInstance)) {
+            actions.push({
+                "kind": "taskAction",
+                "operation": "newInstance",
+                "name": i18n("New window"),
+                "icon": "window-new",
+                "taskRow": preferredRow,
+                "enabled": true
+            })
+        }
+
+        if (rows.length > 1) {
+            let closableCount = 0
+            for (let index = 0; index < rows.length; index++) {
+                const rowIndex = tasksModel.index(rows[index], 0)
+                if (rowIndex.valid && tasksModel.data(rowIndex, TaskManager.AbstractTasksModel.IsClosable)) {
+                    closableCount++
+                }
+            }
+            if (closableCount > 0) {
+                actions.push({
+                    "kind": "taskAction",
+                    "operation": "closeAll",
+                    "name": i18np("Close %1 window", "Close all %1 windows", closableCount),
+                    "icon": "window-close",
+                    "taskRows": rows,
+                    "enabled": true,
+                    "destructive": true
+                })
+            }
+            return actions
+        }
+
+        const minimized = !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimized)
+        const maximized = !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMaximized)
+        const keepAbove = !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsKeepAbove)
+        const fullScreen = !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsFullScreen)
+
+        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimizable)) {
+            actions.push({
+                "kind": "taskAction",
+                "operation": "toggleMinimized",
+                "name": minimized ? i18n("Restore") : i18n("Minimize"),
+                "icon": minimized ? "window-restore" : "window-minimize",
+                "taskRow": preferredRow,
+                "enabled": true
+            })
+        }
+        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMaximizable)) {
+            actions.push({
+                "kind": "taskAction",
+                "operation": "toggleMaximized",
+                "name": maximized ? i18n("Restore from maximized") : i18n("Maximize"),
+                "icon": maximized ? "window-restore" : "window-maximize",
+                "taskRow": preferredRow,
+                "enabled": true
+            })
+        }
+        actions.push({
+            "kind": "taskAction",
+            "operation": "toggleKeepAbove",
+            "name": keepAbove ? i18n("Do not keep above") : i18n("Keep above"),
+            "icon": "window-keep-above",
+            "taskRow": preferredRow,
+            "enabled": true,
+            "checked": keepAbove
+        })
+        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsFullScreenable)) {
+            actions.push({
+                "kind": "taskAction",
+                "operation": "toggleFullScreen",
+                "name": fullScreen ? i18n("Exit full screen") : i18n("Full screen"),
+                "icon": fullScreen ? "view-restore" : "view-fullscreen",
+                "taskRow": preferredRow,
+                "enabled": true,
+                "checked": fullScreen
+            })
+        }
+        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsClosable)) {
+            actions.push({
+                "kind": "taskAction",
+                "operation": "close",
+                "name": i18n("Close"),
+                "icon": "window-close",
+                "taskRow": preferredRow,
+                "enabled": true,
+                "destructive": true
+            })
+        }
+        return actions
+    }
+    // qmllint enable unqualified
+
+    function triggerContextAction(action) {
+        if (!action || action.kind !== "taskAction") {
+            return false
+        }
+
+        const operation = String(action.operation || "")
+        const row = Number(action.taskRow)
+        const taskIndex = tasksModel.index(row, 0)
+        if (operation === "closeAll") {
+            const rows = action.taskRows instanceof Array ? action.taskRows.slice() : []
+            for (let index = 0; index < rows.length; index++) {
+                closeTaskRow(Number(rows[index]))
+            }
+            return rows.length > 0
+        }
+        if (!taskIndex.valid) {
+            return false
+        }
+        if (operation === "newInstance") {
+            tasksModel.requestNewInstance(taskIndex)
+        } else if (operation === "toggleMinimized") {
+            minimizeTaskRow(row)
+        } else if (operation === "toggleMaximized") {
+            toggleMaximizedTaskRow(row)
+        } else if (operation === "toggleKeepAbove") {
+            tasksModel.requestToggleKeepAbove(taskIndex)
+        } else if (operation === "toggleFullScreen") {
+            tasksModel.requestToggleFullScreen(taskIndex)
+        } else if (operation === "close") {
+            return closeTaskRow(row)
+        } else {
+            return false
+        }
+        return true
+    }
+
     function activateTaskRow(row) {
         const taskIndex = tasksModel.index(row, 0)
         if (!taskIndex.valid) {

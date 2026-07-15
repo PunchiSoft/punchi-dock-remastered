@@ -57,14 +57,3 @@ function saveItemsScript(configDirectory, configFile, formattedJson) {
         + " > " + shellQuote(configFile)
         + " && cat " + shellQuote(configFile)
 }
-
-function trashSoundPreviewScript(configuredSound, fallbackSound, applicationName) {
-    return "sound_file=" + shellQuote(configuredSound) + "; "
-        + "if [ ! -f \"$sound_file\" ]; then sound_file=" + shellQuote(fallbackSound) + "; fi; "
-        + "if command -v paplay >/dev/null 2>&1 && [ -f \"$sound_file\" ] "
-        + "&& paplay \"$sound_file\" >/dev/null 2>&1; then :; "
-        + "elif command -v pw-play >/dev/null 2>&1 && [ -f \"$sound_file\" ] "
-        + "&& pw-play \"$sound_file\" >/dev/null 2>&1; then :; "
-        + "elif command -v canberra-gtk-play >/dev/null 2>&1; then "
-        + "canberra-gtk-play -i trash-empty -d " + shellQuote(applicationName) + " >/dev/null 2>&1; fi"
-}

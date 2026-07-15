@@ -7,6 +7,7 @@
 #include <KIO/OpenUrlJob>
 #include <KIO/UDSEntry>
 #include <KService>
+#include <KServiceAction>
 
 #include <QDir>
 #include <QFileInfo>
@@ -350,6 +351,33 @@ QString SystemDiscovery::applicationIdForCommand(const QString &command) const
     return service ? normalizedApplicationId(service->storageId()) : QString{};
 }
 
+QVariantList SystemDiscovery::applicationActions(const QString &applicationId) const
+{
+    QVariantList result;
+    const KService::Ptr service = findApplicationService(applicationId);
+    if (!service) {
+        return result;
+    }
+
+    const QList<KServiceAction> actions = service->actions();
+    result.reserve(actions.size());
+    for (const KServiceAction &action : actions) {
+        if (action.noDisplay() || action.isSeparator() || action.name().isEmpty() || action.text().isEmpty()) {
+            continue;
+        }
+
+        result.append(QVariantMap{
+            {QStringLiteral("kind"), QStringLiteral("desktopAction")},
+            {QStringLiteral("name"), action.text()},
+            {QStringLiteral("icon"), action.icon().isEmpty() ? QStringLiteral("system-run") : action.icon()},
+            {QStringLiteral("applicationId"), normalizedApplicationId(service->storageId())},
+            {QStringLiteral("actionId"), action.name()},
+            {QStringLiteral("enabled"), true},
+        });
+    }
+    return result;
+}
+
 void SystemDiscovery::launchApplication(const QString &storageId)
 {
     const KService::Ptr service = KService::serviceByStorageId(storageId);
@@ -366,6 +394,34 @@ void SystemDiscovery::launchApplication(const QString &storageId)
         }
     });
     job->start();
+}
+
+bool SystemDiscovery::launchApplicationAction(const QString &applicationId, const QString &actionId)
+{
+    const KService::Ptr service = findApplicationService(applicationId);
+    if (!service || actionId.trimmed().isEmpty()) {
+        return false;
+    }
+
+    const QList<KServiceAction> actions = service->actions();
+    for (const KServiceAction &action : actions) {
+        if (action.noDisplay() || action.isSeparator() || action.name() != actionId) {
+            continue;
+        }
+
+        auto *job = new KIO::ApplicationLauncherJob(action, this);
+        job->setUiDelegate(nullptr);
+        connect(job, &KJob::result, this, [this, job]() {
+            if (job->error()) {
+                Q_EMIT operationFailed(QStringLiteral("launchAction"), job->errorString());
+            }
+        });
+        job->start();
+        return true;
+    }
+
+    Q_EMIT operationFailed(QStringLiteral("launchAction"), tr("The application action could not be found."));
+    return false;
 }
 
 bool SystemDiscovery::launchApplicationByCommand(const QString &command)

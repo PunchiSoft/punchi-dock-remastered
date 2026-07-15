@@ -3,10 +3,12 @@
 #include "dockruntimeservice.h"
 
 #include <QDir>
+#include <QFileInfo>
 #include <QProcess>
 #include <QRegularExpression>
 #include <QSaveFile>
 #include <QStandardPaths>
+#include <QUrl>
 
 namespace
 {
@@ -78,4 +80,34 @@ bool DockRuntimeService::launchCommand(const QString &command)
     }
 
     return true;
+}
+
+bool DockRuntimeService::playSound(const QString &soundPath, const QString &eventId)
+{
+    QString localPath = soundPath.trimmed();
+    const QUrl soundUrl(localPath);
+    if (soundUrl.isLocalFile()) {
+        localPath = soundUrl.toLocalFile();
+    }
+
+    if (!localPath.isEmpty() && QFileInfo::exists(localPath)) {
+        const QStringList players = {QStringLiteral("paplay"), QStringLiteral("pw-play")};
+        for (const QString &player : players) {
+            const QString executable = QStandardPaths::findExecutable(player);
+            if (!executable.isEmpty() && QProcess::startDetached(executable, {localPath})) {
+                return true;
+            }
+        }
+    }
+
+    const QString normalizedEventId = eventId.trimmed();
+    const QString canberraExecutable = QStandardPaths::findExecutable(QStringLiteral("canberra-gtk-play"));
+    if (!normalizedEventId.isEmpty() && !canberraExecutable.isEmpty()
+        && QProcess::startDetached(canberraExecutable,
+            {QStringLiteral("-i"), normalizedEventId, QStringLiteral("-d"), QStringLiteral("Punchi Dock")})) {
+        return true;
+    }
+
+    Q_EMIT operationFailed(QStringLiteral("playSound"), tr("No sound player or usable sound was found."));
+    return false;
 }

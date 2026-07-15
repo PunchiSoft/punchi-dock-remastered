@@ -12,14 +12,19 @@ Este repositorio es una reescritura modular del proyecto original [Punchi Dock P
 - Lanzadores fijados y entradas dinámicas de tareas opcionales.
 - Tarjetas de ventanas, miniaturas vivas y controles para ventanas agrupadas.
 - Carpetas configurables, notas rápidas, papelera, separadores y calendario.
-- Popups adaptados al tema de Plasma y una interfaz de configuración compacta.
-- Integración QML nativa en C++ para descubrir aplicaciones, servicios de ejecución y operaciones de papelera.
+- Visualizador de audio PipeWire opcional con seis estilos, colores dinámicos o del tema Plasma y hasta 48 elementos visuales.
+- Popups adaptados al tema de Plasma con animaciones de apertura configurables y transiciones fluidas entre miniaturas y menús.
+- Acciones nativas de aplicacion y ventana en los menus contextuales de launchers fijados y tareas dinamicas.
+- Tarjetas multimedia MPRIS contextuales con caratula, informacion de pista y controles de reproduccion.
+- Operaciones asíncronas de papelera con actividad, progreso, sonido de finalización y notificaciones temáticas de KDE.
+- Integración QML nativa en C++ para descubrir aplicaciones, servicios de ejecución, análisis de audio y operaciones de papelera.
 
 ## Requisitos
 
 - Fedora 44 o posterior en `x86_64` es el objetivo actual de publicación.
 - KDE Plasma 6 o posterior.
 - Wayland es la sesión principal soportada.
+- PipeWire es necesario para el visualizador de audio opcional.
 - Los binarios nativos incluidos en el paquete `.plasmoid` se compilan y validan actualmente para Fedora 44+ `x86_64`; no son binarios universales para todas las distribuciones con Plasma.
 
 ## Instalar un paquete publicado
@@ -51,14 +56,15 @@ Instala las dependencias de compilación:
 
 ```bash
 sudo dnf install \
-    cmake gcc-c++ ninja-build extra-cmake-modules \
+    binutils cmake gcc-c++ ninja-build extra-cmake-modules \
     qt6-qtdeclarative-devel \
-    kf6-kcoreaddons-devel kf6-kio-devel kf6-kservice-devel \
+    kf6-kcoreaddons-devel kf6-kio-devel kf6-kjobwidgets-devel \
+    kf6-kservice-devel libplasma-devel \
     pipewire-devel \
     zip unzip
 ```
 
-Compila el módulo nativo y crea el paquete:
+Compila el módulo nativo y crea un paquete `Release` sin símbolos de desarrollo:
 
 ```bash
 scripts/empaquetar-plasmoid.sh
@@ -70,11 +76,23 @@ El paquete resultante se genera en:
 dist/punchi-dock-remastered.plasmoid
 ```
 
+Define `PACKAGE_BUILD_TYPE` o `STRIP_BIN` solo cuando un flujo de desarrollo o compilación cruzada necesite reemplazarlos explícitamente.
+
 Para compilar, instalar y reiniciar Plasma durante una prueba local de desarrollo:
 
 ```bash
 scripts/probar-plasmoid.sh
 ```
+
+Este script ejecuta las comprobaciones de empaquetado y CTest, actualiza el plasmoide local, reinicia Plasma Shell y escribe diagnósticos de inicio filtrados en `debug.log`. Como reinicia el shell del escritorio, úsalo después de un cambio coherente y no tras guardar cada archivo.
+
+Antes de publicar una versión, reproduce el paquete desde un árbol fuente temporal limpio:
+
+```bash
+scripts/validar-empaquetado-limpio.sh
+```
+
+Para iteración visual rápida, `scripts/watch-plasmoidviewer.sh` puede reconstruir y reabrir `plasmoidviewer` al detectar cambios. No sustituye la prueba final dentro del panel o dock real de Plasma.
 
 ## Estructura del proyecto
 

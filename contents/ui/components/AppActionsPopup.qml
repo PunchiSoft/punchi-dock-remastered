@@ -83,13 +83,18 @@ Item {
                 boundsBehavior: Flickable.StopAtBounds
 
                 delegate: Controls.ItemDelegate {
+                    id: actionDelegate
                     required property var modelData
 
                     width: actionList.width
                     height: appActionsRoot.rowHeight
                     text: modelData && modelData.name ? modelData.name : i18n("Custom action")
                     icon.name: modelData && modelData.icon ? modelData.icon : "system-run"
-                    enabled: !!(modelData && String(modelData.command || "").length > 0)
+                    enabled: !!modelData && modelData.enabled !== false
+                        && (String(modelData.kind || "").length > 0
+                            || String(modelData.command || "").length > 0)
+                    checkable: !!modelData && modelData.checked !== undefined
+                    checked: checkable && !!modelData.checked
 
                     onClicked: {
                         if (enabled) {
@@ -102,9 +107,10 @@ Item {
                         anchors.rightMargin: Kirigami.Units.largeSpacing
                         anchors.verticalCenter: parent.verticalCenter
                         width: parent.width * 0.42
-                        text: parent.enabled && modelData && modelData.command
-                            ? modelData.command
-                            : i18n("No command")
+                        visible: text.length > 0
+                        text: actionDelegate.modelData && actionDelegate.modelData.detail
+                            ? String(actionDelegate.modelData.detail)
+                            : ""
                         elide: Text.ElideRight
                         opacity: 0.68
                         horizontalAlignment: Text.AlignRight

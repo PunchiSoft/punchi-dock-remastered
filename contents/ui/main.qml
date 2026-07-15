@@ -22,6 +22,7 @@ PlasmoidItem {
     // Detector de entorno (Panel vs Flotante)
     property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     property bool trashHasItems: false
+    property string activeTrashEmptySound: ""
     readonly property var visibleTaskRows: taskController.visibleTaskRows
     readonly property var overflowTaskRows: taskController.overflowTaskRows
     readonly property int taskVisualRevision: taskController.visualRevision
@@ -49,6 +50,9 @@ PlasmoidItem {
         onOperationFailed: function(operation, message) {
             console.warn("Punchi Dock:", operation, message)
         }
+    }
+    Punchi.MprisController {
+        id: mprisController
     }
     Punchi.ThemeIntegration {
         id: themeIntegration
@@ -249,9 +253,11 @@ PlasmoidItem {
             root.updateTrashState(hasItems)
         }
         onOperationSucceeded: function(operation) {
-            if (operation === "emptyTrash" && trashMenuDialog.visible
-                    && trashContextContent.confirmationVisible) {
-                trashSuccessCloseTimer.restart()
+            if (operation === "emptyTrash") {
+                runtimeService.playSound(root.activeTrashEmptySound, "trash-empty")
+                if (trashMenuDialog.visible && trashContextContent.confirmationVisible) {
+                    trashSuccessCloseTimer.restart()
+                }
             }
         }
         // qmllint enable unqualified
@@ -348,19 +354,86 @@ PlasmoidItem {
         root.trashHasItems = hasItems
     }
 
-    function itemContextActions(item) {
-        if (!item || (item.type || "app") !== "app" || item.actionsEnabled === false) {
-            return []
+    function applicationIdentityForItem(item) {
+        if (!item) {
+            return ""
         }
-        return item.actions instanceof Array
-            ? item.actions.filter(function(action) {
-                return action && String(action.command || "").trim().length > 0
-            })
-            : []
+        if (String(item.storageId || "").trim().length > 0) {
+            return String(item.storageId)
+        }
+        if (String(item.appId || "").trim().length > 0) {
+            return String(item.appId)
+        }
+        return String(systemDiscovery.applicationIdForCommand(item.command || "") || "")
     }
 
-    function itemHasContextMenu(item) {
-        return itemContextActions(item).length > 0
+    function appendUniqueContextActions(target, source, seenNames) {
+        const candidates = source instanceof Array ? source : []
+        for (let index = 0; index < candidates.length; index++) {
+            const action = candidates[index]
+            const name = String(action && action.name ? action.name : "").trim()
+            const key = name.toLocaleLowerCase()
+            if (name.length === 0 || seenNames[key]) {
+                continue
+            }
+            seenNames[key] = true
+            target.push(action)
+        }
+    }
+
+    function itemContextActions(item, taskRows) {
+        if (!item || (item.type || "app") !== "app") {
+            return []
+        }
+
+        const actions = []
+        const seenNames = {}
+        const applicationId = applicationIdentityForItem(item)
+        if (applicationId.length > 0) {
+            appendUniqueContextActions(actions, systemDiscovery.applicationActions(applicationId), seenNames)
+        }
+
+        if (item.actionsEnabled !== false && item.actions instanceof Array) {
+            const customActions = item.actions.filter(function(action) {
+                return action && String(action.command || "").trim().length > 0
+            }).map(function(action) {
+                return Object.assign({}, action, {
+                    "kind": "customCommand",
+                    "enabled": true,
+                    "detail": String(action.command || "")
+                })
+            })
+            appendUniqueContextActions(actions, customActions, seenNames)
+        }
+
+        appendUniqueContextActions(actions, taskController.contextActionsForRows(taskRows || []), seenNames)
+        return actions
+    }
+
+    function itemHasContextMenu(item, taskRows) {
+        if (!item || (item.type || "app") !== "app") {
+            return false
+        }
+        return String(item.storageId || item.appId || item.command || "").trim().length > 0
+            || (item.actions instanceof Array && item.actions.length > 0)
+            || (taskRows instanceof Array && taskRows.length > 0)
+    }
+
+    function triggerContextAction(action) {
+        if (!action || action.enabled === false) {
+            return false
+        }
+        if (action.kind === "desktopAction") {
+            return systemDiscovery.launchApplicationAction(action.applicationId || "", action.actionId || "")
+        }
+        if (action.kind === "taskAction") {
+            return taskController.triggerContextAction(action)
+        }
+        if (String(action.command || "").trim().length > 0) {
+            root.runCommand(action.command)
+            return true
+        }
+        return false
     }
 
     function syncDockItemsConfiguration() {
@@ -600,8 +673,12 @@ PlasmoidItem {
             }
         }
 
-        function openTrashMenu(visualParent) {
+        // qmllint disable unqualified
+        function openTrashMenu(itemData, visualParent) {
             mainContainer.closeAllPopups(trashMenuDialog)
+            root.activeTrashEmptySound = itemData && itemData.emptySound
+                ? String(itemData.emptySound)
+                : ""
             trashMenuDialog.visualParent = mainContainer.popupAnchor(visualParent)
             if (trashIntegration.emptying) {
                 trashContextContent.showConfirmation()
@@ -611,15 +688,22 @@ PlasmoidItem {
             }
             trashMenuDialog.visible = !trashMenuDialog.visible
         }
+        // qmllint enable unqualified
 
-        function openAppContextMenu(itemData, visualParent) {
-            var actions = root.itemContextActions(itemData)
+        // qmllint disable unqualified
+        function openAppContextMenu(itemData, visualParent, taskRows) {
+            const rows = taskRows instanceof Array
+                ? taskRows
+                : taskController.taskStateForDockItem(itemData).rows
+            mprisController.applicationId = root.applicationIdentityForItem(itemData)
+            var actions = root.itemContextActions(itemData, rows)
             if (actions.length === 0) {
                 return
             }
 
             root.activeAppContextMenuData = {
                 "name": itemData && itemData.name ? itemData.name : "",
+                "icon": itemData && itemData.icon ? itemData.icon : "emblem-music-symbolic",
                 "actions": actions,
                 "maxVisibleRows": Math.max(1, Math.min(12,
                     Number(itemData && itemData.actionPopupMaxVisibleRows ? itemData.actionPopupMaxVisibleRows : 6)))
@@ -642,6 +726,7 @@ PlasmoidItem {
                 })
             })
         }
+        // qmllint enable unqualified
 
         function openFolderPopup(itemData, itemIndex, visualParent) {
             mainContainer.closeAllPopups(folderPopupDialog)
@@ -892,7 +977,7 @@ PlasmoidItem {
                         preferTaskPopupOnHover: root.windowPreviewStyle !== "none" && taskState.count > 1
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && root.taskPopupVisualParent === dockItemDelegate)
-                        supportsContextMenu: root.itemHasContextMenu(modelData)
+                        supportsContextMenu: root.itemHasContextMenu(modelData, taskState.rows)
                         
                         onItemClicked: function(cmd) {
                             if (modelData.type === "folder") {
@@ -908,9 +993,9 @@ PlasmoidItem {
                         }
                         onContextMenuRequested: function(visualParent) {
                             if (modelData.type === "trash") {
-                                mainContainer.openTrashMenu(visualParent)
-                            } else if (root.itemHasContextMenu(modelData)) {
-                                mainContainer.openAppContextMenu(modelData, visualParent)
+                                mainContainer.openTrashMenu(modelData, visualParent)
+                            } else if (root.itemHasContextMenu(modelData, taskState.rows)) {
+                                mainContainer.openAppContextMenu(modelData, visualParent, taskState.rows)
                             }
                         }
                         onHoverEntered: function(visualParent) {
@@ -967,6 +1052,7 @@ PlasmoidItem {
                         preferTaskPopupOnHover: root.windowPreviewStyle !== "none" && taskData.count > 1
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && root.taskPopupVisualParent === taskDockItemDelegate)
+                        supportsContextMenu: root.itemHasContextMenu(modelData, taskData.rows)
 
                         onItemClicked: function() {
                             mainContainer.closeAllPopups(null)
@@ -975,6 +1061,9 @@ PlasmoidItem {
                             } else if (taskData.firstRow >= 0) {
                                 taskController.activateTaskRow(taskData.firstRow)
                             }
+                        }
+                        onContextMenuRequested: function(visualParent) {
+                            mainContainer.openAppContextMenu(modelData, visualParent, taskData.rows)
                         }
                         onHoverEntered: function(visualParent) {
                             if (root.windowPreviewStyle !== "none" && taskData.count > 0) {
@@ -1071,7 +1160,7 @@ PlasmoidItem {
             visible: false
             hideOnWindowDeactivate: true
             // El calendario siempre utiliza el fondo nativo del tema de KDE (Kickoff)
-            backgroundHints: PlasmaCore.Types.StandardBackground
+            backgroundHints: PlasmaCore.Types.NoBackground
 
             mainItem: PopupAnimatedContent {
                 popupVisible: calendarPopupDialog.visible
@@ -1157,7 +1246,7 @@ PlasmoidItem {
                 : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
             hideOnWindowDeactivate: !mainContainer.contextMenuOpening
-            backgroundHints: PlasmaCore.Types.StandardBackground
+            backgroundHints: PlasmaCore.Types.NoBackground
 
             mainItem: PopupAnimatedContent {
                 popupVisible: appActionsDialog.visible
@@ -1168,20 +1257,25 @@ PlasmoidItem {
                 popupDirection: root.popupDirection
                 // qmllint enable unqualified
 
-                AppActionsPopup {
-                    id: appActionsContent
-                    itemName: root.activeAppContextMenuData.name || ""
-                    actions: root.activeAppContextMenuData.actions || []
-                    maxVisibleRows: root.activeAppContextMenuData.maxVisibleRows || 6
+                ContextSurfaceStack {
+                    id: appActionsSurfaceStack
+                    mediaController: mprisController
+                    mediaIcon: root.activeAppContextMenuData.icon || "emblem-music-symbolic"
+                    maximumAvailableHeight: root.taskPopupAvailableHeight
 
-                    onActionTriggered: function(action) {
-                        appActionsDialog.visible = false
-                        if (action && String(action.command || "").trim().length > 0) {
-                            root.runCommand(action.command)
+                    AppActionsPopup {
+                        id: appActionsContent
+                        itemName: root.activeAppContextMenuData.name || ""
+                        actions: root.activeAppContextMenuData.actions || []
+                        maxVisibleRows: root.activeAppContextMenuData.maxVisibleRows || 6
+
+                        onActionTriggered: function(action) {
+                            appActionsDialog.visible = false
+                            root.triggerContextAction(action)
                         }
-                    }
-                    onCloseRequested: {
-                        appActionsDialog.visible = false
+                        onCloseRequested: {
+                            appActionsDialog.visible = false
+                        }
                     }
                 }
             }
@@ -1237,7 +1331,7 @@ PlasmoidItem {
                 : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
             hideOnWindowDeactivate: false
-            backgroundHints: PlasmaCore.Types.StandardBackground
+            backgroundHints: PlasmaCore.Types.NoBackground
             onVisibleChanged: {
                 if (!visible) {
                     taskWindowsPopupContent.showPreviews()
@@ -1258,30 +1352,17 @@ PlasmoidItem {
                 popupDirection: root.popupDirection
                 // qmllint enable unqualified
 
-                TaskContextPopup {
-                    id: taskWindowsPopupContent
-                    appName: root.activeTaskPopupData.name || ""
-                    windows: root.activeTaskPopupData.windows || []
-                    previewStyle: root.windowPreviewStyle
-                    previewScale: root.windowPreviewScale
-                    automaticPopupRadius: root.taskPopupRadiusAuto
-                    popupRadius: root.taskPopupRadius
-                    popupDirection: root.popupDirection
-                    inPanel: root.inPanel
-                    maxVisibleRows: root.maxPopupRows
+                ContextSurfaceStack {
+                    id: taskContextSurfaceStack
+                    mediaController: mprisController
+                    mediaIcon: root.activeAppContextMenuData.icon || "emblem-music-symbolic"
+                    showMedia: taskWindowsPopupContent.actionsVisible
                     maximumAvailableHeight: root.taskPopupAvailableHeight
-                    actionItemName: root.activeAppContextMenuData.name || ""
-                    actions: root.activeAppContextMenuData.actions || []
-                    maxVisibleActionRows: root.activeAppContextMenuData.maxVisibleRows || 6
-                    // qmllint disable unqualified
-                    transitionSpeedPercent: root.contextMenuTransitionSpeed
-                    // qmllint enable unqualified
                     onImplicitHeightChanged: {
                         if (taskWindowsDialog.visible) {
                             Qt.callLater(mainContainer.reanchorTaskWindowsPopup)
                         }
                     }
-
                     onContainsMouseChanged: {
                         root.taskPopupHovered = containsMouse
                         if (containsMouse) {
@@ -1291,31 +1372,49 @@ PlasmoidItem {
                         }
                     }
 
-                    onActivateRequested: function(taskRow) {
-                        taskWindowsDialog.visible = false
-                        taskController.activateTaskRow(taskRow)
-                    }
-                    onPresentWindowRequested: function(taskRow) {
-                        taskController.requestWindowPresentation(taskRow)
-                    }
-                    onMinimizeWindowRequested: function(taskRow) {
-                        taskController.minimizeTaskRow(taskRow)
-                    }
-                    onMaximizeWindowRequested: function(taskRow) {
-                        taskController.toggleMaximizedTaskRow(taskRow)
-                    }
-                    onCloseWindowRequested: function(taskRow) {
-                        if (taskController.closeTaskRow(taskRow)) {
-                            mainContainer.removeTaskPopupWindow(taskRow)
+                    TaskContextPopup {
+                        id: taskWindowsPopupContent
+                        appName: root.activeTaskPopupData.name || ""
+                        windows: root.activeTaskPopupData.windows || []
+                        previewStyle: root.windowPreviewStyle
+                        previewScale: root.windowPreviewScale
+                        automaticPopupRadius: root.taskPopupRadiusAuto
+                        popupRadius: root.taskPopupRadius
+                        popupDirection: root.popupDirection
+                        inPanel: root.inPanel
+                        maxVisibleRows: root.maxPopupRows
+                        maximumAvailableHeight: root.taskPopupAvailableHeight
+                        actionItemName: root.activeAppContextMenuData.name || ""
+                        actions: root.activeAppContextMenuData.actions || []
+                        maxVisibleActionRows: root.activeAppContextMenuData.maxVisibleRows || 6
+                        // qmllint disable unqualified
+                        transitionSpeedPercent: root.contextMenuTransitionSpeed
+                        // qmllint enable unqualified
+
+                        onActivateRequested: function(taskRow) {
+                            taskWindowsDialog.visible = false
+                            taskController.activateTaskRow(taskRow)
                         }
-                    }
-                    onCloseRequested: {
-                        taskWindowsDialog.visible = false
-                    }
-                    onActionTriggered: function(action) {
-                        taskWindowsDialog.visible = false
-                        if (action && String(action.command || "").trim().length > 0) {
-                            root.runCommand(action.command)
+                        onPresentWindowRequested: function(taskRow) {
+                            taskController.requestWindowPresentation(taskRow)
+                        }
+                        onMinimizeWindowRequested: function(taskRow) {
+                            taskController.minimizeTaskRow(taskRow)
+                        }
+                        onMaximizeWindowRequested: function(taskRow) {
+                            taskController.toggleMaximizedTaskRow(taskRow)
+                        }
+                        onCloseWindowRequested: function(taskRow) {
+                            if (taskController.closeTaskRow(taskRow)) {
+                                mainContainer.removeTaskPopupWindow(taskRow)
+                            }
+                        }
+                        onCloseRequested: {
+                            taskWindowsDialog.visible = false
+                        }
+                        onActionTriggered: function(action) {
+                            taskWindowsDialog.visible = false
+                            root.triggerContextAction(action)
                         }
                     }
                 }

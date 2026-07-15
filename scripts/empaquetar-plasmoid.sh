@@ -8,6 +8,8 @@ PACKAGE_ROOT="$BUILD_DIR/package-root"
 DIST_DIR="$PROJECT_ROOT/dist"
 ZIP_FILE="$DIST_DIR/punchi-dock-remastered.plasmoid"
 QMLLINT_BASELINE_FILE="${QMLLINT_BASELINE_FILE:-$PROJECT_ROOT/scripts/qmllint-baseline.env}"
+PACKAGE_BUILD_TYPE="${PACKAGE_BUILD_TYPE:-Release}"
+STRIP_BIN="${STRIP_BIN:-strip}"
 
 resolve_qmllint() {
     local candidate=""
@@ -52,6 +54,9 @@ require_command() {
 }
 
 require_command cmake
+require_command ctest
+require_command readelf
+require_command "$STRIP_BIN"
 require_command unzip
 require_command zip
 
@@ -96,9 +101,13 @@ if (( warning_total > QMLLINT_BASELINE_TOTAL \
     exit 1
 fi
 
-echo "==> [2/4] Building the native QML module"
-cmake -S "$PROJECT_ROOT" -B "$BUILD_DIR"
+echo "==> [2/4] Building and testing the native QML module"
+echo "Build type: $PACKAGE_BUILD_TYPE"
+cmake -S "$PROJECT_ROOT" -B "$BUILD_DIR" \
+    -DBUILD_TESTING=ON \
+    -DCMAKE_BUILD_TYPE="$PACKAGE_BUILD_TYPE"
 cmake --build "$BUILD_DIR" --parallel
+ctest --test-dir "$BUILD_DIR" --output-on-failure
 
 echo "==> [3/4] Assembling a clean package tree"
 cmake -E rm -rf "$PACKAGE_ROOT"
@@ -119,6 +128,21 @@ for required_file in \
     fi
 done
 
+native_libraries=(
+    "$PACKAGE_ROOT/contents/ui/org/punchi/dock/libpunchidockintegration.so"
+    "$PACKAGE_ROOT/contents/ui/org/punchi/dock/libpunchidockintegrationplugin.so"
+)
+
+echo "Stripping development symbols from the staged native module"
+"$STRIP_BIN" --strip-unneeded "${native_libraries[@]}"
+
+for native_library in "${native_libraries[@]}"; do
+    if readelf --sections "$native_library" | grep -q '\.debug'; then
+        echo "Debug sections remain in packaged library: $native_library" >&2
+        exit 1
+    fi
+done
+
 echo "==> [4/4] Creating and validating the plasmoid"
 mkdir -p "$DIST_DIR"
 rm -f "$ZIP_FILE"
@@ -133,4 +157,4 @@ if unzip -Z1 "$ZIP_FILE" | grep -Eq '^(build|dist|backup|docs|bitacora|kde-sdk|s
     exit 1
 fi
 
-echo "Package created: $ZIP_FILE"
+echo "Package created: $ZIP_FILE ($(stat -c '%s' "$ZIP_FILE") bytes)"

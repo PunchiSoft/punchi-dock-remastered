@@ -21,6 +21,8 @@ target_sources(punchidockintegration PRIVATE
     audiospectrumcontroller.h
     dockruntimeservice.cpp
     dockruntimeservice.h
+    mpriscontroller.cpp
+    mpriscontroller.h
     pipewireaudiobackend.cpp
     pipewireaudiobackend.h
     spectrumanalyzer.cpp
@@ -36,6 +38,7 @@ target_sources(punchidockintegration PRIVATE
 target_link_libraries(punchidockintegration
     PRIVATE
         Qt6::Core
+        Qt6::DBus
         Qt6::Qml
         KF6::CoreAddons
         KF6::JobWidgets

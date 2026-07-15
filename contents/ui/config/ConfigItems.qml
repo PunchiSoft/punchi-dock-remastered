@@ -74,6 +74,18 @@ KCM.SimpleKCM {
             mainView.showStatus(i18n("System operation failed: %1", message), Kirigami.MessageType.Error)
         }
     }
+
+    Punchi.DockRuntimeService {
+        id: runtimeService
+
+        // qmllint disable unqualified
+        onOperationFailed: function(operation, message) {
+            if (operation === "playSound") {
+                mainView.showStatus(i18n("The sound could not be played: %1", message), Kirigami.MessageType.Error)
+            }
+        }
+        // qmllint enable unqualified
+    }
     property alias itemName: timedDialog.itemNameControl
     property alias timedItemWidth: timedDialog.timedItemWidthControl
     property alias timedTextScale: timedDialog.timedTextScaleControl
@@ -223,8 +235,7 @@ KCM.SimpleKCM {
 
     function playTrashEmptySoundPreview() {
         var configuredSound = resolvedTrashEmptySound()
-        var script = ConfigScriptsJS.trashSoundPreviewScript(configuredSound, defaultTrashEmptySound, "Punchi Dock")
-        soundPreviewSource.connectSource("sh -c " + shellQuote(script))
+        runtimeService.playSound(configuredSound, "trash-empty")
     }
 
     function availableFonts(includeEmpty) {

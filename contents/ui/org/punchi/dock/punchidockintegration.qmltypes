@@ -65,7 +65,7 @@ Module {
         exportMetaObjectRevisions: [256]
         Signal {
             name: "operationFailed"
-            lineNumber: 20
+            lineNumber: 21
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
@@ -89,6 +89,149 @@ Module {
             lineNumber: 17
             Parameter { name: "command"; type: "QString" }
         }
+        Method {
+            name: "playSound"
+            type: "bool"
+            lineNumber: 18
+            Parameter { name: "soundPath"; type: "QString" }
+            Parameter { name: "eventId"; type: "QString" }
+        }
+        Method {
+            name: "playSound"
+            type: "bool"
+            isCloned: true
+            lineNumber: 18
+            Parameter { name: "soundPath"; type: "QString" }
+        }
+        Method { name: "playSound"; type: "bool"; isCloned: true; lineNumber: 18 }
+    }
+    Component {
+        file: "mpriscontroller.h"
+        lineNumber: 13
+        name: "MprisController"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/MprisController 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "applicationId"
+            type: "QString"
+            read: "applicationId"
+            write: "setApplicationId"
+            notify: "applicationIdChanged"
+            index: 0
+            lineNumber: 17
+        }
+        Property {
+            name: "available"
+            type: "bool"
+            read: "available"
+            notify: "stateChanged"
+            index: 1
+            lineNumber: 18
+            isReadonly: true
+        }
+        Property {
+            name: "identity"
+            type: "QString"
+            read: "identity"
+            notify: "stateChanged"
+            index: 2
+            lineNumber: 19
+            isReadonly: true
+        }
+        Property {
+            name: "track"
+            type: "QString"
+            read: "track"
+            notify: "stateChanged"
+            index: 3
+            lineNumber: 20
+            isReadonly: true
+        }
+        Property {
+            name: "artist"
+            type: "QString"
+            read: "artist"
+            notify: "stateChanged"
+            index: 4
+            lineNumber: 21
+            isReadonly: true
+        }
+        Property {
+            name: "artUrl"
+            type: "QString"
+            read: "artUrl"
+            notify: "stateChanged"
+            index: 5
+            lineNumber: 22
+            isReadonly: true
+        }
+        Property {
+            name: "canGoPrevious"
+            type: "bool"
+            read: "canGoPrevious"
+            notify: "stateChanged"
+            index: 6
+            lineNumber: 23
+            isReadonly: true
+        }
+        Property {
+            name: "canPlay"
+            type: "bool"
+            read: "canPlay"
+            notify: "stateChanged"
+            index: 7
+            lineNumber: 24
+            isReadonly: true
+        }
+        Property {
+            name: "canPause"
+            type: "bool"
+            read: "canPause"
+            notify: "stateChanged"
+            index: 8
+            lineNumber: 25
+            isReadonly: true
+        }
+        Property {
+            name: "canGoNext"
+            type: "bool"
+            read: "canGoNext"
+            notify: "stateChanged"
+            index: 9
+            lineNumber: 26
+            isReadonly: true
+        }
+        Property {
+            name: "playing"
+            type: "bool"
+            read: "playing"
+            notify: "stateChanged"
+            index: 10
+            lineNumber: 27
+            isReadonly: true
+        }
+        Signal { name: "applicationIdChanged"; lineNumber: 51 }
+        Signal { name: "stateChanged"; lineNumber: 52 }
+        Method {
+            name: "onServiceOwnerChanged"
+            lineNumber: 55
+            Parameter { name: "name"; type: "QString" }
+            Parameter { name: "oldOwner"; type: "QString" }
+            Parameter { name: "newOwner"; type: "QString" }
+        }
+        Method {
+            name: "onPropertiesChanged"
+            lineNumber: 56
+            Parameter { name: "interfaceName"; type: "QString" }
+            Parameter { name: "changedProperties"; type: "QVariantMap" }
+            Parameter { name: "invalidatedProperties"; type: "QStringList" }
+        }
+        Method { name: "refresh"; lineNumber: 45 }
+        Method { name: "previous"; lineNumber: 46 }
+        Method { name: "togglePlaying"; lineNumber: 47 }
+        Method { name: "next"; lineNumber: 48 }
     }
     Component {
         file: "systemdiscovery.h"
@@ -100,22 +243,22 @@ Module {
         exportMetaObjectRevisions: [256]
         Signal {
             name: "folderEntriesReady"
-            lineNumber: 34
+            lineNumber: 36
             Parameter { name: "entries"; type: "QVariantList" }
         }
         Signal {
             name: "applicationsReady"
-            lineNumber: 35
+            lineNumber: 37
             Parameter { name: "applications"; type: "QVariantList" }
         }
         Signal {
             name: "applicationReady"
-            lineNumber: 36
+            lineNumber: 38
             Parameter { name: "application"; type: "QVariantMap" }
         }
         Signal {
             name: "operationFailed"
-            lineNumber: 37
+            lineNumber: 39
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
@@ -157,19 +300,33 @@ Module {
             Parameter { name: "command"; type: "QString" }
         }
         Method {
-            name: "launchApplication"
+            name: "applicationActions"
+            type: "QVariantList"
+            isMethodConstant: true
             lineNumber: 29
+            Parameter { name: "applicationId"; type: "QString" }
+        }
+        Method {
+            name: "launchApplication"
+            lineNumber: 30
             Parameter { name: "storageId"; type: "QString" }
+        }
+        Method {
+            name: "launchApplicationAction"
+            type: "bool"
+            lineNumber: 31
+            Parameter { name: "applicationId"; type: "QString" }
+            Parameter { name: "actionId"; type: "QString" }
         }
         Method {
             name: "launchApplicationByCommand"
             type: "bool"
-            lineNumber: 30
+            lineNumber: 32
             Parameter { name: "command"; type: "QString" }
         }
         Method {
             name: "openUrl"
-            lineNumber: 31
+            lineNumber: 33
             Parameter { name: "url"; type: "QString" }
         }
     }

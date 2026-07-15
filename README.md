@@ -12,14 +12,19 @@ This repository is a modular rewrite of the original [Punchi Dock Plasmoid](http
 - Pinned launchers and optional dynamic task entries.
 - Window cards, live previews, and grouped-window controls.
 - Configurable folders, quick notes, trash, separators, and calendar items.
-- Plasma-themed popups and a compact configuration interface.
-- Native C++ QML integration for application discovery, runtime services, and trash operations.
+- Optional PipeWire audio visualizer with six styles, dynamic or Plasma-themed colors, and up to 48 visual elements.
+- Plasma-themed popups with configurable opening animations and smooth preview-to-menu transitions.
+- Native application and window actions in the context menus of pinned launchers and dynamic tasks.
+- Contextual MPRIS media cards with artwork, track information, and playback controls.
+- Asynchronous trash operations with activity, progress, completion sound, and themed KDE notifications.
+- Native C++ QML integration for application discovery, runtime services, audio analysis, and trash operations.
 
 ## Requirements
 
 - Fedora 44 or later on `x86_64` is the current release target.
 - KDE Plasma 6 or later.
 - Wayland is the primary supported session.
+- PipeWire is required by the optional audio visualizer.
 - Native binaries shipped inside the `.plasmoid` package are currently built and validated for Fedora 44+ `x86_64`, not as a universal Linux binary for every Plasma-based distribution.
 
 ## Install a Release Package
@@ -51,14 +56,15 @@ Install the build dependencies:
 
 ```bash
 sudo dnf install \
-    cmake gcc-c++ ninja-build extra-cmake-modules \
+    binutils cmake gcc-c++ ninja-build extra-cmake-modules \
     qt6-qtdeclarative-devel \
-    kf6-kcoreaddons-devel kf6-kio-devel kf6-kservice-devel \
+    kf6-kcoreaddons-devel kf6-kio-devel kf6-kjobwidgets-devel \
+    kf6-kservice-devel libplasma-devel \
     pipewire-devel \
     zip unzip
 ```
 
-Build the native module and create the package:
+Build the native module and create a stripped `Release` package:
 
 ```bash
 scripts/empaquetar-plasmoid.sh
@@ -70,11 +76,23 @@ The resulting package is written to:
 dist/punchi-dock-remastered.plasmoid
 ```
 
+Set `PACKAGE_BUILD_TYPE` or `STRIP_BIN` only when a development or cross-toolchain workflow requires an explicit override.
+
 To build, install, and restart Plasma for a local development test:
 
 ```bash
 scripts/probar-plasmoid.sh
 ```
+
+This script runs the packaging checks and CTest, upgrades the local plasmoid, restarts Plasma Shell, and writes filtered startup diagnostics to `debug.log`. Because it restarts the desktop shell, use it after a coherent change rather than on every file save.
+
+Before publishing a release, reproduce the package from a clean temporary source tree:
+
+```bash
+scripts/validar-empaquetado-limpio.sh
+```
+
+For rapid visual iteration, `scripts/watch-plasmoidviewer.sh` can rebuild and reopen `plasmoidviewer` when files change. It does not replace a final test in the real Plasma panel or dock.
 
 ## Project Structure
 
