@@ -53,6 +53,11 @@ PlasmoidItem {
     Punchi.ThemeIntegration {
         id: themeIntegration
     }
+    Punchi.AudioSpectrumController {
+        id: audioSpectrumController
+        enabled: root.audioSpectrumConfigured
+            && !root.hiddenByVirtualDesktop
+    }
     TaskModelController {
         id: taskController
         dockItems: root.dockItems
@@ -95,6 +100,31 @@ PlasmoidItem {
     readonly property string dockIndicatorPosition: String(Plasmoid.configuration.indicatorPosition || "bottom")
     readonly property real dockIndicatorOpacity: Math.max(0.0, Math.min(1.0, Number(Plasmoid.configuration.indicatorOpacity || 100) / 100.0))
     readonly property int dockIndicatorThickness: Math.max(2, Number(Plasmoid.configuration.indicatorThickness || 4))
+    readonly property bool audioSpectrumConfigured: Plasmoid.configuration.audioSpectrumEnabled === true
+    readonly property real audioSpectrumIntensity: Math.max(0.1, Math.min(0.6,
+        Number(Plasmoid.configuration.audioSpectrumIntensity || 35) / 100.0))
+    readonly property bool audioSpectrumUsePlasmaTheme: Plasmoid.configuration.audioSpectrumUsePlasmaTheme !== false
+    readonly property int audioSpectrumBarCount: {
+        const configuredCount = Number(Plasmoid.configuration.audioSpectrumBarCount || 12)
+        return [8, 12, 16, 24, 32, 48].indexOf(configuredCount) >= 0 ? configuredCount : 12
+    }
+    readonly property string audioSpectrumStyle: {
+        const configuredStyle = String(Plasmoid.configuration.audioSpectrumStyle || "edge")
+        const supportedStyles = ["edge", "centered", "capsules", "pixel", "cloud", "particles"]
+        return supportedStyles.indexOf(configuredStyle) >= 0 ? configuredStyle : "edge"
+    }
+    readonly property string audioSpectrumBackgroundMode: {
+        const configuredMode = String(Plasmoid.configuration.audioSpectrumBackgroundMode || "plasma")
+        return configuredMode === "spectrumOnly" ? "spectrumOnly" : "plasma"
+    }
+    readonly property string audioSpectrumOrigin: {
+        const configuredOrigin = String(Plasmoid.configuration.audioSpectrumOrigin || "bottom")
+        return configuredOrigin === "top" ? "top" : "bottom"
+    }
+    readonly property string audioSpectrumFlow: {
+        const configuredFlow = String(Plasmoid.configuration.audioSpectrumFlow || "none")
+        return ["left", "right"].indexOf(configuredFlow) >= 0 ? configuredFlow : "none"
+    }
     readonly property real configuredHoverScale: Math.max(1.0, Number(Plasmoid.configuration.hoverScale || 1.0))
     readonly property real panelHoverScale: inPanel ? Math.min(configuredHoverScale, 1.18) : configuredHoverScale
     readonly property int panelLocation: Plasmoid.location
@@ -120,6 +150,18 @@ PlasmoidItem {
         return Qt.BottomEdge
     }
     readonly property int popupMargin: root.inPanel ? 2 : 10
+    readonly property string popupAnimationStyle: {
+        const configuredStyle = String(Plasmoid.configuration.popupAnimation || "scale")
+        return ["scale", "bounce", "fade", "slide", "none"].indexOf(configuredStyle) >= 0
+            ? configuredStyle
+            : "scale"
+    }
+    readonly property int popupAnimationSpeedPercent: Math.max(10, Math.min(200,
+        Number(Plasmoid.configuration.popupAnimationSpeedPercent || 100)))
+    readonly property int popupAnimationIntensity: Math.max(10, Math.min(200,
+        Number(Plasmoid.configuration.popupAnimationIntensity || 100)))
+    readonly property int contextMenuTransitionSpeed: Math.max(10, Math.min(200,
+        Number(Plasmoid.configuration.contextMenuTransitionSpeed || 100)))
     readonly property int detectedPanelThickness: {
         try {
             var containment = Plasmoid.containment
@@ -199,12 +241,33 @@ PlasmoidItem {
 
     Punchi.TrashIntegration {
         id: trashIntegration
+        // qmllint disable unqualified
         onOperationFailed: function(operation, message) {
             console.warn("Punchi Dock:", operation, message)
         }
         onStateChanged: function(hasItems) {
             root.updateTrashState(hasItems)
         }
+        onOperationSucceeded: function(operation) {
+            if (operation === "emptyTrash" && trashMenuDialog.visible
+                    && trashContextContent.confirmationVisible) {
+                trashSuccessCloseTimer.restart()
+            }
+        }
+        // qmllint enable unqualified
+    }
+
+    Timer {
+        id: trashSuccessCloseTimer
+        interval: 1200
+        repeat: false
+        // qmllint disable unqualified
+        onTriggered: {
+            trashMenuDialog.visible = false
+            trashContextContent.showMenu()
+            trashIntegration.resetOperationState()
+        }
+        // qmllint enable unqualified
     }
 
     Connections {
@@ -216,7 +279,7 @@ PlasmoidItem {
             } else {
                 root.dockItems = []
             }
-            runtimeService.persistDockItemsJson(raw)
+            runtimeService.persistDockItemsJson(raw, root.configInstanceId())
             trashIntegration.refresh()
         }
     }
@@ -229,6 +292,21 @@ PlasmoidItem {
             root.dockItems = Logic.loadItems("")
         }
         trashIntegration.refresh()
+    }
+
+    function configInstanceId() {
+        var value = ""
+        try {
+            if (Plasmoid && Plasmoid.id !== undefined && Plasmoid.id !== null) {
+                value = String(Plasmoid.id)
+            }
+        } catch (error) {
+            value = ""
+        }
+        if (value.length === 0 || value === "undefined" || value === "null") {
+            return "default"
+        }
+        return value.replace(/[^A-Za-z0-9_.-]/g, "_")
     }
 
     function runCommand(command) {
@@ -288,7 +366,7 @@ PlasmoidItem {
     function syncDockItemsConfiguration() {
         var raw = JSON.stringify(root.dockItems)
         Plasmoid.configuration.dockItemsJson = raw
-        runtimeService.persistDockItemsJson(raw)
+        runtimeService.persistDockItemsJson(raw, root.configInstanceId())
     }
 
     function updateNoteItem(noteItem, noteText, popupWidth, popupHeight) {
@@ -516,9 +594,6 @@ PlasmoidItem {
             if (taskWindowsDialog !== exceptDialog) {
                 taskWindowsDialog.visible = false
             }
-            if (trashConfirmDialog !== exceptDialog) {
-                trashConfirmDialog.visible = false
-            }
             if (exceptDialog !== taskWindowsDialog) {
                 taskPopupOpenTimer.stop()
                 taskPopupCloseTimer.stop()
@@ -528,7 +603,12 @@ PlasmoidItem {
         function openTrashMenu(visualParent) {
             mainContainer.closeAllPopups(trashMenuDialog)
             trashMenuDialog.visualParent = mainContainer.popupAnchor(visualParent)
-            trashConfirmDialog.visualParent = mainContainer.popupAnchor(visualParent)
+            if (trashIntegration.emptying) {
+                trashContextContent.showConfirmation()
+            } else {
+                trashIntegration.resetOperationState()
+                trashContextContent.showMenu()
+            }
             trashMenuDialog.visible = !trashMenuDialog.visible
         }
 
@@ -560,13 +640,6 @@ PlasmoidItem {
                 Qt.callLater(function() {
                     mainContainer.contextMenuOpening = false
                 })
-            })
-        }
-
-        function openTrashConfirmation() {
-            trashMenuDialog.visible = false
-            Qt.callLater(function() {
-                trashConfirmDialog.visible = true
             })
         }
 
@@ -648,8 +721,69 @@ PlasmoidItem {
                 preferOpaque: !!(Plasmoid.containmentDisplayHints
                     & PlasmaCore.Types.ContainmentPrefersOpaqueBackground)
                     || windowIntersectionController.touchingWindow
+                // qmllint disable unqualified
+                spectrumActive: audioSpectrumController.active
+                spectrumLevels: audioSpectrumController.levels
+                spectrumIntensity: root.audioSpectrumIntensity
+                spectrumUsePlasmaTheme: root.audioSpectrumUsePlasmaTheme
+                spectrumBarCount: root.audioSpectrumBarCount
+                spectrumOriginEdge: root.audioSpectrumOrigin === "top"
+                    ? Qt.TopEdge
+                    : Qt.BottomEdge
+                spectrumEdgeInset: root.floatingExtraHeight / 2
+                spectrumBarStyle: root.audioSpectrumStyle
+                spectrumFlowDirection: root.audioSpectrumFlow
+                plasmaBackgroundVisible: !root.audioSpectrumConfigured
+                    || root.audioSpectrumBackgroundMode === "plasma"
+                // qmllint enable unqualified
                 visible: !root.inPanel
             }
+
+            // qmllint disable unqualified
+            Item {
+                id: panelSpectrumViewport
+
+                readonly property real panelCrossAxisExtent: {
+                    const extent = Number(root.verticalPanel ? root.width : root.height)
+                    return extent > 0
+                        ? extent
+                        : (root.verticalPanel ? dockLayout.width : dockLayout.height)
+                }
+
+                // The applet allocation excludes Plasma's adaptive floating margin.
+                x: root.verticalPanel
+                    ? Math.round((parent.width - width) / 2)
+                    : dockLayout.x
+                y: root.verticalPanel
+                    ? dockLayout.y
+                    : Math.round((parent.height - height) / 2)
+                width: root.verticalPanel
+                    ? Math.min(dockLayout.width, panelCrossAxisExtent)
+                    : dockLayout.width
+                height: root.verticalPanel
+                    ? dockLayout.height
+                    : Math.min(dockLayout.height, panelCrossAxisExtent)
+                clip: true
+                visible: root.inPanel
+
+                AudioSpectrumLayer {
+                    anchors.fill: parent
+                    active: root.inPanel && audioSpectrumController.active
+                    levels: audioSpectrumController.levels
+                    intensity: root.audioSpectrumIntensity
+                    usePlasmaTheme: root.audioSpectrumUsePlasmaTheme
+                    barCount: root.audioSpectrumBarCount
+                    barStyle: root.audioSpectrumStyle
+                    flowDirection: root.audioSpectrumFlow
+                    vertical: root.verticalPanel
+                    originEdge: root.verticalPanel
+                        ? (root.leftPanel ? Qt.LeftEdge : Qt.RightEdge)
+                        : root.audioSpectrumOrigin === "top"
+                            ? Qt.TopEdge
+                            : Qt.BottomEdge
+                }
+            }
+            // qmllint enable unqualified
 
             RowLayout {
                 id: dockLayout
@@ -896,21 +1030,31 @@ PlasmoidItem {
                 ? PlasmaCore.Types.NoBackground
                 : PlasmaCore.Types.StandardBackground
 
-            mainItem: FolderPopup {
-                id: folderPopupContent
-                folderItem: root.activeFolderData
-                layoutMode: root.activeFolderData.layout || "grid"
-                virtualEdge: Plasmoid.location
-                isOpen: folderPopupDialog.visible
-                maximumAvailableHeight: root.taskPopupAvailableHeight
+            mainItem: PopupAnimatedContent {
+                popupVisible: folderPopupDialog.visible
+                // qmllint disable unqualified
+                animationStyle: root.popupAnimationStyle
+                animationSpeedPercent: root.popupAnimationSpeedPercent
+                animationIntensityPercent: root.popupAnimationIntensity
+                popupDirection: root.popupDirection
+                // qmllint enable unqualified
 
-                onAppLaunched: function(app) {
-                    folderPopupDialog.visible = false
-                    root.launchDockItem(app)
-                }
+                FolderPopup {
+                    id: folderPopupContent
+                    folderItem: root.activeFolderData
+                    layoutMode: root.activeFolderData.layout || "grid"
+                    virtualEdge: Plasmoid.location
+                    isOpen: folderPopupDialog.visible
+                    maximumAvailableHeight: root.taskPopupAvailableHeight
 
-                onCloseRequested: {
-                    folderPopupDialog.visible = false
+                    onAppLaunched: function(app) {
+                        folderPopupDialog.visible = false
+                        root.launchDockItem(app)
+                    }
+
+                    onCloseRequested: {
+                        folderPopupDialog.visible = false
+                    }
                 }
             }
         }
@@ -929,14 +1073,24 @@ PlasmoidItem {
             // El calendario siempre utiliza el fondo nativo del tema de KDE (Kickoff)
             backgroundHints: PlasmaCore.Types.StandardBackground
 
-            mainItem: CalendarPopup {
-                // El popup se reinicia a la fecha actual al mostrarse
-                Component.onCompleted: {
-                    displayedDate = new Date()
-                    updateGrid()
-                }
-                onCloseRequested: {
-                    calendarPopupDialog.visible = false
+            mainItem: PopupAnimatedContent {
+                popupVisible: calendarPopupDialog.visible
+                // qmllint disable unqualified
+                animationStyle: root.popupAnimationStyle
+                animationSpeedPercent: root.popupAnimationSpeedPercent
+                animationIntensityPercent: root.popupAnimationIntensity
+                popupDirection: root.popupDirection
+                // qmllint enable unqualified
+
+                CalendarPopup {
+                    // El popup se reinicia a la fecha actual al mostrarse
+                    Component.onCompleted: {
+                        displayedDate = new Date()
+                        updateGrid()
+                    }
+                    onCloseRequested: {
+                        calendarPopupDialog.visible = false
+                    }
                 }
             }
         }
@@ -951,20 +1105,44 @@ PlasmoidItem {
                 ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
                 : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
-            hideOnWindowDeactivate: true
+            hideOnWindowDeactivate: !trashContextContent.confirmationVisible
             backgroundHints: PlasmaCore.Types.StandardBackground
 
-            mainItem: TrashMenuPopup {
-                id: trashMenuContent
-                onOpenTrashClicked: {
-                    trashMenuDialog.visible = false
-                    trashIntegration.openTrash()
-                }
-                onEmptyTrashClicked: {
-                    mainContainer.openTrashConfirmation()
-                }
-                onCloseRequested: {
-                    trashMenuDialog.visible = false
+            mainItem: PopupAnimatedContent {
+                popupVisible: trashMenuDialog.visible
+                // qmllint disable unqualified
+                animationStyle: root.popupAnimationStyle
+                animationSpeedPercent: root.popupAnimationSpeedPercent
+                animationIntensityPercent: root.popupAnimationIntensity
+                popupDirection: root.popupDirection
+                // qmllint enable unqualified
+
+                TrashContextPopup {
+                    id: trashContextContent
+                    // qmllint disable unqualified
+                    operationState: trashIntegration.operationState
+                    progressPercent: trashIntegration.progressPercent
+                    progressDeterminate: trashIntegration.progressDeterminate
+                    processedItems: trashIntegration.processedItems
+                    totalItems: trashIntegration.totalItems
+                    errorMessage: trashIntegration.errorMessage
+                    transitionSpeedPercent: root.contextMenuTransitionSpeed
+                    onOpenTrashRequested: {
+                        trashMenuDialog.visible = false
+                        trashIntegration.openTrash()
+                    }
+                    onEmptyTrashRequested: {
+                        trashIntegration.emptyTrash()
+                    }
+                    onCloseRequested: {
+                        trashSuccessCloseTimer.stop()
+                        trashMenuDialog.visible = false
+                        if (!trashIntegration.emptying) {
+                            trashIntegration.resetOperationState()
+                            trashContextContent.showMenu()
+                        }
+                    }
+                    // qmllint enable unqualified
                 }
             }
         }
@@ -981,20 +1159,30 @@ PlasmoidItem {
             hideOnWindowDeactivate: !mainContainer.contextMenuOpening
             backgroundHints: PlasmaCore.Types.StandardBackground
 
-            mainItem: AppActionsPopup {
-                id: appActionsContent
-                itemName: root.activeAppContextMenuData.name || ""
-                actions: root.activeAppContextMenuData.actions || []
-                maxVisibleRows: root.activeAppContextMenuData.maxVisibleRows || 6
+            mainItem: PopupAnimatedContent {
+                popupVisible: appActionsDialog.visible
+                // qmllint disable unqualified
+                animationStyle: root.popupAnimationStyle
+                animationSpeedPercent: root.popupAnimationSpeedPercent
+                animationIntensityPercent: root.popupAnimationIntensity
+                popupDirection: root.popupDirection
+                // qmllint enable unqualified
 
-                onActionTriggered: function(action) {
-                    appActionsDialog.visible = false
-                    if (action && String(action.command || "").trim().length > 0) {
-                        root.runCommand(action.command)
+                AppActionsPopup {
+                    id: appActionsContent
+                    itemName: root.activeAppContextMenuData.name || ""
+                    actions: root.activeAppContextMenuData.actions || []
+                    maxVisibleRows: root.activeAppContextMenuData.maxVisibleRows || 6
+
+                    onActionTriggered: function(action) {
+                        appActionsDialog.visible = false
+                        if (action && String(action.command || "").trim().length > 0) {
+                            root.runCommand(action.command)
+                        }
                     }
-                }
-                onCloseRequested: {
-                    appActionsDialog.visible = false
+                    onCloseRequested: {
+                        appActionsDialog.visible = false
+                    }
                 }
             }
         }
@@ -1016,15 +1204,25 @@ PlasmoidItem {
                 }
             }
 
-            mainItem: NotePopup {
-                id: notePopupContent
-                noteItem: root.activeNoteData
-                onCloseRequested: {
-                    notePopupDialog.visible = false
-                }
-                onClearRequested: function(noteText, popupWidth, popupHeight) {
-                    notePopupContent.initialText = noteText
-                    root.updateNoteItem(root.activeNoteData, noteText, popupWidth, popupHeight)
+            mainItem: PopupAnimatedContent {
+                popupVisible: notePopupDialog.visible
+                // qmllint disable unqualified
+                animationStyle: root.popupAnimationStyle
+                animationSpeedPercent: root.popupAnimationSpeedPercent
+                animationIntensityPercent: root.popupAnimationIntensity
+                popupDirection: root.popupDirection
+                // qmllint enable unqualified
+
+                NotePopup {
+                    id: notePopupContent
+                    noteItem: root.activeNoteData
+                    onCloseRequested: {
+                        notePopupDialog.visible = false
+                    }
+                    onClearRequested: function(noteText, popupWidth, popupHeight) {
+                        notePopupContent.initialText = noteText
+                        root.updateNoteItem(root.activeNoteData, noteText, popupWidth, popupHeight)
+                    }
                 }
             }
         }
@@ -1051,61 +1249,74 @@ PlasmoidItem {
                 }
             }
 
-            mainItem: TaskContextPopup {
-                id: taskWindowsPopupContent
-                appName: root.activeTaskPopupData.name || ""
-                windows: root.activeTaskPopupData.windows || []
-                previewStyle: root.windowPreviewStyle
-                previewScale: root.windowPreviewScale
-                automaticPopupRadius: root.taskPopupRadiusAuto
-                popupRadius: root.taskPopupRadius
+            mainItem: PopupAnimatedContent {
+                popupVisible: taskWindowsDialog.visible
+                // qmllint disable unqualified
+                animationStyle: root.popupAnimationStyle
+                animationSpeedPercent: root.popupAnimationSpeedPercent
+                animationIntensityPercent: root.popupAnimationIntensity
                 popupDirection: root.popupDirection
-                inPanel: root.inPanel
-                maxVisibleRows: root.maxPopupRows
-                maximumAvailableHeight: root.taskPopupAvailableHeight
-                actionItemName: root.activeAppContextMenuData.name || ""
-                actions: root.activeAppContextMenuData.actions || []
-                maxVisibleActionRows: root.activeAppContextMenuData.maxVisibleRows || 6
-                onImplicitHeightChanged: {
-                    if (taskWindowsDialog.visible) {
-                        Qt.callLater(mainContainer.reanchorTaskWindowsPopup)
-                    }
-                }
+                // qmllint enable unqualified
 
-                onContainsMouseChanged: {
-                    root.taskPopupHovered = containsMouse
-                    if (containsMouse) {
-                        taskPopupCloseTimer.stop()
-                    } else if (!mainContainer.taskPopupSourceContainsMouse()) {
-                        taskPopupCloseTimer.restart()
+                TaskContextPopup {
+                    id: taskWindowsPopupContent
+                    appName: root.activeTaskPopupData.name || ""
+                    windows: root.activeTaskPopupData.windows || []
+                    previewStyle: root.windowPreviewStyle
+                    previewScale: root.windowPreviewScale
+                    automaticPopupRadius: root.taskPopupRadiusAuto
+                    popupRadius: root.taskPopupRadius
+                    popupDirection: root.popupDirection
+                    inPanel: root.inPanel
+                    maxVisibleRows: root.maxPopupRows
+                    maximumAvailableHeight: root.taskPopupAvailableHeight
+                    actionItemName: root.activeAppContextMenuData.name || ""
+                    actions: root.activeAppContextMenuData.actions || []
+                    maxVisibleActionRows: root.activeAppContextMenuData.maxVisibleRows || 6
+                    // qmllint disable unqualified
+                    transitionSpeedPercent: root.contextMenuTransitionSpeed
+                    // qmllint enable unqualified
+                    onImplicitHeightChanged: {
+                        if (taskWindowsDialog.visible) {
+                            Qt.callLater(mainContainer.reanchorTaskWindowsPopup)
+                        }
                     }
-                }
 
-                onActivateRequested: function(taskRow) {
-                    taskWindowsDialog.visible = false
-                    taskController.activateTaskRow(taskRow)
-                }
-                onPresentWindowRequested: function(taskRow) {
-                    taskController.requestWindowPresentation(taskRow)
-                }
-                onMinimizeWindowRequested: function(taskRow) {
-                    taskController.minimizeTaskRow(taskRow)
-                }
-                onMaximizeWindowRequested: function(taskRow) {
-                    taskController.toggleMaximizedTaskRow(taskRow)
-                }
-                onCloseWindowRequested: function(taskRow) {
-                    if (taskController.closeTaskRow(taskRow)) {
-                        mainContainer.removeTaskPopupWindow(taskRow)
+                    onContainsMouseChanged: {
+                        root.taskPopupHovered = containsMouse
+                        if (containsMouse) {
+                            taskPopupCloseTimer.stop()
+                        } else if (!mainContainer.taskPopupSourceContainsMouse()) {
+                            taskPopupCloseTimer.restart()
+                        }
                     }
-                }
-                onCloseRequested: {
-                    taskWindowsDialog.visible = false
-                }
-                onActionTriggered: function(action) {
-                    taskWindowsDialog.visible = false
-                    if (action && String(action.command || "").trim().length > 0) {
-                        root.runCommand(action.command)
+
+                    onActivateRequested: function(taskRow) {
+                        taskWindowsDialog.visible = false
+                        taskController.activateTaskRow(taskRow)
+                    }
+                    onPresentWindowRequested: function(taskRow) {
+                        taskController.requestWindowPresentation(taskRow)
+                    }
+                    onMinimizeWindowRequested: function(taskRow) {
+                        taskController.minimizeTaskRow(taskRow)
+                    }
+                    onMaximizeWindowRequested: function(taskRow) {
+                        taskController.toggleMaximizedTaskRow(taskRow)
+                    }
+                    onCloseWindowRequested: function(taskRow) {
+                        if (taskController.closeTaskRow(taskRow)) {
+                            mainContainer.removeTaskPopupWindow(taskRow)
+                        }
+                    }
+                    onCloseRequested: {
+                        taskWindowsDialog.visible = false
+                    }
+                    onActionTriggered: function(action) {
+                        taskWindowsDialog.visible = false
+                        if (action && String(action.command || "").trim().length > 0) {
+                            root.runCommand(action.command)
+                        }
                     }
                 }
             }
@@ -1123,44 +1334,32 @@ PlasmoidItem {
             hideOnWindowDeactivate: true
             backgroundHints: PlasmaCore.Types.StandardBackground
 
-            mainItem: TaskOverflowPopup {
-                entries: root.overflowTaskRows
-                maxVisibleRows: root.maxPopupRows
+            mainItem: PopupAnimatedContent {
+                popupVisible: taskOverflowDialog.visible
+                // qmllint disable unqualified
+                animationStyle: root.popupAnimationStyle
+                animationSpeedPercent: root.popupAnimationSpeedPercent
+                animationIntensityPercent: root.popupAnimationIntensity
+                popupDirection: root.popupDirection
+                // qmllint enable unqualified
 
-                onEntryActivated: function(entry) {
-                    taskOverflowDialog.visible = false
-                    if (entry.count > 1) {
-                        mainContainer.openTaskWindowsPopup(entry.name, entry.rows, taskOverflowDockItem)
-                    } else if (entry.firstRow >= 0) {
-                        taskController.activateTaskRow(entry.firstRow)
+                TaskOverflowPopup {
+                    entries: root.overflowTaskRows
+                    maxVisibleRows: root.maxPopupRows
+
+                    onEntryActivated: function(entry) {
+                        taskOverflowDialog.visible = false
+                        if (entry.count > 1) {
+                            mainContainer.openTaskWindowsPopup(entry.name, entry.rows, taskOverflowDockItem)
+                        } else if (entry.firstRow >= 0) {
+                            taskController.activateTaskRow(entry.firstRow)
+                        }
                     }
-                }
-                onCloseRequested: taskOverflowDialog.visible = false
-            }
-        }
-
-        PlasmaCore.AppletPopup {
-            id: trashConfirmDialog
-            popupDirection: root.popupDirection
-            margin: root.popupMargin
-            floating: !root.inPanel
-            removeBorderStrategy: root.inPanel
-                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
-                : PlasmaCore.AppletPopup.AtScreenEdges
-            visible: false
-            hideOnWindowDeactivate: false
-            backgroundHints: PlasmaCore.Types.StandardBackground
-
-            mainItem: ConfirmTrashEmptyPopup {
-                onConfirmRequested: {
-                    trashConfirmDialog.visible = false
-                    trashIntegration.emptyTrash()
-                }
-                onCancelRequested: {
-                    trashConfirmDialog.visible = false
+                    onCloseRequested: taskOverflowDialog.visible = false
                 }
             }
         }
+
     }
 
     // Datos del popup de carpeta activo

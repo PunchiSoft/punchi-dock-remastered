@@ -17,11 +17,21 @@ Item {
     property string actionItemName: ""
     property var actions: []
     property int maxVisibleActionRows: 6
+    property int transitionSpeedPercent: 100
     property bool actionsVisible: false
+    property real preservedPreviewWidth: 0
+    property real preservedPreviewHeight: 0
     readonly property bool containsMouse: popupHover.hovered
+    readonly property bool preservingPreviewSize: actionsVisible
+        && preservedPreviewWidth > 0
+        && preservedPreviewHeight > 0
+    readonly property int transitionDuration: Kirigami.Units.longDuration > 1
+        ? Math.round(Kirigami.Units.longDuration * 100
+            / Math.max(10, Math.min(200, transitionSpeedPercent)))
+        : 0
 
-    implicitWidth: actionsVisible ? actionsPage.implicitWidth : previewPage.implicitWidth
-    implicitHeight: actionsVisible ? actionsPage.implicitHeight : previewPage.implicitHeight
+    implicitWidth: preservingPreviewSize ? preservedPreviewWidth : previewPage.implicitWidth
+    implicitHeight: preservingPreviewSize ? preservedPreviewHeight : previewPage.implicitHeight
     width: implicitWidth
     height: implicitHeight
     clip: true
@@ -35,11 +45,18 @@ Item {
     signal closeRequested()
 
     function showActions() {
+        if (actionsVisible) {
+            return
+        }
+        preservedPreviewWidth = Math.max(1, width)
+        preservedPreviewHeight = Math.max(1, height)
         actionsVisible = true
     }
 
     function showPreviews() {
         actionsVisible = false
+        preservedPreviewWidth = 0
+        preservedPreviewHeight = 0
     }
 
     HoverHandler {
@@ -53,9 +70,9 @@ Item {
         x: root.actionsVisible ? -root.width : 0
 
         Behavior on x {
-            enabled: Kirigami.Units.longDuration > 1
+            enabled: root.transitionDuration > 0
             NumberAnimation {
-                duration: Kirigami.Units.longDuration
+                duration: root.transitionDuration
                 easing.type: Easing.InOutCubic
             }
         }
@@ -64,6 +81,7 @@ Item {
             id: previewPage
             x: 0
             width: root.width
+            height: root.height
             visible: !root.actionsVisible || pageStrip.x > -root.width
             appName: root.appName
             windows: root.windows
@@ -88,6 +106,7 @@ Item {
             id: actionsPage
             x: root.width
             width: root.width
+            height: root.height
             itemName: root.actionItemName
             actions: root.actions
             maxVisibleRows: root.maxVisibleActionRows

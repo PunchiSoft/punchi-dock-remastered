@@ -17,13 +17,16 @@ This repository is a modular rewrite of the original [Punchi Dock Plasmoid](http
 
 ## Requirements
 
-- Linux with KDE Plasma 6.
+- Fedora 44 or later on `x86_64` is the current release target.
+- KDE Plasma 6 or later.
 - Wayland is the primary supported session.
-- Fedora 44 or later is the main development and testing environment.
+- Native binaries shipped inside the `.plasmoid` package are currently built and validated for Fedora 44+ `x86_64`, not as a universal Linux binary for every Plasma-based distribution.
 
 ## Install a Release Package
 
-End users should install a prebuilt `.plasmoid` release. Development packages and a compiler are not required.
+End users should install a prebuilt `.plasmoid` release for the supported target platform. Development packages and a compiler are not required.
+
+The current packaged release target is Fedora 44+ `x86_64` with KDE Plasma 6 or later.
 
 On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already available on a Plasma installation:
 
@@ -40,7 +43,7 @@ kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered.plasmoid
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
 
-## Build from Source on Fedora 44+
+## Build from Source on Fedora 44+ `x86_64`
 
 The source tree contains a native C++ QML module. Installing the repository directory directly with `kpackagetool6` does not compile that module.
 
@@ -51,13 +54,14 @@ sudo dnf install \
     cmake gcc-c++ ninja-build extra-cmake-modules \
     qt6-qtdeclarative-devel \
     kf6-kcoreaddons-devel kf6-kio-devel kf6-kservice-devel \
+    pipewire-devel \
     zip unzip
 ```
 
 Build the native module and create the package:
 
 ```bash
-PATH="/usr/lib64/qt6/bin:$PATH" scripts/empaquetar-plasmoid.sh
+scripts/empaquetar-plasmoid.sh
 ```
 
 The resulting package is written to:
@@ -69,7 +73,7 @@ dist/punchi-dock-remastered.plasmoid
 To build, install, and restart Plasma for a local development test:
 
 ```bash
-PATH="/usr/lib64/qt6/bin:$PATH" scripts/probar-plasmoid.sh
+scripts/probar-plasmoid.sh
 ```
 
 ## Project Structure

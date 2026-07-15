@@ -154,7 +154,7 @@ KCM.SimpleKCM {
                 onActivated: page.cfg_panelLengthMode = currentValue
 
                 ConfigCursorBehavior {
-                    active: page.interactiveCursorEnabled
+                    cursorEnabled: page.interactiveCursorEnabled
                 }
             }
         }
@@ -173,7 +173,7 @@ KCM.SimpleKCM {
                 Layout.preferredWidth: page.contentWidthHint - 60
 
                 ConfigCursorBehavior {
-                    active: page.interactiveCursorEnabled
+                    cursorEnabled: page.interactiveCursorEnabled
                     role: "slider"
                 }
             }
@@ -210,7 +210,7 @@ KCM.SimpleKCM {
                 Layout.preferredWidth: page.contentWidthHint - 60
 
                 ConfigCursorBehavior {
-                    active: page.interactiveCursorEnabled
+                    cursorEnabled: page.interactiveCursorEnabled
                     role: "slider"
                 }
             }
@@ -248,7 +248,7 @@ KCM.SimpleKCM {
                 }
 
                 ConfigCursorBehavior {
-                    active: page.interactiveCursorEnabled
+                    cursorEnabled: page.interactiveCursorEnabled
                 }
             }
         }
@@ -279,7 +279,7 @@ KCM.SimpleKCM {
                 }
 
                 ConfigCursorBehavior {
-                    active: page.interactiveCursorEnabled
+                    cursorEnabled: page.interactiveCursorEnabled
                 }
             }
         }

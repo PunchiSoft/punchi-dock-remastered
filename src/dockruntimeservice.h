@@ -13,7 +13,7 @@ class DockRuntimeService : public QObject
 public:
     explicit DockRuntimeService(QObject *parent = nullptr);
 
-    Q_INVOKABLE bool persistDockItemsJson(const QString &json);
+    Q_INVOKABLE bool persistDockItemsJson(const QString &json, const QString &instanceId = QString());
     Q_INVOKABLE bool launchCommand(const QString &command);
 
 Q_SIGNALS:

@@ -16,6 +16,10 @@ Item {
     signal emptyTrashClicked()
     signal closeRequested()
 
+    function focusFirstAction() {
+        openOption.forceActiveFocus()
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 12

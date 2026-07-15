@@ -3,10 +3,10 @@ import QtQuick
 HoverHandler {
     id: root
 
-    property bool active: false
+    property bool cursorEnabled: false
     property string role: "click"
 
-    enabled: active
+    enabled: cursorEnabled
     cursorShape: {
         if (role === "text") {
             return Qt.IBeamCursor

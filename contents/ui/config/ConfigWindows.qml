@@ -87,7 +87,7 @@ KCM.SimpleKCM {
             text: i18n("Show active windows in the dock")
 
             ConfigCursorBehavior {
-                active: page.interactiveCursorEnabled
+                cursorEnabled: page.interactiveCursorEnabled
             }
         }
 
@@ -111,7 +111,7 @@ KCM.SimpleKCM {
             Accessible.name: i18n("Maximum dynamic groups shown in the dock")
 
             ConfigCursorBehavior {
-                active: page.interactiveCursorEnabled
+                cursorEnabled: page.interactiveCursorEnabled
             }
         }
 
@@ -132,7 +132,7 @@ KCM.SimpleKCM {
             enabled: showActiveTasksCheck.checked
 
             ConfigCursorBehavior {
-                active: page.interactiveCursorEnabled
+                cursorEnabled: page.interactiveCursorEnabled
             }
         }
 
@@ -171,7 +171,7 @@ KCM.SimpleKCM {
                 }
 
                 ConfigCursorBehavior {
-                    active: page.interactiveCursorEnabled
+                    cursorEnabled: page.interactiveCursorEnabled
                 }
             }
         }
@@ -203,7 +203,7 @@ KCM.SimpleKCM {
                 Layout.preferredWidth: page.contentWidthHint - 64
 
                 ConfigCursorBehavior {
-                    active: page.interactiveCursorEnabled
+                    cursorEnabled: page.interactiveCursorEnabled
                     role: "slider"
                 }
             }
@@ -232,7 +232,7 @@ KCM.SimpleKCM {
             enabled: page.cfg_windowPreviewStyle !== "none"
 
             ConfigCursorBehavior {
-                active: page.interactiveCursorEnabled
+                cursorEnabled: page.interactiveCursorEnabled
             }
         }
 
@@ -253,7 +253,7 @@ KCM.SimpleKCM {
                 Accessible.name: i18n("Window preview card corner radius")
 
                 ConfigCursorBehavior {
-                    active: page.interactiveCursorEnabled
+                    cursorEnabled: page.interactiveCursorEnabled
                     role: "slider"
                 }
             }
@@ -297,7 +297,7 @@ KCM.SimpleKCM {
                 }
 
                 ConfigCursorBehavior {
-                    active: page.interactiveCursorEnabled
+                    cursorEnabled: page.interactiveCursorEnabled
                 }
             }
         }
@@ -323,7 +323,7 @@ KCM.SimpleKCM {
             Layout.preferredWidth: page.selectorWidthHint
 
             ConfigCursorBehavior {
-                active: page.interactiveCursorEnabled
+                cursorEnabled: page.interactiveCursorEnabled
             }
         }
 

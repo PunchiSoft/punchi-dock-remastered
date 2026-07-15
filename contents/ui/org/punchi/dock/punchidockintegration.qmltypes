@@ -7,6 +7,55 @@ import QtQuick.tooling 1.2
 
 Module {
     Component {
+        file: "audiospectrumcontroller.h"
+        lineNumber: 11
+        name: "AudioSpectrumController"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/AudioSpectrumController 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "enabled"
+            type: "bool"
+            read: "enabled"
+            write: "setEnabled"
+            notify: "enabledChanged"
+            index: 0
+            lineNumber: 15
+        }
+        Property {
+            name: "available"
+            type: "bool"
+            read: "available"
+            notify: "availableChanged"
+            index: 1
+            lineNumber: 16
+            isReadonly: true
+        }
+        Property {
+            name: "active"
+            type: "bool"
+            read: "active"
+            notify: "activeChanged"
+            index: 2
+            lineNumber: 17
+            isReadonly: true
+        }
+        Property {
+            name: "levels"
+            type: "QVariantList"
+            read: "levels"
+            notify: "levelsChanged"
+            index: 3
+            lineNumber: 18
+            isReadonly: true
+        }
+        Signal { name: "enabledChanged"; lineNumber: 32 }
+        Signal { name: "availableChanged"; lineNumber: 33 }
+        Signal { name: "activeChanged"; lineNumber: 34 }
+        Signal { name: "levelsChanged"; lineNumber: 35 }
+    }
+    Component {
         file: "dockruntimeservice.h"
         lineNumber: 8
         name: "DockRuntimeService"
@@ -23,6 +72,14 @@ Module {
         Method {
             name: "persistDockItemsJson"
             type: "bool"
+            lineNumber: 16
+            Parameter { name: "json"; type: "QString" }
+            Parameter { name: "instanceId"; type: "QString" }
+        }
+        Method {
+            name: "persistDockItemsJson"
+            type: "bool"
+            isCloned: true
             lineNumber: 16
             Parameter { name: "json"; type: "QString" }
         }
@@ -43,22 +100,22 @@ Module {
         exportMetaObjectRevisions: [256]
         Signal {
             name: "folderEntriesReady"
-            lineNumber: 33
+            lineNumber: 34
             Parameter { name: "entries"; type: "QVariantList" }
         }
         Signal {
             name: "applicationsReady"
-            lineNumber: 34
+            lineNumber: 35
             Parameter { name: "applications"; type: "QVariantList" }
         }
         Signal {
             name: "applicationReady"
-            lineNumber: 35
+            lineNumber: 36
             Parameter { name: "application"; type: "QVariantMap" }
         }
         Signal {
             name: "operationFailed"
-            lineNumber: 36
+            lineNumber: 37
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
@@ -117,8 +174,27 @@ Module {
         }
     }
     Component {
-        file: "trashintegration.h"
+        file: "themeintegration.h"
         lineNumber: 10
+        name: "ThemeIntegration"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/ThemeIntegration 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "adaptiveTransparencyEnabled"
+            type: "bool"
+            read: "adaptiveTransparencyEnabled"
+            notify: "adaptiveTransparencyEnabledChanged"
+            index: 0
+            lineNumber: 14
+            isReadonly: true
+        }
+        Signal { name: "adaptiveTransparencyEnabledChanged"; lineNumber: 22 }
+    }
+    Component {
+        file: "trashintegration.h"
+        lineNumber: 13
         name: "TrashIntegration"
         accessSemantics: "reference"
         prototype: "QObject"
@@ -130,22 +206,93 @@ Module {
             read: "hasItems"
             notify: "stateChanged"
             index: 0
-            lineNumber: 14
+            lineNumber: 17
+            isReadonly: true
+        }
+        Property {
+            name: "emptying"
+            type: "bool"
+            read: "emptying"
+            notify: "operationStateChanged"
+            index: 1
+            lineNumber: 18
+            isReadonly: true
+        }
+        Property {
+            name: "operationState"
+            type: "QString"
+            read: "operationState"
+            notify: "operationStateChanged"
+            index: 2
+            lineNumber: 19
+            isReadonly: true
+        }
+        Property {
+            name: "progressPercent"
+            type: "int"
+            read: "progressPercent"
+            notify: "progressChanged"
+            index: 3
+            lineNumber: 20
+            isReadonly: true
+        }
+        Property {
+            name: "progressDeterminate"
+            type: "bool"
+            read: "progressDeterminate"
+            notify: "progressChanged"
+            index: 4
+            lineNumber: 21
+            isReadonly: true
+        }
+        Property {
+            name: "processedItems"
+            type: "int"
+            read: "processedItems"
+            notify: "progressChanged"
+            index: 5
+            lineNumber: 22
+            isReadonly: true
+        }
+        Property {
+            name: "totalItems"
+            type: "int"
+            read: "totalItems"
+            notify: "progressChanged"
+            index: 6
+            lineNumber: 23
+            isReadonly: true
+        }
+        Property {
+            name: "errorMessage"
+            type: "QString"
+            read: "errorMessage"
+            notify: "operationStateChanged"
+            index: 7
+            lineNumber: 24
             isReadonly: true
         }
         Signal {
             name: "stateChanged"
-            lineNumber: 27
+            lineNumber: 45
             Parameter { name: "hasItems"; type: "bool" }
+        }
+        Signal { name: "operationStateChanged"; lineNumber: 46 }
+        Signal { name: "progressChanged"; lineNumber: 47 }
+        Signal {
+            name: "operationSucceeded"
+            lineNumber: 48
+            Parameter { name: "operation"; type: "QString" }
         }
         Signal {
             name: "operationFailed"
-            lineNumber: 28
+            lineNumber: 49
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
-        Method { name: "refresh"; lineNumber: 22 }
-        Method { name: "openTrash"; lineNumber: 23 }
-        Method { name: "emptyTrash"; lineNumber: 24 }
+        Method { name: "refresh"; lineNumber: 39 }
+        Method { name: "openTrash"; lineNumber: 40 }
+        Method { name: "emptyTrash"; lineNumber: 41 }
+        Method { name: "resetOperationState"; lineNumber: 42 }
     }
 }

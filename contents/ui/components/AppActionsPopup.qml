@@ -71,6 +71,7 @@ Item {
 
         Controls.ScrollView {
             Layout.fillWidth: true
+            Layout.fillHeight: appActionsRoot.embedded
             Layout.preferredHeight: appActionsRoot.visibleRows * appActionsRoot.rowHeight
             clip: true
 

@@ -107,7 +107,6 @@ var items = [
         "name": "Trash",
         "icon": "user-trash",
         "fullIcon": "user-trash-full",
-        "emptySound": "/usr/share/sounds/ocean/stereo/trash-empty.oga",
         "showState": true,
         "acceptDrops": true
     },
@@ -119,14 +118,6 @@ var items = [
         "note": "Thank you for choosing Punchi Dock.\n\nPlease consider leaving a comment or reporting bugs on KDE Store or GitHub; your feedback helps improve the project.\n\n(This is a welcome note: you can edit it, delete it, or move it whenever you like.)\n\nGracias por preferir Punchi Dock.\n\nNo olvides dejar tus comentarios o reportar bugs en KDE Store o GitHub; tu feedback ayuda a mejorar el proyecto.\n\n(Esta es una nota de bienvenida: puedes editarla, borrarla o moverla cuando quieras.)",
         "popupWidth": 380,
         "popupHeight": 260
-    },
-    {
-        "_comment": "Web shortcut. Opens the project repository with the user's default browser.",
-        "type": "app",
-        "name": "GitHub",
-        "icon": "internet-web-browser",
-        "command": "xdg-open \"https://github.com/PunchiSoft/punchi-dock-plasmoid\"",
-        "confirmationMessage": "You will be directed to the official repository page. Check your default web browser. Thank you for using Punchi Dock. Linux for everyone."
     },
     {
         "_comment": "Visual separator. Useful before date or time widgets.",

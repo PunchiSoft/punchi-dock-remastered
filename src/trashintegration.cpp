@@ -3,15 +3,17 @@
 #include "trashintegration.h"
 
 #include <KDirWatch>
-#include <KIO/DeleteJob>
-#include <KIO/ListJob>
+#include <KIO/EmptyTrashJob>
 #include <KIO/OpenUrlJob>
-#include <KIO/UDSEntry>
+#include <KNotificationJobUiDelegate>
 
 #include <QDir>
 #include <QFileInfoList>
 #include <QStandardPaths>
 #include <QUrl>
+
+#include <algorithm>
+#include <limits>
 
 namespace
 {
@@ -56,6 +58,41 @@ bool TrashIntegration::hasItems() const
     return m_hasItems;
 }
 
+bool TrashIntegration::emptying() const
+{
+    return m_operationState == QLatin1String("emptying");
+}
+
+QString TrashIntegration::operationState() const
+{
+    return m_operationState;
+}
+
+int TrashIntegration::progressPercent() const
+{
+    return m_progressPercent;
+}
+
+bool TrashIntegration::progressDeterminate() const
+{
+    return m_progressDeterminate;
+}
+
+int TrashIntegration::processedItems() const
+{
+    return m_processedItems;
+}
+
+int TrashIntegration::totalItems() const
+{
+    return m_totalItems;
+}
+
+QString TrashIntegration::errorMessage() const
+{
+    return m_errorMessage;
+}
+
 void TrashIntegration::refresh()
 {
     const QDir dir(trashFilesPath());
@@ -77,52 +114,57 @@ void TrashIntegration::openTrash()
 
 void TrashIntegration::emptyTrash()
 {
-    auto *listJob = KIO::listDir(QUrl(QStringLiteral("trash:/")), KIO::HideProgressInfo);
-    auto *urls = new QList<QUrl>;
+    if (emptying() || m_emptyTrashJob) {
+        return;
+    }
 
-    connect(listJob, &KIO::ListJob::entries, this, [urls](KIO::Job *, const KIO::UDSEntryList &batch) {
-        for (const KIO::UDSEntry &entry : batch) {
-            const QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
-            if (name.isEmpty() || name == QLatin1String(".") || name == QLatin1String("..")) {
-                continue;
-            }
+    resetProgress();
+    setOperationState(QStringLiteral("emptying"));
 
-            const QString entryUrl = entry.stringValue(KIO::UDSEntry::UDS_URL);
-            if (!entryUrl.isEmpty()) {
-                urls->append(QUrl(entryUrl));
-                continue;
-            }
+    auto *job = KIO::emptyTrash();
+    m_emptyTrashJob = job;
+    job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoErrorHandlingEnabled));
 
-            QUrl fallback(QStringLiteral("trash:/"));
-            fallback.setPath(QStringLiteral("/") + name);
-            urls->append(fallback);
+    connect(job, &KJob::percentChanged, this, [this](KJob *progressJob, unsigned long percent) {
+        syncProgress(progressJob);
+        if (percent == 0 && !m_progressDeterminate) {
+            return;
         }
+        m_progressPercent = std::clamp(static_cast<int>(percent), 0, 100);
+        m_progressDeterminate = true;
+        Q_EMIT progressChanged();
     });
-
-    connect(listJob, &KJob::result, this, [this, listJob, urls]() {
-        if (listJob->error()) {
-            Q_EMIT operationFailed(QStringLiteral("emptyTrash"), listJob->errorString());
-            delete urls;
+    connect(job, &KJob::totalAmountChanged, this, [this](KJob *progressJob, KJob::Unit, qulonglong) {
+        syncProgress(progressJob);
+    });
+    connect(job, &KJob::processedAmountChanged, this, [this](KJob *progressJob, KJob::Unit, qulonglong) {
+        syncProgress(progressJob);
+    });
+    connect(job, &KJob::result, this, [this, job]() {
+        m_emptyTrashJob = nullptr;
+        if (job->error()) {
+            setOperationState(QStringLiteral("failed"), job->errorString());
+            Q_EMIT operationFailed(QStringLiteral("emptyTrash"), job->errorString());
             return;
         }
 
-        if (urls->isEmpty()) {
-            setHasItems(false);
-            delete urls;
-            return;
-        }
-
-        auto *deleteJob = KIO::del(*urls, KIO::HideProgressInfo);
-        deleteJob->setUiDelegate(nullptr);
-        connect(deleteJob, &KJob::result, this, [this, deleteJob]() {
-            if (deleteJob->error()) {
-                Q_EMIT operationFailed(QStringLiteral("emptyTrash"), deleteJob->errorString());
-                return;
-            }
-            refresh();
-        });
-        delete urls;
+        m_progressPercent = 100;
+        m_progressDeterminate = true;
+        Q_EMIT progressChanged();
+        setHasItems(false);
+        setOperationState(QStringLiteral("succeeded"));
+        Q_EMIT operationSucceeded(QStringLiteral("emptyTrash"));
     });
+}
+
+void TrashIntegration::resetOperationState()
+{
+    if (emptying()) {
+        return;
+    }
+
+    resetProgress();
+    setOperationState(QStringLiteral("idle"));
 }
 
 void TrashIntegration::setHasItems(bool hasItems)
@@ -133,6 +175,64 @@ void TrashIntegration::setHasItems(bool hasItems)
 
     m_hasItems = hasItems;
     Q_EMIT stateChanged(m_hasItems);
+}
+
+void TrashIntegration::setOperationState(const QString &state, const QString &errorMessage)
+{
+    if (m_operationState == state && m_errorMessage == errorMessage) {
+        return;
+    }
+
+    m_operationState = state;
+    m_errorMessage = errorMessage;
+    Q_EMIT operationStateChanged();
+}
+
+void TrashIntegration::resetProgress()
+{
+    const bool changed = m_progressPercent != -1 || m_processedItems != 0
+        || m_totalItems != 0 || m_progressDeterminate;
+    m_progressPercent = -1;
+    m_processedItems = 0;
+    m_totalItems = 0;
+    m_progressDeterminate = false;
+    if (changed) {
+        Q_EMIT progressChanged();
+    }
+}
+
+void TrashIntegration::syncProgress(KJob *job)
+{
+    if (!job) {
+        return;
+    }
+
+    qulonglong total = job->totalAmount(KJob::Items);
+    qulonglong processed = job->processedAmount(KJob::Items);
+    if (total == 0) {
+        total = job->totalAmount(KJob::Files) + job->totalAmount(KJob::Directories);
+        processed = job->processedAmount(KJob::Files) + job->processedAmount(KJob::Directories);
+    }
+
+    const auto maximumInt = static_cast<qulonglong>(std::numeric_limits<int>::max());
+    const int nextTotal = static_cast<int>(std::min(total, maximumInt));
+    const int nextProcessed = static_cast<int>(std::min(processed, maximumInt));
+    const bool nextDeterminate = nextTotal > 0;
+    const int nextPercent = nextDeterminate
+        ? std::clamp(static_cast<int>((static_cast<double>(processed) * 100.0)
+            / static_cast<double>(total)), 0, 100)
+        : m_progressPercent;
+
+    if (m_totalItems == nextTotal && m_processedItems == nextProcessed
+        && m_progressDeterminate == nextDeterminate && m_progressPercent == nextPercent) {
+        return;
+    }
+
+    m_totalItems = nextTotal;
+    m_processedItems = nextProcessed;
+    m_progressDeterminate = nextDeterminate;
+    m_progressPercent = nextPercent;
+    Q_EMIT progressChanged();
 }
 
 void TrashIntegration::watchPaths()

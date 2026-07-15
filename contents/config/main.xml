@@ -49,6 +49,30 @@
     <entry name="indicatorThickness" type="Int">
       <default>4</default>
     </entry>
+    <entry name="audioSpectrumEnabled" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="audioSpectrumIntensity" type="Int">
+      <default>35</default>
+    </entry>
+    <entry name="audioSpectrumUsePlasmaTheme" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="audioSpectrumBarCount" type="Int">
+      <default>12</default>
+    </entry>
+    <entry name="audioSpectrumStyle" type="String">
+      <default>edge</default>
+    </entry>
+    <entry name="audioSpectrumBackgroundMode" type="String">
+      <default>plasma</default>
+    </entry>
+    <entry name="audioSpectrumOrigin" type="String">
+      <default>bottom</default>
+    </entry>
+    <entry name="audioSpectrumFlow" type="String">
+      <default>none</default>
+    </entry>
   </group>
   <group name="Mouse">
     <entry name="hoverAnimation" type="String">
@@ -56,6 +80,21 @@
     </entry>
     <entry name="clickEffect" type="String">
       <default>none</default>
+    </entry>
+    <entry name="popupAnimation" type="String">
+      <default>scale</default>
+    </entry>
+    <entry name="popupAnimationSpeed" type="String">
+      <default>normal</default>
+    </entry>
+    <entry name="popupAnimationSpeedPercent" type="Int">
+      <default>100</default>
+    </entry>
+    <entry name="popupAnimationIntensity" type="Int">
+      <default>100</default>
+    </entry>
+    <entry name="contextMenuTransitionSpeed" type="Int">
+      <default>100</default>
     </entry>
     <entry name="globalMouseCursor" type="Bool">
       <default>false</default>

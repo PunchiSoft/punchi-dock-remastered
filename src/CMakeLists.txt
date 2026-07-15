@@ -17,8 +17,14 @@ set_target_properties(punchidockintegrationplugin PROPERTIES
 )
 
 target_sources(punchidockintegration PRIVATE
+    audiospectrumcontroller.cpp
+    audiospectrumcontroller.h
     dockruntimeservice.cpp
     dockruntimeservice.h
+    pipewireaudiobackend.cpp
+    pipewireaudiobackend.h
+    spectrumanalyzer.cpp
+    spectrumanalyzer.h
     systemdiscovery.cpp
     systemdiscovery.h
     themeintegration.cpp
@@ -32,9 +38,11 @@ target_link_libraries(punchidockintegration
         Qt6::Core
         Qt6::Qml
         KF6::CoreAddons
+        KF6::JobWidgets
         KF6::KIOCore
         KF6::KIOGui
         KF6::Service
+        PkgConfig::PipeWire
         Plasma::Plasma
 )
 

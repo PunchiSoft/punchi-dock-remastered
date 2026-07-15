@@ -13,9 +13,16 @@ include(KDEInstallDirs6)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(ECMQmlModule)
+include(CTest)
 
 find_package(Qt6 6.6 REQUIRED COMPONENTS Core Qml)
-find_package(KF6 6.0 REQUIRED COMPONENTS CoreAddons KIO Service)
+find_package(KF6 6.0 REQUIRED COMPONENTS CoreAddons JobWidgets KIO Service)
 find_package(Plasma 6.0 REQUIRED)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PipeWire REQUIRED IMPORTED_TARGET libpipewire-0.3)
 
 add_subdirectory(src)
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

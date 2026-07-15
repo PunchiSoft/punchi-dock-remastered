@@ -17,13 +17,16 @@ Este repositorio es una reescritura modular del proyecto original [Punchi Dock P
 
 ## Requisitos
 
-- Linux con KDE Plasma 6.
+- Fedora 44 o posterior en `x86_64` es el objetivo actual de publicación.
+- KDE Plasma 6 o posterior.
 - Wayland es la sesión principal soportada.
-- Fedora 44 o posterior es el entorno principal de desarrollo y pruebas.
+- Los binarios nativos incluidos en el paquete `.plasmoid` se compilan y validan actualmente para Fedora 44+ `x86_64`; no son binarios universales para todas las distribuciones con Plasma.
 
 ## Instalar un paquete publicado
 
-El usuario final debe instalar un paquete `.plasmoid` ya construido. No necesita paquetes de desarrollo ni un compilador.
+El usuario final debe instalar un paquete `.plasmoid` ya construido para la plataforma soportada. No necesita paquetes de desarrollo ni un compilador.
+
+El objetivo actual del paquete publicado es Fedora 44+ `x86_64` con KDE Plasma 6 o posterior.
 
 En Fedora, `kpackagetool6` pertenece a `kf6-kpackage` y normalmente ya está disponible en una instalación de Plasma:
 
@@ -40,7 +43,7 @@ kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered.plasmoid
 
 Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actualizado no se carga inmediatamente.
 
-## Compilar desde fuentes en Fedora 44+
+## Compilar desde fuentes en Fedora 44+ `x86_64`
 
 El árbol de fuentes contiene un módulo QML nativo en C++. Instalar directamente el directorio del repositorio con `kpackagetool6` no compila ese módulo.
 
@@ -51,13 +54,14 @@ sudo dnf install \
     cmake gcc-c++ ninja-build extra-cmake-modules \
     qt6-qtdeclarative-devel \
     kf6-kcoreaddons-devel kf6-kio-devel kf6-kservice-devel \
+    pipewire-devel \
     zip unzip
 ```
 
 Compila el módulo nativo y crea el paquete:
 
 ```bash
-PATH="/usr/lib64/qt6/bin:$PATH" scripts/empaquetar-plasmoid.sh
+scripts/empaquetar-plasmoid.sh
 ```
 
 El paquete resultante se genera en:
@@ -69,7 +73,7 @@ dist/punchi-dock-remastered.plasmoid
 Para compilar, instalar y reiniciar Plasma durante una prueba local de desarrollo:
 
 ```bash
-PATH="/usr/lib64/qt6/bin:$PATH" scripts/probar-plasmoid.sh
+scripts/probar-plasmoid.sh
 ```
 
 ## Estructura del proyecto
