@@ -29,10 +29,6 @@ Controls.Dialog {
     readonly property string containerLayoutValue: itemEditor.containerLayoutValue
     property alias containerLayoutIndex: itemEditor.containerLayoutIndex
     property alias containerShowLabelsChecked: itemEditor.containerShowLabelsChecked
-    property alias radialBackgroundChecked: itemEditor.radialBackgroundChecked
-    property alias radialIconSlotsChecked: itemEditor.radialIconSlotsChecked
-    property alias radialDistanceValue: itemEditor.radialDistanceValue
-    property alias fanCenterDistanceValue: itemEditor.fanCenterDistanceValue
     property alias actionsEnabledChecked: actionEditor.actionsEnabledChecked
     property alias actionPopupLimitRowsChecked: actionEditor.actionPopupLimitRowsChecked
     property alias actionPopupMaxVisibleRowsValue: actionEditor.actionPopupMaxVisibleRowsValue
@@ -58,13 +54,7 @@ Controls.Dialog {
     property string gridText: "Grid"
     property string listText: "List"
     property string detailedText: "Detailed"
-    property string radialText: "Radial"
-    property string fanText: "Fan"
     property string showContainerLabelsText: "Show labels"
-    property string radialBackgroundText: "Show radial background"
-    property string radialIconSlotsText: "Show icon circles"
-    property string radialDistanceLabel: "Radial distance:"
-    property string fanCenterDistanceLabel: "Fan spread:"
     property string noteText: "Note"
     property string separatorText: "Separator"
     property string spacerText: "Spacer"
@@ -148,13 +138,7 @@ Controls.Dialog {
             gridText: root.gridText
             listText: root.listText
             detailedText: root.detailedText
-            radialText: root.radialText
-            fanText: root.fanText
             showContainerLabelsText: root.showContainerLabelsText
-            radialBackgroundText: root.radialBackgroundText
-            radialIconSlotsText: root.radialIconSlotsText
-            radialDistanceLabel: root.radialDistanceLabel
-            fanCenterDistanceLabel: root.fanCenterDistanceLabel
             noteText: root.noteText
             separatorText: root.separatorText
             spacerText: root.spacerText

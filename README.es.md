@@ -37,13 +37,13 @@ En Fedora, `kpackagetool6` pertenece a `kf6-kpackage` y normalmente ya está dis
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.6-fedora44-x86_64.plasmoid
 ```
 
 Para actualizar una instalación existente:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.6-fedora44-x86_64.plasmoid
 ```
 
 Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actualizado no se carga inmediatamente.
@@ -64,19 +64,30 @@ sudo dnf install \
     zip unzip
 ```
 
-Compila el módulo nativo y crea un paquete `Release` sin símbolos de desarrollo:
+Compila el módulo nativo y crea el artefacto versionado para el sistema actual:
 
 ```bash
 scripts/empaquetar-plasmoid.sh
 ```
 
-El paquete resultante se genera en:
+El script detecta Fedora o Debian desde `/etc/os-release`. El paquete resultante se genera con un nombre inequívoco:
 
 ```text
-dist/punchi-dock-remastered.plasmoid
+dist/punchi-dock-remastered-<version>-<distribución><versión>-<arquitectura>.plasmoid
 ```
 
-Define `PACKAGE_BUILD_TYPE` o `STRIP_BIN` solo cuando un flujo de desarrollo o compilación cruzada necesite reemplazarlos explícitamente.
+Por ejemplo: `punchi-dock-remastered-0.8.6-fedora44-x86_64.plasmoid` o `punchi-dock-remastered-0.8.6-debian13-x86_64.plasmoid`. No instales en Debian un artefacto identificado como Fedora ni a la inversa.
+
+Los wrappers explícitos quedan disponibles para automatización o diagnóstico:
+
+```bash
+scripts/build-fedora-package.sh
+scripts/build-debian-package.sh
+```
+
+Cada wrapper exige ejecutarse en su distribución y usa su baseline propio. El flujo Debian fue comprobado en Debian 13, donde el artefacto se instaló y cargó correctamente. Consulta [scripts/README.md](scripts/README.md) para distinguir empaquetado, instalación local y validación limpia.
+
+Define `PACKAGE_BUILD_TYPE` o `STRIP_BIN` solo cuando un flujo de desarrollo necesite reemplazarlos explícitamente. No uses `PACKAGE_OUTPUT_FILE` para poner una etiqueta Debian a un binario Fedora ni uses compilación cruzada para publicar el módulo QML nativo.
 
 Para compilar, instalar y reiniciar Plasma durante una prueba local de desarrollo:
 

@@ -3,13 +3,70 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+    cat <<'EOF'
+Uso: scripts/empaquetar-plasmoid.sh
+
+Detecta Fedora o Debian y genera un paquete versionado para el sistema actual.
+Para seleccionar un perfil explícitamente:
+  scripts/build-fedora-package.sh
+  scripts/build-debian-package.sh
+EOF
+    exit 0
+fi
+
+if (( $# > 0 )); then
+    echo "Error: este script no acepta argumentos. Usa --help para ver los perfiles disponibles." >&2
+    exit 1
+fi
+
+if [[ "${PUNCHI_PACKAGE_CORE:-0}" != "1" ]]; then
+    if [[ ! -r /etc/os-release ]]; then
+        echo "Error: no se pudo detectar la distribución desde /etc/os-release." >&2
+        exit 1
+    fi
+
+    # shellcheck disable=SC1091
+    source /etc/os-release
+
+    case "${ID:-}" in
+        fedora)
+            echo "==> Perfil detectado: Fedora ${VERSION_ID:-desconocida}"
+            exec "$SCRIPT_DIR/build-fedora-package.sh"
+            ;;
+        debian)
+            echo "==> Perfil detectado: Debian ${VERSION_ID:-desconocida}"
+            exec "$SCRIPT_DIR/build-debian-package.sh"
+            ;;
+        *)
+            echo "Error: distribución sin perfil de empaquetado: ${ID:-desconocida}." >&2
+            echo "Perfiles disponibles: Fedora y Debian." >&2
+            exit 1
+            ;;
+    esac
+fi
+
 BUILD_DIR="${BUILD_DIR:-$PROJECT_ROOT/build}"
 PACKAGE_ROOT="$BUILD_DIR/package-root"
-DIST_DIR="$PROJECT_ROOT/dist"
-ZIP_FILE="$DIST_DIR/punchi-dock-remastered.plasmoid"
+DIST_DIR="${DIST_DIR:-$PROJECT_ROOT/dist}"
+
+if [[ -z "${PACKAGE_OUTPUT_FILE:-}" ]]; then
+    echo "Error interno: el perfil de plataforma no definió PACKAGE_OUTPUT_FILE." >&2
+    exit 1
+fi
+
+if [[ "$PACKAGE_OUTPUT_FILE" != /* ]]; then
+    PACKAGE_OUTPUT_FILE="$PROJECT_ROOT/$PACKAGE_OUTPUT_FILE"
+fi
+
+ZIP_FILE="$PACKAGE_OUTPUT_FILE"
+DIST_DIR="$(dirname "$ZIP_FILE")"
 QMLLINT_BASELINE_FILE="${QMLLINT_BASELINE_FILE:-$PROJECT_ROOT/scripts/qmllint-baseline.env}"
 PACKAGE_BUILD_TYPE="${PACKAGE_BUILD_TYPE:-Release}"
 STRIP_BIN="${STRIP_BIN:-strip}"
+
+echo "==> Artefacto objetivo: $ZIP_FILE"
 
 resolve_qmllint() {
     local candidate=""
@@ -22,6 +79,7 @@ resolve_qmllint() {
 
     candidates+=(
         "/usr/lib64/qt6/bin/qmllint"
+        "/usr/lib/qt6/bin/qmllint"
         "qmllint6"
         "qmllint"
     )
@@ -42,7 +100,7 @@ resolve_qmllint() {
         fi
     done
 
-    echo "A Qt 6 qmllint executable is required. Set QMLLINT_BIN or install /usr/lib64/qt6/bin/qmllint." >&2
+    echo "A Qt 6 qmllint executable is required. Set QMLLINT_BIN or install the Qt 6 development tools." >&2
     exit 1
 }
 
@@ -69,6 +127,12 @@ QMLLINT_BASELINE_UNQUALIFIED=0
 QMLLINT_BASELINE_LAYOUT=0
 QMLLINT_BASELINE_MISSING_PROPERTY=0
 QMLLINT_BASELINE_IMPORT=0
+if [[ ! -f "$QMLLINT_BASELINE_FILE" && "${QMLLINT_RECORD_BASELINE:-0}" != "1" ]]; then
+    echo "Error: no existe el baseline de qmllint: $QMLLINT_BASELINE_FILE" >&2
+    echo "Define QMLLINT_BASELINE_FILE con un baseline calibrado para esta plataforma." >&2
+    exit 1
+fi
+
 if [[ -f "$QMLLINT_BASELINE_FILE" ]]; then
     # shellcheck disable=SC1090
     source "$QMLLINT_BASELINE_FILE"
@@ -91,6 +155,22 @@ warning_import="$(grep '^Warning:' "$QMLLINT_LOG" | grep -c '\[import\]' || true
 
 echo "qmllint warnings: total=$warning_total, unqualified=$warning_unqualified, layout=$warning_layout, missing-property=$warning_missing_property, import=$warning_import"
 echo "qmllint log: $QMLLINT_LOG"
+
+if [[ "${QMLLINT_RECORD_BASELINE:-0}" == "1" ]]; then
+    mkdir -p "$(dirname "$QMLLINT_BASELINE_FILE")"
+    printf 'QMLLINT_BASELINE_TOTAL=%s\n' "$warning_total" >"$QMLLINT_BASELINE_FILE"
+    printf 'QMLLINT_BASELINE_UNQUALIFIED=%s\n' "$warning_unqualified" >>"$QMLLINT_BASELINE_FILE"
+    printf 'QMLLINT_BASELINE_LAYOUT=%s\n' "$warning_layout" >>"$QMLLINT_BASELINE_FILE"
+    printf 'QMLLINT_BASELINE_MISSING_PROPERTY=%s\n' "$warning_missing_property" >>"$QMLLINT_BASELINE_FILE"
+    printf 'QMLLINT_BASELINE_IMPORT=%s\n' "$warning_import" >>"$QMLLINT_BASELINE_FILE"
+    echo "qmllint baseline recorded: $QMLLINT_BASELINE_FILE"
+
+    QMLLINT_BASELINE_TOTAL="$warning_total"
+    QMLLINT_BASELINE_UNQUALIFIED="$warning_unqualified"
+    QMLLINT_BASELINE_LAYOUT="$warning_layout"
+    QMLLINT_BASELINE_MISSING_PROPERTY="$warning_missing_property"
+    QMLLINT_BASELINE_IMPORT="$warning_import"
+fi
 
 if (( warning_total > QMLLINT_BASELINE_TOTAL \
     || warning_unqualified > QMLLINT_BASELINE_UNQUALIFIED \

@@ -17,7 +17,11 @@ Item {
     signal closeRequested()
 
     function focusFirstAction() {
-        openOption.forceActiveFocus()
+        openOption.forceActiveFocus(Qt.TabFocusReason)
+    }
+
+    function clearActionFocus() {
+        trashMenuRoot.forceActiveFocus(Qt.MouseFocusReason)
     }
 
     ColumnLayout {
@@ -39,8 +43,8 @@ Item {
             
             // Botón de cerrar
             Rectangle {
-                width: 20
-                height: 20
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
                 radius: 10
                 color: closeMouse.containsMouse || closeMouse.activeFocus ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.backgroundColor
                 

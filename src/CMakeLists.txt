@@ -19,6 +19,8 @@ set_target_properties(punchidockintegrationplugin PROPERTIES
 target_sources(punchidockintegration PRIVATE
     audiospectrumcontroller.cpp
     audiospectrumcontroller.h
+    commandclassification.cpp
+    commandclassification.h
     dockruntimeservice.cpp
     dockruntimeservice.h
     mpriscontroller.cpp

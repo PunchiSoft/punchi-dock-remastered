@@ -22,17 +22,9 @@ PlasmoidItem {
     // Detector de entorno (Panel vs Flotante)
     property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     property bool trashHasItems: false
-    property string activeTrashEmptySound: ""
     readonly property var visibleTaskRows: taskController.visibleTaskRows
     readonly property var overflowTaskRows: taskController.overflowTaskRows
     readonly property int taskVisualRevision: taskController.visualRevision
-    property var activeTaskPopupData: ({ "name": "", "windows": [] })
-    property var activeAppContextMenuData: ({ "name": "", "actions": [], "maxVisibleRows": 6 })
-    property string pendingTaskPopupAppName: ""
-    property var pendingTaskPopupRows: []
-    property var taskPopupVisualParent: null
-    property bool taskPopupHovered: false
-
     signal taskStructureChanged()
 
     // Visibilidad por Escritorios Virtuales
@@ -252,27 +244,6 @@ PlasmoidItem {
         onStateChanged: function(hasItems) {
             root.updateTrashState(hasItems)
         }
-        onOperationSucceeded: function(operation) {
-            if (operation === "emptyTrash") {
-                runtimeService.playSound(root.activeTrashEmptySound, "trash-empty")
-                if (trashMenuDialog.visible && trashContextContent.confirmationVisible) {
-                    trashSuccessCloseTimer.restart()
-                }
-            }
-        }
-        // qmllint enable unqualified
-    }
-
-    Timer {
-        id: trashSuccessCloseTimer
-        interval: 1200
-        repeat: false
-        // qmllint disable unqualified
-        onTriggered: {
-            trashMenuDialog.visible = false
-            trashContextContent.showMenu()
-            trashIntegration.resetOperationState()
-        }
         // qmllint enable unqualified
     }
 
@@ -444,10 +415,11 @@ PlasmoidItem {
 
     function updateNoteItem(noteItem, noteText, popupWidth, popupHeight) {
         if (!noteItem) {
-            return
+            return null
         }
 
         var updatedItems = []
+        var updatedNoteItem = noteItem
         var changed = false
         for (var i = 0; i < root.dockItems.length; i++) {
             var item = root.dockItems[i]
@@ -457,8 +429,8 @@ PlasmoidItem {
                     "popupWidth": popupWidth,
                     "popupHeight": popupHeight
                 })
+                updatedNoteItem = item
                 changed = true
-                root.activeNoteData = item
             }
             updatedItems.push(item)
         }
@@ -467,17 +439,13 @@ PlasmoidItem {
             root.dockItems = updatedItems
             syncDockItemsConfiguration()
         }
+        return updatedNoteItem
     }
 
     fullRepresentation: Item {
         id: mainContainer
         visible: !root.hiddenByVirtualDesktop
         enabled: visible
-        property bool contextMenuOpening: false
-        readonly property bool contextMenuVisible: contextMenuOpening
-            || appActionsDialog.visible
-            || trashMenuDialog.visible
-            || taskWindowsPopupContent.actionsVisible
         implicitWidth: visible ? dockWrapper.width : 0
         implicitHeight: visible ? dockWrapper.height : 0
         width: implicitWidth
@@ -487,297 +455,58 @@ PlasmoidItem {
         Layout.preferredWidth: root.panelPreferredWidth
         Layout.preferredHeight: root.panelPreferredHeight
 
-        Timer {
-            id: taskPopupOpenTimer
-            interval: 280
-            repeat: false
-            onTriggered: {
-                if (!mainContainer.contextMenuVisible
-                        && root.taskPopupVisualParent
-                        && root.pendingTaskPopupRows.length > 0) {
-                    mainContainer.openTaskWindowsPopup(root.pendingTaskPopupAppName,
-                        root.pendingTaskPopupRows, root.taskPopupVisualParent)
-                }
+        PopupCoordinator {
+            id: popupCoordinator
+            inPanel: root.inPanel
+            dockFallbackAnchor: dockWrapper
+            taskStructureSource: root
+            taskControllerRef: taskController
+            mprisControllerRef: mprisController
+            trashIntegrationRef: trashIntegration
+            trashContextContentRef: trashContextContent
+            notePopupContentRef: notePopupContent
+            taskWindowsPopupContentRef: taskWindowsPopupContent
+            folderPopupDialogRef: folderPopupDialog
+            calendarPopupDialogRef: calendarPopupDialog
+            trashMenuDialogRef: trashMenuDialog
+            notePopupDialogRef: notePopupDialog
+            appActionsDialogRef: appActionsDialog
+            taskWindowsDialogRef: taskWindowsDialog
+            taskOverflowDialogRef: taskOverflowDialog
+            applicationIdentityResolver: function(itemData) {
+                return root.applicationIdentityForItem(itemData)
+            }
+            contextActionsResolver: function(itemData, rows) {
+                return root.itemContextActions(itemData, rows)
             }
         }
 
-        Timer {
-            id: taskPopupCloseTimer
-            interval: 260
-            repeat: false
-            onTriggered: {
-                if (!root.taskPopupHovered && !mainContainer.taskPopupSourceContainsMouse()) {
-                    taskWindowsDialog.visible = false
-                }
-            }
-        }
-
+        // qmllint disable unqualified
         Connections {
-            target: root
-            function onTaskStructureChanged() {
-                mainContainer.refreshTaskPopupAfterStructureChange()
-            }
-        }
+            target: trashIntegration
 
-        function refreshTaskPopupAfterStructureChange() {
-            if (!taskWindowsDialog.visible) {
-                return -1
-            }
-
-            const popupData = root.activeTaskPopupData || {}
-            const applicationId = String(popupData.applicationId || "")
-            const windowUuids = popupData.windowUuids instanceof Array
-                ? popupData.windowUuids
-                : []
-            if (applicationId.length === 0 && windowUuids.length === 0) {
-                return -1
-            }
-
-            const windows = taskController.taskWindowsForIdentity(applicationId, windowUuids)
-            if (windows.length === 0) {
-                taskWindowsDialog.visible = false
-                return 0
-            }
-
-            const previousKey = (popupData.windows || []).map(function(windowData) {
-                return String(windowData.windowUuid || (windowData.row + ":" + windowData.title))
-            }).join("\n")
-            const currentKey = windows.map(function(windowData) {
-                return String(windowData.windowUuid || (windowData.row + ":" + windowData.title))
-            }).join("\n")
-            if (currentKey !== previousKey) {
-                root.activeTaskPopupData = {
-                    "name": String(popupData.name || ""),
-                    "applicationId": applicationId,
-                    "windowUuids": windows.map(function(windowData) {
-                        return String(windowData.windowUuid || "")
-                    }).filter(function(uuid) {
-                        return uuid.length > 0
-                    }),
-                    "windows": windows
+            function onOperationSucceeded(operation) {
+                if (operation !== "emptyTrash") {
+                    return
+                }
+                runtimeService.playSound(popupCoordinator.activeTrashEmptySound, "trash-empty")
+                if (trashMenuDialog.visible && trashContextContent.confirmationVisible) {
+                    trashSuccessCloseTimer.restart()
                 }
             }
-
-            return windows.length
         }
 
-        function removeTaskPopupWindow(taskRow) {
-            const popupData = root.activeTaskPopupData || {}
-            const windows = (popupData.windows || []).filter(function(windowData) {
-                return Number(windowData.row) !== Number(taskRow)
-            })
-            if (windows.length === 0) {
-                taskWindowsDialog.visible = false
-                return
-            }
-
-            root.activeTaskPopupData = {
-                "name": String(popupData.name || ""),
-                "applicationId": String(popupData.applicationId || ""),
-                "windowUuids": windows.map(function(windowData) {
-                    return String(windowData.windowUuid || "")
-                }).filter(function(uuid) {
-                    return uuid.length > 0
-                }),
-                "windows": windows
-            }
-        }
-
-        function reanchorTaskWindowsPopup() {
-            if (!taskWindowsDialog.visible || !taskWindowsDialog.visualParent) {
-                return
-            }
-
-            const anchor = taskWindowsDialog.visualParent
-            taskWindowsDialog.visualParent = null
-            taskWindowsDialog.visualParent = anchor
-        }
-
-        function scheduleTaskWindowsPopup(appName, rows, visualParent) {
-            if (mainContainer.contextMenuVisible) {
-                taskPopupOpenTimer.stop()
-                return
-            }
-
-            root.pendingTaskPopupAppName = appName || ""
-            root.pendingTaskPopupRows = rows || []
-            root.taskPopupVisualParent = visualParent || null
-            taskPopupCloseTimer.stop()
-            if (root.pendingTaskPopupRows.length > 0 && root.taskPopupVisualParent) {
-                taskPopupOpenTimer.restart()
-            }
-        }
-
-        function cancelPendingTaskWindowsPopup(visualParent) {
-            if (visualParent && root.taskPopupVisualParent
-                    && visualParent !== root.taskPopupVisualParent) {
-                return
-            }
-            if (!taskWindowsDialog.visible) {
-                taskPopupOpenTimer.stop()
-                root.pendingTaskPopupAppName = ""
-                root.pendingTaskPopupRows = []
-                root.taskPopupVisualParent = null
-                root.taskPopupHovered = false
-                taskPopupCloseTimer.stop()
-                return
-            }
-            if (!root.taskPopupHovered) {
-                taskPopupCloseTimer.restart()
-            }
-        }
-
-        function taskPopupSourceContainsMouse() {
-            try {
-                return !!(root.taskPopupVisualParent && root.taskPopupVisualParent.containsMouse)
-            } catch (error) {
-                return false
-            }
-        }
-
-        function popupAnchor(visualParent) {
-            if (!visualParent) {
-                return dockWrapper
-            }
-            if (!root.inPanel && visualParent.popupAnchorItem) {
-                return visualParent.popupAnchorItem
-            }
-            return visualParent
-        }
-
-        function closeAllPopups(exceptDialog) {
-            if (folderPopupDialog !== exceptDialog) {
-                folderPopupDialog.visible = false
-            }
-            if (calendarPopupDialog !== exceptDialog) {
-                calendarPopupDialog.visible = false
-            }
-            if (trashMenuDialog !== exceptDialog) {
+        Timer {
+            id: trashSuccessCloseTimer
+            interval: 1200
+            repeat: false
+            onTriggered: {
                 trashMenuDialog.visible = false
-            }
-            if (notePopupDialog !== exceptDialog) {
-                notePopupDialog.visible = false
-            }
-            if (appActionsDialog !== exceptDialog) {
-                appActionsDialog.visible = false
-            }
-            if (taskOverflowDialog !== exceptDialog) {
-                taskOverflowDialog.visible = false
-            }
-            if (taskWindowsDialog !== exceptDialog) {
-                taskWindowsDialog.visible = false
-            }
-            if (exceptDialog !== taskWindowsDialog) {
-                taskPopupOpenTimer.stop()
-                taskPopupCloseTimer.stop()
-            }
-        }
-
-        // qmllint disable unqualified
-        function openTrashMenu(itemData, visualParent) {
-            mainContainer.closeAllPopups(trashMenuDialog)
-            root.activeTrashEmptySound = itemData && itemData.emptySound
-                ? String(itemData.emptySound)
-                : ""
-            trashMenuDialog.visualParent = mainContainer.popupAnchor(visualParent)
-            if (trashIntegration.emptying) {
-                trashContextContent.showConfirmation()
-            } else {
-                trashIntegration.resetOperationState()
                 trashContextContent.showMenu()
+                trashIntegration.resetOperationState()
             }
-            trashMenuDialog.visible = !trashMenuDialog.visible
         }
         // qmllint enable unqualified
-
-        // qmllint disable unqualified
-        function openAppContextMenu(itemData, visualParent, taskRows) {
-            const rows = taskRows instanceof Array
-                ? taskRows
-                : taskController.taskStateForDockItem(itemData).rows
-            mprisController.applicationId = root.applicationIdentityForItem(itemData)
-            var actions = root.itemContextActions(itemData, rows)
-            if (actions.length === 0) {
-                return
-            }
-
-            root.activeAppContextMenuData = {
-                "name": itemData && itemData.name ? itemData.name : "",
-                "icon": itemData && itemData.icon ? itemData.icon : "emblem-music-symbolic",
-                "actions": actions,
-                "maxVisibleRows": Math.max(1, Math.min(12,
-                    Number(itemData && itemData.actionPopupMaxVisibleRows ? itemData.actionPopupMaxVisibleRows : 6)))
-            }
-            if (taskWindowsDialog.visible && root.taskPopupVisualParent === visualParent) {
-                taskPopupOpenTimer.stop()
-                taskPopupCloseTimer.stop()
-                taskWindowsPopupContent.showActions()
-                return
-            }
-
-            const anchor = mainContainer.popupAnchor(visualParent)
-            mainContainer.closeAllPopups(appActionsDialog)
-            mainContainer.contextMenuOpening = true
-            Qt.callLater(function() {
-                appActionsDialog.visualParent = anchor
-                appActionsDialog.visible = true
-                Qt.callLater(function() {
-                    mainContainer.contextMenuOpening = false
-                })
-            })
-        }
-        // qmllint enable unqualified
-
-        function openFolderPopup(itemData, itemIndex, visualParent) {
-            mainContainer.closeAllPopups(folderPopupDialog)
-            root.activeFolderData = itemData
-            root.activeFolderIndex = itemIndex
-            folderPopupDialog.visualParent = mainContainer.popupAnchor(visualParent)
-            folderPopupDialog.visible = !folderPopupDialog.visible
-        }
-
-        function openCalendarPopup(visualParent) {
-            mainContainer.closeAllPopups(calendarPopupDialog)
-            calendarPopupDialog.visualParent = mainContainer.popupAnchor(visualParent)
-            calendarPopupDialog.visible = !calendarPopupDialog.visible
-        }
-
-        function openNotePopup(itemData, visualParent) {
-            mainContainer.closeAllPopups(null)
-            root.activeNoteData = itemData
-            notePopupDialog.visualParent = mainContainer.popupAnchor(visualParent)
-            notePopupDialog.visible = true
-            Qt.callLater(function() {
-                notePopupContent.focusEditor()
-            })
-        }
-
-        function openTaskWindowsPopup(appName, rows, visualParent) {
-            taskPopupOpenTimer.stop()
-            mainContainer.closeAllPopups(taskWindowsDialog)
-            taskWindowsPopupContent.showPreviews()
-            const popupRows = rows || []
-            const popupWindows = taskController.taskWindowsForRows(popupRows)
-            root.activeTaskPopupData = {
-                "name": appName || "",
-                "applicationId": taskController.taskApplicationIdForRows(popupRows),
-                "windowUuids": popupWindows.map(function(windowData) {
-                    return String(windowData.windowUuid || "")
-                }).filter(function(uuid) {
-                    return uuid.length > 0
-                }),
-                "windows": popupWindows
-            }
-            taskWindowsDialog.visualParent = mainContainer.popupAnchor(visualParent)
-            root.taskPopupVisualParent = visualParent
-            taskWindowsDialog.visible = true
-        }
-
-        function openTaskOverflowPopup(visualParent) {
-            mainContainer.closeAllPopups(taskOverflowDialog)
-            taskOverflowDialog.visualParent = mainContainer.popupAnchor(visualParent)
-            taskOverflowDialog.visible = true
-        }
 
         Item {
             id: dockWrapper
@@ -976,35 +705,35 @@ PlasmoidItem {
                             : ""
                         preferTaskPopupOnHover: root.windowPreviewStyle !== "none" && taskState.count > 1
                         suppressTooltip: mainContainer.contextMenuVisible
-                            || (taskWindowsDialog.visible && root.taskPopupVisualParent === dockItemDelegate)
+                            || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === dockItemDelegate)
                         supportsContextMenu: root.itemHasContextMenu(modelData, taskState.rows)
                         
                         onItemClicked: function(cmd) {
                             if (modelData.type === "folder") {
-                                mainContainer.openFolderPopup(modelData, index, dockItemDelegate)
+                                popupCoordinator.openFolderPopup(modelData, dockItemDelegate)
                             } else if (modelData.type === "calendar") {
-                                mainContainer.openCalendarPopup(dockItemDelegate)
+                                popupCoordinator.openCalendarPopup(dockItemDelegate)
                             } else if (modelData.type === "note") {
-                                mainContainer.openNotePopup(modelData, dockItemDelegate)
+                                popupCoordinator.openNotePopup(modelData, dockItemDelegate)
                             } else {
-                                mainContainer.closeAllPopups(null)
+                                popupCoordinator.closeAllPopups(null)
                                 root.handleDockItemActivation(modelData, dockItemDelegate)
                             }
                         }
-                        onContextMenuRequested: function(visualParent) {
+                        onContextMenuRequested: function(visualParent, keyboardInvoked) {
                             if (modelData.type === "trash") {
-                                mainContainer.openTrashMenu(modelData, visualParent)
+                                popupCoordinator.openTrashMenu(modelData, visualParent, keyboardInvoked)
                             } else if (root.itemHasContextMenu(modelData, taskState.rows)) {
-                                mainContainer.openAppContextMenu(modelData, visualParent, taskState.rows)
+                                popupCoordinator.openAppContextMenu(modelData, visualParent, taskState.rows)
                             }
                         }
                         onHoverEntered: function(visualParent) {
                             if (root.windowPreviewStyle !== "none" && taskState.count > 0) {
-                                mainContainer.scheduleTaskWindowsPopup(modelData.name || "", taskState.rows, visualParent)
+                                popupCoordinator.scheduleTaskWindowsPopup(modelData.name || "", taskState.rows, visualParent)
                             }
                         }
                         onHoverExited: function(visualParent) {
-                            mainContainer.cancelPendingTaskWindowsPopup(visualParent)
+                            popupCoordinator.cancelPendingTaskWindowsPopup(visualParent)
                         }
                     }
                 }
@@ -1051,11 +780,11 @@ PlasmoidItem {
                         taskPreviewWindowUuid: taskData.windowUuid
                         preferTaskPopupOnHover: root.windowPreviewStyle !== "none" && taskData.count > 1
                         suppressTooltip: mainContainer.contextMenuVisible
-                            || (taskWindowsDialog.visible && root.taskPopupVisualParent === taskDockItemDelegate)
+                            || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === taskDockItemDelegate)
                         supportsContextMenu: root.itemHasContextMenu(modelData, taskData.rows)
 
                         onItemClicked: function() {
-                            mainContainer.closeAllPopups(null)
+                            popupCoordinator.closeAllPopups(null)
                             if (taskData.count > 1) {
                                 taskController.activatePreferredTaskRow(taskData.rows)
                             } else if (taskData.firstRow >= 0) {
@@ -1063,15 +792,15 @@ PlasmoidItem {
                             }
                         }
                         onContextMenuRequested: function(visualParent) {
-                            mainContainer.openAppContextMenu(modelData, visualParent, taskData.rows)
+                            popupCoordinator.openAppContextMenu(modelData, visualParent, taskData.rows)
                         }
                         onHoverEntered: function(visualParent) {
                             if (root.windowPreviewStyle !== "none" && taskData.count > 0) {
-                                mainContainer.scheduleTaskWindowsPopup(itemName, taskData.rows, visualParent)
+                                popupCoordinator.scheduleTaskWindowsPopup(itemName, taskData.rows, visualParent)
                             }
                         }
                         onHoverExited: function(visualParent) {
-                            mainContainer.cancelPendingTaskWindowsPopup(visualParent)
+                            popupCoordinator.cancelPendingTaskWindowsPopup(visualParent)
                         }
                     }
                 }
@@ -1097,7 +826,7 @@ PlasmoidItem {
                         root.overflowTaskRows.length)
                     taskIndicatorCount: root.overflowTaskRows.length
 
-                    onItemClicked: mainContainer.openTaskOverflowPopup(taskOverflowDockItem)
+                    onItemClicked: popupCoordinator.openTaskOverflowPopup(taskOverflowDockItem)
                 }
             }
         }
@@ -1113,11 +842,7 @@ PlasmoidItem {
                 : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
             hideOnWindowDeactivate: true
-            // Si es circular/abanico desactivamos el fondo nativo para el vuelo de iconos.
-            // Si es lista/grid/detalle, usamos el fondo nativo estándar del tema de KDE (tipo Kickoff)
-            backgroundHints: (root.activeFolderData.layout === "circular" || root.activeFolderData.layout === "fan")
-                ? PlasmaCore.Types.NoBackground
-                : PlasmaCore.Types.StandardBackground
+            backgroundHints: PlasmaCore.Types.StandardBackground
 
             mainItem: PopupAnimatedContent {
                 popupVisible: folderPopupDialog.visible
@@ -1130,10 +855,10 @@ PlasmoidItem {
 
                 FolderPopup {
                     id: folderPopupContent
-                    folderItem: root.activeFolderData
-                    layoutMode: root.activeFolderData.layout || "grid"
-                    virtualEdge: Plasmoid.location
-                    isOpen: folderPopupDialog.visible
+                    folderItem: popupCoordinator.activeFolderData
+                    layoutMode: ["list", "detailed"].indexOf(popupCoordinator.activeFolderData.layout) >= 0
+                        ? popupCoordinator.activeFolderData.layout
+                        : "grid"
                     maximumAvailableHeight: root.taskPopupAvailableHeight
 
                     onAppLaunched: function(app) {
@@ -1245,7 +970,7 @@ PlasmoidItem {
                 ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
                 : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
-            hideOnWindowDeactivate: !mainContainer.contextMenuOpening
+            hideOnWindowDeactivate: !popupCoordinator.contextMenuOpening
             backgroundHints: PlasmaCore.Types.NoBackground
 
             mainItem: PopupAnimatedContent {
@@ -1260,14 +985,14 @@ PlasmoidItem {
                 ContextSurfaceStack {
                     id: appActionsSurfaceStack
                     mediaController: mprisController
-                    mediaIcon: root.activeAppContextMenuData.icon || "emblem-music-symbolic"
+                    mediaIcon: popupCoordinator.activeAppContextMenuData.icon || "emblem-music-symbolic"
                     maximumAvailableHeight: root.taskPopupAvailableHeight
 
                     AppActionsPopup {
                         id: appActionsContent
-                        itemName: root.activeAppContextMenuData.name || ""
-                        actions: root.activeAppContextMenuData.actions || []
-                        maxVisibleRows: root.activeAppContextMenuData.maxVisibleRows || 6
+                        itemName: popupCoordinator.activeAppContextMenuData.name || ""
+                        actions: popupCoordinator.activeAppContextMenuData.actions || []
+                        maxVisibleRows: popupCoordinator.activeAppContextMenuData.maxVisibleRows || 6
 
                         onActionTriggered: function(action) {
                             appActionsDialog.visible = false
@@ -1294,7 +1019,9 @@ PlasmoidItem {
             backgroundHints: PlasmaCore.Types.StandardBackground
             onVisibleChanged: {
                 if (!visible && notePopupContent.currentText !== notePopupContent.initialText) {
-                    root.updateNoteItem(root.activeNoteData, notePopupContent.currentText, notePopupContent.activeWidth, notePopupContent.activeHeight)
+                    popupCoordinator.activeNoteData = root.updateNoteItem(popupCoordinator.activeNoteData,
+                        notePopupContent.currentText, notePopupContent.activeWidth,
+                        notePopupContent.activeHeight)
                 }
             }
 
@@ -1309,13 +1036,14 @@ PlasmoidItem {
 
                 NotePopup {
                     id: notePopupContent
-                    noteItem: root.activeNoteData
+                    noteItem: popupCoordinator.activeNoteData
                     onCloseRequested: {
                         notePopupDialog.visible = false
                     }
                     onClearRequested: function(noteText, popupWidth, popupHeight) {
                         notePopupContent.initialText = noteText
-                        root.updateNoteItem(root.activeNoteData, noteText, popupWidth, popupHeight)
+                        popupCoordinator.activeNoteData = root.updateNoteItem(
+                            popupCoordinator.activeNoteData, noteText, popupWidth, popupHeight)
                     }
                 }
             }
@@ -1335,11 +1063,7 @@ PlasmoidItem {
             onVisibleChanged: {
                 if (!visible) {
                     taskWindowsPopupContent.showPreviews()
-                    root.pendingTaskPopupAppName = ""
-                    root.pendingTaskPopupRows = []
-                    root.taskPopupVisualParent = null
-                    root.taskPopupHovered = false
-                    taskPopupCloseTimer.stop()
+                    popupCoordinator.resetTaskPopupState()
                 }
             }
 
@@ -1355,27 +1079,22 @@ PlasmoidItem {
                 ContextSurfaceStack {
                     id: taskContextSurfaceStack
                     mediaController: mprisController
-                    mediaIcon: root.activeAppContextMenuData.icon || "emblem-music-symbolic"
+                    mediaIcon: popupCoordinator.activeAppContextMenuData.icon || "emblem-music-symbolic"
                     showMedia: taskWindowsPopupContent.actionsVisible
                     maximumAvailableHeight: root.taskPopupAvailableHeight
                     onImplicitHeightChanged: {
                         if (taskWindowsDialog.visible) {
-                            Qt.callLater(mainContainer.reanchorTaskWindowsPopup)
+                            Qt.callLater(popupCoordinator.reanchorTaskWindowsPopup)
                         }
                     }
                     onContainsMouseChanged: {
-                        root.taskPopupHovered = containsMouse
-                        if (containsMouse) {
-                            taskPopupCloseTimer.stop()
-                        } else if (!mainContainer.taskPopupSourceContainsMouse()) {
-                            taskPopupCloseTimer.restart()
-                        }
+                        popupCoordinator.setTaskPopupHovered(containsMouse)
                     }
 
                     TaskContextPopup {
                         id: taskWindowsPopupContent
-                        appName: root.activeTaskPopupData.name || ""
-                        windows: root.activeTaskPopupData.windows || []
+                        appName: popupCoordinator.activeTaskPopupData.name || ""
+                        windows: popupCoordinator.activeTaskPopupData.windows || []
                         previewStyle: root.windowPreviewStyle
                         previewScale: root.windowPreviewScale
                         automaticPopupRadius: root.taskPopupRadiusAuto
@@ -1384,9 +1103,9 @@ PlasmoidItem {
                         inPanel: root.inPanel
                         maxVisibleRows: root.maxPopupRows
                         maximumAvailableHeight: root.taskPopupAvailableHeight
-                        actionItemName: root.activeAppContextMenuData.name || ""
-                        actions: root.activeAppContextMenuData.actions || []
-                        maxVisibleActionRows: root.activeAppContextMenuData.maxVisibleRows || 6
+                        actionItemName: popupCoordinator.activeAppContextMenuData.name || ""
+                        actions: popupCoordinator.activeAppContextMenuData.actions || []
+                        maxVisibleActionRows: popupCoordinator.activeAppContextMenuData.maxVisibleRows || 6
                         // qmllint disable unqualified
                         transitionSpeedPercent: root.contextMenuTransitionSpeed
                         // qmllint enable unqualified
@@ -1406,7 +1125,7 @@ PlasmoidItem {
                         }
                         onCloseWindowRequested: function(taskRow) {
                             if (taskController.closeTaskRow(taskRow)) {
-                                mainContainer.removeTaskPopupWindow(taskRow)
+                                popupCoordinator.removeTaskPopupWindow(taskRow)
                             }
                         }
                         onCloseRequested: {
@@ -1449,7 +1168,7 @@ PlasmoidItem {
                     onEntryActivated: function(entry) {
                         taskOverflowDialog.visible = false
                         if (entry.count > 1) {
-                            mainContainer.openTaskWindowsPopup(entry.name, entry.rows, taskOverflowDockItem)
+                            popupCoordinator.openTaskWindowsPopup(entry.name, entry.rows, taskOverflowDockItem)
                         } else if (entry.firstRow >= 0) {
                             taskController.activateTaskRow(entry.firstRow)
                         }
@@ -1461,8 +1180,4 @@ PlasmoidItem {
 
     }
 
-    // Datos del popup de carpeta activo
-    property var activeFolderData: ({})
-    property int activeFolderIndex: -1
-    property var activeNoteData: ({})
 }

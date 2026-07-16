@@ -139,7 +139,9 @@ Item {
                 
                 // Botón Anterior
                 Rectangle {
-                    width: 28; height: 28; radius: 6
+                    Layout.preferredWidth: 28
+                    Layout.preferredHeight: 28
+                    radius: 6
                     color: prevMouse.containsMouse || prevMouse.activeFocus ? Kirigami.Theme.highlightColor : "transparent"
                     border.width: prevMouse.activeFocus ? 1 : 0
                     border.color: Kirigami.Theme.highlightColor
@@ -163,7 +165,9 @@ Item {
 
                 // Botón Siguiente
                 Rectangle {
-                    width: 28; height: 28; radius: 6
+                    Layout.preferredWidth: 28
+                    Layout.preferredHeight: 28
+                    radius: 6
                     color: nextMouse.containsMouse || nextMouse.activeFocus ? Kirigami.Theme.highlightColor : "transparent"
                     border.width: nextMouse.activeFocus ? 1 : 0
                     border.color: Kirigami.Theme.highlightColor
@@ -186,7 +190,9 @@ Item {
                 }
 
                 Rectangle {
-                    width: 28; height: 28; radius: 6
+                    Layout.preferredWidth: 28
+                    Layout.preferredHeight: 28
+                    radius: 6
                     color: closeMouse.containsMouse || closeMouse.activeFocus ? Kirigami.Theme.negativeTextColor : "transparent"
                     border.width: closeMouse.activeFocus ? 1 : 0
                     border.color: Kirigami.Theme.negativeTextColor

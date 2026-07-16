@@ -2,6 +2,8 @@
 
 #include "systemdiscovery.h"
 
+#include "commandclassification.h"
+
 #include <KIO/ApplicationLauncherJob>
 #include <KIO/ListJob>
 #include <KIO/OpenUrlJob>
@@ -426,6 +428,10 @@ bool SystemDiscovery::launchApplicationAction(const QString &applicationId, cons
 
 bool SystemDiscovery::launchApplicationByCommand(const QString &command)
 {
+    if (!CommandClassification::canResolveToDesktopService(command)) {
+        return false;
+    }
+
     const KService::Ptr service = findApplicationService(commandLookupKey(command));
     if (!service) {
         return false;

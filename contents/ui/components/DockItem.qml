@@ -3,7 +3,7 @@ import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
-import org.kde.plasma.components as PlasmaComponents
+import org.kde.plasma.extras as PlasmaExtras
 import org.kde.taskmanager as TaskManager
 
 Item {
@@ -174,7 +174,7 @@ Item {
     }
 
     signal itemClicked(string cmd)
-    signal contextMenuRequested(var visualParent)
+    signal contextMenuRequested(var visualParent, bool keyboardInvoked)
     signal hoverEntered(var visualParent)
     signal hoverExited(var visualParent)
     // Medidas del contenedor del Layout TOTALMENTE ESTÁTICAS para evitar jitter
@@ -225,18 +225,16 @@ Item {
                 y: hoverOffsetY
             }
 
-            PlasmaComponents.Label {
+            PlasmaExtras.ShadowedLabel {
                 text: currentTime
                 font.pixelSize: 14
                 font.weight: Font.Normal
-                color: Kirigami.Theme.textColor
                 anchors.horizontalCenter: parent.horizontalCenter
             }
 
-            PlasmaComponents.Label {
+            PlasmaExtras.ShadowedLabel {
                 text: currentDate
                 font.pixelSize: 9
-                color: Kirigami.Theme.textColor
                 opacity: 0.68
                 anchors.horizontalCenter: parent.horizontalCenter
             }
@@ -410,7 +408,7 @@ Item {
                 return
             }
             if (mouse.button === Qt.RightButton) {
-                dockItemContainer.contextMenuRequested(dockItemContainer)
+                dockItemContainer.contextMenuRequested(dockItemContainer, false)
             } else {
                 if (clickEffect === "pulse") {
                     clickPulseAnimation.restart()
@@ -427,7 +425,7 @@ Item {
         Keys.onPressed: function(event) {
             if ((itemType === "trash" || supportsContextMenu) && (event.key === Qt.Key_Menu
                     || (event.key === Qt.Key_F10 && (event.modifiers & Qt.ShiftModifier)))) {
-                dockItemContainer.contextMenuRequested(dockItemContainer)
+                dockItemContainer.contextMenuRequested(dockItemContainer, true)
                 event.accepted = true
             }
         }

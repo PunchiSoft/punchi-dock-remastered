@@ -18,10 +18,6 @@ GridLayout {
     readonly property string containerLayoutValue: containerLayout.currentValue || "grid"
     property alias containerLayoutIndex: containerLayout.currentIndex
     property alias containerShowLabelsChecked: folderShowLabels.checked
-    property alias radialBackgroundChecked: radialBackground.checked
-    property alias radialIconSlotsChecked: radialIconSlots.checked
-    property alias radialDistanceValue: radialDistance.value
-    property alias fanCenterDistanceValue: fanCenterDistance.value
     property alias spacerSizeValue: spacerSize.value
     readonly property string containerSourceValue: containerSource.currentValue || "manual"
     property alias containerSourceIndex: containerSource.currentIndex
@@ -40,13 +36,7 @@ GridLayout {
     property string gridText: "Grid"
     property string listText: "List"
     property string detailedText: "Detailed"
-    property string radialText: "Radial"
-    property string fanText: "Fan"
     property string showContainerLabelsText: "Show labels"
-    property string radialBackgroundText: "Show radial background"
-    property string radialIconSlotsText: "Show icon circles"
-    property string radialDistanceLabel: "Radial distance:"
-    property string fanCenterDistanceLabel: "Fan spread:"
     property string noteText: "Note"
     property string separatorText: "Separator"
     property string spacerText: "Spacer"
@@ -140,9 +130,7 @@ GridLayout {
             model: [
                 { "text": root.gridText, "value": "grid" },
                 { "text": root.listText, "value": "list" },
-                { "text": root.detailedText, "value": "detailed" },
-                { "text": root.radialText, "value": "radial" },
-                { "text": root.fanText, "value": "fan" }
+                { "text": root.detailedText, "value": "detailed" }
             ]
             onActivated: root.containerLayoutChanged(currentValue)
         }
@@ -156,92 +144,6 @@ GridLayout {
         text: root.showContainerLabelsText
         checked: true
         onClicked: root.formChanged()
-    }
-
-    Controls.CheckBox {
-        id: radialBackground
-        Layout.columnSpan: 2
-        visible: root.itemModeValue === "container" && root.containerLayoutValue === "radial"
-        enabled: root.selectedItemType === "folder"
-        text: root.radialBackgroundText
-        checked: true
-        onClicked: root.formChanged()
-    }
-
-    Controls.CheckBox {
-        id: radialIconSlots
-        Layout.columnSpan: 2
-        visible: root.itemModeValue === "container" && root.containerLayoutValue === "radial"
-        enabled: root.selectedItemType === "folder"
-        text: root.radialIconSlotsText
-        checked: true
-        onClicked: root.formChanged()
-    }
-
-    Controls.Label {
-        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-        Layout.preferredWidth: Kirigami.Units.gridUnit * 5
-        visible: root.itemModeValue === "container" && root.containerLayoutValue === "radial"
-        text: root.radialDistanceLabel
-        horizontalAlignment: Text.AlignLeft
-        opacity: 0.75
-    }
-
-    RowLayout {
-        Layout.fillWidth: true
-        visible: root.itemModeValue === "container" && root.containerLayoutValue === "radial"
-        enabled: root.selectedItemType === "folder"
-        spacing: Kirigami.Units.smallSpacing
-
-        Controls.Slider {
-            id: radialDistance
-            Layout.fillWidth: true
-            from: 0
-            to: 360
-            stepSize: 4
-            snapMode: Controls.Slider.SnapAlways
-            onMoved: root.formChanged()
-        }
-
-        Controls.Label {
-            Layout.minimumWidth: Kirigami.Units.gridUnit * 3
-            horizontalAlignment: Text.AlignRight
-            text: Math.round(radialDistance.value) + " px"
-            opacity: 0.75
-        }
-    }
-
-    Controls.Label {
-        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-        Layout.preferredWidth: Kirigami.Units.gridUnit * 5
-        visible: root.itemModeValue === "container" && root.containerLayoutValue === "fan"
-        text: root.fanCenterDistanceLabel
-        horizontalAlignment: Text.AlignLeft
-        opacity: 0.75
-    }
-
-    RowLayout {
-        Layout.fillWidth: true
-        visible: root.itemModeValue === "container" && root.containerLayoutValue === "fan"
-        enabled: root.selectedItemType === "folder"
-        spacing: Kirigami.Units.smallSpacing
-
-        Controls.Slider {
-            id: fanCenterDistance
-            Layout.fillWidth: true
-            from: 0
-            to: 100
-            stepSize: 2
-            snapMode: Controls.Slider.SnapAlways
-            onMoved: root.formChanged()
-        }
-
-        Controls.Label {
-            Layout.minimumWidth: Kirigami.Units.gridUnit * 3
-            horizontalAlignment: Text.AlignRight
-            text: Math.round(fanCenterDistance.value) + " px"
-            opacity: 0.75
-        }
     }
 
     Controls.Label {

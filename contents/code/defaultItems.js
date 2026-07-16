@@ -64,10 +64,6 @@ var items = [
             { "type": "app", "name": "LibreOffice Math", "icon": "libreoffice-math", "command": "libreoffice --math" },
             { "type": "app", "name": "LibreOffice Base", "icon": "libreoffice-base", "command": "libreoffice --base" }
         ],
-        "radialBackground": false,
-        "radialIconSlots": true,
-        "radialDistance": 0,
-        "fanCenterDistance": 0,
         "sourceType": "manual",
         "sourcePath": "",
         "sourceCategory": "Development"
@@ -86,10 +82,6 @@ var items = [
         "popupMaxHeight": 0,
         "innerIconSize": 48,
         "showLabels": false,
-        "radialBackground": false,
-        "radialIconSlots": true,
-        "radialDistance": 0,
-        "fanCenterDistance": 0,
         "sourcePath": "",
         "closeOnLaunch": true,
         "apps": [

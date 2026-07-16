@@ -1,5 +1,6 @@
 import QtQuick
 import org.kde.taskmanager as TaskManager
+import "TaskManagerCompatibility.js" as TaskManagerCompatibility
 
 Item {
     id: root
@@ -18,12 +19,20 @@ Item {
     property int visualRevision: 0
     property int structureRevision: 0
     property bool pendingStructureRefresh: false
+    property bool useLegacyCurrentDesktopFilter: false
+
+    TaskManager.VirtualDesktopInfo {
+        id: virtualDesktopInfo
+    }
 
     TaskManager.TasksModel {
         id: tasksModel
         groupMode: TaskManager.TasksModel.GroupDisabled
         sortMode: TaskManager.TasksModel.SortDisabled
-        filterByCurrentVirtualDesktop: root.showActiveTasks && root.currentDesktopOnly
+        virtualDesktop: virtualDesktopInfo.currentDesktop
+        filterByVirtualDesktop: root.useLegacyCurrentDesktopFilter
+
+        Component.onCompleted: root.updateCurrentDesktopFilter()
     }
 
     Timer {
@@ -62,15 +71,29 @@ Item {
     }
 
     onDockItemsChanged: scheduleRefresh(true)
-    onShowActiveTasksChanged: scheduleRefresh(true)
-    onCurrentDesktopOnlyChanged: scheduleRefresh(true)
+    onShowActiveTasksChanged: {
+        updateCurrentDesktopFilter()
+        scheduleRefresh(true)
+    }
+    onCurrentDesktopOnlyChanged: {
+        updateCurrentDesktopFilter()
+        scheduleRefresh(true)
+    }
     onWindowGroupingModeChanged: scheduleRefresh(true)
     onMaxDynamicGroupsChanged: scheduleRefresh(true)
 
     Component.onCompleted: {
+        updateCurrentDesktopFilter()
         refreshVisibleRows()
         bumpStructureRevision()
         bumpVisualRevision()
+    }
+
+    function updateCurrentDesktopFilter() {
+        const enabled = root.showActiveTasks && root.currentDesktopOnly
+        const nativeFilterApplied = TaskManagerCompatibility.setOptionalProperty(
+            tasksModel, "filterByCurrentVirtualDesktop", enabled)
+        root.useLegacyCurrentDesktopFilter = enabled && !nativeFilterApplied
     }
 
     function normalizeApplicationId(value) {

@@ -37,13 +37,13 @@ On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.6-fedora44-x86_64.plasmoid
 ```
 
 To update an existing installation:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.6-fedora44-x86_64.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
@@ -64,19 +64,30 @@ sudo dnf install \
     zip unzip
 ```
 
-Build the native module and create a stripped `Release` package:
+Build the native module and create the versioned artifact for the current system:
 
 ```bash
 scripts/empaquetar-plasmoid.sh
 ```
 
-The resulting package is written to:
+The script detects Fedora or Debian through `/etc/os-release`. It writes an unambiguous package name:
 
 ```text
-dist/punchi-dock-remastered.plasmoid
+dist/punchi-dock-remastered-<version>-<distribution><version>-<architecture>.plasmoid
 ```
 
-Set `PACKAGE_BUILD_TYPE` or `STRIP_BIN` only when a development or cross-toolchain workflow requires an explicit override.
+Examples include `punchi-dock-remastered-0.8.6-fedora44-x86_64.plasmoid` and `punchi-dock-remastered-0.8.6-debian13-x86_64.plasmoid`. Never install a Fedora-labeled artifact on Debian or vice versa.
+
+Explicit wrappers remain available for automation and diagnostics:
+
+```bash
+scripts/build-fedora-package.sh
+scripts/build-debian-package.sh
+```
+
+Each wrapper requires its matching distribution and uses its own baseline. The Debian workflow was verified on Debian 13, where the artifact installed and loaded correctly. See [scripts/README.md](scripts/README.md) for the distinction between packaging, local installation, and clean-source validation.
+
+Set `PACKAGE_BUILD_TYPE` or `STRIP_BIN` only when a development workflow requires an explicit override. Never use `PACKAGE_OUTPUT_FILE` to label a Fedora binary as Debian, and do not cross-compile the native QML module for publication on another distribution.
 
 To build, install, and restart Plasma for a local development test:
 

@@ -11,7 +11,12 @@ WATCH_ROOT="${1:-contents}"
 POLL_INTERVAL="${POLL_INTERVAL:-1}"
 VIEWER_FORMFACTOR="${VIEWER_FORMFACTOR:-horizontal}"
 VIEWER_LOCATION="${VIEWER_LOCATION:-bottomedge}"
-PACKAGE_FILE="$PROJECT_ROOT/dist/punchi-dock-remastered.plasmoid"
+
+# shellcheck disable=SC1091
+source /etc/os-release
+PACKAGE_VERSION="$(awk -F '"' '/"Version"[[:space:]]*:/ { print $4; exit }' "$PROJECT_ROOT/metadata.json")"
+PLATFORM_LABEL="${ID:-linux}${VERSION_ID:-unknown}-$(uname -m)"
+PACKAGE_FILE="$PROJECT_ROOT/dist/punchi-dock-remastered-${PACKAGE_VERSION}-${PLATFORM_LABEL}-local-test.plasmoid"
 
 if ! command -v plasmoidviewer >/dev/null 2>&1; then
     echo "plasmoidviewer no está disponible en PATH." >&2
@@ -24,7 +29,7 @@ if ! command -v kpackagetool6 >/dev/null 2>&1; then
 fi
 
 install_current_package() {
-    "$SCRIPT_DIR/empaquetar-plasmoid.sh"
+    PACKAGE_OUTPUT_FILE="$PACKAGE_FILE" "$SCRIPT_DIR/empaquetar-plasmoid.sh"
     if ! kpackagetool6 --type Plasma/Applet -u "$PACKAGE_FILE" 2>/dev/null; then
         kpackagetool6 --type Plasma/Applet -i "$PACKAGE_FILE"
     fi

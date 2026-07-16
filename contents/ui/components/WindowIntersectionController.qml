@@ -2,6 +2,7 @@ import QtQuick
 import org.kde.kirigami as Kirigami
 import org.kde.kwindowsystem
 import org.kde.taskmanager as TaskManager
+import "TaskManagerCompatibility.js" as TaskManagerCompatibility
 
 Item {
     id: root
@@ -11,6 +12,7 @@ Item {
     property rect regionGeometry: Qt.rect(0, 0, 0, 0)
     property bool monitoringEnabled: true
     property bool touchingWindow: false
+    property bool useLegacyCurrentDesktopFilter: false
 
     readonly property bool touchingWindowDirect: monitoringEnabled
         && regionGeometry.width > 0
@@ -24,10 +26,15 @@ Item {
         id: activityInfo
     }
 
+    TaskManager.VirtualDesktopInfo {
+        id: virtualDesktopInfo
+    }
+
     TaskManager.TasksModel {
         id: visibleWindowsModel
 
-        filterByCurrentVirtualDesktop: true
+        virtualDesktop: virtualDesktopInfo.currentDesktop
+        filterByVirtualDesktop: root.useLegacyCurrentDesktopFilter
         filterByActivity: true
         filterByScreen: false
         filterByRegion: root.monitoringEnabled
@@ -39,6 +46,8 @@ Item {
         regionGeometry: root.regionGeometry
         activity: activityInfo.currentActivity
         groupMode: TaskManager.TasksModel.GroupDisabled
+
+        Component.onCompleted: root.updateCurrentDesktopFilter()
     }
 
     Timer {
@@ -95,7 +104,16 @@ Item {
     onTouchingWindowDirectChanged: scheduleTouchingWindowUpdate()
     onShowingDesktopChanged: scheduleTouchingWindowUpdate()
 
-    Component.onCompleted: scheduleRegionUpdate()
+    Component.onCompleted: {
+        updateCurrentDesktopFilter()
+        scheduleRegionUpdate()
+    }
+
+    function updateCurrentDesktopFilter() {
+        const nativeFilterApplied = TaskManagerCompatibility.setOptionalProperty(
+            visibleWindowsModel, "filterByCurrentVirtualDesktop", true)
+        root.useLegacyCurrentDesktopFilter = !nativeFilterApplied
+    }
 
     function scheduleRegionUpdate() {
         regionUpdateTimer.restart()

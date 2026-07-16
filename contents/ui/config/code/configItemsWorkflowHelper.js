@@ -46,7 +46,7 @@ function setContainerLayout(layout) {
         return
     }
 
-    var nextLayout = layout === "list" || layout === "detailed" || layout === "radial" || layout === "fan" ? layout : "grid"
+    var nextLayout = layout === "list" || layout === "detailed" ? layout : "grid"
     var nextItems = clone(items)
     var item = nextItems[selectedIndex]
     if (!item || item.type !== "folder" || item.layout === nextLayout) {

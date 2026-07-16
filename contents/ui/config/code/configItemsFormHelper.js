@@ -51,9 +51,6 @@ function refreshItemForm() {
         trashDialog.acceptDropsChecked = true
         actionDialog.actionsEnabledChecked = false
         actionDialog.containerLayoutIndex = 0
-        actionDialog.radialBackgroundChecked = true
-        actionDialog.radialIconSlotsChecked = true
-        actionDialog.fanCenterDistanceValue = 0
         return
     }
 
@@ -70,10 +67,6 @@ function refreshItemForm() {
     actionDialog.itemModeIndex = item.type === "folder" ? 1 : (item.type === "note" ? 2 : (item.type === "separator" ? 3 : (item.type === "spacer" ? 4 : 0)))
     actionDialog.containerLayoutIndex = actionDialog.layoutIndexFor(item.layout || "grid")
     actionDialog.containerShowLabelsChecked = item.showLabels === undefined ? true : item.showLabels
-    actionDialog.radialBackgroundChecked = item.radialBackground === undefined ? true : item.radialBackground
-    actionDialog.radialIconSlotsChecked = item.radialIconSlots === undefined ? true : item.radialIconSlots
-    actionDialog.radialDistanceValue = item.radialDistance || 0
-    actionDialog.fanCenterDistanceValue = item.fanCenterDistance || 0
     actionDialog.spacerSizeValue = item.size || 24
     actionDialog.containerSourceIndex = actionDialog.sourceIndexFor(item.sourceType || "manual")
     actionDialog.containerPathText = item.sourcePath || ""
@@ -178,10 +171,6 @@ function applyItemForm(force) {
         item.icon = actionDialog.appIconText || "folder"
         item.layout = actionDialog.containerLayoutValue || "grid"
         item.showLabels = actionDialog.containerShowLabelsChecked
-        item.radialBackground = actionDialog.radialBackgroundChecked
-        item.radialIconSlots = actionDialog.radialIconSlotsChecked
-        item.radialDistance = actionDialog.radialDistanceValue
-        item.fanCenterDistance = actionDialog.fanCenterDistanceValue
         item.sourceType = actionDialog.containerSourceValue || "manual"
         item.sourcePath = actionDialog.containerPathText || ""
         item.sourceCategory = actionDialog.containerCategoryValue || "Development"

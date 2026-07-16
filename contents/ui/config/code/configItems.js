@@ -465,16 +465,13 @@ function pruneApp(item) {
 
 function pruneFolder(item) {
     removeKeys(item, ["command", "actions", "actionsEnabled"])
+    removeKeys(item, ["radialBackground", "radialIconSlots", "radialDistance", "fanCenterDistance"])
     item.apps = item.apps instanceof Array ? item.apps : []
-    item.layout = item.layout === "list" || item.layout === "detailed" || item.layout === "radial" || item.layout === "fan" ? item.layout : "grid"
+    item.layout = item.layout === "list" || item.layout === "detailed" ? item.layout : "grid"
     item.columns = Math.max(0, item.columns || 0)
     item.rows = Math.max(0, item.rows || 0)
     item.innerIconSize = Math.max(16, item.innerIconSize || 48)
     item.showLabels = item.showLabels === undefined ? true : item.showLabels
-    item.radialBackground = item.radialBackground === undefined ? true : item.radialBackground
-    item.radialIconSlots = item.radialIconSlots === undefined ? true : item.radialIconSlots
-    item.radialDistance = Math.max(0, item.radialDistance || 0)
-    item.fanCenterDistance = Math.max(0, Math.min(100, item.fanCenterDistance || 0))
     item.closeOnLaunch = item.closeOnLaunch === undefined ? true : item.closeOnLaunch
     for (var index = 0; index < item.apps.length; index++) {
         item.apps[index].type = "app"
@@ -554,10 +551,6 @@ function newItem(type, defaultTrashEmptySound) {
             "rows": 0,
             "innerIconSize": 48,
             "showLabels": true,
-            "radialBackground": true,
-            "radialIconSlots": true,
-            "radialDistance": 0,
-            "fanCenterDistance": 0,
             "closeOnLaunch": true,
             "sourceType": "manual",
             "sourcePath": "",
@@ -642,9 +635,6 @@ function setItemMode(items, selectedIndex, mode) {
         item.rows = item.rows === undefined ? 0 : item.rows
         item.innerIconSize = item.innerIconSize || 48
         item.showLabels = item.showLabels === undefined ? true : item.showLabels
-        item.radialBackground = item.radialBackground === undefined ? true : item.radialBackground
-        item.radialIconSlots = item.radialIconSlots === undefined ? true : item.radialIconSlots
-        item.fanCenterDistance = Math.max(0, Math.min(100, item.fanCenterDistance || 0))
         item.closeOnLaunch = item.closeOnLaunch === undefined ? true : item.closeOnLaunch
         item.sourceType = item.sourceType || "manual"
         item.sourcePath = item.sourcePath || ""

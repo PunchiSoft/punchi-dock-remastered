@@ -1,31 +1,24 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls as Controls
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
-import org.kde.plasma.core as PlasmaCore
-import org.kde.ksvg as KSvg
 
 Item {
     id: folderRoot
-    implicitWidth: circularMode ? 320 : 280
-    implicitHeight: circularMode ? 320 : classicPopupHeight
+    implicitWidth: 280
+    implicitHeight: classicPopupHeight
     width: implicitWidth
     height: implicitHeight
 
     // Propiedades inyectadas por la UI principal
     property var folderItem: ({})
-    property string layoutMode: "grid" // "list", "grid", "detailed", "circular", "fan"
-    property int virtualEdge: PlasmaCore.Types.BottomEdge
-    property bool isOpen: false
+    property string layoutMode: "grid"
     property int maximumAvailableHeight: 640
 
     // Accesos rápidos
-    property bool circularMode: layoutMode === "circular" || layoutMode === "fan"
     property var apps: folderItem.apps || []
     property int itemCount: apps.length
-    readonly property string popupBackgroundPath: layoutMode === "fan" ? "dialogs/background" : "widgets/background"
     readonly property int classicMargin: 12
     readonly property int classicSpacing: 8
     readonly property int gridCellWidth: 80
@@ -47,64 +40,13 @@ Item {
         : maximumAvailableHeight
     readonly property int classicPopupHeight: Math.min(classicNaturalHeight, effectiveMaximumHeight)
 
-    // Animación de despliegue para circular/fan
-    property real openProgress: isOpen ? 1.0 : 0.0
-    Behavior on openProgress {
-        NumberAnimation {
-            duration: 350
-            easing.type: Easing.OutBack
-            easing.overshoot: 0.8
-        }
-    }
-
     // Señales para ejecutar aplicaciones y cerrar el popup
     signal appLaunched(var app)
     signal closeRequested()
 
-    // ── LÓGICA DE GEOMETRÍA CIRCULAR Y ABANICO (FAN) ──────────────────────
-    function getOriginX() {
-        if (layoutMode === "circular") return width / 2;
-        if (virtualEdge === PlasmaCore.Types.LeftEdge) return 20;
-        if (virtualEdge === PlasmaCore.Types.RightEdge) return width - 20;
-        return width / 2;
-    }
-
-    function getOriginY() {
-        if (layoutMode === "circular") return height / 2;
-        if (virtualEdge === PlasmaCore.Types.TopEdge) return 20;
-        if (virtualEdge === PlasmaCore.Types.BottomEdge) return height - 20;
-        return height / 2;
-    }
-
-    function getStartAngle() {
-        if (virtualEdge === PlasmaCore.Types.TopEdge) return 20;
-        if (virtualEdge === PlasmaCore.Types.LeftEdge) return -70;
-        if (virtualEdge === PlasmaCore.Types.RightEdge) return 110;
-        return 200; // BottomEdge / default
-    }
-
-    function getSweepAngle() {
-        return 140;
-    }
-
-    // Calcular posición del botón de cierre en abanico desplazado para no chocar el dock
-    function getCloseX() {
-        if (layoutMode === "circular") return getOriginX();
-        var angleRad = (getStartAngle() + getSweepAngle() / 2) * Math.PI / 180;
-        return getOriginX() + Math.cos(angleRad) * 44;
-    }
-
-    function getCloseY() {
-        if (layoutMode === "circular") return getOriginY();
-        var angleRad = (getStartAngle() + getSweepAngle() / 2) * Math.PI / 180;
-        return getOriginY() + Math.sin(angleRad) * 44;
-    }
-
-    // ── INTERFAZ CLÁSICA (LISTA, REJILLA, DETALLADA) ─────────────────────
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: folderRoot.classicMargin
-        visible: !circularMode
         spacing: folderRoot.classicSpacing
 
         // Título de la carpeta
@@ -120,7 +62,9 @@ Item {
             }
             // Botón de cerrar
             Rectangle {
-                width: 20; height: 20; radius: 10
+                Layout.preferredWidth: 20
+                Layout.preferredHeight: 20
+                radius: 10
                 color: closeMouse.containsMouse || closeMouse.activeFocus ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.backgroundColor
                 PlasmaComponents.Label { text: "×"; anchors.centerIn: parent; color: Kirigami.Theme.textColor }
                 MouseArea {
@@ -172,7 +116,8 @@ Item {
                     spacing: 8
 
                     Kirigami.Icon {
-                        width: 32; height: 32
+                        Layout.preferredWidth: 32
+                        Layout.preferredHeight: 32
                         source: modelData.icon || "application-x-executable"
                     }
                     Column {
@@ -238,119 +183,4 @@ Item {
         }
     }
 
-    // ── INTERFAZ CIRCULAR / ABANICO (FAN) ────────────────────────────────
-    Item {
-        id: circularContainer
-        anchors.fill: parent
-        visible: circularMode
-
-        // Fondo decorativo en modo circular completo
-        KSvg.FrameSvgItem {
-            anchors.centerIn: parent
-            width: 196
-            height: 196
-            imagePath: folderRoot.popupBackgroundPath
-            opacity: 0.8 * openProgress
-            visible: layoutMode === "circular" && openProgress > 0.1
-        }
-
-        // Elementos flying out
-        Repeater {
-            model: folderRoot.apps
-            delegate: Item {
-                property real progress: folderRoot.itemCount <= 1 ? 0.5 : index / (folderRoot.itemCount - 1)
-                property real angleDegrees: layoutMode === "circular"
-                    ? -90 + index * (360 / Math.max(1, folderRoot.itemCount))
-                    : folderRoot.getStartAngle() + progress * folderRoot.getSweepAngle()
-                property real angleRad: angleDegrees * Math.PI / 180
-                
-                // Distancia a expandirse
-                property real radiusLength: layoutMode === "circular" ? 95 : 115
-
-                // Coordenadas calculadas en vivo
-                property real targetX: folderRoot.getOriginX() + Math.cos(angleRad) * radiusLength - width/2
-                property real targetY: folderRoot.getOriginY() + Math.sin(angleRad) * radiusLength - height/2
-
-                width: 52
-                height: 52
-                
-                // Animar el vuelo de los elementos de forma fluida desde el origen
-                x: folderRoot.getOriginX() - width/2 + (targetX - (folderRoot.getOriginX() - width/2)) * folderRoot.openProgress
-                y: folderRoot.getOriginY() - height/2 + (targetY - (folderRoot.getOriginY() - height/2)) * folderRoot.openProgress
-                opacity: folderRoot.openProgress
-                scale: 0.6 + 0.4 * folderRoot.openProgress
-
-                KSvg.FrameSvgItem {
-                    anchors.fill: parent
-                    imagePath: folderRoot.popupBackgroundPath
-                }
-
-                Rectangle {
-                    anchors.fill: parent
-                    radius: 26
-                    color: itemCircMouse.containsMouse || itemCircMouse.activeFocus ? Kirigami.Theme.highlightColor : "transparent"
-                    opacity: itemCircMouse.containsMouse || itemCircMouse.activeFocus ? 0.18 : 0.0
-
-                    Kirigami.Icon {
-                        anchors.centerIn: parent
-                        width: 32; height: 32
-                        source: modelData.icon || "application-x-executable"
-                    }
-                }
-
-                // Tooltip básico para el icono circular
-                Controls.ToolTip {
-                    visible: itemCircMouse.containsMouse
-                    text: modelData.name
-                    delay: 200
-                }
-
-                MouseArea {
-                    id: itemCircMouse
-                    anchors.fill: parent; hoverEnabled: true
-                    activeFocusOnTab: true
-                    Accessible.role: Accessible.Button
-                    Accessible.name: modelData.name || i18n("Aplicación")
-                    onClicked: folderRoot.appLaunched(modelData)
-                    Keys.onReturnPressed: folderRoot.appLaunched(modelData)
-                    Keys.onSpacePressed: folderRoot.appLaunched(modelData)
-                }
-            }
-        }
-
-        // Botón central para cerrar en modo circular o abanico
-        KSvg.FrameSvgItem {
-            width: 38; height: 38
-            imagePath: folderRoot.popupBackgroundPath
-            x: folderRoot.getCloseX() - width/2
-            y: folderRoot.getCloseY() - height/2
-            opacity: openProgress
-        }
-
-        Rectangle {
-            width: 38; height: 38; radius: 19
-            color: circCloseMouse.containsMouse || circCloseMouse.activeFocus ? Kirigami.Theme.negativeTextColor : "transparent"
-            opacity: circCloseMouse.containsMouse || circCloseMouse.activeFocus ? 0.18 : 0.0
-            x: folderRoot.getCloseX() - width/2
-            y: folderRoot.getCloseY() - height/2
-            z: 1
-
-            Kirigami.Icon {
-                anchors.centerIn: parent
-                width: 18; height: 18
-                source: "window-close-symbolic"
-            }
-
-            MouseArea {
-                id: circCloseMouse
-                anchors.fill: parent; hoverEnabled: true
-                activeFocusOnTab: true
-                Accessible.role: Accessible.Button
-                Accessible.name: i18n("Close")
-                onClicked: folderRoot.closeRequested()
-                Keys.onReturnPressed: folderRoot.closeRequested()
-                Keys.onSpacePressed: folderRoot.closeRequested()
-            }
-        }
-    }
 }

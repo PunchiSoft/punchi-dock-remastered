@@ -3,7 +3,12 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-ZIP_FILE="$PROJECT_ROOT/dist/punchi-dock-remastered.plasmoid"
+
+# shellcheck disable=SC1091
+source /etc/os-release
+PACKAGE_VERSION="$(awk -F '"' '/"Version"[[:space:]]*:/ { print $4; exit }' "$PROJECT_ROOT/metadata.json")"
+PLATFORM_LABEL="${ID:-linux}${VERSION_ID:-unknown}-$(uname -m)"
+ZIP_FILE="$PROJECT_ROOT/dist/punchi-dock-remastered-${PACKAGE_VERSION}-${PLATFORM_LABEL}-local-test.plasmoid"
 DEBUG_LOG="$PROJECT_ROOT/debug.log"
 PLUGIN_ID="org.kde.plasma.punchi-dock-remastered"
 DATA_ROOT="$(qtpaths6 --writable-path GenericDataLocation)"
@@ -16,7 +21,7 @@ restore_broken_install() {
     fi
 }
 
-"$SCRIPT_DIR/empaquetar-plasmoid.sh"
+PACKAGE_OUTPUT_FILE="$ZIP_FILE" "$SCRIPT_DIR/empaquetar-plasmoid.sh"
 
 echo "==> [1/3] Installing the local test package"
 if [[ -d "$INSTALL_DIR" && ! -f "$INSTALL_DIR/metadata.json" ]]; then

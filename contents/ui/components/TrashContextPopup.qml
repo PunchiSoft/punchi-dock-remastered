@@ -27,12 +27,16 @@ Item {
     signal emptyTrashRequested()
     signal closeRequested()
 
-    function showMenu() {
+    function showMenu(focusFirstAction) {
         if (operationState === "emptying") {
             return
         }
         confirmationVisible = false
-        Qt.callLater(menuPage.focusFirstAction)
+        if (focusFirstAction === undefined || focusFirstAction) {
+            Qt.callLater(menuPage.focusFirstAction)
+        } else {
+            Qt.callLater(menuPage.clearActionFocus)
+        }
     }
 
     function showConfirmation() {
