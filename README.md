@@ -37,13 +37,13 @@ On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.6-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.7-fedora44-x86_64.plasmoid
 ```
 
 To update an existing installation:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.6-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.7-fedora44-x86_64.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
@@ -76,7 +76,7 @@ The script detects Fedora or Debian through `/etc/os-release`. It writes an unam
 dist/punchi-dock-remastered-<version>-<distribution><version>-<architecture>.plasmoid
 ```
 
-Examples include `punchi-dock-remastered-0.8.6-fedora44-x86_64.plasmoid` and `punchi-dock-remastered-0.8.6-debian13-x86_64.plasmoid`. Never install a Fedora-labeled artifact on Debian or vice versa.
+Examples include `punchi-dock-remastered-0.8.7-fedora44-x86_64.plasmoid` and `punchi-dock-remastered-0.8.7-debian13-x86_64.plasmoid`. Never install a Fedora-labeled artifact on Debian or vice versa.
 
 Explicit wrappers remain available for automation and diagnostics:
 

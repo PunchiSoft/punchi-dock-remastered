@@ -24,13 +24,15 @@ scripts/build-debian-package.sh
 
 Cada uno rechaza ejecutarse en la distribución equivocada. No son scripts de compilación cruzada.
 
+En Debian, los objetos de compilación se guardan por defecto en `~/.cache/punchi-dock-remastered/debian<versión>-<arquitectura>`. Esto evita problemas de timestamps y rendimiento cuando el repositorio está montado mediante una carpeta compartida de VirtualBox. El `.plasmoid` final continúa apareciendo en `dist/`.
+
 ## Prueba local
 
 ```bash
 scripts/probar-plasmoid.sh
 ```
 
-Genera un artefacto como `dist/punchi-dock-remastered-0.8.6-fedora44-x86_64-local-test.plasmoid`, lo instala para el usuario actual y reinicia Plasma Shell. El sufijo `local-test` distingue este paquete temporal de un artefacto publicable.
+Genera un artefacto como `dist/punchi-dock-remastered-0.8.7-fedora44-x86_64-local-test.plasmoid`, verifica su instalación para el usuario actual y reinicia Plasma Shell. En sistemas que exponen `plasma-plasmashell.service` usa el servicio systemd de usuario; si el servicio conserva el proceso anterior, fuerza primero el cierre mediante KDE y vuelve a iniciar el servicio. En los demás sistemas conserva el control mediante `kquitapp6` y `kstart`. El script muestra los PID anterior y posterior y solo declara éxito cuando confirma un proceso nuevo. El sufijo `local-test` distingue este paquete temporal de un artefacto publicable.
 
 ## Validación limpia
 
