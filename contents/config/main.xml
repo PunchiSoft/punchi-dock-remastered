@@ -49,6 +49,12 @@
     <entry name="indicatorThickness" type="Int">
       <default>4</default>
     </entry>
+    <entry name="dockThemeMode" type="String">
+      <default>plasma</default>
+    </entry>
+    <entry name="dockThemeCustomId" type="String">
+      <default></default>
+    </entry>
     <entry name="audioSpectrumEnabled" type="Bool">
       <default>false</default>
     </entry>

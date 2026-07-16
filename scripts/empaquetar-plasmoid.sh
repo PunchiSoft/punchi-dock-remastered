@@ -183,7 +183,11 @@ fi
 
 echo "==> [2/4] Building and testing the native QML module"
 echo "Build type: $PACKAGE_BUILD_TYPE"
-cmake -S "$PROJECT_ROOT" -B "$BUILD_DIR" \
+env \
+    GIT_CONFIG_COUNT=1 \
+    GIT_CONFIG_KEY_0=safe.directory \
+    GIT_CONFIG_VALUE_0="$PROJECT_ROOT" \
+    cmake -S "$PROJECT_ROOT" -B "$BUILD_DIR" \
     -DBUILD_TESTING=ON \
     -DCMAKE_BUILD_TYPE="$PACKAGE_BUILD_TYPE"
 cmake --build "$BUILD_DIR" --parallel

@@ -21,6 +21,10 @@ target_sources(punchidockintegration PRIVATE
     audiospectrumcontroller.h
     commandclassification.cpp
     commandclassification.h
+    dockthemerepository.cpp
+    dockthemerepository.h
+    dockthemevalidator.cpp
+    dockthemevalidator.h
     dockruntimeservice.cpp
     dockruntimeservice.h
     mpriscontroller.cpp
@@ -41,6 +45,7 @@ target_link_libraries(punchidockintegration
     PRIVATE
         Qt6::Core
         Qt6::DBus
+        Qt6::Gui
         Qt6::Qml
         KF6::CoreAddons
         KF6::JobWidgets

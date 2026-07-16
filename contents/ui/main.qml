@@ -49,6 +49,10 @@ PlasmoidItem {
     Punchi.ThemeIntegration {
         id: themeIntegration
     }
+    Punchi.DockThemeRepository {
+        id: dockThemeRepository
+        themeId: root.inPanel ? "" : root.dockThemeCustomId
+    }
     Punchi.AudioSpectrumController {
         id: audioSpectrumController
         enabled: root.audioSpectrumConfigured
@@ -96,6 +100,20 @@ PlasmoidItem {
     readonly property string dockIndicatorPosition: String(Plasmoid.configuration.indicatorPosition || "bottom")
     readonly property real dockIndicatorOpacity: Math.max(0.0, Math.min(1.0, Number(Plasmoid.configuration.indicatorOpacity || 100) / 100.0))
     readonly property int dockIndicatorThickness: Math.max(2, Number(Plasmoid.configuration.indicatorThickness || 4))
+    readonly property string dockThemeMode: {
+        const configuredMode = String(Plasmoid.configuration.dockThemeMode || "plasma")
+        return configuredMode === "custom" ? "custom" : "plasma"
+    }
+    readonly property string dockThemeCustomId: String(Plasmoid.configuration.dockThemeCustomId || "")
+    readonly property bool customDockThemeActive: !inPanel
+        && dockThemeMode === "custom"
+        && dockThemeRepository.valid
+    readonly property var customDockSeparatorTheme: customDockThemeActive
+        && dockThemeRepository.theme.separator
+        ? dockThemeRepository.theme.separator
+        : ({})
+    readonly property bool customDockSeparatorActive: !inPanel
+        && String(customDockSeparatorTheme.style || "").length > 0
     readonly property bool audioSpectrumConfigured: Plasmoid.configuration.audioSpectrumEnabled === true
     readonly property real audioSpectrumIntensity: Math.max(0.1, Math.min(0.6,
         Number(Plasmoid.configuration.audioSpectrumIntensity || 35) / 100.0))
@@ -158,28 +176,32 @@ PlasmoidItem {
         Number(Plasmoid.configuration.popupAnimationIntensity || 100)))
     readonly property int contextMenuTransitionSpeed: Math.max(10, Math.min(200,
         Number(Plasmoid.configuration.contextMenuTransitionSpeed || 100)))
+    // Plasma::Containment exposes its visual geometry at runtime, although the
+    // generated QML type metadata does not declare width/height.
+    // qmllint disable missing-property
     readonly property int detectedPanelThickness: {
         try {
             var containment = Plasmoid.containment
-            if (!containment || !containment.screenGeometry || !containment.availableScreenRect) {
+            if (!containment) {
                 return 0
             }
 
-            var screenGeometry = containment.screenGeometry
-            var availableScreenRect = containment.availableScreenRect
             var thickness = verticalPanel
-                ? Math.max(0, screenGeometry.width - availableScreenRect.width)
-                : Math.max(0, screenGeometry.height - availableScreenRect.height)
+                ? Math.max(0, Number(containment["width"] || 0))
+                : Math.max(0, Number(containment["height"] || 0))
             return thickness > 0 ? thickness : 0
         } catch (error) {
             return 0
         }
     }
+    // qmllint enable missing-property
     readonly property int panelCrossAxisPadding: verticalPanel ? (dockBackgroundHorizontalPadding * 2) : (dockBackgroundVerticalPadding * 2)
     readonly property int effectivePanelIconLimit: detectedPanelThickness > 0
         ? Math.max(32, detectedPanelThickness - panelCrossAxisPadding - 12)
         : Math.max(32, Number(Plasmoid.configuration.iconSize || 48))
-    readonly property int effectivePanelBaseIconLimit: Math.max(24, Math.floor(effectivePanelIconLimit / panelHoverScale))
+    readonly property int effectivePanelBaseIconLimit: detectedPanelThickness > 0
+        ? Math.max(24, Math.floor(effectivePanelIconLimit / panelHoverScale))
+        : Math.max(32, Number(Plasmoid.configuration.iconSize || 48))
     readonly property int effectiveIconSize: inPanel
         ? Math.min(Number(Plasmoid.configuration.iconSize || 48), effectivePanelBaseIconLimit)
         : Number(Plasmoid.configuration.iconSize || 48)
@@ -549,6 +571,8 @@ PlasmoidItem {
                 spectrumFlowDirection: root.audioSpectrumFlow
                 plasmaBackgroundVisible: !root.audioSpectrumConfigured
                     || root.audioSpectrumBackgroundMode === "plasma"
+                customThemeEnabled: root.customDockThemeActive
+                customTheme: dockThemeRepository.theme
                 // qmllint enable unqualified
                 visible: !root.inPanel
             }
@@ -678,6 +702,8 @@ PlasmoidItem {
                         indicatorThickness: root.dockIndicatorThickness
                         indicatorOpacity: root.dockIndicatorOpacity
                         popupDirection: root.popupDirection
+                        customSeparatorEnabled: root.customDockSeparatorActive
+                        separatorTheme: root.customDockSeparatorTheme
                         
                         // Variables de animación de la ola
                         hoverZoomProgress: dockLayout.hoverZoomProgress

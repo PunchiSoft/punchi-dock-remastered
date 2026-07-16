@@ -1,9 +1,12 @@
 import QtQuick
 import QtQuick.Controls as Controls
+import QtQuick.Dialogs as QtDialogs
 import QtQuick.Layouts
 import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
+import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
+import "../org/punchi/dock" as Punchi
 import "components"
 
 KCM.SimpleKCM {
@@ -20,20 +23,19 @@ KCM.SimpleKCM {
     property string cfg_indicatorPosition: "bottom"
     property alias cfg_indicatorOpacity: indicatorOpacitySlider.value
     property alias cfg_indicatorThickness: indicatorThicknessSlider.value
-    property alias cfg_audioSpectrumEnabled: audioSpectrumCheck.checked
-    property alias cfg_audioSpectrumIntensity: audioSpectrumIntensitySlider.value
-    property alias cfg_audioSpectrumUsePlasmaTheme: audioSpectrumPlasmaThemeCheck.checked
-    property int cfg_audioSpectrumBarCount: 12
-    property string cfg_audioSpectrumStyle: "edge"
-    property string cfg_audioSpectrumBackgroundMode: "plasma"
-    property string cfg_audioSpectrumOrigin: "bottom"
-    property string cfg_audioSpectrumFlow: "none"
+    property string cfg_dockThemeMode: "plasma"
+    property string cfg_dockThemeCustomId: ""
+    property var lastThemeDirectoryImport: ({})
+    property string pendingThemeRemovalId: ""
+    property string pendingThemeRemovalName: ""
+    property int pendingThemeRemovalIndex: -1
+    property string themeRemovalMessage: ""
 
     readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
+    readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+        || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool indicatorPositionApplicable: cfg_indicatorType !== "ring"
         && cfg_indicatorType !== "none"
-    readonly property bool audioSpectrumUsesAbstractElements: cfg_audioSpectrumStyle === "cloud"
-        || cfg_audioSpectrumStyle === "particles"
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     readonly property var indicatorTypeOptions: [
@@ -48,42 +50,9 @@ KCM.SimpleKCM {
         { "text": i18n("Top"), "value": "top" }
     ]
     // qmllint disable unqualified
-    readonly property var audioSpectrumBarCountOptions: [
-        { "text": i18n("8 bars"), "value": 8 },
-        { "text": i18n("12 bars"), "value": 12 },
-        { "text": i18n("16 bars"), "value": 16 },
-        { "text": i18n("24 bars"), "value": 24 },
-        { "text": i18n("32 bars"), "value": 32 },
-        { "text": i18n("48 bars"), "value": 48 }
-    ]
-    readonly property var audioSpectrumDensityOptions: [
-        { "text": "8", "value": 8 },
-        { "text": "12", "value": 12 },
-        { "text": "16", "value": 16 },
-        { "text": "24", "value": 24 },
-        { "text": "32", "value": 32 },
-        { "text": "48", "value": 48 }
-    ]
-    readonly property var audioSpectrumStyleOptions: [
-        { "text": i18n("From the edge"), "value": "edge" },
-        { "text": i18n("Centered wave"), "value": "centered" },
-        { "text": i18n("Floating capsules"), "value": "capsules" },
-        { "text": i18n("Pixel spectrum"), "value": "pixel" },
-        { "text": i18n("Luminous cloud"), "value": "cloud" },
-        { "text": i18n("Reactive particles"), "value": "particles" }
-    ]
-    readonly property var audioSpectrumBackgroundOptions: [
-        { "text": i18n("Over the Plasma background"), "value": "plasma" },
-        { "text": i18n("Spectrum only, without background"), "value": "spectrumOnly" }
-    ]
-    readonly property var audioSpectrumOriginOptions: [
-        { "text": i18n("Bottom to top"), "value": "bottom" },
-        { "text": i18n("Top to bottom"), "value": "top" }
-    ]
-    readonly property var audioSpectrumFlowOptions: [
-        { "text": i18n("No movement"), "value": "none" },
-        { "text": i18n("Flow to the left"), "value": "left" },
-        { "text": i18n("Flow to the right"), "value": "right" }
+    readonly property var dockThemeModeOptions: [
+        { "text": i18n("Plasma theme"), "value": "plasma" },
+        { "text": i18n("External JSON theme"), "value": "custom" }
     ]
     // qmllint enable unqualified
 
@@ -109,27 +78,393 @@ KCM.SimpleKCM {
         syncComboValue(indicatorPositionCombo, page.cfg_indicatorPosition)
     }
 
-    function syncAudioSpectrumSelectors() {
-        syncComboValue(audioSpectrumBarCountCombo, page.cfg_audioSpectrumBarCount)
-        syncComboValue(audioSpectrumStyleCombo, page.cfg_audioSpectrumStyle)
-        syncComboValue(audioSpectrumBackgroundCombo, page.cfg_audioSpectrumBackgroundMode)
-        syncComboValue(audioSpectrumOriginCombo, page.cfg_audioSpectrumOrigin)
-        syncComboValue(audioSpectrumFlowCombo, page.cfg_audioSpectrumFlow)
+    function syncDockThemeSelector() {
+        syncComboValue(dockThemeModeCombo, page.cfg_dockThemeMode)
     }
+
+    function syncThemeLibrarySelector() {
+        if (!dockThemeLibraryCombo) {
+            return
+        }
+
+        const resolvedIndex = dockThemeLibraryCombo.indexOfValue(
+            page.cfg_dockThemeCustomId)
+        if (dockThemeLibraryCombo.currentIndex !== resolvedIndex) {
+            dockThemeLibraryCombo.currentIndex = resolvedIndex
+        }
+    }
+
+    function requestSelectedThemeRemoval() {
+        const selectedThemeId = String(
+            dockThemeLibraryCombo.currentValue || "")
+        const selectedThemeIndex = dockThemeLibraryCombo.currentIndex
+        if (dockThemeLibraryCombo.currentIndex < 0
+            || selectedThemeId.length === 0
+            || selectedThemeIndex >= dockThemeRepository.availableThemes.length) {
+            return
+        }
+
+        const selectedTheme =
+            dockThemeRepository.availableThemes[selectedThemeIndex] || ({})
+        page.pendingThemeRemovalId = selectedThemeId
+        page.pendingThemeRemovalName =
+            String(selectedTheme.name || dockThemeLibraryCombo.currentText || "")
+        page.pendingThemeRemovalIndex = selectedThemeIndex
+        removeThemeDialog.open()
+    }
+
+    function removePendingTheme() {
+        const removedThemeId = page.pendingThemeRemovalId
+        const removedThemeName = page.pendingThemeRemovalName
+        const previousIndex = page.pendingThemeRemovalIndex
+        if (removedThemeId.length === 0
+            || !dockThemeRepository.removeTheme(removedThemeId)) {
+            return
+        }
+
+        page.lastThemeDirectoryImport = ({})
+        // qmllint disable unqualified
+        page.themeRemovalMessage = i18n("Theme “%1” was deleted.", removedThemeName)
+        // qmllint enable unqualified
+
+        if (dockThemeRepository.availableThemes.length === 0) {
+            page.cfg_dockThemeCustomId = ""
+            page.cfg_dockThemeMode = "plasma"
+        } else if (page.cfg_dockThemeCustomId === removedThemeId) {
+            const fallbackIndex = Math.min(
+                Math.max(0, previousIndex),
+                dockThemeRepository.availableThemes.length - 1)
+            const fallbackTheme =
+                dockThemeRepository.availableThemes[fallbackIndex] || ({})
+            page.cfg_dockThemeCustomId = String(fallbackTheme.id || "")
+            if (page.cfg_dockThemeCustomId.length === 0) {
+                page.cfg_dockThemeMode = "plasma"
+            }
+        }
+
+        page.pendingThemeRemovalId = ""
+        page.pendingThemeRemovalName = ""
+        page.pendingThemeRemovalIndex = -1
+        page.syncThemeLibrarySelector()
+    }
+
+    // qmllint disable unqualified
+    function dockThemeErrorText(errorCode) {
+        switch (errorCode) {
+        case "invalidSource":
+            return i18n("Choose a local JSON file.")
+        case "unreadableFile":
+            return i18n("The selected theme file could not be read.")
+        case "emptyFile":
+            return i18n("The selected theme file is empty.")
+        case "fileTooLarge":
+            return i18n("The selected theme is larger than the 64 KiB limit.")
+        case "invalidJson":
+            return i18n("The selected file does not contain valid JSON.")
+        case "unsupportedSchema":
+            return i18n("The selected theme uses an unsupported schema version.")
+        case "unsupportedRenderer":
+            return i18n("This version of Punchi Dock does not support the renderer requested by the theme.")
+        case "themeNotFound":
+            return i18n("The configured external theme is unavailable. The Plasma background will be used.")
+        case "storageUnavailable":
+        case "writeFailed":
+            return i18n("Punchi Dock could not store the imported theme.")
+        case "invalidDirectory":
+            return i18n("Choose a local folder containing JSON themes.")
+        case "unreadableDirectory":
+            return i18n("The selected theme folder could not be read.")
+        case "invalidThemeId":
+            return i18n("The selected installed theme has an invalid identifier.")
+        case "removeFailed":
+            return i18n("Punchi Dock could not delete the selected theme.")
+        default:
+            return i18n("The selected file is not a supported Punchi Dock theme.")
+        }
+    }
+
+    function themeDirectoryImportText(result) {
+        if (!result || result.candidateCount === undefined) {
+            return ""
+        }
+        if (result.candidateCount === 0) {
+            return i18n("The selected folder and its subfolders do not contain JSON theme files.")
+        }
+
+        if (result.truncatedCount > 0) {
+            return i18n("Folder import finished — added: %1, already installed: %2, rejected: %3, not processed because of the 256-theme limit: %4.",
+                result.importedCount, result.duplicateCount,
+                result.rejectedCount, result.truncatedCount)
+        }
+        return i18n("Folder import finished — added: %1, already installed: %2, rejected: %3.",
+            result.importedCount, result.duplicateCount, result.rejectedCount)
+    }
+    // qmllint enable unqualified
 
     onCfg_indicatorTypeChanged: syncIndicatorSelectors()
     onCfg_indicatorPositionChanged: syncIndicatorSelectors()
-    onCfg_audioSpectrumBarCountChanged: syncAudioSpectrumSelectors()
-    onCfg_audioSpectrumStyleChanged: syncAudioSpectrumSelectors()
-    onCfg_audioSpectrumBackgroundModeChanged: syncAudioSpectrumSelectors()
-    onCfg_audioSpectrumOriginChanged: syncAudioSpectrumSelectors()
-    onCfg_audioSpectrumFlowChanged: syncAudioSpectrumSelectors()
+    onCfg_dockThemeModeChanged: syncDockThemeSelector()
+    onCfg_dockThemeCustomIdChanged: syncThemeLibrarySelector()
     Component.onCompleted: {
         syncIndicatorSelectors()
-        syncAudioSpectrumSelectors()
+        syncDockThemeSelector()
+        dockThemeRepository.refreshThemes()
+        syncThemeLibrarySelector()
     }
 
+    Punchi.DockThemeRepository {
+        id: dockThemeRepository
+        themeId: page.inPanel ? "" : page.cfg_dockThemeCustomId
+
+        onThemesChanged: page.syncThemeLibrarySelector()
+    }
+
+    // qmllint disable unqualified
+    QtDialogs.FileDialog {
+        id: dockThemeFileDialog
+        title: i18n("Import Punchi Dock Theme")
+        fileMode: QtDialogs.FileDialog.OpenFile
+        nameFilters: [i18n("JSON theme files") + " (*.json)", i18n("All files") + " (*)"]
+
+        onAccepted: {
+            page.themeRemovalMessage = ""
+            const importedThemeId = dockThemeRepository.importTheme(selectedFile)
+            if (importedThemeId.length === 0) {
+                return
+            }
+            page.cfg_dockThemeCustomId = importedThemeId
+            page.cfg_dockThemeMode = "custom"
+            page.syncThemeLibrarySelector()
+        }
+    }
+
+    QtDialogs.FolderDialog {
+        id: dockThemeFolderDialog
+        title: i18n("Import Punchi Dock Theme Folder")
+
+        onAccepted: {
+            page.themeRemovalMessage = ""
+            page.lastThemeDirectoryImport =
+                dockThemeRepository.importThemeDirectory(selectedFolder)
+            const selectedThemeId =
+                page.lastThemeDirectoryImport.selectedThemeId || ""
+            if (selectedThemeId.length > 0) {
+                page.cfg_dockThemeCustomId = selectedThemeId
+                page.cfg_dockThemeMode = "custom"
+                page.syncThemeLibrarySelector()
+            }
+        }
+    }
+
+    Controls.Menu {
+        id: importThemeMenu
+
+        Controls.MenuItem {
+            text: i18n("Import file…")
+            icon.name: "document-import"
+            Accessible.name: i18n("Import one Punchi Dock JSON theme")
+            onTriggered: {
+                page.lastThemeDirectoryImport = ({})
+                dockThemeRepository.clearError()
+                dockThemeFileDialog.open()
+            }
+        }
+
+        Controls.MenuItem {
+            text: i18n("Import folder…")
+            icon.name: "folder-open"
+            Accessible.name: i18n("Import all Punchi Dock JSON themes from a folder and its subfolders")
+            onTriggered: {
+                page.lastThemeDirectoryImport = ({})
+                dockThemeRepository.clearError()
+                dockThemeFolderDialog.open()
+            }
+        }
+    }
+
+    Kirigami.PromptDialog {
+        id: removeThemeDialog
+        parent: page
+        title: i18nc("@title:window", "Delete Installed Theme?")
+        subtitle: i18n("Delete “%1” permanently from the Punchi Dock Remastered theme library?",
+            page.pendingThemeRemovalName)
+        dialogType: Kirigami.PromptDialog.Warning
+        standardButtons: Kirigami.Dialog.NoButton
+        customFooterActions: [
+            Kirigami.Action {
+                text: i18nc("@action:button", "Delete Theme")
+                icon.name: "edit-delete"
+                onTriggered: removeThemeDialog.accept()
+            },
+            Kirigami.Action {
+                text: i18nc("@action:button", "Cancel")
+                icon.name: "dialog-cancel"
+                onTriggered: removeThemeDialog.reject()
+            }
+        ]
+        onAccepted: page.removePendingTheme()
+        onRejected: {
+            page.pendingThemeRemovalId = ""
+            page.pendingThemeRemovalName = ""
+            page.pendingThemeRemovalIndex = -1
+        }
+    }
+    // qmllint enable unqualified
+
     Kirigami.FormLayout {
+
+        // qmllint disable unqualified
+        SectionTitle {
+            Kirigami.FormData.isSection: true
+            visible: !page.inPanel
+            text: i18n("Dock background theme")
+        }
+
+        Kirigami.InlineMessage {
+            visible: !page.inPanel
+            type: Kirigami.MessageType.Information
+            text: i18n("Imported themes are stored in the Punchi Dock Remastered user library and currently apply only to a floating dock. Plasma panels keep their native background.")
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Background:")
+            Layout.maximumWidth: page.contentWidthHint
+            visible: !page.inPanel
+
+            Controls.ComboBox {
+                id: dockThemeModeCombo
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                textRole: "text"
+                valueRole: "value"
+                model: page.dockThemeModeOptions
+                onActivated: {
+                    if (page.cfg_dockThemeMode !== currentValue) {
+                        page.cfg_dockThemeMode = currentValue
+                    }
+                }
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Installed theme:")
+            Layout.maximumWidth: page.contentWidthHint
+            visible: !page.inPanel && page.cfg_dockThemeMode === "custom"
+
+            Controls.ComboBox {
+                id: dockThemeLibraryCombo
+                Layout.preferredWidth: Math.max(160,
+                    page.selectorWidthHint - importThemeButton.implicitWidth
+                    - removeThemeButton.implicitWidth
+                    - (Kirigami.Units.smallSpacing * 2)
+                )
+                Layout.maximumWidth: page.selectorWidthHint
+                textRole: "displayName"
+                valueRole: "id"
+                model: dockThemeRepository.availableThemes
+                enabled: count > 0
+                displayText: currentIndex >= 0
+                    ? currentText
+                    : count > 0
+                        ? i18n("Select a theme")
+                        : i18n("No imported themes")
+                Accessible.name: i18n("Installed Punchi Dock theme")
+                onActivated: {
+                    if (page.cfg_dockThemeCustomId !== currentValue) {
+                        page.cfg_dockThemeCustomId = currentValue
+                    }
+                }
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+
+            Controls.Button {
+                id: importThemeButton
+                text: i18n("Import…")
+                icon.name: "list-add"
+                Accessible.name: i18n("Import Punchi Dock JSON themes")
+                Accessible.description: i18n("Choose whether to import one JSON theme or all JSON themes from a folder.")
+                onClicked: importThemeMenu.popup(
+                    importThemeButton, 0, importThemeButton.height)
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+
+            Controls.Button {
+                id: removeThemeButton
+                text: i18nc("@action:button", "Delete")
+                icon.name: "edit-delete-symbolic"
+                display: Controls.AbstractButton.IconOnly
+                enabled: dockThemeLibraryCombo.currentIndex >= 0
+                    && String(dockThemeLibraryCombo.currentValue || "").length > 0
+                Accessible.name: i18n("Delete the selected installed Punchi Dock theme")
+                onClicked: page.requestSelectedThemeRemoval()
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: text
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+        }
+
+        Controls.Label {
+            visible: !page.inPanel
+                && page.cfg_dockThemeMode === "custom"
+                && dockThemeRepository.availableThemes.length === 0
+            text: i18n("Import a JSON theme to add it to your Punchi Dock Remastered library.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+
+        Kirigami.InlineMessage {
+            visible: !page.inPanel
+                && page.cfg_dockThemeMode === "custom"
+                && dockThemeRepository.errorCode.length > 0
+            type: Kirigami.MessageType.Error
+            text: page.dockThemeErrorText(dockThemeRepository.errorCode)
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+        }
+
+        Kirigami.InlineMessage {
+            visible: !page.inPanel
+                && page.cfg_dockThemeMode === "custom"
+                && page.lastThemeDirectoryImport.candidateCount !== undefined
+            type: page.lastThemeDirectoryImport.candidateCount === 0
+                ? Kirigami.MessageType.Information
+                : (page.lastThemeDirectoryImport.rejectedCount > 0
+                    || page.lastThemeDirectoryImport.truncatedCount > 0)
+                    ? Kirigami.MessageType.Warning
+                    : Kirigami.MessageType.Positive
+            text: page.themeDirectoryImportText(page.lastThemeDirectoryImport)
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+        }
+
+        Kirigami.InlineMessage {
+            visible: !page.inPanel
+                && page.themeRemovalMessage.length > 0
+            type: Kirigami.MessageType.Positive
+            text: page.themeRemovalMessage
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+        }
+        // qmllint enable unqualified
 
         SectionTitle {
             Kirigami.FormData.isSection: true
@@ -154,212 +489,6 @@ KCM.SimpleKCM {
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
         }
-
-        // qmllint disable unqualified
-        Controls.CheckBox {
-            id: audioSpectrumCheck
-            Kirigami.FormData.isSection: true
-            text: i18n("Audio visualizer")
-            font.bold: true
-
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
-        }
-
-        Kirigami.InlineMessage {
-            visible: true
-            type: Kirigami.MessageType.Warning
-            text: i18n("Privacy notice: Punchi Dock monitors the system output mix only while the audio visualizer is enabled. It does not select the microphone, record or store audio samples, or send audio over the network. Plasma may still show a recording indicator because output monitoring uses an input audio stream.")
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Dock background:")
-            Layout.maximumWidth: page.contentWidthHint
-            enabled: audioSpectrumCheck.checked
-
-            Controls.ComboBox {
-                id: audioSpectrumBackgroundCombo
-                Layout.preferredWidth: page.selectorWidthHint
-                Layout.maximumWidth: page.selectorWidthHint
-                textRole: "text"
-                valueRole: "value"
-                model: page.audioSpectrumBackgroundOptions
-                onActivated: {
-                    if (page.cfg_audioSpectrumBackgroundMode !== currentValue) {
-                        page.cfg_audioSpectrumBackgroundMode = currentValue
-                    }
-                }
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
-            }
-        }
-
-        Controls.Label {
-            text: page.cfg_audioSpectrumBackgroundMode === "spectrumOnly"
-                ? i18n("In floating mode, only the spectrum and dock items remain visible. A Plasma panel keeps its own background.")
-                : i18n("The spectrum is drawn over the Plasma-themed dock background.")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: layoutMetrics.helperIndent
-            color: Kirigami.Theme.disabledTextColor
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Visualizer intensity:")
-            Layout.maximumWidth: page.contentWidthHint
-            enabled: audioSpectrumCheck.checked
-
-            Controls.Slider {
-                id: audioSpectrumIntensitySlider
-                from: 10
-                to: 60
-                stepSize: 5
-                snapMode: Controls.Slider.SnapAlways
-                Layout.fillWidth: true
-                Layout.preferredWidth: page.contentWidthHint - 64
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
-            }
-
-            Controls.Label {
-                text: Math.round(audioSpectrumIntensitySlider.value) + "%"
-                horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: 56
-            }
-        }
-
-        Controls.CheckBox {
-            id: audioSpectrumPlasmaThemeCheck
-            Kirigami.FormData.label: i18n("EQ theme:")
-            text: i18n("Use Plasma theme colors")
-            enabled: audioSpectrumCheck.checked
-
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
-        }
-
-        Controls.Label {
-            text: audioSpectrumPlasmaThemeCheck.checked
-                ? i18n("Visualizer elements use Plasma's highlight color.")
-                : i18n("Visualizer elements use dynamic colors that react to each frequency level.")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: layoutMetrics.helperIndent
-            color: Kirigami.Theme.disabledTextColor
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: page.audioSpectrumUsesAbstractElements
-                ? i18n("Visual density:")
-                : i18n("Number of bars:")
-            Layout.maximumWidth: page.contentWidthHint
-            enabled: audioSpectrumCheck.checked
-
-            Controls.ComboBox {
-                id: audioSpectrumBarCountCombo
-                Layout.preferredWidth: page.selectorWidthHint
-                Layout.maximumWidth: page.selectorWidthHint
-                textRole: "text"
-                valueRole: "value"
-                model: page.audioSpectrumUsesAbstractElements
-                    ? page.audioSpectrumDensityOptions
-                    : page.audioSpectrumBarCountOptions
-                onActivated: {
-                    if (page.cfg_audioSpectrumBarCount !== currentValue) {
-                        page.cfg_audioSpectrumBarCount = currentValue
-                    }
-                }
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
-            }
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Visualizer style:")
-            Layout.maximumWidth: page.contentWidthHint
-            enabled: audioSpectrumCheck.checked
-
-            Controls.ComboBox {
-                id: audioSpectrumStyleCombo
-                Layout.preferredWidth: page.selectorWidthHint
-                Layout.maximumWidth: page.selectorWidthHint
-                textRole: "text"
-                valueRole: "value"
-                model: page.audioSpectrumStyleOptions
-                onActivated: {
-                    if (page.cfg_audioSpectrumStyle !== currentValue) {
-                        page.cfg_audioSpectrumStyle = currentValue
-                    }
-                }
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
-            }
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Rhythmic movement:")
-            Layout.maximumWidth: page.contentWidthHint
-            enabled: audioSpectrumCheck.checked
-
-            Controls.ComboBox {
-                id: audioSpectrumFlowCombo
-                Layout.preferredWidth: page.selectorWidthHint
-                Layout.maximumWidth: page.selectorWidthHint
-                textRole: "text"
-                valueRole: "value"
-                model: page.audioSpectrumFlowOptions
-                onActivated: {
-                    if (page.cfg_audioSpectrumFlow !== currentValue) {
-                        page.cfg_audioSpectrumFlow = currentValue
-                    }
-                }
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
-            }
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Edge direction:")
-            Layout.maximumWidth: page.contentWidthHint
-            enabled: audioSpectrumCheck.checked
-                && ["edge", "capsules", "pixel", "particles"].indexOf(page.cfg_audioSpectrumStyle) >= 0
-
-            Controls.ComboBox {
-                id: audioSpectrumOriginCombo
-                Layout.preferredWidth: page.selectorWidthHint
-                Layout.maximumWidth: page.selectorWidthHint
-                textRole: "text"
-                valueRole: "value"
-                model: page.audioSpectrumOriginOptions
-                onActivated: {
-                    if (page.cfg_audioSpectrumOrigin !== currentValue) {
-                        page.cfg_audioSpectrumOrigin = currentValue
-                    }
-                }
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
-            }
-        }
-        // qmllint enable unqualified
 
         SectionTitle {
             Kirigami.FormData.isSection: true

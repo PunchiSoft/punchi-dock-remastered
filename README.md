@@ -10,22 +10,30 @@ This repository is a modular rewrite of the original [Punchi Dock Plasmoid](http
 
 - Floating dock and Plasma panel modes.
 - Pinned launchers and optional dynamic task entries.
+- Custom launchers with safe preservation of commands and arguments.
 - Window cards, live previews, and grouped-window controls.
-- Configurable folders, quick notes, trash, separators, and calendar items.
+- Configurable folders with grid, list, and detail views, plus quick notes, trash, separators, and calendar items.
 - Optional PipeWire audio visualizer with six styles, dynamic or Plasma-themed colors, and up to 48 visual elements.
 - Plasma-themed popups with configurable opening animations and smooth preview-to-menu transitions.
 - Native application and window actions in the context menus of pinned launchers and dynamic tasks.
 - Contextual MPRIS media cards with artwork, track information, and playback controls.
 - Asynchronous trash operations with activity, progress, completion sound, and themed KDE notifications.
+- External JSON background themes stored in a managed user library, with recursive folder import, removal, and safe Plasma fallback.
+- Flat 2D and shelf-style 2.5D renderers with theme-defined separators, borders, gradients, rims, and bounded glow.
+- Theme-adaptive clock and calendar shadows for readability over varying backgrounds.
+- Dynamic compatibility with TaskManager APIs exposed by different Plasma 6 versions.
+- Portable application window icons and task matching through both application IDs and launcher URLs.
+- Stable icon sizing when a Plasma panel switches between always-visible and auto-hide modes.
 - Native C++ QML integration for application discovery, runtime services, audio analysis, and trash operations.
 
 ## Requirements
 
-- Fedora 44 or later on `x86_64` is the current release target.
+- Fedora 44 or later on `x86_64` is the primary release target.
 - KDE Plasma 6 or later.
 - Wayland is the primary supported session.
 - PipeWire is required by the optional audio visualizer.
-- Native binaries shipped inside the `.plasmoid` package are currently built and validated for Fedora 44+ `x86_64`, not as a universal Linux binary for every Plasma-based distribution.
+- Fedora 44 and Debian 13 have separate validated build, installation, and startup flows; the complete Debian functional review remains in progress.
+- Native binaries inside each `.plasmoid` are not universal: use the artifact labeled for the distribution where it was built.
 
 ## Install a Release Package
 
@@ -37,22 +45,22 @@ On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.7-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid
 ```
 
 To update an existing installation:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.7-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
 
-## Build from Source on Fedora 44+ `x86_64`
+## Build from Source
 
 The source tree contains a native C++ QML module. Installing the repository directory directly with `kpackagetool6` does not compile that module.
 
-Install the build dependencies:
+On Fedora 44+, install the build dependencies:
 
 ```bash
 sudo dnf install \
@@ -63,6 +71,8 @@ sudo dnf install \
     pipewire-devel \
     zip unzip
 ```
+
+On Debian, install the equivalent Qt 6, KF6, Plasma, PipeWire, CMake, and ZIP development packages. The Debian wrapper was validated on Debian 13 with Qt 6.8.2.
 
 Build the native module and create the versioned artifact for the current system:
 
@@ -76,7 +86,7 @@ The script detects Fedora or Debian through `/etc/os-release`. It writes an unam
 dist/punchi-dock-remastered-<version>-<distribution><version>-<architecture>.plasmoid
 ```
 
-Examples include `punchi-dock-remastered-0.8.7-fedora44-x86_64.plasmoid` and `punchi-dock-remastered-0.8.7-debian13-x86_64.plasmoid`. Never install a Fedora-labeled artifact on Debian or vice versa.
+Examples include `punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid` and `punchi-dock-remastered-0.8.8-debian13-x86_64.plasmoid`. Never install a Fedora-labeled artifact on Debian or vice versa.
 
 Explicit wrappers remain available for automation and diagnostics:
 

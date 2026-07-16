@@ -9,7 +9,7 @@ import org.kde.taskmanager as TaskManager
 Item {
     id: dockItemContainer
     
-    property string iconName: ""
+    property var iconName: ""
     property string itemName: ""
     property string itemCommand: ""
     property int iconSize: 48
@@ -130,6 +130,8 @@ Item {
     property bool suppressTooltip: false
     property bool supportsContextMenu: false
     property int popupDirection: Qt.BottomEdge
+    property bool customSeparatorEnabled: false
+    property var separatorTheme: ({})
     readonly property Item dockWrapperItem: dockItemContainer.parent && dockItemContainer.parent.parent ? dockItemContainer.parent.parent : null
     readonly property bool verticalPopupFlow: popupDirection === Qt.TopEdge || popupDirection === Qt.BottomEdge
     readonly property real popupAnchorExtent: Math.max(1, Math.min(width, iconSize + 12))
@@ -150,8 +152,28 @@ Item {
         && !suppressTooltip
         && !preferTaskPopupOnHover
         && (!activeTaskItem || taskPreviewStyle !== "none")
-    readonly property real separatorLength: Math.max(20, Math.round(iconSize * 0.72))
-    readonly property real separatorThickness: 2
+    readonly property real requestedSeparatorThickness: customSeparatorEnabled
+        ? Number(separatorTheme.thickness || 2)
+        : 2
+    readonly property real separatorThickness: Math.min(iconSize,
+        requestedSeparatorThickness)
+    readonly property var separatorGlow: separatorTheme.glow || ({})
+    readonly property real requestedSeparatorGlowSize: customSeparatorEnabled
+        ? Math.max(0, Number(separatorGlow.size || 0))
+        : 0
+    readonly property real separatorGlowSize: Math.min(
+        requestedSeparatorGlowSize,
+        Math.max(0, (iconSize - separatorThickness) / 2))
+    readonly property real separatorBodyLengthLimit: Math.max(
+        separatorThickness, iconSize - (separatorGlowSize * 2))
+    readonly property real separatorLength: customSeparatorEnabled
+        ? (String(separatorTheme.style || "line") === "dot"
+            ? separatorThickness
+            : Math.min(separatorBodyLengthLimit,
+                Math.max(separatorThickness,
+                    Math.round(iconSize
+                        * Number(separatorTheme.lengthRatio || 0.72)))))
+        : Math.max(20, Math.round(iconSize * 0.72))
     readonly property real effectiveTaskPreviewScale: Math.max(0.5, Math.min(2.0, taskPreviewScale))
     readonly property int richTooltipPreviewWidth: Math.round(176 * effectiveTaskPreviewScale)
     readonly property int richTooltipPreviewHeight: Math.round(richTooltipPreviewWidth / 1.6)
@@ -178,7 +200,12 @@ Item {
     signal hoverEntered(var visualParent)
     signal hoverExited(var visualParent)
     // Medidas del contenedor del Layout TOTALMENTE ESTÁTICAS para evitar jitter
-    implicitWidth: separatorItem ? 10 : (spacerItem ? Math.max(12, iconSize * 0.5) : Math.max(iconSize + 12, showPersistentLabel ? Math.round(iconSize * 1.85) : 0))
+    implicitWidth: separatorItem
+        ? Math.max(10, Math.ceil(separatorThickness + 4))
+        : (spacerItem
+            ? Math.max(12, iconSize * 0.5)
+            : Math.max(iconSize + 12,
+                showPersistentLabel ? Math.round(iconSize * 1.85) : 0))
     implicitHeight: visualAreaHeight + labelAreaHeight
 
     Rectangle {
@@ -241,13 +268,26 @@ Item {
         }
 
         Rectangle {
-            visible: separatorItem
-            width: separatorThickness
-            height: separatorLength
-            radius: separatorThickness / 2
+            visible: dockItemContainer.separatorItem
+                && !dockItemContainer.customSeparatorEnabled
+            width: dockItemContainer.separatorThickness
+            height: dockItemContainer.separatorLength
+            radius: dockItemContainer.separatorThickness / 2
             anchors.centerIn: parent
             color: Kirigami.Theme.textColor
             opacity: 0.34
+        }
+
+        ThemedSeparator {
+            visible: dockItemContainer.separatorItem
+                && dockItemContainer.customSeparatorEnabled
+            anchors.centerIn: parent
+            width: dockItemContainer.separatorThickness
+            height: dockItemContainer.separatorLength
+            availableLength: visualArea.height
+            renderedThickness: dockItemContainer.separatorThickness
+            maximumGlowSize: dockItemContainer.separatorGlowSize
+            theme: dockItemContainer.separatorTheme
         }
 
         TaskIndicator {

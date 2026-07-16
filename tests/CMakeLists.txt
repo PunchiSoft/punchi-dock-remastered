@@ -17,6 +17,27 @@ target_link_libraries(commandclassification_test PRIVATE Qt6::Core KF6::CoreAddo
 
 add_test(NAME commandclassification_test COMMAND commandclassification_test)
 
+add_executable(dockthemevalidator_test
+    dockthemevalidator_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/dockthemevalidator.cpp
+)
+
+target_include_directories(dockthemevalidator_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(dockthemevalidator_test PRIVATE Qt6::Core Qt6::Gui)
+
+add_test(NAME dockthemevalidator_test COMMAND dockthemevalidator_test)
+
+add_executable(dockthemerepository_test
+    dockthemerepository_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/dockthemerepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/dockthemevalidator.cpp
+)
+
+target_include_directories(dockthemerepository_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(dockthemerepository_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml)
+
+add_test(NAME dockthemerepository_test COMMAND dockthemerepository_test)
+
 add_executable(pipewirebackend_probe EXCLUDE_FROM_ALL
     pipewirebackend_probe.cpp
     ${CMAKE_SOURCE_DIR}/src/pipewireaudiobackend.cpp

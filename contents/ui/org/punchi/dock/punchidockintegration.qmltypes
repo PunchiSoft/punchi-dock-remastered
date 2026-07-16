@@ -106,6 +106,93 @@ Module {
         Method { name: "playSound"; type: "bool"; isCloned: true; lineNumber: 18 }
     }
     Component {
+        file: "dockthemerepository.h"
+        lineNumber: 11
+        name: "DockThemeRepository"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/DockThemeRepository 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "themeId"
+            type: "QString"
+            read: "themeId"
+            write: "setThemeId"
+            notify: "themeIdChanged"
+            index: 0
+            lineNumber: 15
+        }
+        Property {
+            name: "theme"
+            type: "QVariantMap"
+            read: "theme"
+            notify: "themeChanged"
+            index: 1
+            lineNumber: 16
+            isReadonly: true
+        }
+        Property {
+            name: "valid"
+            type: "bool"
+            read: "valid"
+            notify: "themeChanged"
+            index: 2
+            lineNumber: 17
+            isReadonly: true
+        }
+        Property {
+            name: "themeName"
+            type: "QString"
+            read: "themeName"
+            notify: "themeChanged"
+            index: 3
+            lineNumber: 18
+            isReadonly: true
+        }
+        Property {
+            name: "errorCode"
+            type: "QString"
+            read: "errorCode"
+            notify: "errorCodeChanged"
+            index: 4
+            lineNumber: 19
+            isReadonly: true
+        }
+        Property {
+            name: "availableThemes"
+            type: "QVariantList"
+            read: "availableThemes"
+            notify: "themesChanged"
+            index: 5
+            lineNumber: 20
+            isReadonly: true
+        }
+        Signal { name: "themeIdChanged"; lineNumber: 40 }
+        Signal { name: "themeChanged"; lineNumber: 41 }
+        Signal { name: "errorCodeChanged"; lineNumber: 42 }
+        Signal { name: "themesChanged"; lineNumber: 43 }
+        Method {
+            name: "importTheme"
+            type: "QString"
+            lineNumber: 33
+            Parameter { name: "sourceUrl"; type: "QUrl" }
+        }
+        Method {
+            name: "importThemeDirectory"
+            type: "QVariantMap"
+            lineNumber: 34
+            Parameter { name: "sourceDirectoryUrl"; type: "QUrl" }
+        }
+        Method {
+            name: "removeTheme"
+            type: "bool"
+            lineNumber: 35
+            Parameter { name: "themeId"; type: "QString" }
+        }
+        Method { name: "refreshThemes"; lineNumber: 36 }
+        Method { name: "clearError"; lineNumber: 37 }
+    }
+    Component {
         file: "mpriscontroller.h"
         lineNumber: 13
         name: "MprisController"

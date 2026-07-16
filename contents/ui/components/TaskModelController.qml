@@ -124,9 +124,69 @@ Item {
             : ""
     }
 
+    function normalizeLauncherUrl(value) {
+        let text = String(value || "").trim()
+        if (text.indexOf("applications:") === 0) {
+            text = text.slice("applications:".length)
+            if (text.endsWith(".desktop")) {
+                text = text.slice(0, -8)
+            }
+            return text.length > 0 ? ("applications:" + text) : ""
+        }
+        return text
+    }
+
+    function dockItemLauncherUrl(item) {
+        if (!item || item.type !== "app") {
+            return ""
+        }
+
+        const storageId = normalizeApplicationId(item.storageId || "")
+        return storageId.length > 0 ? ("applications:" + storageId) : ""
+    }
+
     function taskAppIdForRow(row) {
         const taskIndex = tasksModel.index(row, 0)
         return normalizeApplicationId(tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.AppId))
+    }
+
+    function taskLauncherUrlForRow(row) {
+        const taskIndex = tasksModel.index(row, 0)
+        return normalizeLauncherUrl(tasksModel.data(
+            taskIndex, TaskManager.AbstractTasksModel.LauncherUrlWithoutIcon))
+    }
+
+    function dockItemMatchesTaskRow(item, row) {
+        const dockAppId = dockItemApplicationId(item)
+        const taskAppId = taskAppIdForRow(row)
+        if (dockAppId.length > 0 && dockAppId === taskAppId) {
+            return true
+        }
+
+        const dockLauncherUrl = dockItemLauncherUrl(item)
+        const taskLauncherUrl = taskLauncherUrlForRow(row)
+        return dockLauncherUrl.length > 0 && dockLauncherUrl === taskLauncherUrl
+    }
+
+    function taskEntriesMatch(entry, nextEntry) {
+        if (!entry || !nextEntry) {
+            return false
+        }
+        if (nextEntry.appId.length > 0 && entry.appIds.indexOf(nextEntry.appId) >= 0) {
+            return true
+        }
+        return nextEntry.launcherUrl.length > 0
+            && entry.launcherUrls.indexOf(nextEntry.launcherUrl) >= 0
+    }
+
+    function appendEntryIdentity(entry, nextEntry) {
+        if (nextEntry.appId.length > 0 && entry.appIds.indexOf(nextEntry.appId) < 0) {
+            entry.appIds.push(nextEntry.appId)
+        }
+        if (nextEntry.launcherUrl.length > 0
+                && entry.launcherUrls.indexOf(nextEntry.launcherUrl) < 0) {
+            entry.launcherUrls.push(nextEntry.launcherUrl)
+        }
     }
 
     function groupingEnabled() {
@@ -144,7 +204,7 @@ Item {
             || roles.indexOf(TaskManager.AbstractTasksModel.SkipTaskbar) >= 0
     }
 
-    function taskIconNameForRow(row) {
+    function taskIconSourceForRow(row) {
         const taskIndex = tasksModel.index(row, 0)
         const taskAppId = taskAppIdForRow(row)
         let iconName = root.systemDiscovery && taskAppId.length > 0
@@ -154,12 +214,17 @@ Item {
             return iconName
         }
 
-        const launcherUrl = String(tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.LauncherUrlWithoutIcon) || "")
+        const launcherUrl = taskLauncherUrlForRow(row)
         if (root.systemDiscovery && launcherUrl.indexOf("applications:") === 0) {
             iconName = root.systemDiscovery.iconForApplication(launcherUrl.slice("applications:".length))
             if (iconName.length > 0) {
                 return iconName
             }
+        }
+
+        const windowIcon = tasksModel.data(taskIndex, Qt.DecorationRole)
+        if (windowIcon) {
+            return windowIcon
         }
 
         return "application-x-executable"
@@ -195,13 +260,8 @@ Item {
             return false
         }
 
-        const taskAppId = taskAppIdForRow(row)
-        if (taskAppId.length === 0) {
-            return true
-        }
-
         for (let index = 0; index < root.dockItems.length; index++) {
-            if (dockItemApplicationId(root.dockItems[index]) === taskAppId) {
+            if (dockItemMatchesTaskRow(root.dockItems[index], row)) {
                 return false
             }
         }
@@ -212,16 +272,22 @@ Item {
     function buildVisibleTaskEntryForRow(row) {
         const taskIndex = tasksModel.index(row, 0)
         const appId = taskAppIdForRow(row)
+        const launcherUrl = taskLauncherUrlForRow(row)
         return {
-            "key": appId.length > 0 && groupingEnabled() ? ("app:" + appId) : ("row:" + row),
+            "key": appId.length > 0
+                ? ("app:" + appId)
+                : (launcherUrl.length > 0 ? ("launcher:" + launcherUrl) : ("row:" + row)),
             "appId": appId,
+            "appIds": appId.length > 0 ? [appId] : [],
+            "launcherUrl": launcherUrl,
+            "launcherUrls": launcherUrl.length > 0 ? [launcherUrl] : [],
             "rows": [row],
             "firstRow": row,
             "count": 1,
             "name": String(tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.AppName)
                 || tasksModel.data(taskIndex, Qt.DisplayRole)
                 || ""),
-            "icon": taskIconNameForRow(row),
+            "icon": taskIconSourceForRow(row),
             "active": isTaskRowActive(row),
             "demandsAttention": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsDemandingAttention),
             "windowUuid": taskWindowUuidForRow(row)
@@ -230,22 +296,28 @@ Item {
 
     function refreshVisibleRows() {
         const entries = []
-        const groupedIndexByKey = {}
         if (root.showActiveTasks) {
             for (let row = 0; row < tasksModel.count; row++) {
                 if (isTaskRowVisible(row)) {
                     const nextEntry = buildVisibleTaskEntryForRow(row)
-                    if (groupingEnabled() && nextEntry.appId.length > 0) {
-                        const existingIndex = groupedIndexByKey[nextEntry.key]
-                        if (existingIndex !== undefined) {
+                    if (groupingEnabled()
+                            && (nextEntry.appId.length > 0 || nextEntry.launcherUrl.length > 0)) {
+                        let existingIndex = -1
+                        for (let entryIndex = 0; entryIndex < entries.length; entryIndex++) {
+                            if (taskEntriesMatch(entries[entryIndex], nextEntry)) {
+                                existingIndex = entryIndex
+                                break
+                            }
+                        }
+                        if (existingIndex >= 0) {
                             const existingEntry = entries[existingIndex]
                             existingEntry.rows.push(row)
                             existingEntry.count += 1
                             existingEntry.active = existingEntry.active || nextEntry.active
                             existingEntry.demandsAttention = existingEntry.demandsAttention || nextEntry.demandsAttention
+                            appendEntryIdentity(existingEntry, nextEntry)
                             continue
                         }
-                        groupedIndexByKey[nextEntry.key] = entries.length
                     }
                     entries.push(nextEntry)
                 }
@@ -281,7 +353,6 @@ Item {
     }
 
     function taskStateForDockItem(item) {
-        const appId = dockItemApplicationId(item)
         const result = {
             "count": 0,
             "isActive": false,
@@ -289,7 +360,8 @@ Item {
             "firstRow": -1,
             "rows": []
         }
-        if (appId.length === 0) {
+        if (dockItemApplicationId(item).length === 0
+                && dockItemLauncherUrl(item).length === 0) {
             return result
         }
 
@@ -297,7 +369,7 @@ Item {
             const taskIndex = tasksModel.index(row, 0)
             if (!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsWindow)
                     || tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.SkipTaskbar)
-                    || taskAppIdForRow(row) !== appId) {
+                    || !dockItemMatchesTaskRow(item, row)) {
                 continue
             }
             if (result.firstRow === -1) {
@@ -329,7 +401,7 @@ Item {
                 "minimized": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimized),
                 "maximizable": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMaximizable),
                 "maximized": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMaximized),
-                "icon": taskIconNameForRow(row),
+                "icon": taskIconSourceForRow(row),
                 "windowUuid": taskWindowUuidForRow(row)
             })
         }
@@ -434,7 +506,7 @@ Item {
             "name": String(tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.AppName)
                 || tasksModel.data(taskIndex, Qt.DisplayRole)
                 || ""),
-            "icon": taskIconNameForRow(firstRow),
+            "icon": taskIconSourceForRow(firstRow),
             "count": Math.max(1, Number(entry.count || rows.length || 1)),
             "rows": rows,
             "firstRow": firstRow,

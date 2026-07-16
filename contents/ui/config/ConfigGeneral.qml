@@ -28,23 +28,25 @@ KCM.SimpleKCM {
     readonly property bool verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
+    // Plasma::Containment exposes its visual geometry at runtime, although the
+    // generated QML type metadata does not declare width/height.
+    // qmllint disable missing-property
     readonly property int detectedPanelThickness: {
         try {
             var containment = Plasmoid.containment
-            if (!containment || !containment.screenGeometry || !containment.availableScreenRect) {
+            if (!containment) {
                 return 0
             }
 
-            var screenGeometry = containment.screenGeometry
-            var availableScreenRect = containment.availableScreenRect
             var thickness = verticalPanel
-                ? Math.max(0, screenGeometry.width - availableScreenRect.width)
-                : Math.max(0, screenGeometry.height - availableScreenRect.height)
+                ? Math.max(0, Number(containment["width"] || 0))
+                : Math.max(0, Number(containment["height"] || 0))
             return thickness > 0 ? thickness : 0
         } catch (error) {
             return 0
         }
     }
+    // qmllint enable missing-property
     readonly property int panelCrossAxisPadding: verticalPanel ? 36 : 24
     readonly property int safePanelIconSizeMax: detectedPanelThickness > 0
         ? Math.max(32, detectedPanelThickness - panelCrossAxisPadding - 12)

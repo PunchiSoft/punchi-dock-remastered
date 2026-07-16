@@ -10,22 +10,30 @@ Este repositorio es una reescritura modular del proyecto original [Punchi Dock P
 
 - Modos dock flotante y panel de Plasma.
 - Lanzadores fijados y entradas dinámicas de tareas opcionales.
+- Lanzadores personalizados con preservación segura de comandos y argumentos.
 - Tarjetas de ventanas, miniaturas vivas y controles para ventanas agrupadas.
-- Carpetas configurables, notas rápidas, papelera, separadores y calendario.
+- Carpetas configurables con vistas de rejilla, lista y detalle, además de notas rápidas, papelera, separadores y calendario.
 - Visualizador de audio PipeWire opcional con seis estilos, colores dinámicos o del tema Plasma y hasta 48 elementos visuales.
 - Popups adaptados al tema de Plasma con animaciones de apertura configurables y transiciones fluidas entre miniaturas y menús.
 - Acciones nativas de aplicacion y ventana en los menus contextuales de launchers fijados y tareas dinamicas.
 - Tarjetas multimedia MPRIS contextuales con caratula, informacion de pista y controles de reproduccion.
 - Operaciones asíncronas de papelera con actividad, progreso, sonido de finalización y notificaciones temáticas de KDE.
+- Temas externos JSON almacenados en una biblioteca administrada, con importación recursiva de carpetas, borrado y fallback seguro al fondo Plasma.
+- Renderers plano 2D y repisa 2.5D con separadores, bordes, gradientes, rims y glow acotado definidos por cada tema.
+- Reloj y calendario con sombras adaptadas al tema para conservar legibilidad sobre fondos variables.
+- Compatibilidad dinámica con APIs de TaskManager disponibles en distintas versiones de Plasma 6.
+- Iconos de ventanas para aplicaciones portables y asociación de tareas mediante identificadores de aplicación o URL de lanzador.
+- Tamaño estable de iconos al alternar un panel Plasma entre Siempre visible y Ocultar automáticamente.
 - Integración QML nativa en C++ para descubrir aplicaciones, servicios de ejecución, análisis de audio y operaciones de papelera.
 
 ## Requisitos
 
-- Fedora 44 o posterior en `x86_64` es el objetivo actual de publicación.
+- Fedora 44 o posterior en `x86_64` es el objetivo principal de publicación.
 - KDE Plasma 6 o posterior.
 - Wayland es la sesión principal soportada.
 - PipeWire es necesario para el visualizador de audio opcional.
-- Los binarios nativos incluidos en el paquete `.plasmoid` se compilan y validan actualmente para Fedora 44+ `x86_64`; no son binarios universales para todas las distribuciones con Plasma.
+- Fedora 44 y Debian 13 cuentan con flujos de compilación, instalación y arranque validados por separado; la revisión funcional completa de Debian sigue en curso.
+- Los binarios nativos incluidos en cada `.plasmoid` no son universales: debe usarse el artefacto etiquetado para la distribución donde fue compilado.
 
 ## Instalar un paquete publicado
 
@@ -37,22 +45,22 @@ En Fedora, `kpackagetool6` pertenece a `kf6-kpackage` y normalmente ya está dis
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.7-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid
 ```
 
 Para actualizar una instalación existente:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.7-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid
 ```
 
 Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actualizado no se carga inmediatamente.
 
-## Compilar desde fuentes en Fedora 44+ `x86_64`
+## Compilar desde fuentes
 
 El árbol de fuentes contiene un módulo QML nativo en C++. Instalar directamente el directorio del repositorio con `kpackagetool6` no compila ese módulo.
 
-Instala las dependencias de compilación:
+En Fedora 44+, instala las dependencias de compilación:
 
 ```bash
 sudo dnf install \
@@ -63,6 +71,8 @@ sudo dnf install \
     pipewire-devel \
     zip unzip
 ```
+
+En Debian deben instalarse los paquetes de desarrollo equivalentes para Qt 6, KF6, Plasma, PipeWire, CMake y herramientas ZIP. El wrapper Debian fue validado en Debian 13 con Qt 6.8.2.
 
 Compila el módulo nativo y crea el artefacto versionado para el sistema actual:
 
@@ -76,7 +86,7 @@ El script detecta Fedora o Debian desde `/etc/os-release`. El paquete resultante
 dist/punchi-dock-remastered-<version>-<distribución><versión>-<arquitectura>.plasmoid
 ```
 
-Por ejemplo: `punchi-dock-remastered-0.8.7-fedora44-x86_64.plasmoid` o `punchi-dock-remastered-0.8.7-debian13-x86_64.plasmoid`. No instales en Debian un artefacto identificado como Fedora ni a la inversa.
+Por ejemplo: `punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid` o `punchi-dock-remastered-0.8.8-debian13-x86_64.plasmoid`. No instales en Debian un artefacto identificado como Fedora ni a la inversa.
 
 Los wrappers explícitos quedan disponibles para automatización o diagnóstico:
 
