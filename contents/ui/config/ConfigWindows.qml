@@ -20,6 +20,7 @@ KCM.SimpleKCM {
     property alias cfg_showTasksCurrentDesktopOnly: currentDesktopOnlyCheck.checked
     property string cfg_windowPreviewStyle: "card"
     property alias cfg_windowPreviewScale: previewScaleSlider.value
+    property alias cfg_mediaControlsOnHover: mediaControlsOnHoverCheck.checked
     property alias cfg_taskPopupRadiusAuto: taskPopupRadiusAutoCheck.checked
     property alias cfg_taskPopupRadius: taskPopupRadiusSlider.value
     property string cfg_windowGroupingMode: "application"
@@ -81,6 +82,7 @@ KCM.SimpleKCM {
             text: i18n("Task visibility")
         }
 
+        // qmllint disable unqualified
         Controls.CheckBox {
             id: showActiveTasksCheck
             Kirigami.FormData.label: i18n("Tasks:")
@@ -188,6 +190,27 @@ KCM.SimpleKCM {
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
         }
+
+        Controls.CheckBox {
+            id: mediaControlsOnHoverCheck
+            Kirigami.FormData.label: i18n("Media players:")
+            text: i18n("Show media controls on hover when available")
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.interactiveCursorEnabled
+            }
+        }
+
+        Controls.Label {
+            text: i18n("For MPRIS-compatible applications, replaces the window preview with artwork, playback controls, and volume. Right-click actions remain separate.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+            enabled: mediaControlsOnHoverCheck.checked
+        }
+        // qmllint enable unqualified
 
         RowLayout {
             Kirigami.FormData.label: i18n("Preview size:")

@@ -6,20 +6,28 @@ import org.kde.kirigami as Kirigami
 
 // Plasma provides the translation functions in the applet context.
 // qmllint disable unqualified
-Item {
+FocusScope {
     id: root
 
     property var controller: null
     property string fallbackIcon: "emblem-music-symbolic"
     property bool compact: false
+    property bool squarePresentation: false
     readonly property bool available: !!controller && controller.available
     readonly property string artUrl: controller && controller.artUrl
         ? String(controller.artUrl)
         : ""
-    readonly property bool ambientMode: !compact
+    readonly property bool squareMode: squarePresentation && !compact
+    readonly property bool ambientMode: !squareMode && !compact
         && ambientSource.status === Image.Ready
         && artUrl.length > 0
-    readonly property real preferredExpandedHeight: artUrl.length > 0 ? 120 : 88
+    readonly property bool volumeAvailable: !!controller && controller.volumeAvailable
+    readonly property real compactPreferredHeight: volumeAvailable ? 88 : 56
+    readonly property real preferredExpandedHeight: squarePresentation
+        ? (volumeAvailable ? 420 : 382)
+        : (volumeAvailable
+            ? (artUrl.length > 0 ? 152 : 120)
+            : (artUrl.length > 0 ? 120 : 88))
     readonly property string title: controller && controller.track
         ? controller.track
         : controller && controller.identity
@@ -32,10 +40,32 @@ Item {
             : i18n("MPRIS controls")
     readonly property real cornerRadius: 12
 
-    implicitHeight: compact ? 56 : (ambientMode ? 120 : 88)
+    implicitWidth: 280
+    implicitHeight: compact ? compactPreferredHeight : preferredExpandedHeight
     visible: available
     Accessible.role: Accessible.Grouping
     Accessible.name: i18nc("@info:accessible", "Media controls for %1", title)
+
+    signal closeRequested()
+
+    Keys.onEscapePressed: function(event) {
+        root.closeRequested()
+        event.accepted = true
+    }
+
+    function focusFirstControl() {
+        if (squareMode) {
+            if (squareControls.focusFirstControl()) {
+                return true
+            }
+            return squareVolume.focusControl()
+        }
+        const transport = ambientMode ? ambientControls : standardControls
+        if (transport.focusFirstControl()) {
+            return true
+        }
+        return (ambientMode ? ambientVolume : standardVolume).focusControl()
+    }
 
     Rectangle {
         anchors.fill: parent
@@ -43,6 +73,114 @@ Item {
         color: Kirigami.Theme.alternateBackgroundColor
         border.width: 1
         border.color: Kirigami.Theme.disabledTextColor
+    }
+
+    ColumnLayout {
+        id: squareContent
+        anchors.fill: parent
+        anchors.margins: 12
+        spacing: Kirigami.Units.smallSpacing
+        visible: root.squareMode
+
+        Item {
+            id: squareCover
+            Layout.fillWidth: true
+            Layout.preferredHeight: width
+
+            Rectangle {
+                anchors.fill: parent
+                radius: root.cornerRadius - 2
+                color: Kirigami.Theme.backgroundColor
+            }
+
+            Image {
+                id: squareCoverSource
+                anchors.fill: parent
+                source: root.artUrl
+                fillMode: Image.PreserveAspectCrop
+                asynchronous: true
+                cache: true
+                visible: false
+                layer.enabled: true
+            }
+
+            Item {
+                id: squareCoverMask
+                anchors.fill: parent
+                visible: false
+                layer.enabled: true
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: root.cornerRadius - 2
+                    color: "black"
+                }
+            }
+
+            Effects.MultiEffect {
+                anchors.fill: parent
+                source: squareCoverSource
+                maskEnabled: true
+                maskSource: squareCoverMask
+                visible: squareCoverSource.status === Image.Ready
+            }
+
+            Kirigami.Icon {
+                anchors.centerIn: parent
+                width: Kirigami.Units.iconSizes.huge
+                height: width
+                source: root.fallbackIcon.length > 0
+                    ? root.fallbackIcon
+                    : "emblem-music-symbolic"
+                visible: squareCoverSource.status !== Image.Ready
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                radius: root.cornerRadius - 2
+                color: "transparent"
+                border.width: 1
+                border.color: Qt.rgba(Kirigami.Theme.textColor.r,
+                    Kirigami.Theme.textColor.g,
+                    Kirigami.Theme.textColor.b, 0.16)
+            }
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 0
+
+            PlasmaComponents.Label {
+                Layout.fillWidth: true
+                text: root.title
+                font.weight: Font.DemiBold
+                font.pointSize: Kirigami.Theme.defaultFont.pointSize + 1
+                elide: Text.ElideRight
+                maximumLineCount: 1
+            }
+
+            PlasmaComponents.Label {
+                Layout.fillWidth: true
+                text: root.subtitle
+                color: Kirigami.Theme.disabledTextColor
+                elide: Text.ElideRight
+                maximumLineCount: 1
+            }
+        }
+
+        MediaTransportControls {
+            id: squareControls
+            Layout.fillWidth: true
+            Layout.preferredHeight: 52
+            controller: root.controller
+            prominentPlayButton: true
+        }
+
+        MediaVolumeControl {
+            id: squareVolume
+            Layout.fillWidth: true
+            controller: root.controller
+        }
     }
 
     Image {
@@ -75,7 +213,7 @@ Item {
         maskEnabled: true
         maskSource: ambientMask
         opacity: root.ambientMode ? 1 : 0
-        visible: opacity > 0
+        visible: !root.squareMode && opacity > 0
 
         Behavior on opacity {
             NumberAnimation {
@@ -110,7 +248,7 @@ Item {
         anchors.margins: Kirigami.Units.smallSpacing
         spacing: Kirigami.Units.smallSpacing
         opacity: root.ambientMode ? 0 : 1
-        visible: opacity > 0
+        visible: !root.squareMode && opacity > 0
 
         Behavior on opacity {
             NumberAnimation {
@@ -174,6 +312,13 @@ Item {
             }
 
             MediaTransportControls {
+                id: standardControls
+                Layout.fillWidth: true
+                controller: root.controller
+            }
+
+            MediaVolumeControl {
+                id: standardVolume
                 Layout.fillWidth: true
                 controller: root.controller
             }
@@ -223,9 +368,21 @@ Item {
             id: ambientControls
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.bottom: parent.bottom
+            anchors.bottom: ambientVolume.top
             anchors.leftMargin: 10
             anchors.rightMargin: 10
+            anchors.bottomMargin: 4
+            controller: root.controller
+            lightAppearance: true
+        }
+
+        MediaVolumeControl {
+            id: ambientVolume
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 14
+            anchors.rightMargin: 14
             anchors.bottomMargin: 4
             controller: root.controller
             lightAppearance: true

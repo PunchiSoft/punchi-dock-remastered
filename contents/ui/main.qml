@@ -114,6 +114,7 @@ PlasmoidItem {
     readonly property int floatingExtraWidth: 48
     readonly property int floatingExtraHeight: 32
     readonly property string windowPreviewStyle: String(Plasmoid.configuration.windowPreviewStyle || "card")
+    readonly property bool mediaControlsOnHover: !!Plasmoid.configuration.mediaControlsOnHover
     readonly property real windowPreviewScale: Math.max(0.5, Math.min(2.0,
         Number(Plasmoid.configuration.windowPreviewScale || 1.0)))
     readonly property bool taskPopupRadiusAuto: Plasmoid.configuration.taskPopupRadiusAuto !== false
@@ -130,6 +131,14 @@ PlasmoidItem {
     readonly property bool dockIconReflectionsEnabled: (!inPanel || horizontalPanel)
         && !dockShowLabels
         && !!Plasmoid.configuration.iconReflectionsEnabled
+    readonly property real dockIconReflectionOpacity: {
+        const configuredPercent = Number(
+            Plasmoid.configuration.iconReflectionOpacity)
+        const safePercent = Number.isFinite(configuredPercent)
+            ? configuredPercent
+            : 22
+        return Math.max(5, Math.min(50, safePercent)) / 100.0
+    }
     readonly property int dockLabelFontSize: Math.max(10, Math.round(effectiveIconSize * 0.22))
     readonly property int dockLabelAreaHeight: dockShowLabels ? (dockLabelFontSize + 12) : 0
     readonly property string dockClickEffect: String(Plasmoid.configuration.clickEffect || "none")
@@ -723,6 +732,8 @@ PlasmoidItem {
             trashContextContentRef: trashContextContent
             notePopupContentRef: notePopupContent
             taskWindowsPopupContentRef: taskWindowsPopupContent
+            taskContextSurfaceStackRef: taskContextSurfaceStack
+            mediaHoverEnabled: root.mediaControlsOnHover
             folderPopupDialogRef: folderPopupDialog
             calendarPopupDialogRef: calendarPopupDialog
             trashMenuDialogRef: trashMenuDialog
@@ -865,7 +876,10 @@ PlasmoidItem {
                     : Math.round((parent.height - height) / 2)
                 width: root.verticalPanel
                     ? Math.min(dockLayout.width, panelCrossAxisExtent)
-                    : dockLayout.width
+                    : (root.panelFillLengthEnabled
+                        ? Math.max(0, parent.width - x
+                            - root.dockBackgroundHorizontalPadding)
+                        : dockLayout.width)
                 height: root.verticalPanel
                     ? dockLayout.height
                     : Math.min(dockLayout.height, panelCrossAxisExtent)
@@ -973,10 +987,11 @@ PlasmoidItem {
                         taskMinimizedCount: taskState.minimizedCount
                         minimizeReactionRevision: root.minimizeReactionRevision
                         minimizeReactionTargetIndex: root.minimizeReactionTargetIndex
-                        // qmllint enable unqualified
                         showItemHoverBackground: root.dockShowItemHoverBackground
                         iconReflectionEnabled: root.dockIconReflectionsEnabled
+                        iconReflectionOpacity: root.dockIconReflectionOpacity
                         iconReflectionAvailableExtent: root.panelReflectionAvailableExtent
+                        // qmllint enable unqualified
                         // The delegate is compiled as a nested component by
                         // qmllint; these bindings resolve the owning plasmoid at runtime.
                         // qmllint disable unqualified
@@ -1028,6 +1043,7 @@ PlasmoidItem {
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === dockItemDelegate)
                         supportsContextMenu: root.itemHasContextMenu(modelData, taskState.rows, "pinned")
+                        mediaHoverControlsEnabled: root.mediaControlsOnHover && taskState.count > 0
 
                         // qmllint disable unqualified
                         TaskDelegateGeometryPublisher {
@@ -1063,9 +1079,16 @@ PlasmoidItem {
                             }
                         }
                         onHoverEntered: function(visualParent) {
-                            if (root.windowPreviewStyle !== "none" && taskState.count > 0) {
-                                popupCoordinator.scheduleTaskWindowsPopup(modelData.name || "", taskState.rows, visualParent)
+                            if ((root.mediaControlsOnHover || root.windowPreviewStyle !== "none")
+                                    && taskState.count > 0) {
+                                popupCoordinator.scheduleTaskWindowsPopup(modelData.name || "",
+                                    taskState.rows, visualParent, false,
+                                    root.windowPreviewStyle !== "none")
                             }
+                        }
+                        onMediaControlsRequested: function(visualParent) {
+                            popupCoordinator.scheduleTaskWindowsPopup(modelData.name || "",
+                                taskState.rows, visualParent, true, false)
                         }
                         onHoverExited: function(visualParent) {
                             popupCoordinator.cancelPendingTaskWindowsPopup(visualParent)
@@ -1098,10 +1121,11 @@ PlasmoidItem {
                         taskMinimizedCount: taskData.minimizedCount
                         minimizeReactionRevision: root.minimizeReactionRevision
                         minimizeReactionTargetIndex: root.minimizeReactionTargetIndex
-                        // qmllint enable unqualified
                         showItemHoverBackground: root.dockShowItemHoverBackground
                         iconReflectionEnabled: root.dockIconReflectionsEnabled
+                        iconReflectionOpacity: root.dockIconReflectionOpacity
                         iconReflectionAvailableExtent: root.panelReflectionAvailableExtent
+                        // qmllint enable unqualified
                         // qmllint disable unqualified
                         positionTransitionEnabled: root.dockItemTransitionActive
                         animateEntry: {
@@ -1141,6 +1165,7 @@ PlasmoidItem {
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === taskDockItemDelegate)
                         supportsContextMenu: root.itemHasContextMenu(modelData, taskData.rows, "dynamic")
+                        mediaHoverControlsEnabled: root.mediaControlsOnHover && taskData.count > 0
 
                         // qmllint disable unqualified
                         TaskDelegateGeometryPublisher {
@@ -1168,9 +1193,16 @@ PlasmoidItem {
                                 taskData.rows, "dynamic", -1)
                         }
                         onHoverEntered: function(visualParent) {
-                            if (root.windowPreviewStyle !== "none" && taskData.count > 0) {
-                                popupCoordinator.scheduleTaskWindowsPopup(itemName, taskData.rows, visualParent)
+                            if ((root.mediaControlsOnHover || root.windowPreviewStyle !== "none")
+                                    && taskData.count > 0) {
+                                popupCoordinator.scheduleTaskWindowsPopup(itemName,
+                                    taskData.rows, visualParent, false,
+                                    root.windowPreviewStyle !== "none")
                             }
+                        }
+                        onMediaControlsRequested: function(visualParent) {
+                            popupCoordinator.scheduleTaskWindowsPopup(itemName,
+                                taskData.rows, visualParent, true, false)
                         }
                         onHoverExited: function(visualParent) {
                             popupCoordinator.cancelPendingTaskWindowsPopup(visualParent)
@@ -1219,6 +1251,7 @@ PlasmoidItem {
                     minimizeReactionTargetIndex: root.minimizeReactionTargetIndex
                     showItemHoverBackground: root.dockShowItemHoverBackground
                     iconReflectionEnabled: root.dockIconReflectionsEnabled
+                    iconReflectionOpacity: root.dockIconReflectionOpacity
                     iconReflectionAvailableExtent: root.panelReflectionAvailableExtent
                     positionTransitionEnabled: root.dockItemTransitionActive
                     popupDirection: root.popupDirection
@@ -1399,8 +1432,7 @@ PlasmoidItem {
 
                 ContextSurfaceStack {
                     id: appActionsSurfaceStack
-                    mediaController: mprisController
-                    mediaIcon: popupCoordinator.activeAppContextMenuData.icon || "emblem-music-symbolic"
+                    showMedia: false
                     maximumAvailableHeight: root.taskPopupAvailableHeight
 
                     AppActionsPopup {
@@ -1504,8 +1536,9 @@ PlasmoidItem {
                 ContextSurfaceStack {
                     id: taskContextSurfaceStack
                     mediaController: mprisController
-                    mediaIcon: popupCoordinator.activeAppContextMenuData.icon || "emblem-music-symbolic"
-                    showMedia: taskWindowsPopupContent.actionsVisible
+                    mediaIcon: popupCoordinator.activeTaskPopupData.icon || "emblem-music-symbolic"
+                    showMedia: popupCoordinator.mediaHoverActive
+                    mediaOnly: popupCoordinator.mediaHoverActive
                     maximumAvailableHeight: root.taskPopupAvailableHeight
                     onImplicitHeightChanged: {
                         if (taskWindowsDialog.visible) {
@@ -1515,6 +1548,7 @@ PlasmoidItem {
                     onContainsMouseChanged: {
                         popupCoordinator.setTaskPopupHovered(containsMouse)
                     }
+                    onMediaCloseRequested: popupCoordinator.closeMediaHoverFromKeyboard()
 
                     TaskContextPopup {
                         id: taskWindowsPopupContent

@@ -299,26 +299,49 @@ Module {
             lineNumber: 27
             isReadonly: true
         }
-        Signal { name: "applicationIdChanged"; lineNumber: 51 }
-        Signal { name: "stateChanged"; lineNumber: 52 }
+        Property {
+            name: "volumeAvailable"
+            type: "bool"
+            read: "volumeAvailable"
+            notify: "stateChanged"
+            index: 11
+            lineNumber: 28
+            isReadonly: true
+        }
+        Property {
+            name: "volume"
+            type: "double"
+            read: "volume"
+            notify: "stateChanged"
+            index: 12
+            lineNumber: 29
+            isReadonly: true
+        }
+        Signal { name: "applicationIdChanged"; lineNumber: 56 }
+        Signal { name: "stateChanged"; lineNumber: 57 }
         Method {
             name: "onServiceOwnerChanged"
-            lineNumber: 55
+            lineNumber: 60
             Parameter { name: "name"; type: "QString" }
             Parameter { name: "oldOwner"; type: "QString" }
             Parameter { name: "newOwner"; type: "QString" }
         }
         Method {
             name: "onPropertiesChanged"
-            lineNumber: 56
+            lineNumber: 61
             Parameter { name: "interfaceName"; type: "QString" }
             Parameter { name: "changedProperties"; type: "QVariantMap" }
             Parameter { name: "invalidatedProperties"; type: "QStringList" }
         }
-        Method { name: "refresh"; lineNumber: 45 }
-        Method { name: "previous"; lineNumber: 46 }
-        Method { name: "togglePlaying"; lineNumber: 47 }
-        Method { name: "next"; lineNumber: 48 }
+        Method { name: "refresh"; lineNumber: 49 }
+        Method { name: "previous"; lineNumber: 50 }
+        Method { name: "togglePlaying"; lineNumber: 51 }
+        Method { name: "next"; lineNumber: 52 }
+        Method {
+            name: "setVolume"
+            lineNumber: 53
+            Parameter { name: "volume"; type: "double" }
+        }
     }
     Component {
         file: "systemdiscovery.h"

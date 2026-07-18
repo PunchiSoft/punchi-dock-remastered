@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.8.9\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-07-18 03:21-0400\n"
+"POT-Creation-Date: 2026-07-18 16:13-0400\n"
 "PO-Revision-Date: 2026-07-18 02:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Spanish\n"
@@ -26,7 +26,7 @@ msgstr "%1 / %2"
 msgid "%1 items loaded."
 msgstr "%1 elementos cargados."
 
-#: contents/ui/main.qml:1230
+#: contents/ui/main.qml:1263
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de ventanas más"
@@ -46,7 +46,7 @@ msgid_plural "%1 open windows"
 msgstr[0] "%1 ventana abierta"
 msgstr[1] "%1 ventanas abiertas"
 
-#: contents/ui/config/ConfigWindows.qml:262
+#: contents/ui/config/ConfigWindows.qml:285
 msgid "%1 px"
 msgstr "%1 px"
 
@@ -61,6 +61,12 @@ msgstr "%1 filas"
 #: contents/ui/config/ConfigMouse.qml:239
 #: contents/ui/config/ConfigMouse.qml:276
 #, javascript-format
+msgid "%1%"
+msgstr "%1%"
+
+#: contents/ui/components/MediaVolumeControl.qml:71
+#, javascript-format
+msgctxt "@label"
 msgid "%1%"
 msgstr "%1%"
 
@@ -109,7 +115,7 @@ msgstr "Nombre de la acción:"
 msgid "Activate window"
 msgstr "Activar ventana"
 
-#: contents/ui/config/ConfigWindows.qml:184
+#: contents/ui/config/ConfigWindows.qml:186
 msgid ""
 "Active applications do not show hover previews or grouped-window popups."
 msgstr ""
@@ -138,15 +144,24 @@ msgstr "Añadir una aplicación o un elemento contenedor"
 msgid "Add empty space between items"
 msgstr "Añadir espacio vacío entre elementos"
 
-#: contents/ui/config/ConfigAspect.qml:539
+#: contents/ui/config/ConfigAspect.qml:540
 msgid "Adds a short decorative reflection below icons in a floating dock."
 msgstr "Añade un breve reflejo decorativo bajo los iconos en un dock flotante."
 
-#: contents/ui/config/ConfigAspect.qml:538
+#: contents/ui/config/ConfigAspect.qml:539
 msgid ""
 "Adds an adaptive decorative reflection below icons in a horizontal panel."
 msgstr ""
 "Añade un reflejo decorativo adaptable bajo los iconos en un panel horizontal."
+
+#: contents/ui/components/MediaVolumeControl.qml:53
+msgctxt "@info:accessible"
+msgid "Adjust the media player volume"
+msgstr "Ajustar el volumen del reproductor multimedia"
+
+#: contents/ui/config/ConfigAspect.qml:565
+msgid "Adjusts how strongly icon reflections appear."
+msgstr "Ajusta la intensidad con la que aparecen los reflejos de los iconos."
 
 #: contents/ui/config/ConfigItems.qml:561
 msgid "Alias/Quick Search:"
@@ -156,7 +171,7 @@ msgstr "Alias/Búsqueda rápida:"
 msgid "All desktops"
 msgstr "Todos los escritorios"
 
-#: contents/ui/config/ConfigAspect.qml:231
+#: contents/ui/config/ConfigAspect.qml:232
 #: contents/ui/config/ConfigItems.qml:521
 #: contents/ui/config/ConfigItems.qml:655
 #: contents/ui/config/IconFileDialog.qml:9
@@ -189,7 +204,7 @@ msgid "Appearance"
 msgstr "Apariencia"
 
 #: contents/ui/components/AppActionsPopup.qml:36
-#: contents/ui/components/FolderPopup.qml:175 contents/ui/main.qml:582
+#: contents/ui/components/FolderPopup.qml:175 contents/ui/main.qml:591
 msgid "Application"
 msgstr "Aplicación"
 
@@ -242,7 +257,7 @@ msgstr "Estilo del visualizador de audio"
 msgid "Automatic"
 msgstr "Automático"
 
-#: contents/ui/config/ConfigWindows.qml:231
+#: contents/ui/config/ConfigWindows.qml:254
 msgid "Automatic (recommended 4 px)"
 msgstr "Automático (4 px recomendados)"
 
@@ -251,7 +266,7 @@ msgid "Back to window previews"
 msgstr "Volver a las vistas previas de ventanas"
 
 #: contents/ui/config/CalendarOptions.qml:107
-#: contents/ui/config/ConfigAspect.qml:336
+#: contents/ui/config/ConfigAspect.qml:337
 msgid "Background:"
 msgstr "Segundo plano:"
 
@@ -259,7 +274,7 @@ msgstr "Segundo plano:"
 msgid "Border:"
 msgstr "Borde:"
 
-#: contents/ui/config/ConfigAspect.qml:53
+#: contents/ui/config/ConfigAspect.qml:54
 msgid "Bottom"
 msgstr "Inferior"
 
@@ -297,12 +312,12 @@ msgid "Cancel"
 msgstr "Cancelar"
 
 #: contents/ui/components/NotePopup.qml:253
-#: contents/ui/config/ConfigAspect.qml:304
+#: contents/ui/config/ConfigAspect.qml:305
 msgctxt "@action:button"
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: contents/ui/config/ConfigWindows.qml:34
+#: contents/ui/config/ConfigWindows.qml:35
 msgid "Cards (recommended)"
 msgstr "Tarjetas (recomendado)"
 
@@ -334,11 +349,11 @@ msgstr "Escoger archivo de sonido"
 msgid "Choose a folder first."
 msgstr "Seleccione primero una carpeta."
 
-#: contents/ui/config/ConfigAspect.qml:159
+#: contents/ui/config/ConfigAspect.qml:160
 msgid "Choose a local JSON file."
 msgstr "Seleccione un archivo JSON local."
 
-#: contents/ui/config/ConfigAspect.qml:178
+#: contents/ui/config/ConfigAspect.qml:179
 msgid "Choose a local folder containing JSON themes."
 msgstr "Seleccione una carpeta local que contenga temas JSON."
 
@@ -397,7 +412,7 @@ msgstr "Escoger archivo de icono"
 msgid "Choose sound"
 msgstr "Escoger sonido"
 
-#: contents/ui/config/ConfigAspect.qml:398
+#: contents/ui/config/ConfigAspect.qml:399
 msgid ""
 "Choose whether to import one JSON theme or all JSON themes from a folder."
 msgstr ""
@@ -577,12 +592,12 @@ msgstr "Predeterminado"
 msgid "Default items restored."
 msgstr "Elementos predeterminados restaurados."
 
-#: contents/ui/config/ConfigAspect.qml:409
+#: contents/ui/config/ConfigAspect.qml:410
 msgctxt "@action:button"
 msgid "Delete"
 msgstr "Borrar"
 
-#: contents/ui/config/ConfigAspect.qml:292
+#: contents/ui/config/ConfigAspect.qml:293
 msgctxt "@title:window"
 msgid "Delete Installed Theme?"
 msgstr "¿Eliminar el tema instalado?"
@@ -593,12 +608,12 @@ msgctxt "@action:button"
 msgid "Delete Note"
 msgstr "Eliminar nota"
 
-#: contents/ui/config/ConfigAspect.qml:299
+#: contents/ui/config/ConfigAspect.qml:300
 msgctxt "@action:button"
 msgid "Delete Theme"
 msgstr "Eliminar tema"
 
-#: contents/ui/config/ConfigAspect.qml:414
+#: contents/ui/config/ConfigAspect.qml:415
 msgid "Delete the selected installed Punchi Dock theme"
 msgstr "Eliminar el tema instalado de Punchi Dock seleccionado"
 
@@ -606,7 +621,7 @@ msgstr "Eliminar el tema instalado de Punchi Dock seleccionado"
 msgid "Delete this note from the dock? Its contents cannot be recovered."
 msgstr "¿Eliminar esta nota del dock? Su contenido no se podrá recuperar."
 
-#: contents/ui/config/ConfigAspect.qml:293
+#: contents/ui/config/ConfigAspect.qml:294
 msgid "Delete “%1” permanently from the Punchi Dock Remastered theme library?"
 msgstr ""
 "¿Eliminar «%1» permanentemente de la biblioteca de temas de Punchi Dock "
@@ -628,7 +643,7 @@ msgstr "Visibilidad en escritorios:"
 msgid "Detailed"
 msgstr "Detallado"
 
-#: contents/ui/config/ConfigAspect.qml:594
+#: contents/ui/config/ConfigAspect.qml:628
 msgid "Disables the active-window indicator entirely."
 msgstr "Desactiva por completo el indicador de ventana activa."
 
@@ -644,7 +659,7 @@ msgstr "¿Desea vaciar la papelera?"
 msgid "Dock Items Configuration"
 msgstr "Configuración de elementos del dock"
 
-#: contents/ui/config/ConfigAspect.qml:324
+#: contents/ui/config/ConfigAspect.qml:325
 msgid "Dock background theme"
 msgstr "Tema de fondo del dock"
 
@@ -656,7 +671,7 @@ msgstr "Fondo del dock:"
 msgid "Dock item"
 msgstr "Elemento del dock"
 
-#: contents/ui/config/ConfigAspect.qml:47
+#: contents/ui/config/ConfigAspect.qml:48
 msgid "Dot"
 msgstr "Punto"
 
@@ -664,11 +679,11 @@ msgstr "Punto"
 msgid "Drag files"
 msgstr "Arrastrar archivos"
 
-#: contents/ui/config/ConfigWindows.qml:106
+#: contents/ui/config/ConfigWindows.qml:108
 msgid "Dynamic groups:"
 msgstr "Grupos dinámicos:"
 
-#: contents/ui/config/ConfigWindows.qml:307
+#: contents/ui/config/ConfigWindows.qml:330
 msgid ""
 "Dynamic task entries share one dock item per application, while pinned "
 "launchers keep their current grouped behavior."
@@ -681,7 +696,7 @@ msgstr ""
 msgid "EQ theme:"
 msgstr "Tema del ecualizador:"
 
-#: contents/ui/config/ConfigWindows.qml:308
+#: contents/ui/config/ConfigWindows.qml:331
 msgid ""
 "Each dynamic window gets its own dock item, while pinned launchers still "
 "accumulate their matching windows by application."
@@ -734,7 +749,7 @@ msgstr "Salir de pantalla completa"
 msgid "Export..."
 msgstr "Exportar…"
 
-#: contents/ui/config/ConfigAspect.qml:59
+#: contents/ui/config/ConfigAspect.qml:60
 msgid "External JSON theme"
 msgstr "Tema JSON externo"
 
@@ -786,7 +801,7 @@ msgstr ""
 "La configuración de carpetas se ha retirado temporalmente mientras se "
 "reconstruye de forma segura."
 
-#: contents/ui/config/ConfigAspect.qml:199
+#: contents/ui/config/ConfigAspect.qml:200
 msgid ""
 "Folder import finished — added: %1, already installed: %2, rejected: %3, not "
 "processed because of the 256-theme limit: %4."
@@ -794,7 +809,7 @@ msgstr ""
 "Importación de carpeta finalizada — añadidos: %1, ya instalados: %2, "
 "rechazados: %3, no procesados por el límite de 256 temas: %4."
 
-#: contents/ui/config/ConfigAspect.qml:203
+#: contents/ui/config/ConfigAspect.qml:204
 msgid ""
 "Folder import finished — added: %1, already installed: %2, rejected: %3."
 msgstr ""
@@ -804,6 +819,15 @@ msgstr ""
 #: contents/ui/config/ConfigItems.qml:585
 msgid "Folder:"
 msgstr "Carpeta:"
+
+#: contents/ui/config/ConfigWindows.qml:205
+msgid ""
+"For MPRIS-compatible applications, replaces the window preview with artwork, "
+"playback controls, and volume. Right-click actions remain separate."
+msgstr ""
+"Para las aplicaciones compatibles con MPRIS, reemplaza la vista previa de la "
+"ventana por la carátula, los controles de reproducción y el volumen. Las "
+"acciones del clic derecho permanecen separadas."
 
 #: contents/ui/config/AdvancedJsonEditor.qml:55
 msgid "Format"
@@ -833,11 +857,11 @@ msgstr "General"
 msgid "Grid"
 msgstr "Rejilla"
 
-#: contents/ui/config/ConfigWindows.qml:39
+#: contents/ui/config/ConfigWindows.qml:40
 msgid "Group by application"
 msgstr "Agrupar por aplicación"
 
-#: contents/ui/config/ConfigWindows.qml:278
+#: contents/ui/config/ConfigWindows.qml:301
 msgid "Grouping and limits"
 msgstr "Agrupación y límites"
 
@@ -849,7 +873,7 @@ msgstr "Cabecera:"
 msgid "Height:"
 msgstr "Altura:"
 
-#: contents/ui/config/ConfigAspect.qml:552
+#: contents/ui/config/ConfigAspect.qml:586
 msgid "Hide item names to use icon reflections."
 msgstr "Oculte los nombres de los elementos para usar reflejos de iconos."
 
@@ -857,7 +881,7 @@ msgstr "Oculte los nombres de los elementos para usar reflejos de iconos."
 msgid "Hover animation:"
 msgstr "Animación al pasar el puntero:"
 
-#: contents/ui/config/ConfigAspect.qml:481
+#: contents/ui/config/ConfigAspect.qml:482
 msgid "Hover background:"
 msgstr "Fondo al pasar el puntero:"
 
@@ -865,15 +889,15 @@ msgstr "Fondo al pasar el puntero:"
 msgid "Hover zoom scale:"
 msgstr "Escala de ampliación al pasar el puntero:"
 
-#: contents/ui/config/ConfigAspect.qml:526
+#: contents/ui/config/ConfigAspect.qml:527
 msgid "Icon reflections"
 msgstr "Reflejos de iconos"
 
-#: contents/ui/config/ConfigAspect.qml:550
+#: contents/ui/config/ConfigAspect.qml:584
 msgid "Icon reflections are not available in vertical panels."
 msgstr "Los reflejos de iconos no están disponibles en paneles verticales."
 
-#: contents/ui/config/ConfigAspect.qml:536
+#: contents/ui/config/ConfigAspect.qml:537
 msgid "Icon reflections are unavailable in vertical panels."
 msgstr "Los reflejos de iconos no están disponibles en paneles verticales."
 
@@ -890,37 +914,37 @@ msgstr "Archivos de imagen"
 msgid "Import JSON Configuration"
 msgstr "Importar configuración JSON"
 
-#: contents/ui/config/ConfigAspect.qml:397
+#: contents/ui/config/ConfigAspect.qml:398
 msgid "Import Punchi Dock JSON themes"
 msgstr "Importar temas JSON de Punchi Dock"
 
-#: contents/ui/config/ConfigAspect.qml:229
+#: contents/ui/config/ConfigAspect.qml:230
 msgid "Import Punchi Dock Theme"
 msgstr "Importar tema de Punchi Dock"
 
-#: contents/ui/config/ConfigAspect.qml:247
+#: contents/ui/config/ConfigAspect.qml:248
 msgid "Import Punchi Dock Theme Folder"
 msgstr "Importar carpeta de temas de Punchi Dock"
 
-#: contents/ui/config/ConfigAspect.qml:430
+#: contents/ui/config/ConfigAspect.qml:431
 msgid "Import a JSON theme to add it to your Punchi Dock Remastered library."
 msgstr ""
 "Importe un tema JSON para añadirlo a su biblioteca de Punchi Dock Remastered."
 
-#: contents/ui/config/ConfigAspect.qml:280
+#: contents/ui/config/ConfigAspect.qml:281
 msgid "Import all Punchi Dock JSON themes from a folder and its subfolders"
 msgstr ""
 "Importar todos los temas JSON de Punchi Dock de una carpeta y sus subcarpetas"
 
-#: contents/ui/config/ConfigAspect.qml:267
+#: contents/ui/config/ConfigAspect.qml:268
 msgid "Import file…"
 msgstr "Importar archivo…"
 
-#: contents/ui/config/ConfigAspect.qml:278
+#: contents/ui/config/ConfigAspect.qml:279
 msgid "Import folder…"
 msgstr "Importar carpeta…"
 
-#: contents/ui/config/ConfigAspect.qml:269
+#: contents/ui/config/ConfigAspect.qml:270
 msgid "Import one Punchi Dock JSON theme"
 msgstr "Importar un tema JSON de Punchi Dock"
 
@@ -928,7 +952,7 @@ msgstr "Importar un tema JSON de Punchi Dock"
 msgid "Import..."
 msgstr "Importar…"
 
-#: contents/ui/config/ConfigAspect.qml:330
+#: contents/ui/config/ConfigAspect.qml:331
 msgid ""
 "Imported themes are stored in the Punchi Dock Remastered user library and "
 "currently apply only to a floating dock. Plasma panels keep their native "
@@ -938,7 +962,7 @@ msgstr ""
 "Remastered y actualmente solo se aplican a un dock flotante. Los paneles de "
 "Plasma conservan su fondo nativo."
 
-#: contents/ui/config/ConfigAspect.qml:395
+#: contents/ui/config/ConfigAspect.qml:396
 msgid "Import…"
 msgstr "Importar…"
 
@@ -950,31 +974,31 @@ msgstr ""
 "En modo flotante solo permanecen visibles el espectro y los elementos del "
 "dock. Un panel de Plasma conserva su propio fondo."
 
-#: contents/ui/config/ConfigAspect.qml:566
+#: contents/ui/config/ConfigAspect.qml:600
 msgid "Indicator"
 msgstr "Indicador"
 
-#: contents/ui/config/ConfigAspect.qml:640
+#: contents/ui/config/ConfigAspect.qml:674
 msgid "Indicator opacity:"
 msgstr "Opacidad del indicador:"
 
-#: contents/ui/config/ConfigAspect.qml:606
+#: contents/ui/config/ConfigAspect.qml:640
 msgid "Indicator position:"
 msgstr "Posición del indicador:"
 
-#: contents/ui/config/ConfigAspect.qml:570
+#: contents/ui/config/ConfigAspect.qml:604
 msgid "Indicator shape:"
 msgstr "Forma del indicador:"
 
-#: contents/ui/config/ConfigAspect.qml:665
+#: contents/ui/config/ConfigAspect.qml:699
 msgid "Indicator size:"
 msgstr "Tamaño del indicador:"
 
-#: contents/ui/config/ConfigAspect.qml:381
+#: contents/ui/config/ConfigAspect.qml:382
 msgid "Installed Punchi Dock theme"
 msgstr "Tema de Punchi Dock instalado"
 
-#: contents/ui/config/ConfigAspect.qml:360
+#: contents/ui/config/ConfigAspect.qml:361
 msgid "Installed theme:"
 msgstr "Tema instalado:"
 
@@ -986,7 +1010,7 @@ msgstr "JSON no válido: %1"
 msgid "Item height:"
 msgstr "Altura del elemento:"
 
-#: contents/ui/config/ConfigAspect.qml:476
+#: contents/ui/config/ConfigAspect.qml:477
 msgid "Item highlight"
 msgstr "Realce del elemento"
 
@@ -1018,7 +1042,7 @@ msgstr "Configuración JSON"
 msgid "JSON looks valid."
 msgstr "El JSON parece válido."
 
-#: contents/ui/config/ConfigAspect.qml:231
+#: contents/ui/config/ConfigAspect.qml:232
 msgid "JSON theme files"
 msgstr "Archivos de temas JSON"
 
@@ -1026,11 +1050,11 @@ msgstr "Archivos de temas JSON"
 msgid "Keep above"
 msgstr "Mantener encima"
 
-#: contents/ui/config/ConfigAspect.qml:502
+#: contents/ui/config/ConfigAspect.qml:503
 msgid "Labels"
 msgstr "Etiquetas"
 
-#: contents/ui/config/ConfigAspect.qml:516
+#: contents/ui/config/ConfigAspect.qml:517
 msgid ""
 "Labels use a compact single-line style so the dock can remain readable "
 "without turning every item into a large card."
@@ -1038,7 +1062,7 @@ msgstr ""
 "Las etiquetas usan un estilo compacto de una sola línea para que el dock "
 "siga siendo legible sin convertir cada elemento en una tarjeta grande."
 
-#: contents/ui/config/ConfigAspect.qml:507
+#: contents/ui/config/ConfigAspect.qml:508
 msgid "Labels:"
 msgstr "Etiquetas:"
 
@@ -1058,18 +1082,18 @@ msgstr "Limitar las filas del menú"
 msgid "Limit:"
 msgstr "Límite:"
 
-#: contents/ui/config/ConfigWindows.qml:331
+#: contents/ui/config/ConfigWindows.qml:354
 msgid ""
 "Limits visible popup rows; additional entries remain accessible by scrolling."
 msgstr ""
 "Limita las filas visibles de la ventana emergente; las entradas adicionales "
 "siguen accesibles mediante desplazamiento."
 
-#: contents/ui/config/ConfigAspect.qml:46
+#: contents/ui/config/ConfigAspect.qml:47
 msgid "Line"
 msgstr "Línea"
 
-#: contents/ui/config/ConfigAspect.qml:597
+#: contents/ui/config/ConfigAspect.qml:631
 msgid ""
 "Line, dot and rounded square can be placed at the top or bottom edge of the "
 "icon."
@@ -1112,7 +1136,7 @@ msgstr ""
 msgid "Luminous cloud"
 msgstr "Nube luminosa"
 
-#: contents/ui/components/MediaControlsCard.qml:32
+#: contents/ui/components/MediaControlsCard.qml:35
 msgid "MPRIS controls"
 msgstr "Controles MPRIS"
 
@@ -1120,7 +1144,7 @@ msgstr "Controles MPRIS"
 msgid "Manual"
 msgstr "Manual"
 
-#: contents/ui/config/ConfigWindows.qml:273
+#: contents/ui/config/ConfigWindows.qml:296
 msgid ""
 "Manual mode starts from 4 px and adjusts the internal preview card and "
 "thumbnail corners while preserving Plasma's native popup blur and shadow."
@@ -1137,7 +1161,7 @@ msgstr "Maximizar"
 msgid "Maximize window"
 msgstr "Maximizar la ventana"
 
-#: contents/ui/config/ConfigWindows.qml:111
+#: contents/ui/config/ConfigWindows.qml:113
 msgid "Maximum dynamic groups shown in the dock"
 msgstr "Máximo de grupos dinámicos mostrados en el dock"
 
@@ -1145,14 +1169,23 @@ msgstr "Máximo de grupos dinámicos mostrados en el dock"
 msgid "Maximum length reached"
 msgstr "Se ha alcanzado la longitud máxima"
 
-#: contents/ui/components/MediaControlsCard.qml:38
+#: contents/ui/components/MediaControlsCard.qml:43
 msgctxt "@info:accessible"
 msgid "Media controls for %1"
 msgstr "Controles multimedia para %1"
 
-#: contents/ui/components/MediaControlsCard.qml:27
+#: contents/ui/components/MediaControlsCard.qml:30
 msgid "Media playback"
 msgstr "Reproducción multimedia"
+
+#: contents/ui/config/ConfigWindows.qml:196
+msgid "Media players:"
+msgstr "Reproductores multimedia:"
+
+#: contents/ui/components/MediaVolumeControl.qml:52
+msgctxt "@label:slider"
+msgid "Media volume"
+msgstr "Volumen multimedia"
 
 #: contents/ui/config/ConfigMouse.qml:255
 msgid "Menu transition speed:"
@@ -1188,12 +1221,12 @@ msgstr "Nueva ventana"
 msgid "Next month"
 msgstr "Mes siguiente"
 
-#: contents/ui/components/MediaTransportControls.qml:50
+#: contents/ui/components/MediaTransportControls.qml:69
 msgctxt "@action:button"
 msgid "Next track"
 msgstr "Pista siguiente"
 
-#: contents/ui/config/ConfigAspect.qml:380
+#: contents/ui/config/ConfigAspect.qml:381
 msgid "No imported themes"
 msgstr "No hay temas importados"
 
@@ -1211,10 +1244,10 @@ msgid "No virtual desktops were found."
 msgstr "No se han encontrado escritorios virtuales."
 
 #: contents/ui/config/CalendarOptions.qml:234
-#: contents/ui/config/ConfigAspect.qml:50 contents/ui/config/ConfigMouse.qml:30
+#: contents/ui/config/ConfigAspect.qml:51 contents/ui/config/ConfigMouse.qml:30
 #: contents/ui/config/ConfigMouse.qml:36 contents/ui/config/ConfigMouse.qml:43
 #: contents/ui/config/ConfigMouse.qml:54
-#: contents/ui/config/ConfigWindows.qml:36
+#: contents/ui/config/ConfigWindows.qml:37
 msgid "None"
 msgstr "Ninguno"
 
@@ -1236,7 +1269,7 @@ msgstr "Número de barras del visualizador de audio"
 msgid "Number of bars:"
 msgstr "Número de barras:"
 
-#: contents/ui/config/ConfigWindows.qml:141
+#: contents/ui/config/ConfigWindows.qml:143
 msgid "Only tasks on the current desktop will appear."
 msgstr "Solo aparecerán las tareas del escritorio actual."
 
@@ -1272,17 +1305,17 @@ msgstr "Longitud del panel:"
 msgid "Paragraph"
 msgstr "Párrafo"
 
-#: contents/ui/components/MediaTransportControls.qml:37
+#: contents/ui/components/MediaTransportControls.qml:55
 msgctxt "@action:button"
 msgid "Pause"
 msgstr "Pausar"
 
-#: contents/ui/main.qml:492
+#: contents/ui/main.qml:501
 msgctxt "@action:context"
 msgid "Pin to Dock"
 msgstr "Anclar al dock"
 
-#: contents/ui/config/ConfigWindows.qml:95
+#: contents/ui/config/ConfigWindows.qml:97
 msgid ""
 "Pinned launchers can act as task entries when their application is already "
 "open."
@@ -1298,12 +1331,12 @@ msgstr "Espectro de píxeles"
 #: contents/ui/config/CalendarOptions.qml:151
 #: contents/ui/config/CalendarOptions.qml:200
 #: contents/ui/config/CalendarOptions.qml:249
-#: contents/ui/config/ConfigAspect.qml:58
+#: contents/ui/config/ConfigAspect.qml:59
 #: contents/ui/config/ConfigItems.qml:538
 msgid "Plasma theme"
 msgstr "Tema de Plasma"
 
-#: contents/ui/components/MediaTransportControls.qml:38
+#: contents/ui/components/MediaTransportControls.qml:56
 msgctxt "@action:button"
 msgid "Play"
 msgstr "Reproducir"
@@ -1324,7 +1357,7 @@ msgstr "Animación de la ventana emergente:"
 msgid "Popup intensity:"
 msgstr "Intensidad de la ventana emergente:"
 
-#: contents/ui/config/ConfigWindows.qml:319
+#: contents/ui/config/ConfigWindows.qml:342
 msgid "Popup rows:"
 msgstr "Filas de la ventana emergente:"
 
@@ -1332,7 +1365,7 @@ msgstr "Filas de la ventana emergente:"
 msgid "Popup speed:"
 msgstr "Velocidad de la ventana emergente:"
 
-#: contents/ui/config/ConfigAspect.qml:631
+#: contents/ui/config/ConfigAspect.qml:665
 msgid "Position is not used with the current indicator shape."
 msgstr "La posición no se usa con la forma actual del indicador."
 
@@ -1344,11 +1377,16 @@ msgstr "Pulsar"
 msgid "Press Enter to search..."
 msgstr "Pulse Intro para buscar..."
 
-#: contents/ui/components/DockItem.qml:738
+#: contents/ui/components/DockItem.qml:600
+msgctxt "@info:accessible"
+msgid "Press M to open media controls"
+msgstr "Pulsa M para abrir los controles multimedia"
+
+#: contents/ui/components/DockItem.qml:758
 msgid "Preview card"
 msgstr "Tarjeta de vista previa"
 
-#: contents/ui/config/ConfigWindows.qml:230
+#: contents/ui/config/ConfigWindows.qml:253
 msgid "Preview corners:"
 msgstr "Esquinas de la vista previa:"
 
@@ -1356,15 +1394,15 @@ msgstr "Esquinas de la vista previa:"
 msgid "Preview disabled"
 msgstr "Vista previa desactivada"
 
-#: contents/ui/config/ConfigWindows.qml:157
+#: contents/ui/config/ConfigWindows.qml:159
 msgid "Preview popup:"
 msgstr "Ventana emergente de vista previa:"
 
-#: contents/ui/config/ConfigWindows.qml:240
+#: contents/ui/config/ConfigWindows.qml:263
 msgid "Preview radius:"
 msgstr "Radio de la vista previa:"
 
-#: contents/ui/config/ConfigWindows.qml:193
+#: contents/ui/config/ConfigWindows.qml:216
 msgid "Preview size:"
 msgstr "Tamaño de la vista previa:"
 
@@ -1372,12 +1410,12 @@ msgstr "Tamaño de la vista previa:"
 msgid "Preview to context menu transition speed"
 msgstr "Velocidad de transición de la vista previa al menú contextual"
 
-#: contents/ui/components/DockItem.qml:737
+#: contents/ui/components/DockItem.qml:757
 #: contents/ui/components/TaskWindowsPopup.qml:235
 msgid "Preview unavailable"
 msgstr "Vista previa no disponible"
 
-#: contents/ui/config/ConfigWindows.qml:153
+#: contents/ui/config/ConfigWindows.qml:155
 msgid "Previews"
 msgstr "Vistas previas"
 
@@ -1385,7 +1423,7 @@ msgstr "Vistas previas"
 msgid "Previous month"
 msgstr "Mes anterior"
 
-#: contents/ui/components/MediaTransportControls.qml:25
+#: contents/ui/components/MediaTransportControls.qml:42
 msgctxt "@action:button"
 msgid "Previous track"
 msgstr "Pista anterior"
@@ -1407,15 +1445,15 @@ msgstr ""
 msgid "Pulse"
 msgstr "Pulso"
 
-#: contents/ui/config/ConfigAspect.qml:184
+#: contents/ui/config/ConfigAspect.qml:185
 msgid "Punchi Dock could not delete the selected theme."
 msgstr "Punchi Dock no ha podido eliminar el tema seleccionado."
 
-#: contents/ui/config/ConfigAspect.qml:176
+#: contents/ui/config/ConfigAspect.qml:177
 msgid "Punchi Dock could not store the imported theme."
 msgstr "Punchi Dock no ha podido guardar el tema importado."
 
-#: contents/ui/components/DockItem.qml:25 contents/ui/main.qml:635
+#: contents/ui/components/DockItem.qml:25 contents/ui/main.qml:644
 msgctxt "@title"
 msgid "Quick Note"
 msgstr "Nota rápida"
@@ -1428,7 +1466,15 @@ msgstr "Radio:"
 msgid "Reactive particles"
 msgstr "Partículas reactivas"
 
-#: contents/ui/config/ConfigAspect.qml:532
+#: contents/ui/config/ConfigAspect.qml:564
+msgid "Reflection opacity"
+msgstr "Opacidad del reflejo"
+
+#: contents/ui/config/ConfigAspect.qml:553
+msgid "Reflection opacity:"
+msgstr "Opacidad del reflejo:"
+
+#: contents/ui/config/ConfigAspect.qml:533
 msgid "Reflection:"
 msgstr "Reflejo:"
 
@@ -1456,11 +1502,11 @@ msgstr "Movimiento rítmico:"
 msgid "Right-click commands"
 msgstr "Órdenes del botón derecho"
 
-#: contents/ui/config/ConfigAspect.qml:48
+#: contents/ui/config/ConfigAspect.qml:49
 msgid "Ring"
 msgstr "Anillo"
 
-#: contents/ui/config/ConfigAspect.qml:49
+#: contents/ui/config/ConfigAspect.qml:50
 msgid "Rounded square"
 msgstr "Cuadrado redondeado"
 
@@ -1468,7 +1514,7 @@ msgstr "Cuadrado redondeado"
 msgid "Saved"
 msgstr "Guardado"
 
-#: contents/ui/config/ConfigWindows.qml:219
+#: contents/ui/config/ConfigWindows.qml:242
 msgid ""
 "Scales the default size of window thumbnails and preview cards without "
 "stretching their aspect ratio."
@@ -1476,11 +1522,11 @@ msgstr ""
 "Escala el tamaño predeterminado de las miniaturas de ventanas y las tarjetas "
 "de vista previa sin deformar su relación de aspecto."
 
-#: contents/ui/config/ConfigWindows.qml:130
+#: contents/ui/config/ConfigWindows.qml:132
 msgid "Scope:"
 msgstr "Ámbito:"
 
-#: contents/ui/config/ConfigAspect.qml:379
+#: contents/ui/config/ConfigAspect.qml:380
 msgid "Select a theme"
 msgstr "Seleccionar un tema"
 
@@ -1501,11 +1547,11 @@ msgstr "Cursor de configuración:"
 msgid "Shaped"
 msgstr "Con forma"
 
-#: contents/ui/config/ConfigAspect.qml:482
+#: contents/ui/config/ConfigAspect.qml:483
 msgid "Show a themed background behind items"
 msgstr "Mostrar un fondo temático detrás de los elementos"
 
-#: contents/ui/config/ConfigWindows.qml:87
+#: contents/ui/config/ConfigWindows.qml:89
 msgid "Show active windows in the dock"
 msgstr "Mostrar las ventanas activas en el dock"
 
@@ -1513,11 +1559,11 @@ msgstr "Mostrar las ventanas activas en el dock"
 msgid "Show date information"
 msgstr "Mostrar información de la fecha"
 
-#: contents/ui/config/ConfigWindows.qml:40
+#: contents/ui/config/ConfigWindows.qml:41
 msgid "Show each window"
 msgstr "Mostrar cada ventana"
 
-#: contents/ui/config/ConfigAspect.qml:508
+#: contents/ui/config/ConfigAspect.qml:509
 msgid "Show item names in the dock"
 msgstr "Mostrar los nombres de los elementos en el dock"
 
@@ -1525,11 +1571,16 @@ msgstr "Mostrar los nombres de los elementos en el dock"
 msgid "Show labels"
 msgstr "Mostrar etiquetas"
 
-#: contents/ui/config/ConfigWindows.qml:131
+#: contents/ui/config/ConfigWindows.qml:197
+msgid "Show media controls on hover when available"
+msgstr ""
+"Mostrar los controles multimedia al pasar el puntero cuando estén disponibles"
+
+#: contents/ui/config/ConfigWindows.qml:133
 msgid "Show only windows from the current virtual desktop"
 msgstr "Mostrar solo las ventanas del escritorio virtual actual"
 
-#: contents/ui/config/ConfigAspect.qml:533
+#: contents/ui/config/ConfigAspect.qml:534
 msgid "Show reflections below dock items"
 msgstr "Mostrar reflejos bajo los elementos del dock"
 
@@ -1537,7 +1588,7 @@ msgstr "Mostrar reflejos bajo los elementos del dock"
 msgid "Show trash state"
 msgstr "Mostrar el estado de la papelera"
 
-#: contents/ui/config/ConfigAspect.qml:483
+#: contents/ui/config/ConfigAspect.qml:484
 msgid ""
 "Shows the Plasma highlight background when an item is hovered or its "
 "application is active."
@@ -1586,15 +1637,15 @@ msgstr "La operación del sistema ha fallado: %1"
 msgid "Target desktop:"
 msgstr "Escritorio de destino:"
 
-#: contents/ui/config/ConfigWindows.qml:81
+#: contents/ui/config/ConfigWindows.qml:82
 msgid "Task visibility"
 msgstr "Visibilidad de tareas"
 
-#: contents/ui/config/ConfigWindows.qml:142
+#: contents/ui/config/ConfigWindows.qml:144
 msgid "Tasks from all virtual desktops can appear."
 msgstr "Pueden aparecer tareas de todos los escritorios virtuales."
 
-#: contents/ui/config/ConfigWindows.qml:86
+#: contents/ui/config/ConfigWindows.qml:88
 msgid "Tasks:"
 msgstr "Tareas:"
 
@@ -1630,7 +1681,7 @@ msgstr "No se ha podido crear el directorio de configuración."
 msgid "The configuration directory is unavailable."
 msgstr "El directorio de configuración no está disponible."
 
-#: contents/ui/config/ConfigAspect.qml:173
+#: contents/ui/config/ConfigAspect.qml:174
 msgid ""
 "The configured external theme is unavailable. The Plasma background will be "
 "used."
@@ -1649,7 +1700,7 @@ msgstr ""
 "El grosor real del panel no está disponible en esta vista, por lo que se usa "
 "un límite alternativo seguro."
 
-#: contents/ui/config/ConfigAspect.qml:554
+#: contents/ui/config/ConfigAspect.qml:588
 msgid ""
 "The reflection adapts to the available panel thickness and is hidden when "
 "there is not enough space."
@@ -1657,7 +1708,7 @@ msgstr ""
 "El reflejo se adapta al grosor disponible del panel y se oculta cuando no "
 "hay espacio suficiente."
 
-#: contents/ui/config/ConfigAspect.qml:555
+#: contents/ui/config/ConfigAspect.qml:589
 msgid ""
 "The reflection is decorative and does not change the size or interaction "
 "area of dock items."
@@ -1665,7 +1716,7 @@ msgstr ""
 "El reflejo es decorativo y no cambia el tamaño ni el área de interacción de "
 "los elementos del dock."
 
-#: contents/ui/config/ConfigAspect.qml:596
+#: contents/ui/config/ConfigAspect.qml:630
 msgid ""
 "The ring surrounds the icon, so it does not use a top or bottom position."
 msgstr ""
@@ -1679,41 +1730,41 @@ msgstr "El valor raíz debe ser una matriz JSON."
 msgid "The selected desktop no longer exists. Choose another desktop."
 msgstr "El escritorio seleccionado ya no existe. Seleccione otro escritorio."
 
-#: contents/ui/config/ConfigAspect.qml:167
+#: contents/ui/config/ConfigAspect.qml:168
 msgid "The selected file does not contain valid JSON."
 msgstr "El archivo seleccionado no contiene JSON válido."
 
-#: contents/ui/config/ConfigAspect.qml:186
+#: contents/ui/config/ConfigAspect.qml:187
 msgid "The selected file is not a supported Punchi Dock theme."
 msgstr "El archivo seleccionado no es un tema compatible con Punchi Dock."
 
-#: contents/ui/config/ConfigAspect.qml:195
+#: contents/ui/config/ConfigAspect.qml:196
 msgid "The selected folder and its subfolders do not contain JSON theme files."
 msgstr ""
 "La carpeta seleccionada y sus subcarpetas no contienen archivos de temas "
 "JSON."
 
-#: contents/ui/config/ConfigAspect.qml:182
+#: contents/ui/config/ConfigAspect.qml:183
 msgid "The selected installed theme has an invalid identifier."
 msgstr "El tema instalado seleccionado tiene un identificador no válido."
 
-#: contents/ui/config/ConfigAspect.qml:161
+#: contents/ui/config/ConfigAspect.qml:162
 msgid "The selected theme file could not be read."
 msgstr "No se ha podido leer el archivo de tema seleccionado."
 
-#: contents/ui/config/ConfigAspect.qml:163
+#: contents/ui/config/ConfigAspect.qml:164
 msgid "The selected theme file is empty."
 msgstr "El archivo de tema seleccionado está vacío."
 
-#: contents/ui/config/ConfigAspect.qml:180
+#: contents/ui/config/ConfigAspect.qml:181
 msgid "The selected theme folder could not be read."
 msgstr "No se ha podido leer la carpeta de temas seleccionada."
 
-#: contents/ui/config/ConfigAspect.qml:165
+#: contents/ui/config/ConfigAspect.qml:166
 msgid "The selected theme is larger than the 64 KiB limit."
 msgstr "El tema seleccionado supera el límite de 64 KiB."
 
-#: contents/ui/config/ConfigAspect.qml:169
+#: contents/ui/config/ConfigAspect.qml:170
 msgid "The selected theme uses an unsupported schema version."
 msgstr "El tema seleccionado usa una versión de esquema no compatible."
 
@@ -1729,11 +1780,11 @@ msgstr "El espectro se dibuja sobre el fondo del dock con el tema de Plasma."
 msgid "The trash could not be emptied."
 msgstr "No se ha podido vaciar la papelera."
 
-#: contents/ui/config/ConfigAspect.qml:131
+#: contents/ui/config/ConfigAspect.qml:132
 msgid "Theme “%1” was deleted."
 msgstr "Se ha eliminado el tema «%1»."
 
-#: contents/ui/config/ConfigWindows.qml:119
+#: contents/ui/config/ConfigWindows.qml:121
 msgid ""
 "This manual limit applies in floating and compact modes. While Fill free "
 "panel space is active, Punchi Dock automatically uses the available panel "
@@ -1744,7 +1795,7 @@ msgstr ""
 "automáticamente la capacidad disponible del panel. Los grupos adicionales "
 "siguen disponibles desde el elemento de desbordamiento."
 
-#: contents/ui/config/ConfigAspect.qml:171
+#: contents/ui/config/ConfigAspect.qml:172
 msgid ""
 "This version of Punchi Dock does not support the renderer requested by the "
 "theme."
@@ -1759,7 +1810,7 @@ msgstr ""
 "Esto sustituirá los elementos guardados del dock por una matriz vacía. No se "
 "puede deshacer desde Punchi Dock."
 
-#: contents/ui/config/ConfigAspect.qml:54
+#: contents/ui/config/ConfigAspect.qml:55
 msgid "Top"
 msgstr "Superior"
 
@@ -1785,7 +1836,7 @@ msgstr "Progreso del vaciado de la papelera"
 msgid "Type:"
 msgstr "Tipo:"
 
-#: contents/ui/main.qml:501
+#: contents/ui/main.qml:510
 msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Desanclar del dock"
@@ -1816,7 +1867,7 @@ msgstr "Usar el color proporcionado por el tema de Plasma"
 msgid "Validate"
 msgstr "Validar"
 
-#: contents/ui/config/ConfigWindows.qml:76
+#: contents/ui/config/ConfigWindows.qml:77
 msgid ""
 "Vertical panels remain supported, but advanced visual tuning is currently "
 "focused on horizontal panels."
@@ -1876,11 +1927,11 @@ msgstr "Anchura:"
 msgid "Window"
 msgstr "Ventana"
 
-#: contents/ui/config/ConfigWindows.qml:282
+#: contents/ui/config/ConfigWindows.qml:305
 msgid "Window behavior:"
 msgstr "Comportamiento de las ventanas:"
 
-#: contents/ui/config/ConfigAspect.qml:491
+#: contents/ui/config/ConfigAspect.qml:492
 msgid "Window indicators remain visible when the item background is hidden."
 msgstr ""
 "Los indicadores de ventanas permanecen visibles cuando se oculta el fondo "
@@ -1894,15 +1945,15 @@ msgstr "Efecto al minimizar ventanas:"
 msgid "Window preview"
 msgstr "Vista previa de ventana"
 
-#: contents/ui/config/ConfigWindows.qml:253
+#: contents/ui/config/ConfigWindows.qml:276
 msgid "Window preview card corner radius"
 msgstr "Radio de las esquinas de la tarjeta de vista previa de ventana"
 
-#: contents/ui/config/ConfigWindows.qml:35
+#: contents/ui/config/ConfigWindows.qml:36
 msgid "Window previews"
 msgstr "Vistas previas de ventanas"
 
-#: contents/ui/config/ConfigWindows.qml:183
+#: contents/ui/config/ConfigWindows.qml:185
 msgid ""
 "Window selectors and hover previews use cards with the app icon and no live "
 "window content."
@@ -1910,7 +1961,7 @@ msgstr ""
 "Los selectores de ventanas y las vistas previas al pasar el puntero usan "
 "tarjetas con el icono de la aplicación y sin contenido en vivo de la ventana."
 
-#: contents/ui/config/ConfigWindows.qml:181
+#: contents/ui/config/ConfigWindows.qml:183
 msgid ""
 "Window selectors and hover previews use live thumbnails when the compositor "
 "can provide them."
@@ -1939,3 +1990,7 @@ msgstr "Sí"
 #: contents/ui/config/components/ActionDialog.qml:76
 msgid "rows"
 msgstr "filas"
+
+#~ msgctxt "@info:accessible"
+#~ msgid "%1 percent"
+#~ msgstr "%1 por ciento"

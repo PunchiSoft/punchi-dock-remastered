@@ -32,8 +32,11 @@ This repository is a modular rewrite of the original [Punchi Dock Plasmoid](http
 - Wayland is the primary supported session.
 - PipeWire is required by the optional audio visualizer.
 - Fedora 44 `x86_64` is the primary prebuilt release target. Debian 13 has a separate validated build, installation, and startup flow; its complete functional review remains in progress.
-- Other Linux distributions running Plasma 6 are not excluded, but their native package must be built and tested against their own Qt, KF6, and Plasma stack.
+- Community users report successful operation on additional current Linux distributions with Plasma 6. These reports indicate broader compatibility, but they are not yet equivalent to a project-validated distribution profile.
+- Source builds require CMake 3.22+, a C++20 compiler, Qt 6.6+, ECM/KF6 6.0+, Plasma 6.0+, and PipeWire development files, all supplied as one coherent distribution stack.
 - Native binaries inside each `.plasmoid` are not universal: use the artifact labeled for the distribution where it was built.
+
+Compatibility therefore has three levels: Fedora is the primary release target, Debian is a separately validated compatibility profile, and other distributions are community-reported when they satisfy the build requirements. A newer distribution can often build and run Punchi Dock without project changes; a conservative distribution may need its own compatible source build and baseline. Do not mix repositories or replace the system Qt/KDE stack solely to meet these versions.
 
 ## Install a Release Package
 
@@ -78,7 +81,7 @@ sudo dnf install \
     qt6-qtdeclarative-devel \
     kf6-kcoreaddons-devel kf6-kio-devel kf6-kjobwidgets-devel \
     kf6-kservice-devel libplasma-devel \
-    pipewire-devel \
+    pipewire-devel gettext \
     zip unzip
 ```
 
@@ -90,7 +93,7 @@ Build the native module and create the versioned artifact for the current system
 scripts/empaquetar-plasmoid.sh
 ```
 
-The automated packaging script currently detects Fedora or Debian through `/etc/os-release`. Other Plasma 6 distributions may be compatible at runtime, but they do not yet have a validated automatic packaging profile in this repository. The supported profiles write an unambiguous package name:
+The automated packaging script currently detects Fedora or Debian through `/etc/os-release`. Other current Plasma 6 distributions have been reported to work when the requirements above are available, but they do not yet have a validated automatic packaging profile in this repository. Treat those reports as community compatibility: build and test against the host distribution and do not relabel a Fedora or Debian native artifact. The supported profiles write an unambiguous package name:
 
 ```text
 dist/punchi-dock-remastered-<version>-<distribution><version>-<architecture>.plasmoid

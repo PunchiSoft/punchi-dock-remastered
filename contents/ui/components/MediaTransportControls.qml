@@ -10,6 +10,7 @@ RowLayout {
 
     property var controller: null
     property bool lightAppearance: false
+    property bool prominentPlayButton: false
     readonly property bool available: !!controller && controller.available
     readonly property color controlColor: lightAppearance
         ? Qt.rgba(1, 1, 1, 0.96)
@@ -17,11 +18,30 @@ RowLayout {
 
     spacing: Kirigami.Units.smallSpacing
 
+    function focusFirstControl() {
+        if (previousButton.enabled) {
+            previousButton.forceActiveFocus(Qt.TabFocusReason)
+            return true
+        }
+        if (playPauseButton.enabled) {
+            playPauseButton.forceActiveFocus(Qt.TabFocusReason)
+            return true
+        }
+        if (nextButton.enabled) {
+            nextButton.forceActiveFocus(Qt.TabFocusReason)
+            return true
+        }
+        return false
+    }
+
     Item {
         Layout.fillWidth: true
     }
 
     PlasmaComponents.ToolButton {
+        id: previousButton
+        Layout.preferredWidth: root.prominentPlayButton ? 36 : implicitWidth
+        Layout.preferredHeight: root.prominentPlayButton ? 36 : implicitHeight
         text: i18nc("@action:button", "Previous track")
         display: PlasmaComponents.AbstractButton.IconOnly
         icon.name: Application.layoutDirection === Qt.RightToLeft
@@ -33,6 +53,9 @@ RowLayout {
     }
 
     PlasmaComponents.ToolButton {
+        id: playPauseButton
+        Layout.preferredWidth: root.prominentPlayButton ? 52 : implicitWidth
+        Layout.preferredHeight: root.prominentPlayButton ? 52 : implicitHeight
         text: root.controller && root.controller.playing
             ? i18nc("@action:button", "Pause")
             : i18nc("@action:button", "Play")
@@ -40,13 +63,30 @@ RowLayout {
         icon.name: root.controller && root.controller.playing
             ? "media-playback-pause"
             : "media-playback-start"
-        icon.color: root.controlColor
+        icon.color: root.prominentPlayButton
+            ? Kirigami.Theme.highlightedTextColor
+            : root.controlColor
         enabled: root.available && ((root.controller.playing && root.controller.canPause)
             || (!root.controller.playing && root.controller.canPlay))
         onClicked: root.controller.togglePlaying()
+
+        background: Rectangle {
+            visible: root.prominentPlayButton
+            radius: width / 2
+            color: playPauseButton.pressed
+                ? Qt.darker(Kirigami.Theme.highlightColor, 1.18)
+                : (playPauseButton.hovered || playPauseButton.activeFocus
+                    ? Qt.lighter(Kirigami.Theme.highlightColor, 1.08)
+                    : Kirigami.Theme.highlightColor)
+            border.width: playPauseButton.activeFocus ? 2 : 0
+            border.color: Kirigami.Theme.textColor
+        }
     }
 
     PlasmaComponents.ToolButton {
+        id: nextButton
+        Layout.preferredWidth: root.prominentPlayButton ? 36 : implicitWidth
+        Layout.preferredHeight: root.prominentPlayButton ? 36 : implicitHeight
         text: i18nc("@action:button", "Next track")
         display: PlasmaComponents.AbstractButton.IconOnly
         icon.name: Application.layoutDirection === Qt.RightToLeft

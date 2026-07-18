@@ -16,6 +16,7 @@ Item {
     property var trashContextContentRef: null
     property var notePopupContentRef: null
     property var taskWindowsPopupContentRef: null
+    property var taskContextSurfaceStackRef: null
 
     property var folderPopupDialogRef: null
     property var calendarPopupDialogRef: null
@@ -39,6 +40,10 @@ Item {
     property var taskPopupVisualParent: null
     property bool taskPopupHovered: false
     property bool contextMenuOpening: false
+    property bool mediaHoverEnabled: false
+    property bool mediaHoverActive: false
+    property bool pendingTaskPopupKeyboardInvoked: false
+    property bool pendingTaskPopupPreviewFallback: true
 
     readonly property bool contextMenuVisible: contextMenuOpening
         || (appActionsDialogRef && appActionsDialogRef.visible)
@@ -54,7 +59,9 @@ Item {
                     && root.taskPopupVisualParent
                     && root.pendingTaskPopupRows.length > 0) {
                 root.openTaskWindowsPopup(root.pendingTaskPopupAppName,
-                    root.pendingTaskPopupRows, root.taskPopupVisualParent)
+                    root.pendingTaskPopupRows, root.taskPopupVisualParent,
+                    root.pendingTaskPopupKeyboardInvoked,
+                    root.pendingTaskPopupPreviewFallback)
             }
         }
     }
@@ -76,6 +83,21 @@ Item {
         target: root.taskStructureSource
         function onTaskStructureChanged() {
             root.refreshTaskPopupAfterStructureChange()
+        }
+    }
+
+    Connections {
+        target: root.mprisControllerRef
+        function onStateChanged() {
+            if (!root.mediaHoverActive || root.mprisControllerRef.available) {
+                return
+            }
+            root.mediaHoverActive = false
+            if (root.pendingTaskPopupPreviewFallback) {
+                root.taskWindowsPopupContentRef.showPreviews()
+            } else if (root.taskWindowsDialogRef) {
+                root.taskWindowsDialogRef.visible = false
+            }
         }
     }
 
@@ -147,6 +169,7 @@ Item {
             ? applicationIdentityResolver(itemData)
             : ""
         mprisControllerRef.applicationId = applicationId
+        mediaHoverActive = false
         const actions = contextActionsResolver
             ? contextActionsResolver(itemData, rows, itemOrigin || "",
                 Number.isInteger(persistentIndex) ? persistentIndex : -1)
@@ -217,7 +240,7 @@ Item {
         })
     }
 
-    function openTaskWindowsPopup(appName, rows, visualParent) {
+    function openTaskWindowsPopup(appName, rows, visualParent, keyboardInvoked, previewFallback) {
         if (!surfaceAvailable(taskWindowsDialogRef, "taskWindowsDialog")
                 || !surfaceAvailable(taskWindowsPopupContentRef, "taskWindowsPopupContent")
                 || !surfaceAvailable(taskControllerRef, "taskController")) {
@@ -228,9 +251,21 @@ Item {
         taskWindowsPopupContentRef.showPreviews()
         const popupRows = rows || []
         const popupWindows = taskControllerRef.taskWindowsForRows(popupRows)
+        const applicationId = taskControllerRef.taskApplicationIdForRows(popupRows)
+        const showMedia = mediaHoverEnabled
+            && mprisControllerRef.applicationId === applicationId
+            && mprisControllerRef.available
+        if (!showMedia && !previewFallback) {
+            resetTaskPopupState()
+            return
+        }
+        mediaHoverActive = showMedia
         activeTaskPopupData = {
             "name": appName || "",
-            "applicationId": taskControllerRef.taskApplicationIdForRows(popupRows),
+            "icon": popupWindows.length > 0 && popupWindows[0].icon
+                ? popupWindows[0].icon
+                : "emblem-music-symbolic",
+            "applicationId": applicationId,
             "windowUuids": popupWindows.map(function(windowData) {
                 return String(windowData.windowUuid || "")
             }).filter(function(uuid) {
@@ -241,6 +276,11 @@ Item {
         taskWindowsDialogRef.visualParent = popupAnchor(visualParent)
         taskPopupVisualParent = visualParent
         taskWindowsDialogRef.visible = true
+        if (showMedia && keyboardInvoked && taskContextSurfaceStackRef) {
+            Qt.callLater(function() {
+                root.taskContextSurfaceStackRef.focusMediaControls()
+            })
+        }
     }
 
     function openTaskOverflowPopup(visualParent) {
@@ -252,7 +292,7 @@ Item {
         taskOverflowDialogRef.visible = true
     }
 
-    function scheduleTaskWindowsPopup(appName, rows, visualParent) {
+    function scheduleTaskWindowsPopup(appName, rows, visualParent, keyboardInvoked, previewFallback) {
         if (contextMenuVisible) {
             taskPopupOpenTimer.stop()
             return
@@ -260,6 +300,12 @@ Item {
         pendingTaskPopupAppName = appName || ""
         pendingTaskPopupRows = rows || []
         taskPopupVisualParent = visualParent || null
+        pendingTaskPopupKeyboardInvoked = !!keyboardInvoked
+        pendingTaskPopupPreviewFallback = previewFallback !== false
+        if (mediaHoverEnabled && mprisControllerRef && taskControllerRef) {
+            mprisControllerRef.applicationId = taskControllerRef.taskApplicationIdForRows(
+                pendingTaskPopupRows)
+        }
         taskPopupCloseTimer.stop()
         if (pendingTaskPopupRows.length > 0 && taskPopupVisualParent) {
             taskPopupOpenTimer.restart()
@@ -286,6 +332,21 @@ Item {
         pendingTaskPopupRows = []
         taskPopupVisualParent = null
         taskPopupHovered = false
+        pendingTaskPopupKeyboardInvoked = false
+        pendingTaskPopupPreviewFallback = true
+        mediaHoverActive = false
+    }
+
+    function closeMediaHoverFromKeyboard() {
+        const sourceItem = taskPopupVisualParent
+        if (taskWindowsDialogRef) {
+            taskWindowsDialogRef.visible = false
+        }
+        if (sourceItem && sourceItem.focusItem) {
+            Qt.callLater(function() {
+                sourceItem.focusItem()
+            })
+        }
     }
 
     function setTaskPopupHovered(hovered) {
@@ -332,6 +393,7 @@ Item {
         if (currentKey !== previousKey) {
             activeTaskPopupData = {
                 "name": String(popupData.name || ""),
+                "icon": String(popupData.icon || "emblem-music-symbolic"),
                 "applicationId": applicationId,
                 "windowUuids": windows.map(function(windowData) {
                     return String(windowData.windowUuid || "")

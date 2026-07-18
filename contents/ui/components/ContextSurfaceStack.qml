@@ -9,25 +9,28 @@ Item {
     property var mediaController: null
     property string mediaIcon: "emblem-music-symbolic"
     property bool showMedia: true
+    property bool mediaOnly: false
     property real mediaGap: 2
     property real maximumAvailableHeight: 0
     readonly property Item contentItem: contentHost.children.length > 0
         ? contentHost.children[0]
         : null
-    readonly property real contentImplicitWidth: contentItem ? contentItem.implicitWidth : 0
-    readonly property real contentImplicitHeight: contentItem ? contentItem.implicitHeight : 0
+    readonly property real contentImplicitWidth: !mediaOnly && contentItem ? contentItem.implicitWidth : 0
+    readonly property real contentImplicitHeight: !mediaOnly && contentItem ? contentItem.implicitHeight : 0
     readonly property bool mediaRequested: showMedia
         && !!mediaController
         && mediaController.available
     readonly property bool fullMediaFits: maximumAvailableHeight <= 0
         || contentImplicitHeight + mediaGap + mediaCard.preferredExpandedHeight <= maximumAvailableHeight
     readonly property bool compactMediaFits: maximumAvailableHeight <= 0
-        || contentImplicitHeight + mediaGap + 56 <= maximumAvailableHeight
+        || contentImplicitHeight + mediaGap + mediaCard.compactPreferredHeight <= maximumAvailableHeight
     readonly property bool mediaVisible: mediaRequested && compactMediaFits
     readonly property bool compactMedia: mediaVisible && !fullMediaFits
     property real mediaExtent: 0
     property real mediaRevealProgress: 0
-    readonly property bool containsMouse: surfaceHover.hovered
+    readonly property bool containsMouse: surfaceHover.hovered || mediaCard.activeFocus
+
+    signal mediaCloseRequested()
 
     implicitWidth: Math.max(contentImplicitWidth, mediaVisible ? 280 : 0)
     implicitHeight: contentImplicitHeight + mediaExtent
@@ -50,8 +53,13 @@ Item {
         })
     }
 
+    function focusMediaControls() {
+        return mediaVisible && mediaCard.focusFirstControl()
+    }
+
     onMediaVisibleChanged: updateMediaPresentation()
     onCompactMediaChanged: updateMediaPresentation()
+    onMediaOnlyChanged: updateMediaPresentation()
 
     Component.onCompleted: updateMediaPresentation()
 
@@ -81,6 +89,7 @@ Item {
         controller: root.mediaController
         fallbackIcon: root.mediaIcon
         compact: root.compactMedia
+        squarePresentation: root.mediaOnly
         visible: root.mediaVisible || root.mediaExtent > 0.5
         opacity: root.mediaRevealProgress
         scale: 0.98 + (0.02 * root.mediaRevealProgress)
@@ -89,6 +98,7 @@ Item {
         }
 
         onImplicitHeightChanged: root.updateMediaPresentation()
+        onCloseRequested: root.mediaCloseRequested()
     }
 
     KSvg.FrameSvgItem {
@@ -98,6 +108,7 @@ Item {
         width: root.width
         height: Math.max(0, root.height - root.mediaExtent)
         imagePath: "dialogs/background"
+        visible: !root.mediaOnly
     }
 
     Item {
@@ -106,6 +117,7 @@ Item {
         y: root.mediaExtent
         width: root.width
         height: Math.max(0, root.height - root.mediaExtent)
+        visible: !root.mediaOnly
     }
 
     Binding {

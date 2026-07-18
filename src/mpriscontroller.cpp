@@ -7,6 +7,7 @@
 #include <QDBusInterface>
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
+#include <QDBusVariant>
 #include <QRegularExpression>
 #include <QTimer>
 #include <QUrl>
@@ -118,6 +119,7 @@ void MprisController::setApplicationId(const QString &applicationId)
     if (m_applicationId.isEmpty()) {
         clearState();
     } else {
+        clearState();
         refresh();
     }
 }
@@ -132,6 +134,8 @@ bool MprisController::canPlay() const { return m_canPlay; }
 bool MprisController::canPause() const { return m_canPause; }
 bool MprisController::canGoNext() const { return m_canGoNext; }
 bool MprisController::playing() const { return m_playing; }
+bool MprisController::volumeAvailable() const { return m_volumeAvailable; }
+double MprisController::volume() const { return m_volume; }
 
 void MprisController::refresh()
 {
@@ -261,6 +265,9 @@ void MprisController::selectBestCandidate()
     m_canPause = player.value(QStringLiteral("CanPause")).toBool();
     m_canGoNext = player.value(QStringLiteral("CanGoNext")).toBool();
     m_playing = player.value(QStringLiteral("PlaybackStatus")).toString() == QLatin1String("Playing");
+    m_volumeAvailable = player.contains(QStringLiteral("Volume"))
+        && player.value(QStringLiteral("CanControl")).toBool();
+    m_volume = std::clamp(player.value(QStringLiteral("Volume")).toDouble(), 0.0, 1.0);
     m_available = true;
     Q_EMIT stateChanged();
 }
@@ -279,6 +286,8 @@ void MprisController::clearState()
     m_canPause = false;
     m_canGoNext = false;
     m_playing = false;
+    m_volumeAvailable = false;
+    m_volume = 0.0;
     if (changed) {
         Q_EMIT stateChanged();
     }
@@ -305,6 +314,31 @@ void MprisController::next()
     if (m_canGoNext) {
         callPlayerMethod(QStringLiteral("Next"));
     }
+}
+
+void MprisController::setVolume(double volume)
+{
+    if (!m_available || !m_volumeAvailable || m_service.isEmpty()) {
+        return;
+    }
+
+    const double safeVolume = std::clamp(volume, 0.0, 1.0);
+    if (qFuzzyCompare(m_volume, safeVolume)) {
+        return;
+    }
+
+    m_volume = safeVolume;
+    Q_EMIT stateChanged();
+
+    QDBusInterface properties(m_service,
+                              QString::fromLatin1(mprisPath),
+                              QString::fromLatin1(propertiesInterface),
+                              QDBusConnection::sessionBus());
+    properties.asyncCall(QStringLiteral("Set"),
+                         QString::fromLatin1(playerInterface),
+                         QStringLiteral("Volume"),
+                         QVariant::fromValue(QDBusVariant(safeVolume)));
+    QTimer::singleShot(120, this, &MprisController::scheduleRefresh);
 }
 
 void MprisController::callPlayerMethod(const QString &method)

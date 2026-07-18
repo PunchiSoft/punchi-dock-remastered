@@ -21,6 +21,7 @@ KCM.SimpleKCM {
     property alias cfg_showLabels: showLabelsCheck.checked
     property alias cfg_showItemHoverBackground: showItemHoverBackgroundCheck.checked
     property alias cfg_iconReflectionsEnabled: iconReflectionsCheck.checked
+    property alias cfg_iconReflectionOpacity: iconReflectionOpacitySlider.value
     property string cfg_indicatorType: "line"
     property string cfg_indicatorPosition: "bottom"
     property alias cfg_indicatorOpacity: indicatorOpacitySlider.value
@@ -543,6 +544,39 @@ KCM.SimpleKCM {
                 cursorEnabled: page.interactiveCursorEnabled
             }
         }
+
+        // qmllint disable unqualified
+        RowLayout {
+            enabled: iconReflectionsCheck.checked
+                && page.iconReflectionsSupported
+                && !showLabelsCheck.checked
+            Kirigami.FormData.label: i18n("Reflection opacity:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: iconReflectionOpacitySlider
+                from: 5
+                to: 50
+                stepSize: 1
+                snapMode: Controls.Slider.SnapAlways
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Reflection opacity")
+                Accessible.description: i18n("Adjusts how strongly icon reflections appear.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: Math.round(iconReflectionOpacitySlider.value) + "%"
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 56
+            }
+        }
+        // qmllint enable unqualified
 
         Controls.Label {
             // qmllint disable unqualified

@@ -48,6 +48,7 @@ Item {
     property bool taskMinimizedTrackingReady: false
     property bool showItemHoverBackground: true
     property bool iconReflectionEnabled: false
+    property real iconReflectionOpacity: 0.22
     property real iconReflectionAvailableExtent: -1
     property bool animateEntry: false
     property bool positionTransitionEnabled: false
@@ -173,6 +174,7 @@ Item {
     property bool preferTaskPopupOnHover: false
     property bool suppressTooltip: false
     property bool supportsContextMenu: false
+    property bool mediaHoverControlsEnabled: false
     property int popupDirection: Qt.BottomEdge
     property bool customSeparatorEnabled: false
     property var separatorTheme: ({})
@@ -260,9 +262,14 @@ Item {
 
     signal itemClicked(string cmd)
     signal contextMenuRequested(var visualParent, bool keyboardInvoked)
+    signal mediaControlsRequested(var visualParent)
     signal hoverEntered(var visualParent)
     signal hoverExited(var visualParent)
     signal taskMinimized(int itemIndex)
+
+    function focusItem() {
+        mouseArea.forceActiveFocus(Qt.OtherFocusReason)
+    }
     // Keep layout container measurements fully static to prevent jitter.
     implicitWidth: separatorItem
         ? Math.max(10, Math.ceil(separatorThickness + 4))
@@ -389,7 +396,8 @@ Item {
             displaySize: dockItemContainer.iconReflectionDisplaySize
             visibleRatio: dockItemContainer.iconReflectionVisibleRatio
             horizontalOffset: dockItemContainer.hoverOffsetX
-            opacity: 0.22
+            opacity: Math.max(0.05, Math.min(0.50,
+                dockItemContainer.iconReflectionOpacity))
             width: parent.width
             height: Math.max(1, displaySize
                 * (sourceOverlapRatio + visibleRatio))
@@ -587,6 +595,11 @@ Item {
         activeFocusOnTab: true
         Accessible.role: separatorItem || spacerItem ? Accessible.StaticText : Accessible.Button
         Accessible.name: dockItemContainer.localizedItemName
+        // qmllint disable unqualified
+        Accessible.description: dockItemContainer.mediaHoverControlsEnabled
+            ? i18nc("@info:accessible", "Press M to open media controls")
+            : ""
+        // qmllint enable unqualified
         acceptedButtons: separatorItem || spacerItem
             ? Qt.NoButton
             : ((itemType === "trash" || supportsContextMenu)
@@ -643,6 +656,13 @@ Item {
         Keys.onReturnPressed: if (!separatorItem && !spacerItem) dockItemContainer.itemClicked(itemCommand)
         Keys.onSpacePressed: if (!separatorItem && !spacerItem) dockItemContainer.itemClicked(itemCommand)
         Keys.onPressed: function(event) {
+            if (dockItemContainer.mediaHoverControlsEnabled
+                    && event.key === Qt.Key_M
+                    && event.modifiers === Qt.NoModifier) {
+                dockItemContainer.mediaControlsRequested(dockItemContainer)
+                event.accepted = true
+                return
+            }
             if ((itemType === "trash" || supportsContextMenu) && (event.key === Qt.Key_Menu
                     || (event.key === Qt.Key_F10 && (event.modifiers & Qt.ShiftModifier)))) {
                 dockItemContainer.contextMenuRequested(dockItemContainer, true)

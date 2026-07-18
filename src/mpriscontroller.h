@@ -25,6 +25,8 @@ class MprisController : public QObject
     Q_PROPERTY(bool canPause READ canPause NOTIFY stateChanged)
     Q_PROPERTY(bool canGoNext READ canGoNext NOTIFY stateChanged)
     Q_PROPERTY(bool playing READ playing NOTIFY stateChanged)
+    Q_PROPERTY(bool volumeAvailable READ volumeAvailable NOTIFY stateChanged)
+    Q_PROPERTY(double volume READ volume NOTIFY stateChanged)
 
 public:
     explicit MprisController(QObject *parent = nullptr);
@@ -41,11 +43,14 @@ public:
     bool canPause() const;
     bool canGoNext() const;
     bool playing() const;
+    bool volumeAvailable() const;
+    double volume() const;
 
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void previous();
     Q_INVOKABLE void togglePlaying();
     Q_INVOKABLE void next();
+    Q_INVOKABLE void setVolume(double volume);
 
 Q_SIGNALS:
     void applicationIdChanged();
@@ -75,6 +80,8 @@ private:
     bool m_canPause = false;
     bool m_canGoNext = false;
     bool m_playing = false;
+    bool m_volumeAvailable = false;
+    double m_volume = 0.0;
     quint64 m_refreshGeneration = 0;
     int m_pendingPropertyRequests = 0;
     QHash<QString, QVariantMap> m_candidates;
