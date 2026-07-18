@@ -310,5 +310,55 @@ int main(int argc, char **argv)
         && QFile::exists(sourcePath),
         "theme removal ignores symlinks and preserves their targets");
 
+    const QByteArray shapedThemeData = R"json(
+{
+  "schemaVersion": 2,
+  "metadata": { "name": "Repository Wave" },
+  "renderer": "shaped",
+  "surface": { "color": "#d9273140" },
+  "shape": {
+    "preset": "wave",
+    "depthRatio": 0.1,
+    "repetitions": 5,
+    "phase": 0
+  }
+}
+)json";
+    const QString shapedSourcePath = QDir(temporaryDataHome.path()).filePath(
+        QStringLiteral("shaped-theme.json"));
+    QFile shapedSourceFile(shapedSourcePath);
+    if (!shapedSourceFile.open(QIODevice::WriteOnly | QIODevice::Truncate)
+        || shapedSourceFile.write(shapedThemeData) != shapedThemeData.size()) {
+        std::cerr << "FAILED: shaped theme fixture could not be created\n";
+        return 1;
+    }
+    shapedSourceFile.close();
+
+    DockThemeRepository shapedImporter;
+    const QString shapedThemeId = shapedImporter.importTheme(
+        QUrl::fromLocalFile(shapedSourcePath));
+    const QString shapedManagedPath = findManagedThemePath(
+        temporaryDataHome.path(), shapedThemeId);
+    passed &= expect(shapedThemeId.size() == 16
+        && shapedManagedPath.contains(
+            QStringLiteral("/themes/shaped/repository-wave/")),
+        "shaped imports use their own managed hierarchy");
+    const QVariantList shapedThemes = shapedImporter.availableThemes();
+    const auto shapedThemeIterator = std::find_if(
+        shapedThemes.cbegin(),
+        shapedThemes.cend(),
+        [&shapedThemeId](const QVariant &themeValue) {
+            return themeValue.toMap().value(QStringLiteral("id")).toString()
+                == shapedThemeId;
+        });
+    passed &= expect(shapedThemeIterator != shapedThemes.cend(),
+        "shaped theme appears in the managed library");
+    if (shapedThemeIterator != shapedThemes.cend()) {
+        const QString shapedDisplayName = shapedThemeIterator->toMap()
+            .value(QStringLiteral("displayName")).toString();
+        passed &= expect(shapedDisplayName.endsWith(QStringLiteral(" · Shaped")),
+            "shaped theme is identified in the managed library");
+    }
+
     return passed ? 0 : 1;
 }

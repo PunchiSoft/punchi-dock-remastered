@@ -14,18 +14,46 @@ Item {
     property string itemCommand: ""
     property int iconSize: 48
 
+    readonly property string localizedItemName: {
+        if (itemType === "trash" && itemName === "Trash") {
+            return i18n("Trash")
+        }
+        if (itemType === "calendar" && itemName === "Calendar") {
+            return i18n("Calendar")
+        }
+        if (itemType === "note" && itemName === "Quick Note") {
+            return i18nc("@title", "Quick Note")
+        }
+        return itemName
+    }
+
     property int itemIndex: -1
     property int hoveredIndex: -1
     
-    // Variables de animación de la ola
+    // Wave animation state.
     property real hoverZoomProgress: 0.0
     property int lastHoveredIndex: -1
     property real lastMouseOffset: 0.0
 
-    // Configuración matemática idéntica al proyecto original con transiciones suaves
+    // Wave geometry follows the original project while preserving smooth transitions.
     property real hoverScaleSetting: 1.35
     property string hoverAnimationMode: "wave"
     property string clickEffect: "none"
+    property string windowMinimizeEffect: "none"
+    property int taskMinimizedCount: 0
+    property int minimizeReactionRevision: 0
+    property int minimizeReactionTargetIndex: -1
+    property int observedTaskCount: 0
+    property int observedTaskMinimizedCount: 0
+    property bool taskMinimizedTrackingReady: false
+    property bool showItemHoverBackground: true
+    property bool iconReflectionEnabled: false
+    property real iconReflectionAvailableExtent: -1
+    property bool animateEntry: false
+    property bool positionTransitionEnabled: false
+    property real entryOpacity: 1.0
+    property real entryScale: 1.0
+    property bool positionAnimationReady: false
     property bool showPersistentLabel: false
     property int labelFontSize: Math.max(10, Math.round(iconSize * 0.22))
     property string indicatorType: "line"
@@ -35,6 +63,22 @@ Item {
     property int highQualityIconSize: Math.min(512, Math.max(iconSize, Math.ceil(iconSize * Math.max(1, hoverScaleSetting) * 1.12)))
     property real highQualityIconScale: highQualityIconSize > 0 ? iconSize / highQualityIconSize : 1
     readonly property real hoverScaleDelta: Math.max(0.0001, hoverScaleSetting - 1.0)
+    readonly property real iconReflectionMaximumVisibleRatio: 0.26
+    readonly property real iconReflectionDisplaySize: iconSize * waveScale
+    readonly property real iconReflectionContainerScale:
+        clickAnimationScale * entryScale
+    readonly property real iconReflectionBottomDisplacement:
+        (((iconReflectionDisplaySize / 2) + hoverOffsetY)
+            * iconReflectionContainerScale) - (iconSize / 2)
+    readonly property real iconReflectionUsableExtent:
+        iconReflectionAvailableExtent < 0
+            ? iconReflectionDisplaySize * iconReflectionMaximumVisibleRatio
+            : Math.max(0, iconReflectionAvailableExtent
+                - iconReflectionBottomDisplacement)
+    readonly property real iconReflectionVisibleRatio: Math.max(0,
+        Math.min(iconReflectionMaximumVisibleRatio,
+            iconReflectionUsableExtent / Math.max(1,
+                iconReflectionDisplaySize * iconReflectionContainerScale)))
     readonly property real baseItemExtent: Math.max(iconSize, implicitWidth - 12)
     readonly property real labelAreaHeight: showPersistentLabel && !separatorItem && !spacerItem ? (labelFontSize + 12) : 0
     readonly property real visualAreaHeight: iconSize + 12
@@ -136,6 +180,7 @@ Item {
     readonly property bool verticalPopupFlow: popupDirection === Qt.TopEdge || popupDirection === Qt.BottomEdge
     readonly property real popupAnchorExtent: Math.max(1, Math.min(width, iconSize + 12))
     readonly property Item popupAnchorItem: popupAnchorProxy
+    readonly property Item taskGeometryItem: taskGeometryProxy
     readonly property bool containsMouse: mouseArea.containsMouse
     readonly property bool separatorItem: itemType === "separator"
     readonly property bool spacerItem: itemType === "spacer"
@@ -195,11 +240,30 @@ Item {
         }
     }
 
+    Timer {
+        id: minimizeStateEvaluationTimer
+        interval: 0
+        repeat: false
+        onTriggered: {
+            if (dockItemContainer.taskMinimizedTrackingReady
+                    && dockItemContainer.taskIndicatorCount
+                        === dockItemContainer.observedTaskCount
+                    && dockItemContainer.taskMinimizedCount
+                        > dockItemContainer.observedTaskMinimizedCount) {
+                dockItemContainer.taskMinimized(dockItemContainer.itemIndex)
+            }
+            dockItemContainer.observedTaskCount = dockItemContainer.taskIndicatorCount
+            dockItemContainer.observedTaskMinimizedCount
+                = dockItemContainer.taskMinimizedCount
+        }
+    }
+
     signal itemClicked(string cmd)
     signal contextMenuRequested(var visualParent, bool keyboardInvoked)
     signal hoverEntered(var visualParent)
     signal hoverExited(var visualParent)
-    // Medidas del contenedor del Layout TOTALMENTE ESTÁTICAS para evitar jitter
+    signal taskMinimized(int itemIndex)
+    // Keep layout container measurements fully static to prevent jitter.
     implicitWidth: separatorItem
         ? Math.max(10, Math.ceil(separatorThickness + 4))
         : (spacerItem
@@ -207,14 +271,98 @@ Item {
             : Math.max(iconSize + 12,
                 showPersistentLabel ? Math.round(iconSize * 1.85) : 0))
     implicitHeight: visualAreaHeight + labelAreaHeight
+    opacity: entryOpacity
+
+    Behavior on x {
+        enabled: dockItemContainer.positionAnimationReady
+            && dockItemContainer.positionTransitionEnabled
+        NumberAnimation {
+            duration: Kirigami.Units.longDuration
+            easing.type: Easing.InOutCubic
+        }
+    }
+
+    Behavior on y {
+        enabled: dockItemContainer.positionAnimationReady
+            && dockItemContainer.positionTransitionEnabled
+        NumberAnimation {
+            duration: Kirigami.Units.longDuration
+            easing.type: Easing.InOutCubic
+        }
+    }
+
+    Component.onCompleted: {
+        dockItemContainer.observedTaskCount = dockItemContainer.taskIndicatorCount
+        dockItemContainer.observedTaskMinimizedCount
+            = dockItemContainer.taskMinimizedCount
+        if (dockItemContainer.animateEntry) {
+            dockItemContainer.entryOpacity = 0.0
+            dockItemContainer.entryScale = 0.88
+            entryAnimation.restart()
+        }
+        Qt.callLater(function() {
+            dockItemContainer.positionAnimationReady = true
+            dockItemContainer.taskMinimizedTrackingReady = true
+        })
+    }
+
+    onTaskIndicatorCountChanged: minimizeStateEvaluationTimer.restart()
+    onTaskMinimizedCountChanged: minimizeStateEvaluationTimer.restart()
+
+    MinimizeItemReaction {
+        id: minimizeItemReaction
+        mode: dockItemContainer.windowMinimizeEffect
+        itemIndex: dockItemContainer.itemIndex
+        targetIndex: dockItemContainer.minimizeReactionTargetIndex
+        revision: dockItemContainer.minimizeReactionRevision
+        iconSize: dockItemContainer.iconSize
+        verticalPanel: dockItemContainer.inPanel
+            && (dockItemContainer.panelLocation === PlasmaCore.Types.LeftEdge
+                || dockItemContainer.panelLocation === PlasmaCore.Types.RightEdge)
+        bounceDirection: dockItemContainer.panelLocation === PlasmaCore.Types.RightEdge
+            || dockItemContainer.panelLocation === PlasmaCore.Types.BottomEdge
+            ? -1
+            : 1
+        reactionEnabled: !dockItemContainer.separatorItem
+            && !dockItemContainer.spacerItem
+    }
+
+    ParallelAnimation {
+        id: entryAnimation
+
+        NumberAnimation {
+            target: dockItemContainer
+            property: "entryOpacity"
+            to: 1.0
+            duration: Kirigami.Units.longDuration
+            easing.type: Easing.OutCubic
+        }
+
+        NumberAnimation {
+            target: dockItemContainer
+            property: "entryScale"
+            to: 1.0
+            duration: Kirigami.Units.longDuration
+            easing.type: Easing.OutCubic
+        }
+    }
 
     Rectangle {
         id: hoverBackground
         anchors.fill: parent
+        visible: dockItemContainer.showItemHoverBackground
+            && !dockItemContainer.separatorItem
+            && !dockItemContainer.spacerItem
+            && dockItemContainer.itemType !== "calendar"
         radius: 8
         color: Kirigami.Theme.highlightColor
-        opacity: separatorItem || spacerItem ? 0.0 : (((mouseArea.containsMouse && itemType !== "calendar") || taskIsActive) ? 0.2 : 0.0)
-        Behavior on opacity { NumberAnimation { duration: 150 } }
+        opacity: mouseArea.containsMouse || dockItemContainer.taskIsActive
+            ? 0.2
+            : 0.0
+        Behavior on opacity {
+            enabled: hoverBackground.visible
+            NumberAnimation { duration: 150 }
+        }
     }
 
     Item {
@@ -223,10 +371,36 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
         height: dockItemContainer.visualAreaHeight
-        scale: clickAnimationScale
+        scale: dockItemContainer.clickAnimationScale * dockItemContainer.entryScale
+        transform: Translate {
+            x: minimizeItemReaction.horizontalOffset
+            y: minimizeItemReaction.verticalOffset
+        }
+
+        IconReflection {
+            id: iconReflection
+            z: 0
+            active: dockItemContainer.iconReflectionEnabled
+                && dockItemContainer.iconReflectionVisibleRatio > 0.025
+                && dockItemContainer.itemType !== "calendar"
+                && !dockItemContainer.separatorItem
+                && !dockItemContainer.spacerItem
+            iconSource: dockItemContainer.iconName
+            displaySize: dockItemContainer.iconReflectionDisplaySize
+            visibleRatio: dockItemContainer.iconReflectionVisibleRatio
+            horizontalOffset: dockItemContainer.hoverOffsetX
+            opacity: 0.22
+            width: parent.width
+            height: Math.max(1, displaySize
+                * (sourceOverlapRatio + visibleRatio))
+            x: 0
+            y: (parent.height / 2) + (displaySize / 2)
+                + dockItemContainer.hoverOffsetY - sourceOverlap
+        }
 
         Kirigami.Icon {
             id: itemIcon
+            z: 1
             anchors.centerIn: parent
             width: highQualityIconSize
             height: highQualityIconSize
@@ -291,6 +465,7 @@ Item {
         }
 
         TaskIndicator {
+            z: 2
             anchors.fill: parent
             visible: itemType === "app"
                 && taskIndicatorCount > 0
@@ -305,6 +480,11 @@ Item {
         }
     }
 
+    Item {
+        id: taskGeometryProxy
+        anchors.fill: visualArea
+    }
+
     Controls.Label {
         id: persistentLabel
         visible: showPersistentLabel && !separatorItem && !spacerItem
@@ -314,7 +494,7 @@ Item {
         width: parent.width - 6
         horizontalAlignment: Text.AlignHCenter
         elide: Text.ElideRight
-        text: itemName
+        text: dockItemContainer.localizedItemName
         font.pixelSize: labelFontSize
         color: Kirigami.Theme.textColor
         opacity: mouseArea.containsMouse || taskIsActive ? 1.0 : 0.88
@@ -406,7 +586,7 @@ Item {
         hoverEnabled: !separatorItem && !spacerItem
         activeFocusOnTab: true
         Accessible.role: separatorItem || spacerItem ? Accessible.StaticText : Accessible.Button
-        Accessible.name: itemName
+        Accessible.name: dockItemContainer.localizedItemName
         acceptedButtons: separatorItem || spacerItem
             ? Qt.NoButton
             : ((itemType === "trash" || supportsContextMenu)
@@ -438,7 +618,7 @@ Item {
                 return
             }
             if (containsMouse) {
-                // Rango de -0.5 (izquierda) a 0.5 (derecha)
+                // Range from -0.5 (left) to 0.5 (right).
                 dockItemContainer.parent.mouseOffset = (mouse.x - (width / 2)) / width
             }
         }
@@ -493,7 +673,7 @@ Item {
             spacing: 4
 
             Controls.Label {
-                text: i18n(dockItemContainer.itemName)
+                text: dockItemContainer.localizedItemName
                 color: Kirigami.Theme.textColor
                 font.bold: true
             }
@@ -507,7 +687,7 @@ Item {
             spacing: 4
 
             Kirigami.Heading {
-                text: i18n(dockItemContainer.itemName)
+                text: dockItemContainer.localizedItemName
                 level: 4
                 color: Kirigami.Theme.textColor
                 elide: Text.ElideRight

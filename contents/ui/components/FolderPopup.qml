@@ -11,12 +11,12 @@ Item {
     width: implicitWidth
     height: implicitHeight
 
-    // Propiedades inyectadas por la UI principal
+    // Properties injected by the main UI.
     property var folderItem: ({})
     property string layoutMode: "grid"
     property int maximumAvailableHeight: 640
 
-    // Accesos rápidos
+    // Quick access entries.
     property var apps: folderItem.apps || []
     property int itemCount: apps.length
     readonly property int classicMargin: 12
@@ -40,7 +40,7 @@ Item {
         : maximumAvailableHeight
     readonly property int classicPopupHeight: Math.min(classicNaturalHeight, effectiveMaximumHeight)
 
-    // Señales para ejecutar aplicaciones y cerrar el popup
+    // Signals for launching applications and closing the popup.
     signal appLaunched(var app)
     signal closeRequested()
 
@@ -49,7 +49,7 @@ Item {
         anchors.margins: folderRoot.classicMargin
         spacing: folderRoot.classicSpacing
 
-        // Título de la carpeta
+        // Folder title.
         RowLayout {
             id: classicHeader
             Layout.fillWidth: true
@@ -60,7 +60,7 @@ Item {
                 font.weight: Font.Bold
                 Layout.fillWidth: true
             }
-            // Botón de cerrar
+            // Close button.
             Rectangle {
                 Layout.preferredWidth: 20
                 Layout.preferredHeight: 20
@@ -80,12 +80,12 @@ Item {
             }
         }
 
-        // Vista de Rejilla/Lista
+        // Grid or list view.
         GridView {
             id: gridView
             Layout.fillWidth: true
             Layout.fillHeight: true
-            // Corregir cellWidth para evitar scrollbars o recortes horizontales
+            // Keep cellWidth from producing scrollbars or horizontal clipping.
             cellWidth: layoutMode === "list" || layoutMode === "detailed"
                 ? gridView.width
                 : folderRoot.gridCellWidth
@@ -97,7 +97,7 @@ Item {
                 width: gridView.cellWidth
                 height: gridView.cellHeight
 
-                // Fondo interactivo
+                // Interactive background.
                 Rectangle {
                     anchors.fill: parent
                     anchors.margins: 2
@@ -108,7 +108,7 @@ Item {
                     border.color: Kirigami.Theme.highlightColor
                 }
 
-                // Modo Lista y Modo Detalle (Icono a la izquierda, etiqueta al lado)
+                // List and detail modes place the icon before the label.
                 RowLayout {
                     anchors.fill: parent
                     anchors.margins: 4
@@ -143,7 +143,7 @@ Item {
                     }
                 }
 
-                // Modo Grid Estándar (Icono arriba, etiqueta abajo)
+                // Standard grid mode places the icon above the label.
                 ColumnLayout {
                     anchors.fill: parent
                     anchors.margins: 4
@@ -172,7 +172,7 @@ Item {
                     hoverEnabled: true
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
-                    Accessible.name: modelData.name || i18n("Aplicación")
+                    Accessible.name: modelData.name || i18n("Application")
                     onClicked: {
                         folderRoot.appLaunched(modelData)
                     }

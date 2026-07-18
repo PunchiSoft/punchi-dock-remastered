@@ -119,12 +119,25 @@ La estructura real del repositorio puede evolucionar. No crear carpetas o abstra
 - Bajo Wayland, utilizar integraciones nativas de KDE para tareas restringidas por el compositor.
 - Python puede utilizarse para herramientas de desarrollo en `Scripts/`, pero no como dependencia del runtime del plasmoide.
 
+## Idioma fuente del proyecto
+
+- El inglés es el único idioma fuente del código, independientemente del idioma usado por el usuario para dar instrucciones.
+- Escribir en inglés identificadores, comentarios, mensajes de log, errores propios, nombres y mensajes de pruebas, salidas de scripts y textos visibles de fallback en QML, JavaScript, C++ y herramientas del repositorio.
+- No introducir labels, menús, tooltips, placeholders, estados, mensajes accesibles ni otros textos visibles directamente en español u otro idioma dentro del código ejecutable.
+- Mantener las traducciones exclusivamente en `po/<idioma>.po`, salvo los campos localizados de formatos que lo requieran expresamente, como `Name[es]` o `Description[es]` en `metadata.json`.
+- Si se encuentra un texto fuente del runtime en un idioma distinto del inglés, convertirlo a inglés y conservar su traducción mediante ki18n.
+- La documentación interna en `docs/`, `bitacora/` y los archivos de instrucciones puede conservar el idioma establecido por el documento o solicitado por el usuario; esta excepción no se extiende al código ni a la interfaz.
+
 ## Internacionalización
 
 - Todo texto visible para el usuario debe ser traducible mediante ki18n.
 - Usar `i18n`, `i18nc` o `i18np` según contexto y pluralidad.
 - Usar marcadores como `%1` en lugar de concatenar fragmentos traducidos.
 - No traducir anticipadamente en JavaScript si ello impide reaccionar a cambios de idioma.
+- Tratar como cambio de internacionalización cualquier alta, modificación o retirada de menús, labels, botones, tooltips, placeholders, estados vacíos, errores, notificaciones y nombres o descripciones accesibles.
+- Después de cambiar un texto visible, ejecutar `scripts/update-translations.sh`, actualizar todos los catálogos soportados y validar que no queden entradas vacías ni difusas.
+- Mantener inglés como fallback y no declarar un idioma compatible hasta que su PO esté completo, revisado y supere `msgfmt --check --check-format` y `translation_catalog_test`.
+- Empaquetar los MO bajo `contents/locale/<idioma>/LC_MESSAGES/` con el dominio exacto del plasmoide; no colocarlos en `locale/` en la raíz del KPackage.
 
 ## Empaquetado
 

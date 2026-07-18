@@ -26,6 +26,7 @@ public:
     Q_INVOKABLE QString iconForApplication(const QString &applicationId) const;
     Q_INVOKABLE QString iconForCategory(const QString &category) const;
     Q_INVOKABLE QString applicationIdForCommand(const QString &command) const;
+    Q_INVOKABLE QVariantMap applicationForLauncher(const QString &applicationId, const QString &launcherUrl) const;
     Q_INVOKABLE QVariantList applicationActions(const QString &applicationId) const;
     Q_INVOKABLE void launchApplication(const QString &storageId);
     Q_INVOKABLE bool launchApplicationAction(const QString &applicationId, const QString &actionId);

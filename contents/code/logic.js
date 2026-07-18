@@ -1,7 +1,7 @@
 .pragma library
 .import "defaultItems.js" as DockDefaults
 
-// Módulo central de lógica de negocio (desacoplado de la UI)
+// Central business logic module, decoupled from the UI.
 
 function loadItems(jsonString) {
     if (jsonString && typeof jsonString === "string" && jsonString.trim().length > 0) {
@@ -52,7 +52,7 @@ function launchItem(item, commandRunner) {
     var command = item.command.trim();
     if (command.length === 0) return;
 
-    // Delegamos la ejecución real a un DataEngine o componente que la UI nos provea
+    // Delegate execution to a DataEngine or another component provided by the UI.
     if (typeof commandRunner === "function") {
         commandRunner(command);
     }

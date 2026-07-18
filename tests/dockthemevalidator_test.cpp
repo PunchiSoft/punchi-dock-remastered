@@ -259,6 +259,130 @@ int main(int argc, char **argv)
         && invalidBackInsetResult.errorCode == QLatin1String("invalidShelf"),
         "out-of-range shelf perspective rejected");
 
+    const QByteArray shapedTheme = R"json(
+{
+  "schemaVersion": 2,
+  "metadata": { "name": "Organic Wave" },
+  "renderer": "shaped",
+  "surface": {
+    "color": "#d9273140",
+    "border": { "width": 1, "color": "#996fdcf4" }
+  },
+  "shape": {
+    "preset": "wave",
+    "depthRatio": 0.12,
+    "repetitions": 5,
+    "phase": 0.25
+  }
+}
+)json";
+    const DockThemeValidator::Result shapedResult =
+        DockThemeValidator::validate(shapedTheme);
+    passed &= expect(shapedResult.ok
+        && shapedResult.theme.value(QStringLiteral("schemaVersion")).toInt() == 2
+        && shapedResult.theme.value(QStringLiteral("renderer")).toString()
+            == QLatin1String("shaped"),
+        "schema 2 shaped renderer accepted");
+    const QVariantMap normalizedShape = shapedResult.theme
+        .value(QStringLiteral("shape")).toMap();
+    passed &= expect(normalizedShape.value(QStringLiteral("preset")).toString()
+            == QLatin1String("wave")
+        && normalizedShape.value(QStringLiteral("repetitions")).toInt() == 5
+        && normalizedShape.value(QStringLiteral("depthRatio")).toDouble() == 0.12,
+        "shaped geometry normalized");
+
+    QByteArray shapedWithLegacySchema = shapedTheme;
+    shapedWithLegacySchema.replace("\"schemaVersion\": 2", "\"schemaVersion\": 1");
+    const DockThemeValidator::Result legacyShapedResult =
+        DockThemeValidator::validate(shapedWithLegacySchema);
+    passed &= expect(!legacyShapedResult.ok
+        && legacyShapedResult.errorCode == QLatin1String("unsupportedRenderer"),
+        "schema 1 cannot request shaped renderer");
+
+    QByteArray unknownShapePreset = shapedTheme;
+    unknownShapePreset.replace("\"wave\"", "\"externalPath\"");
+    const DockThemeValidator::Result unknownShapePresetResult =
+        DockThemeValidator::validate(unknownShapePreset);
+    passed &= expect(!unknownShapePresetResult.ok
+        && unknownShapePresetResult.errorCode == QLatin1String("invalidShape"),
+        "unknown shape preset rejected");
+
+    QByteArray excessiveShapeDepth = shapedTheme;
+    excessiveShapeDepth.replace("\"depthRatio\": 0.12", "\"depthRatio\": 0.8");
+    const DockThemeValidator::Result excessiveShapeDepthResult =
+        DockThemeValidator::validate(excessiveShapeDepth);
+    passed &= expect(!excessiveShapeDepthResult.ok
+        && excessiveShapeDepthResult.errorCode == QLatin1String("invalidShape"),
+        "out-of-range shape depth rejected");
+
+    QByteArray fractionalRepetitions = shapedTheme;
+    fractionalRepetitions.replace("\"repetitions\": 5", "\"repetitions\": 5.5");
+    const DockThemeValidator::Result fractionalRepetitionsResult =
+        DockThemeValidator::validate(fractionalRepetitions);
+    passed &= expect(!fractionalRepetitionsResult.ok
+        && fractionalRepetitionsResult.errorCode == QLatin1String("invalidShape"),
+        "fractional shape repetitions rejected");
+
+    const QByteArray animatedTheme = R"json(
+{
+  "schemaVersion": 2,
+  "metadata": { "name": "Animated Holographic" },
+  "renderer": "flat",
+  "surface": {
+    "color": "#b8161e28",
+    "gradient": {
+      "direction": "horizontal",
+      "stops": [
+        { "position": 0, "color": "#9c22d3ee" },
+        { "position": 0.35, "color": "#a060bde7" },
+        { "position": 0.7, "color": "#a0ff7eb3" },
+        { "position": 1, "color": "#9c22d3ee" }
+      ]
+    }
+  },
+  "animation": {
+    "type": "paletteFlow",
+    "duration": 16000,
+    "direction": "forward"
+  }
+}
+)json";
+    const DockThemeValidator::Result animatedResult =
+        DockThemeValidator::validate(animatedTheme);
+    passed &= expect(animatedResult.ok
+        && animatedResult.theme.value(QStringLiteral("animation")).toMap()
+            .value(QStringLiteral("type")).toString()
+            == QLatin1String("paletteFlow")
+        && animatedResult.theme.value(QStringLiteral("animation")).toMap()
+            .value(QStringLiteral("duration")).toInt() == 16000,
+        "schema 2 palette flow animation accepted");
+
+    QByteArray legacyAnimatedTheme = animatedTheme;
+    legacyAnimatedTheme.replace("\"schemaVersion\": 2", "\"schemaVersion\": 1");
+    const DockThemeValidator::Result legacyAnimatedResult =
+        DockThemeValidator::validate(legacyAnimatedTheme);
+    passed &= expect(!legacyAnimatedResult.ok
+        && legacyAnimatedResult.errorCode == QLatin1String("invalidAnimation"),
+        "schema 1 animation rejected");
+
+    QByteArray fastAnimatedTheme = animatedTheme;
+    fastAnimatedTheme.replace("\"duration\": 16000", "\"duration\": 500");
+    const DockThemeValidator::Result fastAnimatedResult =
+        DockThemeValidator::validate(fastAnimatedTheme);
+    passed &= expect(!fastAnimatedResult.ok
+        && fastAnimatedResult.errorCode == QLatin1String("invalidAnimation"),
+        "distracting animation duration rejected");
+
+    QByteArray openPaletteTheme = animatedTheme;
+    openPaletteTheme.replace(
+        "{ \"position\": 1, \"color\": \"#9c22d3ee\" }",
+        "{ \"position\": 1, \"color\": \"#a0ff7eb3\" }");
+    const DockThemeValidator::Result openPaletteResult =
+        DockThemeValidator::validate(openPaletteTheme);
+    passed &= expect(!openPaletteResult.ok
+        && openPaletteResult.errorCode == QLatin1String("invalidAnimation"),
+        "non-looping animation palette rejected");
+
     for (int argumentIndex = 1; argumentIndex < argc; ++argumentIndex) {
         const QString filePath = QString::fromLocal8Bit(argv[argumentIndex]);
         QFile themeFile(filePath);

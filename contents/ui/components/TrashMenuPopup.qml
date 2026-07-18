@@ -29,7 +29,7 @@ Item {
         anchors.margins: 12
         spacing: 8
 
-        // Cabecera / Título
+        // Header and title.
         RowLayout {
             Layout.fillWidth: true
             
@@ -41,7 +41,7 @@ Item {
                 Layout.fillWidth: true
             }
             
-            // Botón de cerrar
+            // Close button.
             Rectangle {
                 Layout.preferredWidth: 20
                 Layout.preferredHeight: 20
@@ -68,7 +68,7 @@ Item {
             }
         }
 
-        // Opción: Abrir Papelera
+        // Open Trash action.
         Controls.ItemDelegate {
             id: openOption
             Layout.fillWidth: true
@@ -81,7 +81,7 @@ Item {
             }
         }
 
-        // Opción: Vaciar Papelera
+        // Empty Trash action.
         Controls.ItemDelegate {
             id: emptyOption
             Layout.fillWidth: true

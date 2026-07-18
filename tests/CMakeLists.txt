@@ -34,9 +34,14 @@ add_executable(dockthemerepository_test
 )
 
 target_include_directories(dockthemerepository_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(dockthemerepository_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml)
+target_link_libraries(dockthemerepository_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml KF6::I18n)
 
 add_test(NAME dockthemerepository_test COMMAND dockthemerepository_test)
+
+add_test(
+    NAME translation_catalog_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/translation_catalog_test.sh
+)
 
 add_executable(pipewirebackend_probe EXCLUDE_FROM_ALL
     pipewirebackend_probe.cpp

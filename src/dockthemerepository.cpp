@@ -4,6 +4,8 @@
 
 #include "dockthemevalidator.h"
 
+#include <KLocalizedString>
+
 #include <QCryptographicHash>
 #include <QDir>
 #include <QDirIterator>
@@ -18,6 +20,7 @@
 
 namespace
 {
+constexpr auto TranslationDomain = "plasma_applet_org.kde.plasma.punchi-dock-remastered";
 constexpr int maximumDirectoryThemeCount = 256;
 
 bool isValidThemeId(const QString &themeId)
@@ -367,7 +370,9 @@ void DockThemeRepository::refreshThemes()
                 themeName,
                 renderer == QLatin1String("shelf")
                     ? QStringLiteral("2.5D")
-                    : QStringLiteral("2D"))},
+                    : renderer == QLatin1String("shaped")
+                        ? i18nd(TranslationDomain, "Shaped")
+                        : QStringLiteral("2D"))},
             {QStringLiteral("renderer"), renderer},
             {QStringLiteral("version"), metadata.value(QStringLiteral("version"))},
         });
@@ -488,7 +493,9 @@ QString DockThemeRepository::managedThemeDirectoryPath(const QVariantMap &theme)
     const QString renderer = theme.value(QStringLiteral("renderer")).toString();
     const QString rendererDirectory = renderer == QLatin1String("shelf")
         ? QStringLiteral("2.5d")
-        : QStringLiteral("2d");
+        : renderer == QLatin1String("shaped")
+            ? QStringLiteral("shaped")
+            : QStringLiteral("2d");
     const QString themeName = theme.value(QStringLiteral("metadata")).toMap()
         .value(QStringLiteral("name")).toString();
     const QStringList directoryParts{

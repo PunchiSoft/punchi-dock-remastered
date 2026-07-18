@@ -17,7 +17,7 @@ KCM.SimpleKCM {
         availableWidth: page.width
     }
 
-    // Variables prefijadas con "cfg_" para mapear automáticamente a KConfig (main.xml)
+    // Variables prefixed with "cfg_" map automatically to KConfig (main.xml).
     property alias cfg_iconSize: iconSizeSlider.value
     property alias cfg_hoverScale: hoverScaleSlider.value
     property string cfg_virtualDesktopMode: "all"
@@ -51,23 +51,11 @@ KCM.SimpleKCM {
     readonly property int safePanelIconSizeMax: detectedPanelThickness > 0
         ? Math.max(32, detectedPanelThickness - panelCrossAxisPadding - 12)
         : 96
-    readonly property bool panelSeemsToFillEdge: {
-        try {
-            var containment = Plasmoid.containment
-            if (!inPanel || !containment || !containment.availableScreenRect) {
-                return false
-            }
-            if (verticalPanel) {
-                return containment.height >= containment.availableScreenRect.height * 0.92
-            }
-            return containment.width >= containment.availableScreenRect.width * 0.92
-        } catch (error) {
-            return false
-        }
-    }
+    readonly property bool flexiblePanelLengthAvailable: inPanel
+        && !verticalPanel
     readonly property var panelLengthOptions: [
         { "text": i18n("Fit content"), "value": "content" },
-        { "text": i18n("Fill panel edge"), "value": "fill" }
+        { "text": i18n("Fill free panel space"), "value": "fill" }
     ]
     readonly property var virtualDesktopModel: {
         var result = []
@@ -134,14 +122,14 @@ KCM.SimpleKCM {
             showCloseButton: false
             text: !page.inPanel
                 ? i18n("Current dock state: Floating mode. Panel-only sizing and integration options are unavailable.")
-                : page.panelSeemsToFillEdge
-                    ? i18n("Current dock state: Panel mode. The Plasma panel spans the full screen edge, so compact or full-edge length can be selected.")
-                    : i18n("Current dock state: Panel mode. The current Plasma panel does not span the full screen edge, so the full-edge length option is unavailable.")
+                : page.verticalPanel
+                    ? i18n("Current dock state: Vertical panel. Flexible panel length is currently available only in horizontal panels.")
+                    : i18n("Current dock state: Horizontal panel. Fill free panel space activates while the Plasma panel uses Fill available; otherwise Punchi Dock remains compact.")
             Accessible.name: text
         }
 
         RowLayout {
-            visible: page.inPanel && page.panelSeemsToFillEdge
+            visible: page.flexiblePanelLengthAvailable
             Kirigami.FormData.label: i18n("Panel length:")
             Layout.maximumWidth: page.contentWidthHint
 
@@ -154,6 +142,7 @@ KCM.SimpleKCM {
                 model: page.panelLengthOptions
                 currentIndex: Math.max(0, indexOfValue(page.cfg_panelLengthMode))
                 onActivated: page.cfg_panelLengthMode = currentValue
+                Accessible.name: i18n("Panel length")
 
                 ConfigCursorBehavior {
                     cursorEnabled: page.interactiveCursorEnabled
@@ -161,7 +150,7 @@ KCM.SimpleKCM {
             }
         }
 
-        // Control del Tamaño de Iconos
+        // Icon size control.
         RowLayout {
             Kirigami.FormData.label: page.inPanel ? i18n("Panel icon size:") : i18n("Floating icon size:")
             Layout.maximumWidth: page.contentWidthHint
@@ -198,7 +187,7 @@ KCM.SimpleKCM {
                 : i18n("The real panel thickness is not available in this view, so a safe fallback limit is being used.")
         }
 
-        // Control del Escala del Zoom de Ola
+        // Wave zoom scale control.
         RowLayout {
             Kirigami.FormData.label: i18n("Hover zoom scale:")
             Layout.maximumWidth: page.contentWidthHint
@@ -224,7 +213,7 @@ KCM.SimpleKCM {
             }
         }
 
-        // Control de Visibilidad en Escritorios Virtuales
+        // Virtual desktop visibility control.
         RowLayout {
             Kirigami.FormData.label: i18n("Desktop visibility:")
             Layout.maximumWidth: page.contentWidthHint
@@ -255,7 +244,7 @@ KCM.SimpleKCM {
             }
         }
 
-        // Control para elegir el Escritorio Virtual de Destino
+        // Target virtual desktop selector.
         RowLayout {
             Kirigami.FormData.label: i18n("Target desktop:")
             visible: page.cfg_virtualDesktopMode === "single"

@@ -28,11 +28,11 @@ This repository is a modular rewrite of the original [Punchi Dock Plasmoid](http
 
 ## Requirements
 
-- Fedora 44 or later on `x86_64` is the primary release target.
 - KDE Plasma 6 or later.
 - Wayland is the primary supported session.
 - PipeWire is required by the optional audio visualizer.
-- Fedora 44 and Debian 13 have separate validated build, installation, and startup flows; the complete Debian functional review remains in progress.
+- Fedora 44 `x86_64` is the primary prebuilt release target. Debian 13 has a separate validated build, installation, and startup flow; its complete functional review remains in progress.
+- Other Linux distributions running Plasma 6 are not excluded, but their native package must be built and tested against their own Qt, KF6, and Plasma stack.
 - Native binaries inside each `.plasmoid` are not universal: use the artifact labeled for the distribution where it was built.
 
 ## Install a Release Package
@@ -45,13 +45,13 @@ On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid
 ```
 
 To update an existing installation:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
@@ -59,6 +59,16 @@ Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loa
 ## Build from Source
 
 The source tree contains a native C++ QML module. Installing the repository directory directly with `kpackagetool6` does not compile that module.
+
+Check the local development environment before installing or changing packages:
+
+```bash
+scripts/check-build-environment.sh
+```
+
+The checker reports the distribution, architecture, Plasma, CMake, and `qmllint` versions. Qt 6.11 is the primary lint profile and Qt 6.8 has a separate compatibility profile because their diagnostics differ. `qmllint` is a development tool, not a runtime dependency for users installing a matching prebuilt `.plasmoid`; a Qt 6.8 lint failure alone does not prove that the dock cannot run on that system.
+
+Use the Qt 6, KF6, and Plasma development packages supplied by the distribution. Do not replace the system Qt stack with a standalone Qt 6.11 installation merely to match the primary lint profile, because the native module must be compiled against a coherent distribution stack.
 
 On Fedora 44+, install the build dependencies:
 
@@ -80,13 +90,13 @@ Build the native module and create the versioned artifact for the current system
 scripts/empaquetar-plasmoid.sh
 ```
 
-The script detects Fedora or Debian through `/etc/os-release`. It writes an unambiguous package name:
+The automated packaging script currently detects Fedora or Debian through `/etc/os-release`. Other Plasma 6 distributions may be compatible at runtime, but they do not yet have a validated automatic packaging profile in this repository. The supported profiles write an unambiguous package name:
 
 ```text
 dist/punchi-dock-remastered-<version>-<distribution><version>-<architecture>.plasmoid
 ```
 
-Examples include `punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid` and `punchi-dock-remastered-0.8.8-debian13-x86_64.plasmoid`. Never install a Fedora-labeled artifact on Debian or vice versa.
+Examples include `punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid` and `punchi-dock-remastered-0.8.9-debian13-x86_64.plasmoid`. Never install a Fedora-labeled artifact on Debian or vice versa.
 
 Explicit wrappers remain available for automation and diagnostics:
 

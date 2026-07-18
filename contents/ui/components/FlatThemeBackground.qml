@@ -11,12 +11,16 @@ Item {
     readonly property var gradientStops: gradientData.stops ? gradientData.stops : []
     readonly property var borderData: surface.border ? surface.border : ({})
     readonly property var shadowData: theme && theme.shadow ? theme.shadow : ({})
+    readonly property var animationData: theme && theme.animation
+        ? theme.animation : ({})
     readonly property color surfaceColor: surface.color || "transparent"
     readonly property real surfaceRadius: Number(surface.radius || 0)
     readonly property string gradientDirection: String(gradientData.direction || "vertical")
     readonly property real shadowSize: Number(shadowData.size || 0)
     readonly property real shadowXOffset: Number(shadowData.xOffset || 0)
     readonly property real shadowYOffset: Number(shadowData.yOffset || 0)
+    readonly property bool paletteFlowEnabled:
+        animationData.type === "paletteFlow"
 
     function gradientStop(index) {
         if (gradientStops.length === 0) {
@@ -45,6 +49,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
+            visible: !root.paletteFlowEnabled
             color: root.surfaceColor
             radius: root.surfaceRadius
             antialiasing: true
@@ -89,6 +94,18 @@ Item {
                     color: root.gradientStop(7).color
                 }
             }
+        }
+
+        AnimatedGradientSurface {
+            anchors.fill: parent
+            visible: root.paletteFlowEnabled
+            gradientStops: root.gradientStops
+            gradientDirection: root.gradientDirection
+            flowDirection: String(root.animationData.direction || "forward")
+            flowDuration: Number(root.animationData.duration || 16000)
+            radius: root.surfaceRadius
+            borderWidth: Number(root.borderData.width || 0)
+            borderColor: root.borderData.color || "transparent"
         }
     }
 }

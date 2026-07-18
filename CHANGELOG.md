@@ -2,6 +2,44 @@
 
 Todos los cambios notables de este proyecto serán documentados en este archivo.
 
+## [0.8.9] - 2026-07-18
+
+### Agregado
+
+- Reserva flexible del espacio libre en paneles horizontales configurados para rellenar el ancho disponible.
+- Capacidad automática para grupos dinámicos y desbordamiento ajustado al espacio realmente asignado por Plasma.
+- Acciones `Pin to Dock` y `Unpin from Dock` para tareas dinámicas y aplicaciones fijadas.
+- Creación de notas rápidas desde el menú global y eliminación segura desde el editor de notas.
+- Reflejos opcionales y degradados para iconos en dock flotante y panel horizontal.
+- Opción para mostrar u ocultar el fondo temático de hover y aplicación activa.
+- Publicación de la geometría de los items para dirigir hacia ellos la animación de minimización de KWin.
+- Reacciones configurables al minimizar: rebote lento y onda lateral acotada a los items vecinos.
+- Infraestructura ki18n reproducible con inglés como fuente, catálogo español y compilación de traducciones dentro del `.plasmoid`.
+- Renderer `shaped` con esquema JSON v2 y gradientes animados opcionales para temas externos.
+- Comprobador portable del entorno de compilación y diagnóstico detallado cuando `qmllint` supera un baseline.
+
+### Cambiado
+
+- El modo `Fill free panel space` solo se activa cuando el panel horizontal usa realmente `FillAvailable`; los modos compacto, flotante y vertical conservan su tamaño normal.
+- Los items dinámicos se alinean después del último elemento fijado y el overflow ocupa la última celda disponible sin desplazar el bloque persistente.
+- Las transiciones entre tarea dinámica y aplicación fijada utilizan una animación breve sin alterar el orden persistido.
+- El idioma de la interfaz sigue automáticamente la configuración regional de KDE; no se añade un selector que pueda afectar globalmente a `plasmashell`.
+- Fedora Qt 6.11 y Debian Qt 6.8 conservan perfiles de lint independientes sin convertir la versión del linter en requisito de ejecución.
+
+### Corregido
+
+- Desanclar utiliza un índice persistente validado y elimina correctamente el launcher fijado.
+- Los reflejos nacen bajo el icono, se desvanecen gradualmente y respetan el espacio real disponible en paneles horizontales.
+- Las notas eliminadas no vuelven a guardarse accidentalmente al cerrar su popup.
+- Las ventanas minimizadas reciben como destino el icono, grupo u overflow que las representa.
+- Los falsos positivos de Qt 6.8 para la acción contextual oficial `PlasmaCore.Action` quedan suprimidos localmente sin ampliar el baseline global.
+
+### Validación
+
+- Fedora 44 con Qt 6.11.1: `qmllint` dentro del baseline, compilación Release, CTest `6/6` y empaquetado completado.
+- Varias mejoras visuales y funcionales fueron confirmadas por el usuario en Plasma 6 Wayland real.
+- Debian 13 con Qt 6.8.2 mantiene validación independiente; queda pendiente confirmar el flujo completo después de la última corrección localizada de lint.
+
 ## [0.8.8] - 2026-07-16
 
 ### Agregado

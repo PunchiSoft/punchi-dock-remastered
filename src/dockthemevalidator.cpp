@@ -24,6 +24,11 @@ const QStringList separatorPatternStyles{
     QStringLiteral("hazard"),
     QStringLiteral("centerLine"),
 };
+const QStringList shapedPresets{
+    QStringLiteral("wave"),
+    QStringLiteral("bubbles"),
+    QStringLiteral("cutCorners"),
+};
 
 DockThemeValidator::Result failure(const QString &errorCode)
 {
@@ -57,6 +62,25 @@ bool readNumber(const QJsonObject &object, const QString &key, double defaultVal
 
     const double number = value.toDouble();
     if (!qIsFinite(number) || number < minimum || number > maximum) {
+        return false;
+    }
+
+    *result = number;
+    return true;
+}
+
+bool readInteger(const QJsonObject &object, const QString &key, int defaultValue,
+    int minimum, int maximum, int *result)
+{
+    if (!object.contains(key)) {
+        *result = defaultValue;
+        return true;
+    }
+
+    const QJsonValue value = object.value(key);
+    const int number = value.toInt(minimum - 1);
+    if (!value.isDouble() || value.toDouble() != number
+        || number < minimum || number > maximum) {
         return false;
     }
 
@@ -121,9 +145,11 @@ DockThemeValidator::Result DockThemeValidator::validate(const QByteArray &data)
     }
 
     const QJsonObject root = document.object();
-    const QJsonValue schemaVersion = root.value(QStringLiteral("schemaVersion"));
-    if (!schemaVersion.isDouble() || schemaVersion.toInt(-1) != 1
-        || schemaVersion.toDouble() != 1.0) {
+    const QJsonValue schemaVersionValue = root.value(QStringLiteral("schemaVersion"));
+    const int schemaVersion = schemaVersionValue.toInt(-1);
+    if (!schemaVersionValue.isDouble()
+        || schemaVersionValue.toDouble() != schemaVersion
+        || (schemaVersion != 1 && schemaVersion != 2)) {
         return failure(QStringLiteral("unsupportedSchema"));
     }
 
@@ -142,12 +168,15 @@ DockThemeValidator::Result DockThemeValidator::validate(const QByteArray &data)
     }
 
     const QJsonValue rendererValue = root.value(QStringLiteral("renderer"));
+    const QString renderer = rendererValue.toString();
+    const bool legacyRenderer = renderer == QLatin1String("flat")
+        || renderer == QLatin1String("shelf");
+    const bool shapedRenderer = renderer == QLatin1String("shaped");
     if (!rendererValue.isString()
-        || (rendererValue.toString() != QLatin1String("flat")
-            && rendererValue.toString() != QLatin1String("shelf"))) {
+        || (!legacyRenderer && !shapedRenderer)
+        || (schemaVersion == 1 && shapedRenderer)) {
         return failure(QStringLiteral("unsupportedRenderer"));
     }
-    const QString renderer = rendererValue.toString();
 
     const QJsonValue surfaceValue = root.value(QStringLiteral("surface"));
     if (!surfaceValue.isObject()) {
@@ -464,6 +493,34 @@ DockThemeValidator::Result DockThemeValidator::validate(const QByteArray &data)
         };
     }
 
+    QVariantMap shapedMap;
+    if (renderer == QLatin1String("shaped")) {
+        const QJsonValue shapeValue = root.value(QStringLiteral("shape"));
+        if (!shapeValue.isObject()) {
+            return failure(QStringLiteral("invalidShape"));
+        }
+
+        const QJsonObject shape = shapeValue.toObject();
+        const QJsonValue presetValue = shape.value(QStringLiteral("preset"));
+        double depthRatio = 0;
+        int repetitions = 0;
+        double phase = 0;
+        if (!presetValue.isString()
+            || !shapedPresets.contains(presetValue.toString())
+            || !readNumber(shape, QStringLiteral("depthRatio"), 0.1, 0.04, 0.24, &depthRatio)
+            || !readInteger(shape, QStringLiteral("repetitions"), 4, 2, 12, &repetitions)
+            || !readNumber(shape, QStringLiteral("phase"), 0, 0, 1, &phase)) {
+            return failure(QStringLiteral("invalidShape"));
+        }
+
+        shapedMap = {
+            {QStringLiteral("preset"), presetValue.toString()},
+            {QStringLiteral("depthRatio"), depthRatio},
+            {QStringLiteral("repetitions"), repetitions},
+            {QStringLiteral("phase"), phase},
+        };
+    }
+
     bool blurRequested = false;
     const QJsonValue effectsValue = root.value(QStringLiteral("effects"));
     if (!effectsValue.isUndefined()) {
@@ -478,6 +535,46 @@ DockThemeValidator::Result DockThemeValidator::validate(const QByteArray &data)
             }
             blurRequested = blurValue.toBool();
         }
+    }
+
+    QVariantMap animationMap;
+    const QJsonValue animationValue = root.value(QStringLiteral("animation"));
+    if (!animationValue.isUndefined()) {
+        if (schemaVersion != 2 || renderer != QLatin1String("flat")
+            || !animationValue.isObject()) {
+            return failure(QStringLiteral("invalidAnimation"));
+        }
+
+        const QJsonObject animation = animationValue.toObject();
+        const QJsonValue typeValue = animation.value(QStringLiteral("type"));
+        const QJsonValue directionValue = animation.value(QStringLiteral("direction"));
+        int duration = 0;
+        if (!typeValue.isString()
+            || typeValue.toString() != QLatin1String("paletteFlow")
+            || (!directionValue.isUndefined()
+                && (!directionValue.isString()
+                    || (directionValue.toString() != QLatin1String("forward")
+                        && directionValue.toString() != QLatin1String("reverse"))))
+            || !readInteger(animation, QStringLiteral("duration"), 16000,
+                6000, 60000, &duration)) {
+            return failure(QStringLiteral("invalidAnimation"));
+        }
+
+        const QString firstColor = gradientStops.constFirst().toMap()
+            .value(QStringLiteral("color")).toString();
+        const QString lastColor = gradientStops.constLast().toMap()
+            .value(QStringLiteral("color")).toString();
+        if (firstColor != lastColor) {
+            return failure(QStringLiteral("invalidAnimation"));
+        }
+
+        animationMap = {
+            {QStringLiteral("type"), typeValue.toString()},
+            {QStringLiteral("duration"), duration},
+            {QStringLiteral("direction"), directionValue.isUndefined()
+                ? QStringLiteral("forward")
+                : directionValue.toString()},
+        };
     }
 
     QVariantMap separatorMap;
@@ -686,7 +783,7 @@ DockThemeValidator::Result DockThemeValidator::validate(const QByteArray &data)
     }
 
     QVariantMap normalizedTheme{
-        {QStringLiteral("schemaVersion"), 1},
+        {QStringLiteral("schemaVersion"), schemaVersion},
         {QStringLiteral("metadata"), metadataMap},
         {QStringLiteral("renderer"), renderer},
         {QStringLiteral("surface"), QVariantMap{
@@ -708,6 +805,12 @@ DockThemeValidator::Result DockThemeValidator::validate(const QByteArray &data)
     }
     if (!shelfMap.isEmpty()) {
         normalizedTheme.insert(QStringLiteral("shelf"), shelfMap);
+    }
+    if (!shapedMap.isEmpty()) {
+        normalizedTheme.insert(QStringLiteral("shape"), shapedMap);
+    }
+    if (!animationMap.isEmpty()) {
+        normalizedTheme.insert(QStringLiteral("animation"), animationMap);
     }
 
     return {true, normalizedTheme, {}};

@@ -2,6 +2,8 @@
 
 #include "dockruntimeservice.h"
 
+#include <KLocalizedString>
+
 #include <QDir>
 #include <QFileInfo>
 #include <QProcess>
@@ -12,6 +14,8 @@
 
 namespace
 {
+constexpr auto TranslationDomain = "plasma_applet_org.kde.plasma.punchi-dock-remastered";
+
 QString sanitizedInstanceId(QString instanceId)
 {
     instanceId = instanceId.trimmed();
@@ -41,13 +45,13 @@ bool DockRuntimeService::persistDockItemsJson(const QString &json, const QString
 {
     const QString configRoot = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
     if (configRoot.isEmpty()) {
-        Q_EMIT operationFailed(QStringLiteral("persist"), tr("The configuration directory is unavailable."));
+        Q_EMIT operationFailed(QStringLiteral("persist"), i18nd(TranslationDomain, "The configuration directory is unavailable."));
         return false;
     }
 
     QDir configDirectory(configRoot);
     if (!configDirectory.mkpath(QStringLiteral("punchi-dock"))) {
-        Q_EMIT operationFailed(QStringLiteral("persist"), tr("The configuration directory could not be created."));
+        Q_EMIT operationFailed(QStringLiteral("persist"), i18nd(TranslationDomain, "The configuration directory could not be created."));
         return false;
     }
 
@@ -75,7 +79,7 @@ bool DockRuntimeService::launchCommand(const QString &command)
     }
 
     if (!QProcess::startDetached(QStringLiteral("/bin/sh"), {QStringLiteral("-c"), normalizedCommand})) {
-        Q_EMIT operationFailed(QStringLiteral("launch"), tr("The command could not be started."));
+        Q_EMIT operationFailed(QStringLiteral("launch"), i18nd(TranslationDomain, "The command could not be started."));
         return false;
     }
 
@@ -108,6 +112,6 @@ bool DockRuntimeService::playSound(const QString &soundPath, const QString &even
         return true;
     }
 
-    Q_EMIT operationFailed(QStringLiteral("playSound"), tr("No sound player or usable sound was found."));
+    Q_EMIT operationFailed(QStringLiteral("playSound"), i18nd(TranslationDomain, "No sound player or usable sound was found."));
     return false;
 }

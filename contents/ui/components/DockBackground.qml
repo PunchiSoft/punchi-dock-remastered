@@ -23,7 +23,8 @@ Item {
         && customThemeEnabled
         && customTheme
         && (customTheme.renderer === "flat"
-            || customTheme.renderer === "shelf")
+            || customTheme.renderer === "shelf"
+            || customTheme.renderer === "shaped")
 
     KSvg.FrameSvgItem {
         anchors.fill: parent
@@ -62,6 +63,14 @@ Item {
         z: 0
         visible: backgroundRoot.customThemeVisible
             && backgroundRoot.customTheme.renderer === "shelf"
+        theme: backgroundRoot.customTheme
+    }
+
+    ShapedThemeBackground {
+        anchors.fill: parent
+        z: 0
+        visible: backgroundRoot.customThemeVisible
+            && backgroundRoot.customTheme.renderer === "shaped"
         theme: backgroundRoot.customTheme
     }
 

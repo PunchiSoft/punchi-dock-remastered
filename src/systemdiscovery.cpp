@@ -2,6 +2,8 @@
 
 #include "systemdiscovery.h"
 
+#include <KLocalizedString>
+
 #include "commandclassification.h"
 
 #include <KIO/ApplicationLauncherJob>
@@ -21,6 +23,8 @@
 
 namespace
 {
+constexpr auto TranslationDomain = "plasma_applet_org.kde.plasma.punchi-dock-remastered";
+
 constexpr qsizetype maximumResults = 80;
 
 QString normalizedApplicationId(QString applicationId)
@@ -181,6 +185,32 @@ KService::Ptr findApplicationService(const QString &query)
     return {};
 }
 
+KService::Ptr findLauncherService(const QString &applicationId, const QString &launcherUrlText)
+{
+    KService::Ptr service;
+    const QUrl launcherUrl(launcherUrlText.trimmed());
+
+    // Match libtaskmanager's launcher resolution: applications: URLs carry a
+    // KService menu id, while local launcher URLs point at a desktop file.
+    if (launcherUrl.scheme() == QLatin1String("applications")) {
+        service = KService::serviceByMenuId(launcherUrl.path());
+    } else if (launcherUrl.isLocalFile()) {
+        service = KService::serviceByDesktopPath(launcherUrl.toLocalFile());
+    }
+
+    if (!service) {
+        const QString normalizedId = normalizedApplicationId(applicationId);
+        if (!normalizedId.isEmpty()) {
+            service = KService::serviceByStorageId(normalizedId);
+            if (!service) {
+                service = KService::serviceByDesktopName(normalizedId);
+            }
+        }
+    }
+
+    return service && service->isApplication() ? service : KService::Ptr{};
+}
+
 QString iconFromDesktopDirectory(const QStringList &fileNames)
 {
     const QStringList searchDirs = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation);
@@ -249,7 +279,7 @@ void SystemDiscovery::requestFolderEntries(const QString &path)
 {
     const QUrl url = QUrl::fromUserInput(path, QDir::homePath(), QUrl::AssumeLocalFile);
     if (!url.isValid()) {
-        Q_EMIT operationFailed(QStringLiteral("folder"), tr("The folder location is invalid."));
+        Q_EMIT operationFailed(QStringLiteral("folder"), i18nd(TranslationDomain, "The folder location is invalid."));
         return;
     }
 
@@ -353,6 +383,11 @@ QString SystemDiscovery::applicationIdForCommand(const QString &command) const
     return service ? normalizedApplicationId(service->storageId()) : QString{};
 }
 
+QVariantMap SystemDiscovery::applicationForLauncher(const QString &applicationId, const QString &launcherUrl) const
+{
+    return serviceMap(findLauncherService(applicationId, launcherUrl));
+}
+
 QVariantList SystemDiscovery::applicationActions(const QString &applicationId) const
 {
     QVariantList result;
@@ -384,7 +419,7 @@ void SystemDiscovery::launchApplication(const QString &storageId)
 {
     const KService::Ptr service = KService::serviceByStorageId(storageId);
     if (!service) {
-        Q_EMIT operationFailed(QStringLiteral("launch"), tr("The application could not be found."));
+        Q_EMIT operationFailed(QStringLiteral("launch"), i18nd(TranslationDomain, "The application could not be found."));
         return;
     }
 
@@ -422,7 +457,7 @@ bool SystemDiscovery::launchApplicationAction(const QString &applicationId, cons
         return true;
     }
 
-    Q_EMIT operationFailed(QStringLiteral("launchAction"), tr("The application action could not be found."));
+    Q_EMIT operationFailed(QStringLiteral("launchAction"), i18nd(TranslationDomain, "The application action could not be found."));
     return false;
 }
 

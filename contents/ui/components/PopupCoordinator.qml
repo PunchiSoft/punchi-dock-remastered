@@ -30,6 +30,7 @@ Item {
 
     property var activeFolderData: ({})
     property var activeNoteData: ({})
+    property int activeNoteIndex: -1
     property var activeTaskPopupData: ({ "name": "", "windows": [] })
     property var activeAppContextMenuData: ({ "name": "", "actions": [], "maxVisibleRows": 6 })
     property string activeTrashEmptySound: ""
@@ -131,7 +132,7 @@ Item {
         trashMenuDialogRef.visible = !trashMenuDialogRef.visible
     }
 
-    function openAppContextMenu(itemData, visualParent, taskRows) {
+    function openAppContextMenu(itemData, visualParent, taskRows, itemOrigin, persistentIndex) {
         if (!surfaceAvailable(taskControllerRef, "taskController")
                 || !surfaceAvailable(mprisControllerRef, "mprisController")
                 || !surfaceAvailable(appActionsDialogRef, "appActionsDialog")
@@ -147,7 +148,8 @@ Item {
             : ""
         mprisControllerRef.applicationId = applicationId
         const actions = contextActionsResolver
-            ? contextActionsResolver(itemData, rows)
+            ? contextActionsResolver(itemData, rows, itemOrigin || "",
+                Number.isInteger(persistentIndex) ? persistentIndex : -1)
             : []
         if (actions.length === 0) {
             return
@@ -200,13 +202,14 @@ Item {
         calendarPopupDialogRef.visible = !calendarPopupDialogRef.visible
     }
 
-    function openNotePopup(itemData, visualParent) {
+    function openNotePopup(itemData, visualParent, itemIndex) {
         if (!surfaceAvailable(notePopupDialogRef, "notePopupDialog")
                 || !surfaceAvailable(notePopupContentRef, "notePopupContent")) {
             return
         }
         closeAllPopups(null)
         activeNoteData = itemData
+        activeNoteIndex = Number.isInteger(itemIndex) ? itemIndex : -1
         notePopupDialogRef.visualParent = popupAnchor(visualParent)
         notePopupDialogRef.visible = true
         Qt.callLater(function() {

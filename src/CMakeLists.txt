@@ -48,6 +48,7 @@ target_link_libraries(punchidockintegration
         Qt6::Gui
         Qt6::Qml
         KF6::CoreAddons
+        KF6::I18n
         KF6::JobWidgets
         KF6::KIOCore
         KF6::KIOGui

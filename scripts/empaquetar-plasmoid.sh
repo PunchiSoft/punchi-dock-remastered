@@ -65,6 +65,8 @@ DIST_DIR="$(dirname "$ZIP_FILE")"
 QMLLINT_BASELINE_FILE="${QMLLINT_BASELINE_FILE:-$PROJECT_ROOT/scripts/qmllint-baseline.env}"
 PACKAGE_BUILD_TYPE="${PACKAGE_BUILD_TYPE:-Release}"
 STRIP_BIN="${STRIP_BIN:-strip}"
+TRANSLATION_DOMAIN="plasma_applet_org.kde.plasma.punchi-dock-remastered"
+PO_DIR="$PROJECT_ROOT/po"
 
 echo "==> Artefacto objetivo: $ZIP_FILE"
 
@@ -113,6 +115,8 @@ require_command() {
 
 require_command cmake
 require_command ctest
+require_command msgfmt
+require_command msgattrib
 require_command readelf
 require_command "$STRIP_BIN"
 require_command unzip
@@ -153,6 +157,20 @@ warning_layout="$(grep '^Warning:' "$QMLLINT_LOG" | grep -c '\[Quick.layout-posi
 warning_missing_property="$(grep '^Warning:' "$QMLLINT_LOG" | grep -c '\[missing-property\]' || true)"
 warning_import="$(grep '^Warning:' "$QMLLINT_LOG" | grep -c '\[import\]' || true)"
 
+report_warning_category_excess() {
+    local category_name="$1"
+    local warning_count="$2"
+    local baseline_count="$3"
+    local warning_pattern="$4"
+
+    if (( warning_count <= baseline_count )); then
+        return
+    fi
+
+    echo "Baseline exceeded for $category_name: current=$warning_count, baseline=$baseline_count, delta=+$((warning_count - baseline_count))" >&2
+    grep '^Warning:' "$QMLLINT_LOG" | grep "$warning_pattern" >&2 || true
+}
+
 echo "qmllint warnings: total=$warning_total, unqualified=$warning_unqualified, layout=$warning_layout, missing-property=$warning_missing_property, import=$warning_import"
 echo "qmllint log: $QMLLINT_LOG"
 
@@ -178,6 +196,11 @@ if (( warning_total > QMLLINT_BASELINE_TOTAL \
     || warning_missing_property > QMLLINT_BASELINE_MISSING_PROPERTY \
     || warning_import > QMLLINT_BASELINE_IMPORT )); then
     echo "qmllint warnings exceed the recorded baseline in $QMLLINT_BASELINE_FILE" >&2
+    report_warning_category_excess "total" "$warning_total" "$QMLLINT_BASELINE_TOTAL" '^Warning:'
+    report_warning_category_excess "unqualified" "$warning_unqualified" "$QMLLINT_BASELINE_UNQUALIFIED" '\[unqualified\]'
+    report_warning_category_excess "layout" "$warning_layout" "$QMLLINT_BASELINE_LAYOUT" '\[Quick\.layout-positioning\]'
+    report_warning_category_excess "missing-property" "$warning_missing_property" "$QMLLINT_BASELINE_MISSING_PROPERTY" '\[missing-property\]'
+    report_warning_category_excess "import" "$warning_import" "$QMLLINT_BASELINE_IMPORT" '\[import\]'
     exit 1
 fi
 
@@ -200,6 +223,33 @@ cmake -E copy "$PROJECT_ROOT/metadata.json" "$PACKAGE_ROOT/metadata.json"
 cmake -E copy "$PROJECT_ROOT/LICENSE" "$PACKAGE_ROOT/LICENSE"
 cmake -E copy_directory "$PROJECT_ROOT/contents" "$PACKAGE_ROOT/contents"
 cmake --build "$BUILD_DIR" --target stage_plasmoid_module
+
+translation_count=0
+shopt -s nullglob
+translation_catalogs=("$PO_DIR"/*.po)
+for translation_catalog in "${translation_catalogs[@]}"; do
+    language="$(basename "$translation_catalog" .po)"
+    untranslated_count="$(msgattrib --untranslated --no-obsolete "$translation_catalog" | grep -c '^msgid ' || true)"
+    fuzzy_count="$(msgattrib --only-fuzzy --no-obsolete "$translation_catalog" | grep -c '^msgid ' || true)"
+    if (( untranslated_count > 1 || fuzzy_count > 1 )); then
+        echo "Translation catalog is incomplete or fuzzy: $translation_catalog" >&2
+        exit 1
+    fi
+
+    catalog_dir="$PACKAGE_ROOT/contents/locale/$language/LC_MESSAGES"
+    cmake -E make_directory "$catalog_dir"
+    msgfmt \
+        --check \
+        --check-format \
+        --output-file="$catalog_dir/$TRANSLATION_DOMAIN.mo" \
+        "$translation_catalog"
+    ((translation_count += 1))
+done
+
+if (( translation_count == 0 )); then
+    echo "No translation catalogs were found in $PO_DIR" >&2
+    exit 1
+fi
 
 for required_file in \
     "$PACKAGE_ROOT/contents/ui/org/punchi/dock/libpunchidockintegration.so" \
@@ -235,6 +285,21 @@ rm -f "$ZIP_FILE"
     zip -rq "$ZIP_FILE" metadata.json LICENSE contents
 )
 unzip -tq "$ZIP_FILE" >/dev/null
+
+if ! unzip -Z1 "$ZIP_FILE" | grep -qx "contents/locale/es/LC_MESSAGES/$TRANSLATION_DOMAIN.mo"; then
+    echo "The Spanish translation catalog is missing from the plasmoid" >&2
+    exit 1
+fi
+
+if unzip -Z1 "$ZIP_FILE" | grep -q '^locale/'; then
+    echo "Translation catalogs were staged outside the KPackage contents prefix" >&2
+    exit 1
+fi
+
+if unzip -Z1 "$ZIP_FILE" | grep -Eq '\.(po|pot)$'; then
+    echo "Translation source files were found in the plasmoid" >&2
+    exit 1
+fi
 
 if unzip -Z1 "$ZIP_FILE" | grep -Eq '^(build|dist|backup|docs|bitacora|kde-sdk|scripts|src|\.agents|\.git)/|(^|/)(debug\.log|.*\.py|.*\.sh|.*\.plasmoid)$'; then
     echo "Development files were found in the plasmoid" >&2

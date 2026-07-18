@@ -12,10 +12,17 @@ Item {
     property bool currentDesktopOnly: true
     property string windowGroupingMode: "application"
     property int maxDynamicGroups: 8
+    // Flexible panel mode can derive the direct group limit from its visual
+    // capacity without overwriting the user's manual limit for other modes.
+    property bool automaticDynamicGroups: false
+    // Number of visual slots available for dynamic groups, including the
+    // overflow item. A negative value preserves the configured-only limit.
+    property int dynamicGroupCapacity: -1
     property var systemDiscovery: null
 
     property var visibleTaskRows: []
     property var overflowTaskRows: []
+    property int totalDynamicGroups: 0
     property int visualRevision: 0
     property int structureRevision: 0
     property bool pendingStructureRefresh: false
@@ -81,6 +88,8 @@ Item {
     }
     onWindowGroupingModeChanged: scheduleRefresh(true)
     onMaxDynamicGroupsChanged: scheduleRefresh(true)
+    onAutomaticDynamicGroupsChanged: scheduleRefresh(true)
+    onDynamicGroupCapacityChanged: scheduleRefresh(true)
 
     Component.onCompleted: {
         updateCurrentDesktopFilter()
@@ -151,9 +160,13 @@ Item {
     }
 
     function taskLauncherUrlForRow(row) {
+        return normalizeLauncherUrl(taskRawLauncherUrlForRow(row))
+    }
+
+    function taskRawLauncherUrlForRow(row) {
         const taskIndex = tasksModel.index(row, 0)
-        return normalizeLauncherUrl(tasksModel.data(
-            taskIndex, TaskManager.AbstractTasksModel.LauncherUrlWithoutIcon))
+        return String(tasksModel.data(
+            taskIndex, TaskManager.AbstractTasksModel.LauncherUrlWithoutIcon) || "").trim()
     }
 
     function dockItemMatchesTaskRow(item, row) {
@@ -240,6 +253,69 @@ Item {
         return winIds.length > 0 ? String(winIds[0]) : ""
     }
 
+    function taskRowsForEntries(entries) {
+        const sourceEntries = entries instanceof Array ? entries : []
+        const rows = []
+        const seenRows = ({})
+
+        for (let entryIndex = 0; entryIndex < sourceEntries.length; entryIndex++) {
+            const entryRows = sourceEntries[entryIndex]
+                && sourceEntries[entryIndex].rows instanceof Array
+                ? sourceEntries[entryIndex].rows
+                : []
+            for (let rowIndex = 0; rowIndex < entryRows.length; rowIndex++) {
+                const row = Number(entryRows[rowIndex])
+                if (isNaN(row) || row < 0) {
+                    continue
+                }
+                const rowKey = String(row)
+                if (!seenRows[rowKey]) {
+                    seenRows[rowKey] = true
+                    rows.push(row)
+                }
+            }
+        }
+
+        return rows
+    }
+
+    function publishDelegateGeometry(taskRows, visualDelegate) {
+        const sourceRows = taskRows instanceof Array ? taskRows : []
+        if (!visualDelegate || !visualDelegate.visible
+                || visualDelegate.width <= 0 || visualDelegate.height <= 0) {
+            return
+        }
+
+        const globalPosition = visualDelegate.mapToGlobal(0, 0)
+        const geometry = Qt.rect(
+            Math.round(globalPosition.x),
+            Math.round(globalPosition.y),
+            Math.round(visualDelegate.width),
+            Math.round(visualDelegate.height)
+        )
+        const publishedRows = ({})
+
+        for (let rowIndex = 0; rowIndex < sourceRows.length; rowIndex++) {
+            const row = Number(sourceRows[rowIndex])
+            if (isNaN(row) || row < 0) {
+                continue
+            }
+            const rowKey = String(row)
+            if (publishedRows[rowKey]) {
+                continue
+            }
+
+            const taskIndex = tasksModel.index(row, 0)
+            if (!taskIndex.valid
+                    || !tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsWindow)) {
+                continue
+            }
+
+            publishedRows[rowKey] = true
+            tasksModel.requestPublishDelegateGeometry(taskIndex, geometry, visualDelegate)
+        }
+    }
+
     function isTaskRowActive(row) {
         const taskIndex = tasksModel.index(row, 0)
         if (!taskIndex.valid) {
@@ -272,6 +348,7 @@ Item {
     function buildVisibleTaskEntryForRow(row) {
         const taskIndex = tasksModel.index(row, 0)
         const appId = taskAppIdForRow(row)
+        const rawLauncherUrl = taskRawLauncherUrlForRow(row)
         const launcherUrl = taskLauncherUrlForRow(row)
         return {
             "key": appId.length > 0
@@ -280,6 +357,7 @@ Item {
             "appId": appId,
             "appIds": appId.length > 0 ? [appId] : [],
             "launcherUrl": launcherUrl,
+            "rawLauncherUrl": rawLauncherUrl,
             "launcherUrls": launcherUrl.length > 0 ? [launcherUrl] : [],
             "rows": [row],
             "firstRow": row,
@@ -292,6 +370,61 @@ Item {
             "demandsAttention": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsDemandingAttention),
             "windowUuid": taskWindowUuidForRow(row)
         }
+    }
+
+    function pinDescriptorForEntry(entry) {
+        if (!entry || !root.systemDiscovery) {
+            return null
+        }
+
+        const resolved = root.systemDiscovery.applicationForLauncher(
+            String(entry.appId || ""),
+            String(entry.rawLauncherUrl || entry.launcherUrl || ""))
+        const storageId = String(resolved && resolved.storageId || "").trim()
+        if (storageId.length === 0) {
+            return null
+        }
+
+        const descriptor = {
+            "type": "app",
+            "name": String(resolved.name || entry.name || ""),
+            "icon": String(resolved.icon || "application-x-executable"),
+            "storageId": storageId,
+            "appId": String(resolved.appId || normalizeApplicationId(storageId))
+        }
+        const command = String(resolved.command || "").trim()
+        if (command.length > 0) {
+            descriptor.command = command
+        }
+        return descriptor
+    }
+
+    function dockContainsPinDescriptor(descriptor) {
+        if (!descriptor) {
+            return false
+        }
+
+        const descriptorAppId = normalizeApplicationId(
+            descriptor.appId || descriptor.storageId || "")
+        const descriptorLauncherUrl = normalizeLauncherUrl(
+            descriptor.launcherUrl || (descriptor.storageId
+                ? ("applications:" + descriptor.storageId)
+                : ""))
+        for (let index = 0; index < root.dockItems.length; index++) {
+            const item = root.dockItems[index]
+            if (!item || (item.type || "app") !== "app") {
+                continue
+            }
+            if (descriptorAppId.length > 0
+                    && dockItemApplicationId(item) === descriptorAppId) {
+                return true
+            }
+            if (descriptorLauncherUrl.length > 0
+                    && dockItemLauncherUrl(item) === descriptorLauncherUrl) {
+                return true
+            }
+        }
+        return false
     }
 
     function refreshVisibleRows() {
@@ -324,9 +457,30 @@ Item {
             }
         }
 
-        const safeLimit = Math.max(1, Math.min(20, root.maxDynamicGroups))
-        root.visibleTaskRows = entries.slice(0, safeLimit)
-        root.overflowTaskRows = entries.slice(safeLimit)
+        root.totalDynamicGroups = entries.length
+
+        const configuredLimit = root.automaticDynamicGroups
+            ? entries.length
+            : Math.max(1, Math.min(20, root.maxDynamicGroups))
+        if (root.dynamicGroupCapacity < 0) {
+            root.visibleTaskRows = entries.slice(0, configuredLimit)
+            root.overflowTaskRows = entries.slice(configuredLimit)
+            return
+        }
+
+        const availableSlots = Math.max(0, Math.floor(root.dynamicGroupCapacity))
+        if (entries.length <= Math.min(configuredLimit, availableSlots)) {
+            root.visibleTaskRows = entries
+            root.overflowTaskRows = []
+            return
+        }
+
+        // When entries do not fit, the last available slot belongs to the
+        // overflow item. The effective limit is manual outside flexible mode
+        // and capacity-driven while automatic mode is active.
+        const directLimit = Math.min(configuredLimit, Math.max(0, availableSlots - 1))
+        root.visibleTaskRows = entries.slice(0, directLimit)
+        root.overflowTaskRows = entries.slice(directLimit)
     }
 
     function bumpVisualRevision() {
@@ -355,6 +509,7 @@ Item {
     function taskStateForDockItem(item) {
         const result = {
             "count": 0,
+            "minimizedCount": 0,
             "isActive": false,
             "demandsAttention": false,
             "firstRow": -1,
@@ -376,6 +531,9 @@ Item {
                 result.firstRow = row
             }
             result.count += 1
+            if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimized)) {
+                result.minimizedCount += 1
+            }
             result.rows.push(row)
             result.isActive = result.isActive || isTaskRowActive(row)
             result.demandsAttention = result.demandsAttention
@@ -467,6 +625,7 @@ Item {
                 "name": "",
                 "icon": "application-x-executable",
                 "count": 0,
+                "minimizedCount": 0,
                 "rows": [],
                 "firstRow": -1,
                 "active": false,
@@ -482,6 +641,7 @@ Item {
                 "name": "",
                 "icon": "application-x-executable",
                 "count": 0,
+                "minimizedCount": 0,
                 "rows": [],
                 "firstRow": -1,
                 "active": false,
@@ -493,6 +653,7 @@ Item {
         const rows = entry.rows.slice()
         let active = false
         let demandsAttention = false
+        let minimizedCount = 0
         for (let index = 0; index < rows.length; index++) {
             const row = rows[index]
             const rowIndex = tasksModel.index(row, 0)
@@ -501,6 +662,9 @@ Item {
             }
             active = active || isTaskRowActive(row)
             demandsAttention = demandsAttention || !!tasksModel.data(rowIndex, TaskManager.AbstractTasksModel.IsDemandingAttention)
+            if (tasksModel.data(rowIndex, TaskManager.AbstractTasksModel.IsMinimized)) {
+                minimizedCount += 1
+            }
         }
         return {
             "name": String(tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.AppName)
@@ -508,12 +672,27 @@ Item {
                 || ""),
             "icon": taskIconSourceForRow(firstRow),
             "count": Math.max(1, Number(entry.count || rows.length || 1)),
+            "minimizedCount": minimizedCount,
             "rows": rows,
             "firstRow": firstRow,
             "active": active,
             "demandsAttention": demandsAttention,
             "windowUuid": taskWindowUuidForRow(firstRow)
         }
+    }
+
+    function minimizedCountForRows(taskRows) {
+        const rows = taskRows instanceof Array ? taskRows : []
+        let minimizedCount = 0
+        for (let index = 0; index < rows.length; index++) {
+            const taskIndex = tasksModel.index(Number(rows[index]), 0)
+            if (taskIndex.valid
+                    && tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsWindow)
+                    && tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimized)) {
+                minimizedCount += 1
+            }
+        }
+        return minimizedCount
     }
 
     // qmllint disable unqualified

@@ -14,11 +14,11 @@ Item {
     property date today: new Date()
     signal closeRequested()
 
-    // Formateador nativo de KDE/Qt Locale para traducciones automáticas del sistema
+    // Native KDE/Qt locale formatter for system-provided translations.
     property var dayNames: {
         var locale = Qt.locale()
         var days = []
-        // Generar nombres cortos de días empezando en Lunes (1) a Domingo (7/0 en Qt)
+        // Generate short day names from Monday (1) through Sunday (7/0 in Qt).
         for (var i = 1; i <= 7; i++) {
             var dayNum = (i === 7) ? 0 : i
             days.push(locale.standaloneDayName(dayNum, Locale.NarrowFormat))
@@ -29,12 +29,12 @@ Item {
     function getFormattedMonthYear() {
         var locale = Qt.locale()
         var monthName = locale.standaloneMonthName(displayedDate.getMonth(), Locale.LongFormat)
-        // Capitalizar primera letra del mes
+        // Capitalize the first letter of the month.
         monthName = monthName.charAt(0).toUpperCase() + monthName.slice(1)
         return monthName + " " + displayedDate.getFullYear()
     }
 
-    // Navegar meses
+    // Navigate between months.
     function prevMonth() {
         var m = displayedDate.getMonth();
         var y = displayedDate.getFullYear();
@@ -57,7 +57,7 @@ Item {
         updateGrid();
     }
 
-    // Modelo de días (42 celdas para cubrir cualquier mes)
+    // Day model with 42 cells to cover every possible month layout.
     ListModel {
         id: daysModel
     }
@@ -67,15 +67,15 @@ Item {
         var year = displayedDate.getFullYear();
         var month = displayedDate.getMonth();
 
-        // Días en el mes actual y primer día de la semana (Lunes=0...Domingo=6)
+        // Days in the current month and first weekday (Monday=0 through Sunday=6).
         var daysInMonth = new Date(year, month + 1, 0).getDate();
         var firstDayIndex = new Date(year, month, 1).getDay();
         firstDayIndex = (firstDayIndex === 0) ? 6 : firstDayIndex - 1;
 
-        // Días en el mes anterior (para rellenar huecos)
+        // Days in the previous month used to fill leading cells.
         var prevMonthDays = new Date(year, month, 0).getDate();
 
-        // Rellenar días del mes anterior
+        // Fill days from the previous month.
         for (var i = firstDayIndex - 1; i >= 0; i--) {
             daysModel.append({
                 dayNumber: prevMonthDays - i,
@@ -84,7 +84,7 @@ Item {
             });
         }
 
-        // Rellenar días del mes actual
+        // Fill days from the current month.
         for (var j = 1; j <= daysInMonth; j++) {
             var isItToday = (j === today.getDate() && 
                              month === today.getMonth() && 
@@ -96,7 +96,7 @@ Item {
             });
         }
 
-        // Rellenar días del mes siguiente hasta completar las 42 celdas
+        // Fill days from the next month until all 42 cells are populated.
         var remainingCells = 42 - daysModel.count;
         for (var k = 1; k <= remainingCells; k++) {
             daysModel.append({
@@ -121,7 +121,7 @@ Item {
         anchors.margins: 16
         spacing: 12
 
-        // Header (Mes y Año con controles de navegación)
+        // Header with month, year, and navigation controls.
         RowLayout {
             Layout.fillWidth: true
             
@@ -137,7 +137,7 @@ Item {
             RowLayout {
                 spacing: 8
                 
-                // Botón Anterior
+                // Previous month button.
                 Rectangle {
                     Layout.preferredWidth: 28
                     Layout.preferredHeight: 28
@@ -156,14 +156,14 @@ Item {
                         anchors.fill: parent; hoverEnabled: true
                         activeFocusOnTab: true
                         Accessible.role: Accessible.Button
-                        Accessible.name: i18n("Mes anterior")
+                        Accessible.name: i18n("Previous month")
                         onClicked: prevMonth()
                         Keys.onReturnPressed: prevMonth()
                         Keys.onSpacePressed: prevMonth()
                     }
                 }
 
-                // Botón Siguiente
+                // Next month button.
                 Rectangle {
                     Layout.preferredWidth: 28
                     Layout.preferredHeight: 28
@@ -182,7 +182,7 @@ Item {
                         anchors.fill: parent; hoverEnabled: true
                         activeFocusOnTab: true
                         Accessible.role: Accessible.Button
-                        Accessible.name: i18n("Mes siguiente")
+                        Accessible.name: i18n("Next month")
                         onClicked: nextMonth()
                         Keys.onReturnPressed: nextMonth()
                         Keys.onSpacePressed: nextMonth()
@@ -217,7 +217,7 @@ Item {
             }
         }
 
-        // Días de la semana (Cabecera L, M, M, J...)
+        // Weekday header.
         RowLayout {
             Layout.fillWidth: true
             spacing: 0
@@ -236,7 +236,7 @@ Item {
             }
         }
 
-        // Rejilla del calendario (42 días)
+        // Calendar grid with 42 day cells.
         GridLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -257,7 +257,7 @@ Item {
                         height: width
                         radius: 6
                         
-                        // Resaltado de hoy vs selección vs días comunes
+                        // Distinguish today, the selected day, and ordinary days.
                         color: isToday ? Kirigami.Theme.highlightColor : "transparent"
                         
                         PlasmaComponents.Label {
@@ -267,7 +267,7 @@ Item {
                             font.pointSize: Kirigami.Theme.defaultFont.pointSize
                             font.weight: isToday ? Font.Bold : Font.Normal
                             
-                            // Días fuera del mes actual se ven atenuados
+                            // Dim days outside the current month.
                             color: isToday ? Kirigami.Theme.highlightedTextColor : Kirigami.Theme.textColor
                             opacity: isToday || isCurrentMonth ? 1 : 0.3
                         }

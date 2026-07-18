@@ -28,11 +28,11 @@ Este repositorio es una reescritura modular del proyecto original [Punchi Dock P
 
 ## Requisitos
 
-- Fedora 44 o posterior en `x86_64` es el objetivo principal de publicación.
 - KDE Plasma 6 o posterior.
 - Wayland es la sesión principal soportada.
 - PipeWire es necesario para el visualizador de audio opcional.
-- Fedora 44 y Debian 13 cuentan con flujos de compilación, instalación y arranque validados por separado; la revisión funcional completa de Debian sigue en curso.
+- Fedora 44 `x86_64` es el objetivo principal de paquetes precompilados. Debian 13 cuenta con un flujo separado de compilación, instalación y arranque validado; su revisión funcional completa sigue en curso.
+- No se excluyen otras distribuciones Linux con Plasma 6, pero su paquete nativo debe compilarse y probarse con su propia pila Qt, KF6 y Plasma.
 - Los binarios nativos incluidos en cada `.plasmoid` no son universales: debe usarse el artefacto etiquetado para la distribución donde fue compilado.
 
 ## Instalar un paquete publicado
@@ -45,13 +45,13 @@ En Fedora, `kpackagetool6` pertenece a `kf6-kpackage` y normalmente ya está dis
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid
 ```
 
 Para actualizar una instalación existente:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid
 ```
 
 Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actualizado no se carga inmediatamente.
@@ -59,6 +59,16 @@ Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actu
 ## Compilar desde fuentes
 
 El árbol de fuentes contiene un módulo QML nativo en C++. Instalar directamente el directorio del repositorio con `kpackagetool6` no compila ese módulo.
+
+Comprueba el entorno de desarrollo local antes de instalar o cambiar paquetes:
+
+```bash
+scripts/check-build-environment.sh
+```
+
+El comprobador informa la distribución, arquitectura y versiones de Plasma, CMake y `qmllint`. Qt 6.11 es el perfil principal de lint y Qt 6.8 dispone de un perfil de compatibilidad separado porque sus diagnósticos difieren. `qmllint` es una herramienta de desarrollo, no una dependencia de ejecución para quien instala un `.plasmoid` precompilado compatible; un fallo de lint con Qt 6.8 por sí solo no demuestra que el dock no pueda ejecutarse en ese sistema.
+
+Usa los paquetes de desarrollo Qt 6, KF6 y Plasma suministrados por la distribución. No reemplaces la pila Qt del sistema con una instalación independiente de Qt 6.11 solo para igualar el perfil principal de lint, porque el módulo nativo debe compilarse contra una pila coherente de la distribución.
 
 En Fedora 44+, instala las dependencias de compilación:
 
@@ -80,13 +90,13 @@ Compila el módulo nativo y crea el artefacto versionado para el sistema actual:
 scripts/empaquetar-plasmoid.sh
 ```
 
-El script detecta Fedora o Debian desde `/etc/os-release`. El paquete resultante se genera con un nombre inequívoco:
+El script automático de empaquetado detecta actualmente Fedora o Debian desde `/etc/os-release`. Otras distribuciones con Plasma 6 pueden ser compatibles durante la ejecución, pero todavía no disponen de un perfil automático de empaquetado validado en este repositorio. Los perfiles soportados generan un paquete con nombre inequívoco:
 
 ```text
 dist/punchi-dock-remastered-<version>-<distribución><versión>-<arquitectura>.plasmoid
 ```
 
-Por ejemplo: `punchi-dock-remastered-0.8.8-fedora44-x86_64.plasmoid` o `punchi-dock-remastered-0.8.8-debian13-x86_64.plasmoid`. No instales en Debian un artefacto identificado como Fedora ni a la inversa.
+Por ejemplo: `punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid` o `punchi-dock-remastered-0.8.9-debian13-x86_64.plasmoid`. No instales en Debian un artefacto identificado como Fedora ni a la inversa.
 
 Los wrappers explícitos quedan disponibles para automatización o diagnóstico:
 

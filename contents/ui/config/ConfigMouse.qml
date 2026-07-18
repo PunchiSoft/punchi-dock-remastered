@@ -16,6 +16,7 @@ KCM.SimpleKCM {
 
     property string cfg_hoverAnimation: "wave"
     property string cfg_clickEffect: "none"
+    property string cfg_windowMinimizeEffect: "none"
     property string cfg_popupAnimation: "scale"
     // Kept so existing configurations can still be loaded by the KCM.
     property string cfg_popupAnimationSpeed: "normal"
@@ -37,6 +38,13 @@ KCM.SimpleKCM {
         { "text": i18n("Press"), "value": "press" },
         { "text": i18n("Bounce"), "value": "bounce" }
     ]
+    // qmllint disable unqualified
+    readonly property var windowMinimizeEffectOptions: [
+        { "text": i18n("None"), "value": "none" },
+        { "text": i18n("Slow bounce"), "value": "slowBounce" },
+        { "text": i18n("Lateral ripple"), "value": "lateralRipple" }
+    ]
+    // qmllint enable unqualified
     // qmllint disable unqualified
     readonly property var popupAnimationOptions: [
         { "text": i18n("Subtle scale (default)"), "value": "scale" },
@@ -61,11 +69,13 @@ KCM.SimpleKCM {
     function syncMouseSelectors() {
         syncComboValue(hoverAnimationCombo, page.cfg_hoverAnimation)
         syncComboValue(clickEffectCombo, page.cfg_clickEffect)
+        syncComboValue(windowMinimizeEffectCombo, page.cfg_windowMinimizeEffect)
         syncComboValue(popupAnimationCombo, page.cfg_popupAnimation)
     }
 
     onCfg_hoverAnimationChanged: syncMouseSelectors()
     onCfg_clickEffectChanged: syncMouseSelectors()
+    onCfg_windowMinimizeEffectChanged: syncMouseSelectors()
     onCfg_popupAnimationChanged: syncMouseSelectors()
     Component.onCompleted: syncMouseSelectors()
 
@@ -115,6 +125,40 @@ KCM.SimpleKCM {
                 }
             }
         }
+
+        // qmllint disable unqualified
+        RowLayout {
+            Kirigami.FormData.label: i18n("Window minimize effect:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.ComboBox {
+                id: windowMinimizeEffectCombo
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                textRole: "text"
+                valueRole: "value"
+                model: page.windowMinimizeEffectOptions
+                onActivated: {
+                    if (page.cfg_windowMinimizeEffect !== currentValue) {
+                        page.cfg_windowMinimizeEffect = currentValue
+                    }
+                }
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.cfg_globalMouseCursor
+                }
+            }
+        }
+
+        Controls.Label {
+            text: i18n("Animates the matching dock item when a window is minimized. Lateral ripple also moves the nearest items.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+        // qmllint enable unqualified
 
         // qmllint disable unqualified
         RowLayout {

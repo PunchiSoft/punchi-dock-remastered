@@ -14,6 +14,7 @@ Item {
     property string transientStatus: ""
     property bool enforcingLength: false
     property bool maximumLengthWarning: false
+    property bool deleteConfirmationVisible: false
     readonly property int activeWidth: Math.max(220, noteItem && noteItem.popupWidth ? noteItem.popupWidth : 360)
     readonly property int activeHeight: Math.max(160, noteItem && noteItem.popupHeight ? noteItem.popupHeight : 260)
     readonly property int maximumNoteLength: 6000
@@ -28,6 +29,7 @@ Item {
 
     signal noteChanged(string noteText, int popupWidth, int popupHeight)
     signal clearRequested(string noteText, int popupWidth, int popupHeight)
+    signal deleteRequested()
     signal closeRequested()
 
     function syncFromItem() {
@@ -36,6 +38,7 @@ Item {
         editor.text = nextText
         transientStatus = ""
         maximumLengthWarning = false
+        deleteConfirmationVisible = false
     }
 
     function focusEditor() {
@@ -180,6 +183,35 @@ Item {
             }
 
             Controls.ToolButton {
+                id: deleteNoteButton
+                Layout.preferredWidth: 28
+                Layout.preferredHeight: 28
+                padding: 2
+                focusPolicy: Qt.StrongFocus
+                Accessible.name: i18nc("@action:button", "Delete Note")
+                Controls.ToolTip.visible: hovered || activeFocus
+                Controls.ToolTip.text: Accessible.name
+                Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
+                contentItem: Kirigami.Icon {
+                    source: "edit-delete"
+                    color: Kirigami.Theme.textColor
+                    implicitWidth: 16
+                    implicitHeight: 16
+                }
+                background: Rectangle {
+                    radius: 6
+                    color: deleteNoteButton.hovered || deleteNoteButton.activeFocus
+                        ? Qt.rgba(Kirigami.Theme.negativeTextColor.r,
+                            Kirigami.Theme.negativeTextColor.g,
+                            Kirigami.Theme.negativeTextColor.b, 0.24)
+                        : "transparent"
+                    border.width: deleteNoteButton.activeFocus ? 1 : 0
+                    border.color: Kirigami.Theme.textColor
+                }
+                onClicked: noteRoot.deleteConfirmationVisible = true
+            }
+
+            Controls.ToolButton {
                 id: closeNoteButton
                 Layout.preferredWidth: 28
                 Layout.preferredHeight: 28
@@ -209,6 +241,28 @@ Item {
                 Keys.onReturnPressed: noteRoot.closeRequested()
                 Keys.onSpacePressed: noteRoot.closeRequested()
             }
+        }
+
+        Kirigami.InlineMessage {
+            visible: noteRoot.deleteConfirmationVisible
+            Layout.fillWidth: true
+            type: Kirigami.MessageType.Warning
+            text: i18n("Delete this note from the dock? Its contents cannot be recovered.")
+            actions: [
+                Kirigami.Action {
+                    text: i18nc("@action:button", "Cancel")
+                    icon.name: "dialog-cancel"
+                    onTriggered: {
+                        noteRoot.deleteConfirmationVisible = false
+                        editor.forceActiveFocus()
+                    }
+                },
+                Kirigami.Action {
+                    text: i18nc("@action:button", "Delete Note")
+                    icon.name: "edit-delete"
+                    onTriggered: noteRoot.deleteRequested()
+                }
+            ]
         }
 
         Controls.ScrollView {

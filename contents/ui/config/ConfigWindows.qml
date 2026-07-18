@@ -116,7 +116,7 @@ KCM.SimpleKCM {
         }
 
         Controls.Label {
-            text: i18n("Limits how many dynamic task groups are shown directly in the dock so it does not become overcrowded. Additional groups remain available from the overflow item.")
+            text: i18n("This manual limit applies in floating and compact modes. While Fill free panel space is active, Punchi Dock automatically uses the available panel capacity. Additional groups remain available from the overflow item.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

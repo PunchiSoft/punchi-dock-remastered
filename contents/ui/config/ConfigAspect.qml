@@ -19,6 +19,8 @@ KCM.SimpleKCM {
     }
 
     property alias cfg_showLabels: showLabelsCheck.checked
+    property alias cfg_showItemHoverBackground: showItemHoverBackgroundCheck.checked
+    property alias cfg_iconReflectionsEnabled: iconReflectionsCheck.checked
     property string cfg_indicatorType: "line"
     property string cfg_indicatorPosition: "bottom"
     property alias cfg_indicatorOpacity: indicatorOpacitySlider.value
@@ -34,6 +36,8 @@ KCM.SimpleKCM {
     readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
         || Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    readonly property bool horizontalPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+    readonly property bool iconReflectionsSupported: !inPanel || horizontalPanel
     readonly property bool indicatorPositionApplicable: cfg_indicatorType !== "ring"
         && cfg_indicatorType !== "none"
     readonly property int contentWidthHint: layoutMetrics.contentWidth
@@ -466,6 +470,33 @@ KCM.SimpleKCM {
         }
         // qmllint enable unqualified
 
+        // qmllint disable unqualified
+        SectionTitle {
+            Kirigami.FormData.isSection: true
+            text: i18n("Item highlight")
+        }
+
+        Controls.CheckBox {
+            id: showItemHoverBackgroundCheck
+            Kirigami.FormData.label: i18n("Hover background:")
+            text: i18n("Show a themed background behind items")
+            Accessible.description: i18n("Shows the Plasma highlight background when an item is hovered or its application is active.")
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.interactiveCursorEnabled
+            }
+        }
+
+        Controls.Label {
+            text: i18n("Window indicators remain visible when the item background is hidden.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+        // qmllint enable unqualified
+
         SectionTitle {
             Kirigami.FormData.isSection: true
             text: i18n("Labels")
@@ -483,6 +514,46 @@ KCM.SimpleKCM {
 
         Controls.Label {
             text: i18n("Labels use a compact single-line style so the dock can remain readable without turning every item into a large card.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+
+        SectionTitle {
+            Kirigami.FormData.isSection: true
+            text: i18n("Icon reflections")
+        }
+
+        Controls.CheckBox {
+            id: iconReflectionsCheck
+            enabled: page.iconReflectionsSupported && !showLabelsCheck.checked
+            Kirigami.FormData.label: i18n("Reflection:")
+            text: i18n("Show reflections below dock items")
+            // qmllint disable unqualified
+            Accessible.description: !page.iconReflectionsSupported
+                ? i18n("Icon reflections are unavailable in vertical panels.")
+                : (page.inPanel
+                    ? i18n("Adds an adaptive decorative reflection below icons in a horizontal panel.")
+                    : i18n("Adds a short decorative reflection below icons in a floating dock."))
+            // qmllint enable unqualified
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.interactiveCursorEnabled
+            }
+        }
+
+        Controls.Label {
+            // qmllint disable unqualified
+            text: page.inPanel && !page.horizontalPanel
+                ? i18n("Icon reflections are not available in vertical panels.")
+                : (showLabelsCheck.checked
+                    ? i18n("Hide item names to use icon reflections.")
+                    : (page.inPanel
+                        ? i18n("The reflection adapts to the available panel thickness and is hidden when there is not enough space.")
+                        : i18n("The reflection is decorative and does not change the size or interaction area of dock items.")))
+            // qmllint enable unqualified
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
