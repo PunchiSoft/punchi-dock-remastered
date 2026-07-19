@@ -1,14 +1,14 @@
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
-import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.plasmoid
 import "components"
 
-KCM.SimpleKCM {
+Item {
     id: page
     implicitWidth: layoutMetrics.pageImplicitWidth
+    implicitHeight: audioVisualizerForm.implicitHeight
 
     ConfigLayoutMetrics {
         id: layoutMetrics
@@ -102,6 +102,8 @@ KCM.SimpleKCM {
 
     // qmllint disable unqualified
     Kirigami.FormLayout {
+        id: audioVisualizerForm
+        width: page.width
         Controls.CheckBox {
             id: audioSpectrumCheck
             Kirigami.FormData.label: i18n("Visualizer:")

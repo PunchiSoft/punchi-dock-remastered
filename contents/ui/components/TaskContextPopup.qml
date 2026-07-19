@@ -7,12 +7,13 @@ Item {
     property string appName: ""
     property var windows: []
     property string previewStyle: "card"
-    property real previewScale: 1.0
+    property real previewScale: 1.5
     property bool automaticPopupRadius: true
     property int popupRadius: 4
     property int popupDirection: Qt.BottomEdge
     property bool inPanel: false
     property int maxVisibleRows: 4
+    property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
     property string actionItemName: ""
     property var actions: []
@@ -92,6 +93,7 @@ Item {
             popupDirection: root.popupDirection
             inPanel: root.inPanel
             maxVisibleRows: root.maxVisibleRows
+            maximumAvailableWidth: root.maximumAvailableWidth
             maximumAvailableHeight: root.maximumAvailableHeight
 
             onActivateRequested: taskRow => root.activateRequested(taskRow)

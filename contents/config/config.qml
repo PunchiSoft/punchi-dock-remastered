@@ -19,14 +19,6 @@ ConfigModel {
         source: "config/ConfigAspect.qml"
     }
 
-    // qmllint disable unqualified
-    ConfigCategory {
-        name: i18n("Audio visualizer")
-        icon: "audio-volume-high"
-        source: "config/ConfigAudioVisualizer.qml"
-    }
-    // qmllint enable unqualified
-
     ConfigCategory {
         name: i18n("Mouse")
         icon: "input-mouse"

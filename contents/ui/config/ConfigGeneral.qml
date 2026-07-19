@@ -113,19 +113,26 @@ KCM.SimpleKCM {
     }
 
     Kirigami.FormLayout {
-        Kirigami.InlineMessage {
+        RowLayout {
             Kirigami.FormData.isSection: true
-            visible: true
             Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            type: Kirigami.MessageType.Warning
-            showCloseButton: false
-            text: !page.inPanel
-                ? i18n("Current dock state: Floating mode. Panel-only sizing and integration options are unavailable.")
-                : page.verticalPanel
-                    ? i18n("Current dock state: Vertical panel. Flexible panel length is currently available only in horizontal panels.")
-                    : i18n("Current dock state: Horizontal panel. Fill free panel space activates while the Plasma panel uses Fill available; otherwise Punchi Dock remains compact.")
-            Accessible.name: text
+
+            // The full-width section lets the bounded message center across
+            // both columns managed internally by FormLayout.
+            Kirigami.InlineMessage {
+                visible: true
+                Layout.fillWidth: true
+                Layout.maximumWidth: page.contentWidthHint
+                Layout.alignment: Qt.AlignHCenter
+                type: Kirigami.MessageType.Information
+                showCloseButton: false
+                text: !page.inPanel
+                    ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Floating mode</b>.<br>Panel-only sizing and integration options are unavailable.")
+                    : page.verticalPanel
+                        ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Vertical panel</b>.<br>Flexible panel length is available only on horizontal panels.")
+                        : i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Horizontal panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.")
+                Accessible.name: text.replace("<br>", " ").replace("<b>", "").replace("</b>", "")
+            }
         }
 
         RowLayout {

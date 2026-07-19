@@ -115,8 +115,8 @@ PlasmoidItem {
     readonly property int floatingExtraHeight: 32
     readonly property string windowPreviewStyle: String(Plasmoid.configuration.windowPreviewStyle || "card")
     readonly property bool mediaControlsOnHover: !!Plasmoid.configuration.mediaControlsOnHover
-    readonly property real windowPreviewScale: Math.max(0.5, Math.min(2.0,
-        Number(Plasmoid.configuration.windowPreviewScale || 1.0)))
+    readonly property real windowPreviewScale: Math.max(1.5, Math.min(4.5,
+        Number(Plasmoid.configuration.windowPreviewScale || 1.5)))
     readonly property bool taskPopupRadiusAuto: Plasmoid.configuration.taskPopupRadiusAuto !== false
     readonly property int taskPopupRadius: Math.max(4, Math.min(32,
         Number(Plasmoid.configuration.taskPopupRadius || 4)))
@@ -125,6 +125,8 @@ PlasmoidItem {
         Number(Plasmoid.configuration.maxPopupRows || 4)))
     readonly property int taskPopupAvailableHeight: Math.max(240,
         Number(root.availableScreenRect.height || 640) - (root.inPanel ? root.panelPreferredHeight : 0) - 24)
+    readonly property int taskPopupAvailableWidth: Math.max(280,
+        Number(root.availableScreenRect.width || 800) - 48)
     readonly property bool dockShowLabels: !!Plasmoid.configuration.showLabels
     readonly property bool dockShowItemHoverBackground:
         Plasmoid.configuration.showItemHoverBackground !== false
@@ -1036,6 +1038,8 @@ PlasmoidItem {
                         taskDemandsAttention: taskState.demandsAttention
                         taskPreviewStyle: root.windowPreviewStyle
                         taskPreviewScale: root.windowPreviewScale
+                        taskPreviewMaximumWidth: root.taskPopupAvailableWidth
+                        taskPreviewMaximumHeight: root.taskPopupAvailableHeight
                         taskPreviewWindowUuid: taskState.firstRow >= 0
                             ? taskController.taskWindowUuidForRow(taskState.firstRow)
                             : ""
@@ -1160,6 +1164,8 @@ PlasmoidItem {
                         taskDemandsAttention: taskData.demandsAttention
                         taskPreviewStyle: root.windowPreviewStyle
                         taskPreviewScale: root.windowPreviewScale
+                        taskPreviewMaximumWidth: root.taskPopupAvailableWidth
+                        taskPreviewMaximumHeight: root.taskPopupAvailableHeight
                         taskPreviewWindowUuid: taskData.windowUuid
                         preferTaskPopupOnHover: root.windowPreviewStyle !== "none" && taskData.count > 1
                         suppressTooltip: mainContainer.contextMenuVisible
@@ -1561,6 +1567,7 @@ PlasmoidItem {
                         popupDirection: root.popupDirection
                         inPanel: root.inPanel
                         maxVisibleRows: root.maxPopupRows
+                        maximumAvailableWidth: root.taskPopupAvailableWidth
                         maximumAvailableHeight: root.taskPopupAvailableHeight
                         actionItemName: popupCoordinator.activeAppContextMenuData.name || ""
                         actions: popupCoordinator.activeAppContextMenuData.actions || []

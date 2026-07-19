@@ -123,7 +123,7 @@
       <default>card</default>
     </entry>
     <entry name="windowPreviewScale" type="Double">
-      <default>1.0</default>
+      <default>1.5</default>
     </entry>
     <entry name="mediaControlsOnHover" type="Bool">
       <default>false</default>

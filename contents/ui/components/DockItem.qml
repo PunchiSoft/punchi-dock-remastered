@@ -169,7 +169,9 @@ Item {
     property bool taskIsActive: false
     property bool taskDemandsAttention: false
     property string taskPreviewStyle: "card"
-    property real taskPreviewScale: 1.0
+    property real taskPreviewScale: 1.5
+    property int taskPreviewMaximumWidth: 752
+    property int taskPreviewMaximumHeight: 568
     property string taskPreviewWindowUuid: ""
     property bool preferTaskPopupOnHover: false
     property bool suppressTooltip: false
@@ -221,7 +223,13 @@ Item {
                     Math.round(iconSize
                         * Number(separatorTheme.lengthRatio || 0.72)))))
         : Math.max(20, Math.round(iconSize * 0.72))
-    readonly property real effectiveTaskPreviewScale: Math.max(0.5, Math.min(2.0, taskPreviewScale))
+    readonly property real maximumTaskPreviewScaleByWidth: Math.max(1.5,
+        (taskPreviewMaximumWidth - 32) / 176)
+    readonly property real maximumTaskPreviewScaleByHeight: Math.max(1.5,
+        (taskPreviewMaximumHeight - 72) * 1.6 / 176)
+    readonly property real effectiveTaskPreviewScale: Math.max(1.5, Math.min(4.5,
+        taskPreviewScale, maximumTaskPreviewScaleByWidth,
+        maximumTaskPreviewScaleByHeight))
     readonly property int richTooltipPreviewWidth: Math.round(176 * effectiveTaskPreviewScale)
     readonly property int richTooltipPreviewHeight: Math.round(richTooltipPreviewWidth / 1.6)
 

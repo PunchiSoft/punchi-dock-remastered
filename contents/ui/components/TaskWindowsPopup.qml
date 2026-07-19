@@ -12,16 +12,23 @@ Item {
     property string appName: ""
     property var windows: []
     property string previewStyle: "card"
-    property real previewScale: 1.0
+    property real previewScale: 1.5
     property bool automaticPopupRadius: true
     property int popupRadius: 4
     property int popupDirection: Qt.BottomEdge
     property bool inPanel: false
     property int maxVisibleRows: 4
+    property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
     readonly property bool showLiveThumbnails: previewStyle === "thumbnail"
     readonly property bool containsMouse: popupHover.hovered
-    readonly property real effectivePreviewScale: Math.max(0.5, Math.min(2.0, previewScale))
+    readonly property real maximumPreviewScaleByWidth: Math.max(1.5,
+        (maximumAvailableWidth - 56) / 184)
+    readonly property real maximumPreviewScaleByHeight: Math.max(1.5,
+        (maximumAvailableHeight - verticalPadding * 2 - cardOuterPadding * 2)
+            * 1.6 / 184)
+    readonly property real effectivePreviewScale: Math.max(1.5, Math.min(4.5,
+        previewScale, maximumPreviewScaleByWidth, maximumPreviewScaleByHeight))
     readonly property int configuredCornerRadius: Math.max(4, Math.min(32, popupRadius))
     readonly property int previewFrameWidth: Math.round(184 * effectivePreviewScale)
     readonly property int previewFrameHeight: Math.round(previewFrameWidth / 1.6)

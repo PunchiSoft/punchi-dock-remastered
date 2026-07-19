@@ -28,6 +28,25 @@ KCM.SimpleKCM {
     property alias cfg_indicatorThickness: indicatorThicknessSlider.value
     property string cfg_dockThemeMode: "plasma"
     property string cfg_dockThemeCustomId: ""
+    property alias cfg_windowPreviewStyle: popupAppearancePage.cfg_windowPreviewStyle
+    property alias cfg_windowPreviewScale: popupAppearancePage.cfg_windowPreviewScale
+    property alias cfg_mediaControlsOnHover: popupAppearancePage.cfg_mediaControlsOnHover
+    property alias cfg_taskPopupRadiusAuto: popupAppearancePage.cfg_taskPopupRadiusAuto
+    property alias cfg_taskPopupRadius: popupAppearancePage.cfg_taskPopupRadius
+    property alias cfg_maxPopupRows: popupAppearancePage.cfg_maxPopupRows
+    property alias cfg_popupAnimation: popupAppearancePage.cfg_popupAnimation
+    property alias cfg_popupAnimationSpeed: popupAppearancePage.cfg_popupAnimationSpeed
+    property alias cfg_popupAnimationSpeedPercent: popupAppearancePage.cfg_popupAnimationSpeedPercent
+    property alias cfg_popupAnimationIntensity: popupAppearancePage.cfg_popupAnimationIntensity
+    property alias cfg_contextMenuTransitionSpeed: menuAppearancePage.cfg_contextMenuTransitionSpeed
+    property alias cfg_audioSpectrumEnabled: audioVisualizerPage.cfg_audioSpectrumEnabled
+    property alias cfg_audioSpectrumIntensity: audioVisualizerPage.cfg_audioSpectrumIntensity
+    property alias cfg_audioSpectrumUsePlasmaTheme: audioVisualizerPage.cfg_audioSpectrumUsePlasmaTheme
+    property alias cfg_audioSpectrumBarCount: audioVisualizerPage.cfg_audioSpectrumBarCount
+    property alias cfg_audioSpectrumStyle: audioVisualizerPage.cfg_audioSpectrumStyle
+    property alias cfg_audioSpectrumBackgroundMode: audioVisualizerPage.cfg_audioSpectrumBackgroundMode
+    property alias cfg_audioSpectrumOrigin: audioVisualizerPage.cfg_audioSpectrumOrigin
+    property alias cfg_audioSpectrumFlow: audioVisualizerPage.cfg_audioSpectrumFlow
     property var lastThemeDirectoryImport: ({})
     property string pendingThemeRemovalId: ""
     property string pendingThemeRemovalName: ""
@@ -54,6 +73,29 @@ KCM.SimpleKCM {
         { "text": i18n("Bottom"), "value": "bottom" },
         { "text": i18n("Top"), "value": "top" }
     ]
+
+    // qmllint disable unqualified
+    header: Controls.TabBar {
+        id: appearanceTabs
+        Accessible.name: i18n("Appearance sections")
+
+        Controls.TabButton {
+            text: i18n("Dock")
+        }
+
+        Controls.TabButton {
+            text: i18n("Popups")
+        }
+
+        Controls.TabButton {
+            text: i18n("Menus")
+        }
+
+        Controls.TabButton {
+            text: i18n("Audio visualizer")
+        }
+    }
+    // qmllint enable unqualified
     // qmllint disable unqualified
     readonly property var dockThemeModeOptions: [
         { "text": i18n("Plasma theme"), "value": "plasma" },
@@ -316,7 +358,21 @@ KCM.SimpleKCM {
     }
     // qmllint enable unqualified
 
-    Kirigami.FormLayout {
+    StackLayout {
+        id: appearanceStack
+        width: page.width
+        currentIndex: appearanceTabs.currentIndex
+        implicitHeight: currentIndex === 0
+            ? dockAppearanceForm.implicitHeight
+            : (currentIndex === 1
+                ? popupAppearancePage.implicitHeight
+                : (currentIndex === 2
+                    ? menuAppearancePage.implicitHeight
+                    : audioVisualizerPage.implicitHeight))
+
+        Kirigami.FormLayout {
+            id: dockAppearanceForm
+            Layout.fillWidth: true
 
         // qmllint disable unqualified
         SectionTitle {
@@ -718,6 +774,22 @@ KCM.SimpleKCM {
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 56
             }
+        }
+        }
+
+        ConfigPopups {
+            id: popupAppearancePage
+            Layout.fillWidth: true
+        }
+
+        ConfigMenus {
+            id: menuAppearancePage
+            Layout.fillWidth: true
+        }
+
+        ConfigAudioVisualizer {
+            id: audioVisualizerPage
+            Layout.fillWidth: true
         }
     }
 }

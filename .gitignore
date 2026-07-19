@@ -25,3 +25,7 @@
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
+
+# Directorios de pruebas y tests locales
+/tests/
+/test/

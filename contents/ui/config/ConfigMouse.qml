@@ -17,12 +17,6 @@ KCM.SimpleKCM {
     property string cfg_hoverAnimation: "wave"
     property string cfg_clickEffect: "none"
     property string cfg_windowMinimizeEffect: "none"
-    property string cfg_popupAnimation: "scale"
-    // Kept so existing configurations can still be loaded by the KCM.
-    property string cfg_popupAnimationSpeed: "normal"
-    property alias cfg_popupAnimationSpeedPercent: popupAnimationSpeedSlider.value
-    property alias cfg_popupAnimationIntensity: popupAnimationIntensitySlider.value
-    property alias cfg_contextMenuTransitionSpeed: contextMenuTransitionSpeedSlider.value
     property alias cfg_globalMouseCursor: globalMouseCursorCheck.checked
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
@@ -45,15 +39,6 @@ KCM.SimpleKCM {
         { "text": i18n("Lateral ripple"), "value": "lateralRipple" }
     ]
     // qmllint enable unqualified
-    // qmllint disable unqualified
-    readonly property var popupAnimationOptions: [
-        { "text": i18n("Subtle scale (default)"), "value": "scale" },
-        { "text": i18n("Bounce"), "value": "bounce" },
-        { "text": i18n("Fade"), "value": "fade" },
-        { "text": i18n("Slide from the dock"), "value": "slide" },
-        { "text": i18n("None"), "value": "none" }
-    ]
-    // qmllint enable unqualified
 
     function syncComboValue(combo, value) {
         if (!combo) {
@@ -70,13 +55,11 @@ KCM.SimpleKCM {
         syncComboValue(hoverAnimationCombo, page.cfg_hoverAnimation)
         syncComboValue(clickEffectCombo, page.cfg_clickEffect)
         syncComboValue(windowMinimizeEffectCombo, page.cfg_windowMinimizeEffect)
-        syncComboValue(popupAnimationCombo, page.cfg_popupAnimation)
     }
 
     onCfg_hoverAnimationChanged: syncMouseSelectors()
     onCfg_clickEffectChanged: syncMouseSelectors()
     onCfg_windowMinimizeEffectChanged: syncMouseSelectors()
-    onCfg_popupAnimationChanged: syncMouseSelectors()
     Component.onCompleted: syncMouseSelectors()
 
     Kirigami.FormLayout {
@@ -152,135 +135,6 @@ KCM.SimpleKCM {
 
         Controls.Label {
             text: i18n("Animates the matching dock item when a window is minimized. Lateral ripple also moves the nearest items.")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: layoutMetrics.helperIndent
-            color: Kirigami.Theme.disabledTextColor
-        }
-        // qmllint enable unqualified
-
-        // qmllint disable unqualified
-        RowLayout {
-            Kirigami.FormData.label: i18n("Popup animation:")
-            Layout.maximumWidth: page.contentWidthHint
-
-            Controls.ComboBox {
-                id: popupAnimationCombo
-                Layout.preferredWidth: page.selectorWidthHint
-                Layout.maximumWidth: page.selectorWidthHint
-                textRole: "text"
-                valueRole: "value"
-                model: page.popupAnimationOptions
-                onActivated: {
-                    if (page.cfg_popupAnimation !== currentValue) {
-                        page.cfg_popupAnimation = currentValue
-                    }
-                }
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.cfg_globalMouseCursor
-                }
-            }
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Popup speed:")
-            Layout.maximumWidth: page.contentWidthHint
-            enabled: page.cfg_popupAnimation !== "none"
-
-            Controls.Slider {
-                id: popupAnimationSpeedSlider
-                from: 10
-                to: 200
-                value: 100
-                stepSize: 5
-                snapMode: Controls.Slider.SnapAlways
-                Layout.fillWidth: true
-                Layout.preferredWidth: page.contentWidthHint - 64
-                Accessible.name: i18n("Popup animation speed")
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.cfg_globalMouseCursor
-                    role: "slider"
-                }
-            }
-
-            Controls.Label {
-                text: i18n("%1%", Math.round(popupAnimationSpeedSlider.value))
-                horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: 56
-            }
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Popup intensity:")
-            Layout.maximumWidth: page.contentWidthHint
-            enabled: page.cfg_popupAnimation !== "none"
-
-            Controls.Slider {
-                id: popupAnimationIntensitySlider
-                from: 10
-                to: 200
-                value: 100
-                stepSize: 5
-                snapMode: Controls.Slider.SnapAlways
-                Layout.fillWidth: true
-                Layout.preferredWidth: page.contentWidthHint - 64
-                Accessible.name: i18n("Popup animation intensity")
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.cfg_globalMouseCursor
-                    role: "slider"
-                }
-            }
-
-            Controls.Label {
-                text: i18n("%1%", Math.round(popupAnimationIntensitySlider.value))
-                horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: 56
-            }
-        }
-
-        Controls.Label {
-            text: i18n("Lower speed values make opening slower. Intensity controls scale, distance, fade and bounce strength. Plasma keeps native control of positioning, focus, blur, shadow and closing.")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: layoutMetrics.helperIndent
-            color: Kirigami.Theme.disabledTextColor
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Menu transition speed:")
-            Layout.maximumWidth: page.contentWidthHint
-
-            Controls.Slider {
-                id: contextMenuTransitionSpeedSlider
-                from: 10
-                to: 200
-                value: 100
-                stepSize: 5
-                snapMode: Controls.Slider.SnapAlways
-                Layout.fillWidth: true
-                Layout.preferredWidth: page.contentWidthHint - 64
-                Accessible.name: i18n("Preview to context menu transition speed")
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.cfg_globalMouseCursor
-                    role: "slider"
-                }
-            }
-
-            Controls.Label {
-                text: i18n("%1%", Math.round(contextMenuTransitionSpeedSlider.value))
-                horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: 56
-            }
-        }
-
-        Controls.Label {
-            text: i18n("Lower values make the preview-to-menu movement gentler; higher values make it faster. 100% follows the Plasma theme duration.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

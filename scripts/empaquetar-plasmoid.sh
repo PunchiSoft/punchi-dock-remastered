@@ -8,10 +8,11 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     cat <<'EOF'
 Uso: scripts/empaquetar-plasmoid.sh
 
-Detecta Fedora o Debian y genera un paquete versionado para el sistema actual.
+Detecta Fedora, Debian o Kubuntu y genera un paquete versionado para el sistema actual.
 Para seleccionar un perfil explícitamente:
   scripts/build-fedora-package.sh
   scripts/build-debian-package.sh
+  scripts/build-kubuntu-package.sh
 EOF
     exit 0
 fi
@@ -39,9 +40,13 @@ if [[ "${PUNCHI_PACKAGE_CORE:-0}" != "1" ]]; then
             echo "==> Perfil detectado: Debian ${VERSION_ID:-desconocida}"
             exec "$SCRIPT_DIR/build-debian-package.sh"
             ;;
+        ubuntu)
+            echo "==> Perfil detectado: Kubuntu/Ubuntu ${VERSION_ID:-desconocida}"
+            exec "$SCRIPT_DIR/build-kubuntu-package.sh"
+            ;;
         *)
             echo "Error: distribución sin perfil de empaquetado: ${ID:-desconocida}." >&2
-            echo "Perfiles disponibles: Fedora y Debian." >&2
+            echo "Perfiles disponibles: Fedora, Debian y Kubuntu." >&2
             exit 1
             ;;
     esac

@@ -36,11 +36,17 @@ This repository is a modular rewrite of the original [Punchi Dock Plasmoid](http
 - Wayland is the primary supported session.
 - PipeWire is required by the optional audio visualizer.
 - Fedora 44 `x86_64` is the primary prebuilt release target. Debian 13 has a separate validated build, installation, and startup flow; its complete functional review remains in progress.
+- Kubuntu has a locally validated source-build and installation profile for Plasma 6.6.4. The native module must still be compiled on the Kubuntu host; this does not make another distribution's artifact compatible.
 - Community users report successful operation on additional current Linux distributions with Plasma 6. These reports indicate broader compatibility, but they are not yet equivalent to a project-validated distribution profile.
 - Source builds require CMake 3.22+, a C++20 compiler, Qt 6.6+, ECM/KF6 6.0+, Plasma 6.0+, and PipeWire development files, all supplied as one coherent distribution stack.
 - Native binaries inside each `.plasmoid` are not universal: use the artifact labeled for the distribution where it was built.
 
-Compatibility therefore has three levels: Fedora is the primary release target, Debian is a separately validated compatibility profile, and other distributions are community-reported when they satisfy the build requirements. A newer distribution can often build and run Punchi Dock without project changes; a conservative distribution may need its own compatible source build and baseline. Do not mix repositories or replace the system Qt/KDE stack solely to meet these versions.
+Compatibility therefore distinguishes Fedora as the primary release target,
+Debian as a separately validated profile, Kubuntu as a validated native
+source-build profile, and other distributions as community-reported. A current
+distribution can often build and run Punchi Dock without project changes, but
+it still needs a compatible source build and lint baseline. Do not mix
+repositories or replace the system Qt/KDE stack solely to meet these versions.
 
 ## Install a Release Package
 
@@ -89,7 +95,10 @@ sudo dnf install \
     zip unzip
 ```
 
-On Debian, install the equivalent Qt 6, KF6, Plasma, PipeWire, CMake, and ZIP development packages. The Debian wrapper was validated on Debian 13 with Qt 6.8.2.
+On Debian or Kubuntu, install the equivalent distribution-provided Qt 6, KF6,
+Plasma, PipeWire, ECM, CMake, gettext, and ZIP development packages. The Debian
+wrapper was validated on Debian 13 with Qt 6.8.2; the Kubuntu source-build,
+installation, startup, and functional flow was validated on Plasma 6.6.4.
 
 Build the native module and create the versioned artifact for the current system:
 
@@ -97,22 +106,35 @@ Build the native module and create the versioned artifact for the current system
 scripts/empaquetar-plasmoid.sh
 ```
 
-The automated packaging script currently detects Fedora or Debian through `/etc/os-release`. Other current Plasma 6 distributions have been reported to work when the requirements above are available, but they do not yet have a validated automatic packaging profile in this repository. Treat those reports as community compatibility: build and test against the host distribution and do not relabel a Fedora or Debian native artifact. The supported profiles write an unambiguous package name:
+The automated packaging script detects Fedora, Debian, or Kubuntu through
+`/etc/os-release`. Kubuntu builds include the local Plasma version in the
+artifact name and use a host-specific `qmllint` baseline stored in the user
+cache. The native Kubuntu flow is validated, but never relabel an artifact built
+for another distribution.
 
 ```text
 dist/punchi-dock-remastered-<version>-<distribution><version>-<architecture>.plasmoid
 ```
 
-Examples include `punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid` and `punchi-dock-remastered-0.8.9-debian13-x86_64.plasmoid`. Never install a Fedora-labeled artifact on Debian or vice versa.
+Examples include `punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid`,
+`punchi-dock-remastered-0.8.9-debian13-x86_64.plasmoid`, and
+`punchi-dock-remastered-0.8.9-kubuntu<version>-plasma6.6.4-x86_64.plasmoid`.
+Never install an artifact labeled for a different distribution.
 
 Explicit wrappers remain available for automation and diagnostics:
 
 ```bash
 scripts/build-fedora-package.sh
 scripts/build-debian-package.sh
+scripts/build-kubuntu-package.sh
 ```
 
-Each wrapper requires its matching distribution and uses its own baseline. The Debian workflow was verified on Debian 13, where the artifact installed and loaded correctly. See [scripts/README.md](scripts/README.md) for the distinction between packaging, local installation, and clean-source validation.
+Each wrapper requires its matching distribution and uses its own baseline. The
+Debian workflow was verified on Debian 13; Kubuntu records an independent local
+baseline and was verified through native build, installation, startup, and user
+functional testing on Plasma 6.6.4. See
+[scripts/README.md](scripts/README.md) for the distinction between packaging,
+local installation, and clean-source validation.
 
 Set `PACKAGE_BUILD_TYPE` or `STRIP_BIN` only when a development workflow requires an explicit override. Never use `PACKAGE_OUTPUT_FILE` to label a Fedora binary as Debian, and do not cross-compile the native QML module for publication on another distribution.
 
@@ -121,6 +143,16 @@ To build, install, and restart Plasma for a local development test:
 ```bash
 scripts/probar-plasmoid.sh
 ```
+
+On a clean Kubuntu installation, prepare the official APT dependencies and
+create the native package with:
+
+```bash
+Scripts/setup_kubuntu_build.py --yes
+```
+
+Add `--local-test` to install the result and restart Plasma Shell. Run this
+program as the desktop user; it requests `sudo` only for APT.
 
 This script runs the packaging checks and CTest, upgrades the local plasmoid, restarts Plasma Shell, and writes filtered startup diagnostics to `debug.log`. Because it restarts the desktop shell, use it after a coherent change rather than on every file save.
 

@@ -36,11 +36,17 @@ Este repositorio es una reescritura modular del proyecto original [Punchi Dock P
 - Wayland es la sesión principal soportada.
 - PipeWire es necesario para el visualizador de audio opcional.
 - Fedora 44 `x86_64` es el objetivo principal de paquetes precompilados. Debian 13 cuenta con un flujo separado de compilación, instalación y arranque validado; su revisión funcional completa sigue en curso.
+- Kubuntu dispone de un perfil de compilación e instalación local validado en Plasma 6.6.4. El módulo nativo debe seguir compilándose dentro de Kubuntu; esto no vuelve compatible un artefacto generado en otra distribución.
 - Usuarios de la comunidad reportan funcionamiento correcto en otras distribuciones Linux actuales con Plasma 6. Estos reportes indican una compatibilidad más amplia, pero todavía no equivalen a un perfil de distribución validado por el proyecto.
 - La compilación requiere CMake 3.22+, un compilador C++20, Qt 6.6+, ECM/KF6 6.0+, Plasma 6.0+ y archivos de desarrollo de PipeWire, todos proporcionados por una pila coherente de la distribución.
 - Los binarios nativos incluidos en cada `.plasmoid` no son universales: debe usarse el artefacto etiquetado para la distribución donde fue compilado.
 
-La compatibilidad queda dividida en tres niveles: Fedora es el objetivo principal de publicación, Debian es un perfil de compatibilidad validado por separado y las demás distribuciones se consideran compatibles por reporte comunitario cuando cumplen los requisitos de compilación. Una distribución actual puede compilar y ejecutar Punchi Dock sin cambios del proyecto; una distribución conservadora puede necesitar su propia compilación y baseline compatibles. No mezcles repositorios ni reemplaces la pila Qt/KDE del sistema únicamente para alcanzar estas versiones.
+La compatibilidad distingue Fedora como objetivo principal de publicación,
+Debian como perfil validado por separado, Kubuntu como perfil validado de
+compilación nativa y las demás distribuciones como reportes comunitarios. Una
+distribución actual puede compilar y ejecutar Punchi Dock sin cambios, pero
+necesita una compilación y baseline compatibles. No mezcles repositorios ni
+reemplaces la pila Qt/KDE del sistema únicamente para alcanzar estas versiones.
 
 ## Instalar un paquete publicado
 
@@ -89,7 +95,10 @@ sudo dnf install \
     zip unzip
 ```
 
-En Debian deben instalarse los paquetes de desarrollo equivalentes para Qt 6, KF6, Plasma, PipeWire, CMake y herramientas ZIP. El wrapper Debian fue validado en Debian 13 con Qt 6.8.2.
+En Debian o Kubuntu deben instalarse los paquetes de desarrollo de la propia
+distribución para Qt 6, KF6, Plasma, PipeWire, ECM, CMake, gettext y ZIP. El
+wrapper Debian fue validado en Debian 13 con Qt 6.8.2; el flujo de compilación,
+instalación, arranque y funcionamiento de Kubuntu fue validado en Plasma 6.6.4.
 
 Compila el módulo nativo y crea el artefacto versionado para el sistema actual:
 
@@ -97,22 +106,35 @@ Compila el módulo nativo y crea el artefacto versionado para el sistema actual:
 scripts/empaquetar-plasmoid.sh
 ```
 
-El script automático de empaquetado detecta actualmente Fedora o Debian desde `/etc/os-release`. Se ha reportado que otras distribuciones actuales con Plasma 6 funcionan cuando disponen de los requisitos anteriores, pero todavía no cuentan con un perfil automático de empaquetado validado en este repositorio. Trátalas como compatibilidad comunitaria: compila y prueba contra la distribución anfitriona y no renombres un artefacto nativo de Fedora o Debian. Los perfiles soportados generan un paquete con nombre inequívoco:
+El script automático detecta Fedora, Debian o Kubuntu desde `/etc/os-release`.
+Los paquetes Kubuntu incluyen la versión local de Plasma en el nombre y usan un
+baseline de `qmllint` específico guardado en la caché del usuario. El flujo
+nativo de Kubuntu está validado, pero nunca renombres un artefacto generado en
+otra distribución.
 
 ```text
 dist/punchi-dock-remastered-<version>-<distribución><versión>-<arquitectura>.plasmoid
 ```
 
-Por ejemplo: `punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid` o `punchi-dock-remastered-0.8.9-debian13-x86_64.plasmoid`. No instales en Debian un artefacto identificado como Fedora ni a la inversa.
+Por ejemplo: `punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid`,
+`punchi-dock-remastered-0.8.9-debian13-x86_64.plasmoid` o
+`punchi-dock-remastered-0.8.9-kubuntu<versión>-plasma6.6.4-x86_64.plasmoid`.
+No instales un artefacto identificado para otra distribución.
 
 Los wrappers explícitos quedan disponibles para automatización o diagnóstico:
 
 ```bash
 scripts/build-fedora-package.sh
 scripts/build-debian-package.sh
+scripts/build-kubuntu-package.sh
 ```
 
-Cada wrapper exige ejecutarse en su distribución y usa su baseline propio. El flujo Debian fue comprobado en Debian 13, donde el artefacto se instaló y cargó correctamente. Consulta [scripts/README.md](scripts/README.md) para distinguir empaquetado, instalación local y validación limpia.
+Cada wrapper exige ejecutarse en su distribución y usa su baseline propio. El
+flujo Debian fue comprobado en Debian 13; Kubuntu registra un baseline local
+independiente y superó compilación, instalación, arranque y validación funcional
+del usuario en Plasma 6.6.4. Consulta
+[scripts/README.md](scripts/README.md) para distinguir empaquetado, instalación
+local y validación limpia.
 
 Define `PACKAGE_BUILD_TYPE` o `STRIP_BIN` solo cuando un flujo de desarrollo necesite reemplazarlos explícitamente. No uses `PACKAGE_OUTPUT_FILE` para poner una etiqueta Debian a un binario Fedora ni uses compilación cruzada para publicar el módulo QML nativo.
 
@@ -121,6 +143,17 @@ Para compilar, instalar y reiniciar Plasma durante una prueba local de desarroll
 ```bash
 scripts/probar-plasmoid.sh
 ```
+
+En una instalación limpia de Kubuntu, prepara las dependencias APT oficiales y
+crea el paquete nativo con:
+
+```bash
+Scripts/setup_kubuntu_build.py --yes
+```
+
+Añade `--local-test` para instalar el resultado y reiniciar Plasma Shell. El
+programa debe ejecutarse como usuario del escritorio; solicita `sudo` solo para
+APT.
 
 Este script ejecuta las comprobaciones de empaquetado y CTest, actualiza el plasmoide local, reinicia Plasma Shell y escribe diagnósticos de inicio filtrados en `debug.log`. Como reinicia el shell del escritorio, úsalo después de un cambio coherente y no tras guardar cada archivo.
 

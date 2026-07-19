@@ -4,10 +4,23 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+# shellcheck source=lib/plasma-version.sh
+source "$SCRIPT_DIR/lib/plasma-version.sh"
+
 # shellcheck disable=SC1091
 source /etc/os-release
 PACKAGE_VERSION="$(awk -F '"' '/"Version"[[:space:]]*:/ { print $4; exit }' "$PROJECT_ROOT/metadata.json")"
 PLATFORM_LABEL="${ID:-linux}${VERSION_ID:-unknown}-$(uname -m)"
+if [[ "${ID:-}" == "ubuntu" ]]; then
+    PLASMA_VERSION_OUTPUT="$(plasmashell --version 2>&1 || true)"
+    PLASMA_VERSION="$(punchi_extract_plasma_version "$PLASMA_VERSION_OUTPUT")"
+    if [[ ! "$PLASMA_VERSION" =~ ^6\. ]]; then
+        echo "Error: Punchi Dock requires Plasma 6 (version output: ${PLASMA_VERSION_OUTPUT:-empty})." >&2
+        exit 1
+    fi
+    SAFE_PLASMA_VERSION="${PLASMA_VERSION//[^[:alnum:]._-]/_}"
+    PLATFORM_LABEL="kubuntu${VERSION_ID:-unknown}-plasma${SAFE_PLASMA_VERSION:-unknown}-$(uname -m)"
+fi
 ZIP_FILE="$PROJECT_ROOT/dist/punchi-dock-remastered-${PACKAGE_VERSION}-${PLATFORM_LABEL}-local-test.plasmoid"
 DEBUG_LOG="$PROJECT_ROOT/debug.log"
 PLUGIN_ID="org.kde.plasma.punchi-dock-remastered"
@@ -91,7 +104,7 @@ restart_plasma_shell() {
     return 1
 }
 
-PACKAGE_OUTPUT_FILE="$ZIP_FILE" "$SCRIPT_DIR/empaquetar-plasmoid.sh"
+PUNCHI_LOCAL_TEST=1 PACKAGE_OUTPUT_FILE="$ZIP_FILE" "$SCRIPT_DIR/empaquetar-plasmoid.sh"
 
 echo "==> [1/3] Installing the local test package"
 if [[ -d "$INSTALL_DIR" && ! -f "$INSTALL_DIR/metadata.json" ]]; then
