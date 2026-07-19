@@ -10,7 +10,7 @@
         "Category": "Application Launchers",
         "Description": "A customizable launcher dock for KDE Plasma 6 with a modular and clean architecture.",
         "Description[es]": "Un dock personalizable de lanzadores para KDE Plasma 6 con una arquitectura modular y limpia.",
-        "Icon": "dock",
+        "Icon": "/images/punchi-dock-remastered.svg",
         "Id": "org.kde.plasma.punchi-dock-remastered",
         "License": "GPL-3.0-or-later",
         "Name": "Punchi Dock Remastered",

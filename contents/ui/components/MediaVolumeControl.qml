@@ -29,6 +29,19 @@ RowLayout {
         return false
     }
 
+    function suppressSliderTickMarksWhenSupported() {
+        // Kirigami before 6.24 does not expose this attached member in its
+        // QML type metadata. Runtime detection keeps the fallback safe.
+        // qmllint disable missing-property
+        const styleHints = volumeSlider.Kirigami.StyleHints
+        // qmllint enable missing-property
+        if (!styleHints
+                || typeof styleHints["tickMarkStepSize"] === "undefined") {
+            return
+        }
+        styleHints["tickMarkStepSize"] = -1
+    }
+
     Kirigami.Icon {
         id: volumeIcon
         Layout.preferredWidth: Kirigami.Units.iconSizes.small
@@ -48,10 +61,10 @@ RowLayout {
         from: 0
         to: 100
         stepSize: 1
-        Kirigami.StyleHints.tickMarkStepSize: -1
         enabled: root.available
         Accessible.name: i18nc("@label:slider", "Media volume")
         Accessible.description: i18nc("@info:accessible", "Adjust the media player volume")
+        Component.onCompleted: root.suppressSliderTickMarksWhenSupported()
         onMoved: {
             if (root.available) {
                 root.controller.setVolume(value / 100.0)

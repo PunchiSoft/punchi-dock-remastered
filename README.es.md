@@ -1,5 +1,9 @@
 # Punchi Dock Remastered
 
+<p align="center">
+  <img src="contents/images/punchi-dock-remastered.svg" width="160" alt="Logo de Punchi Dock Remastered">
+</p>
+
 [English](README.md) | [Español](README.es.md)
 
 Punchi Dock Remastered es un dock de lanzadores e interfaz de tareas nativo para KDE Plasma 6, diseñado principalmente para Wayland. Puede funcionar como dock flotante o integrarse en un panel de Plasma respetando el tema activo.
