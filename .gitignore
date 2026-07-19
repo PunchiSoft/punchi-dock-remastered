@@ -21,11 +21,13 @@
 
 # Binarios compilados
 *.so
+/messages.mo
+__pycache__/
+*.py[cod]
 
 # Archivos del sistema operativo
 .DS_Store
 Thumbs.db
 
-# Directorios de pruebas y tests locales
-/tests/
+# Directorios de pruebas locales descartables
 /test/

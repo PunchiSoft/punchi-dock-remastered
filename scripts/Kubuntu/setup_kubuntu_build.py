@@ -15,7 +15,7 @@ from typing import Mapping, Sequence
 
 
 SCRIPT_PATH = Path(__file__).resolve()
-PROJECT_ROOT = SCRIPT_PATH.parents[1]
+PROJECT_ROOT = SCRIPT_PATH.parents[2]
 DIST_DIR = PROJECT_ROOT / "dist"
 
 APT_PACKAGES: tuple[str, ...] = (

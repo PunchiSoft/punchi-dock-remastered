@@ -84,6 +84,10 @@ KCM.SimpleKCM {
         }
 
         Controls.TabButton {
+            text: i18n("Window previews")
+        }
+
+        Controls.TabButton {
             text: i18n("Popups")
         }
 
@@ -367,8 +371,10 @@ KCM.SimpleKCM {
             : (currentIndex === 1
                 ? popupAppearancePage.implicitHeight
                 : (currentIndex === 2
-                    ? menuAppearancePage.implicitHeight
-                    : audioVisualizerPage.implicitHeight))
+                    ? folderPopupPage.implicitHeight
+                    : (currentIndex === 3
+                        ? menuAppearancePage.implicitHeight
+                        : audioVisualizerPage.implicitHeight)))
 
         Kirigami.FormLayout {
             id: dockAppearanceForm
@@ -779,6 +785,11 @@ KCM.SimpleKCM {
 
         ConfigPopups {
             id: popupAppearancePage
+            Layout.fillWidth: true
+        }
+
+        ConfigFolderPopups {
+            id: folderPopupPage
             Layout.fillWidth: true
         }
 
