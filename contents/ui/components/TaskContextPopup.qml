@@ -4,14 +4,14 @@ import org.kde.kirigami as Kirigami
 Item {
     id: root
 
-    property string appName: ""
     property var windows: []
+    property var taskControllerRef: null
+    property int taskRevision: 0
+    property string applicationId: ""
+    property var windowUuids: []
     property string previewStyle: "card"
     property real previewScale: 1.5
-    property bool automaticPopupRadius: true
-    property int popupRadius: 4
-    property int popupDirection: Qt.BottomEdge
-    property bool inPanel: false
+    property string previewInfoMode: "full"
     property int maxVisibleRows: 4
     property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
@@ -19,20 +19,34 @@ Item {
     property var actions: []
     property int maxVisibleActionRows: 6
     property int transitionSpeedPercent: 100
+    property bool transitionsEnabled: true
+    property bool previewsEnabled: true
+    property bool returnToMedia: false
     property bool actionsVisible: false
+    property real mediaActionsRevealProgress: actionsVisible ? 1 : 0
     property real preservedPreviewWidth: 0
     property real preservedPreviewHeight: 0
     readonly property bool containsMouse: popupHover.hovered
     readonly property bool preservingPreviewSize: actionsVisible
         && preservedPreviewWidth > 0
         && preservedPreviewHeight > 0
-    readonly property int transitionDuration: Kirigami.Units.longDuration > 1
+    readonly property bool mediaActionsComposed: returnToMedia
+        && (actionsVisible || mediaActionsRevealProgress > 0.001)
+    readonly property int transitionDuration: transitionsEnabled && Kirigami.Units.longDuration > 1
         ? Math.round(Kirigami.Units.longDuration * 100
             / Math.max(10, Math.min(200, transitionSpeedPercent)))
         : 0
 
-    implicitWidth: preservingPreviewSize ? preservedPreviewWidth : previewPage.implicitWidth
-    implicitHeight: preservingPreviewSize ? preservedPreviewHeight : previewPage.implicitHeight
+    implicitWidth: preservingPreviewSize
+        ? preservedPreviewWidth
+        : (mediaActionsComposed || actionsVisible
+            ? actionsPage.implicitWidth
+            : previewPage.implicitWidth)
+    implicitHeight: preservingPreviewSize
+        ? preservedPreviewHeight
+        : (mediaActionsComposed || actionsVisible
+            ? actionsPage.implicitHeight
+            : previewPage.implicitHeight)
     width: implicitWidth
     height: implicitHeight
     clip: true
@@ -43,14 +57,14 @@ Item {
     signal maximizeWindowRequested(int taskRow)
     signal closeWindowRequested(int taskRow)
     signal actionTriggered(var action)
-    signal closeRequested()
 
-    function showActions() {
+    function showActions(preservePreviewSize) {
         if (actionsVisible) {
             return
         }
-        preservedPreviewWidth = Math.max(1, width)
-        preservedPreviewHeight = Math.max(1, height)
+        const shouldPreservePreviewSize = preservePreviewSize !== false
+        preservedPreviewWidth = shouldPreservePreviewSize ? Math.max(1, width) : 0
+        preservedPreviewHeight = shouldPreservePreviewSize ? Math.max(1, height) : 0
         actionsVisible = true
     }
 
@@ -58,6 +72,14 @@ Item {
         actionsVisible = false
         preservedPreviewWidth = 0
         preservedPreviewHeight = 0
+    }
+
+    Behavior on mediaActionsRevealProgress {
+        NumberAnimation {
+            duration: root.transitionDuration
+            easing.type: root.actionsVisible ? Easing.OutBack : Easing.InOutCubic
+            easing.overshoot: 0.55
+        }
     }
 
     HoverHandler {
@@ -68,30 +90,33 @@ Item {
         id: pageStrip
         width: root.width * 2
         height: root.height
-        x: root.actionsVisible ? -root.width : 0
+        x: root.returnToMedia ? 0 : (root.actionsVisible ? -root.width : 0)
 
         Behavior on x {
-            enabled: root.transitionDuration > 0
+            enabled: !root.returnToMedia && root.transitionDuration > 0
             NumberAnimation {
                 duration: root.transitionDuration
                 easing.type: Easing.InOutCubic
             }
         }
 
-        TaskWindowsPopup {
+        WindowPreviewSurface {
             id: previewPage
             x: 0
             width: root.width
             height: root.height
-            visible: !root.actionsVisible || pageStrip.x > -root.width
-            appName: root.appName
-            windows: root.windows
+            visible: root.previewsEnabled
+                && !root.mediaActionsComposed
+                && (!root.actionsVisible || pageStrip.x > -root.width)
+            enabled: visible
+            taskControllerRef: root.taskControllerRef
+            taskRevision: root.taskRevision
+            applicationId: root.applicationId
+            windowUuids: root.windowUuids
+            fallbackWindows: root.previewsEnabled ? root.windows : []
             previewStyle: root.previewStyle
             previewScale: root.previewScale
-            automaticPopupRadius: root.automaticPopupRadius
-            popupRadius: root.popupRadius
-            popupDirection: root.popupDirection
-            inPanel: root.inPanel
+            previewInfoMode: root.previewInfoMode
             maxVisibleRows: root.maxVisibleRows
             maximumAvailableWidth: root.maximumAvailableWidth
             maximumAvailableHeight: root.maximumAvailableHeight
@@ -101,18 +126,34 @@ Item {
             onMinimizeWindowRequested: taskRow => root.minimizeWindowRequested(taskRow)
             onMaximizeWindowRequested: taskRow => root.maximizeWindowRequested(taskRow)
             onCloseWindowRequested: taskRow => root.closeWindowRequested(taskRow)
-            onCloseRequested: root.closeRequested()
         }
 
         AppActionsPopup {
             id: actionsPage
-            x: root.width
+            x: root.returnToMedia ? 0 : root.width
             width: root.width
             height: root.height
+            opacity: root.returnToMedia
+                ? Math.max(0, Math.min(1, root.mediaActionsRevealProgress))
+                : 1
+            scale: root.returnToMedia
+                ? 0.985 + (0.015 * Math.max(0,
+                    Math.min(1, root.mediaActionsRevealProgress)))
+                : 1
+            transformOrigin: Item.Top
+            visible: root.returnToMedia ? root.mediaActionsComposed : true
+            transform: Translate {
+                y: root.returnToMedia
+                    ? Kirigami.Units.smallSpacing
+                        * (1 - Math.max(0, Math.min(1,
+                            root.mediaActionsRevealProgress)))
+                    : 0
+            }
             itemName: root.actionItemName
             actions: root.actions
             maxVisibleRows: root.maxVisibleActionRows
             embedded: true
+            returnToMedia: root.returnToMedia
 
             onActionTriggered: action => root.actionTriggered(action)
             onCloseRequested: root.showPreviews()

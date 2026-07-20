@@ -12,6 +12,7 @@ Item {
     property var actions: []
     property int maxVisibleRows: 6
     property bool embedded: false
+    property bool returnToMedia: false
     readonly property int rowHeight: 40
     readonly property int visibleRows: Math.max(1, Math.min(maxVisibleRows, actions.length > 0 ? actions.length : 1))
 
@@ -25,11 +26,13 @@ Item {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
         spacing: 8
 
         RowLayout {
             Layout.fillWidth: true
+            Layout.leftMargin: 12
+            Layout.rightMargin: 12
+            Layout.topMargin: 12
 
             PlasmaExtras.ShadowedLabel {
                 Layout.fillWidth: true
@@ -62,7 +65,9 @@ Item {
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
                     Accessible.name: appActionsRoot.embedded
-                        ? i18n("Back to window previews")
+                        ? (appActionsRoot.returnToMedia
+                            ? i18n("Back to media controls")
+                            : i18n("Back to window previews"))
                         : i18n("Close")
                     onClicked: appActionsRoot.closeRequested()
                 }
@@ -70,15 +75,20 @@ Item {
         }
 
         Controls.ScrollView {
+            id: actionScroll
             Layout.fillWidth: true
             Layout.fillHeight: appActionsRoot.embedded
             Layout.preferredHeight: appActionsRoot.visibleRows * appActionsRoot.rowHeight
+            Layout.leftMargin: 12
+            Layout.rightMargin: Kirigami.Units.smallSpacing
+            Layout.bottomMargin: 12
             clip: true
 
             ListView {
                 id: actionList
                 model: appActionsRoot.actions || []
-                implicitWidth: appActionsRoot.implicitWidth - 24
+                implicitWidth: actionScroll.availableWidth
+                width: actionScroll.availableWidth
                 implicitHeight: contentHeight
                 boundsBehavior: Flickable.StopAtBounds
 

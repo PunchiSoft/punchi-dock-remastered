@@ -27,6 +27,8 @@ target_sources(punchidockintegration PRIVATE
     dockthemevalidator.h
     dockruntimeservice.cpp
     dockruntimeservice.h
+    mediaartworkresolver.cpp
+    mediaartworkresolver.h
     mpriscontroller.cpp
     mpriscontroller.h
     pipewireaudiobackend.cpp

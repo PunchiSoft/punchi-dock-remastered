@@ -10,6 +10,9 @@ Item {
     property string mediaIcon: "emblem-music-symbolic"
     property bool showMedia: true
     property bool mediaOnly: false
+    property bool forceCompactMedia: false
+    property bool transitionsEnabled: true
+    property int transitionSpeedPercent: 100
     property real mediaGap: 2
     property real maximumAvailableHeight: 0
     readonly property Item contentItem: contentHost.children.length > 0
@@ -25,26 +28,44 @@ Item {
     readonly property bool compactMediaFits: maximumAvailableHeight <= 0
         || contentImplicitHeight + mediaGap + mediaCard.compactPreferredHeight <= maximumAvailableHeight
     readonly property bool mediaVisible: mediaRequested && compactMediaFits
-    readonly property bool compactMedia: mediaVisible && !fullMediaFits
+    readonly property bool compactMedia: mediaVisible
+        && (forceCompactMedia || !fullMediaFits)
+    readonly property int transitionDuration: transitionsEnabled && Kirigami.Units.longDuration > 1
+        ? Math.round(Kirigami.Units.longDuration * 100
+            / Math.max(10, Math.min(200, transitionSpeedPercent)))
+        : 0
+    readonly property real requestedContentExtent: !mediaOnly && contentItem
+        ? contentItem.implicitHeight
+        : 0
     property real mediaExtent: 0
+    property real contentExtent: requestedContentExtent
     property real mediaRevealProgress: 0
-    readonly property bool containsMouse: surfaceHover.hovered || mediaCard.activeFocus
+    readonly property bool containsMouse: surfaceHover.hovered
+        || (mediaVisible && mediaCard.activeFocus)
 
     signal mediaCloseRequested()
 
     implicitWidth: Math.max(contentImplicitWidth, mediaVisible ? 280 : 0)
-    implicitHeight: contentImplicitHeight + mediaExtent
+    implicitHeight: contentExtent + mediaExtent
     width: implicitWidth
     height: implicitHeight
 
-    function updateMediaPresentation() {
+    function updateMediaExtent() {
         if (!mediaVisible) {
-            mediaRevealProgress = 0
             mediaExtent = 0
             return
         }
 
         mediaExtent = mediaCard.implicitHeight + mediaGap
+    }
+
+    function updateMediaVisibility() {
+        updateMediaExtent()
+        if (!mediaVisible) {
+            mediaRevealProgress = 0
+            return
+        }
+
         mediaRevealProgress = 0
         Qt.callLater(function() {
             if (root.mediaVisible) {
@@ -57,22 +78,29 @@ Item {
         return mediaVisible && mediaCard.focusFirstControl()
     }
 
-    onMediaVisibleChanged: updateMediaPresentation()
-    onCompactMediaChanged: updateMediaPresentation()
-    onMediaOnlyChanged: updateMediaPresentation()
+    onMediaVisibleChanged: updateMediaVisibility()
+    onCompactMediaChanged: updateMediaExtent()
+    onMediaOnlyChanged: updateMediaExtent()
 
-    Component.onCompleted: updateMediaPresentation()
+    Component.onCompleted: updateMediaVisibility()
 
     Behavior on mediaExtent {
         NumberAnimation {
-            duration: Kirigami.Units.longDuration
+            duration: root.transitionDuration
+            easing.type: Easing.OutCubic
+        }
+    }
+
+    Behavior on contentExtent {
+        NumberAnimation {
+            duration: root.transitionDuration
             easing.type: Easing.OutCubic
         }
     }
 
     Behavior on mediaRevealProgress {
         NumberAnimation {
-            duration: Kirigami.Units.longDuration
+            duration: root.transitionDuration
             easing.type: Easing.OutCubic
         }
     }
@@ -90,6 +118,8 @@ Item {
         fallbackIcon: root.mediaIcon
         compact: root.compactMedia
         squarePresentation: root.mediaOnly
+        transitionDuration: root.transitionDuration
+        height: Math.max(0, root.mediaExtent - root.mediaGap)
         visible: root.mediaVisible || root.mediaExtent > 0.5
         opacity: root.mediaRevealProgress
         scale: 0.98 + (0.02 * root.mediaRevealProgress)
@@ -97,7 +127,7 @@ Item {
             y: 6 * (1 - root.mediaRevealProgress)
         }
 
-        onImplicitHeightChanged: root.updateMediaPresentation()
+        onImplicitHeightChanged: root.updateMediaExtent()
         onCloseRequested: root.mediaCloseRequested()
     }
 
@@ -106,7 +136,7 @@ Item {
         x: 0
         y: root.mediaExtent
         width: root.width
-        height: Math.max(0, root.height - root.mediaExtent)
+        height: root.contentExtent
         imagePath: "dialogs/background"
         visible: !root.mediaOnly
     }
@@ -116,7 +146,7 @@ Item {
         x: 0
         y: root.mediaExtent
         width: root.width
-        height: Math.max(0, root.height - root.mediaExtent)
+        height: root.contentExtent
         visible: !root.mediaOnly
     }
 

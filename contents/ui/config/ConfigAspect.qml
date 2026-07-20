@@ -30,9 +30,8 @@ KCM.SimpleKCM {
     property string cfg_dockThemeCustomId: ""
     property alias cfg_windowPreviewStyle: popupAppearancePage.cfg_windowPreviewStyle
     property alias cfg_windowPreviewScale: popupAppearancePage.cfg_windowPreviewScale
+    property alias cfg_windowPreviewInfoMode: popupAppearancePage.cfg_windowPreviewInfoMode
     property alias cfg_mediaControlsOnHover: popupAppearancePage.cfg_mediaControlsOnHover
-    property alias cfg_taskPopupRadiusAuto: popupAppearancePage.cfg_taskPopupRadiusAuto
-    property alias cfg_taskPopupRadius: popupAppearancePage.cfg_taskPopupRadius
     property alias cfg_maxPopupRows: popupAppearancePage.cfg_maxPopupRows
     property alias cfg_popupAnimation: popupAppearancePage.cfg_popupAnimation
     property alias cfg_popupAnimationSpeed: popupAppearancePage.cfg_popupAnimationSpeed

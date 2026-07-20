@@ -13,17 +13,23 @@ FocusScope {
     property string fallbackIcon: "emblem-music-symbolic"
     property bool compact: false
     property bool squarePresentation: false
+    property int transitionDuration: Kirigami.Units.longDuration
+    property real compactTransitionProgress: compact ? 1 : 0
     readonly property bool available: !!controller && controller.available
     readonly property string artUrl: controller && controller.artUrl
         ? String(controller.artUrl)
         : ""
-    readonly property bool squareMode: squarePresentation && !compact
+    readonly property bool artworkReady: artUrl.length > 0
+        && squareCoverSource.status === Image.Ready
+    readonly property bool squareMode: squarePresentation
+        && artworkReady
+        && !compact
     readonly property bool ambientMode: !squareMode && !compact
         && ambientSource.status === Image.Ready
         && artUrl.length > 0
     readonly property bool volumeAvailable: !!controller && controller.volumeAvailable
     readonly property real compactPreferredHeight: volumeAvailable ? 88 : 56
-    readonly property real preferredExpandedHeight: squarePresentation
+    readonly property real preferredExpandedHeight: squareMode
         ? (volumeAvailable ? 420 : 382)
         : (volumeAvailable
             ? (artUrl.length > 0 ? 152 : 120)
@@ -39,14 +45,32 @@ FocusScope {
             ? controller.identity
             : i18n("MPRIS controls")
     readonly property real cornerRadius: 12
+    readonly property bool compactTransitionVisible: compact
+        || compactTransitionProgress > 0.001
+    readonly property real squareContentOpacity: squareMode
+            || compactTransitionVisible
+        ? Math.max(0, Math.min(1, 1 - (2 * compactTransitionProgress)))
+        : 0
+    readonly property real compactContentOpacity: compactTransitionVisible
+            || squareMode
+        ? Math.max(0, Math.min(1, (2 * compactTransitionProgress) - 1))
+        : (ambientMode ? 0 : 1)
 
     implicitWidth: 280
     implicitHeight: compact ? compactPreferredHeight : preferredExpandedHeight
+    clip: true
     visible: available
     Accessible.role: Accessible.Grouping
     Accessible.name: i18nc("@info:accessible", "Media controls for %1", title)
 
     signal closeRequested()
+
+    Behavior on compactTransitionProgress {
+        NumberAnimation {
+            duration: root.transitionDuration
+            easing.type: Easing.OutCubic
+        }
+    }
 
     Keys.onEscapePressed: function(event) {
         root.closeRequested()
@@ -80,7 +104,10 @@ FocusScope {
         anchors.fill: parent
         anchors.margins: 12
         spacing: Kirigami.Units.smallSpacing
-        visible: root.squareMode
+        opacity: root.squareContentOpacity
+        scale: 1 - (0.025 * Math.min(1, root.compactTransitionProgress))
+        transformOrigin: Item.Top
+        visible: opacity > 0.001
 
         Item {
             id: squareCover
@@ -247,18 +274,16 @@ FocusScope {
         anchors.fill: parent
         anchors.margins: Kirigami.Units.smallSpacing
         spacing: Kirigami.Units.smallSpacing
-        opacity: root.ambientMode ? 0 : 1
-        visible: !root.squareMode && opacity > 0
-
-        Behavior on opacity {
-            NumberAnimation {
-                duration: Kirigami.Units.shortDuration
-            }
-        }
+        opacity: root.compactContentOpacity
+        scale: root.compactTransitionVisible || root.squareMode
+            ? 0.97 + (0.03 * Math.min(1, root.compactTransitionProgress))
+            : 1
+        transformOrigin: Item.Top
+        visible: opacity > 0.001
 
         Item {
-            Layout.preferredWidth: root.compact ? 40 : 64
-            Layout.preferredHeight: root.compact ? 40 : 64
+            Layout.preferredWidth: 64 - (24 * Math.min(1, root.compactTransitionProgress))
+            Layout.preferredHeight: Layout.preferredWidth
 
             Rectangle {
                 anchors.fill: parent
@@ -301,10 +326,10 @@ FocusScope {
             PlasmaComponents.Label {
                 Layout.fillWidth: true
                 text: root.subtitle
-                opacity: 0.72
+                opacity: 0.72 * (1 - Math.min(1, root.compactTransitionProgress))
                 elide: Text.ElideRight
                 maximumLineCount: 1
-                visible: !root.compact
+                visible: opacity > 0.01
             }
 
             Item {

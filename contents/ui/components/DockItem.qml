@@ -4,7 +4,6 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.extras as PlasmaExtras
-import org.kde.taskmanager as TaskManager
 
 Item {
     id: dockItemContainer
@@ -168,12 +167,6 @@ Item {
     property int taskIndicatorCount: 0
     property bool taskIsActive: false
     property bool taskDemandsAttention: false
-    property string taskPreviewStyle: "card"
-    property real taskPreviewScale: 1.5
-    property int taskPreviewMaximumWidth: 752
-    property int taskPreviewMaximumHeight: 568
-    property string taskPreviewWindowUuid: ""
-    property bool preferTaskPopupOnHover: false
     property bool suppressTooltip: false
     property bool supportsContextMenu: false
     property bool mediaHoverControlsEnabled: false
@@ -189,18 +182,11 @@ Item {
     readonly property bool separatorItem: itemType === "separator"
     readonly property bool spacerItem: itemType === "spacer"
     readonly property bool activeTaskItem: itemType === "app" && (taskIsActive || taskIndicatorCount > 0)
-    readonly property bool thumbnailPreviewEnabled: activeTaskItem
-        && taskPreviewStyle === "thumbnail"
-        && taskPreviewWindowUuid.length > 0
-    readonly property bool textTooltipItem: !separatorItem && !spacerItem && itemName.length > 0 && !activeTaskItem
-    readonly property bool richTooltipItem: !separatorItem && !spacerItem && itemName.length > 0
-        && activeTaskItem && taskPreviewStyle !== "none"
     readonly property bool showAnyTooltip: !separatorItem
         && !spacerItem
         && itemName.length > 0
         && !suppressTooltip
-        && !preferTaskPopupOnHover
-        && (!activeTaskItem || taskPreviewStyle !== "none")
+        && !activeTaskItem
     readonly property real requestedSeparatorThickness: customSeparatorEnabled
         ? Number(separatorTheme.thickness || 2)
         : 2
@@ -223,16 +209,6 @@ Item {
                     Math.round(iconSize
                         * Number(separatorTheme.lengthRatio || 0.72)))))
         : Math.max(20, Math.round(iconSize * 0.72))
-    readonly property real maximumTaskPreviewScaleByWidth: Math.max(1.5,
-        (taskPreviewMaximumWidth - 32) / 176)
-    readonly property real maximumTaskPreviewScaleByHeight: Math.max(1.5,
-        (taskPreviewMaximumHeight - 72) * 1.6 / 176)
-    readonly property real effectiveTaskPreviewScale: Math.max(1.5, Math.min(4.5,
-        taskPreviewScale, maximumTaskPreviewScaleByWidth,
-        maximumTaskPreviewScaleByHeight))
-    readonly property int richTooltipPreviewWidth: Math.round(176 * effectiveTaskPreviewScale)
-    readonly property int richTooltipPreviewHeight: Math.round(richTooltipPreviewWidth / 1.6)
-
     Timer {
         id: clockTimer
         interval: 1000
@@ -708,86 +684,6 @@ Item {
         }
     }
 
-    Component {
-        id: richTooltipComponent
-
-        ColumnLayout {
-            spacing: 4
-
-            Kirigami.Heading {
-                text: dockItemContainer.localizedItemName
-                level: 4
-                color: Kirigami.Theme.textColor
-                elide: Text.ElideRight
-                Layout.maximumWidth: 160
-            }
-
-            Rectangle {
-                Layout.preferredWidth: dockItemContainer.richTooltipPreviewWidth
-                Layout.preferredHeight: dockItemContainer.richTooltipPreviewHeight
-                radius: 5
-                color: Qt.rgba(Kirigami.Theme.backgroundColor.r,
-                    Kirigami.Theme.backgroundColor.g,
-                    Kirigami.Theme.backgroundColor.b, 0.8)
-                border.width: 1
-                border.color: dockItemContainer.taskIsActive
-                    ? Kirigami.Theme.highlightColor
-                    : Qt.rgba(Kirigami.Theme.textColor.r,
-                        Kirigami.Theme.textColor.g,
-                        Kirigami.Theme.textColor.b, 0.22)
-
-                Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: 1
-                    radius: 4
-                    color: Qt.rgba(Kirigami.Theme.alternateBackgroundColor.r,
-                        Kirigami.Theme.alternateBackgroundColor.g,
-                        Kirigami.Theme.alternateBackgroundColor.b, 0.72)
-                }
-
-                Column {
-                    anchors.centerIn: parent
-                    width: parent.width - 16
-                    spacing: 6
-
-                    Kirigami.Icon {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        width: 48
-                        height: 48
-                        source: dockItemContainer.iconName
-                    }
-
-                    Controls.Label {
-                        width: parent.width
-                        horizontalAlignment: Text.AlignHCenter
-                        elide: Text.ElideRight
-                        text: dockItemContainer.taskPreviewStyle === "thumbnail"
-                            ? i18n("Preview unavailable")
-                            : i18n("Preview card")
-                        color: Kirigami.Theme.disabledTextColor
-                        font.pixelSize: 11
-                    }
-                }
-
-                Loader {
-                    id: tooltipPreviewLoader
-                    anchors.fill: parent
-                    active: tooltipDialog.visible && dockItemContainer.thumbnailPreviewEnabled
-                    sourceComponent: tooltipLivePreviewComponent
-                }
-            }
-        }
-    }
-
-    Component {
-        id: tooltipLivePreviewComponent
-
-        WindowLiveThumbnail {
-            anchors.fill: parent
-            windowUuid: dockItemContainer.taskPreviewWindowUuid
-        }
-    }
-
     PlasmaCore.Dialog {
         id: tooltipDialog
         visualParent: dockItemContainer
@@ -803,9 +699,7 @@ Item {
             Loader {
                 id: tooltipContentLoader
                 anchors.fill: parent
-                sourceComponent: dockItemContainer.richTooltipItem
-                    ? richTooltipComponent
-                    : textTooltipComponent
+                sourceComponent: textTooltipComponent
             }
         }
     }

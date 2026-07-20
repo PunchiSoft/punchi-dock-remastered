@@ -117,9 +117,10 @@ PlasmoidItem {
     readonly property bool mediaControlsOnHover: !!Plasmoid.configuration.mediaControlsOnHover
     readonly property real windowPreviewScale: Math.max(1.5, Math.min(4.5,
         Number(Plasmoid.configuration.windowPreviewScale || 1.5)))
-    readonly property bool taskPopupRadiusAuto: Plasmoid.configuration.taskPopupRadiusAuto !== false
-    readonly property int taskPopupRadius: Math.max(4, Math.min(32,
-        Number(Plasmoid.configuration.taskPopupRadius || 4)))
+    readonly property string windowPreviewInfoMode: {
+        const mode = String(Plasmoid.configuration.windowPreviewInfoMode || "full")
+        return mode === "icon" || mode === "none" ? mode : "full"
+    }
     readonly property bool showWindowThumbnails: windowPreviewStyle === "thumbnail"
     readonly property int maxPopupRows: Math.max(1, Math.min(8,
         Number(Plasmoid.configuration.maxPopupRows || 4)))
@@ -735,6 +736,7 @@ PlasmoidItem {
             notePopupContentRef: notePopupContent
             taskWindowsPopupContentRef: taskWindowsPopupContent
             taskContextSurfaceStackRef: taskContextSurfaceStack
+            taskPopupAnimatedContentRef: taskPopupAnimatedContent
             mediaHoverEnabled: root.mediaControlsOnHover
             folderPopupDialogRef: folderPopupDialog
             calendarPopupDialogRef: calendarPopupDialog
@@ -1036,14 +1038,6 @@ PlasmoidItem {
                         taskIndicatorCount: taskState.count
                         taskIsActive: taskState.isActive
                         taskDemandsAttention: taskState.demandsAttention
-                        taskPreviewStyle: root.windowPreviewStyle
-                        taskPreviewScale: root.windowPreviewScale
-                        taskPreviewMaximumWidth: root.taskPopupAvailableWidth
-                        taskPreviewMaximumHeight: root.taskPopupAvailableHeight
-                        taskPreviewWindowUuid: taskState.firstRow >= 0
-                            ? taskController.taskWindowUuidForRow(taskState.firstRow)
-                            : ""
-                        preferTaskPopupOnHover: root.windowPreviewStyle !== "none" && taskState.count > 1
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === dockItemDelegate)
                         supportsContextMenu: root.itemHasContextMenu(modelData, taskState.rows, "pinned")
@@ -1162,12 +1156,6 @@ PlasmoidItem {
                         taskIndicatorCount: taskData.count
                         taskIsActive: taskData.active
                         taskDemandsAttention: taskData.demandsAttention
-                        taskPreviewStyle: root.windowPreviewStyle
-                        taskPreviewScale: root.windowPreviewScale
-                        taskPreviewMaximumWidth: root.taskPopupAvailableWidth
-                        taskPreviewMaximumHeight: root.taskPopupAvailableHeight
-                        taskPreviewWindowUuid: taskData.windowUuid
-                        preferTaskPopupOnHover: root.windowPreviewStyle !== "none" && taskData.count > 1
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === taskDockItemDelegate)
                         supportsContextMenu: root.itemHasContextMenu(modelData, taskData.rows, "dynamic")
@@ -1521,7 +1509,7 @@ PlasmoidItem {
                 ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
                 : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false
-            hideOnWindowDeactivate: false
+            hideOnWindowDeactivate: true
             backgroundHints: PlasmaCore.Types.NoBackground
             onVisibleChanged: {
                 if (!visible) {
@@ -1531,6 +1519,7 @@ PlasmoidItem {
             }
 
             mainItem: PopupAnimatedContent {
+                id: taskPopupAnimatedContent
                 popupVisible: taskWindowsDialog.visible
                 // qmllint disable unqualified
                 animationStyle: root.popupAnimationStyle
@@ -1538,13 +1527,21 @@ PlasmoidItem {
                 animationIntensityPercent: root.popupAnimationIntensity
                 popupDirection: root.popupDirection
                 // qmllint enable unqualified
+                onCloseAnimationFinished: taskWindowsDialog.visible = false
 
                 ContextSurfaceStack {
                     id: taskContextSurfaceStack
+                    visible: taskWindowsDialog.visible
+                    enabled: visible
                     mediaController: mprisController
                     mediaIcon: popupCoordinator.activeTaskPopupData.icon || "emblem-music-symbolic"
                     showMedia: popupCoordinator.mediaHoverActive
                     mediaOnly: popupCoordinator.mediaHoverActive
+                        && !taskWindowsPopupContent.mediaActionsComposed
+                    forceCompactMedia: popupCoordinator.mediaHoverActive
+                        && taskWindowsPopupContent.mediaActionsComposed
+                    transitionsEnabled: root.popupAnimationStyle !== "none"
+                    transitionSpeedPercent: root.contextMenuTransitionSpeed
                     maximumAvailableHeight: root.taskPopupAvailableHeight
                     onImplicitHeightChanged: {
                         if (taskWindowsDialog.visible) {
@@ -1558,20 +1555,24 @@ PlasmoidItem {
 
                     TaskContextPopup {
                         id: taskWindowsPopupContent
-                        appName: popupCoordinator.activeTaskPopupData.name || ""
                         windows: popupCoordinator.activeTaskPopupData.windows || []
+                        taskControllerRef: taskController
+                        taskRevision: root.taskVisualRevision
+                        applicationId: popupCoordinator.activeTaskPopupData.applicationId || ""
+                        windowUuids: popupCoordinator.activeTaskPopupData.windowUuids || []
                         previewStyle: root.windowPreviewStyle
                         previewScale: root.windowPreviewScale
-                        automaticPopupRadius: root.taskPopupRadiusAuto
-                        popupRadius: root.taskPopupRadius
-                        popupDirection: root.popupDirection
-                        inPanel: root.inPanel
+                        previewInfoMode: root.windowPreviewInfoMode
                         maxVisibleRows: root.maxPopupRows
                         maximumAvailableWidth: root.taskPopupAvailableWidth
                         maximumAvailableHeight: root.taskPopupAvailableHeight
                         actionItemName: popupCoordinator.activeAppContextMenuData.name || ""
                         actions: popupCoordinator.activeAppContextMenuData.actions || []
                         maxVisibleActionRows: popupCoordinator.activeAppContextMenuData.maxVisibleRows || 6
+                        previewsEnabled: taskWindowsDialog.visible
+                            && !popupCoordinator.mediaHoverActive
+                        returnToMedia: popupCoordinator.mediaHoverActive
+                        transitionsEnabled: root.popupAnimationStyle !== "none"
                         // qmllint disable unqualified
                         transitionSpeedPercent: root.contextMenuTransitionSpeed
                         // qmllint enable unqualified
@@ -1593,9 +1594,6 @@ PlasmoidItem {
                             if (taskController.closeTaskRow(taskRow)) {
                                 popupCoordinator.removeTaskPopupWindow(taskRow)
                             }
-                        }
-                        onCloseRequested: {
-                            taskWindowsDialog.visible = false
                         }
                         onActionTriggered: function(action) {
                             taskWindowsDialog.visible = false

@@ -2,9 +2,11 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import org.kde.kirigami as Kirigami
+import org.kde.plasma.extras as PlasmaExtras
 Item {
     id: taskPopupRoot
-    implicitWidth: Math.max(196, previewFrameWidth + 40) + scrollBarGutter
+    implicitWidth: Math.max(196, previewFrameWidth + horizontalPadding * 2
+        + cardOuterPadding * 2) + scrollBarGutter
     implicitHeight: verticalPadding * 2 + headerHeight + contentSpacing + listViewportHeight
     width: implicitWidth
     height: implicitHeight
@@ -13,8 +15,7 @@ Item {
     property var windows: []
     property string previewStyle: "card"
     property real previewScale: 1.5
-    property bool automaticPopupRadius: true
-    property int popupRadius: 4
+    property string previewInfoMode: "full"
     property int popupDirection: Qt.BottomEdge
     property bool inPanel: false
     property int maxVisibleRows: 4
@@ -29,20 +30,18 @@ Item {
             * 1.6 / 184)
     readonly property real effectivePreviewScale: Math.max(1.5, Math.min(4.5,
         previewScale, maximumPreviewScaleByWidth, maximumPreviewScaleByHeight))
-    readonly property int configuredCornerRadius: Math.max(4, Math.min(32, popupRadius))
     readonly property int previewFrameWidth: Math.round(184 * effectivePreviewScale)
     readonly property int previewFrameHeight: Math.round(previewFrameWidth / 1.6)
-    readonly property int horizontalPadding: 12
-    readonly property int verticalPadding: 12
+    readonly property int horizontalPadding: Kirigami.Units.smallSpacing * 2
+    readonly property int verticalPadding: Kirigami.Units.smallSpacing * 2
     readonly property int headerHeight: 0
     readonly property int contentSpacing: 0
-    readonly property int cardOuterPadding: 5
-    readonly property int previewRadius: automaticPopupRadius ? 4 : configuredCornerRadius
-    readonly property int previewInnerRadius: previewRadius - 1
-    readonly property int cardRadius: Math.min(40, previewRadius + 6)
-    readonly property int cardOverlayHeight: Math.max(68, Math.round(previewFrameHeight * 0.34))
+    readonly property int cardOuterPadding: 2
+    readonly property int previewRadius: 4
+    readonly property int previewInnerRadius: previewRadius
+    readonly property int cardRadius: previewRadius + cardOuterPadding
     readonly property int cardHeight: previewFrameHeight + (cardOuterPadding * 2)
-    readonly property int listSpacing: 8
+    readonly property int listSpacing: Kirigami.Units.smallSpacing
     readonly property int actionGroupRadius: Math.max(8, Math.min(16, previewInnerRadius))
     readonly property int actionButtonRadius: Math.max(6, actionGroupRadius - 2)
     readonly property int listContentHeight: windows.length > 0
@@ -132,13 +131,13 @@ Item {
 
                     background: Rectangle {
                         radius: taskPopupRoot.cardRadius
-                        color: windowRow.hovered || windowRow.activeFocus || windowRow.modelData.active
+                        color: windowRow.hovered || windowRow.activeFocus
                             ? Qt.rgba(Kirigami.Theme.highlightColor.r,
                                 Kirigami.Theme.highlightColor.g,
                                 Kirigami.Theme.highlightColor.b,
-                                windowRow.modelData.active ? 0.14 : 0.08)
+                                0.08)
                             : "transparent"
-                        border.width: windowRow.activeFocus || windowRow.modelData.active ? 1 : 0
+                        border.width: windowRow.activeFocus ? 2 : 0
                         border.color: Kirigami.Theme.highlightColor
                     }
 
@@ -149,22 +148,9 @@ Item {
                             width: taskPopupRoot.previewFrameWidth
                             height: taskPopupRoot.previewFrameHeight
 
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: taskPopupRoot.previewRadius
-                                color: Qt.rgba(Kirigami.Theme.backgroundColor.r,
-                                    Kirigami.Theme.backgroundColor.g,
-                                    Kirigami.Theme.backgroundColor.b, 0.18)
-                                border.width: 1
-                                border.color: Qt.rgba(Kirigami.Theme.textColor.r,
-                                    Kirigami.Theme.textColor.g,
-                                    Kirigami.Theme.textColor.b, 0.14)
-                            }
-
                             Item {
                                 id: previewContent
                                 anchors.fill: parent
-                                anchors.margins: 1
                                 clip: true
 
                                 Rectangle {
@@ -206,20 +192,6 @@ Item {
                                     }
                                 }
 
-                                Rectangle {
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.bottom: parent.bottom
-                                    height: taskPopupRoot.cardOverlayHeight + 28
-                                    radius: taskPopupRoot.previewInnerRadius
-                                    z: 1
-                                    gradient: Gradient {
-                                        GradientStop { position: 0.0; color: Qt.rgba(Kirigami.Theme.backgroundColor.r, Kirigami.Theme.backgroundColor.g, Kirigami.Theme.backgroundColor.b, 0.0) }
-                                        GradientStop { position: 0.45; color: Qt.rgba(Kirigami.Theme.backgroundColor.r, Kirigami.Theme.backgroundColor.g, Kirigami.Theme.backgroundColor.b, 0.18) }
-                                        GradientStop { position: 1.0; color: Qt.rgba(Kirigami.Theme.backgroundColor.r, Kirigami.Theme.backgroundColor.g, Kirigami.Theme.backgroundColor.b, 0.82) }
-                                    }
-                                }
-
                                 Column {
                                     anchors.centerIn: parent
                                     width: parent.width - 16
@@ -246,17 +218,6 @@ Item {
                                 }
 
                                 Rectangle {
-                                    anchors.left: parent.left
-                                    anchors.right: parent.right
-                                    anchors.bottom: parent.bottom
-                                    height: taskPopupRoot.cardOverlayHeight
-                                    z: 2
-                                    color: Qt.rgba(Kirigami.Theme.backgroundColor.r,
-                                        Kirigami.Theme.backgroundColor.g,
-                                        Kirigami.Theme.backgroundColor.b, 0.32)
-                                }
-
-                                Rectangle {
                                     anchors.top: parent.top
                                     anchors.right: parent.right
                                     anchors.topMargin: 8
@@ -270,10 +231,6 @@ Item {
                                     color: Qt.rgba(Kirigami.Theme.backgroundColor.r,
                                         Kirigami.Theme.backgroundColor.g,
                                         Kirigami.Theme.backgroundColor.b, 0.78)
-                                    border.width: 1
-                                    border.color: Qt.rgba(Kirigami.Theme.textColor.r,
-                                        Kirigami.Theme.textColor.g,
-                                        Kirigami.Theme.textColor.b, 0.16)
 
                                     RowLayout {
                                         id: actionButtonsRow
@@ -429,6 +386,7 @@ Item {
                                     anchors.bottomMargin: 8
                                     spacing: 8
                                     z: 3
+                                    visible: taskPopupRoot.previewInfoMode !== "none"
 
                                     Kirigami.Icon {
                                         Layout.alignment: Qt.AlignVCenter
@@ -441,25 +399,27 @@ Item {
                                         Layout.fillWidth: true
                                         Layout.alignment: Qt.AlignVCenter
                                         spacing: 1
+                                        visible: taskPopupRoot.previewInfoMode === "full"
 
-                                        Controls.Label {
+                                        PlasmaExtras.ShadowedLabel {
                                             Layout.fillWidth: true
                                             text: windowRow.primaryText
                                             font.bold: !!windowRow.modelData.active
                                             elide: Text.ElideRight
                                         }
 
-                                        Controls.Label {
+                                        PlasmaExtras.ShadowedLabel {
                                             Layout.fillWidth: true
                                             text: windowRow.secondaryText
                                             elide: Text.ElideRight
-                                            color: Kirigami.Theme.disabledTextColor
+                                            opacity: 0.78
                                             font.pixelSize: 11
                                         }
                                     }
                                 }
                             }
                         }
+
                     }
 
                     Component {

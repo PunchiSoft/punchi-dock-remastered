@@ -17,6 +17,16 @@ target_link_libraries(commandclassification_test PRIVATE Qt6::Core KF6::CoreAddo
 
 add_test(NAME commandclassification_test COMMAND commandclassification_test)
 
+add_executable(mediaartworkresolver_test
+    mediaartworkresolver_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/mediaartworkresolver.cpp
+)
+
+target_include_directories(mediaartworkresolver_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(mediaartworkresolver_test PRIVATE Qt6::Core)
+
+add_test(NAME mediaartworkresolver_test COMMAND mediaartworkresolver_test)
+
 add_executable(dockthemevalidator_test
     dockthemevalidator_test.cpp
     ${CMAKE_SOURCE_DIR}/src/dockthemevalidator.cpp

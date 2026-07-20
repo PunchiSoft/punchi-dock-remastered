@@ -17,6 +17,7 @@ Item {
     property var notePopupContentRef: null
     property var taskWindowsPopupContentRef: null
     property var taskContextSurfaceStackRef: null
+    property var taskPopupAnimatedContentRef: null
 
     property var folderPopupDialogRef: null
     property var calendarPopupDialogRef: null
@@ -74,6 +75,33 @@ Item {
             if (root.taskWindowsDialogRef
                     && !root.taskPopupHovered
                     && !root.taskPopupSourceContainsMouse()) {
+                root.closeTaskWindowsPopup(true)
+            }
+        }
+    }
+
+    Timer {
+        id: mediaAvailabilityFallbackTimer
+        interval: 180
+        repeat: false
+        onTriggered: {
+            if (!root.mediaHoverActive || !root.mprisControllerRef
+                    || root.mprisControllerRef.available) {
+                return
+            }
+            const activeApplicationId = String(
+                root.activeTaskPopupData.applicationId || "")
+            const requestedApplicationId = String(
+                root.mprisControllerRef.applicationId || "")
+            if (activeApplicationId.length > 0
+                    && requestedApplicationId.length > 0
+                    && activeApplicationId !== requestedApplicationId) {
+                return
+            }
+            root.mediaHoverActive = false
+            if (root.pendingTaskPopupPreviewFallback) {
+                root.taskWindowsPopupContentRef.showPreviews()
+            } else if (root.taskWindowsDialogRef) {
                 root.taskWindowsDialogRef.visible = false
             }
         }
@@ -89,15 +117,15 @@ Item {
     Connections {
         target: root.mprisControllerRef
         function onStateChanged() {
-            if (!root.mediaHoverActive || root.mprisControllerRef.available) {
+            if (!root.mediaHoverActive) {
+                mediaAvailabilityFallbackTimer.stop()
                 return
             }
-            root.mediaHoverActive = false
-            if (root.pendingTaskPopupPreviewFallback) {
-                root.taskWindowsPopupContentRef.showPreviews()
-            } else if (root.taskWindowsDialogRef) {
-                root.taskWindowsDialogRef.visible = false
+            if (root.mprisControllerRef.available) {
+                mediaAvailabilityFallbackTimer.stop()
+                return
             }
+            mediaAvailabilityFallbackTimer.restart()
         }
     }
 
@@ -168,8 +196,25 @@ Item {
         const applicationId = applicationIdentityResolver
             ? applicationIdentityResolver(itemData)
             : ""
-        mprisControllerRef.applicationId = applicationId
-        mediaHoverActive = false
+        const taskPopupAlreadyActive = taskWindowsDialogRef.visible
+            && taskPopupVisualParent === visualParent
+        if (taskPopupAlreadyActive && taskPopupAnimatedContentRef) {
+            taskPopupAnimatedContentRef.cancelClosing()
+        }
+        if (taskPopupAlreadyActive && taskWindowsPopupContentRef.actionsVisible) {
+            taskPopupOpenTimer.stop()
+            taskPopupCloseTimer.stop()
+            taskWindowsPopupContentRef.showPreviews()
+            return
+        }
+        const contextualTaskApplicationId = taskControllerRef.taskApplicationIdForRows(rows)
+        const preserveMediaContext = taskPopupAlreadyActive
+            && mediaHoverActive
+            && String(activeTaskPopupData.applicationId || "") === contextualTaskApplicationId
+        if (!preserveMediaContext) {
+            mprisControllerRef.applicationId = applicationId
+            mediaHoverActive = false
+        }
         const actions = contextActionsResolver
             ? contextActionsResolver(itemData, rows, itemOrigin || "",
                 Number.isInteger(persistentIndex) ? persistentIndex : -1)
@@ -187,10 +232,10 @@ Item {
                     ? itemData.actionPopupMaxVisibleRows
                     : 6)))
         }
-        if (taskWindowsDialogRef.visible && taskPopupVisualParent === visualParent) {
+        if (taskPopupAlreadyActive) {
             taskPopupOpenTimer.stop()
             taskPopupCloseTimer.stop()
-            taskWindowsPopupContentRef.showActions()
+            taskWindowsPopupContentRef.showActions(!preserveMediaContext)
             return
         }
 
@@ -247,6 +292,9 @@ Item {
             return
         }
         taskPopupOpenTimer.stop()
+        if (taskPopupAnimatedContentRef) {
+            taskPopupAnimatedContentRef.cancelClosing()
+        }
         closeAllPopups(taskWindowsDialogRef)
         taskWindowsPopupContentRef.showPreviews()
         const popupRows = rows || []
@@ -297,6 +345,10 @@ Item {
             taskPopupOpenTimer.stop()
             return
         }
+        if (taskWindowsDialogRef && taskWindowsDialogRef.visible
+                && taskPopupAnimatedContentRef) {
+            taskPopupAnimatedContentRef.cancelClosing()
+        }
         pendingTaskPopupAppName = appName || ""
         pendingTaskPopupRows = rows || []
         taskPopupVisualParent = visualParent || null
@@ -328,6 +380,7 @@ Item {
     function resetTaskPopupState() {
         taskPopupOpenTimer.stop()
         taskPopupCloseTimer.stop()
+        mediaAvailabilityFallbackTimer.stop()
         pendingTaskPopupAppName = ""
         pendingTaskPopupRows = []
         taskPopupVisualParent = null
@@ -349,10 +402,26 @@ Item {
         }
     }
 
+    function closeTaskWindowsPopup(animated) {
+        taskPopupOpenTimer.stop()
+        taskPopupCloseTimer.stop()
+        if (!taskWindowsDialogRef || !taskWindowsDialogRef.visible) {
+            return
+        }
+        if (animated && taskPopupAnimatedContentRef) {
+            taskPopupAnimatedContentRef.beginClosing()
+            return
+        }
+        taskWindowsDialogRef.visible = false
+    }
+
     function setTaskPopupHovered(hovered) {
         taskPopupHovered = hovered
         if (hovered) {
             taskPopupCloseTimer.stop()
+            if (taskPopupAnimatedContentRef) {
+                taskPopupAnimatedContentRef.cancelClosing()
+            }
         } else if (!taskPopupSourceContainsMouse()) {
             taskPopupCloseTimer.restart()
         }

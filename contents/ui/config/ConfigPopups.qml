@@ -19,9 +19,8 @@ Item {
     // Persist the geometric factor so existing 1.5 configurations become the
     // normalized 1.0 user-facing size without a migration.
     property real cfg_windowPreviewScale: 1.5
+    property string cfg_windowPreviewInfoMode: "full"
     property alias cfg_mediaControlsOnHover: mediaControlsOnHoverCheck.checked
-    property alias cfg_taskPopupRadiusAuto: taskPopupRadiusAutoCheck.checked
-    property alias cfg_taskPopupRadius: taskPopupRadiusSlider.value
     property alias cfg_maxPopupRows: maxPopupRowsSpin.value
     property string cfg_popupAnimation: "scale"
     // Kept so existing configurations can still be loaded by the KCM.
@@ -38,6 +37,13 @@ Item {
         { "text": i18n("Cards (recommended)"), "value": "card" },
         { "text": i18n("Window previews"), "value": "thumbnail" },
         { "text": i18n("None"), "value": "none" }
+    ]
+    // qmllint enable unqualified
+    // qmllint disable unqualified
+    readonly property var previewInfoOptions: [
+        { "text": i18nc("@item:inlistbox Window preview information", "Icon and text"), "value": "full" },
+        { "text": i18nc("@item:inlistbox Window preview information", "Icon only"), "value": "icon" },
+        { "text": i18nc("@item:inlistbox Window preview information", "Hidden"), "value": "none" }
     ]
     // qmllint enable unqualified
     // qmllint disable unqualified
@@ -69,10 +75,12 @@ Item {
 
     function syncSelectors() {
         syncComboValue(previewStyleCombo, page.cfg_windowPreviewStyle)
+        syncComboValue(previewInfoCombo, page.cfg_windowPreviewInfoMode)
         syncComboValue(popupAnimationCombo, page.cfg_popupAnimation)
     }
 
     onCfg_windowPreviewStyleChanged: syncSelectors()
+    onCfg_windowPreviewInfoModeChanged: syncSelectors()
     onCfg_popupAnimationChanged: syncSelectors()
     Component.onCompleted: syncSelectors()
 
@@ -133,7 +141,7 @@ Item {
         }
 
         Controls.Label {
-            text: i18n("For MPRIS-compatible applications, replaces the window preview with artwork, playback controls, and volume. Right-click actions remain separate.")
+            text: i18n("For MPRIS-compatible applications, replaces the window preview with artwork, playback controls, and volume. Right-click shows compact media controls above the application actions.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
@@ -182,53 +190,39 @@ Item {
             enabled: page.cfg_windowPreviewStyle !== "none"
         }
 
-        Controls.CheckBox {
-            id: taskPopupRadiusAutoCheck
-            Kirigami.FormData.label: i18n("Preview corners:")
-            text: i18n("Automatic (recommended 4 px)")
-            enabled: page.cfg_windowPreviewStyle !== "none"
-
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
-        }
-
         RowLayout {
-            Kirigami.FormData.label: i18n("Preview radius:")
+            Kirigami.FormData.label: i18n("Preview information:")
             enabled: page.cfg_windowPreviewStyle !== "none"
-                && !taskPopupRadiusAutoCheck.checked
             Layout.maximumWidth: page.contentWidthHint
 
-            Controls.Slider {
-                id: taskPopupRadiusSlider
-                from: 4
-                to: 32
-                stepSize: 1
-                snapMode: Controls.Slider.SnapAlways
-                Layout.fillWidth: true
-                Layout.preferredWidth: page.contentWidthHint - 64
-                Accessible.name: i18n("Window preview card corner radius")
+            Controls.ComboBox {
+                id: previewInfoCombo
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                textRole: "text"
+                valueRole: "value"
+                model: page.previewInfoOptions
+                Accessible.name: i18n("Window preview information")
+                onActivated: {
+                    if (page.cfg_windowPreviewInfoMode !== currentValue) {
+                        page.cfg_windowPreviewInfoMode = currentValue
+                    }
+                }
 
                 ConfigCursorBehavior {
                     cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
                 }
-            }
-
-            Controls.Label {
-                text: i18n("%1 px", Math.round(taskPopupRadiusSlider.value))
-                font.bold: true
-                Layout.preferredWidth: 54
             }
         }
 
-        Kirigami.InlineMessage {
-            visible: page.cfg_windowPreviewStyle !== "none"
-                && !taskPopupRadiusAutoCheck.checked
+        Controls.Label {
+            text: i18n("Choose whether window previews show the app icon with window details, only the icon, or no information overlay.")
+            wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
-            type: Kirigami.MessageType.Information
-            text: i18n("Manual mode starts from 4 px and adjusts the internal preview card and thumbnail corners while preserving Plasma's native popup blur and shadow.")
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+            enabled: page.cfg_windowPreviewStyle !== "none"
         }
 
         Controls.SpinBox {

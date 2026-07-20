@@ -15,6 +15,7 @@ Item {
     property int popupDirection: Qt.BottomEdge
     property real openingProgress: 0
     property bool openingPending: false
+    property bool closing: false
 
     readonly property Item contentItem: animatedSurface.children.length > 0
         ? animatedSurface.children[0]
@@ -28,6 +29,8 @@ Item {
     readonly property real slideDistance: Kirigami.Units.smallSpacing * 2
         * intensityFactor
     readonly property real initialOpacity: Math.max(0, 1 - (0.72 * intensityFactor))
+
+    signal closeAnimationFinished()
     readonly property real slideX: {
         if (animationStyle !== "slide") {
             return 0
@@ -68,9 +71,46 @@ Item {
         openingProgress = 1
     }
 
+    function finishClosing() {
+        if (!closing) {
+            return
+        }
+        closing = false
+        closeAnimationFinished()
+    }
+
+    function beginClosing() {
+        if (!popupVisible || closing) {
+            return
+        }
+        openingFallback.stop()
+        openingPending = false
+        closing = true
+        if (animationStyle === "none" || animationDuration <= 0
+                || openingProgress <= 0.001) {
+            openingProgress = 0
+            Qt.callLater(function() {
+                root.finishClosing()
+            })
+            return
+        }
+        openingProgress = 0
+    }
+
+    function cancelClosing() {
+        if (!closing) {
+            return
+        }
+        closing = false
+        if (popupVisible) {
+            openingProgress = 1
+        }
+    }
+
     function scheduleOpening() {
         openingFallback.stop()
         openingPending = false
+        closing = false
 
         if (!popupVisible) {
             openingProgress = 0
@@ -91,7 +131,7 @@ Item {
 
     onPopupVisibleChanged: scheduleOpening()
     onAnimationStyleChanged: {
-        if (popupVisible) {
+        if (popupVisible && !closing) {
             scheduleOpening()
         }
     }
@@ -102,12 +142,19 @@ Item {
 
         NumberAnimation {
             duration: root.animationDuration
-            easing.type: root.animationStyle === "bounce"
-                ? Easing.OutBack
-                : Easing.OutCubic
+            easing.type: root.closing
+                ? Easing.InCubic
+                : (root.animationStyle === "bounce"
+                    ? Easing.OutBack
+                    : Easing.OutCubic)
             easing.overshoot: root.animationStyle === "bounce"
                 ? 1 + (1.2 * root.intensityFactor)
                 : 1.70158
+            onRunningChanged: {
+                if (!running && root.closing && root.openingProgress <= 0.001) {
+                    root.finishClosing()
+                }
+            }
         }
     }
 

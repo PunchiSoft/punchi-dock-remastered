@@ -74,6 +74,7 @@ private:
     QString m_track;
     QString m_artist;
     QString m_artUrl;
+    QString m_mediaIdentity;
     bool m_available = false;
     bool m_canGoPrevious = false;
     bool m_canPlay = false;

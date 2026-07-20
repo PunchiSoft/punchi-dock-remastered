@@ -103,6 +103,7 @@ La estructura real del repositorio puede evolucionar. No crear carpetas o abstra
 - Preferir componentes oficiales de Plasma y Kirigami cuando correspondan al contexto del plasmoide.
 - Usar colores, tipografía, medidas y métricas proporcionadas por el tema y el sistema.
 - No introducir colores fijos para elementos que deban adaptarse al tema claro u oscuro.
+- Componer cada popup alrededor de una sola superficie visual principal. Añadir fondos, bordes o marcos internos únicamente cuando cumplan una función concreta de recorte, contraste, interacción o comunicación de estado; evitar composiciones de tarjeta dentro de tarjeta y separar colecciones mediante espaciado y estados transitorios antes que con contornos permanentes.
 - Favorecer bindings declarativos legibles; evitar bindings costosos, ciclos y actualizaciones continuas innecesarias.
 - Mantener animaciones sutiles y acotadas. Considerar coste de CPU/GPU y preferencias de reducción de movimiento.
 - Preservar navegación por teclado, foco visible, nombres accesibles y escalado.

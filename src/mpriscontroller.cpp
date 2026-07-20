@@ -2,6 +2,8 @@
 
 #include "mpriscontroller.h"
 
+#include "mediaartworkresolver.h"
+
 #include <QDBusArgument>
 #include <QDBusConnection>
 #include <QDBusInterface>
@@ -255,11 +257,25 @@ void MprisController::selectBestCandidate()
     const QVariantMap root = best.value(QStringLiteral("root")).toMap();
     const QVariantMap player = best.value(QStringLiteral("player")).toMap();
     const QVariantMap metadata = mapValue(player.value(QStringLiteral("Metadata")));
-    m_service = best.value(QStringLiteral("service")).toString();
+    const QString service = best.value(QStringLiteral("service")).toString();
+    const QString track = metadata.value(QStringLiteral("xesam:title")).toString();
+    const QString artist = artistValue(metadata.value(QStringLiteral("xesam:artist")));
+    const QString mediaUrl = metadata.value(QStringLiteral("xesam:url")).toString();
+    const QString mediaIdentity =
+        MediaArtworkResolver::mediaIdentityKey(service, track, artist, mediaUrl);
+    const QString artworkUrl = MediaArtworkResolver::stabilizedArtworkUrl(
+        metadata.value(QStringLiteral("mpris:artUrl")).toString(),
+        mediaUrl,
+        mediaIdentity,
+        m_mediaIdentity,
+        m_artUrl);
+
+    m_service = service;
     m_identity = root.value(QStringLiteral("Identity")).toString();
-    m_track = metadata.value(QStringLiteral("xesam:title")).toString();
-    m_artist = artistValue(metadata.value(QStringLiteral("xesam:artist")));
-    m_artUrl = metadata.value(QStringLiteral("mpris:artUrl")).toString();
+    m_track = track;
+    m_artist = artist;
+    m_artUrl = artworkUrl;
+    m_mediaIdentity = mediaIdentity;
     m_canGoPrevious = player.value(QStringLiteral("CanGoPrevious")).toBool();
     m_canPlay = player.value(QStringLiteral("CanPlay")).toBool();
     m_canPause = player.value(QStringLiteral("CanPause")).toBool();
@@ -280,6 +296,7 @@ void MprisController::clearState()
     m_track.clear();
     m_artist.clear();
     m_artUrl.clear();
+    m_mediaIdentity.clear();
     m_available = false;
     m_canGoPrevious = false;
     m_canPlay = false;
