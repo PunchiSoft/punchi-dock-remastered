@@ -7,6 +7,8 @@ PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
 
 # shellcheck source=plasma-version.sh
 source "$LIB_DIR/plasma-version.sh"
+# shellcheck source=local-package-install.sh
+source "$LIB_DIR/local-package-install.sh"
 
 # shellcheck disable=SC1091
 source /etc/os-release
@@ -27,27 +29,6 @@ DEBUG_LOG="$PROJECT_ROOT/debug.log"
 PLUGIN_ID="org.kde.plasma.punchi-dock-remastered"
 DATA_ROOT="$(qtpaths6 --writable-path GenericDataLocation)"
 INSTALL_DIR="$DATA_ROOT/plasma/plasmoids/$PLUGIN_ID"
-BROKEN_INSTALL_BACKUP=""
-
-restore_broken_install() {
-    if [[ -n "$BROKEN_INSTALL_BACKUP" && -d "$BROKEN_INSTALL_BACKUP" && ! -e "$INSTALL_DIR" ]]; then
-        mv "$BROKEN_INSTALL_BACKUP" "$INSTALL_DIR"
-    fi
-}
-
-install_with_backup() {
-    BROKEN_INSTALL_BACKUP="$DATA_ROOT/${PLUGIN_ID}.backup.$$"
-    mv "$INSTALL_DIR" "$BROKEN_INSTALL_BACKUP"
-
-    if ! kpackagetool6 --type Plasma/Applet -i "$ZIP_FILE"; then
-        cmake -E remove_directory "$INSTALL_DIR"
-        restore_broken_install
-        return 1
-    fi
-
-    cmake -E remove_directory "$BROKEN_INSTALL_BACKUP"
-    BROKEN_INSTALL_BACKUP=""
-}
 
 restart_plasma_shell() {
     local previous_pid=""
@@ -122,23 +103,7 @@ restart_plasma_shell() {
 PUNCHI_LOCAL_TEST=1 PACKAGE_OUTPUT_FILE="$ZIP_FILE" "$LIB_DIR/package-plasmoid.sh"
 
 echo "==> [1/3] Installing the local test package"
-if [[ -d "$INSTALL_DIR" && ! -f "$INSTALL_DIR/metadata.json" ]]; then
-    BROKEN_INSTALL_BACKUP="$DATA_ROOT/${PLUGIN_ID}.broken.$$"
-    echo "Repairing incomplete local installation: $INSTALL_DIR"
-    mv "$INSTALL_DIR" "$BROKEN_INSTALL_BACKUP"
-fi
-
-if [[ -n "$BROKEN_INSTALL_BACKUP" ]]; then
-    if ! kpackagetool6 --type Plasma/Applet -i "$ZIP_FILE"; then
-        restore_broken_install
-        exit 1
-    fi
-    cmake -E remove_directory "$BROKEN_INSTALL_BACKUP"
-    BROKEN_INSTALL_BACKUP=""
-elif ! kpackagetool6 --type Plasma/Applet -u "$ZIP_FILE" 2>/dev/null; then
-    echo "Replacing the existing same-version local package"
-    install_with_backup
-fi
+punchi_install_local_package "$ZIP_FILE" "$INSTALL_DIR" "$DATA_ROOT" "$PLUGIN_ID"
 
 if [[ ! -f "$INSTALL_DIR/metadata.json" ]]; then
     echo "Error: kpackagetool6 did not leave a valid installation in $INSTALL_DIR" >&2

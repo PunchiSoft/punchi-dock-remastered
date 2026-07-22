@@ -3,7 +3,9 @@
 
 from __future__ import annotations
 
+import os
 import subprocess
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -53,16 +55,21 @@ class PlasmaVersionDetectionTest(unittest.TestCase):
     def test_setup_help_is_available_from_implementation_and_wrapper(self) -> None:
         """Both Kubuntu setup entry points expose the Bash CLI without host checks."""
 
-        for script_path in (SETUP_SCRIPT, SETUP_WRAPPER):
-            with self.subTest(script_path=script_path):
-                result = subprocess.run(
-                    ("bash", str(script_path), "--help"),
-                    check=True,
-                    cwd=PROJECT_ROOT,
-                    text=True,
-                    stdout=subprocess.PIPE,
-                )
-                self.assertIn("Usage: scripts/setup-kubuntu.sh", result.stdout)
+        with tempfile.TemporaryDirectory() as log_directory:
+            environment = os.environ.copy()
+            environment["PUNCHI_LOG_DIR"] = log_directory
+
+            for script_path in (SETUP_SCRIPT, SETUP_WRAPPER):
+                with self.subTest(script_path=script_path):
+                    result = subprocess.run(
+                        ("bash", str(script_path), "--help"),
+                        check=True,
+                        cwd=PROJECT_ROOT,
+                        env=environment,
+                        text=True,
+                        stdout=subprocess.PIPE,
+                    )
+                    self.assertIn("Usage: scripts/setup-kubuntu.sh", result.stdout)
 
 
 if __name__ == "__main__":

@@ -7,6 +7,8 @@ PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
 
 # shellcheck source=../lib/plasma-version.sh
 source "$SCRIPTS_DIR/lib/plasma-version.sh"
+# shellcheck source=../lib/qmllint-baseline.sh
+source "$SCRIPTS_DIR/lib/qmllint-baseline.sh"
 
 if [[ ! -r /etc/os-release ]]; then
     echo "Error: the distribution could not be identified from /etc/os-release." >&2
@@ -45,7 +47,7 @@ package_arch="${PACKAGE_ARCH:-$(uname -m)}"
 safe_plasma_version="${plasma_version//[^[:alnum:]._-]/_}"
 platform_label="kubuntu${platform_version}-plasma${safe_plasma_version}-${package_arch}"
 default_build_root="${XDG_CACHE_HOME:-$HOME/.cache}/punchi-dock-remastered"
-default_baseline_file="$default_build_root/$platform_label/qmllint-baseline.env"
+default_baseline_file="$(punchi_qmllint_baseline_path "$default_build_root/$platform_label" "$package_version")"
 
 export BUILD_DIR="${BUILD_DIR:-$default_build_root/$platform_label}"
 export PACKAGE_OUTPUT_FILE="${PACKAGE_OUTPUT_FILE:-$PROJECT_ROOT/dist/punchi-dock-remastered-${package_version}-${platform_label}.plasmoid}"

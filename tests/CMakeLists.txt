@@ -64,6 +64,21 @@ add_test(
     COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/debian_dependency_detection_test.sh
 )
 
+add_test(
+    NAME qmllint_baseline_path_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/qmllint_baseline_path_test.sh
+)
+
+add_test(
+    NAME setup_logging_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/setup_logging_test.sh
+)
+
+add_test(
+    NAME local_package_install_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/local_package_install_test.sh
+)
+
 add_executable(pipewirebackend_probe EXCLUDE_FROM_ALL
     pipewirebackend_probe.cpp
     ${CMAKE_SOURCE_DIR}/src/pipewireaudiobackend.cpp

@@ -5,6 +5,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
 
+# shellcheck source=../lib/qmllint-baseline.sh
+source "$SCRIPTS_DIR/lib/qmllint-baseline.sh"
+
 usage() {
     cat <<'EOF'
 Usage: scripts/distro/debian14-testing-package.sh [options]
@@ -129,7 +132,7 @@ main() {
     arch="${PACKAGE_ARCH:-$(uname -m)}"
     label="debian14testing-$arch"
     cache_root="${XDG_CACHE_HOME:-$HOME/.cache}/punchi-dock-remastered/$label"
-    baseline_file="${QMLLINT_BASELINE_FILE:-$cache_root/qmllint-baseline.env}"
+    baseline_file="${QMLLINT_BASELINE_FILE:-$(punchi_qmllint_baseline_path "$cache_root" "$version")}"
     build_dir="${BUILD_DIR:-$cache_root/build}"
     zip_file="${PACKAGE_OUTPUT_FILE:-$PROJECT_ROOT/dist/punchi-dock-remastered-$version-$label.plasmoid}"
     qmllint_bin="$(resolve_qmllint_bin)"

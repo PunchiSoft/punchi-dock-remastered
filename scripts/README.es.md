@@ -41,6 +41,21 @@ Cada comando valida su distribución, detecta las dependencias instaladas y usa
 el ejecutable de `qmllint` y baseline correspondientes. Los motores comunes de
 compilación e instalación permanecen internos en `scripts/lib/`.
 
+Cada comando `setup-*.sh` también duplica toda su salida de terminal en una
+carpeta de la distribución dentro del proyecto compartido:
+
+```text
+docs/logs/<distribución>/
+```
+
+Las líneas finales indican la ruta exacta del log y el código de salida. Un
+archivo estable llamado `setup-<distribución>-latest.log` contiene siempre la
+ejecución más reciente, incluso en carpetas compartidas de VirtualBox que no
+exponen enlaces simbólicos. Se puede definir `PUNCHI_LOG_DIR` para usar otro
+directorio local. Todo `docs/` está excluido de Git y de los paquetes del
+plasmoide. Los logs pueden contener rutas del usuario e información del sistema;
+deben revisarse antes de compartirlos públicamente.
+
 Fedora y Debian conservan sus perfiles validados. Kubuntu dispone de un perfil
 de compilación local validado en Plasma 6.6.4: prepara una instalación limpia,
 compila el módulo contra las bibliotecas anfitrionas, instala el paquete y
@@ -77,12 +92,12 @@ En Debian y Kubuntu, los objetos de compilación se guardan por defecto en
 rendimiento cuando el repositorio está montado mediante una carpeta compartida
 de VirtualBox. El `.plasmoid` final continúa apareciendo en `dist/`.
 
-Kubuntu mantiene un baseline de `qmllint` propio en esa caché. La primera
-ejecución de prueba local lo registra automáticamente para la combinación
-concreta de Kubuntu, Plasma y Qt; las siguientes ejecuciones rechazan aumentos
-de advertencias. Ese baseline local sirve para diagnóstico; la validación de
-Kubuntu corresponde al flujo de compilación nativa, no a reutilizar paquetes de
-otras distribuciones.
+Kubuntu mantiene en esa caché un baseline de `qmllint` propio y separado por
+versión del paquete. La primera prueba local de cada versión de Punchi Dock lo
+registra automáticamente para la combinación concreta de Kubuntu, Plasma y Qt;
+las siguientes ejecuciones de esa versión rechazan aumentos de advertencias.
+Ese baseline local sirve para diagnóstico; la validación de Kubuntu corresponde
+al flujo de compilación nativa, no a reutilizar paquetes de otras distribuciones.
 
 ## Preparar Debian 14/testing experimental
 
@@ -94,10 +109,12 @@ scripts/setup-debian14-testing.sh --yes
 ```
 
 El script detecta las dependencias ya instaladas mediante `dpkg-query` y usa APT
-únicamente para los paquetes faltantes. Sin opciones registra el baseline local
-de `qmllint` si hace falta y crea el artefacto publicable `debian14testing` sin
-instalarlo. Debe ejecutarse como usuario normal de Plasma; solo solicita `sudo`
-para APT. No añade repositorios externos ni reemplaza Qt/KDE del sistema.
+únicamente para los paquetes faltantes. Sin opciones registra, si hace falta,
+un baseline local de `qmllint` separado por versión del paquete y crea el
+artefacto publicable `debian14testing` sin instalarlo. Una nueva versión de
+Punchi Dock no reutiliza así los conteos registrados para una versión anterior.
+Debe ejecutarse como usuario normal de Plasma; solo solicita `sudo` para APT. No
+añade repositorios externos ni reemplaza Qt/KDE del sistema.
 
 Opciones útiles:
 

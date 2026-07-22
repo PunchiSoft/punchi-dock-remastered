@@ -179,13 +179,19 @@ report_warning_category_excess() {
     local warning_count="$2"
     local baseline_count="$3"
     local warning_pattern="$4"
+    local detail_limit=12
 
     if (( warning_count <= baseline_count )); then
         return
     fi
 
     echo "Baseline exceeded for $category_name: current=$warning_count, baseline=$baseline_count, delta=+$((warning_count - baseline_count))" >&2
-    grep '^Warning:' "$QMLLINT_LOG" | grep "$warning_pattern" >&2 || true
+    grep '^Warning:' "$QMLLINT_LOG" \
+        | grep "$warning_pattern" \
+        | sed -n "1,${detail_limit}p" >&2 || true
+    if (( warning_count > detail_limit )); then
+        echo "... $((warning_count - detail_limit)) additional $category_name warnings omitted. Full log: $QMLLINT_LOG" >&2
+    fi
 }
 
 echo "qmllint warnings: total=$warning_total, unqualified=$warning_unqualified, layout=$warning_layout, missing-property=$warning_missing_property, import=$warning_import"

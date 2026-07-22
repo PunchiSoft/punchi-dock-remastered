@@ -40,6 +40,21 @@ Each command validates its distribution, detects installed dependencies, and
 uses the matching `qmllint` executable and baseline. Shared build and
 installation engines remain internal under `scripts/lib/`.
 
+Every `setup-*.sh` command also mirrors its complete terminal output to a
+distribution-specific directory inside the shared project:
+
+```text
+docs/logs/<distribution>/
+```
+
+The final lines report the exact log path and exit status. A stable file named
+`setup-<distribution>-latest.log` always contains the most recent execution for
+that distribution, including on VirtualBox shared folders that do not expose
+symbolic links. Set `PUNCHI_LOG_DIR` to use another local directory.
+The entire `docs/` tree is excluded from Git and plasmoid packages. Logs can
+contain local user paths and system information; review them before sharing
+them publicly.
+
 Fedora and Debian keep their validated profiles. Kubuntu has a locally
 validated build profile for Plasma 6.6.4: it prepares a clean installation,
 builds the module against host libraries, installs the package, and supports
@@ -76,11 +91,11 @@ On Debian and Kubuntu, build objects are stored under
 performance issues when the repository is mounted through a VirtualBox shared
 folder. The final `.plasmoid` still appears under `dist/`.
 
-Kubuntu keeps a dedicated `qmllint` baseline in that cache. The first local
-test records it for the exact Kubuntu, Plasma, and Qt combination; later runs
-reject warning increases. This local baseline is diagnostic evidence. Kubuntu
-validation still requires a native build and never reuses another
-distribution's package.
+Kubuntu keeps a dedicated, package-versioned `qmllint` baseline in that cache.
+The first local test for each Punchi Dock version records it for the exact
+Kubuntu, Plasma, and Qt combination; later runs of that version reject warning
+increases. This local baseline is diagnostic evidence. Kubuntu validation still
+requires a native build and never reuses another distribution's package.
 
 ## Experimental Debian 14/testing setup
 
@@ -91,10 +106,12 @@ scripts/setup-debian14-testing.sh --yes
 ```
 
 The script detects installed dependencies with `dpkg-query` and uses APT only
-for missing packages. With no options, it records a local `qmllint` baseline
-when required and creates a public `debian14testing` artifact without installing
-it. Run it as the regular Plasma user; only APT operations request `sudo`. It
-does not add external repositories or replace the system Qt/KDE stack.
+for missing packages. With no options, it records a package-versioned local
+`qmllint` baseline when required and creates a public `debian14testing` artifact
+without installing it. A new Punchi Dock version therefore cannot reuse the
+warning counts recorded for an older version. Run it as the regular Plasma
+user; only APT operations request `sudo`. It does not add external repositories
+or replace the system Qt/KDE stack.
 
 Useful options:
 

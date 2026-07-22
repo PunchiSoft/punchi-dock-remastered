@@ -13,6 +13,8 @@ DRY_RUN=0
 
 # shellcheck source=../lib/plasma-version.sh
 source "$SCRIPTS_DIR/lib/plasma-version.sh"
+# shellcheck source=../lib/qmllint-baseline.sh
+source "$SCRIPTS_DIR/lib/qmllint-baseline.sh"
 
 APT_PACKAGES=(
     binutils
@@ -254,7 +256,7 @@ build_plasmoid() {
     safe_plasma_version="${PLASMA_VERSION//[^[:alnum:]._-]/_}"
     platform_label="kubuntu${VERSION_ID:-unknown}-plasma${safe_plasma_version}-${package_arch}"
     cache_root="${XDG_CACHE_HOME:-$HOME/.cache}/punchi-dock-remastered"
-    baseline_file="$cache_root/$platform_label/qmllint-baseline.env"
+    baseline_file="$(punchi_qmllint_baseline_path "$cache_root/$platform_label" "$package_version")"
 
     if (( LOCAL_TEST == 1 )); then
         artifact_suffix="-local-test"
