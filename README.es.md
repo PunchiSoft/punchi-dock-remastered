@@ -172,3 +172,11 @@ Las notas internas de desarrollo y los registros de auditoría se excluyen delib
 ## Licencia
 
 Punchi Dock Remastered se distribuye bajo la [Licencia Pública General de GNU versión 3.0 o posterior](LICENSE).
+
+Los avisos de copyright, los términos de licencia y los requisitos de atribución
+se aplican tanto al uso humano como al uso asistido por IA. Copiar, modificar,
+redistribuir, resumir o generar código basado en este proyecto con ayuda de IA
+no elimina ni reemplaza la obligación de cumplir la licencia GPL-3.0-or-later,
+conservar los avisos requeridos, proporcionar el código fuente correspondiente
+cuando sea obligatorio y atribuir a Punchi Dock Remastered y sus contribuidores
+cuando corresponda.

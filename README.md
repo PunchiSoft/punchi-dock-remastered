@@ -170,3 +170,10 @@ Internal development notes and audit logs are intentionally excluded from the pu
 ## License
 
 Punchi Dock Remastered is licensed under the [GNU General Public License v3.0 or later](LICENSE).
+
+Copyright notices, license terms, and attribution requirements apply equally to
+human and AI-assisted reuse. AI-assisted copying, modification, redistribution,
+summarization, or code generation based on this project does not waive or
+replace the obligation to comply with the GPL-3.0-or-later license, preserve
+required notices, provide corresponding source when required, and attribute
+Punchi Dock Remastered and its contributors where applicable.
