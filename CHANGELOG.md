@@ -2,6 +2,48 @@
 
 Todos los cambios notables de este proyecto serán documentados en este archivo.
 
+## [0.9.1] - 2026-07-22
+
+### Agregado
+
+- Opciones independientes para mostrar sombras sutiles en los textos del dock,
+  las miniaturas de ventanas, los popups y los menus.
+- Distancia configurable para los popups de carpetas en los perfiles de
+  rejilla, lista y detalle, limitada a un rango seguro.
+- Configuracion separada de animacion, velocidad e intensidad para popups
+  generales, menus y vistas previas.
+- Componentes dedicados para estado de configuracion, geometria, gestion de
+  items y acciones contextuales del dock.
+
+### Cambiado
+
+- `main.qml` delega configuracion, geometria y coordinacion de items en modulos
+  con responsabilidades acotadas.
+- Los textos de menus y superficies emergentes pueden conservar contraste
+  sobre fondos claros mediante sombras configurables.
+- La direccion de cada popup flotante se calcula al abrir desde la posicion
+  real del item que origina la accion.
+- La version declarada en KPackage y CMake avanza a 0.9.1.
+
+### Corregido
+
+- Los popups del dock flotante inferior ya no nacen hacia abajo ni pierden la
+  distancia configurada por usar el area de edicion completa del plasmoide.
+- Carpetas, menus, calendario, notas, overflow y vistas previas comparten el
+  anclaje preciso al `DockItem` de origen.
+- Las pestañas de Apariencia mantienen la correspondencia correcta con su
+  contenido despues de separar los controles de animacion.
+- Los perfiles de carpeta conservan una jerarquia tipografica coherente entre
+  rejilla, lista y detalle.
+
+### Validacion
+
+- Fedora 44, Plasma 6.7.3 y Qt 6.11.1: validacion QML dentro del baseline con
+  725 advertencias conocidas, compilacion Release y paquete Fedora correcto.
+- CTest completo: `12/12` pruebas correctas.
+- El usuario confirmo en Plasma real que la direccion y distancia de los
+  popups flotantes funcionan correctamente en la posicion inferior.
+
 ## [0.9.0] - 2026-07-21
 
 ### Agregado
