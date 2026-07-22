@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.extras as PlasmaExtras
@@ -6,7 +7,9 @@ import org.kde.kirigami as Kirigami
 
 Item {
     id: folderRoot
-    implicitWidth: 280
+    implicitWidth: layoutMode === "grid"
+        ? Math.min(desiredGridWidth + scrollBarGutter, safeMaximumWidth)
+        : Math.min(280, safeMaximumWidth)
     implicitHeight: classicPopupHeight
     width: implicitWidth
     height: implicitHeight
@@ -14,6 +17,13 @@ Item {
     // Properties injected by the main UI.
     property var folderItem: ({})
     property string layoutMode: "grid"
+    property int profileIconSize: layoutMode === "grid" ? 36 : 32
+    property int profileColumns: 3
+    property int profileRows: 4
+    property bool profileShowLabels: true
+    property string profileFontFamily: ""
+    property int profileFontSize: layoutMode === "grid" ? 9 : 10
+    property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
 
     // Quick access entries.
@@ -21,17 +31,58 @@ Item {
     property int itemCount: apps.length
     readonly property int classicMargin: 12
     readonly property int classicSpacing: 8
-    readonly property int gridCellWidth: 80
-    readonly property int classicCellHeight: layoutMode === "detailed" ? 56 : (layoutMode === "list" ? 40 : 72)
-    readonly property int classicContentWidth: implicitWidth - classicMargin * 2
-    readonly property int gridColumnCount: Math.max(1, Math.floor(classicContentWidth / gridCellWidth))
+    readonly property int effectiveIconSize: Math.max(24, Math.min(64,
+        Number(profileIconSize || (layoutMode === "grid" ? 36 : 32))))
+    readonly property int configuredColumnCount: Math.max(1, Math.min(8,
+        Number(profileColumns || 3)))
+    readonly property int configuredRowLimit: Math.max(1, Math.min(8,
+        Number(profileRows || 4)))
+    readonly property bool showItemLabels: profileShowLabels
+    readonly property string effectiveFontFamily:
+        String(profileFontFamily || "").length > 0
+            ? String(profileFontFamily)
+            : (layoutMode === "grid"
+                ? Kirigami.Theme.smallFont.family
+                : Kirigami.Theme.defaultFont.family)
+    readonly property int effectiveFontSize: Math.max(8, Math.min(18,
+        Number(profileFontSize || (layoutMode === "grid" ? 9 : 10))))
+    readonly property int gridCellWidth: showItemLabels
+        ? Math.max(80, effectiveIconSize + 24)
+        : effectiveIconSize + 16
+    readonly property int classicCellHeight: !showItemLabels
+        ? effectiveIconSize + 8
+        : (layoutMode === "detailed"
+            ? Math.max(56, effectiveIconSize + effectiveFontSize + 8)
+            : (layoutMode === "list"
+                ? Math.max(40, effectiveIconSize + 8)
+                : effectiveIconSize + effectiveFontSize + 24))
+    readonly property int desiredGridWidth: classicMargin * 2
+        + configuredColumnCount * gridCellWidth
+    readonly property int safeMaximumWidth: Math.max(
+        classicMargin * 2 + gridCellWidth,
+        Number(maximumAvailableWidth || 752))
+    readonly property int gridColumnsWithoutScrollBar: Math.max(1,
+        Math.min(configuredColumnCount, Math.floor(
+            (Math.min(desiredGridWidth, safeMaximumWidth)
+                - classicMargin * 2) / gridCellWidth)))
+    readonly property bool scrollRequired: layoutMode === "grid"
+        ? itemCount > configuredRowLimit * gridColumnsWithoutScrollBar
+        : itemCount > configuredRowLimit
+    readonly property int scrollBarGutter: scrollRequired
+        ? Math.ceil(verticalScrollBar.implicitWidth)
+            + Kirigami.Units.smallSpacing
+        : 0
+    readonly property int classicContentWidth: implicitWidth
+        - classicMargin * 2 - scrollBarGutter
+    readonly property int gridColumnCount: layoutMode === "grid"
+        ? Math.max(1, Math.min(configuredColumnCount,
+            Math.floor(classicContentWidth / gridCellWidth)))
+        : 1
     readonly property int classicRowCount: layoutMode === "grid"
         ? Math.ceil(itemCount / gridColumnCount)
         : itemCount
-    readonly property int configuredRowLimit: Math.max(0, Number(folderItem.rows || 0))
-    readonly property int visibleClassicRows: Math.max(1, configuredRowLimit > 0
-        ? Math.min(classicRowCount, configuredRowLimit)
-        : classicRowCount)
+    readonly property int visibleClassicRows: Math.max(1,
+        Math.min(classicRowCount, configuredRowLimit))
     readonly property int classicChromeHeight: classicMargin * 2 + classicHeader.implicitHeight + classicSpacing
     readonly property int classicNaturalHeight: classicChromeHeight + visibleClassicRows * classicCellHeight
     readonly property int configuredMaximumHeight: Math.max(0, Number(folderItem.popupMaxHeight || 0))
@@ -54,7 +105,7 @@ Item {
             id: classicHeader
             Layout.fillWidth: true
             PlasmaExtras.ShadowedLabel {
-                text: folderItem.name || i18n("Folder")
+                text: folderRoot.folderItem.name || i18n("Folder")
                 font.family: Kirigami.Theme.defaultFont.family
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize
                 font.weight: Font.Bold
@@ -86,12 +137,20 @@ Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
             // Keep cellWidth from producing scrollbars or horizontal clipping.
-            cellWidth: layoutMode === "list" || layoutMode === "detailed"
-                ? gridView.width
+            cellWidth: folderRoot.layoutMode === "list"
+                || folderRoot.layoutMode === "detailed"
+                ? gridView.width - folderRoot.scrollBarGutter
                 : folderRoot.gridCellWidth
             cellHeight: folderRoot.classicCellHeight
             model: folderRoot.apps
             clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            Controls.ScrollBar.vertical: Controls.ScrollBar {
+                id: verticalScrollBar
+                policy: folderRoot.scrollRequired
+                    ? Controls.ScrollBar.AsNeeded
+                    : Controls.ScrollBar.AlwaysOff
+            }
 
             delegate: Item {
                 width: gridView.cellWidth
@@ -112,33 +171,35 @@ Item {
                 RowLayout {
                     anchors.fill: parent
                     anchors.margins: 4
-                    visible: layoutMode === "list" || layoutMode === "detailed"
+                    visible: folderRoot.layoutMode === "list"
+                        || folderRoot.layoutMode === "detailed"
                     spacing: 8
 
                     Kirigami.Icon {
-                        Layout.preferredWidth: 32
-                        Layout.preferredHeight: 32
+                        Layout.preferredWidth: folderRoot.effectiveIconSize
+                        Layout.preferredHeight: folderRoot.effectiveIconSize
                         source: modelData.icon || "application-x-executable"
                     }
                     Column {
                         Layout.fillWidth: true
+                        visible: folderRoot.showItemLabels
                         PlasmaExtras.ShadowedLabel {
                             text: modelData.name
-                            font.family: Kirigami.Theme.defaultFont.family
-                            font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                            font.family: folderRoot.effectiveFontFamily
+                            font.pointSize: folderRoot.effectiveFontSize
                             font.weight: Font.DemiBold
                             elide: Text.ElideRight
                             width: parent.width
                         }
                         PlasmaComponents.Label {
                             text: modelData.command || ""
-                            font.family: Kirigami.Theme.smallFont.family
-                            font.pointSize: Kirigami.Theme.smallFont.pointSize
+                            font.family: folderRoot.effectiveFontFamily
+                            font.pointSize: Math.max(8, folderRoot.effectiveFontSize - 1)
                             color: Kirigami.Theme.textColor
                             opacity: 0.6
                             elide: Text.ElideRight
                             width: parent.width
-                            visible: layoutMode === "detailed"
+                            visible: folderRoot.layoutMode === "detailed"
                         }
                     }
                 }
@@ -147,19 +208,20 @@ Item {
                 ColumnLayout {
                     anchors.fill: parent
                     anchors.margins: 4
-                    visible: layoutMode === "grid"
-                    spacing: 4
+                    visible: folderRoot.layoutMode === "grid"
+                    spacing: folderRoot.showItemLabels ? 4 : 0
 
                     Kirigami.Icon {
-                        Layout.preferredWidth: 36
-                        Layout.preferredHeight: 36
-                        Layout.alignment: Qt.AlignHCenter
+                        Layout.preferredWidth: folderRoot.effectiveIconSize
+                        Layout.preferredHeight: folderRoot.effectiveIconSize
+                        Layout.alignment: Qt.AlignCenter
                         source: modelData.icon || "application-x-executable"
                     }
                     PlasmaExtras.ShadowedLabel {
+                        visible: folderRoot.showItemLabels
                         text: modelData.name
-                        font.family: Kirigami.Theme.smallFont.family
-                        font.pointSize: Kirigami.Theme.smallFont.pointSize
+                        font.family: folderRoot.effectiveFontFamily
+                        font.pointSize: folderRoot.effectiveFontSize
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
                         elide: Text.ElideRight

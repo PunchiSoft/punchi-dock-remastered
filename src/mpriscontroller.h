@@ -24,7 +24,14 @@ class MprisController : public QObject
     Q_PROPERTY(bool canPlay READ canPlay NOTIFY stateChanged)
     Q_PROPERTY(bool canPause READ canPause NOTIFY stateChanged)
     Q_PROPERTY(bool canGoNext READ canGoNext NOTIFY stateChanged)
+    Q_PROPERTY(bool canControl READ canControl NOTIFY stateChanged)
+    Q_PROPERTY(bool canSeek READ canSeek NOTIFY stateChanged)
     Q_PROPERTY(bool playing READ playing NOTIFY stateChanged)
+    Q_PROPERTY(qlonglong positionUs READ positionUs NOTIFY stateChanged)
+    Q_PROPERTY(qlonglong lengthUs READ lengthUs NOTIFY stateChanged)
+    Q_PROPERTY(bool shuffleAvailable READ shuffleAvailable NOTIFY stateChanged)
+    Q_PROPERTY(bool shuffle READ shuffle NOTIFY stateChanged)
+    Q_PROPERTY(QString loopStatus READ loopStatus NOTIFY stateChanged)
     Q_PROPERTY(bool volumeAvailable READ volumeAvailable NOTIFY stateChanged)
     Q_PROPERTY(double volume READ volume NOTIFY stateChanged)
 
@@ -42,7 +49,14 @@ public:
     bool canPlay() const;
     bool canPause() const;
     bool canGoNext() const;
+    bool canControl() const;
+    bool canSeek() const;
     bool playing() const;
+    qlonglong positionUs() const;
+    qlonglong lengthUs() const;
+    bool shuffleAvailable() const;
+    bool shuffle() const;
+    QString loopStatus() const;
     bool volumeAvailable() const;
     double volume() const;
 
@@ -50,6 +64,8 @@ public:
     Q_INVOKABLE void previous();
     Q_INVOKABLE void togglePlaying();
     Q_INVOKABLE void next();
+    Q_INVOKABLE void setShuffle(bool enabled);
+    Q_INVOKABLE void cycleLoopStatus();
     Q_INVOKABLE void setVolume(double volume);
 
 Q_SIGNALS:
@@ -80,7 +96,14 @@ private:
     bool m_canPlay = false;
     bool m_canPause = false;
     bool m_canGoNext = false;
+    bool m_canControl = false;
+    bool m_canSeek = false;
     bool m_playing = false;
+    qlonglong m_positionUs = 0;
+    qlonglong m_lengthUs = 0;
+    bool m_shuffleAvailable = false;
+    bool m_shuffle = false;
+    QString m_loopStatus;
     bool m_volumeAvailable = false;
     double m_volume = 0.0;
     quint64 m_refreshGeneration = 0;

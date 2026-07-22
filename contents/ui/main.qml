@@ -26,6 +26,11 @@ PlasmoidItem {
             text: i18nc("@action:context", "Add Quick Note")
             icon.name: "knotes"
             onTriggered: root.addQuickNote()
+        },
+        PlasmaCore.Action {
+            text: i18nc("@action:context", "Add Separator")
+            icon.name: "draw-line"
+            onTriggered: root.addQuickSeparator()
         }
     ]
     // qmllint enable missing-property
@@ -124,6 +129,38 @@ PlasmoidItem {
     readonly property bool showWindowThumbnails: windowPreviewStyle === "thumbnail"
     readonly property int maxPopupRows: Math.max(1, Math.min(8,
         Number(Plasmoid.configuration.maxPopupRows || 4)))
+    readonly property int folderGridIconSize: Math.max(24, Math.min(64,
+        Number(Plasmoid.configuration.folderGridIconSize || 36)))
+    readonly property int folderGridColumns: Math.max(1, Math.min(8,
+        Number(Plasmoid.configuration.folderGridColumns || 3)))
+    readonly property int folderGridRows: Math.max(1, Math.min(8,
+        Number(Plasmoid.configuration.folderGridRows || 4)))
+    readonly property bool folderGridShowLabels:
+        Plasmoid.configuration.folderGridShowLabels !== false
+    readonly property string folderGridFontFamily:
+        String(Plasmoid.configuration.folderGridFontFamily || "")
+    readonly property int folderGridFontSize: Math.max(8, Math.min(18,
+        Number(Plasmoid.configuration.folderGridFontSize || 9)))
+    readonly property int folderListIconSize: Math.max(24, Math.min(64,
+        Number(Plasmoid.configuration.folderListIconSize || 32)))
+    readonly property int folderListRows: Math.max(1, Math.min(8,
+        Number(Plasmoid.configuration.folderListRows || 4)))
+    readonly property bool folderListShowLabels:
+        Plasmoid.configuration.folderListShowLabels !== false
+    readonly property string folderListFontFamily:
+        String(Plasmoid.configuration.folderListFontFamily || "")
+    readonly property int folderListFontSize: Math.max(8, Math.min(18,
+        Number(Plasmoid.configuration.folderListFontSize || 10)))
+    readonly property int folderDetailedIconSize: Math.max(24, Math.min(64,
+        Number(Plasmoid.configuration.folderDetailedIconSize || 32)))
+    readonly property int folderDetailedRows: Math.max(1, Math.min(8,
+        Number(Plasmoid.configuration.folderDetailedRows || 4)))
+    readonly property bool folderDetailedShowLabels:
+        Plasmoid.configuration.folderDetailedShowLabels !== false
+    readonly property string folderDetailedFontFamily:
+        String(Plasmoid.configuration.folderDetailedFontFamily || "")
+    readonly property int folderDetailedFontSize: Math.max(8, Math.min(18,
+        Number(Plasmoid.configuration.folderDetailedFontSize || 10)))
     readonly property int taskPopupAvailableHeight: Math.max(240,
         Number(root.availableScreenRect.height || 640) - (root.inPanel ? root.panelPreferredHeight : 0) - 24)
     readonly property int taskPopupAvailableWidth: Math.max(280,
@@ -251,6 +288,20 @@ PlasmoidItem {
         Number(Plasmoid.configuration.popupAnimationIntensity || 100)))
     readonly property int contextMenuTransitionSpeed: Math.max(10, Math.min(200,
         Number(Plasmoid.configuration.contextMenuTransitionSpeed || 100)))
+    readonly property string contextMenuTransitionDirection: {
+        const direction = String(
+            Plasmoid.configuration.contextMenuTransitionDirection || "fromRight")
+        return ["fromRight", "fromLeft", "fromTop", "fromBottom", "morphOnly"]
+            .indexOf(direction) >= 0 ? direction : "fromRight"
+    }
+    readonly property int contextMenuVisibleRows: Math.max(3, Math.min(12,
+        Number(Plasmoid.configuration.contextMenuVisibleRows || 6)))
+    readonly property int contextMenuRowHeight: Math.max(32, Math.min(64,
+        Number(Plasmoid.configuration.contextMenuRowHeight || 46)))
+    readonly property int contextMenuIconSize: Math.max(16, Math.min(40,
+        Number(Plasmoid.configuration.contextMenuIconSize || 26)))
+    readonly property int contextMenuWidth: Math.max(240, Math.min(520,
+        Number(Plasmoid.configuration.contextMenuWidth || 360)))
     // Plasma::Containment exposes its visual geometry at runtime, although the
     // generated QML type metadata does not declare width/height.
     // qmllint disable missing-property
@@ -655,6 +706,15 @@ PlasmoidItem {
         return noteItem
     }
 
+    function addQuickSeparator() {
+        const separatorItem = {
+            "type": "separator"
+        }
+        root.dockItems = root.dockItems.concat([separatorItem])
+        syncDockItemsConfiguration()
+        return separatorItem
+    }
+
     function triggerMinimizeReaction(itemIndex) {
         if (root.dockWindowMinimizeEffect === "none" || itemIndex < 0) {
             return
@@ -664,17 +724,24 @@ PlasmoidItem {
         root.minimizeReactionRevision += 1
     }
 
-    function updateNoteItem(noteItem, noteText, popupWidth, popupHeight) {
+    function updateNoteItem(noteItem, noteText, popupWidth, popupHeight, targetIndex) {
         if (!noteItem) {
             return null
         }
 
+        const requestedIndex = Number(targetIndex)
+        const hasValidIndex = Number.isInteger(requestedIndex)
+            && requestedIndex >= 0
+            && requestedIndex < root.dockItems.length
+            && root.dockItems[requestedIndex]
+            && root.dockItems[requestedIndex].type === "note"
         var updatedItems = []
-        var updatedNoteItem = noteItem
+        var updatedNoteItem = null
         var changed = false
         for (var i = 0; i < root.dockItems.length; i++) {
             var item = root.dockItems[i]
-            if (item === noteItem) {
+            if ((!changed && hasValidIndex && i === requestedIndex)
+                    || (!changed && !hasValidIndex && item === noteItem)) {
                 item = Object.assign({}, item, {
                     "note": noteText,
                     "popupWidth": popupWidth,
@@ -1301,7 +1368,36 @@ PlasmoidItem {
                     layoutMode: ["list", "detailed"].indexOf(popupCoordinator.activeFolderData.layout) >= 0
                         ? popupCoordinator.activeFolderData.layout
                         : "grid"
+                    // qmllint disable unqualified
+                    profileIconSize: folderPopupContent.layoutMode === "list"
+                        ? root.folderListIconSize
+                        : (folderPopupContent.layoutMode === "detailed"
+                            ? root.folderDetailedIconSize
+                            : root.folderGridIconSize)
+                    profileColumns: root.folderGridColumns
+                    profileRows: folderPopupContent.layoutMode === "list"
+                        ? root.folderListRows
+                        : (folderPopupContent.layoutMode === "detailed"
+                            ? root.folderDetailedRows
+                            : root.folderGridRows)
+                    profileShowLabels: folderPopupContent.layoutMode === "list"
+                        ? root.folderListShowLabels
+                        : (folderPopupContent.layoutMode === "detailed"
+                            ? root.folderDetailedShowLabels
+                            : root.folderGridShowLabels)
+                    profileFontFamily: folderPopupContent.layoutMode === "list"
+                        ? root.folderListFontFamily
+                        : (folderPopupContent.layoutMode === "detailed"
+                            ? root.folderDetailedFontFamily
+                            : root.folderGridFontFamily)
+                    profileFontSize: folderPopupContent.layoutMode === "list"
+                        ? root.folderListFontSize
+                        : (folderPopupContent.layoutMode === "detailed"
+                            ? root.folderDetailedFontSize
+                            : root.folderGridFontSize)
+                    maximumAvailableWidth: root.taskPopupAvailableWidth
                     maximumAvailableHeight: root.taskPopupAvailableHeight
+                    // qmllint enable unqualified
 
                     onAppLaunched: function(app) {
                         folderPopupDialog.visible = false
@@ -1383,6 +1479,11 @@ PlasmoidItem {
                     totalItems: trashIntegration.totalItems
                     errorMessage: trashIntegration.errorMessage
                     transitionSpeedPercent: root.contextMenuTransitionSpeed
+                    menuWidth: root.contextMenuWidth
+                    menuRowHeight: root.contextMenuRowHeight
+                    menuIconSize: root.contextMenuIconSize
+                    maximumAvailableWidth: root.taskPopupAvailableWidth
+                    maximumAvailableHeight: root.taskPopupAvailableHeight
                     onOpenTrashRequested: {
                         trashMenuDialog.visible = false
                         trashIntegration.openTrash()
@@ -1433,7 +1534,14 @@ PlasmoidItem {
                         id: appActionsContent
                         itemName: popupCoordinator.activeAppContextMenuData.name || ""
                         actions: popupCoordinator.activeAppContextMenuData.actions || []
-                        maxVisibleRows: popupCoordinator.activeAppContextMenuData.maxVisibleRows || 6
+                        // qmllint disable unqualified
+                        maxVisibleRows: root.contextMenuVisibleRows
+                        rowHeight: root.contextMenuRowHeight
+                        iconSize: root.contextMenuIconSize
+                        targetWidth: root.contextMenuWidth
+                        maximumAvailableWidth: root.taskPopupAvailableWidth
+                        maximumAvailableHeight: root.taskPopupAvailableHeight
+                        // qmllint enable unqualified
 
                         onActionTriggered: function(action) {
                             appActionsDialog.visible = false
@@ -1461,9 +1569,13 @@ PlasmoidItem {
             onVisibleChanged: {
                 if (!visible && !root.deletingActiveNote
                         && notePopupContent.currentText !== notePopupContent.initialText) {
-                    popupCoordinator.activeNoteData = root.updateNoteItem(popupCoordinator.activeNoteData,
+                    const updatedNote = root.updateNoteItem(popupCoordinator.activeNoteData,
                         notePopupContent.currentText, notePopupContent.activeWidth,
-                        notePopupContent.activeHeight)
+                        notePopupContent.activeHeight, popupCoordinator.activeNoteIndex)
+                    if (updatedNote) {
+                        popupCoordinator.activeNoteData = updatedNote
+                        notePopupContent.markSaved(notePopupContent.currentText)
+                    }
                 }
             }
 
@@ -1479,13 +1591,25 @@ PlasmoidItem {
                 NotePopup {
                     id: notePopupContent
                     noteItem: popupCoordinator.activeNoteData
+                    // qmllint disable unqualified
+                    onNoteChanged: function(noteText, popupWidth, popupHeight) {
+                        const updatedNote = root.updateNoteItem(
+                            popupCoordinator.activeNoteData, noteText, popupWidth,
+                            popupHeight, popupCoordinator.activeNoteIndex)
+                        if (updatedNote) {
+                            popupCoordinator.activeNoteData = updatedNote
+                            notePopupContent.markSaved(noteText)
+                        }
+                    }
+                    // qmllint enable unqualified
                     onCloseRequested: {
                         notePopupDialog.visible = false
                     }
                     onClearRequested: function(noteText, popupWidth, popupHeight) {
                         notePopupContent.initialText = noteText
                         popupCoordinator.activeNoteData = root.updateNoteItem(
-                            popupCoordinator.activeNoteData, noteText, popupWidth, popupHeight)
+                            popupCoordinator.activeNoteData, noteText, popupWidth,
+                            popupHeight, popupCoordinator.activeNoteIndex)
                     }
                     onDeleteRequested: {
                         root.deletingActiveNote = true
@@ -1534,6 +1658,8 @@ PlasmoidItem {
                     visible: taskWindowsDialog.visible
                     enabled: visible
                     mediaController: mprisController
+                    taskControllerRef: taskController
+                    mediaWindows: popupCoordinator.activeTaskPopupData.windows || []
                     mediaIcon: popupCoordinator.activeTaskPopupData.icon || "emblem-music-symbolic"
                     showMedia: popupCoordinator.mediaHoverActive
                     mediaOnly: popupCoordinator.mediaHoverActive
@@ -1541,13 +1667,18 @@ PlasmoidItem {
                     forceCompactMedia: popupCoordinator.mediaHoverActive
                         && taskWindowsPopupContent.mediaActionsComposed
                     transitionsEnabled: root.popupAnimationStyle !== "none"
+                    contentGeometryTransitionsEnabled: taskWindowsDialog.visible
+                        && taskPopupAnimatedContent.openingProgress >= 0.999
+                    surfaceStateFrozen: taskPopupAnimatedContent.closing
                     transitionSpeedPercent: root.contextMenuTransitionSpeed
                     maximumAvailableHeight: root.taskPopupAvailableHeight
-                    onImplicitHeightChanged: {
+                    function scheduleReanchor() {
                         if (taskWindowsDialog.visible) {
                             Qt.callLater(popupCoordinator.reanchorTaskWindowsPopup)
                         }
                     }
+                    onImplicitWidthChanged: scheduleReanchor()
+                    onImplicitHeightChanged: scheduleReanchor()
                     onContainsMouseChanged: {
                         popupCoordinator.setTaskPopupHovered(containsMouse)
                     }
@@ -1568,8 +1699,15 @@ PlasmoidItem {
                         maximumAvailableHeight: root.taskPopupAvailableHeight
                         actionItemName: popupCoordinator.activeAppContextMenuData.name || ""
                         actions: popupCoordinator.activeAppContextMenuData.actions || []
-                        maxVisibleActionRows: popupCoordinator.activeAppContextMenuData.maxVisibleRows || 6
+                        // qmllint disable unqualified
+                        maxVisibleActionRows: root.contextMenuVisibleRows
+                        actionRowHeight: root.contextMenuRowHeight
+                        actionIconSize: root.contextMenuIconSize
+                        actionMenuWidth: root.contextMenuWidth
+                        transitionDirection: root.contextMenuTransitionDirection
+                        // qmllint enable unqualified
                         previewsEnabled: taskWindowsDialog.visible
+                            && root.windowPreviewStyle !== "none"
                             && !popupCoordinator.mediaHoverActive
                         returnToMedia: popupCoordinator.mediaHoverActive
                         transitionsEnabled: root.popupAnimationStyle !== "none"

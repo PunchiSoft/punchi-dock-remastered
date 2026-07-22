@@ -29,5 +29,8 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# Capturas locales usadas para diagnosticar scripts
+/scripts/*.bmp
+
 # Directorios de pruebas locales descartables
 /test/

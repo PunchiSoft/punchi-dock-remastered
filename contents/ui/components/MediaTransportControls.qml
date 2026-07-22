@@ -19,6 +19,10 @@ RowLayout {
     spacing: Kirigami.Units.smallSpacing
 
     function focusFirstControl() {
+        if (shuffleButton.enabled) {
+            shuffleButton.forceActiveFocus(Qt.TabFocusReason)
+            return true
+        }
         if (previousButton.enabled) {
             previousButton.forceActiveFocus(Qt.TabFocusReason)
             return true
@@ -36,6 +40,25 @@ RowLayout {
 
     Item {
         Layout.fillWidth: true
+    }
+
+    PlasmaComponents.ToolButton {
+        id: shuffleButton
+        Layout.preferredWidth: root.prominentPlayButton ? 36 : implicitWidth
+        Layout.preferredHeight: root.prominentPlayButton ? 36 : implicitHeight
+        text: i18nc("@action:button", "Shuffle")
+        display: PlasmaComponents.AbstractButton.IconOnly
+        icon.name: "media-playlist-shuffle"
+        icon.color: root.controlColor
+        checkable: true
+        checked: root.available && root.controller.shuffle
+        enabled: root.available
+            && root.controller.canControl
+            && root.controller.shuffleAvailable
+        Accessible.name: text
+        Accessible.role: Accessible.Button
+        Accessible.checked: checked
+        onClicked: root.controller.setShuffle(!root.controller.shuffle)
     }
 
     PlasmaComponents.ToolButton {
@@ -95,6 +118,31 @@ RowLayout {
         icon.color: root.controlColor
         enabled: root.available && root.controller.canGoNext
         onClicked: root.controller.next()
+    }
+
+    PlasmaComponents.ToolButton {
+        id: repeatButton
+        Layout.preferredWidth: root.prominentPlayButton ? 36 : implicitWidth
+        Layout.preferredHeight: root.prominentPlayButton ? 36 : implicitHeight
+        text: root.available && root.controller.loopStatus === "Track"
+            ? i18nc("@action:button", "Repeat track")
+            : i18nc("@action:button", "Repeat")
+        display: PlasmaComponents.AbstractButton.IconOnly
+        icon.name: root.available && root.controller.loopStatus === "Track"
+            ? "media-playlist-repeat-song"
+            : "media-playlist-repeat"
+        icon.color: root.controlColor
+        checkable: true
+        checked: root.available
+            && root.controller.loopStatus.length > 0
+            && root.controller.loopStatus !== "None"
+        enabled: root.available
+            && root.controller.canControl
+            && root.controller.loopStatus.length > 0
+        Accessible.name: text
+        Accessible.role: Accessible.Button
+        Accessible.checked: checked
+        onClicked: root.controller.cycleLoopStatus()
     }
 
     Item {

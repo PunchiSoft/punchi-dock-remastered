@@ -26,15 +26,18 @@ la misma distribución. No se debe reemplazar Qt del sistema por una instalació
 independiente de Qt 6.11 para silenciar el lint: el módulo QML nativo necesita
 una pila de bibliotecas coherente.
 
-## Comando recomendado
+## Comandos recomendados
 
 ```bash
-scripts/empaquetar-plasmoid.sh
+scripts/setup-fedora.sh
+scripts/setup-debian13.sh
+scripts/setup-debian14-testing.sh
+scripts/setup-kubuntu.sh
 ```
 
-Detecta Fedora, Debian o Kubuntu mediante `/etc/os-release`, selecciona el
-ejecutable de `qmllint` y el baseline correspondientes, y genera un artefacto
-con distribución, versión y arquitectura en el nombre.
+Cada comando valida su distribución, detecta las dependencias instaladas y usa
+el ejecutable de `qmllint` y baseline correspondientes. Los motores comunes de
+compilación e instalación permanecen internos en `scripts/lib/`.
 
 Fedora y Debian conservan sus perfiles validados. Kubuntu dispone de un perfil
 de compilación local validado en Plasma 6.6.4: prepara una instalación limpia,
@@ -48,17 +51,24 @@ principal de publicación Fedora.
 | Debian 13 `x86_64` | `dist/punchi-dock-remastered-<version>-debian13-x86_64.plasmoid` |
 | Kubuntu con Plasma 6 `x86_64` | `dist/punchi-dock-remastered-<version>-kubuntu<version>-plasma<version>-x86_64.plasmoid` |
 
-## Selección explícita
+## Debian 13
 
-Estos comandos están destinados principalmente a automatización y diagnóstico:
+El perfil estable validado para Debian 13/trixie se ejecuta con:
 
 ```bash
-scripts/build-fedora-package.sh
-scripts/build-debian-package.sh
-scripts/build-kubuntu-package.sh
+scripts/setup-debian13.sh
 ```
 
-Cada uno rechaza ejecutarse en la distribución equivocada. No son scripts de compilación cruzada.
+Sin opciones genera el artefacto publicable `debian13`. Para instalarlo y
+reiniciar Plasma durante una prueba local:
+
+```bash
+scripts/setup-debian13.sh --local-test
+```
+
+El script rechaza Debian 14/testing y detecta mediante `dpkg-query` si las
+dependencias ya están instaladas. `--dependencies-only`, `--skip-apt` y
+`--dry-run` permiten limitar explícitamente el flujo.
 
 En Debian y Kubuntu, los objetos de compilación se guardan por defecto en
 `~/.cache/punchi-dock-remastered/`. Esto evita problemas de timestamps y
@@ -72,43 +82,70 @@ de advertencias. Ese baseline local sirve para diagnóstico; la validación de
 Kubuntu corresponde al flujo de compilación nativa, no a reutilizar paquetes de
 otras distribuciones.
 
-## Prueba local
+## Preparar Debian 14/testing experimental
+
+Para probar desde un Live CD o instalación limpia de Debian 14/testing `forky`,
+usar el wrapper dedicado:
 
 ```bash
-scripts/probar-plasmoid.sh
+scripts/setup-debian14-testing.sh --yes
 ```
 
-Genera un artefacto como `dist/punchi-dock-remastered-0.8.9-fedora44-x86_64-local-test.plasmoid`, verifica su instalación para el usuario actual y reinicia Plasma Shell. En sistemas que exponen `plasma-plasmashell.service` usa el servicio systemd de usuario; si el servicio conserva el proceso anterior, fuerza primero el cierre mediante KDE y vuelve a iniciar el servicio. En los demás sistemas conserva el control mediante `kquitapp6` y `kstart`. El script muestra los PID anterior y posterior y solo declara éxito cuando confirma un proceso nuevo. El sufijo `local-test` distingue este paquete temporal de un artefacto publicable.
+El script detecta las dependencias ya instaladas mediante `dpkg-query` y usa APT
+únicamente para los paquetes faltantes. Sin opciones registra el baseline local
+de `qmllint` si hace falta y crea el artefacto publicable `debian14testing` sin
+instalarlo. Debe ejecutarse como usuario normal de Plasma; solo solicita `sudo`
+para APT. No añade repositorios externos ni reemplaza Qt/KDE del sistema.
 
-En Kubuntu, el mismo comando compila primero un artefacto etiquetado con la
-versión local de Plasma. No deben reutilizarse paquetes Debian o Fedora.
+Opciones útiles:
+
+```bash
+scripts/setup-debian14-testing.sh --dry-run
+scripts/setup-debian14-testing.sh --skip-apt
+scripts/setup-debian14-testing.sh --yes --local-test
+scripts/setup-debian14-testing.sh --yes --local-test --skip-restart
+```
+
+## Prueba local Fedora
+
+```bash
+scripts/setup-fedora.sh --local-test
+```
+
+Genera un artefacto como `dist/punchi-dock-remastered-0.9.0-fedora44-x86_64-local-test.plasmoid`, verifica su instalación para el usuario actual y reinicia Plasma Shell. En sistemas que exponen `plasma-plasmashell.service` usa el servicio systemd de usuario; si el servicio conserva el proceso anterior, fuerza primero el cierre mediante KDE y vuelve a iniciar el servicio. En los demás sistemas conserva el control mediante `kquitapp6` y `kstart`. El script muestra los PID anterior y posterior y solo declara éxito cuando confirma un proceso nuevo. El sufijo `local-test` distingue este paquete temporal de un artefacto publicable.
+
+En Kubuntu, `scripts/setup-kubuntu.sh --local-test` ejecuta el equivalente con
+la versión local de Plasma. No deben reutilizarse paquetes Debian o Fedora.
 
 ## Preparar una instalación limpia de Kubuntu
 
 Desde la raíz del repositorio, ejecutar como el usuario normal de Plasma:
 
 ```bash
-Scripts/setup_kubuntu_build.py
+scripts/setup-kubuntu.sh
 ```
 
-El programa actualiza APT, verifica e instala las dependencias oficiales y
-genera el artefacto Kubuntu sin instalarlo. Solicita `sudo` únicamente para APT;
-no debe ejecutarse anteponiendo `sudo` al programa completo.
+El script detecta qué dependencias oficiales faltan, actualiza APT solo cuando
+debe instalarlas y genera el artefacto Kubuntu sin instalarlo. Solicita `sudo`
+únicamente para APT; no debe ejecutarse anteponiendo `sudo` al script completo.
 
 Opciones principales:
 
 ```bash
 # Instalar dependencias y empaquetar sin preguntas de APT
-Scripts/setup_kubuntu_build.py --yes
+scripts/setup-kubuntu.sh --yes
 
 # Preparar, empaquetar, instalar y reiniciar Plasma para probarlo
-Scripts/setup_kubuntu_build.py --yes --local-test
+scripts/setup-kubuntu.sh --yes --local-test
 
 # Instalar y comprobar dependencias sin compilar
-Scripts/setup_kubuntu_build.py --dependencies-only
+scripts/setup-kubuntu.sh --dependencies-only
+
+# Compilar usando dependencias que ya fueron instaladas
+scripts/setup-kubuntu.sh --skip-apt
 
 # Mostrar las operaciones sin modificar el sistema
-Scripts/setup_kubuntu_build.py --dry-run
+scripts/setup-kubuntu.sh --dry-run
 ```
 
 Si un paquete no aparece en los repositorios configurados, el proceso se
@@ -140,3 +177,14 @@ prefijo de contenidos de KPackage.
 Instala únicamente el artefacto cuyo nombre coincide con el sistema donde fue compilado. El módulo QML nativo enlaza bibliotecas Qt y KDE del host y no es un binario universal.
 
 Ningún script vigente genera `dist/punchi-dock-remastered.plasmoid` sin una etiqueta de plataforma.
+
+## Organización interna
+
+La raíz de `scripts/` conserva wrappers cortos para comandos habituales y
+compatibilidad con documentación anterior. Las implementaciones viven en:
+
+- `scripts/distro/`: flujos específicos por distribución.
+- `scripts/dev/`: herramientas de desarrollo, diagnóstico y validación.
+- `scripts/lib/`: motores y helpers compartidos; no son comandos principales.
+
+No ejecutar archivos generados como `__pycache__`; no forman parte del proyecto.

@@ -64,6 +64,54 @@
     <entry name="dockThemeCustomId" type="String">
       <default></default>
     </entry>
+    <entry name="folderGridIconSize" type="Int">
+      <default>36</default>
+    </entry>
+    <entry name="folderGridColumns" type="Int">
+      <default>3</default>
+    </entry>
+    <entry name="folderGridRows" type="Int">
+      <default>4</default>
+    </entry>
+    <entry name="folderGridShowLabels" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="folderGridFontFamily" type="String">
+      <default></default>
+    </entry>
+    <entry name="folderGridFontSize" type="Int">
+      <default>9</default>
+    </entry>
+    <entry name="folderListIconSize" type="Int">
+      <default>32</default>
+    </entry>
+    <entry name="folderListRows" type="Int">
+      <default>4</default>
+    </entry>
+    <entry name="folderListShowLabels" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="folderListFontFamily" type="String">
+      <default></default>
+    </entry>
+    <entry name="folderListFontSize" type="Int">
+      <default>10</default>
+    </entry>
+    <entry name="folderDetailedIconSize" type="Int">
+      <default>32</default>
+    </entry>
+    <entry name="folderDetailedRows" type="Int">
+      <default>4</default>
+    </entry>
+    <entry name="folderDetailedShowLabels" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="folderDetailedFontFamily" type="String">
+      <default></default>
+    </entry>
+    <entry name="folderDetailedFontSize" type="Int">
+      <default>10</default>
+    </entry>
     <entry name="audioSpectrumEnabled" type="Bool">
       <default>false</default>
     </entry>
@@ -113,6 +161,21 @@
     </entry>
     <entry name="contextMenuTransitionSpeed" type="Int">
       <default>100</default>
+    </entry>
+    <entry name="contextMenuTransitionDirection" type="String">
+      <default>fromRight</default>
+    </entry>
+    <entry name="contextMenuVisibleRows" type="Int">
+      <default>6</default>
+    </entry>
+    <entry name="contextMenuRowHeight" type="Int">
+      <default>46</default>
+    </entry>
+    <entry name="contextMenuIconSize" type="Int">
+      <default>26</default>
+    </entry>
+    <entry name="contextMenuWidth" type="Int">
+      <default>360</default>
     </entry>
     <entry name="globalMouseCursor" type="Bool">
       <default>false</default>

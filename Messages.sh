@@ -27,7 +27,7 @@ mapfile -d '' cpp_sources < <(
 common_options=(
     --from-code=UTF-8
     --package-name="Punchi Dock Remastered"
-    --package-version="0.8.9"
+    --package-version="0.9.0"
     --msgid-bugs-address="https://github.com/PunchiSoft/punchi-dock-remastered/issues"
     --copyright-holder="Punchi Dock Contributors"
     --add-comments=TRANSLATORS

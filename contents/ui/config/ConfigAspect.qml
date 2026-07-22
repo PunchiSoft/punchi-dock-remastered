@@ -37,7 +37,28 @@ KCM.SimpleKCM {
     property alias cfg_popupAnimationSpeed: popupAppearancePage.cfg_popupAnimationSpeed
     property alias cfg_popupAnimationSpeedPercent: popupAppearancePage.cfg_popupAnimationSpeedPercent
     property alias cfg_popupAnimationIntensity: popupAppearancePage.cfg_popupAnimationIntensity
+    property alias cfg_folderGridIconSize: folderPopupPage.cfg_folderGridIconSize
+    property alias cfg_folderGridColumns: folderPopupPage.cfg_folderGridColumns
+    property alias cfg_folderGridRows: folderPopupPage.cfg_folderGridRows
+    property alias cfg_folderGridShowLabels: folderPopupPage.cfg_folderGridShowLabels
+    property alias cfg_folderGridFontFamily: folderPopupPage.cfg_folderGridFontFamily
+    property alias cfg_folderGridFontSize: folderPopupPage.cfg_folderGridFontSize
+    property alias cfg_folderListIconSize: folderPopupPage.cfg_folderListIconSize
+    property alias cfg_folderListRows: folderPopupPage.cfg_folderListRows
+    property alias cfg_folderListShowLabels: folderPopupPage.cfg_folderListShowLabels
+    property alias cfg_folderListFontFamily: folderPopupPage.cfg_folderListFontFamily
+    property alias cfg_folderListFontSize: folderPopupPage.cfg_folderListFontSize
+    property alias cfg_folderDetailedIconSize: folderPopupPage.cfg_folderDetailedIconSize
+    property alias cfg_folderDetailedRows: folderPopupPage.cfg_folderDetailedRows
+    property alias cfg_folderDetailedShowLabels: folderPopupPage.cfg_folderDetailedShowLabels
+    property alias cfg_folderDetailedFontFamily: folderPopupPage.cfg_folderDetailedFontFamily
+    property alias cfg_folderDetailedFontSize: folderPopupPage.cfg_folderDetailedFontSize
     property alias cfg_contextMenuTransitionSpeed: menuAppearancePage.cfg_contextMenuTransitionSpeed
+    property alias cfg_contextMenuTransitionDirection: menuAppearancePage.cfg_contextMenuTransitionDirection
+    property alias cfg_contextMenuVisibleRows: menuAppearancePage.cfg_contextMenuVisibleRows
+    property alias cfg_contextMenuRowHeight: menuAppearancePage.cfg_contextMenuRowHeight
+    property alias cfg_contextMenuIconSize: menuAppearancePage.cfg_contextMenuIconSize
+    property alias cfg_contextMenuWidth: menuAppearancePage.cfg_contextMenuWidth
     property alias cfg_audioSpectrumEnabled: audioVisualizerPage.cfg_audioSpectrumEnabled
     property alias cfg_audioSpectrumIntensity: audioVisualizerPage.cfg_audioSpectrumIntensity
     property alias cfg_audioSpectrumUsePlasmaTheme: audioVisualizerPage.cfg_audioSpectrumUsePlasmaTheme

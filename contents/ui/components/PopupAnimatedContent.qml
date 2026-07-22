@@ -75,8 +75,8 @@ Item {
         if (!closing) {
             return
         }
-        closing = false
         closeAnimationFinished()
+        closing = false
     }
 
     function beginClosing() {

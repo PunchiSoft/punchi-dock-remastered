@@ -58,13 +58,13 @@ On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.0-fedora44-x86_64.plasmoid
 ```
 
 To update an existing installation:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.0-fedora44-x86_64.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
@@ -100,59 +100,51 @@ Plasma, PipeWire, ECM, CMake, gettext, and ZIP development packages. The Debian
 wrapper was validated on Debian 13 with Qt 6.8.2; the Kubuntu source-build,
 installation, startup, and functional flow was validated on Plasma 6.6.4.
 
-Build the native module and create the versioned artifact for the current system:
+Build the native module and create the Fedora artifact:
 
 ```bash
-scripts/empaquetar-plasmoid.sh
+scripts/setup-fedora.sh
 ```
 
-The automated packaging script detects Fedora, Debian, or Kubuntu through
-`/etc/os-release`. Kubuntu builds include the local Plasma version in the
-artifact name and use a host-specific `qmllint` baseline stored in the user
-cache. The native Kubuntu flow is validated, but never relabel an artifact built
-for another distribution.
+Use `scripts/setup-debian13.sh` on Debian 13,
+`scripts/setup-debian14-testing.sh` on Debian 14/testing, and
+`scripts/setup-kubuntu.sh` on Kubuntu. Each setup rejects a different release,
+detects installed build dependencies, and uses only its native distribution
+profile. Add `--local-test` when the artifact should be installed and Plasma
+Shell restarted. Never relabel an artifact built for another distribution.
 
 ```text
 dist/punchi-dock-remastered-<version>-<distribution><version>-<architecture>.plasmoid
 ```
 
-Examples include `punchi-dock-remastered-0.8.9-fedora44-x86_64.plasmoid`,
-`punchi-dock-remastered-0.8.9-debian13-x86_64.plasmoid`, and
-`punchi-dock-remastered-0.8.9-kubuntu<version>-plasma6.6.4-x86_64.plasmoid`.
+Examples include `punchi-dock-remastered-0.9.0-fedora44-x86_64.plasmoid`,
+`punchi-dock-remastered-0.9.0-debian13-x86_64.plasmoid`, and
+`punchi-dock-remastered-0.9.0-kubuntu<version>-plasma6.6.4-x86_64.plasmoid`.
 Never install an artifact labeled for a different distribution.
 
-Explicit wrappers remain available for automation and diagnostics:
-
-```bash
-scripts/build-fedora-package.sh
-scripts/build-debian-package.sh
-scripts/build-kubuntu-package.sh
-```
-
-Each wrapper requires its matching distribution and uses its own baseline. The
-Debian workflow was verified on Debian 13; Kubuntu records an independent local
-baseline and was verified through native build, installation, startup, and user
-functional testing on Plasma 6.6.4. See
-[scripts/README.md](scripts/README.md) for the distinction between packaging,
-local installation, and clean-source validation.
+The Debian 13 workflow was verified separately from Debian 14/testing. Kubuntu
+records an independent local baseline and was verified through native build,
+installation, startup, and user functional testing on Plasma 6.6.4. See
+[scripts/README.md](scripts/README.md) for the setup options and the distinction
+between public artifacts, local installation, and clean-source validation.
 
 Set `PACKAGE_BUILD_TYPE` or `STRIP_BIN` only when a development workflow requires an explicit override. Never use `PACKAGE_OUTPUT_FILE` to label a Fedora binary as Debian, and do not cross-compile the native QML module for publication on another distribution.
 
-To build, install, and restart Plasma for a local development test:
+To build, install, and restart Plasma for a local Fedora development test:
 
 ```bash
-scripts/probar-plasmoid.sh
+scripts/setup-fedora.sh --local-test
 ```
 
 On a clean Kubuntu installation, prepare the official APT dependencies and
 create the native package with:
 
 ```bash
-Scripts/setup_kubuntu_build.py --yes
+scripts/setup-kubuntu.sh --yes
 ```
 
 Add `--local-test` to install the result and restart Plasma Shell. Run this
-program as the desktop user; it requests `sudo` only for APT.
+script as the desktop user; it requests `sudo` only for APT.
 
 This script runs the packaging checks and CTest, upgrades the local plasmoid, restarts Plasma Shell, and writes filtered startup diagnostics to `debug.log`. Because it restarts the desktop shell, use it after a coherent change rather than on every file save.
 

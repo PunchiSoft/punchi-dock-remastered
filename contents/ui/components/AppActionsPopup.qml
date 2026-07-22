@@ -11,13 +11,28 @@ Item {
     property string itemName: ""
     property var actions: []
     property int maxVisibleRows: 6
+    property int rowHeight: 46
+    property int iconSize: 26
+    property int targetWidth: 360
+    property int maximumAvailableWidth: 752
+    property int maximumAvailableHeight: 640
     property bool embedded: false
     property bool returnToMedia: false
-    readonly property int rowHeight: 40
-    readonly property int visibleRows: Math.max(1, Math.min(maxVisibleRows, actions.length > 0 ? actions.length : 1))
+    readonly property int effectiveRowHeight: Math.max(32, Math.min(64,
+        Number(rowHeight || 46)))
+    readonly property int effectiveIconSize: Math.max(16, Math.min(40,
+        Number(iconSize || 26)))
+    readonly property int chromeHeight: 80
+    readonly property int rowsAllowedByHeight: maximumAvailableHeight > chromeHeight
+        ? Math.max(1, Math.floor((maximumAvailableHeight - chromeHeight)
+            / effectiveRowHeight))
+        : 1
+    readonly property int visibleRows: Math.max(1, Math.min(maxVisibleRows,
+        rowsAllowedByHeight, actions.length > 0 ? actions.length : 1))
 
-    implicitWidth: 280
-    implicitHeight: 64 + 16 + (visibleRows * rowHeight)
+    implicitWidth: Math.max(240, Math.min(520, Number(targetWidth || 360),
+        Number(maximumAvailableWidth || 752)))
+    implicitHeight: chromeHeight + (visibleRows * effectiveRowHeight)
     width: implicitWidth
     height: implicitHeight
 
@@ -78,7 +93,8 @@ Item {
             id: actionScroll
             Layout.fillWidth: true
             Layout.fillHeight: appActionsRoot.embedded
-            Layout.preferredHeight: appActionsRoot.visibleRows * appActionsRoot.rowHeight
+            Layout.preferredHeight: appActionsRoot.visibleRows
+                * appActionsRoot.effectiveRowHeight
             Layout.leftMargin: 12
             Layout.rightMargin: Kirigami.Units.smallSpacing
             Layout.bottomMargin: 12
@@ -97,9 +113,13 @@ Item {
                     required property var modelData
 
                     width: actionList.width
-                    height: appActionsRoot.rowHeight
+                    height: appActionsRoot.effectiveRowHeight
                     text: modelData && modelData.name ? modelData.name : i18n("Custom action")
                     icon.name: modelData && modelData.icon ? modelData.icon : "system-run"
+                    // qmllint disable unqualified
+                    icon.width: appActionsRoot.effectiveIconSize
+                    icon.height: appActionsRoot.effectiveIconSize
+                    // qmllint enable unqualified
                     enabled: !!modelData && modelData.enabled !== false
                         && (String(modelData.kind || "").length > 0
                             || String(modelData.command || "").length > 0)

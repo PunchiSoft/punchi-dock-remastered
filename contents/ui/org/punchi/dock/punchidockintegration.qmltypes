@@ -291,12 +291,75 @@ Module {
             isReadonly: true
         }
         Property {
+            name: "canControl"
+            type: "bool"
+            read: "canControl"
+            notify: "stateChanged"
+            index: 10
+            lineNumber: 27
+            isReadonly: true
+        }
+        Property {
+            name: "canSeek"
+            type: "bool"
+            read: "canSeek"
+            notify: "stateChanged"
+            index: 11
+            lineNumber: 28
+            isReadonly: true
+        }
+        Property {
             name: "playing"
             type: "bool"
             read: "playing"
             notify: "stateChanged"
-            index: 10
-            lineNumber: 27
+            index: 12
+            lineNumber: 29
+            isReadonly: true
+        }
+        Property {
+            name: "positionUs"
+            type: "qlonglong"
+            read: "positionUs"
+            notify: "stateChanged"
+            index: 13
+            lineNumber: 30
+            isReadonly: true
+        }
+        Property {
+            name: "lengthUs"
+            type: "qlonglong"
+            read: "lengthUs"
+            notify: "stateChanged"
+            index: 14
+            lineNumber: 31
+            isReadonly: true
+        }
+        Property {
+            name: "shuffleAvailable"
+            type: "bool"
+            read: "shuffleAvailable"
+            notify: "stateChanged"
+            index: 15
+            lineNumber: 32
+            isReadonly: true
+        }
+        Property {
+            name: "shuffle"
+            type: "bool"
+            read: "shuffle"
+            notify: "stateChanged"
+            index: 16
+            lineNumber: 33
+            isReadonly: true
+        }
+        Property {
+            name: "loopStatus"
+            type: "QString"
+            read: "loopStatus"
+            notify: "stateChanged"
+            index: 17
+            lineNumber: 34
             isReadonly: true
         }
         Property {
@@ -304,8 +367,8 @@ Module {
             type: "bool"
             read: "volumeAvailable"
             notify: "stateChanged"
-            index: 11
-            lineNumber: 28
+            index: 18
+            lineNumber: 35
             isReadonly: true
         }
         Property {
@@ -313,33 +376,39 @@ Module {
             type: "double"
             read: "volume"
             notify: "stateChanged"
-            index: 12
-            lineNumber: 29
+            index: 19
+            lineNumber: 36
             isReadonly: true
         }
-        Signal { name: "applicationIdChanged"; lineNumber: 56 }
-        Signal { name: "stateChanged"; lineNumber: 57 }
+        Signal { name: "applicationIdChanged"; lineNumber: 72 }
+        Signal { name: "stateChanged"; lineNumber: 73 }
         Method {
             name: "onServiceOwnerChanged"
-            lineNumber: 60
+            lineNumber: 76
             Parameter { name: "name"; type: "QString" }
             Parameter { name: "oldOwner"; type: "QString" }
             Parameter { name: "newOwner"; type: "QString" }
         }
         Method {
             name: "onPropertiesChanged"
-            lineNumber: 61
+            lineNumber: 77
             Parameter { name: "interfaceName"; type: "QString" }
             Parameter { name: "changedProperties"; type: "QVariantMap" }
             Parameter { name: "invalidatedProperties"; type: "QStringList" }
         }
-        Method { name: "refresh"; lineNumber: 49 }
-        Method { name: "previous"; lineNumber: 50 }
-        Method { name: "togglePlaying"; lineNumber: 51 }
-        Method { name: "next"; lineNumber: 52 }
+        Method { name: "refresh"; lineNumber: 63 }
+        Method { name: "previous"; lineNumber: 64 }
+        Method { name: "togglePlaying"; lineNumber: 65 }
+        Method { name: "next"; lineNumber: 66 }
+        Method {
+            name: "setShuffle"
+            lineNumber: 67
+            Parameter { name: "enabled"; type: "bool" }
+        }
+        Method { name: "cycleLoopStatus"; lineNumber: 68 }
         Method {
             name: "setVolume"
-            lineNumber: 53
+            lineNumber: 69
             Parameter { name: "volume"; type: "double" }
         }
     }
@@ -353,22 +422,22 @@ Module {
         exportMetaObjectRevisions: [256]
         Signal {
             name: "folderEntriesReady"
-            lineNumber: 36
+            lineNumber: 37
             Parameter { name: "entries"; type: "QVariantList" }
         }
         Signal {
             name: "applicationsReady"
-            lineNumber: 37
+            lineNumber: 38
             Parameter { name: "applications"; type: "QVariantList" }
         }
         Signal {
             name: "applicationReady"
-            lineNumber: 38
+            lineNumber: 39
             Parameter { name: "application"; type: "QVariantMap" }
         }
         Signal {
             name: "operationFailed"
-            lineNumber: 39
+            lineNumber: 40
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
@@ -410,33 +479,41 @@ Module {
             Parameter { name: "command"; type: "QString" }
         }
         Method {
+            name: "applicationForLauncher"
+            type: "QVariantMap"
+            isMethodConstant: true
+            lineNumber: 29
+            Parameter { name: "applicationId"; type: "QString" }
+            Parameter { name: "launcherUrl"; type: "QString" }
+        }
+        Method {
             name: "applicationActions"
             type: "QVariantList"
             isMethodConstant: true
-            lineNumber: 29
+            lineNumber: 30
             Parameter { name: "applicationId"; type: "QString" }
         }
         Method {
             name: "launchApplication"
-            lineNumber: 30
+            lineNumber: 31
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
             name: "launchApplicationAction"
             type: "bool"
-            lineNumber: 31
+            lineNumber: 32
             Parameter { name: "applicationId"; type: "QString" }
             Parameter { name: "actionId"; type: "QString" }
         }
         Method {
             name: "launchApplicationByCommand"
             type: "bool"
-            lineNumber: 32
+            lineNumber: 33
             Parameter { name: "command"; type: "QString" }
         }
         Method {
             name: "openUrl"
-            lineNumber: 33
+            lineNumber: 34
             Parameter { name: "url"; type: "QString" }
         }
     }

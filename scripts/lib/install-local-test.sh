@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPTS_DIR="$(cd "$LIB_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
 
-# shellcheck source=lib/plasma-version.sh
-source "$SCRIPT_DIR/lib/plasma-version.sh"
+# shellcheck source=plasma-version.sh
+source "$LIB_DIR/plasma-version.sh"
 
 # shellcheck disable=SC1091
 source /etc/os-release
@@ -32,6 +33,20 @@ restore_broken_install() {
     if [[ -n "$BROKEN_INSTALL_BACKUP" && -d "$BROKEN_INSTALL_BACKUP" && ! -e "$INSTALL_DIR" ]]; then
         mv "$BROKEN_INSTALL_BACKUP" "$INSTALL_DIR"
     fi
+}
+
+install_with_backup() {
+    BROKEN_INSTALL_BACKUP="$DATA_ROOT/${PLUGIN_ID}.backup.$$"
+    mv "$INSTALL_DIR" "$BROKEN_INSTALL_BACKUP"
+
+    if ! kpackagetool6 --type Plasma/Applet -i "$ZIP_FILE"; then
+        cmake -E remove_directory "$INSTALL_DIR"
+        restore_broken_install
+        return 1
+    fi
+
+    cmake -E remove_directory "$BROKEN_INSTALL_BACKUP"
+    BROKEN_INSTALL_BACKUP=""
 }
 
 restart_plasma_shell() {
@@ -104,7 +119,7 @@ restart_plasma_shell() {
     return 1
 }
 
-PUNCHI_LOCAL_TEST=1 PACKAGE_OUTPUT_FILE="$ZIP_FILE" "$SCRIPT_DIR/empaquetar-plasmoid.sh"
+PUNCHI_LOCAL_TEST=1 PACKAGE_OUTPUT_FILE="$ZIP_FILE" "$LIB_DIR/package-plasmoid.sh"
 
 echo "==> [1/3] Installing the local test package"
 if [[ -d "$INSTALL_DIR" && ! -f "$INSTALL_DIR/metadata.json" ]]; then
@@ -121,7 +136,8 @@ if [[ -n "$BROKEN_INSTALL_BACKUP" ]]; then
     cmake -E remove_directory "$BROKEN_INSTALL_BACKUP"
     BROKEN_INSTALL_BACKUP=""
 elif ! kpackagetool6 --type Plasma/Applet -u "$ZIP_FILE" 2>/dev/null; then
-    kpackagetool6 --type Plasma/Applet -i "$ZIP_FILE"
+    echo "Replacing the existing same-version local package"
+    install_with_backup
 fi
 
 if [[ ! -f "$INSTALL_DIR/metadata.json" ]]; then

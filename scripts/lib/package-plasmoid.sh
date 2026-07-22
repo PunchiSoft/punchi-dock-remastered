@@ -1,30 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPTS_DIR="$(cd "$LIB_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
 
 if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     cat <<'EOF'
-Uso: scripts/empaquetar-plasmoid.sh
+Usage: scripts/lib/package-plasmoid.sh
 
-Detecta Fedora, Debian o Kubuntu y genera un paquete versionado para el sistema actual.
-Para seleccionar un perfil explícitamente:
-  scripts/build-fedora-package.sh
-  scripts/build-debian-package.sh
-  scripts/build-kubuntu-package.sh
+Internal packaging engine. It detects Fedora, Debian, or Kubuntu and creates a
+versioned package for the current system. Prefer a distribution setup command:
+  scripts/setup-fedora.sh
+  scripts/setup-debian13.sh
+  scripts/setup-debian14-testing.sh
+  scripts/setup-kubuntu.sh
+
 EOF
     exit 0
 fi
 
 if (( $# > 0 )); then
-    echo "Error: este script no acepta argumentos. Usa --help para ver los perfiles disponibles." >&2
+    echo "Error: this script accepts no arguments. Use --help to list the distribution entry points." >&2
     exit 1
 fi
 
 if [[ "${PUNCHI_PACKAGE_CORE:-0}" != "1" ]]; then
     if [[ ! -r /etc/os-release ]]; then
-        echo "Error: no se pudo detectar la distribución desde /etc/os-release." >&2
+        echo "Error: the distribution could not be detected from /etc/os-release." >&2
         exit 1
     fi
 
@@ -33,20 +36,29 @@ if [[ "${PUNCHI_PACKAGE_CORE:-0}" != "1" ]]; then
 
     case "${ID:-}" in
         fedora)
-            echo "==> Perfil detectado: Fedora ${VERSION_ID:-desconocida}"
-            exec "$SCRIPT_DIR/build-fedora-package.sh"
+            echo "==> Detected profile: Fedora ${VERSION_ID:-unknown}"
+            exec "$SCRIPTS_DIR/distro/fedora-package.sh"
             ;;
         debian)
-            echo "==> Perfil detectado: Debian ${VERSION_ID:-desconocida}"
-            exec "$SCRIPT_DIR/build-debian-package.sh"
+            if [[ "${VERSION_ID:-}" == "13" || "${VERSION_CODENAME:-}" == "trixie" ]]; then
+                echo "==> Detected profile: Debian 13"
+                exec "$SCRIPTS_DIR/distro/debian13-package.sh"
+            fi
+            if [[ "${VERSION_ID:-}" == "14" || "${VERSION_CODENAME:-}" == "forky" ]]; then
+                echo "==> Detected profile: Debian 14/testing"
+                exec "$SCRIPTS_DIR/distro/debian14-testing-package.sh"
+            fi
+            echo "Error: unsupported Debian release: ${PRETTY_NAME:-unknown}." >&2
+            echo "Use an explicit setup script matching the Debian release." >&2
+            exit 1
             ;;
         ubuntu)
-            echo "==> Perfil detectado: Kubuntu/Ubuntu ${VERSION_ID:-desconocida}"
-            exec "$SCRIPT_DIR/build-kubuntu-package.sh"
+            echo "==> Detected profile: Kubuntu/Ubuntu ${VERSION_ID:-unknown}"
+            exec "$SCRIPTS_DIR/distro/kubuntu-package.sh"
             ;;
         *)
-            echo "Error: distribución sin perfil de empaquetado: ${ID:-desconocida}." >&2
-            echo "Perfiles disponibles: Fedora, Debian y Kubuntu." >&2
+            echo "Error: no packaging profile exists for distribution: ${ID:-unknown}." >&2
+            echo "Available profiles: Fedora, Debian, and Kubuntu." >&2
             exit 1
             ;;
     esac
@@ -57,7 +69,7 @@ PACKAGE_ROOT="$BUILD_DIR/package-root"
 DIST_DIR="${DIST_DIR:-$PROJECT_ROOT/dist}"
 
 if [[ -z "${PACKAGE_OUTPUT_FILE:-}" ]]; then
-    echo "Error interno: el perfil de plataforma no definió PACKAGE_OUTPUT_FILE." >&2
+    echo "Internal error: the platform profile did not define PACKAGE_OUTPUT_FILE." >&2
     exit 1
 fi
 
@@ -73,7 +85,7 @@ STRIP_BIN="${STRIP_BIN:-strip}"
 TRANSLATION_DOMAIN="plasma_applet_org.kde.plasma.punchi-dock-remastered"
 PO_DIR="$PROJECT_ROOT/po"
 
-echo "==> Artefacto objetivo: $ZIP_FILE"
+echo "==> Target artifact: $ZIP_FILE"
 
 resolve_qmllint() {
     local candidate=""

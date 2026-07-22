@@ -1,97 +1,62 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
-import org.kde.plasma.components as PlasmaComponents
-import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
 
 Item {
-    id: trashMenuRoot
-    implicitWidth: 220
-    implicitHeight: 136
-    width: implicitWidth
-    height: implicitHeight
+    id: root
+
+    property int rowHeight: 46
+    property int iconSize: 26
+    readonly property int effectiveRowHeight: Math.max(32, Math.min(64,
+        Number(rowHeight || 46)))
+    readonly property int effectiveIconSize: Math.max(16, Math.min(40,
+        Number(iconSize || 26)))
+
+    implicitWidth: 300
+    implicitHeight: actionColumn.implicitHeight
 
     signal openTrashClicked()
     signal emptyTrashClicked()
-    signal closeRequested()
 
     function focusFirstAction() {
         openOption.forceActiveFocus(Qt.TabFocusReason)
     }
 
     function clearActionFocus() {
-        trashMenuRoot.forceActiveFocus(Qt.MouseFocusReason)
+        root.forceActiveFocus(Qt.MouseFocusReason)
     }
 
     ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: 12
-        spacing: 8
+        id: actionColumn
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        spacing: Kirigami.Units.smallSpacing
 
-        // Header and title.
-        RowLayout {
-            Layout.fillWidth: true
-            
-            PlasmaExtras.ShadowedLabel {
-                text: i18n("Trash")
-                font.family: Kirigami.Theme.defaultFont.family
-                font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                font.weight: Font.Bold
-                Layout.fillWidth: true
-            }
-            
-            // Close button.
-            Rectangle {
-                Layout.preferredWidth: 20
-                Layout.preferredHeight: 20
-                radius: 10
-                color: closeMouse.containsMouse || closeMouse.activeFocus ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.backgroundColor
-                
-                PlasmaComponents.Label {
-                    text: "×"
-                    anchors.centerIn: parent
-                    color: Kirigami.Theme.textColor
-                }
-                
-                MouseArea {
-                    id: closeMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    activeFocusOnTab: true
-                    Accessible.role: Accessible.Button
-                    Accessible.name: i18n("Close")
-                    onClicked: {
-                        trashMenuRoot.closeRequested()
-                    }
-                }
-            }
-        }
-
-        // Open Trash action.
         Controls.ItemDelegate {
             id: openOption
             Layout.fillWidth: true
-            Layout.preferredHeight: 36
+            Layout.preferredHeight: root.effectiveRowHeight
             text: i18n("Open trash")
             icon.name: "folder-open"
-            
-            onClicked: {
-                trashMenuRoot.openTrashClicked()
-            }
+            icon.width: root.effectiveIconSize
+            icon.height: root.effectiveIconSize
+            Accessible.description: i18n("Open the trash folder in the file manager")
+            onClicked: root.openTrashClicked()
         }
 
-        // Empty Trash action.
         Controls.ItemDelegate {
             id: emptyOption
             Layout.fillWidth: true
-            Layout.preferredHeight: 36
+            Layout.preferredHeight: root.effectiveRowHeight
             text: i18n("Empty trash")
             icon.name: "trash-empty"
-            
-            onClicked: {
-                trashMenuRoot.emptyTrashClicked()
-            }
+            icon.width: root.effectiveIconSize
+            icon.height: root.effectiveIconSize
+            icon.color: Kirigami.Theme.negativeTextColor
+            Accessible.description: i18n("Permanently remove all items from the trash")
+            onClicked: root.emptyTrashClicked()
         }
     }
 }

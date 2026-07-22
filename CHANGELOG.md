@@ -2,6 +2,66 @@
 
 Todos los cambios notables de este proyecto serán documentados en este archivo.
 
+## [0.9.0] - 2026-07-21
+
+### Agregado
+
+- Tarjetas multimedia MPRIS ampliadas con caratula resuelta de forma segura,
+  volumen, silencio, barra de progreso, repeticion y reproduccion aleatoria.
+- Superficies reutilizables para miniaturas individuales y grupos de ventanas,
+  con acciones de ventana y estados de previsualizacion coherentes.
+- Perfiles independientes para popups de carpetas en rejilla, lista y detalle:
+  tamano de icono, filas, columnas, labels, tipografia y scroll visible.
+- Configuracion de menus contextuales para ancho, alto de fila, tamano de icono,
+  acciones visibles, velocidad y direccion de la transicion desde miniaturas.
+- Selector nativo de iconos de KDE con busqueda, categorias e importacion de
+  archivos personalizados bajo demanda.
+- Scripts unificados por distribucion para Fedora 44, Debian 13,
+  Debian 14/testing y Kubuntu, con deteccion de dependencias, paquete publico y
+  variante `local-test`.
+- Pruebas para resolucion de caratulas multimedia, deteccion de Plasma en
+  Kubuntu y dependencias de Debian.
+
+### Cambiado
+
+- Los popups multimedia, de ventanas y menus contextuales comparten una
+  superficie morph estable que conserva geometria y contenido saliente durante
+  sus transiciones.
+- La Papelera usa una superficie estructurada y adaptable para menu,
+  confirmacion, progreso, exito y error, con una sola indicacion semantica por
+  estado.
+- Las notas rapidas comunican guardado y conservan el contenido de forma
+  predecible durante edicion y cierre.
+- Las herramientas de desarrollo se organizaron en `scripts/dev/`, los perfiles
+  de sistema en `scripts/distro/` y los motores compartidos en `scripts/lib/`.
+- La documentacion de compilacion distingue claramente artefactos publicables,
+  instalaciones locales y compatibilidad binaria por distribucion.
+
+### Corregido
+
+- Se eliminaron artefactos de un frame al abrir, cerrar o cambiar rapidamente
+  entre miniaturas, controles multimedia y menus contextuales.
+- El menu contextual vuelve suavemente al tamano de miniatura y puede desplegar
+  sus acciones desde la direccion elegida sin perder el anclaje al item.
+- El scroll de listas y menus ya no invade el resaltado de seleccion.
+- Los popups de carpetas conservan todos los elementos mediante scroll cuando
+  el numero de filas visibles es menor que el contenido disponible.
+- Las caratulas MPRIS locales y remotas se normalizan sin bloquear la interfaz
+  ni reutilizar resultados obsoletos.
+- Se retiraron wrappers redundantes de empaquetado y el antiguo selector de
+  iconos limitado al sistema de archivos.
+
+### Validacion
+
+- Fedora 44, Plasma 6.7.3 y Qt 6.11.1: `qmllint` dentro del baseline con 732
+  advertencias conocidas, compilacion Release, empaquetado e instalacion local.
+- CTest completo: `9/9` pruebas correctas.
+- Plasma Shell permanecio activo tras la instalacion local con
+  `NRestarts=0`; los popups modificados fueron revisados iterativamente en una
+  sesion Wayland real.
+- El usuario confirmo los flujos de build dedicados en Debian 13,
+  Debian 14/testing y Kubuntu Plasma 6.6.4 durante el ciclo de desarrollo.
+
 ## [0.8.9] - 2026-07-18
 
 ### Agregado

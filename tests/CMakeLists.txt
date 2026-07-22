@@ -59,6 +59,11 @@ add_test(
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/kubuntu_version_detection_test.py
 )
 
+add_test(
+    NAME debian_dependency_detection_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/debian_dependency_detection_test.sh
+)
+
 add_executable(pipewirebackend_probe EXCLUDE_FROM_ALL
     pipewirebackend_probe.cpp
     ${CMAKE_SOURCE_DIR}/src/pipewireaudiobackend.cpp

@@ -1,32 +1,17 @@
 #!/usr/bin/env python3
-"""Regression tests for localized plasmashell version output."""
+"""Regression tests for the Kubuntu Bash setup helpers."""
 
 from __future__ import annotations
 
-import importlib.util
 import subprocess
 import unittest
 from pathlib import Path
-from types import ModuleType
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SETUP_SCRIPT = PROJECT_ROOT / "scripts" / "Kubuntu" / "setup_kubuntu_build.py"
+SETUP_SCRIPT = PROJECT_ROOT / "scripts" / "distro" / "kubuntu-setup.sh"
+SETUP_WRAPPER = PROJECT_ROOT / "scripts" / "setup-kubuntu.sh"
 SHELL_HELPER = PROJECT_ROOT / "scripts" / "lib" / "plasma-version.sh"
-
-
-def load_setup_module() -> ModuleType:
-    """Load the setup script without executing its CLI entry point."""
-
-    spec = importlib.util.spec_from_file_location("setup_kubuntu_build", SETUP_SCRIPT)
-    if spec is None or spec.loader is None:
-        raise RuntimeError(f"Unable to load test target: {SETUP_SCRIPT}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-SETUP_MODULE = load_setup_module()
 
 
 class PlasmaVersionDetectionTest(unittest.TestCase):
@@ -58,29 +43,26 @@ class PlasmaVersionDetectionTest(unittest.TestCase):
         )
         return result.stdout.strip()
 
-    def test_python_parser(self) -> None:
-        """The Python bootstrap extracts versions from localized output."""
-
-        for version_output, expected in self.CASES:
-            with self.subTest(version_output=version_output):
-                self.assertEqual(
-                    SETUP_MODULE.extract_plasma_version(version_output), expected
-                )
-
-    def test_setup_script_resolves_project_root(self) -> None:
-        """The bootstrap invokes build scripts from the repository root."""
-
-        self.assertEqual(SETUP_MODULE.PROJECT_ROOT, PROJECT_ROOT)
-        self.assertTrue(
-            (SETUP_MODULE.PROJECT_ROOT / "scripts" / "check-build-environment.sh").is_file()
-        )
-
     def test_shell_parser(self) -> None:
         """The Bash packaging wrappers use the same accepted forms."""
 
         for version_output, expected in self.CASES:
             with self.subTest(version_output=version_output):
                 self.assertEqual(self.shell_version(version_output), expected)
+
+    def test_setup_help_is_available_from_implementation_and_wrapper(self) -> None:
+        """Both Kubuntu setup entry points expose the Bash CLI without host checks."""
+
+        for script_path in (SETUP_SCRIPT, SETUP_WRAPPER):
+            with self.subTest(script_path=script_path):
+                result = subprocess.run(
+                    ("bash", str(script_path), "--help"),
+                    check=True,
+                    cwd=PROJECT_ROOT,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                )
+                self.assertIn("Usage: scripts/setup-kubuntu.sh", result.stdout)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import QtQuick.Dialogs
 import org.kde.kirigami as Kirigami
+import org.kde.iconthemes as KIconThemes
 import org.kde.plasma.plasmoid
 import "../org/punchi/dock" as Punchi
 
@@ -49,7 +50,7 @@ KCM.SimpleKCM {
     property alias cfg_actionPopupLimitRows: actionDialog.actionPopupLimitRowsChecked
     property alias cfg_actionPopupMaxVisibleRows: actionDialog.actionPopupMaxVisibleRowsValue
     property bool pendingEditConsumed: false
-    property string iconFileDialogTarget: "item"
+    property string iconPickerTarget: "item"
     property real listRowHeight: Kirigami.Units.gridUnit * 2.4
     property real listFooterHeight: Kirigami.Units.gridUnit * 2.4
     property real listFramePadding: Kirigami.Units.largeSpacing * 2
@@ -435,29 +436,29 @@ KCM.SimpleKCM {
     function addItem(type) { WorkflowHelper.addItem(type) }
 
     function openIconPicker(target) {
-        iconFileDialogTarget = target || "item"
-        iconFileDialog.open()
+        iconPickerTarget = target || "item"
+        iconPicker.open()
     }
 
-    function chooseIconFile(fileUrl) {
-        var selectedIcon = String(fileUrl || "")
+    function chooseIcon(iconName) {
+        var selectedIcon = String(iconName || "")
         if (selectedIcon.length === 0) {
             return
         }
 
-        if (iconFileDialogTarget === "action") {
+        if (iconPickerTarget === "action") {
             actionDialog.actionIconText = selectedIcon
             applyActionForm()
             return
         }
 
-        if (iconFileDialogTarget === "trashFull") {
+        if (iconPickerTarget === "trashFull") {
             trashDialog.fullIconText = selectedIcon
             applyItemForm()
             return
         }
 
-        if (iconFileDialogTarget === "trash") {
+        if (iconPickerTarget === "trash") {
             trashDialog.emptyIconText = selectedIcon
             applyItemForm()
             return
@@ -514,12 +515,12 @@ KCM.SimpleKCM {
         onTriggered: mainView.clearStatus()
     }
 
-    IconFileDialog {
-        id: iconFileDialog
-        titleText: i18n("Choose icon file")
-        imageFilesText: i18n("Image files")
-        allFilesText: i18n("All files")
-        onIconChosen: page.chooseIconFile(fileUrl)
+    KIconThemes.IconDialog {
+        id: iconPicker
+        title: i18n("Choose icon")
+        iconSize: 48
+        modality: Qt.WindowModal
+        onAccepted: page.chooseIcon(iconName)
     }
 
     FolderPathDialog {

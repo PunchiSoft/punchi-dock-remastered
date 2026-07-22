@@ -2,10 +2,11 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+SCRIPTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
 
-# shellcheck source=lib/plasma-version.sh
-source "$SCRIPT_DIR/lib/plasma-version.sh"
+# shellcheck source=../lib/plasma-version.sh
+source "$SCRIPTS_DIR/lib/plasma-version.sh"
 
 if [[ ! -r /etc/os-release ]]; then
     echo "Error: the distribution could not be identified from /etc/os-release." >&2
@@ -60,9 +61,9 @@ if [[ ! -f "$QMLLINT_BASELINE_FILE" && "${QMLLINT_RECORD_BASELINE:-0}" != "1" ]]
     else
         echo "Error: no qmllint baseline exists for this Kubuntu profile: $QMLLINT_BASELINE_FILE" >&2
         echo "Calibrate it locally before creating a distributable artifact:" >&2
-        echo "  QMLLINT_RECORD_BASELINE=1 scripts/build-kubuntu-package.sh" >&2
+        echo "  QMLLINT_RECORD_BASELINE=1 scripts/setup-kubuntu.sh" >&2
         exit 1
     fi
 fi
 
-exec "$SCRIPT_DIR/empaquetar-plasmoid.sh"
+exec "$SCRIPTS_DIR/lib/package-plasmoid.sh"

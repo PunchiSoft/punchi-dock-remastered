@@ -45,6 +45,27 @@ Item {
         editor.forceActiveFocus()
     }
 
+    function requestSave() {
+        if (!hasPendingChanges) {
+            return
+        }
+        noteChanged(editor.text, activeWidth, activeHeight)
+    }
+
+    function markSaved(savedText) {
+        initialText = savedText
+        // qmllint disable unqualified
+        transientStatus = i18n("Saved")
+        // qmllint enable unqualified
+        maximumLengthWarning = false
+        statusResetTimer.restart()
+    }
+
+    function saveAndClose() {
+        requestSave()
+        closeRequested()
+    }
+
     function copyNote() {
         var selectionStart = editor.selectionStart
         var selectionEnd = editor.selectionEnd
@@ -115,6 +136,38 @@ Item {
                 font.weight: Font.Bold
                 Layout.fillWidth: true
             }
+
+            // qmllint disable unqualified
+            Controls.ToolButton {
+                id: saveNoteButton
+                Layout.preferredWidth: 28
+                Layout.preferredHeight: 28
+                padding: 2
+                focusPolicy: Qt.StrongFocus
+                enabled: noteRoot.hasPendingChanges
+                Accessible.name: i18n("Save note")
+                Controls.ToolTip.visible: hovered || activeFocus
+                Controls.ToolTip.text: Accessible.name
+                Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
+                contentItem: Kirigami.Icon {
+                    source: "document-save"
+                    color: Kirigami.Theme.textColor
+                    implicitWidth: 16
+                    implicitHeight: 16
+                }
+                background: Rectangle {
+                    radius: 6
+                    color: saveNoteButton.hovered || saveNoteButton.activeFocus
+                        ? Qt.rgba(Kirigami.Theme.highlightColor.r,
+                            Kirigami.Theme.highlightColor.g,
+                            Kirigami.Theme.highlightColor.b, 0.24)
+                        : "transparent"
+                    border.width: saveNoteButton.activeFocus ? 1 : 0
+                    border.color: Kirigami.Theme.textColor
+                }
+                onClicked: noteRoot.requestSave()
+            }
+            // qmllint enable unqualified
 
             Controls.ToolButton {
                 id: clearNoteButton
@@ -237,9 +290,9 @@ Item {
                     border.width: closeNoteButton.activeFocus ? 1 : 0
                     border.color: Kirigami.Theme.textColor
                 }
-                onClicked: noteRoot.closeRequested()
-                Keys.onReturnPressed: noteRoot.closeRequested()
-                Keys.onSpacePressed: noteRoot.closeRequested()
+                onClicked: noteRoot.saveAndClose()
+                Keys.onReturnPressed: noteRoot.saveAndClose()
+                Keys.onSpacePressed: noteRoot.saveAndClose()
             }
         }
 
@@ -284,6 +337,12 @@ Item {
                 Accessible.name: i18n("Note content")
 
                 onTextChanged: noteRoot.enforceMaximumLength()
+                Keys.onPressed: function(event) {
+                    if (event.matches(StandardKey.Save)) {
+                        noteRoot.requestSave()
+                        event.accepted = true
+                    }
+                }
             }
         }
 

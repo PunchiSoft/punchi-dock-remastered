@@ -2,4 +2,4 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec "$SCRIPT_DIR/dev/update-translations.sh" "$@"
+exec "$SCRIPT_DIR/distro/debian13-setup.sh" "$@"
