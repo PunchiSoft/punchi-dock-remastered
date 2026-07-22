@@ -132,7 +132,7 @@ scripts/setup-fedora.sh --local-test
 ```
 
 Genera un artefacto como
-`dist/punchi-dock-remastered-0.9.0-fedora44-x86_64-local-test.plasmoid`, verifica
+`dist/punchi-dock-remastered-0.9.1-fedora44-x86_64-local-test.plasmoid`, verifica
 su instalación para el usuario actual y reinicia Plasma Shell. En sistemas que
 exponen `plasma-plasmashell.service` usa el servicio systemd de usuario; si el
 servicio conserva el proceso anterior, solicita primero el cierre mediante KDE

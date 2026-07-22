@@ -18,6 +18,7 @@ Item {
     property int maximumAvailableHeight: 640
     property bool embedded: false
     property bool returnToMedia: false
+    property bool textShadowsEnabled: true
     readonly property int effectiveRowHeight: Math.max(32, Math.min(64,
         Number(rowHeight || 46)))
     readonly property int effectiveIconSize: Math.max(16, Math.min(40,
@@ -52,6 +53,7 @@ Item {
             PlasmaExtras.ShadowedLabel {
                 Layout.fillWidth: true
                 text: appActionsRoot.itemName.length > 0 ? appActionsRoot.itemName : i18n("Application")
+                renderShadow: appActionsRoot.textShadowsEnabled
                 font.family: Kirigami.Theme.defaultFont.family
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize
                 font.weight: Font.Bold
@@ -111,10 +113,16 @@ Item {
                 delegate: Controls.ItemDelegate {
                     id: actionDelegate
                     required property var modelData
+                    readonly property string actionText: modelData && modelData.name
+                        ? modelData.name
+                        : i18n("Custom action")
+                    readonly property string detailText: modelData && modelData.detail
+                        ? String(modelData.detail)
+                        : ""
 
                     width: actionList.width
                     height: appActionsRoot.effectiveRowHeight
-                    text: modelData && modelData.name ? modelData.name : i18n("Custom action")
+                    text: actionText
                     icon.name: modelData && modelData.icon ? modelData.icon : "system-run"
                     // qmllint disable unqualified
                     icon.width: appActionsRoot.effectiveIconSize
@@ -132,18 +140,40 @@ Item {
                         }
                     }
 
-                    Controls.Label {
-                        anchors.right: parent.right
-                        anchors.rightMargin: Kirigami.Units.largeSpacing
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: parent.width * 0.42
-                        visible: text.length > 0
-                        text: actionDelegate.modelData && actionDelegate.modelData.detail
-                            ? String(actionDelegate.modelData.detail)
-                            : ""
-                        elide: Text.ElideRight
-                        opacity: 0.68
-                        horizontalAlignment: Text.AlignRight
+                    contentItem: RowLayout {
+                        spacing: Kirigami.Units.largeSpacing
+                        opacity: actionDelegate.enabled ? 1 : 0.45
+
+                        Kirigami.Icon {
+                            Layout.preferredWidth: appActionsRoot.effectiveIconSize
+                            Layout.preferredHeight: appActionsRoot.effectiveIconSize
+                            source: actionDelegate.icon.name
+                        }
+
+                        PlasmaExtras.ShadowedLabel {
+                            Layout.fillWidth: true
+                            text: actionDelegate.actionText
+                            renderShadow: appActionsRoot.textShadowsEnabled
+                            font.family: Kirigami.Theme.defaultFont.family
+                            font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                        }
+
+                        PlasmaExtras.ShadowedLabel {
+                            Layout.preferredWidth: Math.max(0,
+                                actionDelegate.width * 0.34)
+                            visible: actionDelegate.detailText.length > 0
+                            text: actionDelegate.detailText
+                            renderShadow: appActionsRoot.textShadowsEnabled
+                            font.family: Kirigami.Theme.defaultFont.family
+                            font.pointSize: Math.max(8,
+                                Kirigami.Theme.smallFont.pointSize)
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                            opacity: 0.68
+                            horizontalAlignment: Text.AlignRight
+                        }
                     }
                 }
             }

@@ -8,6 +8,9 @@ Item {
     visible: false
 
     property bool inPanel: false
+    property int panelPopupDirection: Qt.TopEdge
+    property rect availableScreenRect: Qt.rect(0, 0, 800, 640)
+    property int popupDirection: panelPopupDirection
     property var dockFallbackAnchor: null
     property var taskStructureSource: null
     property var taskControllerRef: null
@@ -138,13 +141,45 @@ Item {
     }
 
     function popupAnchor(visualParent) {
-        if (!visualParent) {
-            return dockFallbackAnchor
+        return visualParent || dockFallbackAnchor
+    }
+
+    function popupDirectionForAnchor(anchor) {
+        if (inPanel || !anchor || typeof anchor.mapToScene !== "function") {
+            return panelPopupDirection
         }
-        if (!inPanel && visualParent.popupAnchorItem) {
-            return visualParent.popupAnchorItem
+
+        try {
+            const scenePosition = anchor.mapToScene(Qt.point(0, 0))
+            const centerX = scenePosition.x + (Math.max(0, Number(anchor.width || 0)) / 2)
+            const centerY = scenePosition.y + (Math.max(0, Number(anchor.height || 0)) / 2)
+            const screen = availableScreenRect
+            const distances = [
+                { "direction": Qt.BottomEdge,
+                    "distance": Math.abs(centerY - screen.y) },
+                { "direction": Qt.TopEdge,
+                    "distance": Math.abs((screen.y + screen.height) - centerY) },
+                { "direction": Qt.RightEdge,
+                    "distance": Math.abs(centerX - screen.x) },
+                { "direction": Qt.LeftEdge,
+                    "distance": Math.abs((screen.x + screen.width) - centerX) }
+            ]
+            let nearest = distances[0]
+            for (let index = 1; index < distances.length; index++) {
+                if (distances[index].distance < nearest.distance) {
+                    nearest = distances[index]
+                }
+            }
+            return nearest.direction
+        } catch (error) {
+            return panelPopupDirection
         }
-        return visualParent
+    }
+
+    function preparePopupAnchor(visualParent) {
+        const anchor = popupAnchor(visualParent)
+        popupDirection = popupDirectionForAnchor(anchor)
+        return anchor
     }
 
     function closeAllPopups(exceptDialog) {
@@ -172,7 +207,7 @@ Item {
         activeTrashEmptySound = itemData && itemData.emptySound
             ? String(itemData.emptySound)
             : ""
-        trashMenuDialogRef.visualParent = popupAnchor(visualParent)
+        trashMenuDialogRef.visualParent = preparePopupAnchor(visualParent)
         if (trashIntegrationRef.emptying) {
             trashContextContentRef.showConfirmation()
         } else {
@@ -239,7 +274,7 @@ Item {
             return
         }
 
-        const anchor = popupAnchor(visualParent)
+        const anchor = preparePopupAnchor(visualParent)
         closeAllPopups(appActionsDialogRef)
         contextMenuOpening = true
         Qt.callLater(function() {
@@ -257,7 +292,7 @@ Item {
         }
         closeAllPopups(folderPopupDialogRef)
         activeFolderData = itemData
-        folderPopupDialogRef.visualParent = popupAnchor(visualParent)
+        folderPopupDialogRef.visualParent = preparePopupAnchor(visualParent)
         folderPopupDialogRef.visible = !folderPopupDialogRef.visible
     }
 
@@ -266,7 +301,7 @@ Item {
             return
         }
         closeAllPopups(calendarPopupDialogRef)
-        calendarPopupDialogRef.visualParent = popupAnchor(visualParent)
+        calendarPopupDialogRef.visualParent = preparePopupAnchor(visualParent)
         calendarPopupDialogRef.visible = !calendarPopupDialogRef.visible
     }
 
@@ -278,7 +313,7 @@ Item {
         closeAllPopups(null)
         activeNoteData = itemData
         activeNoteIndex = Number.isInteger(itemIndex) ? itemIndex : -1
-        notePopupDialogRef.visualParent = popupAnchor(visualParent)
+        notePopupDialogRef.visualParent = preparePopupAnchor(visualParent)
         notePopupDialogRef.visible = true
         Qt.callLater(function() {
             root.notePopupContentRef.focusEditor()
@@ -321,7 +356,7 @@ Item {
             }),
             "windows": popupWindows
         }
-        taskWindowsDialogRef.visualParent = popupAnchor(visualParent)
+        taskWindowsDialogRef.visualParent = preparePopupAnchor(visualParent)
         taskPopupVisualParent = visualParent
         taskWindowsDialogRef.visible = true
         if (showMedia && keyboardInvoked && taskContextSurfaceStackRef) {
@@ -336,7 +371,7 @@ Item {
             return
         }
         closeAllPopups(taskOverflowDialogRef)
-        taskOverflowDialogRef.visualParent = popupAnchor(visualParent)
+        taskOverflowDialogRef.visualParent = preparePopupAnchor(visualParent)
         taskOverflowDialogRef.visible = true
     }
 
@@ -504,6 +539,7 @@ Item {
             return
         }
         const anchor = taskWindowsDialogRef.visualParent
+        popupDirection = popupDirectionForAnchor(anchor)
         taskWindowsDialogRef.visualParent = null
         taskWindowsDialogRef.visualParent = anchor
     }

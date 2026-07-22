@@ -8,7 +8,7 @@ import "components"
 Item {
     id: page
     implicitWidth: layoutMetrics.pageImplicitWidth
-    implicitHeight: menuForm.implicitHeight
+    implicitHeight: menuColumn.implicitHeight
 
     ConfigLayoutMetrics {
         id: layoutMetrics
@@ -21,6 +21,10 @@ Item {
     property alias cfg_contextMenuIconSize: contextMenuIconSizeSlider.value
     property alias cfg_contextMenuWidth: contextMenuWidthSlider.value
     property string cfg_contextMenuTransitionDirection: "fromRight"
+    property alias cfg_menuTextShadowsEnabled: menuTextShadowsCheck.checked
+    property alias cfg_menuAnimation: menuAnimationSettings.animationStyle
+    property alias cfg_menuAnimationSpeedPercent: menuAnimationSettings.animationSpeedPercent
+    property alias cfg_menuAnimationIntensity: menuAnimationSettings.animationIntensityPercent
 
     readonly property bool interactiveCursorEnabled:
         !!Plasmoid.configuration.globalMouseCursor
@@ -88,10 +92,15 @@ Item {
     onCfg_contextMenuTransitionDirectionChanged: syncDirectionSelector()
     Component.onCompleted: syncDirectionSelector()
 
-    // qmllint disable unqualified
-    Kirigami.FormLayout {
-        id: menuForm
-        width: page.width
+    ColumnLayout {
+        id: menuColumn
+        anchors.fill: parent
+        spacing: 0
+
+        // qmllint disable unqualified
+        Kirigami.FormLayout {
+            id: menuForm
+            Layout.fillWidth: true
 
         Controls.ComboBox {
             id: sizePresetCombo
@@ -217,6 +226,17 @@ Item {
             color: Kirigami.Theme.disabledTextColor
         }
 
+        Controls.CheckBox {
+            id: menuTextShadowsCheck
+            Kirigami.FormData.label: i18n("Text shadows:")
+            text: i18n("Show subtle shadows on menu text")
+            Accessible.description: i18n("Applies to context menu headers, action labels and secondary details.")
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.interactiveCursorEnabled
+            }
+        }
+
         Controls.ComboBox {
             id: transitionDirectionCombo
             Kirigami.FormData.label: i18n("Menu entrance:")
@@ -274,13 +294,28 @@ Item {
             color: Kirigami.Theme.disabledTextColor
         }
 
-        Kirigami.InlineMessage {
-            visible: true
+            Kirigami.InlineMessage {
+                visible: true
+                Layout.fillWidth: true
+                Layout.maximumWidth: page.contentWidthHint
+                type: Kirigami.MessageType.Information
+                text: i18n("Menu entries and per-item actions remain configured from the Items section.")
+            }
+        }
+        // qmllint enable unqualified
+
+        PopupAnimationSettings {
+            id: menuAnimationSettings
             Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            type: Kirigami.MessageType.Information
-            text: i18n("Menu entries and per-item actions remain configured from the Items section.")
+            // qmllint disable unqualified
+            sectionTitle: i18n("Menu animation")
+            // qmllint enable unqualified
+            animationStyle: "fade"
+            animationSpeedPercent: 125
+            animationIntensityPercent: 75
+            contentWidthHint: page.contentWidthHint
+            selectorWidthHint: page.selectorWidthHint
+            interactiveCursorEnabled: page.interactiveCursorEnabled
         }
     }
-    // qmllint enable unqualified
 }

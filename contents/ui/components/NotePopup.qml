@@ -12,6 +12,7 @@ Item {
     property string initialText: ""
     property alias currentText: editor.text
     property string transientStatus: ""
+    property bool textShadowsEnabled: true
     property bool enforcingLength: false
     property bool maximumLengthWarning: false
     property bool deleteConfirmationVisible: false
@@ -131,6 +132,7 @@ Item {
 
             PlasmaExtras.ShadowedLabel {
                 text: noteRoot.noteItem && noteRoot.noteItem.name ? noteRoot.noteItem.name : i18n("Note")
+                renderShadow: noteRoot.textShadowsEnabled
                 font.family: Kirigami.Theme.defaultFont.family
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize
                 font.weight: Font.Bold

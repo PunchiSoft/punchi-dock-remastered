@@ -19,6 +19,7 @@ KCM.SimpleKCM {
     }
 
     property alias cfg_showLabels: showLabelsCheck.checked
+    property alias cfg_dockTextShadowsEnabled: dockTextShadowsCheck.checked
     property alias cfg_showItemHoverBackground: showItemHoverBackgroundCheck.checked
     property alias cfg_iconReflectionsEnabled: iconReflectionsCheck.checked
     property alias cfg_iconReflectionOpacity: iconReflectionOpacitySlider.value
@@ -31,12 +32,22 @@ KCM.SimpleKCM {
     property alias cfg_windowPreviewStyle: popupAppearancePage.cfg_windowPreviewStyle
     property alias cfg_windowPreviewScale: popupAppearancePage.cfg_windowPreviewScale
     property alias cfg_windowPreviewInfoMode: popupAppearancePage.cfg_windowPreviewInfoMode
+    property alias cfg_windowPreviewTextShadowsEnabled: popupAppearancePage.cfg_windowPreviewTextShadowsEnabled
     property alias cfg_mediaControlsOnHover: popupAppearancePage.cfg_mediaControlsOnHover
     property alias cfg_maxPopupRows: popupAppearancePage.cfg_maxPopupRows
-    property alias cfg_popupAnimation: popupAppearancePage.cfg_popupAnimation
-    property alias cfg_popupAnimationSpeed: popupAppearancePage.cfg_popupAnimationSpeed
-    property alias cfg_popupAnimationSpeedPercent: popupAppearancePage.cfg_popupAnimationSpeedPercent
-    property alias cfg_popupAnimationIntensity: popupAppearancePage.cfg_popupAnimationIntensity
+    property alias cfg_popupAnimation: folderPopupPage.cfg_popupAnimation
+    // Kept so existing configurations can still be loaded by the KCM.
+    property string cfg_popupAnimationSpeed: "normal"
+    property alias cfg_popupAnimationSpeedPercent: folderPopupPage.cfg_popupAnimationSpeedPercent
+    property alias cfg_popupAnimationIntensity: folderPopupPage.cfg_popupAnimationIntensity
+    property alias cfg_popupTextShadowsEnabled: folderPopupPage.cfg_popupTextShadowsEnabled
+    property alias cfg_menuAnimation: menuAppearancePage.cfg_menuAnimation
+    property alias cfg_menuAnimationSpeedPercent: menuAppearancePage.cfg_menuAnimationSpeedPercent
+    property alias cfg_menuAnimationIntensity: menuAppearancePage.cfg_menuAnimationIntensity
+    property alias cfg_menuTextShadowsEnabled: menuAppearancePage.cfg_menuTextShadowsEnabled
+    property alias cfg_windowPreviewAnimation: popupAppearancePage.cfg_windowPreviewAnimation
+    property alias cfg_windowPreviewAnimationSpeedPercent: popupAppearancePage.cfg_windowPreviewAnimationSpeedPercent
+    property alias cfg_windowPreviewAnimationIntensity: popupAppearancePage.cfg_windowPreviewAnimationIntensity
     property alias cfg_folderGridIconSize: folderPopupPage.cfg_folderGridIconSize
     property alias cfg_folderGridColumns: folderPopupPage.cfg_folderGridColumns
     property alias cfg_folderGridRows: folderPopupPage.cfg_folderGridRows
@@ -53,6 +64,7 @@ KCM.SimpleKCM {
     property alias cfg_folderDetailedShowLabels: folderPopupPage.cfg_folderDetailedShowLabels
     property alias cfg_folderDetailedFontFamily: folderPopupPage.cfg_folderDetailedFontFamily
     property alias cfg_folderDetailedFontSize: folderPopupPage.cfg_folderDetailedFontSize
+    property alias cfg_folderPopupExtraDistance: folderPopupPage.cfg_folderPopupExtraDistance
     property alias cfg_contextMenuTransitionSpeed: menuAppearancePage.cfg_contextMenuTransitionSpeed
     property alias cfg_contextMenuTransitionDirection: menuAppearancePage.cfg_contextMenuTransitionDirection
     property alias cfg_contextMenuVisibleRows: menuAppearancePage.cfg_contextMenuVisibleRows
@@ -589,6 +601,17 @@ KCM.SimpleKCM {
             id: showLabelsCheck
             Kirigami.FormData.label: i18n("Labels:")
             text: i18n("Show item names in the dock")
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.interactiveCursorEnabled
+            }
+        }
+
+        Controls.CheckBox {
+            id: dockTextShadowsCheck
+            Kirigami.FormData.label: i18n("Text shadows:")
+            text: i18n("Show subtle shadows on dock text")
+            Accessible.description: i18n("Applies to dock labels and the calendar item text.")
 
             ConfigCursorBehavior {
                 cursorEnabled: page.interactiveCursorEnabled

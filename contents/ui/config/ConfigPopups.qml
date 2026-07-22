@@ -8,7 +8,7 @@ import "components"
 Item {
     id: page
     implicitWidth: layoutMetrics.pageImplicitWidth
-    implicitHeight: popupForm.implicitHeight
+    implicitHeight: popupColumn.implicitHeight
 
     ConfigLayoutMetrics {
         id: layoutMetrics
@@ -20,13 +20,12 @@ Item {
     // normalized 1.0 user-facing size without a migration.
     property real cfg_windowPreviewScale: 1.5
     property string cfg_windowPreviewInfoMode: "full"
+    property alias cfg_windowPreviewTextShadowsEnabled: windowPreviewTextShadowsCheck.checked
     property alias cfg_mediaControlsOnHover: mediaControlsOnHoverCheck.checked
     property alias cfg_maxPopupRows: maxPopupRowsSpin.value
-    property string cfg_popupAnimation: "scale"
-    // Kept so existing configurations can still be loaded by the KCM.
-    property string cfg_popupAnimationSpeed: "normal"
-    property alias cfg_popupAnimationSpeedPercent: popupAnimationSpeedSlider.value
-    property alias cfg_popupAnimationIntensity: popupAnimationIntensitySlider.value
+    property alias cfg_windowPreviewAnimation: windowPreviewAnimationSettings.animationStyle
+    property alias cfg_windowPreviewAnimationSpeedPercent: windowPreviewAnimationSettings.animationSpeedPercent
+    property alias cfg_windowPreviewAnimationIntensity: windowPreviewAnimationSettings.animationIntensityPercent
 
     readonly property bool interactiveCursorEnabled:
         !!Plasmoid.configuration.globalMouseCursor
@@ -46,16 +45,6 @@ Item {
         { "text": i18nc("@item:inlistbox Window preview information", "Hidden"), "value": "none" }
     ]
     // qmllint enable unqualified
-    // qmllint disable unqualified
-    readonly property var popupAnimationOptions: [
-        { "text": i18n("Subtle scale (default)"), "value": "scale" },
-        { "text": i18n("Bounce"), "value": "bounce" },
-        { "text": i18n("Fade"), "value": "fade" },
-        { "text": i18n("Slide from the dock"), "value": "slide" },
-        { "text": i18n("None"), "value": "none" }
-    ]
-    // qmllint enable unqualified
-
     component SectionTitle: Kirigami.Heading {
         Layout.fillWidth: true
         level: 3
@@ -76,18 +65,21 @@ Item {
     function syncSelectors() {
         syncComboValue(previewStyleCombo, page.cfg_windowPreviewStyle)
         syncComboValue(previewInfoCombo, page.cfg_windowPreviewInfoMode)
-        syncComboValue(popupAnimationCombo, page.cfg_popupAnimation)
     }
 
     onCfg_windowPreviewStyleChanged: syncSelectors()
     onCfg_windowPreviewInfoModeChanged: syncSelectors()
-    onCfg_popupAnimationChanged: syncSelectors()
     Component.onCompleted: syncSelectors()
 
-    // qmllint disable unqualified
-    Kirigami.FormLayout {
-        id: popupForm
-        width: page.width
+    ColumnLayout {
+        id: popupColumn
+        anchors.fill: parent
+        spacing: 0
+
+        // qmllint disable unqualified
+        Kirigami.FormLayout {
+            id: popupForm
+            Layout.fillWidth: true
 
         SectionTitle {
             Kirigami.FormData.isSection: true
@@ -225,6 +217,18 @@ Item {
             enabled: page.cfg_windowPreviewStyle !== "none"
         }
 
+        Controls.CheckBox {
+            id: windowPreviewTextShadowsCheck
+            Kirigami.FormData.label: i18n("Text shadows:")
+            text: i18n("Show subtle shadows on window preview text")
+            enabled: page.cfg_windowPreviewStyle !== "none"
+            Accessible.description: i18n("Applies to window titles, window details and overflow group labels.")
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.interactiveCursorEnabled
+            }
+        }
+
         Controls.SpinBox {
             id: maxPopupRowsSpin
             Kirigami.FormData.label: i18n("Popup rows:")
@@ -249,100 +253,21 @@ Item {
             enabled: page.cfg_windowPreviewStyle !== "none"
         }
 
-        SectionTitle {
-            Kirigami.FormData.isSection: true
-            text: i18n("Opening animation")
         }
+        // qmllint enable unqualified
 
-        RowLayout {
-            Kirigami.FormData.label: i18n("Popup animation:")
-            Layout.maximumWidth: page.contentWidthHint
-
-            Controls.ComboBox {
-                id: popupAnimationCombo
-                Layout.preferredWidth: page.selectorWidthHint
-                Layout.maximumWidth: page.selectorWidthHint
-                textRole: "text"
-                valueRole: "value"
-                model: page.popupAnimationOptions
-                onActivated: {
-                    if (page.cfg_popupAnimation !== currentValue) {
-                        page.cfg_popupAnimation = currentValue
-                    }
-                }
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
-            }
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Popup speed:")
-            Layout.maximumWidth: page.contentWidthHint
-            enabled: page.cfg_popupAnimation !== "none"
-
-            Controls.Slider {
-                id: popupAnimationSpeedSlider
-                from: 10
-                to: 200
-                value: 100
-                stepSize: 5
-                snapMode: Controls.Slider.SnapAlways
-                Layout.fillWidth: true
-                Layout.preferredWidth: page.contentWidthHint - 64
-                Accessible.name: i18n("Popup animation speed")
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
-            }
-
-            Controls.Label {
-                text: i18n("%1%", Math.round(popupAnimationSpeedSlider.value))
-                horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: 56
-            }
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Popup intensity:")
-            Layout.maximumWidth: page.contentWidthHint
-            enabled: page.cfg_popupAnimation !== "none"
-
-            Controls.Slider {
-                id: popupAnimationIntensitySlider
-                from: 10
-                to: 200
-                value: 100
-                stepSize: 5
-                snapMode: Controls.Slider.SnapAlways
-                Layout.fillWidth: true
-                Layout.preferredWidth: page.contentWidthHint - 64
-                Accessible.name: i18n("Popup animation intensity")
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
-            }
-
-            Controls.Label {
-                text: i18n("%1%", Math.round(popupAnimationIntensitySlider.value))
-                horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: 56
-            }
-        }
-
-        Controls.Label {
-            text: i18n("Lower speed values make opening slower. Intensity controls scale, distance, fade and bounce strength. Plasma keeps native control of positioning, focus, blur, shadow and closing.")
-            wrapMode: Text.WordWrap
+        PopupAnimationSettings {
+            id: windowPreviewAnimationSettings
             Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: layoutMetrics.helperIndent
-            color: Kirigami.Theme.disabledTextColor
+            // qmllint disable unqualified
+            sectionTitle: i18n("Window preview animation")
+            // qmllint enable unqualified
+            animationStyle: "slide"
+            animationSpeedPercent: 100
+            animationIntensityPercent: 100
+            contentWidthHint: page.contentWidthHint
+            selectorWidthHint: page.selectorWidthHint
+            interactiveCursorEnabled: page.interactiveCursorEnabled
         }
     }
-    // qmllint enable unqualified
 }

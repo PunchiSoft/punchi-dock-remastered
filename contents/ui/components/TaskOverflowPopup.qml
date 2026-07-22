@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
+import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
 
 Item {
@@ -8,6 +9,7 @@ Item {
 
     property var entries: []
     property int maxVisibleRows: 4
+    property bool textShadowsEnabled: true
     readonly property int rowHeight: 48
     readonly property int visibleRows: Math.max(1, Math.min(maxVisibleRows, entries.length))
 
@@ -28,11 +30,13 @@ Item {
             id: header
             Layout.fillWidth: true
 
-            Controls.Label {
+            PlasmaExtras.ShadowedLabel {
                 Layout.fillWidth: true
                 text: i18n("More window groups")
+                renderShadow: root.textShadowsEnabled
                 font.bold: true
                 elide: Text.ElideRight
+                wrapMode: Text.NoWrap
             }
 
             Controls.ToolButton {
@@ -70,15 +74,19 @@ Item {
                             source: modelData.icon
                         }
 
-                        Controls.Label {
+                        PlasmaExtras.ShadowedLabel {
                             Layout.fillWidth: true
                             text: modelData.name
+                            renderShadow: root.textShadowsEnabled
                             elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
                         }
 
-                        Controls.Label {
+                        PlasmaExtras.ShadowedLabel {
                             text: String(modelData.count)
-                            color: Kirigami.Theme.disabledTextColor
+                            renderShadow: root.textShadowsEnabled
+                            opacity: 0.68
+                            wrapMode: Text.NoWrap
                         }
                     }
                 }

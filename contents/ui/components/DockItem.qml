@@ -55,6 +55,7 @@ Item {
     property real entryScale: 1.0
     property bool positionAnimationReady: false
     property bool showPersistentLabel: false
+    property bool textShadowsEnabled: true
     property int labelFontSize: Math.max(10, Math.round(iconSize * 0.22))
     property string indicatorType: "line"
     property string indicatorPosition: "bottom"
@@ -170,13 +171,8 @@ Item {
     property bool suppressTooltip: false
     property bool supportsContextMenu: false
     property bool mediaHoverControlsEnabled: false
-    property int popupDirection: Qt.BottomEdge
     property bool customSeparatorEnabled: false
     property var separatorTheme: ({})
-    readonly property Item dockWrapperItem: dockItemContainer.parent && dockItemContainer.parent.parent ? dockItemContainer.parent.parent : null
-    readonly property bool verticalPopupFlow: popupDirection === Qt.TopEdge || popupDirection === Qt.BottomEdge
-    readonly property real popupAnchorExtent: Math.max(1, Math.min(width, iconSize + 12))
-    readonly property Item popupAnchorItem: popupAnchorProxy
     readonly property Item taskGeometryItem: taskGeometryProxy
     readonly property bool containsMouse: mouseArea.containsMouse
     readonly property bool separatorItem: itemType === "separator"
@@ -420,6 +416,7 @@ Item {
 
             PlasmaExtras.ShadowedLabel {
                 text: currentTime
+                renderShadow: dockItemContainer.textShadowsEnabled
                 font.pixelSize: 14
                 font.weight: Font.Normal
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -427,6 +424,7 @@ Item {
 
             PlasmaExtras.ShadowedLabel {
                 text: currentDate
+                renderShadow: dockItemContainer.textShadowsEnabled
                 font.pixelSize: 9
                 opacity: 0.68
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -477,7 +475,7 @@ Item {
         anchors.fill: visualArea
     }
 
-    Controls.Label {
+    PlasmaExtras.ShadowedLabel {
         id: persistentLabel
         visible: showPersistentLabel && !separatorItem && !spacerItem
         anchors.top: visualArea.bottom
@@ -487,25 +485,9 @@ Item {
         horizontalAlignment: Text.AlignHCenter
         elide: Text.ElideRight
         text: dockItemContainer.localizedItemName
+        renderShadow: dockItemContainer.textShadowsEnabled
         font.pixelSize: labelFontSize
-        color: Kirigami.Theme.textColor
         opacity: mouseArea.containsMouse || taskIsActive ? 1.0 : 0.88
-    }
-
-    Item {
-        id: popupAnchorProxy
-        parent: dockWrapperItem
-        visible: false
-        width: verticalPopupFlow ? dockItemContainer.popupAnchorExtent : (dockWrapperItem ? dockWrapperItem.width : dockItemContainer.width)
-        height: verticalPopupFlow ? (dockWrapperItem ? dockWrapperItem.height : dockItemContainer.height) : dockItemContainer.implicitHeight
-        x: verticalPopupFlow
-            ? ((dockItemContainer.parent ? dockItemContainer.parent.x : 0)
-                + dockItemContainer.x
-                + Math.round((dockItemContainer.width - width) / 2))
-            : 0
-        y: verticalPopupFlow
-            ? 0
-            : ((dockItemContainer.parent ? dockItemContainer.parent.y : 0) + dockItemContainer.y)
     }
 
     SequentialAnimation {

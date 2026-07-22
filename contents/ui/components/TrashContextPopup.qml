@@ -20,6 +20,7 @@ Item {
     property int menuIconSize: 26
     property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
+    property bool menuTextShadowsEnabled: true
     property bool confirmationVisible: false
     property real pageTransitionProgress: confirmationVisible ? 1 : 0
     property real surfaceWidth: targetSurfaceWidth
@@ -168,6 +169,7 @@ Item {
                     || pageStrip.x > -pageViewport.width
                 rowHeight: root.effectiveRowHeight
                 iconSize: root.effectiveIconSize
+                textShadowsEnabled: root.menuTextShadowsEnabled
 
                 onOpenTrashClicked: root.openTrashRequested()
                 onEmptyTrashClicked: root.showConfirmation()

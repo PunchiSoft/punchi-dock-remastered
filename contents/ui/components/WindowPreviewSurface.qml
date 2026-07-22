@@ -16,6 +16,7 @@ Item {
     property string previewStyle: "card"
     property real previewScale: 1.5
     property string previewInfoMode: "full"
+    property bool textShadowsEnabled: true
     property int maxVisibleRows: 4
     property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
@@ -159,6 +160,7 @@ Item {
                 previewHeight: root.previewFrameHeight
                 previewRadius: 4
                 outerPadding: root.cardOuterPadding
+                textShadowsEnabled: root.textShadowsEnabled
 
                 onActivateRequested: taskRow => root.activateRequested(taskRow)
                 onPresentWindowRequested: taskRow => root.presentWindowRequested(taskRow)

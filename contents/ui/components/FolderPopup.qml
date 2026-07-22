@@ -23,6 +23,7 @@ Item {
     property bool profileShowLabels: true
     property string profileFontFamily: ""
     property int profileFontSize: layoutMode === "grid" ? 9 : 10
+    property bool textShadowsEnabled: true
     property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
 
@@ -106,6 +107,7 @@ Item {
             Layout.fillWidth: true
             PlasmaExtras.ShadowedLabel {
                 text: folderRoot.folderItem.name || i18n("Folder")
+                renderShadow: folderRoot.textShadowsEnabled
                 font.family: Kirigami.Theme.defaultFont.family
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize
                 font.weight: Font.Bold
@@ -185,6 +187,7 @@ Item {
                         visible: folderRoot.showItemLabels
                         PlasmaExtras.ShadowedLabel {
                             text: modelData.name
+                            renderShadow: folderRoot.textShadowsEnabled
                             font.family: folderRoot.effectiveFontFamily
                             font.pointSize: folderRoot.effectiveFontSize
                             font.weight: Font.DemiBold
@@ -220,8 +223,10 @@ Item {
                     PlasmaExtras.ShadowedLabel {
                         visible: folderRoot.showItemLabels
                         text: modelData.name
+                        renderShadow: folderRoot.textShadowsEnabled
                         font.family: folderRoot.effectiveFontFamily
                         font.pointSize: folderRoot.effectiveFontSize
+                        font.weight: Font.DemiBold
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
                         elide: Text.ElideRight

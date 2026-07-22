@@ -58,13 +58,13 @@ On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.0-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.1-fedora44-x86_64.plasmoid
 ```
 
 To update an existing installation:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.0-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.1-fedora44-x86_64.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
@@ -117,9 +117,9 @@ Shell restarted. Never relabel an artifact built for another distribution.
 dist/punchi-dock-remastered-<version>-<distribution><version>-<architecture>.plasmoid
 ```
 
-Examples include `punchi-dock-remastered-0.9.0-fedora44-x86_64.plasmoid`,
-`punchi-dock-remastered-0.9.0-debian13-x86_64.plasmoid`, and
-`punchi-dock-remastered-0.9.0-kubuntu<version>-plasma6.6.4-x86_64.plasmoid`.
+Examples include `punchi-dock-remastered-0.9.1-fedora44-x86_64.plasmoid`,
+`punchi-dock-remastered-0.9.1-debian13-x86_64.plasmoid`, and
+`punchi-dock-remastered-0.9.1-kubuntu<version>-plasma6.6.4-x86_64.plasmoid`.
 Never install an artifact labeled for a different distribution.
 
 The Debian 13 workflow was verified separately from Debian 14/testing. Kubuntu

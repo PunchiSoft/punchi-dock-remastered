@@ -8,7 +8,7 @@ import "components"
 Item {
     id: page
     implicitWidth: layoutMetrics.pageImplicitWidth
-    implicitHeight: popupForm.implicitHeight
+    implicitHeight: popupColumn.implicitHeight
 
     ConfigLayoutMetrics {
         id: layoutMetrics
@@ -31,6 +31,11 @@ Item {
     property bool cfg_folderDetailedShowLabels: true
     property string cfg_folderDetailedFontFamily: ""
     property int cfg_folderDetailedFontSize: 10
+    property alias cfg_folderPopupExtraDistance: folderPopupExtraDistanceSlider.value
+    property alias cfg_popupTextShadowsEnabled: popupTextShadowsCheck.checked
+    property alias cfg_popupAnimation: generalPopupAnimationSettings.animationStyle
+    property alias cfg_popupAnimationSpeedPercent: generalPopupAnimationSettings.animationSpeedPercent
+    property alias cfg_popupAnimationIntensity: generalPopupAnimationSettings.animationIntensityPercent
 
     property string activeProfile: "grid"
 
@@ -151,10 +156,15 @@ Item {
         leftPadding: 0
     }
 
-    // qmllint disable unqualified
-    Kirigami.FormLayout {
-        id: popupForm
-        width: page.width
+    ColumnLayout {
+        id: popupColumn
+        anchors.fill: parent
+        spacing: 0
+
+        // qmllint disable unqualified
+        Kirigami.FormLayout {
+            id: popupForm
+            Layout.fillWidth: true
 
         SectionTitle {
             Kirigami.FormData.isSection: true
@@ -248,6 +258,43 @@ Item {
             }
         }
 
+        RowLayout {
+            Kirigami.FormData.label: i18n("Popup distance:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: folderPopupExtraDistanceSlider
+                from: 0
+                to: 32
+                stepSize: 1
+                snapMode: Controls.Slider.SnapAlways
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Folder popup distance")
+                Accessible.description: i18n("Adds safe spacing between the dock item and folder popups.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: i18n("%1 px", Math.round(folderPopupExtraDistanceSlider.value))
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 56
+            }
+        }
+
+        Controls.Label {
+            text: i18n("The distance is added to Plasma's normal popup margin and only affects folder popups.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+
         Controls.CheckBox {
             id: showLabelsCheck
             Kirigami.FormData.label: i18n("Item text:")
@@ -313,16 +360,42 @@ Item {
             }
         }
 
-        Controls.Label {
-            text: page.activeProfile === "grid"
-                ? i18n("Additional applications remain available by scrolling. On narrow screens, the popup safely reduces the number of columns.")
-                : i18n("Additional applications remain available by scrolling.")
-            wrapMode: Text.WordWrap
+        Controls.CheckBox {
+            id: popupTextShadowsCheck
+            Kirigami.FormData.label: i18n("Text shadows:")
+            text: i18n("Show subtle shadows on popup text")
+            Accessible.description: i18n("Applies to folder popup labels and note popup titles.")
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.interactiveCursorEnabled
+            }
+        }
+
+            Controls.Label {
+                text: page.activeProfile === "grid"
+                    ? i18n("Additional applications remain available by scrolling. On narrow screens, the popup safely reduces the number of columns.")
+                    : i18n("Additional applications remain available by scrolling.")
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                Layout.maximumWidth: page.contentWidthHint
+                leftPadding: layoutMetrics.helperIndent
+                color: Kirigami.Theme.disabledTextColor
+            }
+        }
+        // qmllint enable unqualified
+
+        PopupAnimationSettings {
+            id: generalPopupAnimationSettings
             Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: layoutMetrics.helperIndent
-            color: Kirigami.Theme.disabledTextColor
+            // qmllint disable unqualified
+            sectionTitle: i18n("General popup animation")
+            // qmllint enable unqualified
+            animationStyle: "scale"
+            animationSpeedPercent: 100
+            animationIntensityPercent: 100
+            contentWidthHint: page.contentWidthHint
+            selectorWidthHint: page.selectorWidthHint
+            interactiveCursorEnabled: page.interactiveCursorEnabled
         }
     }
-    // qmllint enable unqualified
 }

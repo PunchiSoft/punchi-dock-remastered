@@ -12,6 +12,8 @@ Item {
     property string previewStyle: "card"
     property real previewScale: 1.5
     property string previewInfoMode: "full"
+    property bool windowPreviewTextShadowsEnabled: true
+    property bool menuTextShadowsEnabled: true
     property int maxVisibleRows: 4
     property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
@@ -161,6 +163,7 @@ Item {
             previewStyle: root.previewStyle
             previewScale: root.previewScale
             previewInfoMode: root.previewInfoMode
+            textShadowsEnabled: root.windowPreviewTextShadowsEnabled
             maxVisibleRows: root.maxVisibleRows
             maximumAvailableWidth: root.maximumAvailableWidth
             maximumAvailableHeight: root.maximumAvailableHeight
@@ -207,6 +210,7 @@ Item {
             maximumAvailableHeight: root.maximumAvailableHeight
             embedded: true
             returnToMedia: root.returnToMedia
+            textShadowsEnabled: root.menuTextShadowsEnabled
 
             onActionTriggered: action => root.actionTriggered(action)
             onCloseRequested: root.showPreviews()

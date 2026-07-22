@@ -13,6 +13,7 @@ Controls.ItemDelegate {
     property bool liveThumbnailEnabled: false
     property bool streamActive: false
     property string infoMode: "full"
+    property bool textShadowsEnabled: true
     property int previewWidth: 276
     property int previewHeight: 173
     property int previewRadius: 4
@@ -292,6 +293,7 @@ Controls.ItemDelegate {
                     PlasmaExtras.ShadowedLabel {
                         Layout.fillWidth: true
                         text: root.primaryText
+                        renderShadow: root.textShadowsEnabled
                         font.bold: !!root.windowData.active
                         elide: Text.ElideRight
                     }
@@ -299,6 +301,7 @@ Controls.ItemDelegate {
                     PlasmaExtras.ShadowedLabel {
                         Layout.fillWidth: true
                         text: root.secondaryText
+                        renderShadow: root.textShadowsEnabled
                         elide: Text.ElideRight
                         opacity: 0.78
                         font.pixelSize: 11
