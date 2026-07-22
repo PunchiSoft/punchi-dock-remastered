@@ -1,32 +1,33 @@
-# Scripts de empaquetado y prueba
+# Packaging and Testing Scripts
 
-## Comprobar el entorno
+[English](README.md) | [Español](README.es.md)
+
+## Check the environment
 
 ```bash
 scripts/check-build-environment.sh
 ```
 
-Este comando no instala ni reemplaza paquetes. Informa la distribución,
-arquitectura y versiones locales de Plasma, CMake y `qmllint`, y clasifica el
-perfil de lint encontrado:
+This command does not install or replace packages. It reports the distribution,
+architecture, and local Plasma, CMake, and `qmllint` versions, then classifies
+the detected lint profile:
 
-| Versión de `qmllint` | Tratamiento |
+| `qmllint` version | Treatment |
 |---|---|
-| Qt 6.11 | Perfil principal de desarrollo y validación. |
-| Qt 6.8 | Perfil de compatibilidad con baseline separado; puede producir diagnósticos distintos. |
-| Otra versión Qt 6 | Perfil aún no calibrado; deben ejecutarse las pruebas y revisarse sus diagnósticos antes de crear un baseline propio. |
+| Qt 6.11 | Primary development and validation profile. |
+| Qt 6.8 | Compatibility profile with a separate baseline; diagnostics may differ. |
+| Other Qt 6 version | Uncalibrated profile; run the tests and review diagnostics before recording a dedicated baseline. |
 
-El baseline de `qmllint` mide los diagnósticos de una combinación concreta de
-herramienta y plataforma. No define la versión mínima de ejecución del
-plasmoide. Los usuarios que instalan un `.plasmoid` precompilado para su sistema
-no necesitan `qmllint`.
+The `qmllint` baseline measures diagnostics for one specific tool and platform
+combination. It does not define the plasmoid's minimum runtime version. Users
+installing a matching prebuilt `.plasmoid` do not need `qmllint`.
 
-Para compilar, deben usarse los paquetes Qt 6, KF6 y Plasma proporcionados por
-la misma distribución. No se debe reemplazar Qt del sistema por una instalación
-independiente de Qt 6.11 para silenciar el lint: el módulo QML nativo necesita
-una pila de bibliotecas coherente.
+Builds must use the Qt 6, KF6, and Plasma packages supplied by the same
+distribution. Do not replace the system Qt stack with a standalone Qt 6.11
+installation merely to silence lint warnings: the native QML module requires a
+coherent library stack.
 
-## Comandos recomendados
+## Recommended commands
 
 ```bash
 scripts/setup-fedora.sh
@@ -35,69 +36,67 @@ scripts/setup-debian14-testing.sh
 scripts/setup-kubuntu.sh
 ```
 
-Cada comando valida su distribución, detecta las dependencias instaladas y usa
-el ejecutable de `qmllint` y baseline correspondientes. Los motores comunes de
-compilación e instalación permanecen internos en `scripts/lib/`.
+Each command validates its distribution, detects installed dependencies, and
+uses the matching `qmllint` executable and baseline. Shared build and
+installation engines remain internal under `scripts/lib/`.
 
-Fedora y Debian conservan sus perfiles validados. Kubuntu dispone de un perfil
-de compilación local validado en Plasma 6.6.4: prepara una instalación limpia,
-compila el módulo contra las bibliotecas anfitrionas, instala el paquete y permite
-su prueba funcional. No es un binario universal ni reemplaza el objetivo
-principal de publicación Fedora.
+Fedora and Debian keep their validated profiles. Kubuntu has a locally
+validated build profile for Plasma 6.6.4: it prepares a clean installation,
+builds the module against host libraries, installs the package, and supports
+functional testing. It is not a universal binary and does not replace Fedora
+as the primary release target.
 
-| Sistema detectado | Artefacto esperado |
+| Detected system | Expected artifact |
 |---|---|
 | Fedora 44 `x86_64` | `dist/punchi-dock-remastered-<version>-fedora44-x86_64.plasmoid` |
 | Debian 13 `x86_64` | `dist/punchi-dock-remastered-<version>-debian13-x86_64.plasmoid` |
-| Kubuntu con Plasma 6 `x86_64` | `dist/punchi-dock-remastered-<version>-kubuntu<version>-plasma<version>-x86_64.plasmoid` |
+| Kubuntu with Plasma 6 `x86_64` | `dist/punchi-dock-remastered-<version>-kubuntu<version>-plasma<version>-x86_64.plasmoid` |
 
 ## Debian 13
 
-El perfil estable validado para Debian 13/trixie se ejecuta con:
+Run the validated Debian 13/trixie profile with:
 
 ```bash
 scripts/setup-debian13.sh
 ```
 
-Sin opciones genera el artefacto publicable `debian13`. Para instalarlo y
-reiniciar Plasma durante una prueba local:
+With no options, it creates the public `debian13` artifact. To install it and
+restart Plasma for a local test:
 
 ```bash
 scripts/setup-debian13.sh --local-test
 ```
 
-El script rechaza Debian 14/testing y detecta mediante `dpkg-query` si las
-dependencias ya están instaladas. `--dependencies-only`, `--skip-apt` y
-`--dry-run` permiten limitar explícitamente el flujo.
+The script rejects Debian 14/testing and uses `dpkg-query` to detect installed
+dependencies. `--dependencies-only`, `--skip-apt`, and `--dry-run` explicitly
+limit the workflow.
 
-En Debian y Kubuntu, los objetos de compilación se guardan por defecto en
-`~/.cache/punchi-dock-remastered/`. Esto evita problemas de timestamps y
-rendimiento cuando el repositorio está montado mediante una carpeta compartida
-de VirtualBox. El `.plasmoid` final continúa apareciendo en `dist/`.
+On Debian and Kubuntu, build objects are stored under
+`~/.cache/punchi-dock-remastered/` by default. This avoids timestamp and
+performance issues when the repository is mounted through a VirtualBox shared
+folder. The final `.plasmoid` still appears under `dist/`.
 
-Kubuntu mantiene un baseline de `qmllint` propio en esa caché. La primera
-ejecución de prueba local lo registra automáticamente para la combinación
-concreta de Kubuntu, Plasma y Qt; las siguientes ejecuciones rechazan aumentos
-de advertencias. Ese baseline local sirve para diagnóstico; la validación de
-Kubuntu corresponde al flujo de compilación nativa, no a reutilizar paquetes de
-otras distribuciones.
+Kubuntu keeps a dedicated `qmllint` baseline in that cache. The first local
+test records it for the exact Kubuntu, Plasma, and Qt combination; later runs
+reject warning increases. This local baseline is diagnostic evidence. Kubuntu
+validation still requires a native build and never reuses another
+distribution's package.
 
-## Preparar Debian 14/testing experimental
+## Experimental Debian 14/testing setup
 
-Para probar desde un Live CD o instalación limpia de Debian 14/testing `forky`,
-usar el wrapper dedicado:
+From a Live CD or clean Debian 14/testing `forky` installation, use:
 
 ```bash
 scripts/setup-debian14-testing.sh --yes
 ```
 
-El script detecta las dependencias ya instaladas mediante `dpkg-query` y usa APT
-únicamente para los paquetes faltantes. Sin opciones registra el baseline local
-de `qmllint` si hace falta y crea el artefacto publicable `debian14testing` sin
-instalarlo. Debe ejecutarse como usuario normal de Plasma; solo solicita `sudo`
-para APT. No añade repositorios externos ni reemplaza Qt/KDE del sistema.
+The script detects installed dependencies with `dpkg-query` and uses APT only
+for missing packages. With no options, it records a local `qmllint` baseline
+when required and creates a public `debian14testing` artifact without installing
+it. Run it as the regular Plasma user; only APT operations request `sudo`. It
+does not add external repositories or replace the system Qt/KDE stack.
 
-Opciones útiles:
+Useful options:
 
 ```bash
 scripts/setup-debian14-testing.sh --dry-run
@@ -106,85 +105,99 @@ scripts/setup-debian14-testing.sh --yes --local-test
 scripts/setup-debian14-testing.sh --yes --local-test --skip-restart
 ```
 
-## Prueba local Fedora
+## Local Fedora test
 
 ```bash
 scripts/setup-fedora.sh --local-test
 ```
 
-Genera un artefacto como `dist/punchi-dock-remastered-0.9.0-fedora44-x86_64-local-test.plasmoid`, verifica su instalación para el usuario actual y reinicia Plasma Shell. En sistemas que exponen `plasma-plasmashell.service` usa el servicio systemd de usuario; si el servicio conserva el proceso anterior, fuerza primero el cierre mediante KDE y vuelve a iniciar el servicio. En los demás sistemas conserva el control mediante `kquitapp6` y `kstart`. El script muestra los PID anterior y posterior y solo declara éxito cuando confirma un proceso nuevo. El sufijo `local-test` distingue este paquete temporal de un artefacto publicable.
+This creates an artifact such as
+`dist/punchi-dock-remastered-0.9.0-fedora44-x86_64-local-test.plasmoid`, verifies
+its installation for the current user, and restarts Plasma Shell. On systems
+with `plasma-plasmashell.service`, it uses the systemd user service. If the
+service retains the previous process, the script first requests a KDE shutdown
+and then starts the service again. Other systems use `kquitapp6` and `kstart`.
+The script reports the previous and new PIDs and only declares success after
+confirming a new process. The `local-test` suffix distinguishes this temporary
+package from a public artifact.
 
-En Kubuntu, `scripts/setup-kubuntu.sh --local-test` ejecuta el equivalente con
-la versión local de Plasma. No deben reutilizarse paquetes Debian o Fedora.
+On Kubuntu, `scripts/setup-kubuntu.sh --local-test` provides the equivalent
+workflow using the local Plasma version. Do not reuse Debian or Fedora packages.
 
-## Preparar una instalación limpia de Kubuntu
+## Prepare a clean Kubuntu installation
 
-Desde la raíz del repositorio, ejecutar como el usuario normal de Plasma:
+Run from the repository root as the regular Plasma user:
 
 ```bash
 scripts/setup-kubuntu.sh
 ```
 
-El script detecta qué dependencias oficiales faltan, actualiza APT solo cuando
-debe instalarlas y genera el artefacto Kubuntu sin instalarlo. Solicita `sudo`
-únicamente para APT; no debe ejecutarse anteponiendo `sudo` al script completo.
+The script detects missing official dependencies, updates APT only when it must
+install them, and creates the Kubuntu artifact without installing it. Only APT
+operations request `sudo`; do not run the complete script with a leading
+`sudo`.
 
-Opciones principales:
+Main options:
 
 ```bash
-# Instalar dependencias y empaquetar sin preguntas de APT
+# Install dependencies and package without APT prompts
 scripts/setup-kubuntu.sh --yes
 
-# Preparar, empaquetar, instalar y reiniciar Plasma para probarlo
+# Prepare, package, install, and restart Plasma for testing
 scripts/setup-kubuntu.sh --yes --local-test
 
-# Instalar y comprobar dependencias sin compilar
+# Install and check dependencies without building
 scripts/setup-kubuntu.sh --dependencies-only
 
-# Compilar usando dependencias que ya fueron instaladas
+# Build using dependencies that are already installed
 scripts/setup-kubuntu.sh --skip-apt
 
-# Mostrar las operaciones sin modificar el sistema
+# Display operations without changing the system
 scripts/setup-kubuntu.sh --dry-run
 ```
 
-Si un paquete no aparece en los repositorios configurados, el proceso se
-detiene y muestra la lista. No se añaden PPAs ni se mezclan versiones de Qt/KDE.
+If a package is unavailable from the configured repositories, the process
+stops and displays the list. It does not add PPAs or mix Qt/KDE versions.
 
-## Validación limpia
+## Clean validation
 
 ```bash
 scripts/validar-empaquetado-limpio.sh
 ```
 
-Reconstruye desde una copia temporal limpia y verifica lint, CTest, contenido y ZIP. No instala el plasmoide.
+This rebuilds from a clean temporary source copy and validates lint, CTest,
+package contents, and the ZIP archive. It does not install the plasmoid.
 
-## Traducciones
+## Translations
 
 ```bash
 scripts/update-translations.sh
 ```
 
-Regenera la plantilla POT y fusiona los cambios en todos los catálogos PO. El
-código ejecutable conserva el inglés como único idioma fuente; las traducciones
-se mantienen exclusivamente en `po/`. El empaquetado rechaza catálogos
-incompletos o difusos, los compila y coloca únicamente los MO resultantes bajo
-`contents/locale/` dentro del `.plasmoid`, que es la ruta resuelta por el
-prefijo de contenidos de KPackage.
+This regenerates the POT template and merges changes into every existing PO
+catalog. Executable code keeps English as its only source language; translations
+live exclusively under `po/`. Packaging rejects incomplete or fuzzy catalogs,
+compiles them, and includes only the resulting MO files under
+`contents/locale/` inside the `.plasmoid`, which matches KPackage's contents
+prefix.
 
-## Regla de seguridad
+## Safety rule
 
-Instala únicamente el artefacto cuyo nombre coincide con el sistema donde fue compilado. El módulo QML nativo enlaza bibliotecas Qt y KDE del host y no es un binario universal.
+Install only an artifact whose name matches the system where it was built. The
+native QML module links against the host's Qt and KDE libraries and is not a
+universal binary.
 
-Ningún script vigente genera `dist/punchi-dock-remastered.plasmoid` sin una etiqueta de plataforma.
+No current script creates an unlabeled
+`dist/punchi-dock-remastered.plasmoid` artifact.
 
-## Organización interna
+## Internal organization
 
-La raíz de `scripts/` conserva wrappers cortos para comandos habituales y
-compatibilidad con documentación anterior. Las implementaciones viven en:
+The `scripts/` root keeps short wrappers for common commands and compatibility
+with earlier documentation. Implementations live under:
 
-- `scripts/distro/`: flujos específicos por distribución.
-- `scripts/dev/`: herramientas de desarrollo, diagnóstico y validación.
-- `scripts/lib/`: motores y helpers compartidos; no son comandos principales.
+- `scripts/distro/`: distribution-specific workflows.
+- `scripts/dev/`: development, diagnostics, and validation tools.
+- `scripts/lib/`: shared engines and helpers; these are not primary commands.
 
-No ejecutar archivos generados como `__pycache__`; no forman parte del proyecto.
+Do not execute generated files such as `__pycache__`; they are not part of the
+project.

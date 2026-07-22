@@ -126,7 +126,7 @@ No instales un artefacto identificado para otra distribución.
 El flujo Debian 13 fue comprobado por separado de Debian 14/testing. Kubuntu
 registra un baseline local independiente y superó compilación, instalación,
 arranque y validación funcional del usuario en Plasma 6.6.4. Consulta
-[scripts/README.md](scripts/README.md) para conocer las opciones de cada setup y
+[scripts/README.es.md](scripts/README.es.md) para conocer las opciones de cada setup y
 distinguir artefactos públicos, instalación local y validación limpia.
 
 Define `PACKAGE_BUILD_TYPE` o `STRIP_BIN` solo cuando un flujo de desarrollo necesite reemplazarlos explícitamente. No uses `PACKAGE_OUTPUT_FILE` para poner una etiqueta Debian a un binario Fedora ni uses compilación cruzada para publicar el módulo QML nativo.
