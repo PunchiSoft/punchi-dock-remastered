@@ -19,6 +19,11 @@ GridLayout {
     property alias containerLayoutIndex: containerLayout.currentIndex
     property alias containerShowLabelsChecked: folderShowLabels.checked
     property alias spacerSizeValue: spacerSize.value
+    property alias separatorStyleControl: separatorOptions.separatorStyleControl
+    property alias separatorThicknessControl: separatorOptions.separatorThicknessControl
+    property alias separatorLengthRatioControl: separatorOptions.separatorLengthRatioControl
+    property alias separatorOpacityControl: separatorOptions.separatorOpacityControl
+    property alias separatorGlowControl: separatorOptions.separatorGlowControl
     readonly property string containerSourceValue: containerSource.currentValue || "manual"
     property alias containerSourceIndex: containerSource.currentIndex
     property alias containerPathText: containerPath.text
@@ -280,6 +285,17 @@ GridLayout {
         textFromValue: function(value) { return value + " px" }
         valueFromText: function(text) { return Number.fromLocaleString(Qt.locale(), text.replace("px", "")) }
         onValueModified: root.formChanged()
+    }
+
+    SeparatorOptions {
+        id: separatorOptions
+        Layout.columnSpan: 2
+        Layout.fillWidth: true
+        visible: root.itemModeValue === "separator"
+        controller: ({
+            syncing: false,
+            applyItemForm: function() { root.formChanged() }
+        })
     }
 
     Controls.Label {

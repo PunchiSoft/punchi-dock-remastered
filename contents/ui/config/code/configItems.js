@@ -414,6 +414,11 @@ function removeKeys(item, keys) {
 
 function pruneSeparator(item) {
     removeKeys(item, ["name", "icon", "command", "apps"])
+    item.separatorStyle = item.separatorStyle || "line"
+    item.separatorThickness = Math.max(1, Math.min(16, Number(item.separatorThickness === undefined ? 2 : item.separatorThickness)))
+    item.separatorLengthRatio = Math.max(0.20, Math.min(1.0, Number(item.separatorLengthRatio === undefined ? 0.72 : item.separatorLengthRatio)))
+    item.separatorOpacity = Math.max(0.10, Math.min(1.0, Number(item.separatorOpacity === undefined ? 0.34 : item.separatorOpacity)))
+    item.separatorGlowEnabled = item.separatorGlowEnabled === true
 }
 
 function pruneSpacer(item) {
@@ -435,7 +440,12 @@ function pruneClock(item) {
 }
 
 function pruneCalendar(item) {
-    removeKeys(item, ["icon", "fontFamily", "mode", "showSeconds", "command", "apps"])
+    removeKeys(item, ["icon", "fontFamily", "mode", "showSeconds", "command", "apps", "width", "height", "backgroundColor", "accentColor", "borderColor", "radius", "textScale"])
+    item.timeTextScale = Math.max(0.75, Math.min(2.0, Number(item.timeTextScale === undefined ? 1.0 : item.timeTextScale)))
+    item.dateTextScale = Math.max(0.75, Math.min(2.0, Number(item.dateTextScale === undefined ? 1.0 : item.dateTextScale)))
+    item.showWeekNumbers = item.showWeekNumbers === undefined ? true : !!item.showWeekNumbers
+    item.popupScale = Math.max(0.5, Math.min(3.0,
+        Number(item.popupScale === undefined ? 1.0 : item.popupScale)))
 }
 
 function pruneTrash(item) {
@@ -508,9 +518,8 @@ function newItem(type, defaultTrashEmptySound) {
             "name": "Calendar",
             "icon": "x-office-calendar",
             "color": "",
-            "width": 0,
-            "height": 0,
             "textScale": 1.15,
+            "popupScale": 1.0,
             "calendarDisplayMode": "tile",
             "textShowWeekday": true,
             "textShowDay": true,

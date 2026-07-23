@@ -34,6 +34,7 @@ Item {
     property var contextActionsResolver: null
 
     property var activeFolderData: ({})
+    property var activeCalendarData: ({})
     property var activeNoteData: ({})
     property int activeNoteIndex: -1
     property var activeTaskPopupData: ({ "name": "", "windows": [] })
@@ -296,11 +297,12 @@ Item {
         folderPopupDialogRef.visible = !folderPopupDialogRef.visible
     }
 
-    function openCalendarPopup(visualParent) {
+    function openCalendarPopup(itemData, visualParent) {
         if (!surfaceAvailable(calendarPopupDialogRef, "calendarPopupDialog")) {
             return
         }
         closeAllPopups(calendarPopupDialogRef)
+        activeCalendarData = itemData || ({})
         calendarPopupDialogRef.visualParent = preparePopupAnchor(visualParent)
         calendarPopupDialogRef.visible = !calendarPopupDialogRef.visible
     }

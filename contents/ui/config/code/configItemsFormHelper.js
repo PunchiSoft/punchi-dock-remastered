@@ -42,6 +42,8 @@ function refreshItemForm() {
         calendarAccentColor.text = ""
         calendarBorderColor.text = ""
         calendarRadius.value = 0
+        calendarShowWeekNumbers.checked = true
+        calendarPopupScale.value = 1.0
         calendarDisplayMode.currentIndex = 0
         calendarFormat.editText = "HH:mm"
         timedItemWidth.value = 0
@@ -75,7 +77,32 @@ function refreshItemForm() {
     trashDialog.emptyIconText = item.icon || ""
     trashDialog.fullIconText = item.fullIcon || ""
     calendarFormat.editText = item.format || "HH:mm"
-    timedTextScale.value = item.textScale === undefined ? 1.15 : item.textScale
+    clockColor.text = item.color || ""
+    if (calendarTimeTextScale) {
+        calendarTimeTextScale.value = item.timeTextScale === undefined ? (item.textScale === undefined ? 1.0 : item.timeTextScale) : item.timeTextScale
+    }
+    if (calendarDateTextScale) {
+        calendarDateTextScale.value = item.dateTextScale === undefined ? (item.textScale === undefined ? 1.0 : item.textScale) : item.dateTextScale
+    }
+    calendarShowWeekNumbers.checked = item.showWeekNumbers === undefined ? true : item.showWeekNumbers
+    calendarPopupScale.value = Math.max(0.5, Math.min(3.0,
+        Number(item.popupScale === undefined ? 1.0 : item.popupScale)))
+
+    if (separatorStyle && separatorStyle.model) {
+        separatorStyle.currentIndex = Math.max(0, ["line", "dot", "square", "pill", "star"].indexOf(item.separatorStyle || "line"))
+    }
+    if (separatorThickness) {
+        separatorThickness.value = item.separatorThickness === undefined ? 2 : item.separatorThickness
+    }
+    if (separatorLengthRatio) {
+        separatorLengthRatio.value = item.separatorLengthRatio === undefined ? 0.72 : item.separatorLengthRatio
+    }
+    if (separatorOpacity) {
+        separatorOpacity.value = item.separatorOpacity === undefined ? 0.34 : item.separatorOpacity
+    }
+    if (separatorGlow) {
+        separatorGlow.checked = item.separatorGlowEnabled === true
+    }
 
     trashDialog.soundPath = item.emptySound || defaultTrashEmptySound
     trashDialog.showStateChecked = item.showState === undefined ? true : item.showState
@@ -119,6 +146,21 @@ function applyItemForm(force) {
     item.type = item.type || "app"
 
     if (item.type === "separator") {
+        if (separatorStyle && separatorStyle.currentValue) {
+            item.separatorStyle = separatorStyle.currentValue
+        }
+        if (separatorThickness) {
+            item.separatorThickness = separatorThickness.value
+        }
+        if (separatorLengthRatio) {
+            item.separatorLengthRatio = separatorLengthRatio.value
+        }
+        if (separatorOpacity) {
+            item.separatorOpacity = separatorOpacity.value
+        }
+        if (separatorGlow) {
+            item.separatorGlowEnabled = separatorGlow.checked
+        }
         ConfigItemsJS.pruneSeparator(item)
     } else if (item.type === "spacer") {
         item.size = actionDialog.spacerSizeValue
@@ -151,12 +193,12 @@ function applyItemForm(force) {
         ConfigItemsJS.pruneClock(item)
     } else if (item.type === "calendar") {
         item.name = itemName.text || "Calendar"
-        item.color = clockColor.text
-        item.backgroundColor = calendarBackgroundColor.text
-        item.accentColor = calendarAccentColor.text
-        item.borderColor = calendarBorderColor.text
-        item.radius = calendarRadius.value
+        item.color = clockColor ? clockColor.text : ""
         item.format = calendarFormat.editText || "HH:mm"
+        item.timeTextScale = calendarTimeTextScale ? calendarTimeTextScale.value : 1.0
+        item.dateTextScale = calendarDateTextScale ? calendarDateTextScale.value : 1.0
+        item.showWeekNumbers = calendarShowWeekNumbers.checked
+        item.popupScale = calendarPopupScale.value
         ConfigItemsJS.pruneCalendar(item)
     } else if (item.type === "trash") {
         item.name = trashDialog.nameText || "Trash"

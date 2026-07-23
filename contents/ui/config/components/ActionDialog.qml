@@ -36,6 +36,11 @@ Controls.Dialog {
     property alias actionIconText: actionEditor.actionIconText
     property alias actionCommandText: actionEditor.actionCommandText
     property alias spacerSizeValue: itemEditor.spacerSizeValue
+    property alias separatorStyleControl: itemEditor.separatorStyleControl
+    property alias separatorThicknessControl: itemEditor.separatorThicknessControl
+    property alias separatorLengthRatioControl: itemEditor.separatorLengthRatioControl
+    property alias separatorOpacityControl: itemEditor.separatorOpacityControl
+    property alias separatorGlowControl: itemEditor.separatorGlowControl
     readonly property string containerSourceValue: itemEditor.containerSourceValue
     property alias containerSourceIndex: itemEditor.containerSourceIndex
     property alias containerPathText: itemEditor.containerPathText

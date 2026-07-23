@@ -12,6 +12,13 @@ Item {
     property string itemName: ""
     property string itemCommand: ""
     property int iconSize: 48
+    property real timeTextScale: 1.0
+    property real dateTextScale: 1.0
+    property string separatorStyleSetting: "line"
+    property real separatorThicknessSetting: 2
+    property real separatorLengthRatioSetting: 0.72
+    property real separatorOpacitySetting: 0.34
+    property bool separatorGlowSetting: false
 
     readonly property string localizedItemName: {
         if (itemType === "trash" && itemName === "Trash") {
@@ -417,7 +424,7 @@ Item {
             PlasmaExtras.ShadowedLabel {
                 text: currentTime
                 renderShadow: dockItemContainer.textShadowsEnabled
-                font.pixelSize: 14
+                font.pixelSize: Math.round(14 * dockItemContainer.timeTextScale)
                 font.weight: Font.Normal
                 anchors.horizontalCenter: parent.horizontalCenter
             }
@@ -425,33 +432,21 @@ Item {
             PlasmaExtras.ShadowedLabel {
                 text: currentDate
                 renderShadow: dockItemContainer.textShadowsEnabled
-                font.pixelSize: 9
+                font.pixelSize: Math.round(9 * dockItemContainer.dateTextScale)
                 opacity: 0.68
                 anchors.horizontalCenter: parent.horizontalCenter
             }
         }
 
-        Rectangle {
-            visible: dockItemContainer.separatorItem
-                && !dockItemContainer.customSeparatorEnabled
-            width: dockItemContainer.separatorThickness
-            height: dockItemContainer.separatorLength
-            radius: dockItemContainer.separatorThickness / 2
-            anchors.centerIn: parent
-            color: Kirigami.Theme.textColor
-            opacity: 0.34
-        }
-
         ThemedSeparator {
             visible: dockItemContainer.separatorItem
-                && dockItemContainer.customSeparatorEnabled
             anchors.centerIn: parent
-            width: dockItemContainer.separatorThickness
-            height: dockItemContainer.separatorLength
             availableLength: visualArea.height
-            renderedThickness: dockItemContainer.separatorThickness
-            maximumGlowSize: dockItemContainer.separatorGlowSize
-            theme: dockItemContainer.separatorTheme
+            style: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.style ? dockItemContainer.separatorTheme.style : dockItemContainer.separatorStyleSetting
+            thickness: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.thickness ? dockItemContainer.separatorTheme.thickness : dockItemContainer.separatorThicknessSetting
+            lengthRatio: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.lengthRatio ? dockItemContainer.separatorTheme.lengthRatio : dockItemContainer.separatorLengthRatioSetting
+            customOpacity: dockItemContainer.separatorOpacitySetting
+            glowEnabled: dockItemContainer.separatorGlowSetting || (dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorGlowSize > 0)
         }
 
         TaskIndicator {

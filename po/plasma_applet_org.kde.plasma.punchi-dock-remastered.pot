@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.0\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-07-22 10:05-0400\n"
+"POT-Creation-Date: 2026-07-22 21:36-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,15 +19,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
+#: contents/ui/components/CalendarPopup.qml:358
+msgctxt "@title:column calendar week number"
+msgid "#"
+msgstr ""
+
 #: contents/ui/components/NotePopup.qml:379
 msgid "%1 / %2"
 msgstr ""
 
-#: contents/ui/config/code/configItemsFormHelper.js:267
+#: contents/ui/config/code/configItemsFormHelper.js:309
 msgid "%1 items loaded."
 msgstr ""
 
-#: contents/ui/main.qml:717
+#: contents/ui/main.qml:723
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] ""
@@ -59,16 +64,16 @@ msgstr ""
 msgid "%1 px"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:592
+#: contents/ui/config/components/ActionDialog.qml:82
+#: contents/ui/config/ConfigItems.qml:603
 #: contents/ui/config/ItemActionEditor.qml:34
 #: contents/ui/config/ItemActionEditor.qml:100
-#: contents/ui/config/components/ActionDialog.qml:77
 msgid "%1 rows"
 msgstr ""
 
-#: contents/ui/config/ConfigMenus.qml:282
 #: contents/ui/config/components/PopupAnimationSettings.qml:90
 #: contents/ui/config/components/PopupAnimationSettings.qml:119
+#: contents/ui/config/ConfigMenus.qml:282
 #, javascript-format
 msgid "%1%"
 msgstr ""
@@ -114,15 +119,15 @@ msgstr ""
 msgid "8 bars"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:595
+#: contents/ui/config/ConfigItems.qml:606
 msgid "Action command:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:594
+#: contents/ui/config/ConfigItems.qml:605
 msgid "Action icon:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:593
+#: contents/ui/config/ConfigItems.qml:604
 msgid "Action name:"
 msgstr ""
 
@@ -197,7 +202,7 @@ msgstr ""
 msgid "Adjusts how strongly icon reflections appear."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:562
+#: contents/ui/config/ConfigItems.qml:573
 msgid "Alias/Quick Search:"
 msgstr ""
 
@@ -206,7 +211,7 @@ msgid "All desktops"
 msgstr ""
 
 #: contents/ui/config/ConfigAspect.qml:310
-#: contents/ui/config/ConfigItems.qml:656
+#: contents/ui/config/ConfigItems.qml:667
 #: contents/ui/config/SoundFileDialog.qml:9
 msgid "All files"
 msgstr ""
@@ -221,15 +226,15 @@ msgid ""
 "also moves the nearest items."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:595
+#: contents/ui/config/ConfigItems.qml:606
 msgid "App command:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:594
+#: contents/ui/config/ConfigItems.qml:605
 msgid "App icon:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:593
+#: contents/ui/config/ConfigItems.qml:604
 msgid "App name:"
 msgstr ""
 
@@ -247,7 +252,7 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:585
+#: contents/ui/config/ConfigItems.qml:596
 msgid "Application category"
 msgstr ""
 
@@ -267,7 +272,7 @@ msgstr ""
 msgid "Applies to window titles, window details and overflow group labels."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:655
+#: contents/ui/config/ConfigItems.qml:666
 #: contents/ui/config/SoundFileDialog.qml:8
 msgid "Audio files"
 msgstr ""
@@ -300,16 +305,14 @@ msgstr ""
 msgid "Audio visualizer style"
 msgstr ""
 
-#: contents/ui/config/CalendarOptions.qml:268
-#: contents/ui/config/CalendarOptions.qml:271
+#: contents/ui/config/components/TimedDialog.qml:90
+#: contents/ui/config/components/TimedDialog.qml:93
+#: contents/ui/config/components/TimedDialog.qml:116
+#: contents/ui/config/components/TimedDialog.qml:119
 #: contents/ui/config/ConfigFolderPopups.qml:131
-#: contents/ui/config/ConfigItems.qml:245
-#: contents/ui/config/ConfigItems.qml:262
-#: contents/ui/config/ConfigItems.qml:266
-#: contents/ui/config/components/TimedDialog.qml:85
-#: contents/ui/config/components/TimedDialog.qml:88
-#: contents/ui/config/components/TimedDialog.qml:111
-#: contents/ui/config/components/TimedDialog.qml:114
+#: contents/ui/config/ConfigItems.qml:256
+#: contents/ui/config/ConfigItems.qml:273
+#: contents/ui/config/ConfigItems.qml:277
 msgid "Automatic"
 msgstr ""
 
@@ -321,13 +324,8 @@ msgstr ""
 msgid "Back to window previews"
 msgstr ""
 
-#: contents/ui/config/CalendarOptions.qml:107
 #: contents/ui/config/ConfigAspect.qml:431
 msgid "Background:"
-msgstr ""
-
-#: contents/ui/config/CalendarOptions.qml:205
-msgid "Border:"
 msgstr ""
 
 #: contents/ui/config/ConfigAspect.qml:105
@@ -338,8 +336,8 @@ msgstr ""
 msgid "Bottom to top"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:33
 #: contents/ui/config/components/PopupAnimationSettings.qml:20
+#: contents/ui/config/ConfigMouse.qml:33
 msgid "Bounce"
 msgstr ""
 
@@ -348,17 +346,21 @@ msgstr ""
 msgid "Bring window to front"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:21
-#: contents/ui/config/ConfigItems.qml:120
+#: contents/ui/components/DockItem.qml:28
+#: contents/ui/config/ConfigItems.qml:131
 msgid "Calendar"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:128
+#: contents/ui/config/ConfigItems.qml:139
 msgid "Calendar color:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:124
+#: contents/ui/config/ConfigItems.qml:135
 msgid "Calendar font:"
+msgstr ""
+
+#: contents/ui/config/CalendarOptions.qml:160
+msgid "Calendar popup scale"
 msgstr ""
 
 #: contents/ui/config/AddItemPalette.qml:27
@@ -379,7 +381,7 @@ msgstr ""
 msgid "Cards (recommended)"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:587
+#: contents/ui/config/ConfigItems.qml:598
 msgid "Category:"
 msgstr ""
 
@@ -411,55 +413,55 @@ msgstr ""
 msgid "Choose a local folder containing JSON themes."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:134
+#: contents/ui/config/ConfigItems.qml:145
 msgid "Choose calendar background color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:140
+#: contents/ui/config/ConfigItems.qml:151
 msgid "Choose calendar border color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:157
+#: contents/ui/config/ConfigItems.qml:168
 msgid "Choose calendar color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:137
+#: contents/ui/config/ConfigItems.qml:148
 msgid "Choose calendar header color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:145
+#: contents/ui/config/ConfigItems.qml:156
 msgid "Choose clock accent color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:151
+#: contents/ui/config/ConfigItems.qml:162
 msgid "Choose clock border color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:157
+#: contents/ui/config/ConfigItems.qml:168
 msgid "Choose clock color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:154
+#: contents/ui/config/ConfigItems.qml:165
 msgid "Choose clock face color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:148
+#: contents/ui/config/ConfigItems.qml:159
 msgid "Choose clock marker color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:528
+#: contents/ui/config/ConfigItems.qml:539
 msgid "Choose folder"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:520
-#: contents/ui/config/ConfigItems.qml:579
 #: contents/ui/config/components/TrashDialog.qml:106
 #: contents/ui/config/components/TrashDialog.qml:136
+#: contents/ui/config/ConfigItems.qml:531
+#: contents/ui/config/ConfigItems.qml:590
 msgid "Choose icon"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:653
 #: contents/ui/config/components/TrashDialog.qml:203
+#: contents/ui/config/ConfigItems.qml:664
 msgid "Choose sound"
 msgstr ""
 
@@ -472,6 +474,10 @@ msgstr ""
 msgid ""
 "Choose whether window previews show the app icon with window details, only "
 "the icon, or no information overlay."
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:43
+msgid "Circle"
 msgstr ""
 
 #: contents/ui/config/ConfigFileToolbar.qml:48
@@ -498,20 +504,20 @@ msgstr ""
 msgid "Click effect:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:120
+#: contents/ui/config/ConfigItems.qml:131
 msgid "Clock"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:128
+#: contents/ui/config/ConfigItems.qml:139
 msgid "Clock color:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:124
+#: contents/ui/config/ConfigItems.qml:135
 msgid "Clock font:"
 msgstr ""
 
 #: contents/ui/components/AppActionsPopup.qml:88
-#: contents/ui/components/CalendarPopup.qml:211
+#: contents/ui/components/CalendarPopup.qml:325
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:219
 #: contents/ui/components/FolderPopup.qml:128
 #: contents/ui/components/NotePopup.qml:275
@@ -545,7 +551,7 @@ msgctxt "@item:inlistbox Context menu size"
 msgid "Comfortable"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:577
+#: contents/ui/config/ConfigItems.qml:588
 msgid "Command:"
 msgstr ""
 
@@ -599,15 +605,15 @@ msgstr ""
 msgid "Configure trash"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:567
+#: contents/ui/config/ConfigItems.qml:578
 msgid "Container"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:581
+#: contents/ui/config/ConfigItems.qml:592
 msgid "Container applications"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:582
+#: contents/ui/config/ConfigItems.qml:593
 msgid "Content:"
 msgstr ""
 
@@ -675,8 +681,16 @@ msgstr ""
 msgid "Custom action"
 msgstr ""
 
-#: contents/ui/config/ConfigFileToolbar.qml:41
+#: contents/ui/config/CalendarOptions.qml:117
+msgid "Date text scale"
+msgstr ""
+
+#: contents/ui/config/CalendarOptions.qml:95
+msgid "Date text scale:"
+msgstr ""
+
 #: contents/ui/config/components/TrashDialog.qml:194
+#: contents/ui/config/ConfigFileToolbar.qml:41
 msgid "Default"
 msgstr ""
 
@@ -717,7 +731,7 @@ msgstr ""
 msgid "Delete “%1” permanently from the Punchi Dock Remastered theme library?"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:563
+#: contents/ui/config/ConfigItems.qml:574
 msgid "Description:"
 msgstr ""
 
@@ -729,7 +743,7 @@ msgstr ""
 msgid "Desktop visibility:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:571
+#: contents/ui/config/ConfigItems.qml:582
 msgid "Detailed"
 msgstr ""
 
@@ -833,8 +847,16 @@ msgstr ""
 msgid "Emptying trash…"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:589
+#: contents/ui/config/ConfigItems.qml:600
 msgid "Enable right-click menu"
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:175
+msgid "Enable separator glow effect"
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:169
+msgid "Enable subtle glow effect"
 msgstr ""
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:110
@@ -894,7 +916,7 @@ msgid "Flow to the right"
 msgstr ""
 
 #: contents/ui/components/FolderPopup.qml:109
-#: contents/ui/config/ConfigItems.qml:584
+#: contents/ui/config/ConfigItems.qml:595
 msgid "Folder"
 msgstr ""
 
@@ -938,7 +960,7 @@ msgstr ""
 msgid "Folder popups"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:586
+#: contents/ui/config/ConfigItems.qml:597
 msgid "Folder:"
 msgstr ""
 
@@ -961,7 +983,7 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#: contents/ui/config/CalendarOptions.qml:29
+#: contents/ui/config/CalendarOptions.qml:34
 msgid "Format:"
 msgstr ""
 
@@ -1005,7 +1027,11 @@ msgstr ""
 msgid "General popup animation"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:569
+#: contents/ui/components/CalendarPopup.qml:261
+msgid "Go to today"
+msgstr ""
+
+#: contents/ui/config/ConfigItems.qml:580
 msgid "Grid"
 msgstr ""
 
@@ -1022,11 +1048,7 @@ msgstr ""
 msgid "Grouping and limits"
 msgstr ""
 
-#: contents/ui/config/CalendarOptions.qml:156
-msgid "Header:"
-msgstr ""
-
-#: contents/ui/config/components/TimedDialog.qml:98
+#: contents/ui/config/components/TimedDialog.qml:103
 msgid "Height:"
 msgstr ""
 
@@ -1078,7 +1100,7 @@ msgstr ""
 msgid "Icon size:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:576
+#: contents/ui/config/ConfigItems.qml:587
 msgid "Icon:"
 msgstr ""
 
@@ -1175,7 +1197,7 @@ msgstr ""
 msgid "Invalid JSON: %1"
 msgstr ""
 
-#: contents/ui/config/components/TimedDialog.qml:119
+#: contents/ui/config/components/TimedDialog.qml:124
 msgid "Item height:"
 msgstr ""
 
@@ -1183,15 +1205,12 @@ msgstr ""
 msgid "Item highlight"
 msgstr ""
 
-#: contents/ui/config/components/TimedDialog.qml:60
-msgid "Item size:"
-msgstr ""
-
 #: contents/ui/config/ConfigFolderPopups.qml:300
 msgid "Item text:"
 msgstr ""
 
-#: contents/ui/config/components/TimedDialog.qml:93
+#: contents/ui/config/components/TimedDialog.qml:65
+#: contents/ui/config/components/TimedDialog.qml:98
 msgid "Item width:"
 msgstr ""
 
@@ -1246,7 +1265,7 @@ msgstr ""
 msgid "Lateral ripple"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:566
+#: contents/ui/config/ConfigItems.qml:577
 msgid "Launch app"
 msgstr ""
 
@@ -1254,7 +1273,11 @@ msgstr ""
 msgid "Layout profile:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:590
+#: contents/ui/config/SeparatorOptions.qml:93
+msgid "Length:"
+msgstr ""
+
+#: contents/ui/config/ConfigItems.qml:601
 msgid "Limit menu rows"
 msgstr ""
 
@@ -1268,6 +1291,7 @@ msgid ""
 msgstr ""
 
 #: contents/ui/config/ConfigAspect.qml:98
+#: contents/ui/config/SeparatorOptions.qml:42
 msgid "Line"
 msgstr ""
 
@@ -1277,7 +1301,7 @@ msgid ""
 "icon."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:570
+#: contents/ui/config/ConfigItems.qml:581
 msgid "List"
 msgstr ""
 
@@ -1286,7 +1310,7 @@ msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:588
+#: contents/ui/config/ConfigItems.qml:599
 msgid "Load content"
 msgstr ""
 
@@ -1308,7 +1332,7 @@ msgstr ""
 msgid "MPRIS controls"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:583
+#: contents/ui/config/ConfigItems.qml:594
 msgid "Manual"
 msgstr ""
 
@@ -1425,9 +1449,9 @@ msgstr ""
 msgid "Mouse"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:561
-#: contents/ui/config/components/TimedDialog.qml:40
+#: contents/ui/config/components/TimedDialog.qml:45
 #: contents/ui/config/components/TrashDialog.qml:43
+#: contents/ui/config/ConfigItems.qml:572
 msgid "Name:"
 msgstr ""
 
@@ -1435,7 +1459,7 @@ msgstr ""
 msgid "New window"
 msgstr ""
 
-#: contents/ui/components/CalendarPopup.qml:185
+#: contents/ui/components/CalendarPopup.qml:288
 msgid "Next month"
 msgstr ""
 
@@ -1460,17 +1484,16 @@ msgstr ""
 msgid "No virtual desktops were found."
 msgstr ""
 
-#: contents/ui/config/CalendarOptions.qml:234
+#: contents/ui/config/components/PopupAnimationSettings.qml:23
 #: contents/ui/config/ConfigAspect.qml:102
 #: contents/ui/config/ConfigMouse.qml:24 contents/ui/config/ConfigMouse.qml:30
 #: contents/ui/config/ConfigMouse.qml:37 contents/ui/config/ConfigPopups.qml:38
-#: contents/ui/config/components/PopupAnimationSettings.qml:23
 msgid "None"
 msgstr ""
 
 #: contents/ui/components/NotePopup.qml:134
 #: contents/ui/config/AddItemPalette.qml:24
-#: contents/ui/config/ConfigItems.qml:573
+#: contents/ui/config/ConfigItems.qml:584
 msgid "Note"
 msgstr ""
 
@@ -1488,6 +1511,10 @@ msgstr ""
 
 #: contents/ui/config/ConfigWindows.qml:130
 msgid "Only tasks on the current desktop will appear."
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:130
+msgid "Opacity:"
 msgstr ""
 
 #: contents/ui/config/AddItemPalette.qml:28
@@ -1566,12 +1593,9 @@ msgstr ""
 msgid "Pixel spectrum"
 msgstr ""
 
-#: contents/ui/config/CalendarOptions.qml:102
-#: contents/ui/config/CalendarOptions.qml:151
-#: contents/ui/config/CalendarOptions.qml:200
-#: contents/ui/config/CalendarOptions.qml:249
+#: contents/ui/config/CalendarOptions.qml:218
 #: contents/ui/config/ConfigAspect.qml:137
-#: contents/ui/config/ConfigItems.qml:539
+#: contents/ui/config/ConfigItems.qml:550
 msgid "Plasma theme"
 msgstr ""
 
@@ -1593,6 +1617,10 @@ msgstr ""
 msgid "Popup rows:"
 msgstr ""
 
+#: contents/ui/config/CalendarOptions.qml:138
+msgid "Popup scale:"
+msgstr ""
+
 #: contents/ui/config/ConfigAspect.qml:123
 msgid "Popups"
 msgstr ""
@@ -1605,11 +1633,11 @@ msgstr ""
 msgid "Press"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:564
+#: contents/ui/config/ConfigItems.qml:575
 msgid "Press Enter to search..."
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:587
+#: contents/ui/components/DockItem.qml:561
 msgctxt "@info:accessible"
 msgid "Press M to open media controls"
 msgstr ""
@@ -1640,7 +1668,7 @@ msgstr ""
 msgid "Preview unavailable"
 msgstr ""
 
-#: contents/ui/components/CalendarPopup.qml:159
+#: contents/ui/components/CalendarPopup.qml:234
 msgid "Previous month"
 msgstr ""
 
@@ -1669,14 +1697,10 @@ msgstr ""
 msgid "Punchi Dock could not store the imported theme."
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:24
+#: contents/ui/components/DockItem.qml:31
 #: contents/ui/components/DockItemsController.qml:197
 msgctxt "@title"
 msgid "Quick Note"
-msgstr ""
-
-#: contents/ui/config/CalendarOptions.qml:254
-msgid "Radius:"
 msgstr ""
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:58
@@ -1727,12 +1751,16 @@ msgstr ""
 msgid "Rhythmic movement:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:580
+#: contents/ui/config/ConfigItems.qml:591
 msgid "Right-click commands"
 msgstr ""
 
 #: contents/ui/config/ConfigAspect.qml:100
 msgid "Ring"
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:45
+msgid "Rounded pill"
 msgstr ""
 
 #: contents/ui/config/ConfigAspect.qml:101
@@ -1765,12 +1793,34 @@ msgid "Select custom color"
 msgstr ""
 
 #: contents/ui/config/AddItemPalette.qml:25
-#: contents/ui/config/ConfigItems.qml:574
+#: contents/ui/config/ConfigItems.qml:585
 msgid "Separator"
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:118
+msgid "Separator length ratio"
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:155
+msgid "Separator opacity"
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:81
+msgid "Separator thickness"
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:22
+msgid ""
+"Separators help group items on your dock. Shape, size, and glow adapt "
+"automatically to your Plasma theme."
 msgstr ""
 
 #: contents/ui/config/ConfigMouse.qml:148
 msgid "Settings cursor:"
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:32
+msgid "Shape:"
 msgstr ""
 
 #: src/dockthemerepository.cpp:374
@@ -1789,6 +1839,10 @@ msgstr ""
 msgid "Show application names and details"
 msgstr ""
 
+#: contents/ui/config/CalendarOptions.qml:134
+msgid "Show calendar week numbers"
+msgstr ""
+
 #: contents/ui/config/AddItemPalette.qml:27
 msgid "Show date information"
 msgstr ""
@@ -1801,7 +1855,7 @@ msgstr ""
 msgid "Show item names in the dock"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:572
+#: contents/ui/config/ConfigItems.qml:583
 msgid "Show labels"
 msgstr ""
 
@@ -1835,6 +1889,10 @@ msgstr ""
 
 #: contents/ui/config/components/TrashDialog.qml:68
 msgid "Show trash state"
+msgstr ""
+
+#: contents/ui/config/CalendarOptions.qml:131
+msgid "Show week numbers"
 msgstr ""
 
 #: contents/ui/config/ConfigFolderPopups.qml:303
@@ -1871,11 +1929,11 @@ msgid "Slow bounce"
 msgstr ""
 
 #: contents/ui/config/AddItemPalette.qml:26
-#: contents/ui/config/ConfigItems.qml:575
+#: contents/ui/config/ConfigItems.qml:586
 msgid "Spacer"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:578
+#: contents/ui/config/ConfigItems.qml:589
 msgid "Spacer size:"
 msgstr ""
 
@@ -1885,6 +1943,14 @@ msgstr ""
 
 #: contents/ui/config/components/PopupAnimationSettings.qml:68
 msgid "Speed:"
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:44
+msgid "Square"
+msgstr ""
+
+#: contents/ui/config/SeparatorOptions.qml:46
+msgid "Star"
 msgstr ""
 
 #: contents/ui/config/components/PopupAnimationSettings.qml:19
@@ -1915,11 +1981,11 @@ msgstr ""
 msgid "Test sound"
 msgstr ""
 
-#: contents/ui/config/CalendarOptions.qml:56
+#: contents/ui/config/CalendarOptions.qml:172
 msgid "Text color:"
 msgstr ""
 
-#: contents/ui/config/components/TimedDialog.qml:126
+#: contents/ui/config/components/TimedDialog.qml:131
 msgid "Text scale:"
 msgstr ""
 
@@ -2049,6 +2115,10 @@ msgstr ""
 msgid "Theme “%1” was deleted."
 msgstr ""
 
+#: contents/ui/config/SeparatorOptions.qml:56
+msgid "Thickness:"
+msgstr ""
+
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:41
 msgid "This action cannot be undone."
 msgstr ""
@@ -2072,6 +2142,14 @@ msgid ""
 "undone from Punchi Dock."
 msgstr ""
 
+#: contents/ui/config/CalendarOptions.qml:83
+msgid "Time text scale"
+msgstr ""
+
+#: contents/ui/config/CalendarOptions.qml:61
+msgid "Time text scale:"
+msgstr ""
+
 #: contents/ui/config/ConfigAspect.qml:106
 msgid "Top"
 msgstr ""
@@ -2080,7 +2158,7 @@ msgstr ""
 msgid "Top to bottom"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:18
+#: contents/ui/components/DockItem.qml:25
 #: contents/ui/components/TrashContextPopup.qml:56
 #: contents/ui/config/AddItemPalette.qml:28
 msgid "Trash"
@@ -2102,7 +2180,7 @@ msgstr ""
 msgid "Try Again"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:565
+#: contents/ui/config/ConfigItems.qml:576
 msgid "Type:"
 msgstr ""
 
@@ -2111,9 +2189,7 @@ msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr ""
 
-#: contents/ui/config/CalendarOptions.qml:85
-#: contents/ui/config/CalendarOptions.qml:136
-#: contents/ui/config/CalendarOptions.qml:185
+#: contents/ui/config/CalendarOptions.qml:201
 msgid "Use Plasma color"
 msgstr ""
 
@@ -2143,7 +2219,7 @@ msgid ""
 "focused on horizontal panels."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:568
+#: contents/ui/config/ConfigItems.qml:579
 msgid "View:"
 msgstr ""
 
@@ -2194,7 +2270,7 @@ msgid ""
 "selectors use an interactive pointer."
 msgstr ""
 
-#: contents/ui/config/components/TimedDialog.qml:73
+#: contents/ui/config/components/TimedDialog.qml:78
 msgid "Width:"
 msgstr ""
 
@@ -2262,8 +2338,8 @@ msgstr ""
 msgid "Write a quick note"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:591
+#: contents/ui/config/components/ActionDialog.qml:81
+#: contents/ui/config/ConfigItems.qml:602
 #: contents/ui/config/ItemActionEditor.qml:33
-#: contents/ui/config/components/ActionDialog.qml:76
 msgid "rows"
 msgstr ""

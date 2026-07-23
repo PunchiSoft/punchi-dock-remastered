@@ -13,6 +13,11 @@ Controls.Dialog {
     property alias timedTextScaleControl: timedTextScale
     property alias calendarItemHeightControl: calendarItemHeight
     property alias calendarFormatControl: calendarOptions.calendarFormatControl
+    property alias calendarTimeTextScaleControl: calendarOptions.calendarTimeTextScaleControl
+    property alias calendarDateTextScaleControl: calendarOptions.calendarDateTextScaleControl
+    property alias calendarShowWeekNumbersControl: calendarOptions.calendarShowWeekNumbersControl
+    property alias calendarPopupScaleControl: calendarOptions.calendarPopupScaleControl
+    property var calendarTextColorControl
     property var calendarBackgroundColorControl
     property var calendarAccentColorControl
     property var calendarBorderColorControl
@@ -56,20 +61,20 @@ Controls.Dialog {
 
             Controls.Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                visible: controller.selectedItemType === "calendar"
-                text: i18n("Item size:")
+                visible: controller.selectedItemType === "clock"
+                text: i18n("Item width:")
                 horizontalAlignment: Text.AlignLeft
                 opacity: 0.75
             }
 
             RowLayout {
                 Layout.fillWidth: true
-                visible: controller.selectedItemType === "calendar"
+                visible: controller.selectedItemType === "clock"
                 enabled: controller.selectedIndex >= 0
                 spacing: Kirigami.Units.smallSpacing
 
                 Controls.Label {
-                    visible: controller.selectedItemType === "calendar"
+                    visible: controller.selectedItemType === "clock"
                     text: i18n("Width:")
                     opacity: 0.75
                 }
@@ -94,7 +99,7 @@ Controls.Dialog {
                 }
 
                 Controls.Label {
-                    visible: controller.selectedItemType === "calendar"
+                    visible: false
                     text: i18n("Height:")
                     opacity: 0.75
                 }
@@ -102,7 +107,7 @@ Controls.Dialog {
                 Controls.SpinBox {
                     id: calendarItemHeight
                     Layout.preferredWidth: Kirigami.Units.gridUnit * 7
-                    visible: controller.selectedItemType === "calendar"
+                    visible: false
                     enabled: controller.selectedIndex >= 0
                     from: 0
                     to: 600
@@ -122,7 +127,7 @@ Controls.Dialog {
 
             Controls.Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                visible: controller.selectedItemType === "calendar"
+                visible: false
                 text: i18n("Text scale:")
                 horizontalAlignment: Text.AlignLeft
                 opacity: 0.75
@@ -130,7 +135,7 @@ Controls.Dialog {
 
             RowLayout {
                 Layout.fillWidth: true
-                visible: controller.selectedItemType === "calendar"
+                visible: false
                 enabled: controller.selectedIndex >= 0
                 spacing: Kirigami.Units.smallSpacing
 
@@ -171,6 +176,7 @@ Controls.Dialog {
         }
     }
     Component.onCompleted: {
+        calendarTextColorControl = calendarOptions.calendarTextColorControl
         calendarBackgroundColorControl = calendarOptions.calendarBackgroundColorControl
         calendarAccentColorControl = calendarOptions.calendarAccentColorControl
         calendarBorderColorControl = calendarOptions.calendarBorderColorControl

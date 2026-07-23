@@ -490,6 +490,13 @@ PlasmoidItem {
                         }
                         
                         itemType: modelData.type || "app"
+                        timeTextScale: modelData.timeTextScale === undefined ? (modelData.textScale === undefined ? 1.0 : modelData.textScale) : modelData.timeTextScale
+                        dateTextScale: modelData.dateTextScale === undefined ? (modelData.textScale === undefined ? 1.0 : modelData.textScale) : modelData.dateTextScale
+                        separatorStyleSetting: modelData.separatorStyle || "line"
+                        separatorThicknessSetting: modelData.separatorThickness === undefined ? 2 : modelData.separatorThickness
+                        separatorLengthRatioSetting: modelData.separatorLengthRatio === undefined ? 0.72 : modelData.separatorLengthRatio
+                        separatorOpacitySetting: modelData.separatorOpacity === undefined ? 0.34 : modelData.separatorOpacity
+                        separatorGlowSetting: modelData.separatorGlowEnabled === true
                         iconName: modelData.type === "trash" && modelData.showState !== false
                             ? (dockItemsController.trashHasItems ? (modelData.fullIcon || "user-trash-full") : (modelData.icon || "user-trash"))
                             : (modelData.icon || "")
@@ -515,7 +522,7 @@ PlasmoidItem {
                             if (modelData.type === "folder") {
                                 popupCoordinator.openFolderPopup(modelData, dockItemDelegate)
                             } else if (modelData.type === "calendar") {
-                                popupCoordinator.openCalendarPopup(dockItemDelegate)
+                                popupCoordinator.openCalendarPopup(modelData, dockItemDelegate)
                             } else if (modelData.type === "note") {
                                 popupCoordinator.openNotePopup(modelData, dockItemDelegate, index)
                             } else {
@@ -828,6 +835,12 @@ PlasmoidItem {
                 // qmllint enable unqualified
 
                 CalendarPopup {
+                    showWeekNumbers: popupCoordinator.activeCalendarData.showWeekNumbers === undefined
+                        ? true
+                        : popupCoordinator.activeCalendarData.showWeekNumbers
+                    popupScale: popupCoordinator.activeCalendarData.popupScale === undefined
+                        ? 1.0
+                        : Number(popupCoordinator.activeCalendarData.popupScale || 1.0)
                     // Reset the popup to the current date whenever it opens.
                     Component.onCompleted: {
                         displayedDate = new Date()

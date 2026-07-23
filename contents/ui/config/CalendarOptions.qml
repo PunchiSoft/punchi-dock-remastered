@@ -9,11 +9,16 @@ ColumnLayout {
     property var controller
     property string calendarDisplayModeValue: "text"
     property var clockColorControl: calendarTextColor
+    property alias calendarTextColorControl: calendarTextColor
     property alias calendarFormatControl: calendarFormatCombo
-    property alias calendarBackgroundColorControl: calendarBackgroundColor
-    property alias calendarAccentColorControl: calendarAccentColor
-    property alias calendarBorderColorControl: calendarBorderColor
-    property alias calendarRadiusControl: calendarRadius
+    property alias calendarTimeTextScaleControl: calendarTimeTextScale
+    property alias calendarDateTextScaleControl: calendarDateTextScale
+    property alias calendarShowWeekNumbersControl: calendarShowWeekNumbers
+    property alias calendarPopupScaleControl: calendarPopupScale
+    property var calendarBackgroundColorControl: null
+    property var calendarAccentColorControl: null
+    property var calendarBorderColorControl: null
+    property var calendarRadiusControl: null
 
     spacing: Kirigami.Units.smallSpacing
 
@@ -49,6 +54,117 @@ ColumnLayout {
                     editText = model[index]
                 }
                 controller.applyItemForm()
+            }
+        }
+
+        Controls.Label {
+            text: i18n("Time text scale:")
+            opacity: 0.75
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Kirigami.Units.smallSpacing
+
+            Controls.Slider {
+                id: calendarTimeTextScale
+                Layout.fillWidth: true
+                from: 0.75
+                to: 2.0
+                stepSize: 0.05
+                snapMode: Controls.Slider.SnapAlways
+                enabled: controller.selectedIndex >= 0
+                onMoved: controller.applyItemForm()
+                onValueChanged: {
+                    if (!controller.syncing) {
+                        controller.applyItemForm()
+                    }
+                }
+                Accessible.name: i18n("Time text scale")
+            }
+
+            Controls.Label {
+                Layout.minimumWidth: Kirigami.Units.gridUnit * 2.8
+                horizontalAlignment: Text.AlignRight
+                text: Math.round(calendarTimeTextScale.value * 100) + "%"
+                opacity: 0.75
+            }
+        }
+
+        Controls.Label {
+            text: i18n("Date text scale:")
+            opacity: 0.75
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Kirigami.Units.smallSpacing
+
+            Controls.Slider {
+                id: calendarDateTextScale
+                Layout.fillWidth: true
+                from: 0.75
+                to: 2.0
+                stepSize: 0.05
+                snapMode: Controls.Slider.SnapAlways
+                enabled: controller.selectedIndex >= 0
+                onMoved: controller.applyItemForm()
+                onValueChanged: {
+                    if (!controller.syncing) {
+                        controller.applyItemForm()
+                    }
+                }
+                Accessible.name: i18n("Date text scale")
+            }
+
+            Controls.Label {
+                Layout.minimumWidth: Kirigami.Units.gridUnit * 2.8
+                horizontalAlignment: Text.AlignRight
+                text: Math.round(calendarDateTextScale.value * 100) + "%"
+                opacity: 0.75
+            }
+        }
+
+        Controls.CheckBox {
+            id: calendarShowWeekNumbers
+            Layout.columnSpan: 2
+            text: i18n("Show week numbers")
+            enabled: controller.selectedIndex >= 0
+            onToggled: controller.applyItemForm()
+            Accessible.name: i18n("Show calendar week numbers")
+        }
+
+        Controls.Label {
+            text: i18n("Popup scale:")
+            opacity: 0.75
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: Kirigami.Units.smallSpacing
+
+            Controls.Slider {
+                id: calendarPopupScale
+                Layout.fillWidth: true
+                from: 0.5
+                to: 3.0
+                stepSize: 0.05
+                snapMode: Controls.Slider.SnapAlways
+                enabled: controller.selectedIndex >= 0
+                onMoved: controller.applyItemForm()
+                onValueChanged: {
+                    if (!controller.syncing) {
+                        controller.applyItemForm()
+                    }
+                }
+                Accessible.name: i18n("Calendar popup scale")
+            }
+
+            Controls.Label {
+                Layout.minimumWidth: Kirigami.Units.gridUnit * 2.8
+                horizontalAlignment: Text.AlignRight
+                text: (Math.round(calendarPopupScale.value * 100) / 100) + "x"
+                opacity: 0.75
             }
         }
 
@@ -100,177 +216,6 @@ ColumnLayout {
 
                 Controls.ToolTip.visible: hovered
                 Controls.ToolTip.text: i18n("Plasma theme")
-            }
-        }
-
-        Controls.Label {
-            text: i18n("Background:")
-            opacity: 0.75
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Kirigami.Units.smallSpacing
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 2.2
-                Layout.preferredHeight: Kirigami.Units.gridUnit * 2
-                onClicked: controller.openTimedColorDialog("calendarBackground")
-
-                contentItem: Rectangle {
-                    anchors.centerIn: parent
-                    width: Kirigami.Units.gridUnit * 1.35
-                    height: width
-                    radius: 4
-                    color: calendarBackgroundColor.text.length > 0 ? calendarBackgroundColor.text : Kirigami.Theme.backgroundColor
-                    border.width: 1
-                    border.color: Kirigami.Theme.textColor
-                    opacity: calendarBackgroundColor.text.length > 0 ? 1 : 0.55
-                }
-            }
-
-            Controls.TextField {
-                id: calendarBackgroundColor
-                Layout.fillWidth: true
-                placeholderText: i18n("Use Plasma color")
-                onEditingFinished: controller.applyItemForm()
-            }
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                icon.name: "edit-reset-symbolic"
-                display: Controls.AbstractButton.IconOnly
-                enabled: calendarBackgroundColor.text.length > 0
-                onClicked: {
-                    calendarBackgroundColor.text = ""
-                    controller.applyItemForm()
-                }
-
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Plasma theme")
-            }
-        }
-
-        Controls.Label {
-            text: i18n("Header:")
-            opacity: 0.75
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Kirigami.Units.smallSpacing
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 2.2
-                Layout.preferredHeight: Kirigami.Units.gridUnit * 2
-                onClicked: controller.openTimedColorDialog("calendarAccent")
-
-                contentItem: Rectangle {
-                    anchors.centerIn: parent
-                    width: Kirigami.Units.gridUnit * 1.35
-                    height: width
-                    radius: 4
-                    color: calendarAccentColor.text.length > 0 ? calendarAccentColor.text : Kirigami.Theme.highlightColor
-                    border.width: 1
-                    border.color: Kirigami.Theme.textColor
-                    opacity: calendarAccentColor.text.length > 0 ? 1 : 0.55
-                }
-            }
-
-            Controls.TextField {
-                id: calendarAccentColor
-                Layout.fillWidth: true
-                placeholderText: i18n("Use Plasma color")
-                onEditingFinished: controller.applyItemForm()
-            }
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                icon.name: "edit-reset-symbolic"
-                display: Controls.AbstractButton.IconOnly
-                enabled: calendarAccentColor.text.length > 0
-                onClicked: {
-                    calendarAccentColor.text = ""
-                    controller.applyItemForm()
-                }
-
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Plasma theme")
-            }
-        }
-
-        Controls.Label {
-            text: i18n("Border:")
-            opacity: 0.75
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Kirigami.Units.smallSpacing
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 2.2
-                Layout.preferredHeight: Kirigami.Units.gridUnit * 2
-                onClicked: controller.openTimedColorDialog("calendarBorder")
-
-                contentItem: Rectangle {
-                    anchors.centerIn: parent
-                    width: Kirigami.Units.gridUnit * 1.35
-                    height: width
-                    radius: 4
-                    color: calendarBorderColor.text.length > 0 ? calendarBorderColor.text : "transparent"
-                    border.width: 1
-                    border.color: Kirigami.Theme.textColor
-                    opacity: calendarBorderColor.text.length > 0 ? 1 : 0.55
-                }
-            }
-
-            Controls.TextField {
-                id: calendarBorderColor
-                Layout.fillWidth: true
-                placeholderText: i18n("None")
-                onEditingFinished: controller.applyItemForm()
-            }
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                icon.name: "edit-reset-symbolic"
-                display: Controls.AbstractButton.IconOnly
-                enabled: calendarBorderColor.text.length > 0
-                onClicked: {
-                    calendarBorderColor.text = ""
-                    controller.applyItemForm()
-                }
-
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Plasma theme")
-            }
-        }
-
-        Controls.Label {
-            text: i18n("Radius:")
-            opacity: 0.75
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: Kirigami.Units.smallSpacing
-
-            Controls.SpinBox {
-                id: calendarRadius
-                Layout.fillWidth: true
-                from: 0
-                to: 48
-                textFromValue: function(value) {
-                    return value === 0 ? i18n("Automatic") : value + " px"
-                }
-                valueFromText: function(text) {
-                    return text === i18n("Automatic") ? 0 : Number.fromLocaleString(Qt.locale(), text.replace("px", ""))
-                }
-                onValueModified: controller.applyItemForm()
             }
         }
     }
