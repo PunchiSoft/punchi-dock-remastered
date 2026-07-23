@@ -8,6 +8,9 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 
 - Opciones independientes para mostrar sombras sutiles en los textos del dock,
   las miniaturas de ventanas, los popups y los menus.
+- Deslizadores independientes para escala del texto de hora (`timeTextScale`) y fecha (`dateTextScale`) en el item de Calendario/Reloj.
+- Panel dedicado de configuración de Separadores (`SeparatorOptions.qml`) con aviso informativo nativo de Kirigami.
+- Soporte para personalización de Separadores con selección de formas geométricas (Línea, Círculo, Cuadrado, Cápsula redondeada, Estrella), grosor (1-16px), proporción de largo (20%-100%), opacidad (10%-100%) y efecto de resplandor sutil.
 - Distancia configurable para los popups de carpetas en los perfiles de
   rejilla, lista y detalle, limitada a un rango seguro.
 - Configuracion separada de animacion, velocidad e intensidad para popups
