@@ -87,6 +87,7 @@ PlasmoidItem {
         panelLocation: Plasmoid.location
         configuredIconSize: Number(Plasmoid.configuration.iconSize || 48)
         configuredPanelLengthMode: String(Plasmoid.configuration.panelLengthMode || "fit")
+        configuredPanelAlignmentMode: String(Plasmoid.configuration.panelAlignmentMode || "start")
         panelHoverScale: dockConfig.panelHoverScale
         folderPopupExtraDistance: dockConfig.folderPopupExtraDistance
         dockShowLabels: dockConfig.dockShowLabels
@@ -196,6 +197,7 @@ PlasmoidItem {
             taskWindowsPopupContentRef: taskWindowsPopupContent
             taskContextSurfaceStackRef: taskContextSurfaceStack
             taskPopupAnimatedContentRef: taskPopupAnimatedContent
+            mediaHoverMode: dockConfig.mediaControlsMode
             mediaHoverEnabled: dockConfig.mediaControlsOnHover
             folderPopupDialogRef: folderPopupDialog
             calendarPopupDialogRef: calendarPopupDialog
@@ -261,16 +263,24 @@ PlasmoidItem {
                     return -1
                 }
 
-                const innerWidth = Math.max(0, width
-                    - (dockGeometry.dockBackgroundHorizontalPadding * 2))
+                const isVertical = dockGeometry.verticalPanel
+                const totalPadding = isVertical
+                    ? (dockGeometry.dockBackgroundVerticalPadding * 2)
+                    : (dockGeometry.dockBackgroundHorizontalPadding * 2)
+                const innerLength = Math.max(0,
+                    (isVertical ? height : width) - totalPadding)
                 const boundarySpacing = dockItemsController.dockItems.length > 0
                     && taskController.totalDynamicGroups > 0
                     ? dockGeometry.dockSpacing
                     : 0
-                const availableWidth = Math.max(0, innerWidth
+                const availableLength = Math.max(0, innerLength
                     - dockGeometry.panelFixedContentWidth - boundarySpacing)
-                return Math.max(0, Math.floor((availableWidth + dockGeometry.dockSpacing)
-                    / (dockGeometry.panelItemWidth + dockGeometry.dockSpacing)))
+                const itemExtent = isVertical
+                    ? dockGeometry.panelItemHeight
+                    : dockGeometry.panelItemWidth
+                return Math.max(0, Math.floor(
+                    (availableLength + dockGeometry.dockSpacing)
+                    / (itemExtent + dockGeometry.dockSpacing)))
             }
 
             Binding {
@@ -360,46 +370,54 @@ PlasmoidItem {
                     barStyle: dockConfig.audioSpectrumStyle
                     flowDirection: dockConfig.audioSpectrumFlow
                     vertical: dockGeometry.verticalPanel
-                    originEdge: dockGeometry.verticalPanel
-                        ? (dockGeometry.leftPanel ? Qt.LeftEdge : Qt.RightEdge)
-                        : dockConfig.audioSpectrumOrigin === "top"
-                            ? Qt.TopEdge
-                            : Qt.BottomEdge
+                    originEdge: dockGeometry.spectrumOriginEdge
                 }
             }
             // qmllint enable unqualified
 
-            RowLayout {
+            GridLayout {
                 id: dockLayout
-                spacing: dockGeometry.dockSpacing
-                // The row is part of fullRepresentation and resolves its
+                flow: dockGeometry.verticalPanel ? GridLayout.TopToBottom : GridLayout.LeftToRight
+                columns: dockGeometry.verticalPanel ? 1 : -1
+                rows: dockGeometry.verticalPanel ? -1 : 1
+                rowSpacing: dockGeometry.dockSpacing
+                columnSpacing: dockGeometry.dockSpacing
+                // The layout is part of fullRepresentation and resolves its
                 // trailing sibling through the owning representation.
                 // qmllint disable unqualified
                 readonly property real trailingOverflowExtent: overflowLayoutAnchor.visible
-                    ? dockGeometry.dockSpacing + overflowLayoutAnchor.width
+                    ? dockGeometry.dockSpacing + (dockGeometry.verticalPanel ? overflowLayoutAnchor.height : overflowLayoutAnchor.width)
                     : 0
                 // qmllint enable unqualified
                 x: {
                     if (!root.inPanel) {
                         return Math.round((parent.width - width - trailingOverflowExtent) / 2)
                     }
-                    if (dockGeometry.panelFillLengthEnabled) {
-                        return dockGeometry.dockBackgroundHorizontalPadding
+                    if (dockGeometry.verticalPanel) {
+                        return Math.round((parent.width - width) / 2)
                     }
-                    if (dockGeometry.leftPanel) {
-                        return dockGeometry.dockBackgroundHorizontalPadding
+                    if (dockGeometry.configuredPanelAlignmentMode === "center") {
+                        return Math.round((parent.width - width - trailingOverflowExtent) / 2)
                     }
-                    if (dockGeometry.rightPanel) {
-                        return parent.width - width - trailingOverflowExtent
-                            - dockGeometry.dockBackgroundHorizontalPadding
+                    if (dockGeometry.configuredPanelAlignmentMode === "end") {
+                        return parent.width - width - trailingOverflowExtent - dockGeometry.dockBackgroundHorizontalPadding
                     }
-                    return Math.round((parent.width - width - trailingOverflowExtent) / 2)
+                    return dockGeometry.dockBackgroundHorizontalPadding
                 }
                 y: {
                     if (!root.inPanel) {
                         return Math.round((parent.height - height) / 2)
                     }
-                    return Math.round((parent.height - height) / 2)
+                    if (!dockGeometry.verticalPanel) {
+                        return Math.round((parent.height - height) / 2)
+                    }
+                    if (dockGeometry.configuredPanelAlignmentMode === "center") {
+                        return Math.round((parent.height - height) / 2)
+                    }
+                    if (dockGeometry.configuredPanelAlignmentMode === "end") {
+                        return parent.height - height - dockGeometry.dockBackgroundVerticalPadding
+                    }
+                    return dockGeometry.dockBackgroundVerticalPadding
                 }
                 
                 property int hoveredIndex: -1
@@ -681,10 +699,16 @@ PlasmoidItem {
                 visible: root.overflowTaskRows.length > 0
                 width: taskOverflowDockItem.implicitWidth
                 height: taskOverflowDockItem.implicitHeight
-                x: dockGeometry.panelFillLengthEnabled
-                    ? parent.width - dockGeometry.dockBackgroundHorizontalPadding - width
-                    : dockLayout.x + dockLayout.width + dockGeometry.dockSpacing
-                y: dockLayout.y
+                x: dockGeometry.verticalPanel
+                    ? Math.round((parent.width - width) / 2)
+                    : (dockGeometry.panelFillLengthEnabled
+                        ? parent.width - dockGeometry.dockBackgroundHorizontalPadding - width
+                        : dockLayout.x + dockLayout.width + dockGeometry.dockSpacing)
+                y: dockGeometry.verticalPanel
+                    ? (dockGeometry.panelFillLengthEnabled
+                        ? parent.height - dockGeometry.dockBackgroundVerticalPadding - height
+                        : dockLayout.y + dockLayout.height + dockGeometry.dockSpacing)
+                    : dockLayout.y
 
                 // DockItem coordinates its wave hover state through its parent.
                 property alias hoveredIndex: dockLayout.hoveredIndex
@@ -794,6 +818,8 @@ PlasmoidItem {
                         : (folderPopupContent.layoutMode === "detailed"
                             ? dockConfig.folderDetailedFontSize
                             : dockConfig.folderGridFontSize)
+                    profileScale: dockConfig.folderPopupScale
+                    showHeaderLabel: dockConfig.folderPopupShowHeader
                     textShadowsEnabled: dockConfig.popupTextShadowsEnabled
                     maximumAvailableWidth: dockGeometry.taskPopupAvailableWidth
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
@@ -1070,6 +1096,7 @@ PlasmoidItem {
                     taskControllerRef: taskController
                     mediaWindows: popupCoordinator.activeTaskPopupData.windows || []
                     mediaIcon: popupCoordinator.activeTaskPopupData.icon || "emblem-music-symbolic"
+                    mediaControlsMode: dockConfig.mediaControlsMode
                     showMedia: popupCoordinator.mediaHoverActive
                     mediaOnly: popupCoordinator.mediaHoverActive
                         && !taskWindowsPopupContent.mediaActionsComposed
@@ -1101,6 +1128,8 @@ PlasmoidItem {
                         applicationId: popupCoordinator.activeTaskPopupData.applicationId || ""
                         windowUuids: popupCoordinator.activeTaskPopupData.windowUuids || []
                         previewStyle: dockConfig.windowPreviewStyle
+                        mediaControlsMode: dockConfig.mediaControlsMode
+                        mprisControllerRef: mprisController
                         previewScale: dockConfig.windowPreviewScale
                         previewInfoMode: dockConfig.windowPreviewInfoMode
                         windowPreviewTextShadowsEnabled: dockConfig.windowPreviewTextShadowsEnabled
@@ -1144,6 +1173,7 @@ PlasmoidItem {
                                 popupCoordinator.removeTaskPopupWindow(taskRow)
                             }
                         }
+                        onMediaCloseRequested: popupCoordinator.closeMediaHoverFromKeyboard()
                         onActionTriggered: function(action) {
                             taskWindowsDialog.visible = false
                             dockContextActionsController.triggerAction(action)

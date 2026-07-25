@@ -32,6 +32,8 @@ Item {
     property string cfg_folderDetailedFontFamily: ""
     property int cfg_folderDetailedFontSize: 10
     property alias cfg_folderPopupExtraDistance: folderPopupExtraDistanceSlider.value
+    property alias cfg_folderPopupScale: folderPopupScaleSlider.value
+    property alias cfg_folderPopupShowHeader: showFolderHeaderCheck.checked
     property alias cfg_popupTextShadowsEnabled: popupTextShadowsCheck.checked
     property alias cfg_popupAnimation: generalPopupAnimationSettings.animationStyle
     property alias cfg_popupAnimationSpeedPercent: generalPopupAnimationSettings.animationSpeedPercent
@@ -292,7 +294,56 @@ Item {
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
             leftPadding: layoutMetrics.helperIndent
-            color: Kirigami.Theme.disabledTextColor
+            opacity: 0.7
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Popup scale:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: folderPopupScaleSlider
+                from: 0.5
+                to: 3.0
+                stepSize: 0.1
+                snapMode: Controls.Slider.SnapAlways
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Folder popup scale")
+                Accessible.description: i18n("Scales popup dimensions, icons, and text proportionally.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: i18n("%1x", Number(folderPopupScaleSlider.value || 1.0).toFixed(1))
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 56
+            }
+        }
+
+        Controls.Label {
+            text: i18n("Scales folder popup contents between 0.5x and 3.0x while maintaining fixed window geometry.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            opacity: 0.7
+        }
+
+        Controls.CheckBox {
+            id: showFolderHeaderCheck
+            Kirigami.FormData.label: i18n("Title header:")
+            text: i18n("Show folder name header at top of popups")
+            Accessible.description: i18n("Displays the folder title header label and close button at the top of the popup.")
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.interactiveCursorEnabled
+                role: "checkbox"
+            }
         }
 
         Controls.CheckBox {

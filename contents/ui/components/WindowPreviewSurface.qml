@@ -14,6 +14,10 @@ Item {
     property var windowUuids: []
     property var fallbackWindows: []
     property string previewStyle: "card"
+    property var mprisControllerRef: null
+    property string mediaControlsMode: "card"
+    property bool transitionsEnabled: true
+    property int transitionDuration: Kirigami.Units.longDuration
     property real previewScale: 1.5
     property string previewInfoMode: "full"
     property bool textShadowsEnabled: true
@@ -25,6 +29,19 @@ Item {
     readonly property var windows: resolvedWindows
     readonly property bool showLiveThumbnails: previewStyle === "thumbnail"
     readonly property bool containsMouse: popupHover.hovered
+    readonly property bool mediaOverlayRequested: mediaControlsMode === "overlay"
+        && !!mprisControllerRef
+        && mprisControllerRef.available
+    readonly property int mediaOverlayGap: Kirigami.Units.smallSpacing
+    readonly property bool mediaOverlayFits: maximumAvailableHeight <= 0
+        || maximumAvailableHeight >= verticalPadding * 2 + cardHeight
+            + mediaOverlayGap + bottomMediaCard.compactPreferredHeight
+    readonly property bool mediaOverlayVisible: mediaOverlayRequested
+        && mediaOverlayFits
+    readonly property real mediaOverlayHeight: mediaOverlayVisible
+        ? bottomMediaCard.implicitHeight * mediaOverlayRevealProgress
+        : 0
+    property real mediaOverlayRevealProgress: 0
 
     function requestedWindows() {
         if (taskControllerRef
@@ -69,7 +86,35 @@ Item {
     onApplicationIdChanged: refreshWindows()
     onWindowUuidsChanged: refreshWindows()
     onFallbackWindowsChanged: refreshWindows()
-    Component.onCompleted: refreshWindows()
+    Component.onCompleted: {
+        refreshWindows()
+        updateMediaOverlayReveal()
+    }
+
+    function updateMediaOverlayReveal() {
+        mediaOverlayRevealAnimation.stop()
+        if (!mediaOverlayVisible) {
+            mediaOverlayRevealProgress = 0
+            return
+        }
+        if (!transitionsEnabled || transitionDuration <= 0) {
+            mediaOverlayRevealProgress = 1
+            return
+        }
+        mediaOverlayRevealProgress = 0
+        mediaOverlayRevealAnimation.start()
+    }
+
+    onMediaOverlayVisibleChanged: updateMediaOverlayReveal()
+    onTransitionsEnabledChanged: updateMediaOverlayReveal()
+    onVisibleChanged: {
+        if (visible) {
+            updateMediaOverlayReveal()
+        } else {
+            mediaOverlayRevealAnimation.stop()
+            mediaOverlayRevealProgress = 0
+        }
+    }
 
     readonly property real maximumPreviewScaleByWidth: Math.max(1.5,
         (maximumAvailableWidth - 56) / 184)
@@ -92,7 +137,8 @@ Item {
     readonly property int configuredRowsHeight: visibleRowLimit * cardHeight
         + (visibleRowLimit - 1) * listSpacing
     readonly property int availableListHeight: Math.max(cardHeight,
-        maximumAvailableHeight - verticalPadding * 2)
+        maximumAvailableHeight - verticalPadding * 2 - mediaOverlayHeight
+            - (mediaOverlayVisible ? mediaOverlayGap : 0))
     readonly property int listViewportHeight: Math.min(listContentHeight,
         configuredRowsHeight, availableListHeight)
     readonly property bool scrollRequired: listContentHeight > listViewportHeight
@@ -101,8 +147,11 @@ Item {
         : 0
 
     implicitWidth: Math.max(196, previewFrameWidth + horizontalPadding * 2
-        + cardOuterPadding * 2) + scrollBarGutter
+        + cardOuterPadding * 2 + scrollBarGutter,
+        mediaOverlayVisible ? bottomMediaCard.implicitWidth
+            + horizontalPadding * 2 : 0)
     implicitHeight: verticalPadding * 2 + listViewportHeight
+        + (mediaOverlayVisible ? mediaOverlayGap + mediaOverlayHeight : 0)
     width: implicitWidth
     height: implicitHeight
     Layout.maximumHeight: maximumAvailableHeight
@@ -112,9 +161,29 @@ Item {
     signal minimizeWindowRequested(int taskRow)
     signal maximizeWindowRequested(int taskRow)
     signal closeWindowRequested(int taskRow)
+    signal mediaCloseRequested()
 
     HoverHandler {
         id: popupHover
+    }
+
+    SequentialAnimation {
+        id: mediaOverlayRevealAnimation
+
+        PauseAnimation {
+            duration: Math.max(90, Math.min(140,
+                Math.round(root.transitionDuration * 0.45)))
+        }
+
+        NumberAnimation {
+            target: root
+            property: "mediaOverlayRevealProgress"
+            from: 0
+            to: 1
+            duration: Math.max(140, Math.min(200,
+                Math.round(root.transitionDuration * 0.75)))
+            easing.type: Easing.OutCubic
+        }
     }
 
     Controls.ScrollView {
@@ -123,7 +192,8 @@ Item {
         anchors.leftMargin: root.horizontalPadding
         anchors.rightMargin: root.horizontalPadding
         anchors.topMargin: root.verticalPadding
-        anchors.bottomMargin: root.verticalPadding
+        anchors.bottomMargin: root.verticalPadding + (root.mediaOverlayVisible
+            ? root.mediaOverlayGap + root.mediaOverlayHeight : 0)
         clip: true
         rightPadding: root.scrollBarGutter
         Controls.ScrollBar.horizontal.policy: Controls.ScrollBar.AlwaysOff
@@ -169,5 +239,31 @@ Item {
                 onCloseWindowRequested: taskRow => root.closeWindowRequested(taskRow)
             }
         }
+    }
+
+    MediaControlsCard {
+        id: bottomMediaCard
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: root.horizontalPadding
+        anchors.rightMargin: root.horizontalPadding
+        anchors.bottomMargin: root.verticalPadding
+        compact: true
+        visible: root.mediaOverlayVisible
+            && root.mediaOverlayRevealProgress > 0.001
+        enabled: root.mediaOverlayRevealProgress >= 0.999
+        opacity: root.mediaOverlayRevealProgress
+        scale: 0.98 + (0.02 * root.mediaOverlayRevealProgress)
+        transformOrigin: Item.Top
+        transform: Translate {
+            y: Kirigami.Units.smallSpacing
+                * (1 - root.mediaOverlayRevealProgress)
+        }
+        controller: root.mprisControllerRef
+        taskControllerRef: root.taskControllerRef
+        windows: root.windows
+
+        onCloseRequested: root.mediaCloseRequested()
     }
 }

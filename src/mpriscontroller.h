@@ -66,6 +66,7 @@ public:
     Q_INVOKABLE void next();
     Q_INVOKABLE void setShuffle(bool enabled);
     Q_INVOKABLE void cycleLoopStatus();
+    Q_INVOKABLE void toggleMute();
     Q_INVOKABLE void setVolume(double volume);
 
 Q_SIGNALS:
@@ -106,6 +107,7 @@ private:
     QString m_loopStatus;
     bool m_volumeAvailable = false;
     double m_volume = 0.0;
+    double m_lastAudibleVolume = 0.5;
     quint64 m_refreshGeneration = 0;
     int m_pendingPropertyRequests = 0;
     QHash<QString, QVariantMap> m_candidates;

@@ -13,6 +13,8 @@ Item {
     property real previewScale: 1.5
     property string previewInfoMode: "full"
     property bool windowPreviewTextShadowsEnabled: true
+    property var mprisControllerRef: null
+    property string mediaControlsMode: "card"
     property bool menuTextShadowsEnabled: true
     property int maxVisibleRows: 4
     property int maximumAvailableWidth: 752
@@ -105,6 +107,7 @@ Item {
     signal minimizeWindowRequested(int taskRow)
     signal maximizeWindowRequested(int taskRow)
     signal closeWindowRequested(int taskRow)
+    signal mediaCloseRequested()
     signal actionTriggered(var action)
 
     function showActions() {
@@ -128,8 +131,7 @@ Item {
     Behavior on mediaActionsRevealProgress {
         NumberAnimation {
             duration: root.transitionDuration
-            easing.type: root.actionsVisible ? Easing.OutBack : Easing.InOutCubic
-            easing.overshoot: 0.55
+            easing.type: Easing.InOutCubic
         }
     }
 
@@ -160,6 +162,10 @@ Item {
             applicationId: root.applicationId
             windowUuids: root.windowUuids
             fallbackWindows: root.previewSurfaceVisible ? root.windows : []
+            mprisControllerRef: root.mprisControllerRef
+            mediaControlsMode: root.mediaControlsMode
+            transitionsEnabled: root.transitionsEnabled
+            transitionDuration: root.transitionDuration
             previewStyle: root.previewStyle
             previewScale: root.previewScale
             previewInfoMode: root.previewInfoMode
@@ -173,6 +179,7 @@ Item {
             onMinimizeWindowRequested: taskRow => root.minimizeWindowRequested(taskRow)
             onMaximizeWindowRequested: taskRow => root.maximizeWindowRequested(taskRow)
             onCloseWindowRequested: taskRow => root.closeWindowRequested(taskRow)
+            onMediaCloseRequested: root.mediaCloseRequested()
         }
 
         AppActionsPopup {

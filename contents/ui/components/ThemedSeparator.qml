@@ -13,6 +13,7 @@ Item {
     property real lengthRatio: Number(theme.lengthRatio || 0.72)
     property real customOpacity: Number(theme.opacity === undefined ? 0.34 : theme.opacity)
     property bool glowEnabled: theme.glowEnabled === true || (theme.glow && theme.glow.size > 0)
+    property bool verticalPanel: false
 
     readonly property string effectiveStyle: style
     readonly property real effectiveThickness: Math.max(1, thickness)
@@ -23,8 +24,8 @@ Item {
         ? effectiveThickness / 2
         : (effectiveStyle === "square" ? 0 : Math.min(effectiveThickness / 2, Number(theme.radius || 0)))
 
-    implicitWidth: effectiveThickness
-    implicitHeight: effectiveLength
+    implicitWidth: verticalPanel && (effectiveStyle === "line" || effectiveStyle === "pill") ? effectiveLength : effectiveThickness
+    implicitHeight: verticalPanel && (effectiveStyle === "line" || effectiveStyle === "pill") ? effectiveThickness : effectiveLength
     opacity: customOpacity
 
     // Subtle glow layer when enabled

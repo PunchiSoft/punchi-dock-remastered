@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
+import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 
 // Plasma provides the translation functions in the applet context.
@@ -16,10 +17,14 @@ RowLayout {
     readonly property color controlColor: lightAppearance
         ? Qt.rgba(1, 1, 1, 0.96)
         : Kirigami.Theme.textColor
+    readonly property int muteButtonExtent: 28
+    readonly property int muteIconExtent: 20
 
     spacing: Kirigami.Units.smallSpacing
     visible: available
-    implicitHeight: visible ? Math.max(volumeIcon.implicitHeight, volumeSlider.implicitHeight) : 0
+    implicitHeight: visible
+        ? Math.max(volumeMuteButton.implicitHeight, volumeSlider.implicitHeight)
+        : 0
 
     function focusControl() {
         if (available) {
@@ -42,17 +47,29 @@ RowLayout {
         styleHints["tickMarkStepSize"] = -1
     }
 
-    Kirigami.Icon {
-        id: volumeIcon
-        Layout.preferredWidth: Kirigami.Units.iconSizes.small
-        Layout.preferredHeight: Kirigami.Units.iconSizes.small
-        source: root.controller && root.controller.volume <= 0.001
+    PlasmaComponents.ToolButton {
+        id: volumeMuteButton
+        Layout.preferredWidth: root.muteButtonExtent
+        Layout.preferredHeight: root.muteButtonExtent
+        text: root.controller && root.controller.volume <= 0.001
+            ? i18nc("@action:button", "Restore media volume")
+            : i18nc("@action:button", "Mute media volume")
+        display: PlasmaComponents.AbstractButton.IconOnly
+        icon.width: root.muteIconExtent
+        icon.height: root.muteIconExtent
+        icon.name: root.controller && root.controller.volume <= 0.001
             ? "audio-volume-muted"
             : (root.controller && root.controller.volume < 0.5
                 ? "audio-volume-low"
                 : "audio-volume-high")
-        color: root.controlColor
-        Accessible.ignored: true
+        icon.color: root.controlColor
+        enabled: root.available
+        Accessible.name: text
+        Accessible.role: Accessible.Button
+        Controls.ToolTip.visible: hovered || activeFocus
+        Controls.ToolTip.text: text
+        Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
+        onClicked: root.controller.toggleMute()
     }
 
     Controls.Slider {

@@ -33,11 +33,23 @@ Item {
     Rectangle {
         id: edgeIndicator
         visible: root.type === "line" || root.type === "dot" || root.type === "square"
-        width: root.type === "line" ? root.lineWidth : root.dotSize + (root.type === "square" ? 2 : 0)
-        height: root.type === "line" ? root.sizeHint : width
-        x: Math.round((root.width - width) / 2)
-        y: root.position === "top" ? 1 : Math.max(1, root.height - height - 1)
-        radius: root.type === "square" ? Math.max(2, root.dotSize * 0.28) : height / 2
+        width: root.type === "line"
+            ? (root.position === "left" || root.position === "right" ? root.sizeHint : root.lineWidth)
+            : root.dotSize + (root.type === "square" ? 2 : 0)
+        height: root.type === "line"
+            ? (root.position === "left" || root.position === "right" ? root.lineWidth : root.sizeHint)
+            : width
+        x: root.position === "left"
+            ? 1
+            : (root.position === "right"
+                ? Math.max(1, root.width - width - 1)
+                : Math.round((root.width - width) / 2))
+        y: root.position === "top"
+            ? 1
+            : (root.position === "bottom"
+                ? Math.max(1, root.height - height - 1)
+                : Math.round((root.height - height) / 2))
+        radius: root.type === "square" ? Math.max(2, root.dotSize * 0.28) : Math.min(width, height) / 2
         color: root.resolvedColor
     }
 

@@ -23,6 +23,8 @@ constexpr auto mprisPath = "/org/mpris/MediaPlayer2";
 constexpr auto rootInterface = "org.mpris.MediaPlayer2";
 constexpr auto playerInterface = "org.mpris.MediaPlayer2.Player";
 constexpr auto propertiesInterface = "org.freedesktop.DBus.Properties";
+constexpr double mutedVolumeThreshold = 0.001;
+constexpr double defaultRestoredVolume = 0.5;
 
 QString normalizedIdentity(QString value)
 {
@@ -303,6 +305,9 @@ void MprisController::selectBestCandidate()
     m_volumeAvailable = player.contains(QStringLiteral("Volume"))
         && m_canControl;
     m_volume = std::clamp(player.value(QStringLiteral("Volume")).toDouble(), 0.0, 1.0);
+    if (m_volume > mutedVolumeThreshold) {
+        m_lastAudibleVolume = m_volume;
+    }
     m_available = true;
     Q_EMIT stateChanged();
 }
@@ -331,6 +336,7 @@ void MprisController::clearState()
     m_loopStatus.clear();
     m_volumeAvailable = false;
     m_volume = 0.0;
+    m_lastAudibleVolume = defaultRestoredVolume;
     if (changed) {
         Q_EMIT stateChanged();
     }
@@ -425,6 +431,9 @@ void MprisController::setVolume(double volume)
         return;
     }
 
+    if (safeVolume > mutedVolumeThreshold) {
+        m_lastAudibleVolume = safeVolume;
+    }
     m_volume = safeVolume;
     Q_EMIT stateChanged();
 
@@ -437,6 +446,21 @@ void MprisController::setVolume(double volume)
                          QStringLiteral("Volume"),
                          QVariant::fromValue(QDBusVariant(safeVolume)));
     QTimer::singleShot(120, this, &MprisController::scheduleRefresh);
+}
+
+void MprisController::toggleMute()
+{
+    if (!m_available || !m_volumeAvailable || m_service.isEmpty()) {
+        return;
+    }
+
+    if (m_volume > mutedVolumeThreshold) {
+        m_lastAudibleVolume = m_volume;
+        setVolume(0.0);
+        return;
+    }
+
+    setVolume(std::max(mutedVolumeThreshold, m_lastAudibleVolume));
 }
 
 void MprisController::callPlayerMethod(const QString &method)

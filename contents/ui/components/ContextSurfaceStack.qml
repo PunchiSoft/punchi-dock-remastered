@@ -10,6 +10,7 @@ Item {
     property var taskControllerRef: null
     property var mediaWindows: []
     property string mediaIcon: "emblem-music-symbolic"
+    property string mediaControlsMode: "card"
     property bool showMedia: true
     property bool mediaOnly: false
     property bool forceCompactMedia: false
@@ -19,6 +20,7 @@ Item {
     property int transitionSpeedPercent: 100
     property real mediaGap: 2
     property real maximumAvailableHeight: 0
+    property real contentTransferProgress: 1
     readonly property Item contentItem: contentHost.children.length > 0
         ? contentHost.children[0]
         : null
@@ -90,6 +92,17 @@ Item {
         return mediaVisible && mediaCard.focusFirstControl()
     }
 
+    function beginContentTransfer() {
+        if (!transitionsEnabled || transitionDuration <= 0) {
+            contentTransferProgress = 1
+            return
+        }
+
+        contentTransferAnimation.stop()
+        contentTransferProgress = 0
+        contentTransferAnimation.start()
+    }
+
     onMediaVisibleChanged: updateMediaVisibility()
     onCompactMediaChanged: updateMediaExtent()
     onMediaOnlyChanged: updateMediaExtent()
@@ -137,6 +150,16 @@ Item {
         }
     }
 
+    NumberAnimation {
+        id: contentTransferAnimation
+        target: root
+        property: "contentTransferProgress"
+        from: 0
+        to: 1
+        duration: Math.max(90, Math.min(160, Math.round(root.transitionDuration * 0.65)))
+        easing.type: Easing.OutCubic
+    }
+
     HoverHandler {
         id: surfaceHover
     }
@@ -152,13 +175,15 @@ Item {
         fallbackIcon: root.mediaIcon
         compact: root.compactMedia
         squarePresentation: root.mediaOnly
+        fullCoverPresentation: root.mediaOnly && root.mediaControlsMode === "fullCard"
         transitionDuration: root.transitionDuration
         height: Math.max(0, root.mediaExtent - root.mediaGap)
         visible: root.mediaVisible || root.mediaExtent > 0.5
-        opacity: root.mediaRevealProgress
+        opacity: root.mediaRevealProgress * (0.72 + (0.28 * root.contentTransferProgress))
         scale: 0.98 + (0.02 * root.mediaRevealProgress)
         transform: Translate {
-            y: 6 * (1 - root.mediaRevealProgress)
+            y: (6 * (1 - root.mediaRevealProgress))
+                + (4 * (1 - root.contentTransferProgress))
         }
 
         onImplicitHeightChanged: root.updateMediaExtent()
@@ -173,6 +198,7 @@ Item {
         height: root.contentExtent
         imagePath: "dialogs/background"
         visible: !root.mediaOnly
+        opacity: 0.72 + (0.28 * root.contentTransferProgress)
     }
 
     Item {
@@ -182,6 +208,10 @@ Item {
         width: root.width
         height: root.contentExtent
         visible: !root.mediaOnly
+        opacity: 0.72 + (0.28 * root.contentTransferProgress)
+        transform: Translate {
+            y: 4 * (1 - root.contentTransferProgress)
+        }
     }
 
     Binding {

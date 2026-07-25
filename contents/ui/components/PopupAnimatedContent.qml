@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
 
 import QtQuick
+import QtQuick.Layouts
 import QtQuick.Window
 import org.kde.kirigami as Kirigami
 
@@ -60,6 +61,10 @@ Item {
     implicitHeight: contentItem ? contentItem.implicitHeight : 0
     width: implicitWidth
     height: implicitHeight
+    Layout.minimumWidth: implicitWidth
+    Layout.maximumWidth: implicitWidth
+    Layout.minimumHeight: implicitHeight
+    Layout.maximumHeight: implicitHeight
 
     function beginOpening() {
         if (!popupVisible || !openingPending) {

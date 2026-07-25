@@ -15,6 +15,7 @@ FocusScope {
     property string fallbackIcon: "emblem-music-symbolic"
     property bool compact: false
     property bool squarePresentation: false
+    property bool fullCoverPresentation: false
     property int transitionDuration: Kirigami.Units.longDuration
     property real compactTransitionProgress: compact ? 1 : 0
     readonly property bool available: !!controller && controller.available
@@ -22,11 +23,15 @@ FocusScope {
         ? String(controller.artUrl)
         : ""
     readonly property bool artworkReady: artUrl.length > 0
-        && squareCoverSource.status === Image.Ready
+        && (squareCoverSource.status === Image.Ready || fullCoverSource.status === Image.Ready)
+    readonly property bool fullCoverMode: fullCoverPresentation && !compact
     readonly property bool squareMode: squarePresentation
+        && !fullCoverMode
         && artworkReady
         && !compact
-    readonly property bool ambientMode: !squareMode && !compact
+    readonly property bool ambientMode: !squareMode
+        && !fullCoverMode
+        && !compact
         && ambientSource.status === Image.Ready
         && artUrl.length > 0
     readonly property bool volumeAvailable: !!controller && controller.volumeAvailable
@@ -44,15 +49,17 @@ FocusScope {
     readonly property real compactPreferredHeight: (volumeAvailable ? 88 : 56)
         + topControlReservedHeight
         + progressReservedHeight
-    readonly property real preferredExpandedHeight: squareMode
-        ? (volumeAvailable ? 420 : 382)
-            + topControlReservedHeight
-            + progressReservedHeight
-        : (volumeAvailable
-            ? (artUrl.length > 0 ? 152 : 120)
-            : (artUrl.length > 0 ? 120 : 88))
-            + topControlReservedHeight
-            + progressReservedHeight
+    readonly property real preferredExpandedHeight: fullCoverMode
+        ? (volumeAvailable ? 380 : 340)
+        : (squareMode
+            ? (volumeAvailable ? 420 : 382)
+                + topControlReservedHeight
+                + progressReservedHeight
+            : (volumeAvailable
+                ? (artUrl.length > 0 ? 152 : 120)
+                : (artUrl.length > 0 ? 120 : 88))
+                + topControlReservedHeight
+                + progressReservedHeight)
     readonly property string title: controller && controller.track
         ? controller.track
         : controller && controller.identity
@@ -72,6 +79,7 @@ FocusScope {
         : 0
     readonly property real compactContentOpacity: compactTransitionVisible
             || squareMode
+            || fullCoverMode
         ? Math.max(0, Math.min(1, (2 * compactTransitionProgress) - 1))
         : (ambientMode ? 0 : 1)
     readonly property int closeTaskRow: preferredCloseTaskRow()
@@ -80,6 +88,9 @@ FocusScope {
         ? fallbackIcon
         : "emblem-music-symbolic"
     readonly property bool appBadgeVisible: available
+    readonly property color overlayBackgroundColor: Kirigami.Theme.backgroundColor
+    readonly property color overlayTextColor: Kirigami.Theme.textColor
+    readonly property color overlaySecondaryTextColor: Kirigami.Theme.disabledTextColor
 
     implicitWidth: 280
     implicitHeight: compact ? compactPreferredHeight : preferredExpandedHeight
@@ -103,6 +114,12 @@ FocusScope {
     }
 
     function focusFirstControl() {
+        if (fullCoverMode) {
+            if (fullCoverControls.focusFirstControl()) {
+                return true
+            }
+            return fullCoverVolume.focusControl()
+        }
         if (squareMode) {
             if (squareControls.focusFirstControl()) {
                 return true
@@ -359,6 +376,161 @@ FocusScope {
     }
 
     Image {
+        id: fullCoverSource
+        anchors.fill: parent
+        source: root.artUrl
+        fillMode: Image.PreserveAspectCrop
+        asynchronous: true
+        cache: true
+        visible: false
+        layer.enabled: true
+    }
+
+    Item {
+        id: fullCoverMask
+        anchors.fill: parent
+        visible: false
+        layer.enabled: true
+
+        Rectangle {
+            anchors.fill: parent
+            radius: root.cornerRadius
+            color: "black"
+        }
+    }
+
+    Effects.MultiEffect {
+        anchors.fill: parent
+        source: fullCoverSource
+        maskEnabled: true
+        maskSource: fullCoverMask
+        opacity: root.fullCoverMode && root.artworkReady ? (1 - Math.min(1, root.compactTransitionProgress)) : 0
+        visible: opacity > 0.001
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        radius: root.cornerRadius
+        opacity: root.fullCoverMode && !root.artworkReady ? (1 - Math.min(1, root.compactTransitionProgress)) : 0
+        visible: opacity > 0.001
+        color: Kirigami.Theme.backgroundColor
+
+        Kirigami.Icon {
+            anchors.centerIn: parent
+            width: Kirigami.Units.iconSizes.huge
+            height: width
+            source: root.fallbackIcon.length > 0
+                ? root.fallbackIcon
+                : "emblem-music-symbolic"
+            opacity: 0.25
+        }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        radius: root.cornerRadius
+        opacity: root.fullCoverMode ? (1 - Math.min(1, root.compactTransitionProgress)) : 0
+        visible: opacity > 0.001
+        gradient: Gradient {
+            GradientStop {
+                position: 0.0
+                color: Qt.rgba(root.overlayBackgroundColor.r,
+                    root.overlayBackgroundColor.g,
+                    root.overlayBackgroundColor.b, 0.28)
+            }
+            GradientStop {
+                position: 0.35
+                color: Qt.rgba(root.overlayBackgroundColor.r,
+                    root.overlayBackgroundColor.g,
+                    root.overlayBackgroundColor.b, 0.12)
+            }
+            GradientStop {
+                position: 0.65
+                color: Qt.rgba(root.overlayBackgroundColor.r,
+                    root.overlayBackgroundColor.g,
+                    root.overlayBackgroundColor.b, 0.65)
+            }
+            GradientStop {
+                position: 1.0
+                color: Qt.rgba(root.overlayBackgroundColor.r,
+                    root.overlayBackgroundColor.g,
+                    root.overlayBackgroundColor.b, 0.88)
+            }
+        }
+    }
+
+    ColumnLayout {
+        id: fullCoverContent
+        anchors.fill: parent
+        anchors.margins: 12
+        spacing: Kirigami.Units.smallSpacing
+        opacity: root.fullCoverMode ? Math.max(0, Math.min(1, 1 - (2 * root.compactTransitionProgress))) : 0
+        scale: 1 - (0.025 * Math.min(1, root.compactTransitionProgress))
+        transformOrigin: Item.Top
+        visible: opacity > 0.001
+
+        Item {
+            Layout.fillWidth: true
+            Layout.preferredHeight: root.topControlReservedHeight
+            visible: root.topControlReservedHeight > 0
+        }
+
+        Item {
+            Layout.fillHeight: true
+        }
+
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: 2
+
+            PlasmaComponents.Label {
+                Layout.fillWidth: true
+                text: root.title
+                color: root.overlayTextColor
+                font.weight: Font.Bold
+                font.pointSize: Kirigami.Theme.defaultFont.pointSize + 2
+                elide: Text.ElideRight
+                maximumLineCount: 1
+            }
+
+            PlasmaComponents.Label {
+                Layout.fillWidth: true
+                text: root.subtitle
+                color: root.overlaySecondaryTextColor
+                font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                elide: Text.ElideRight
+                maximumLineCount: 1
+            }
+        }
+
+        PlaybackProgressBar {
+            Layout.fillWidth: true
+            Layout.leftMargin: 2
+            Layout.rightMargin: 2
+            active: root.hasProgress
+            value: root.playbackProgress
+            lightAppearance: false
+        }
+
+        MediaTransportControls {
+            id: fullCoverControls
+            Layout.fillWidth: true
+            Layout.preferredHeight: 52
+            controller: root.controller
+            prominentPlayButton: true
+            lightAppearance: false
+        }
+
+        MediaVolumeControl {
+            id: fullCoverVolume
+            Layout.fillWidth: true
+            controller: root.controller
+            lightAppearance: false
+            visible: root.volumeAvailable
+        }
+    }
+
+    Image {
         id: ambientSource
         anchors.fill: parent
         source: root.artUrl
@@ -405,15 +577,21 @@ FocusScope {
         gradient: Gradient {
             GradientStop {
                 position: 0
-                color: Qt.rgba(0, 0, 0, 0.08)
+                color: Qt.rgba(root.overlayBackgroundColor.r,
+                    root.overlayBackgroundColor.g,
+                    root.overlayBackgroundColor.b, 0.08)
             }
             GradientStop {
                 position: 0.5
-                color: Qt.rgba(0, 0, 0, 0.3)
+                color: Qt.rgba(root.overlayBackgroundColor.r,
+                    root.overlayBackgroundColor.g,
+                    root.overlayBackgroundColor.b, 0.3)
             }
             GradientStop {
                 position: 1
-                color: Qt.rgba(0, 0, 0, 0.9)
+                color: Qt.rgba(root.overlayBackgroundColor.r,
+                    root.overlayBackgroundColor.g,
+                    root.overlayBackgroundColor.b, 0.9)
             }
         }
     }
@@ -552,7 +730,7 @@ FocusScope {
             PlasmaComponents.Label {
                 Layout.fillWidth: true
                 text: root.title
-                color: "white"
+                color: root.overlayTextColor
                 font.weight: Font.Bold
                 elide: Text.ElideRight
                 maximumLineCount: 1
@@ -561,7 +739,7 @@ FocusScope {
             PlasmaComponents.Label {
                 Layout.fillWidth: true
                 text: root.subtitle
-                color: Qt.rgba(1, 1, 1, 0.78)
+                color: root.overlaySecondaryTextColor
                 elide: Text.ElideRight
                 maximumLineCount: 1
             }
@@ -576,7 +754,7 @@ FocusScope {
             anchors.rightMargin: 10
             anchors.bottomMargin: 4
             controller: root.controller
-            lightAppearance: true
+            lightAppearance: false
         }
 
         PlaybackProgressBar {
@@ -588,7 +766,7 @@ FocusScope {
             anchors.bottomMargin: 2
             active: root.hasProgress
             value: root.playbackProgress
-            lightAppearance: true
+            lightAppearance: false
         }
 
         MediaVolumeControl {
@@ -600,7 +778,7 @@ FocusScope {
             anchors.rightMargin: 14
             anchors.bottomMargin: 4
             controller: root.controller
-            lightAppearance: true
+            lightAppearance: false
         }
     }
 
@@ -609,9 +787,10 @@ FocusScope {
         radius: root.cornerRadius
         color: "transparent"
         border.width: 1
-        border.color: root.ambientMode
-            ? Qt.rgba(1, 1, 1, 0.16)
-            : Kirigami.Theme.disabledTextColor
+        border.color: root.ambientMode || root.fullCoverMode
+            ? Qt.rgba(root.overlayTextColor.r, root.overlayTextColor.g,
+                root.overlayTextColor.b, 0.16)
+            : root.overlaySecondaryTextColor
     }
 
     Rectangle {
@@ -624,17 +803,12 @@ FocusScope {
         height: 28
         radius: width / 2
         visible: root.appBadgeVisible
-        color: root.ambientMode
-            ? Qt.rgba(0, 0, 0, 0.28)
-            : Qt.rgba(Kirigami.Theme.backgroundColor.r,
-                Kirigami.Theme.backgroundColor.g,
-                Kirigami.Theme.backgroundColor.b, 0.72)
+        color: Qt.rgba(root.overlayBackgroundColor.r,
+            root.overlayBackgroundColor.g, root.overlayBackgroundColor.b, 0.72)
         border.width: 1
-        border.color: root.ambientMode
-            ? Qt.rgba(1, 1, 1, 0.18)
-            : Qt.rgba(Kirigami.Theme.textColor.r,
-                Kirigami.Theme.textColor.g,
-                Kirigami.Theme.textColor.b, 0.12)
+        border.color: Qt.rgba(root.overlayTextColor.r,
+            root.overlayTextColor.g, root.overlayTextColor.b,
+            (root.ambientMode || root.fullCoverMode) ? 0.18 : 0.12)
         Accessible.role: Accessible.Graphic
         Accessible.name: i18nc("@info:accessible", "Media application")
 
@@ -643,7 +817,7 @@ FocusScope {
             width: 18
             height: 18
             source: root.appIconSource
-            color: root.ambientMode ? "white" : Kirigami.Theme.textColor
+            color: root.overlayTextColor
             isMask: String(root.appIconSource).indexOf("-symbolic") >= 0
         }
     }
@@ -659,7 +833,7 @@ FocusScope {
         text: i18nc("@action:button", "Close window")
         display: PlasmaComponents.AbstractButton.IconOnly
         icon.name: "window-close"
-        icon.color: root.ambientMode ? "white" : Kirigami.Theme.textColor
+        icon.color: root.overlayTextColor
         visible: root.available
         enabled: root.canCloseWindow
         Accessible.name: text
@@ -676,13 +850,12 @@ FocusScope {
                     ? Qt.rgba(Kirigami.Theme.highlightColor.r,
                         Kirigami.Theme.highlightColor.g,
                         Kirigami.Theme.highlightColor.b,
-                        root.ambientMode ? 0.32 : 0.18)
-                    : Qt.rgba(root.ambientMode ? 0 : Kirigami.Theme.backgroundColor.r,
-                        root.ambientMode ? 0 : Kirigami.Theme.backgroundColor.g,
-                        root.ambientMode ? 0 : Kirigami.Theme.backgroundColor.b,
-                        root.ambientMode ? 0.28 : 0.72))
+                        (root.ambientMode || root.fullCoverMode) ? 0.32 : 0.18)
+                    : Qt.rgba(root.overlayBackgroundColor.r,
+                        root.overlayBackgroundColor.g,
+                        root.overlayBackgroundColor.b, 0.72))
             border.width: closeButton.activeFocus ? 1 : 0
-            border.color: root.ambientMode ? "white" : Kirigami.Theme.highlightColor
+            border.color: Kirigami.Theme.highlightColor
         }
     }
 }

@@ -23,6 +23,7 @@ KCM.SimpleKCM {
     property string cfg_virtualDesktopMode: "all"
     property string cfg_targetVirtualDesktop: ""
     property string cfg_panelLengthMode: "content"
+    property string cfg_panelAlignmentMode: "start"
     readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
@@ -52,11 +53,21 @@ KCM.SimpleKCM {
         ? Math.max(32, detectedPanelThickness - panelCrossAxisPadding - 12)
         : 96
     readonly property bool flexiblePanelLengthAvailable: inPanel
-        && !verticalPanel
     readonly property var panelLengthOptions: [
         { "text": i18n("Fit content"), "value": "content" },
         { "text": i18n("Fill free panel space"), "value": "fill" }
     ]
+    // qmllint disable unqualified
+    readonly property var panelAlignmentOptions: verticalPanel ? [
+        { "text": i18n("Top to bottom"), "value": "start" },
+        { "text": i18n("Center"), "value": "center" },
+        { "text": i18n("Bottom to top"), "value": "end" }
+    ] : [
+        { "text": i18n("Left to right"), "value": "start" },
+        { "text": i18n("Center"), "value": "center" },
+        { "text": i18n("Right to left"), "value": "end" }
+    ]
+    // qmllint enable unqualified
     readonly property var virtualDesktopModel: {
         var result = []
         var ids = virtualDesktopInfo.desktopIds
@@ -112,187 +123,211 @@ KCM.SimpleKCM {
         }
     }
 
-    Kirigami.FormLayout {
-        RowLayout {
-            Kirigami.FormData.isSection: true
+    ColumnLayout {
+        spacing: Kirigami.Units.largeSpacing
+        Layout.fillWidth: true
+
+        Kirigami.FormLayout {
             Layout.fillWidth: true
 
-            // The full-width section lets the bounded message center across
-            // both columns managed internally by FormLayout.
+            RowLayout {
+                visible: page.flexiblePanelLengthAvailable
+                Kirigami.FormData.label: i18n("Panel length:")
+                Layout.maximumWidth: page.contentWidthHint
+
+                Controls.ComboBox {
+                    id: panelLengthModeCombo
+                    Layout.preferredWidth: page.selectorWidthHint
+                    Layout.maximumWidth: page.selectorWidthHint
+                    textRole: "text"
+                    valueRole: "value"
+                    model: page.panelLengthOptions
+                    currentIndex: Math.max(0, indexOfValue(page.cfg_panelLengthMode))
+                    onActivated: page.cfg_panelLengthMode = currentValue
+                    Accessible.name: i18n("Panel length")
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                    }
+                }
+            }
+
+            // qmllint disable unqualified
+            RowLayout {
+                visible: page.inPanel
+                Kirigami.FormData.label: page.verticalPanel ? i18n("Vertical alignment:") : i18n("Horizontal alignment:")
+                Layout.maximumWidth: page.contentWidthHint
+
+                Controls.ComboBox {
+                    id: panelAlignmentModeCombo
+                    Layout.preferredWidth: page.selectorWidthHint
+                    Layout.maximumWidth: page.selectorWidthHint
+                    textRole: "text"
+                    valueRole: "value"
+                    model: page.panelAlignmentOptions
+                    currentIndex: Math.max(0, indexOfValue(page.cfg_panelAlignmentMode))
+                    onActivated: page.cfg_panelAlignmentMode = currentValue
+                    Accessible.name: page.verticalPanel ? i18n("Vertical alignment") : i18n("Horizontal alignment")
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                    }
+                }
+            }
+            // qmllint enable unqualified
+
+            // Icon size control.
+            RowLayout {
+                Kirigami.FormData.label: page.inPanel ? i18n("Panel icon size:") : i18n("Floating icon size:")
+                Layout.maximumWidth: page.contentWidthHint
+
+                Controls.Slider {
+                    id: iconSizeSlider
+                    from: 32
+                    to: page.inPanel ? page.safePanelIconSizeMax : 96
+                    stepSize: 2
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: page.contentWidthHint - 60
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                        role: "slider"
+                    }
+                }
+
+                Controls.Label {
+                    text: iconSizeSlider.value + " px"
+                    font.bold: true
+                    Layout.preferredWidth: 50
+                }
+            }
+
             Kirigami.InlineMessage {
-                visible: true
+                Kirigami.FormData.label: page.inPanel ? i18n("Limit:") : ""
                 Layout.fillWidth: true
                 Layout.maximumWidth: page.contentWidthHint
-                Layout.alignment: Qt.AlignHCenter
+                visible: page.inPanel
                 type: Kirigami.MessageType.Information
-                showCloseButton: false
-                text: !page.inPanel
-                    ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Floating mode</b>.<br>Panel-only sizing and integration options are unavailable.")
-                    : page.verticalPanel
-                        ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Vertical panel</b>.<br>Flexible panel length is available only on horizontal panels.")
-                        : i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Horizontal panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.")
-                Accessible.name: text.replace("<br>", " ").replace("<b>", "").replace("</b>", "")
+                text: page.detectedPanelThickness > 0
+                    ? i18n("Estimated panel-safe maximum: %1 px", page.safePanelIconSizeMax)
+                    : i18n("The real panel thickness is not available in this view, so a safe fallback limit is being used.")
             }
-        }
 
-        RowLayout {
-            visible: page.flexiblePanelLengthAvailable
-            Kirigami.FormData.label: i18n("Panel length:")
-            Layout.maximumWidth: page.contentWidthHint
+            // Wave zoom scale control.
+            RowLayout {
+                Kirigami.FormData.label: i18n("Hover zoom scale:")
+                Layout.maximumWidth: page.contentWidthHint
 
-            Controls.ComboBox {
-                id: panelLengthModeCombo
-                Layout.preferredWidth: page.selectorWidthHint
-                Layout.maximumWidth: page.selectorWidthHint
-                textRole: "text"
-                valueRole: "value"
-                model: page.panelLengthOptions
-                currentIndex: Math.max(0, indexOfValue(page.cfg_panelLengthMode))
-                onActivated: page.cfg_panelLengthMode = currentValue
-                Accessible.name: i18n("Panel length")
+                Controls.Slider {
+                    id: hoverScaleSlider
+                    from: 1.05
+                    to: 2.0
+                    stepSize: 0.05
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: page.contentWidthHint - 60
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                        role: "slider"
+                    }
+                }
+
+                Controls.Label {
+                    text: hoverScaleSlider.value.toFixed(2) + "x"
+                    font.bold: true
+                    Layout.preferredWidth: 50
                 }
             }
-        }
 
-        // Icon size control.
-        RowLayout {
-            Kirigami.FormData.label: page.inPanel ? i18n("Panel icon size:") : i18n("Floating icon size:")
-            Layout.maximumWidth: page.contentWidthHint
-            
-            Controls.Slider {
-                id: iconSizeSlider
-                from: 32
-                to: page.inPanel ? page.safePanelIconSizeMax : 96
-                stepSize: 2
+            // Virtual desktop visibility control.
+            RowLayout {
+                Kirigami.FormData.label: i18n("Desktop visibility:")
+                Layout.maximumWidth: page.contentWidthHint
+
+                Controls.ComboBox {
+                    id: desktopModeCombo
+                    Layout.preferredWidth: page.selectorWidthHint
+                    Layout.maximumWidth: page.selectorWidthHint
+                    textRole: "text"
+                    valueRole: "value"
+                    model: [
+                        { "text": i18n("All desktops"), "value": "all" },
+                        { "text": i18n("Single desktop"), "value": "single" }
+                    ]
+
+                    currentIndex: Math.max(0, indexOfValue(page.cfg_virtualDesktopMode))
+                    onActivated: {
+                        page.cfg_virtualDesktopMode = currentValue
+                        if (currentValue === "single"
+                                && page.cfg_targetVirtualDesktop === ""
+                                && page.defaultTargetVirtualDesktopId !== "") {
+                            page.cfg_targetVirtualDesktop = page.defaultTargetVirtualDesktopId
+                        }
+                    }
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                    }
+                }
+            }
+
+            // Target virtual desktop selector.
+            RowLayout {
+                Kirigami.FormData.label: i18n("Target desktop:")
+                visible: page.cfg_virtualDesktopMode === "single"
+                Layout.maximumWidth: page.contentWidthHint
+
+                Controls.ComboBox {
+                    id: desktopCombo
+                    Layout.preferredWidth: page.selectorWidthHint
+                    Layout.maximumWidth: page.selectorWidthHint
+                    textRole: "name"
+                    valueRole: "id"
+                    model: page.virtualDesktopModel
+                    enabled: count > 0
+                    currentIndex: {
+                        if (count === 0) {
+                            return -1
+                        }
+                        var targetDesktopId = page.cfg_targetVirtualDesktop || page.defaultTargetVirtualDesktopId
+                        return indexOfValue(targetDesktopId)
+                    }
+                    onActivated: {
+                        page.cfg_targetVirtualDesktop = currentValue
+                    }
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                    }
+                }
+            }
+
+            Kirigami.InlineMessage {
+                Kirigami.FormData.isSection: true
                 Layout.fillWidth: true
-                Layout.preferredWidth: page.contentWidthHint - 60
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
-            }
-            
-            Controls.Label {
-                text: iconSizeSlider.value + " px"
-                font.bold: true
-                Layout.preferredWidth: 50
+                Layout.maximumWidth: page.contentWidthHint
+                visible: page.cfg_virtualDesktopMode === "single"
+                    && (page.virtualDesktopModel.length === 0 || !page.targetVirtualDesktopAvailable)
+                type: Kirigami.MessageType.Warning
+                text: page.virtualDesktopModel.length === 0
+                    ? i18n("No virtual desktops were found.")
+                    : i18n("The selected desktop no longer exists. Choose another desktop.")
             }
         }
 
         Kirigami.InlineMessage {
-            Kirigami.FormData.label: page.inPanel ? i18n("Limit:") : ""
+            id: statusInlineMessage
+            visible: true
             Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            visible: page.inPanel
+            Layout.alignment: Qt.AlignHCenter
             type: Kirigami.MessageType.Information
-            text: page.detectedPanelThickness > 0
-                ? i18n("Estimated panel-safe maximum: %1 px", page.safePanelIconSizeMax)
-                : i18n("The real panel thickness is not available in this view, so a safe fallback limit is being used.")
+            showCloseButton: false
+            text: !page.inPanel
+                ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Floating mode</b>.<br>Panel-only sizing and integration options are unavailable.")
+                : page.verticalPanel
+                    ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Vertical panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.")
+                    : i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Horizontal panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.")
+            Accessible.name: text.replace("<br>", " ").replace("<b>", "").replace("</b>", "")
         }
-
-        // Wave zoom scale control.
-        RowLayout {
-            Kirigami.FormData.label: i18n("Hover zoom scale:")
-            Layout.maximumWidth: page.contentWidthHint
-            
-            Controls.Slider {
-                id: hoverScaleSlider
-                from: 1.0
-                to: 2.0
-                stepSize: 0.05
-                Layout.fillWidth: true
-                Layout.preferredWidth: page.contentWidthHint - 60
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
-            }
-
-            Controls.Label {
-                text: hoverScaleSlider.value.toFixed(2) + "x"
-                font.bold: true
-                Layout.preferredWidth: 50
-            }
-        }
-
-        // Virtual desktop visibility control.
-        RowLayout {
-            Kirigami.FormData.label: i18n("Desktop visibility:")
-            Layout.maximumWidth: page.contentWidthHint
-            
-            Controls.ComboBox {
-                id: desktopModeCombo
-                Layout.preferredWidth: page.selectorWidthHint
-                Layout.maximumWidth: page.selectorWidthHint
-                textRole: "text"
-                valueRole: "value"
-                model: [
-                    { "text": i18n("All desktops"), "value": "all" },
-                    { "text": i18n("Single desktop"), "value": "single" }
-                ]
-                currentIndex: Math.max(0, indexOfValue(page.cfg_virtualDesktopMode))
-                onActivated: {
-                    page.cfg_virtualDesktopMode = currentValue
-                    if (currentValue === "single"
-                            && page.cfg_targetVirtualDesktop === ""
-                            && page.defaultTargetVirtualDesktopId !== "") {
-                        page.cfg_targetVirtualDesktop = page.defaultTargetVirtualDesktopId
-                    }
-                }
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
-            }
-        }
-
-        // Target virtual desktop selector.
-        RowLayout {
-            Kirigami.FormData.label: i18n("Target desktop:")
-            visible: page.cfg_virtualDesktopMode === "single"
-            Layout.maximumWidth: page.contentWidthHint
-            
-            Controls.ComboBox {
-                id: desktopCombo
-                Layout.preferredWidth: page.selectorWidthHint
-                Layout.maximumWidth: page.selectorWidthHint
-                textRole: "name"
-                valueRole: "id"
-                model: page.virtualDesktopModel
-                enabled: count > 0
-                currentIndex: {
-                    if (count === 0) {
-                        return -1
-                    }
-                    var targetDesktopId = page.cfg_targetVirtualDesktop || page.defaultTargetVirtualDesktopId
-                    return indexOfValue(targetDesktopId)
-                }
-                onActivated: {
-                    page.cfg_targetVirtualDesktop = currentValue
-                }
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
-            }
-        }
-
-        Kirigami.InlineMessage {
-            Kirigami.FormData.isSection: true
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            visible: page.cfg_virtualDesktopMode === "single"
-                && (page.virtualDesktopModel.length === 0 || !page.targetVirtualDesktopAvailable)
-            type: Kirigami.MessageType.Warning
-            text: page.virtualDesktopModel.length === 0
-                ? i18n("No virtual desktops were found.")
-                : i18n("The selected desktop no longer exists. Choose another desktop.")
-        }
-
     }
 }

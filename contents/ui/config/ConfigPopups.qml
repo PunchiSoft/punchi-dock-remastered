@@ -15,13 +15,11 @@ Item {
         availableWidth: page.width
     }
 
-    property string cfg_windowPreviewStyle: "card"
-    // Persist the geometric factor so existing 1.5 configurations become the
-    // normalized 1.0 user-facing size without a migration.
+    property string previewStyle: "card"
     property real cfg_windowPreviewScale: 1.5
     property string cfg_windowPreviewInfoMode: "full"
+    property string mediaControlsMode: "none"
     property alias cfg_windowPreviewTextShadowsEnabled: windowPreviewTextShadowsCheck.checked
-    property alias cfg_mediaControlsOnHover: mediaControlsOnHoverCheck.checked
     property alias cfg_maxPopupRows: maxPopupRowsSpin.value
     property alias cfg_windowPreviewAnimation: windowPreviewAnimationSettings.animationStyle
     property alias cfg_windowPreviewAnimationSpeedPercent: windowPreviewAnimationSettings.animationSpeedPercent
@@ -44,6 +42,12 @@ Item {
         { "text": i18nc("@item:inlistbox Window preview information", "Icon only"), "value": "icon" },
         { "text": i18nc("@item:inlistbox Window preview information", "Hidden"), "value": "none" }
     ]
+    readonly property var mediaControlsModeOptions: [
+        { "text": i18nc("@item:inlistbox Media player hover mode", "Replace preview with media card"), "value": "card" },
+        { "text": i18nc("@item:inlistbox Media player hover mode", "Replace preview with full cover media card"), "value": "fullCard" },
+        { "text": i18nc("@item:inlistbox Media player hover mode", "Show media card below window previews"), "value": "overlay" },
+        { "text": i18nc("@item:inlistbox Media player hover mode", "Disabled"), "value": "none" }
+    ]
     // qmllint enable unqualified
     component SectionTitle: Kirigami.Heading {
         Layout.fillWidth: true
@@ -51,25 +55,36 @@ Item {
         leftPadding: 0
     }
 
+    signal previewStyleSelected(string style)
+    signal mediaControlsModeSelected(string mode)
+
     function syncComboValue(combo, value) {
-        if (!combo) {
+        if (!combo || combo.count <= 0) {
             return
         }
 
-        const resolvedIndex = Math.max(0, combo.indexOfValue(value))
-        if (combo.currentIndex !== resolvedIndex) {
-            combo.currentIndex = resolvedIndex
+        const index = combo.indexOfValue(value)
+        if (index >= 0 && combo.currentIndex !== index) {
+            combo.currentIndex = index
         }
     }
 
     function syncSelectors() {
-        syncComboValue(previewStyleCombo, page.cfg_windowPreviewStyle)
+        syncComboValue(previewStyleCombo, page.previewStyle)
         syncComboValue(previewInfoCombo, page.cfg_windowPreviewInfoMode)
+        syncComboValue(mediaControlsModeCombo, page.mediaControlsMode)
     }
 
-    onCfg_windowPreviewStyleChanged: syncSelectors()
-    onCfg_windowPreviewInfoModeChanged: syncSelectors()
-    Component.onCompleted: syncSelectors()
+    function scheduleSelectorSync() {
+        Qt.callLater(function() {
+            page.syncSelectors()
+        })
+    }
+
+    onPreviewStyleChanged: scheduleSelectorSync()
+    onCfg_windowPreviewInfoModeChanged: scheduleSelectorSync()
+    onMediaControlsModeChanged: scheduleSelectorSync()
+    Component.onCompleted: scheduleSelectorSync()
 
     ColumnLayout {
         id: popupColumn
@@ -97,9 +112,10 @@ Item {
                 textRole: "text"
                 valueRole: "value"
                 model: page.previewStyleOptions
+                onCountChanged: page.scheduleSelectorSync()
                 onActivated: {
-                    if (page.cfg_windowPreviewStyle !== currentValue) {
-                        page.cfg_windowPreviewStyle = currentValue
+                    if (page.previewStyle !== currentValue) {
+                        page.previewStyleSelected(currentValue)
                     }
                 }
 
@@ -110,9 +126,9 @@ Item {
         }
 
         Controls.Label {
-            text: page.cfg_windowPreviewStyle === "thumbnail"
+            text: page.previewStyle === "thumbnail"
                 ? i18n("Window selectors and hover previews use live thumbnails when the compositor can provide them.")
-                : (page.cfg_windowPreviewStyle === "card"
+                : (page.previewStyle === "card"
                     ? i18n("Window selectors and hover previews use cards with the app icon and no live window content.")
                     : i18n("Active applications do not show hover previews or grouped-window popups."))
             wrapMode: Text.WordWrap
@@ -122,29 +138,48 @@ Item {
             color: Kirigami.Theme.disabledTextColor
         }
 
-        Controls.CheckBox {
-            id: mediaControlsOnHoverCheck
+        RowLayout {
             Kirigami.FormData.label: i18n("Media players:")
-            text: i18n("Show media controls on hover when available")
+            Layout.maximumWidth: page.contentWidthHint
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
+            Controls.ComboBox {
+                id: mediaControlsModeCombo
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                textRole: "text"
+                valueRole: "value"
+                model: page.mediaControlsModeOptions
+                onCountChanged: page.scheduleSelectorSync()
+                onActivated: {
+                    if (page.mediaControlsMode !== currentValue) {
+                        page.mediaControlsModeSelected(currentValue)
+                    }
+                }
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
             }
         }
 
         Controls.Label {
-            text: i18n("For MPRIS-compatible applications, replaces the window preview with artwork, playback controls, and volume. Right-click shows compact media controls above the application actions.")
+            text: page.mediaControlsMode === "overlay"
+                ? i18n("For MPRIS-compatible applications, displays media playback controls below the window preview list.")
+                : (page.mediaControlsMode === "fullCard"
+                    ? i18n("For MPRIS-compatible applications, replaces the window preview with a full cover background media card.")
+                    : (page.mediaControlsMode === "card"
+                        ? i18n("For MPRIS-compatible applications, replaces the window preview with artwork, playback controls, and volume card.")
+                        : i18n("Media applications behave like standard windows without showing media controls on hover.")))
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
-            enabled: mediaControlsOnHoverCheck.checked
         }
 
         RowLayout {
             Kirigami.FormData.label: i18n("Preview size:")
-            enabled: page.cfg_windowPreviewStyle !== "none"
+            enabled: page.previewStyle !== "none"
             Layout.maximumWidth: page.contentWidthHint
 
             Controls.Slider {
@@ -179,12 +214,12 @@ Item {
             Layout.maximumWidth: page.contentWidthHint
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
-            enabled: page.cfg_windowPreviewStyle !== "none"
+            enabled: page.previewStyle !== "none"
         }
 
         RowLayout {
             Kirigami.FormData.label: i18n("Preview information:")
-            enabled: page.cfg_windowPreviewStyle !== "none"
+            enabled: page.previewStyle !== "none"
             Layout.maximumWidth: page.contentWidthHint
 
             Controls.ComboBox {
@@ -194,6 +229,7 @@ Item {
                 textRole: "text"
                 valueRole: "value"
                 model: page.previewInfoOptions
+                onCountChanged: page.scheduleSelectorSync()
                 Accessible.name: i18n("Window preview information")
                 onActivated: {
                     if (page.cfg_windowPreviewInfoMode !== currentValue) {
@@ -214,14 +250,14 @@ Item {
             Layout.maximumWidth: page.contentWidthHint
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
-            enabled: page.cfg_windowPreviewStyle !== "none"
+            enabled: page.previewStyle !== "none"
         }
 
         Controls.CheckBox {
             id: windowPreviewTextShadowsCheck
             Kirigami.FormData.label: i18n("Text shadows:")
             text: i18n("Show subtle shadows on window preview text")
-            enabled: page.cfg_windowPreviewStyle !== "none"
+            enabled: page.previewStyle !== "none"
             Accessible.description: i18n("Applies to window titles, window details and overflow group labels.")
 
             ConfigCursorBehavior {
@@ -234,7 +270,7 @@ Item {
             Kirigami.FormData.label: i18n("Popup rows:")
             from: 1
             to: 8
-            enabled: page.cfg_windowPreviewStyle !== "none"
+            enabled: page.previewStyle !== "none"
             Layout.preferredWidth: page.selectorWidthHint
             Accessible.name: i18n("Maximum visible popup rows")
 
@@ -250,7 +286,7 @@ Item {
             Layout.maximumWidth: page.contentWidthHint
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
-            enabled: page.cfg_windowPreviewStyle !== "none"
+            enabled: page.previewStyle !== "none"
         }
 
         }

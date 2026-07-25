@@ -13,6 +13,8 @@ KCM.SimpleKCM {
     id: page
     implicitWidth: layoutMetrics.pageImplicitWidth
 
+    signal configurationChanged()
+
     ConfigLayoutMetrics {
         id: layoutMetrics
         availableWidth: page.width
@@ -29,11 +31,12 @@ KCM.SimpleKCM {
     property alias cfg_indicatorThickness: indicatorThicknessSlider.value
     property string cfg_dockThemeMode: "plasma"
     property string cfg_dockThemeCustomId: ""
-    property alias cfg_windowPreviewStyle: popupAppearancePage.cfg_windowPreviewStyle
+    property string cfg_windowPreviewStyle: "card"
     property alias cfg_windowPreviewScale: popupAppearancePage.cfg_windowPreviewScale
     property alias cfg_windowPreviewInfoMode: popupAppearancePage.cfg_windowPreviewInfoMode
     property alias cfg_windowPreviewTextShadowsEnabled: popupAppearancePage.cfg_windowPreviewTextShadowsEnabled
-    property alias cfg_mediaControlsOnHover: popupAppearancePage.cfg_mediaControlsOnHover
+    property string cfg_mediaControlsMode: ""
+    property bool cfg_mediaControlsOnHover: false
     property alias cfg_maxPopupRows: popupAppearancePage.cfg_maxPopupRows
     property alias cfg_popupAnimation: folderPopupPage.cfg_popupAnimation
     // Kept so existing configurations can still be loaded by the KCM.
@@ -65,6 +68,8 @@ KCM.SimpleKCM {
     property alias cfg_folderDetailedFontFamily: folderPopupPage.cfg_folderDetailedFontFamily
     property alias cfg_folderDetailedFontSize: folderPopupPage.cfg_folderDetailedFontSize
     property alias cfg_folderPopupExtraDistance: folderPopupPage.cfg_folderPopupExtraDistance
+    property alias cfg_folderPopupScale: folderPopupPage.cfg_folderPopupScale
+    property alias cfg_folderPopupShowHeader: folderPopupPage.cfg_folderPopupShowHeader
     property alias cfg_contextMenuTransitionSpeed: menuAppearancePage.cfg_contextMenuTransitionSpeed
     property alias cfg_contextMenuTransitionDirection: menuAppearancePage.cfg_contextMenuTransitionDirection
     property alias cfg_contextMenuVisibleRows: menuAppearancePage.cfg_contextMenuVisibleRows
@@ -75,6 +80,16 @@ KCM.SimpleKCM {
     property alias cfg_audioSpectrumIntensity: audioVisualizerPage.cfg_audioSpectrumIntensity
     property alias cfg_audioSpectrumUsePlasmaTheme: audioVisualizerPage.cfg_audioSpectrumUsePlasmaTheme
     property alias cfg_audioSpectrumBarCount: audioVisualizerPage.cfg_audioSpectrumBarCount
+
+    readonly property string effectiveMediaControlsMode: {
+        const mode = String(cfg_mediaControlsMode || "")
+        if (["none", "card", "fullCard", "overlay"].indexOf(mode) >= 0) {
+            return mode
+        }
+
+        return cfg_mediaControlsOnHover === true ? "card" : "none"
+    }
+
     property alias cfg_audioSpectrumStyle: audioVisualizerPage.cfg_audioSpectrumStyle
     property alias cfg_audioSpectrumBackgroundMode: audioVisualizerPage.cfg_audioSpectrumBackgroundMode
     property alias cfg_audioSpectrumOrigin: audioVisualizerPage.cfg_audioSpectrumOrigin
@@ -829,6 +844,23 @@ KCM.SimpleKCM {
         ConfigPopups {
             id: popupAppearancePage
             Layout.fillWidth: true
+            previewStyle: page.cfg_windowPreviewStyle
+            mediaControlsMode: page.effectiveMediaControlsMode
+
+            onPreviewStyleSelected: function(style) {
+                if (page.cfg_windowPreviewStyle !== style) {
+                    page.cfg_windowPreviewStyle = style
+                    page.configurationChanged()
+                }
+            }
+
+            onMediaControlsModeSelected: function(mode) {
+                if (page.cfg_mediaControlsMode !== mode) {
+                    page.cfg_mediaControlsMode = mode
+                    page.cfg_mediaControlsOnHover = mode !== "none"
+                    page.configurationChanged()
+                }
+            }
         }
 
         ConfigFolderPopups {

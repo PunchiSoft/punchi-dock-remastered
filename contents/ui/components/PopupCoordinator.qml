@@ -45,7 +45,8 @@ Item {
     property var taskPopupVisualParent: null
     property bool taskPopupHovered: false
     property bool contextMenuOpening: false
-    property bool mediaHoverEnabled: false
+    property string mediaHoverMode: "card"
+    property bool mediaHoverEnabled: mediaHoverMode !== "none"
     property bool mediaHoverActive: false
     property bool pendingTaskPopupKeyboardInvoked: false
     property bool pendingTaskPopupPreviewFallback: true
@@ -329,6 +330,9 @@ Item {
             return
         }
         taskPopupOpenTimer.stop()
+        const targetAnchor = popupAnchor(visualParent)
+        const retargetingVisiblePopup = taskWindowsDialogRef.visible
+            && taskWindowsDialogRef.visualParent !== targetAnchor
         if (taskPopupAnimatedContentRef) {
             taskPopupAnimatedContentRef.cancelClosing()
         }
@@ -338,11 +342,15 @@ Item {
         const popupWindows = taskControllerRef.taskWindowsForRows(popupRows)
         const applicationId = taskControllerRef.taskApplicationIdForRows(popupRows)
         const showMedia = mediaHoverEnabled
+            && (mediaHoverMode === "card" || mediaHoverMode === "fullCard")
             && mprisControllerRef.applicationId === applicationId
             && mprisControllerRef.available
         if (!showMedia && !previewFallback) {
             resetTaskPopupState()
             return
+        }
+        if (retargetingVisiblePopup && taskContextSurfaceStackRef) {
+            taskContextSurfaceStackRef.beginContentTransfer()
         }
         mediaHoverActive = showMedia
         activeTaskPopupData = {
@@ -397,6 +405,13 @@ Item {
         }
         taskPopupCloseTimer.stop()
         if (pendingTaskPopupRows.length > 0 && taskPopupVisualParent) {
+            if (taskWindowsDialogRef && taskWindowsDialogRef.visible
+                    && taskWindowsDialogRef.visualParent !== popupAnchor(taskPopupVisualParent)) {
+                openTaskWindowsPopup(pendingTaskPopupAppName, pendingTaskPopupRows,
+                    taskPopupVisualParent, pendingTaskPopupKeyboardInvoked,
+                    pendingTaskPopupPreviewFallback)
+                return
+            }
             taskPopupOpenTimer.restart()
         }
     }

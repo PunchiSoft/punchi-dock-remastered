@@ -9,7 +9,7 @@ Item {
     id: folderRoot
     implicitWidth: layoutMode === "grid"
         ? Math.min(desiredGridWidth + scrollBarGutter, safeMaximumWidth)
-        : Math.min(280, safeMaximumWidth)
+        : Math.min(Math.round(280 * effectiveScale), safeMaximumWidth)
     implicitHeight: classicPopupHeight
     width: implicitWidth
     height: implicitHeight
@@ -23,6 +23,8 @@ Item {
     property bool profileShowLabels: true
     property string profileFontFamily: ""
     property int profileFontSize: layoutMode === "grid" ? 9 : 10
+    property real profileScale: 1.0
+    property bool showHeaderLabel: true
     property bool textShadowsEnabled: true
     property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
@@ -30,10 +32,12 @@ Item {
     // Quick access entries.
     property var apps: folderItem.apps || []
     property int itemCount: apps.length
-    readonly property int classicMargin: 12
-    readonly property int classicSpacing: 8
-    readonly property int effectiveIconSize: Math.max(24, Math.min(64,
-        Number(profileIconSize || (layoutMode === "grid" ? 36 : 32))))
+    readonly property real effectiveScale: Math.max(0.5, Math.min(3.0,
+        Number(profileScale || 1.0)))
+    readonly property int classicMargin: Math.round(12 * effectiveScale)
+    readonly property int classicSpacing: Math.round(8 * effectiveScale)
+    readonly property int effectiveIconSize: Math.max(16, Math.min(192,
+        Math.round(Number(profileIconSize || (layoutMode === "grid" ? 36 : 32)) * effectiveScale)))
     readonly property int configuredColumnCount: Math.max(1, Math.min(8,
         Number(profileColumns || 3)))
     readonly property int configuredRowLimit: Math.max(1, Math.min(8,
@@ -45,18 +49,18 @@ Item {
             : (layoutMode === "grid"
                 ? Kirigami.Theme.smallFont.family
                 : Kirigami.Theme.defaultFont.family)
-    readonly property int effectiveFontSize: Math.max(8, Math.min(18,
-        Number(profileFontSize || (layoutMode === "grid" ? 9 : 10))))
+    readonly property int effectiveFontSize: Math.max(6, Math.min(36,
+        Math.round(Number(profileFontSize || (layoutMode === "grid" ? 9 : 10)) * effectiveScale)))
     readonly property int gridCellWidth: showItemLabels
-        ? Math.max(80, effectiveIconSize + 24)
-        : effectiveIconSize + 16
+        ? Math.max(Math.round(80 * effectiveScale), effectiveIconSize + Math.round(24 * effectiveScale))
+        : effectiveIconSize + Math.round(16 * effectiveScale)
     readonly property int classicCellHeight: !showItemLabels
-        ? effectiveIconSize + 8
+        ? effectiveIconSize + Math.round(8 * effectiveScale)
         : (layoutMode === "detailed"
-            ? Math.max(56, effectiveIconSize + effectiveFontSize + 8)
+            ? Math.max(Math.round(56 * effectiveScale), effectiveIconSize + effectiveFontSize + Math.round(8 * effectiveScale))
             : (layoutMode === "list"
-                ? Math.max(40, effectiveIconSize + 8)
-                : effectiveIconSize + effectiveFontSize + 24))
+                ? Math.max(Math.round(40 * effectiveScale), effectiveIconSize + Math.round(8 * effectiveScale))
+                : effectiveIconSize + effectiveFontSize + Math.round(24 * effectiveScale)))
     readonly property int desiredGridWidth: classicMargin * 2
         + configuredColumnCount * gridCellWidth
     readonly property int safeMaximumWidth: Math.max(
@@ -84,7 +88,8 @@ Item {
         : itemCount
     readonly property int visibleClassicRows: Math.max(1,
         Math.min(classicRowCount, configuredRowLimit))
-    readonly property int classicChromeHeight: classicMargin * 2 + classicHeader.implicitHeight + classicSpacing
+    readonly property int headerHeightEffect: showHeaderLabel ? (classicHeader.implicitHeight + classicSpacing) : 0
+    readonly property int classicChromeHeight: classicMargin * 2 + headerHeightEffect
     readonly property int classicNaturalHeight: classicChromeHeight + visibleClassicRows * classicCellHeight
     readonly property int configuredMaximumHeight: Math.max(0, Number(folderItem.popupMaxHeight || 0))
     readonly property int effectiveMaximumHeight: configuredMaximumHeight > 0
@@ -104,12 +109,13 @@ Item {
         // Folder title.
         RowLayout {
             id: classicHeader
+            visible: folderRoot.showHeaderLabel
             Layout.fillWidth: true
             PlasmaExtras.ShadowedLabel {
                 text: folderRoot.folderItem.name || i18n("Folder")
                 renderShadow: folderRoot.textShadowsEnabled
                 font.family: Kirigami.Theme.defaultFont.family
-                font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                font.pointSize: Math.max(8, Math.min(36, Math.round(Kirigami.Theme.defaultFont.pointSize * folderRoot.effectiveScale)))
                 font.weight: Font.Bold
                 Layout.fillWidth: true
             }

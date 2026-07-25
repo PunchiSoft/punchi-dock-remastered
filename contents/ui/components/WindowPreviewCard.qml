@@ -74,9 +74,12 @@ Controls.ItemDelegate {
                     Kirigami.Theme.alternateBackgroundColor.b, 0.72)
             }
 
+            readonly property bool thumbnailReady: !!(thumbnailLoader.item && thumbnailLoader.item.hasThumbnail)
+
             Loader {
                 id: thumbnailLoader
                 anchors.fill: parent
+                z: 2
                 active: root.streamActive && root.liveThumbnailEnabled
                     && root.windowUuid.length > 0
                 sourceComponent: WindowLiveThumbnail {
@@ -85,14 +88,12 @@ Controls.ItemDelegate {
             }
 
             Column {
+                id: fallbackColumn
                 anchors.centerIn: parent
                 width: parent.width - 16
                 spacing: 6
-                // Loader.item is intentionally dynamic; the loaded component exposes
-                // hasThumbnail through WindowLiveThumbnail.
-                // qmllint disable missing-property
-                visible: !(thumbnailLoader.item && thumbnailLoader.item.hasThumbnail)
-                // qmllint enable missing-property
+                z: 1
+                visible: !previewFrame.thumbnailReady
 
                 Kirigami.Icon {
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -105,9 +106,10 @@ Controls.ItemDelegate {
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
                     elide: Text.ElideRight
-                    text: !root.liveThumbnailEnabled
-                        ? i18n("Preview disabled")
+                    text: !root.liveThumbnailEnabled ? i18n("Preview disabled")
+                        // qmllint disable unqualified
                         : i18n("Preview unavailable")
+                        // qmllint enable unqualified
                     color: Kirigami.Theme.disabledTextColor
                     font.pixelSize: 11
                 }

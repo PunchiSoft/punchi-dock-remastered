@@ -143,6 +143,7 @@ KCM.SimpleKCM {
         }
         // qmllint enable unqualified
 
+        // qmllint disable unqualified
         Controls.CheckBox {
             id: globalMouseCursorCheck
             Kirigami.FormData.label: i18n("Settings cursor:")
@@ -162,5 +163,6 @@ KCM.SimpleKCM {
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
         }
+        // qmllint enable unqualified
     }
 }

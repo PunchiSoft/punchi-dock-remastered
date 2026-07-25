@@ -2,6 +2,32 @@
 
 Todos los cambios notables de este proyecto serán documentados en este archivo.
 
+## [0.9.2] - 2026-07-23
+
+### Agregado
+
+- Soporte nativo completo e integración para Paneles de Plasma 6 Verticales / Laterales (borde izquierdo y derecho de la pantalla).
+- Disposición adaptativa dinámica (`GridLayout` con flujo `TopToBottom`) al colocar el dock en paneles laterales.
+- Orientación de despliegue inteligente para ventanas emergentes, menús contextuales, miniaturas, notas y calendario (`Qt.RightEdge` en panel izquierdo y `Qt.LeftEdge` en panel derecho).
+- Renderizado de separadores horizontales adaptados al ancho del panel vertical en `ThemedSeparator.qml`.
+- Ubicación adaptable de indicadores de estado activo de tareas (`TaskIndicator.qml`) en el borde interior del dock (`left`/`right`).
+- Ecualizador de audio (`AudioSpectrumLayer`) con orientación vertical y origen adaptado al borde del panel.
+
+### Cambiado
+
+- `DockGeometryState.qml` abstrae la medición de contenido sobre el eje Y (`panelLengthForDockItem`, `panelItemExtent`).
+- `DockItem.qml` calcula dinámicamente `implicitWidth` y `implicitHeight` preservando la proporción cuadrada de las celdas en orientación vertical.
+- `DockItem.qml` adapta el seguimiento del ratón (`mouseOffset`) sobre el eje Y para propagar la ola de forma fluida de arriba a abajo.
+- La versión declarada en KPackage y CMake avanza a 0.9.2.
+
+### Corregido
+
+- Corregido el recorte (*clipping*) de iconos en los bordes de la celda acotando la holgura de desplazamiento lateral `hoverOffsetX` en `DockGeometryState.qml` y `DockItem.qml`.
+- Corregida la visibilidad y alineación de separadores en paneles verticales mediante `visualAreaHeight`.
+- Corregido el cálculo de capacidad de slots dinámicos (`dynamicTaskSlotCapacity`) en paneles verticales de modo *fill*.
+- Restaurada la función `focusItem()` para retornar el foco por teclado tras cerrar controles de medios.
+- Restaurado el centrado horizontal del layout en modo flotante cuando hay tareas de desbordamiento.
+
 ## [0.9.1] - 2026-07-22
 
 ### Agregado

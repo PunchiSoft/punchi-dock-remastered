@@ -20,6 +20,16 @@ Item {
     property real separatorOpacitySetting: 0.34
     property bool separatorGlowSetting: false
 
+    readonly property string effectiveIndicatorPosition: {
+        if (inPanel && panelLocation === PlasmaCore.Types.LeftEdge) {
+            return "right"
+        }
+        if (inPanel && panelLocation === PlasmaCore.Types.RightEdge) {
+            return "left"
+        }
+        return indicatorPosition
+    }
+
     readonly property string localizedItemName: {
         if (itemType === "trash" && itemName === "Trash") {
             return i18n("Trash")
@@ -68,7 +78,17 @@ Item {
     property string indicatorPosition: "bottom"
     property int indicatorThickness: 4
     property real indicatorOpacity: 1.0
-    property int highQualityIconSize: Math.min(512, Math.max(iconSize, Math.ceil(iconSize * Math.max(1, hoverScaleSetting) * 1.12)))
+    property int highQualityIconSize: {
+        const targetSize = Math.ceil(iconSize * Math.max(1.0, hoverScaleSetting))
+        if (targetSize <= iconSize) {
+            return iconSize
+        }
+        if (targetSize <= 64 && iconSize < 64) return 64
+        if (targetSize <= 96) return 96
+        if (targetSize <= 128) return 128
+        if (targetSize <= 256) return 256
+        return Math.min(512, targetSize)
+    }
     property real highQualityIconScale: highQualityIconSize > 0 ? iconSize / highQualityIconSize : 1
     readonly property real hoverScaleDelta: Math.max(0.0001, hoverScaleSetting - 1.0)
     readonly property real iconReflectionMaximumVisibleRatio: 0.26
@@ -87,9 +107,18 @@ Item {
         Math.min(iconReflectionMaximumVisibleRatio,
             iconReflectionUsableExtent / Math.max(1,
                 iconReflectionDisplaySize * iconReflectionContainerScale)))
-    readonly property real baseItemExtent: Math.max(iconSize, implicitWidth - 12)
+    readonly property real baseItemExtent: Math.max(iconSize, (verticalPanelMode ? implicitHeight : implicitWidth) - 12)
     readonly property real labelAreaHeight: showPersistentLabel && !separatorItem && !spacerItem ? (labelFontSize + 12) : 0
-    readonly property real visualAreaHeight: iconSize + 12
+    // Use direct values for separators/spacers in vertical mode to avoid
+    // a circular binding (implicitHeight depends on visualAreaHeight).
+    readonly property real visualAreaHeight: {
+        if ((separatorItem || spacerItem) && verticalPanelMode) {
+            return separatorItem
+                ? Math.max(10, Math.ceil(separatorThickness + 4))
+                : Math.max(12, iconSize * 0.5)
+        }
+        return iconSize + 12
+    }
     property real clickAnimationScale: 1.0
     property real waveScale: {
         if (itemType === "calendar") {
@@ -257,14 +286,25 @@ Item {
     function focusItem() {
         mouseArea.forceActiveFocus(Qt.OtherFocusReason)
     }
+
+    readonly property bool verticalPanelMode: inPanel && (panelLocation === PlasmaCore.Types.LeftEdge || panelLocation === PlasmaCore.Types.RightEdge)
+
     // Keep layout container measurements fully static to prevent jitter.
-    implicitWidth: separatorItem
-        ? Math.max(10, Math.ceil(separatorThickness + 4))
-        : (spacerItem
-            ? Math.max(12, iconSize * 0.5)
-            : Math.max(iconSize + 12,
-                showPersistentLabel ? Math.round(iconSize * 1.85) : 0))
-    implicitHeight: visualAreaHeight + labelAreaHeight
+    implicitWidth: verticalPanelMode
+        ? Math.max(iconSize + 12, showPersistentLabel ? Math.round(iconSize * 1.85) : 0)
+        : (separatorItem
+            ? Math.max(10, Math.ceil(separatorThickness + 4))
+            : (spacerItem
+                ? Math.max(12, iconSize * 0.5)
+                : Math.max(iconSize + 12,
+                    showPersistentLabel ? Math.round(iconSize * 1.85) : 0)))
+    implicitHeight: verticalPanelMode
+        ? (separatorItem
+            ? Math.max(10, Math.ceil(separatorThickness + 4))
+            : (spacerItem
+                ? Math.max(12, iconSize * 0.5)
+                : (visualAreaHeight + labelAreaHeight)))
+        : (visualAreaHeight + labelAreaHeight)
     opacity: entryOpacity
 
     Behavior on x {
@@ -441,7 +481,8 @@ Item {
         ThemedSeparator {
             visible: dockItemContainer.separatorItem
             anchors.centerIn: parent
-            availableLength: visualArea.height
+            verticalPanel: dockItemContainer.verticalPanelMode
+            availableLength: verticalPanel ? visualArea.width : visualArea.height
             style: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.style ? dockItemContainer.separatorTheme.style : dockItemContainer.separatorStyleSetting
             thickness: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.thickness ? dockItemContainer.separatorTheme.thickness : dockItemContainer.separatorThicknessSetting
             lengthRatio: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.lengthRatio ? dockItemContainer.separatorTheme.lengthRatio : dockItemContainer.separatorLengthRatioSetting
@@ -458,7 +499,7 @@ Item {
             active: taskIsActive
             demandsAttention: taskDemandsAttention
             type: indicatorType
-            position: indicatorPosition
+            position: effectiveIndicatorPosition
             thickness: indicatorThickness
             indicatorOpacity: dockItemContainer.indicatorOpacity
             iconSize: iconSize
@@ -592,8 +633,12 @@ Item {
                 return
             }
             if (containsMouse) {
-                // Range from -0.5 (left) to 0.5 (right).
-                dockItemContainer.parent.mouseOffset = (mouse.x - (width / 2)) / width
+                // Range from -0.5 to 0.5 along the item's primary layout axis.
+                if (dockItemContainer.verticalPanelMode) {
+                    dockItemContainer.parent.mouseOffset = (mouse.y - (height / 2)) / height
+                } else {
+                    dockItemContainer.parent.mouseOffset = (mouse.x - (width / 2)) / width
+                }
             }
         }
         

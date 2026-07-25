@@ -11,6 +11,7 @@ QtObject {
     property int panelLocation: PlasmaCore.Types.BottomEdge
     property int configuredIconSize: 48
     property string configuredPanelLengthMode: "fit"
+    property string configuredPanelAlignmentMode: "start"
     property int folderPopupExtraDistance: 0
     property real panelHoverScale: 1.0
     property bool dockShowLabels: false

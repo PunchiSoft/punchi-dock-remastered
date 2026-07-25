@@ -29,6 +29,9 @@
     <entry name="panelLengthMode" type="String">
       <default>content</default>
     </entry>
+    <entry name="panelAlignmentMode" type="String">
+      <default>start</default>
+    </entry>
   </group>
   <group name="Appearance">
     <entry name="showLabels" type="Bool">
@@ -127,6 +130,12 @@
     <entry name="folderPopupExtraDistance" type="Int">
       <default>0</default>
     </entry>
+    <entry name="folderPopupScale" type="Double">
+      <default>1.0</default>
+    </entry>
+    <entry name="folderPopupShowHeader" type="Bool">
+      <default>true</default>
+    </entry>
     <entry name="audioSpectrumEnabled" type="Bool">
       <default>false</default>
     </entry>
@@ -223,6 +232,9 @@
     </entry>
     <entry name="windowPreviewInfoMode" type="String">
       <default>full</default>
+    </entry>
+    <entry name="mediaControlsMode" type="String">
+      <default></default>
     </entry>
     <entry name="mediaControlsOnHover" type="Bool">
       <default>false</default>

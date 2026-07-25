@@ -4,9 +4,10 @@
         "Authors": [
             {
                 "Email": "",
-                "Name": "Punchi Dock Contributors"
+                "Name": "punchisoft"
             }
         ],
+        "BugReportUrl": "https://github.com/PunchiSoft/punchi-dock-remastered/issues",
         "Category": "Application Launchers",
         "Description": "A customizable launcher dock for KDE Plasma 6 with a modular and clean architecture.",
         "Description[es]": "Un dock personalizable de lanzadores para KDE Plasma 6 con una arquitectura modular y limpia.",
@@ -18,7 +19,7 @@
         "ServiceTypes": [
             "Plasma/Applet"
         ],
-        "Version": "0.9.1",
+        "Version": "0.9.2",
         "Website": "https://github.com/PunchiSoft/punchi-dock-remastered"
     },
     "X-Plasma-API-Minimum-Version": "6.0"

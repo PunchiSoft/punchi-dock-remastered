@@ -14,6 +14,8 @@ Item {
     property string appName: ""
     property var windows: []
     property string previewStyle: "card"
+    property var mprisControllerRef: null
+    property string mediaControlsMode: "card"
     property real previewScale: 1.5
     property string previewInfoMode: "full"
     property int popupDirection: Qt.BottomEdge
@@ -432,6 +434,18 @@ Item {
                     }
                 }
             }
+        }
+
+        MediaControlsCard {
+            id: bottomMediaCard
+            Layout.fillWidth: true
+            visible: taskPopupRoot.mediaControlsMode === "overlay"
+                && !!taskPopupRoot.mprisControllerRef
+                && taskPopupRoot.mprisControllerRef.available
+            compact: true
+            controller: taskPopupRoot.mprisControllerRef
+            taskControllerRef: null
+            windows: taskPopupRoot.windows
         }
     }
 }

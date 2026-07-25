@@ -11,7 +11,14 @@ QtObject {
     property var theme: ({})
 
     readonly property string windowPreviewStyle: String(Plasmoid.configuration.windowPreviewStyle || "card")
-    readonly property bool mediaControlsOnHover: !!Plasmoid.configuration.mediaControlsOnHover
+    readonly property string mediaControlsMode: {
+        const mode = String(Plasmoid.configuration.mediaControlsMode || "")
+        if (mode === "none" || mode === "card" || mode === "fullCard" || mode === "overlay") {
+            return mode
+        }
+        return Plasmoid.configuration.mediaControlsOnHover === true ? "card" : "none"
+    }
+    readonly property bool mediaControlsOnHover: mediaControlsMode !== "none"
     readonly property real windowPreviewScale: Math.max(1.5, Math.min(4.5,
         Number(Plasmoid.configuration.windowPreviewScale || 1.5)))
     readonly property string windowPreviewInfoMode: {
@@ -63,6 +70,10 @@ QtObject {
         Number(Plasmoid.configuration.folderDetailedFontSize || 10)))
     readonly property int folderPopupExtraDistance: Math.max(0, Math.min(32,
         Number(Plasmoid.configuration.folderPopupExtraDistance || 0)))
+    readonly property real folderPopupScale: Math.max(0.5, Math.min(3.0,
+        Number(Plasmoid.configuration.folderPopupScale || 1.0)))
+    readonly property bool folderPopupShowHeader:
+        Plasmoid.configuration.folderPopupShowHeader !== false
 
     readonly property bool dockShowLabels: !!Plasmoid.configuration.showLabels
     readonly property bool dockTextShadowsEnabled:
@@ -143,8 +154,8 @@ QtObject {
         return ["left", "right"].indexOf(configuredFlow) >= 0 ? configuredFlow : "none"
     }
 
-    readonly property real configuredHoverScale: Math.max(1.0,
-        Number(Plasmoid.configuration.hoverScale || 1.0))
+    readonly property real configuredHoverScale: Math.max(1.05,
+        Number(Plasmoid.configuration.hoverScale || 1.05))
     readonly property real panelHoverScale: root.inPanel
         ? Math.min(configuredHoverScale, 1.18)
         : configuredHoverScale
