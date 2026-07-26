@@ -14,7 +14,7 @@ QtObject {
     readonly property string mediaControlsMode: {
         const mode = String(Plasmoid.configuration.mediaControlsMode || "")
         if (mode === "none" || mode === "card" || mode === "fullCard" || mode === "overlay") {
-            return mode
+            return mode === "overlay" && windowPreviewStyle === "none" ? "none" : mode
         }
         return Plasmoid.configuration.mediaControlsOnHover === true ? "card" : "none"
     }

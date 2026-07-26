@@ -24,6 +24,20 @@ Este repositorio es una reescritura modular del proyecto original [Punchi Dock P
 
 La versión actual es [v0.9.2](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.2).
 
+## Capturas
+
+<p align="center">
+  <img src="Images/banner_00.png" alt="Resumen de funciones de Punchi Dock Remastered" width="900">
+</p>
+
+| Disposiciones del dock |
+|:--:|
+| <img src="Images/desktop-layouts.png" alt="Punchi Dock en disposición horizontal, vertical y como panel de Plasma" width="760"> |
+
+| Multimedia MPRIS | Carpeta en cuadrícula | Calendario y reloj |
+|:--:|:--:|:--:|
+| <img src="Images/Mpris_01.png" alt="Tarjeta multimedia MPRIS con portada y controles de reproducción" width="210"> | <img src="Images/MenuGrid.png" alt="Popup de carpeta en vista de cuadrícula" width="210"> | <img src="Images/Calendar_clock.png" alt="Popup de calendario y reloj" width="210"> |
+
 ## Características
 
 - Modos dock flotante y panel de Plasma.

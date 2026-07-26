@@ -85,7 +85,7 @@ KCM.SimpleKCM {
     readonly property string effectiveMediaControlsMode: {
         const mode = String(cfg_mediaControlsMode || "")
         if (["none", "card", "fullCard", "overlay"].indexOf(mode) >= 0) {
-            return mode
+            return mode === "overlay" && cfg_windowPreviewStyle === "none" ? "none" : mode
         }
 
         return cfg_mediaControlsOnHover === true ? "card" : "none"
@@ -877,7 +877,13 @@ KCM.SimpleKCM {
 
             onPreviewStyleSelected: function(style) {
                 if (page.cfg_windowPreviewStyle !== style) {
+                    const disablesOverlay = style === "none"
+                        && page.effectiveMediaControlsMode === "overlay"
                     page.cfg_windowPreviewStyle = style
+                    if (disablesOverlay) {
+                        page.cfg_mediaControlsMode = "none"
+                        page.cfg_mediaControlsOnHover = false
+                    }
                     page.configurationChanged()
                 }
             }

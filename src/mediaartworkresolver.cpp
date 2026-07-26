@@ -27,7 +27,16 @@ bool isValidVideoId(const QString &videoId)
 bool isSupportedMprisArtworkUrl(const QString &artworkUrl)
 {
     const QUrl url(artworkUrl.trimmed());
-    return url.isValid() && url.isLocalFile();
+    if (!url.isValid()) {
+        return false;
+    }
+
+    if (url.isLocalFile()) {
+        return true;
+    }
+
+    return url.scheme() == QLatin1String("https") && url.port() == -1
+        && url.userInfo().isEmpty() && url.host() == QLatin1String("i.scdn.co");
 }
 }
 

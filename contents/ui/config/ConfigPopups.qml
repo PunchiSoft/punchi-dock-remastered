@@ -42,12 +42,22 @@ Item {
         { "text": i18nc("@item:inlistbox Window preview information", "Icon only"), "value": "icon" },
         { "text": i18nc("@item:inlistbox Window preview information", "Hidden"), "value": "none" }
     ]
-    readonly property var mediaControlsModeOptions: [
-        { "text": i18nc("@item:inlistbox Media player hover mode", "Replace preview with media card"), "value": "card" },
-        { "text": i18nc("@item:inlistbox Media player hover mode", "Replace preview with full cover media card"), "value": "fullCard" },
-        { "text": i18nc("@item:inlistbox Media player hover mode", "Show media card below window previews"), "value": "overlay" },
-        { "text": i18nc("@item:inlistbox Media player hover mode", "Disabled"), "value": "none" }
-    ]
+    readonly property var mediaControlsModeOptions: {
+        const options = [
+            { "text": i18nc("@item:inlistbox Media player hover mode", "Replace preview with media card"), "value": "card" },
+            { "text": i18nc("@item:inlistbox Media player hover mode", "Replace preview with full cover media card"), "value": "fullCard" }
+        ]
+        if (previewStyle !== "none") {
+            options.push({
+                "text": i18nc("@item:inlistbox Media player hover mode", "Show media card below window previews"),
+                "value": "overlay"
+            })
+        }
+        options.push({
+            "text": i18nc("@item:inlistbox Media player hover mode", "Disabled"), "value": "none"
+        })
+        return options
+    }
     // qmllint enable unqualified
     component SectionTitle: Kirigami.Heading {
         Layout.fillWidth: true

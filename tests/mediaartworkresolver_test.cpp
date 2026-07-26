@@ -70,9 +70,38 @@ int main()
                 MediaArtworkResolver::stabilizedArtworkUrl(
                     mprisArtwork, mediaUrl, identity, QString(), QString()),
                 mprisArtwork);
-    expectEqual("remote MPRIS artwork is rejected",
+    constexpr auto spotifyArtwork = "https://i.scdn.co/image/ab67616d0000b273example";
+    expectEqual("Spotify MPRIS artwork is accepted",
+                MediaArtworkResolver::stabilizedArtworkUrl(
+                    QString::fromUtf8(spotifyArtwork), mediaUrl, identity, QString(), QString()),
+                QString::fromUtf8(spotifyArtwork));
+    expectEqual("untrusted remote MPRIS artwork is rejected",
                 MediaArtworkResolver::stabilizedArtworkUrl(
                     QStringLiteral("https://invalid.example/artwork.png"),
+                    mediaUrl,
+                    identity,
+                    QString(),
+                    QString()),
+                QString());
+    expectEqual("insecure Spotify MPRIS artwork is rejected",
+                MediaArtworkResolver::stabilizedArtworkUrl(
+                    QStringLiteral("http://i.scdn.co/image/example"),
+                    mediaUrl,
+                    identity,
+                    QString(),
+                    QString()),
+                QString());
+    expectEqual("Spotify MPRIS artwork with a custom port is rejected",
+                MediaArtworkResolver::stabilizedArtworkUrl(
+                    QStringLiteral("https://i.scdn.co:444/image/example"),
+                    mediaUrl,
+                    identity,
+                    QString(),
+                    QString()),
+                QString());
+    expectEqual("Spotify MPRIS artwork with user information is rejected",
+                MediaArtworkResolver::stabilizedArtworkUrl(
+                    QStringLiteral("https://user@i.scdn.co/image/example"),
                     mediaUrl,
                     identity,
                     QString(),

@@ -24,6 +24,20 @@ This repository is a modular rewrite of the original [Punchi Dock Plasmoid](http
 
 The current release is [v0.9.2](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.2).
 
+## Screenshots
+
+<p align="center">
+  <img src="Images/banner_00.png" alt="Punchi Dock Remastered feature overview" width="900">
+</p>
+
+| Dock layouts |
+|:--:|
+| <img src="Images/desktop-layouts.png" alt="Punchi Dock in horizontal, vertical, and Plasma panel layouts" width="760"> |
+
+| MPRIS media | Folder grid | Calendar and clock |
+|:--:|:--:|:--:|
+| <img src="Images/Mpris_01.png" alt="MPRIS media card with artwork and playback controls" width="210"> | <img src="Images/MenuGrid.png" alt="Folder popup in grid view" width="210"> | <img src="Images/Calendar_clock.png" alt="Calendar and clock popup" width="210"> |
+
 ## Languages
 
 - English is the runtime source language and fallback.

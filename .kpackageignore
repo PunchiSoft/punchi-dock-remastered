@@ -10,6 +10,7 @@
 /.gemini/
 /.git/
 /.github/
+/Images/
 
 # Código fuente C++ (ya se compila, no se distribuye)
 /src/
