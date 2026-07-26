@@ -6,6 +6,9 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 
 ### Agregado
 
+- Traducciones iniciales completas de la interfaz en alemán (`de`) y portugués
+  brasileño (`pt_BR`), incluidas en el paquete junto con español. Se mantiene
+  pendiente su revisión por hablantes nativos antes de declararlas mantenidas.
 - Soporte nativo completo e integración para Paneles de Plasma 6 Verticales / Laterales (borde izquierdo y derecho de la pantalla).
 - Disposición adaptativa dinámica (`GridLayout` con flujo `TopToBottom`) al colocar el dock en paneles laterales.
 - Orientación de despliegue inteligente para ventanas emergentes, menús contextuales, miniaturas, notas y calendario (`Qt.RightEdge` en panel izquierdo y `Qt.LeftEdge` en panel derecho).

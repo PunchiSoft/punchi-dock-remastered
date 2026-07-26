@@ -22,6 +22,7 @@ namespace
 {
 constexpr auto TranslationDomain = "plasma_applet_org.kde.plasma.punchi-dock-remastered";
 constexpr int maximumDirectoryThemeCount = 256;
+constexpr int maximumDirectoryThemeScanCount = maximumDirectoryThemeCount + 1;
 
 bool isValidThemeId(const QString &themeId)
 {
@@ -202,6 +203,7 @@ QVariantMap DockThemeRepository::importThemeDirectory(const QUrl &sourceDirector
         {QStringLiteral("duplicateCount"), 0},
         {QStringLiteral("rejectedCount"), 0},
         {QStringLiteral("truncatedCount"), 0},
+        {QStringLiteral("scanLimitReached"), false},
         {QStringLiteral("selectedThemeId"), QString()},
     };
 
@@ -219,6 +221,7 @@ QVariantMap DockThemeRepository::importThemeDirectory(const QUrl &sourceDirector
     }
 
     QFileInfoList themeFiles;
+    bool scanLimitReached = false;
     QDirIterator sourceIterator(
         sourceDirectoryInfo.absoluteFilePath(),
         QDir::Files | QDir::NoDotAndDotDot,
@@ -228,6 +231,10 @@ QVariantMap DockThemeRepository::importThemeDirectory(const QUrl &sourceDirector
         if (sourceInfo.suffix().compare(
                 QLatin1String("json"), Qt::CaseInsensitive) == 0) {
             themeFiles.append(sourceInfo);
+            if (themeFiles.size() >= maximumDirectoryThemeScanCount) {
+                scanLimitReached = true;
+                break;
+            }
         }
     }
     std::sort(themeFiles.begin(), themeFiles.end(),
@@ -241,6 +248,7 @@ QVariantMap DockThemeRepository::importThemeDirectory(const QUrl &sourceDirector
             themeFiles.size() - maximumDirectoryThemeCount;
         themeFiles = themeFiles.mid(0, maximumDirectoryThemeCount);
     }
+    importResult[QStringLiteral("scanLimitReached")] = scanLimitReached;
 
     int importedCount = 0;
     int duplicateCount = 0;

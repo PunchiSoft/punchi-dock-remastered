@@ -20,12 +20,12 @@ PLATFORM_LABEL="${ID:-linux}${VERSION_ID:-unknown}-$(uname -m)"
 PACKAGE_FILE="$PROJECT_ROOT/dist/punchi-dock-remastered-${PACKAGE_VERSION}-${PLATFORM_LABEL}-local-test.plasmoid"
 
 if ! command -v plasmoidviewer >/dev/null 2>&1; then
-    echo "plasmoidviewer no está disponible en PATH." >&2
+    echo "plasmoidviewer is not available in PATH." >&2
     exit 1
 fi
 
 if ! command -v kpackagetool6 >/dev/null 2>&1; then
-    echo "kpackagetool6 no esta disponible en PATH." >&2
+    echo "kpackagetool6 is not available in PATH." >&2
     exit 1
 fi
 
@@ -68,9 +68,9 @@ else
     watcher_backend="polling"
 fi
 
-echo "Empaquetando e instalando la revision actual..."
+echo "Packaging and installing the current revision..."
 install_current_package
-echo "Iniciando plasmoidviewer para $APPLET_ID ($VIEWER_FORMFACTOR, $VIEWER_LOCATION)"
+echo "Starting plasmoidviewer for $APPLET_ID ($VIEWER_FORMFACTOR, $VIEWER_LOCATION)"
 start_viewer
 
 echo "Observando cambios en: $WATCH_ROOT"
@@ -91,7 +91,7 @@ while true; do
         last_snapshot="$current_snapshot"
     fi
 
-    echo "Cambio detectado. Actualizando el paquete y reiniciando plasmoidviewer..."
+    echo "Change detected. Updating the package and restarting plasmoidviewer..."
     stop_viewer
     install_current_package
     start_viewer

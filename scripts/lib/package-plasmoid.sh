@@ -149,8 +149,8 @@ QMLLINT_BASELINE_LAYOUT=0
 QMLLINT_BASELINE_MISSING_PROPERTY=0
 QMLLINT_BASELINE_IMPORT=0
 if [[ ! -f "$QMLLINT_BASELINE_FILE" && "${QMLLINT_RECORD_BASELINE:-0}" != "1" ]]; then
-    echo "Error: no existe el baseline de qmllint: $QMLLINT_BASELINE_FILE" >&2
-    echo "Define QMLLINT_BASELINE_FILE con un baseline calibrado para esta plataforma." >&2
+    echo "Error: no qmllint baseline exists: $QMLLINT_BASELINE_FILE" >&2
+    echo "Set QMLLINT_BASELINE_FILE to a baseline calibrated for this platform." >&2
     exit 1
 fi
 
@@ -309,10 +309,13 @@ rm -f "$ZIP_FILE"
 )
 unzip -tq "$ZIP_FILE" >/dev/null
 
-if ! unzip -Z1 "$ZIP_FILE" | grep -qx "contents/locale/es/LC_MESSAGES/$TRANSLATION_DOMAIN.mo"; then
-    echo "The Spanish translation catalog is missing from the plasmoid" >&2
-    exit 1
-fi
+for translation_catalog in "${translation_catalogs[@]}"; do
+    language="$(basename "$translation_catalog" .po)"
+    if ! unzip -Z1 "$ZIP_FILE" | grep -qx "contents/locale/$language/LC_MESSAGES/$TRANSLATION_DOMAIN.mo"; then
+        echo "The $language translation catalog is missing from the plasmoid" >&2
+        exit 1
+    fi
+done
 
 if unzip -Z1 "$ZIP_FILE" | grep -q '^locale/'; then
     echo "Translation catalogs were staged outside the KPackage contents prefix" >&2

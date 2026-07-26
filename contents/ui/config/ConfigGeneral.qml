@@ -5,6 +5,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCM
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
+import "../org/punchi/dock" as Punchi
 import org.kde.taskmanager as TaskManager
 import "components"
 
@@ -102,6 +103,10 @@ KCM.SimpleKCM {
     TaskManager.VirtualDesktopInfo {
         id: virtualDesktopInfo
     }
+    Punchi.PanelLengthModeBridge {
+        id: panelLengthModeBridge
+        containmentId: Plasmoid.containment ? Plasmoid.containment.id : 0
+    }
 
     Connections {
         target: virtualDesktopInfo
@@ -154,7 +159,7 @@ KCM.SimpleKCM {
 
             // qmllint disable unqualified
             RowLayout {
-                visible: page.inPanel
+                visible: page.inPanel && panelLengthModeBridge.fillAvailable
                 Kirigami.FormData.label: page.verticalPanel ? i18n("Vertical alignment:") : i18n("Horizontal alignment:")
                 Layout.maximumWidth: page.contentWidthHint
 

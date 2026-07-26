@@ -107,7 +107,7 @@ var items = [
         "type": "note",
         "name": "Welcome note",
         "icon": "knotes",
-        "note": "Thank you for choosing Punchi Dock.\n\nPlease consider leaving a comment or reporting bugs on KDE Store or GitHub; your feedback helps improve the project.\n\n(This is a welcome note: you can edit it, delete it, or move it whenever you like.)\n\nGracias por preferir Punchi Dock.\n\nNo olvides dejar tus comentarios o reportar bugs en KDE Store o GitHub; tu feedback ayuda a mejorar el proyecto.\n\n(Esta es una nota de bienvenida: puedes editarla, borrarla o moverla cuando quieras.)",
+        "note": "Thank you for choosing Punchi Dock.\n\nPlease consider leaving a comment or reporting bugs on KDE Store or GitHub; your feedback helps improve the project.\n\n(This is a welcome note: you can edit it, delete it, or move it whenever you like.)",
         "popupWidth": 380,
         "popupHeight": 260
     },

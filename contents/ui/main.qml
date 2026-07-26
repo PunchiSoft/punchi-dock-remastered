@@ -20,6 +20,7 @@ PlasmoidItem {
     // the installed Plasma metadata and reports cascading property warnings.
     // qmllint disable import
     // qmllint disable missing-property
+    // qmllint disable unqualified
     Plasmoid.contextualActions: [
         PlasmaCore.Action {
             text: i18nc("@action:context", "Add Quick Note")
@@ -30,7 +31,25 @@ PlasmoidItem {
             text: i18nc("@action:context", "Add Separator")
             icon.name: "draw-line"
             onTriggered: dockItemsController.addQuickSeparator()
+        },
+        PlasmaCore.Action {
+            visible: !root.inPanel
+            text: i18n("Plasma theme")
+            icon.name: "preferences-desktop-theme-global"
+            checkable: true
+            checked: String(Plasmoid.configuration.dockThemeMode || "plasma") === "plasma"
+            onTriggered: Plasmoid.configuration.dockThemeMode = "plasma"
+        },
+        PlasmaCore.Action {
+            visible: !root.inPanel
+                && String(Plasmoid.configuration.dockThemeCustomId || "").length > 0
+            text: i18n("External JSON theme")
+            icon.name: "preferences-desktop-theme-global"
+            checkable: true
+            checked: String(Plasmoid.configuration.dockThemeMode || "plasma") === "custom"
+            onTriggered: Plasmoid.configuration.dockThemeMode = "custom"
         }
+        // qmllint enable unqualified
     ]
     // qmllint enable missing-property
     // qmllint enable import
@@ -39,6 +58,10 @@ PlasmoidItem {
     
     // Host environment detection (panel or floating dock).
     property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    readonly property bool floatingVertical: !inPanel
+        && String(Plasmoid.configuration.floatingDockOrientation || "horizontal") === "vertical"
+    property var floatingDockAnchor: null
+    property bool floatingOrientationReady: false
     readonly property var visibleTaskRows: taskController.visibleTaskRows
     readonly property var overflowTaskRows: taskController.overflowTaskRows
     readonly property int taskVisualRevision: taskController.visualRevision
@@ -82,9 +105,9 @@ PlasmoidItem {
         id: dockGeometry
         inPanel: root.inPanel
         hiddenByVirtualDesktop: root.hiddenByVirtualDesktop
-        verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
-        horizontalPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
-        panelLocation: Plasmoid.location
+        verticalPanel: root.inPanel ? Plasmoid.formFactor === PlasmaCore.Types.Vertical : root.floatingVertical
+        horizontalPanel: root.inPanel ? Plasmoid.formFactor === PlasmaCore.Types.Horizontal : !root.floatingVertical
+        panelLocation: root.floatingVertical ? PlasmaCore.Types.LeftEdge : Plasmoid.location
         configuredIconSize: Number(Plasmoid.configuration.iconSize || 48)
         configuredPanelLengthMode: String(Plasmoid.configuration.panelLengthMode || "fit")
         configuredPanelAlignmentMode: String(Plasmoid.configuration.panelAlignmentMode || "start")
@@ -97,12 +120,17 @@ PlasmoidItem {
         overflowTaskCount: root.overflowTaskRows.length
         totalDynamicGroups: taskController.totalDynamicGroups
         availableScreenRect: root.availableScreenRect
+        floatingAnchor: root.floatingDockAnchor
         hostHeight: root.height
         // PanelView and containment expose these properties at runtime.
         // qmllint disable missing-property
         panelWindow: root.Window.window
         containment: Plasmoid.containment
         // qmllint enable missing-property
+    }
+    Punchi.PanelLengthModeBridge {
+        containmentId: Plasmoid.containment ? Plasmoid.containment.id : 0
+        reportedPanelLengthMode: dockGeometry.detectedPanelLengthMode
     }
     Punchi.AudioSpectrumController {
         id: audioSpectrumController
@@ -148,8 +176,44 @@ PlasmoidItem {
     switchWidth: inPanel ? dockGeometry.panelPreferredWidth : Math.ceil(dockGeometry.panelItemWidth)
     switchHeight: inPanel ? dockGeometry.panelPreferredHeight : Math.ceil(dockGeometry.panelItemHeight)
 
-    Layout.fillWidth: dockGeometry.panelFillLengthEnabled
-    Layout.fillHeight: inPanel && dockGeometry.horizontalPanel && !hiddenByVirtualDesktop
+    function applyFloatingOrientationFootprint() {
+        if (inPanel || !floatingDockAnchor) {
+            return
+        }
+
+        const targetWidth = Math.ceil(floatingDockAnchor.implicitWidth)
+        const targetHeight = Math.ceil(floatingDockAnchor.implicitHeight)
+        if (targetWidth <= 0 || targetHeight <= 0) {
+            return
+        }
+
+        const centerX = x + (width / 2)
+        const centerY = y + (height / 2)
+        width = targetWidth
+        height = targetHeight
+        x = Math.round(centerX - (width / 2))
+        y = Math.round(centerY - (height / 2))
+        dockGeometry.updateFloatingScreenEdge(floatingDockAnchor)
+    }
+
+    onFloatingVerticalChanged: {
+        if (floatingOrientationReady) {
+            floatingOrientationFootprintTimer.restart()
+        }
+    }
+    Component.onCompleted: floatingOrientationReady = true
+
+    Timer {
+        id: floatingOrientationFootprintTimer
+        interval: 50
+        repeat: false
+        onTriggered: root.applyFloatingOrientationFootprint()
+    }
+
+    Layout.fillWidth: inPanel && !hiddenByVirtualDesktop
+        && (dockGeometry.verticalPanel || dockGeometry.panelFillLengthEnabled)
+    Layout.fillHeight: inPanel && !hiddenByVirtualDesktop
+        && (dockGeometry.horizontalPanel || dockGeometry.panelFillLengthEnabled)
     Layout.minimumWidth: inPanel ? dockGeometry.panelMinimumWidth : -1
     Layout.minimumHeight: inPanel ? dockGeometry.panelMinimumHeight : -1
     Layout.preferredWidth: inPanel ? dockGeometry.panelPreferredWidth : -1
@@ -174,8 +238,10 @@ PlasmoidItem {
         enabled: visible
         implicitWidth: visible ? dockGeometry.panelPreferredWidth : 0
         implicitHeight: visible ? dockGeometry.panelPreferredHeight : 0
-        Layout.fillWidth: dockGeometry.panelFillLengthEnabled
-        Layout.fillHeight: root.inPanel && dockGeometry.horizontalPanel && visible
+        Layout.fillWidth: root.inPanel && visible
+            && (dockGeometry.verticalPanel || dockGeometry.panelFillLengthEnabled)
+        Layout.fillHeight: root.inPanel && visible
+            && (dockGeometry.horizontalPanel || dockGeometry.panelFillLengthEnabled)
         Layout.minimumWidth: dockGeometry.panelMinimumWidth
         Layout.minimumHeight: dockGeometry.panelMinimumHeight
         Layout.preferredWidth: dockGeometry.panelPreferredWidth
@@ -187,6 +253,9 @@ PlasmoidItem {
             inPanel: root.inPanel
             panelPopupDirection: dockGeometry.popupDirection
             availableScreenRect: root.availableScreenRect
+            // qmllint disable unqualified
+            geometryStateRef: dockGeometry
+            // qmllint enable unqualified
             dockFallbackAnchor: dockWrapper
             taskStructureSource: root
             taskControllerRef: taskController
@@ -254,9 +323,16 @@ PlasmoidItem {
                 ? dockGeometry.panelPreferredWidth
                 : dockLayout.implicitWidth + dockLayout.trailingOverflowExtent
                     + dockGeometry.floatingExtraWidth
-            implicitHeight: root.inPanel ? dockGeometry.panelPreferredHeight : dockLayout.implicitHeight + dockGeometry.floatingExtraHeight
+            implicitHeight: root.inPanel ? dockGeometry.panelPreferredHeight : dockLayout.implicitHeight
+                + dockLayout.trailingOverflowExtent + dockGeometry.floatingExtraHeight
             width: root.inPanel ? parent.width : implicitWidth
             height: root.inPanel ? parent.height : implicitHeight
+
+            Component.onCompleted: root.floatingDockAnchor = dockWrapper
+            onXChanged: dockGeometry.updateFloatingScreenEdge(dockWrapper)
+            onYChanged: dockGeometry.updateFloatingScreenEdge(dockWrapper)
+            onWidthChanged: dockGeometry.updateFloatingScreenEdge(dockWrapper)
+            onHeightChanged: dockGeometry.updateFloatingScreenEdge(dockWrapper)
 
             readonly property int dynamicTaskSlotCapacity: {
                 if (!dockGeometry.panelFillLengthEnabled) {
@@ -274,7 +350,7 @@ PlasmoidItem {
                     ? dockGeometry.dockSpacing
                     : 0
                 const availableLength = Math.max(0, innerLength
-                    - dockGeometry.panelFixedContentWidth - boundarySpacing)
+                    - dockGeometry.panelFixedContentLength - boundarySpacing)
                 const itemExtent = isVertical
                     ? dockGeometry.panelItemHeight
                     : dockGeometry.panelItemWidth
@@ -316,10 +392,13 @@ PlasmoidItem {
                 spectrumIntensity: dockConfig.audioSpectrumIntensity
                 spectrumUsePlasmaTheme: dockConfig.audioSpectrumUsePlasmaTheme
                 spectrumBarCount: dockConfig.audioSpectrumBarCount
-                spectrumOriginEdge: dockConfig.audioSpectrumOrigin === "top"
-                    ? Qt.TopEdge
-                    : Qt.BottomEdge
-                spectrumEdgeInset: dockGeometry.floatingExtraHeight / 2
+                spectrumVertical: dockGeometry.verticalPanel
+                dockVertical: dockGeometry.verticalPanel
+                spectrumOriginEdge: dockGeometry.verticalPanel ? dockGeometry.spectrumOriginEdge
+                    : (dockConfig.audioSpectrumOrigin === "top" ? Qt.TopEdge : Qt.BottomEdge)
+                spectrumEdgeInset: dockGeometry.verticalPanel
+                    ? dockGeometry.floatingExtraWidth / 2
+                    : dockGeometry.floatingExtraHeight / 2
                 spectrumBarStyle: dockConfig.audioSpectrumStyle
                 spectrumFlowDirection: dockConfig.audioSpectrumFlow
                 plasmaBackgroundVisible: !dockConfig.audioSpectrumConfigured
@@ -355,7 +434,10 @@ PlasmoidItem {
                             - dockGeometry.dockBackgroundHorizontalPadding)
                         : dockLayout.width)
                 height: dockGeometry.verticalPanel
-                    ? dockLayout.height
+                    ? (dockGeometry.panelFillLengthEnabled
+                        ? Math.max(0, parent.height - y
+                            - dockGeometry.dockBackgroundVerticalPadding)
+                        : dockLayout.height)
                     : Math.min(dockLayout.height, panelCrossAxisExtent)
                 clip: true
                 visible: root.inPanel
@@ -459,7 +541,7 @@ PlasmoidItem {
                         itemIndex: index
                         hoveredIndex: dockLayout.hoveredIndex
                         inPanel: root.inPanel
-                        panelLocation: dockGeometry.panelLocation
+                        panelLocation: dockGeometry.effectivePanelLocation
                         iconSize: dockGeometry.effectiveIconSize
                         hoverScaleSetting: dockConfig.panelHoverScale
                         hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "wave"
@@ -594,7 +676,7 @@ PlasmoidItem {
                         itemIndex: dockItemsController.dockItems.length + index
                         hoveredIndex: dockLayout.hoveredIndex
                         inPanel: root.inPanel
-                        panelLocation: dockGeometry.panelLocation
+                        panelLocation: dockGeometry.effectivePanelLocation
                         iconSize: dockGeometry.effectiveIconSize
                         hoverScaleSetting: dockConfig.panelHoverScale
                         hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "wave"
@@ -721,7 +803,7 @@ PlasmoidItem {
                     itemIndex: dockItemsController.dockItems.length + root.visibleTaskRows.length
                     hoveredIndex: dockLayout.hoveredIndex
                     inPanel: root.inPanel
-                    panelLocation: dockGeometry.panelLocation
+                    panelLocation: dockGeometry.effectivePanelLocation
                     iconSize: dockGeometry.effectiveIconSize
                     hoverScaleSetting: dockConfig.panelHoverScale
                     hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "wave"

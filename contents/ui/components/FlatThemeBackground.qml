@@ -5,6 +5,7 @@ Item {
     id: root
 
     property var theme: ({})
+    property bool dockVertical: false
 
     readonly property var surface: theme && theme.surface ? theme.surface : ({})
     readonly property var gradientData: surface.gradient ? surface.gradient : ({})
@@ -16,6 +17,9 @@ Item {
     readonly property color surfaceColor: surface.color || "transparent"
     readonly property real surfaceRadius: Number(surface.radius || 0)
     readonly property string gradientDirection: String(gradientData.direction || "vertical")
+    readonly property string effectiveGradientDirection: root.dockVertical
+        ? (root.gradientDirection === "horizontal" ? "vertical" : "horizontal")
+        : root.gradientDirection
     readonly property real shadowSize: Number(shadowData.size || 0)
     readonly property real shadowXOffset: Number(shadowData.xOffset || 0)
     readonly property real shadowYOffset: Number(shadowData.yOffset || 0)
@@ -57,7 +61,7 @@ Item {
             border.color: root.borderData.color || "transparent"
 
             gradient: Gradient {
-                orientation: root.gradientDirection === "horizontal"
+                orientation: root.effectiveGradientDirection === "horizontal"
                     ? Gradient.Horizontal
                     : Gradient.Vertical
 
@@ -100,7 +104,7 @@ Item {
             anchors.fill: parent
             visible: root.paletteFlowEnabled
             gradientStops: root.gradientStops
-            gradientDirection: root.gradientDirection
+            gradientDirection: root.effectiveGradientDirection
             flowDirection: String(root.animationData.direction || "forward")
             flowDuration: Number(root.animationData.duration || 16000)
             radius: root.surfaceRadius

@@ -24,6 +24,17 @@ This repository is a modular rewrite of the original [Punchi Dock Plasmoid](http
 
 The current release is [v0.9.2](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.2).
 
+## Languages
+
+- English is the runtime source language and fallback.
+- Spanish (`es`) is the currently maintained interface translation.
+- German (`de`) and Brazilian Portuguese (`pt_BR`) are included as complete
+  initial interface-translation drafts. Native-speaker review remains pending
+  before they are considered maintained translations.
+
+See [the translation guide](po/README.md) for the catalog policy and
+contribution requirements.
+
 ## Features
 
 - Floating dock and Plasma panel modes.

@@ -70,6 +70,14 @@ int main()
                 MediaArtworkResolver::stabilizedArtworkUrl(
                     mprisArtwork, mediaUrl, identity, QString(), QString()),
                 mprisArtwork);
+    expectEqual("remote MPRIS artwork is rejected",
+                MediaArtworkResolver::stabilizedArtworkUrl(
+                    QStringLiteral("https://invalid.example/artwork.png"),
+                    mediaUrl,
+                    identity,
+                    QString(),
+                    QString()),
+                QString());
     expectEqual("same media retains artwork after partial update",
                 MediaArtworkResolver::stabilizedArtworkUrl(
                     QString(), mediaUrl, identity, identity, mprisArtwork),
@@ -97,6 +105,14 @@ int main()
     expectEqual("new YouTube media uses its own fallback",
                 MediaArtworkResolver::stabilizedArtworkUrl(
                     QString(), nextYoutubeUrl, nextIdentity, identity, mprisArtwork),
+                QString::fromUtf8(thumbnail));
+    expectEqual("remote MPRIS artwork falls back to a validated YouTube thumbnail",
+                MediaArtworkResolver::stabilizedArtworkUrl(
+                    QStringLiteral("https://invalid.example/artwork.png"),
+                    nextYoutubeUrl,
+                    nextIdentity,
+                    identity,
+                    mprisArtwork),
                 QString::fromUtf8(thumbnail));
     expectEqual("new generic media never inherits previous artwork",
                 MediaArtworkResolver::stabilizedArtworkUrl(

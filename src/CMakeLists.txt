@@ -31,6 +31,8 @@ target_sources(punchidockintegration PRIVATE
     mediaartworkresolver.h
     mpriscontroller.cpp
     mpriscontroller.h
+    panellengthmodebridge.cpp
+    panellengthmodebridge.h
     pipewireaudiobackend.cpp
     pipewireaudiobackend.h
     spectrumanalyzer.cpp

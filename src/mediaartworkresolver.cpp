@@ -23,6 +23,12 @@ bool isValidVideoId(const QString &videoId)
     static const QRegularExpression pattern(QStringLiteral("^[A-Za-z0-9_-]{11}$"));
     return pattern.match(videoId).hasMatch();
 }
+
+bool isSupportedMprisArtworkUrl(const QString &artworkUrl)
+{
+    const QUrl url(artworkUrl.trimmed());
+    return url.isValid() && url.isLocalFile();
+}
 }
 
 QString MediaArtworkResolver::youtubeThumbnailUrl(const QString &mediaUrl)
@@ -89,7 +95,7 @@ QString MediaArtworkResolver::stabilizedArtworkUrl(const QString &mprisArtworkUr
     }
 
     const QString providedArtwork = mprisArtworkUrl.trimmed();
-    if (!providedArtwork.isEmpty()) {
+    if (isSupportedMprisArtworkUrl(providedArtwork)) {
         return providedArtwork;
     }
 

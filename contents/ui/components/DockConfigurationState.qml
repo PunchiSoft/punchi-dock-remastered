@@ -80,7 +80,7 @@ QtObject {
         Plasmoid.configuration.dockTextShadowsEnabled !== false
     readonly property bool dockShowItemHoverBackground:
         Plasmoid.configuration.showItemHoverBackground !== false
-    readonly property bool dockIconReflectionsEnabled: (!root.inPanel || root.horizontalPanel)
+    readonly property bool dockIconReflectionsEnabled: root.horizontalPanel
         && !dockShowLabels
         && !!Plasmoid.configuration.iconReflectionsEnabled
     readonly property real dockIconReflectionOpacity: {

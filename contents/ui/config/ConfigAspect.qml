@@ -31,6 +31,7 @@ KCM.SimpleKCM {
     property alias cfg_indicatorThickness: indicatorThicknessSlider.value
     property string cfg_dockThemeMode: "plasma"
     property string cfg_dockThemeCustomId: ""
+    property string cfg_floatingDockOrientation: "horizontal"
     property string cfg_windowPreviewStyle: "card"
     property alias cfg_windowPreviewScale: popupAppearancePage.cfg_windowPreviewScale
     property alias cfg_windowPreviewInfoMode: popupAppearancePage.cfg_windowPreviewInfoMode
@@ -151,6 +152,10 @@ KCM.SimpleKCM {
     readonly property var dockThemeModeOptions: [
         { "text": i18n("Plasma theme"), "value": "plasma" },
         { "text": i18n("External JSON theme"), "value": "custom" }
+    ]
+    readonly property var floatingDockOrientationOptions: [
+        { "text": i18n("Horizontal"), "value": "horizontal" },
+        { "text": i18n("Vertical"), "value": "vertical" }
     ]
     // qmllint enable unqualified
 
@@ -289,6 +294,10 @@ KCM.SimpleKCM {
             return i18n("The selected folder and its subfolders do not contain JSON theme files.")
         }
 
+        if (result.scanLimitReached) {
+            return i18n("Folder import reached the 256-theme safety limit — added: %1, already installed: %2, rejected: %3. Additional themes were not processed.",
+                result.importedCount, result.duplicateCount, result.rejectedCount)
+        }
         if (result.truncatedCount > 0) {
             return i18n("Folder import finished — added: %1, already installed: %2, rejected: %3, not processed because of the 256-theme limit: %4.",
                 result.importedCount, result.duplicateCount,
@@ -440,6 +449,25 @@ KCM.SimpleKCM {
             text: i18n("Imported themes are stored in the Punchi Dock Remastered user library and currently apply only to a floating dock. Plasma panels keep their native background.")
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Dock orientation:")
+            Layout.maximumWidth: page.contentWidthHint
+            visible: !page.inPanel
+
+            Controls.ComboBox {
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                textRole: "text"
+                valueRole: "value"
+                model: page.floatingDockOrientationOptions
+                currentIndex: Math.max(0, indexOfValue(page.cfg_floatingDockOrientation))
+                onActivated: page.cfg_floatingDockOrientation = currentValue
+                Accessible.name: i18n("Dock orientation")
+
+                ConfigCursorBehavior { cursorEnabled: page.interactiveCursorEnabled }
+            }
         }
 
         RowLayout {

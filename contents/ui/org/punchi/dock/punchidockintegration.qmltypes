@@ -413,6 +413,52 @@ Module {
         }
     }
     Component {
+        file: "panellengthmodebridge.h"
+        lineNumber: 8
+        name: "PanelLengthModeBridge"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/PanelLengthModeBridge 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "containmentId"
+            type: "uint"
+            read: "containmentId"
+            write: "setContainmentId"
+            notify: "containmentIdChanged"
+            index: 0
+            lineNumber: 13
+        }
+        Property {
+            name: "panelLengthMode"
+            type: "int"
+            read: "panelLengthMode"
+            notify: "panelLengthModeChanged"
+            index: 1
+            lineNumber: 14
+            isReadonly: true
+        }
+        Property {
+            name: "fillAvailable"
+            type: "bool"
+            read: "fillAvailable"
+            notify: "panelLengthModeChanged"
+            index: 2
+            lineNumber: 15
+            isReadonly: true
+        }
+        Property {
+            name: "reportedPanelLengthMode"
+            type: "int"
+            read: "reportedPanelLengthMode"
+            write: "setReportedPanelLengthMode"
+            index: 3
+            lineNumber: 16
+        }
+        Signal { name: "containmentIdChanged"; lineNumber: 31 }
+        Signal { name: "panelLengthModeChanged"; lineNumber: 32 }
+    }
+    Component {
         file: "systemdiscovery.h"
         lineNumber: 15
         name: "SystemDiscovery"

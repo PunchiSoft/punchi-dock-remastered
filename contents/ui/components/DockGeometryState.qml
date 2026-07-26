@@ -21,6 +21,8 @@ QtObject {
     property int overflowTaskCount: 0
     property int totalDynamicGroups: 0
     property rect availableScreenRect: Qt.rect(0, 0, 800, 640)
+    property var floatingAnchor: null
+    property int floatingScreenEdge: PlasmaCore.Types.LeftEdge
     property real hostHeight: 0
     property var panelWindow: null
     property var containment: null
@@ -30,10 +32,47 @@ QtObject {
     readonly property int dockBackgroundVerticalPadding: 12
     readonly property int floatingExtraWidth: 48
     readonly property int floatingExtraHeight: 32
-    readonly property bool topPanel: panelLocation === PlasmaCore.Types.TopEdge
-    readonly property bool bottomPanel: panelLocation === PlasmaCore.Types.BottomEdge
-    readonly property bool leftPanel: panelLocation === PlasmaCore.Types.LeftEdge
-    readonly property bool rightPanel: panelLocation === PlasmaCore.Types.RightEdge
+    readonly property int effectivePanelLocation: root.inPanel
+        ? root.panelLocation
+        : root.floatingScreenEdge
+
+    function updateFloatingScreenEdge(anchor) {
+        const target = anchor || root.floatingAnchor
+        if (root.inPanel || !target) {
+            return
+        }
+
+        try {
+            const centerPoint = Qt.point(Math.max(0, Number(target.width || 0)) / 2,
+                Math.max(0, Number(target.height || 0)) / 2)
+            const center = typeof target.mapToGlobal === "function"
+                ? target.mapToGlobal(centerPoint)
+                : target.mapToScene(centerPoint)
+            if (root.verticalPanel) {
+                const screenCenterX = Number(root.availableScreenRect.x || 0)
+                    + (Math.max(0, Number(root.availableScreenRect.width || 0)) / 2)
+                root.floatingScreenEdge = center.x <= screenCenterX
+                    ? PlasmaCore.Types.LeftEdge
+                    : PlasmaCore.Types.RightEdge
+            } else {
+                const screenCenterY = Number(root.availableScreenRect.y || 0)
+                    + (Math.max(0, Number(root.availableScreenRect.height || 0)) / 2)
+                root.floatingScreenEdge = center.y <= screenCenterY
+                    ? PlasmaCore.Types.TopEdge
+                    : PlasmaCore.Types.BottomEdge
+            }
+        } catch (error) {
+            root.floatingScreenEdge = root.panelLocation
+        }
+    }
+
+    onFloatingAnchorChanged: updateFloatingScreenEdge(root.floatingAnchor)
+    onAvailableScreenRectChanged: updateFloatingScreenEdge(root.floatingAnchor)
+    onVerticalPanelChanged: updateFloatingScreenEdge(root.floatingAnchor)
+    readonly property bool topPanel: effectivePanelLocation === PlasmaCore.Types.TopEdge
+    readonly property bool bottomPanel: effectivePanelLocation === PlasmaCore.Types.BottomEdge
+    readonly property bool leftPanel: effectivePanelLocation === PlasmaCore.Types.LeftEdge
+    readonly property bool rightPanel: effectivePanelLocation === PlasmaCore.Types.RightEdge
 
     readonly property int detectedPanelLengthMode: {
         try {
@@ -62,6 +101,21 @@ QtObject {
             return Qt.LeftEdge
         }
         return Qt.TopEdge
+    }
+    readonly property int spectrumOriginEdge: {
+        if (topPanel) {
+            return Qt.TopEdge
+        }
+        if (bottomPanel) {
+            return Qt.BottomEdge
+        }
+        if (leftPanel) {
+            return Qt.LeftEdge
+        }
+        if (rightPanel) {
+            return Qt.RightEdge
+        }
+        return Qt.BottomEdge
     }
     readonly property int popupMargin: root.inPanel ? 2 : 10
     readonly property int folderPopupMargin: popupMargin
@@ -93,7 +147,6 @@ QtObject {
         ? Math.min(root.configuredIconSize, effectivePanelBaseIconLimit)
         : root.configuredIconSize
     readonly property bool panelFillLengthEnabled: root.inPanel
-        && root.horizontalPanel
         && panelUsesFillAvailable
         && !root.hiddenByVirtualDesktop
         && root.configuredPanelLengthMode === "fill"
@@ -105,7 +158,7 @@ QtObject {
         ? (effectiveIconSize * root.panelHoverScale) + 12 + root.dockLabelAreaHeight
         : Math.max(panelItemWidth, (effectiveIconSize * root.panelHoverScale) + 12))
 
-    function panelWidthForDockItem(item) {
+    function panelMainAxisExtentForDockItem(item) {
         const itemType = item && item.type ? String(item.type) : "app"
         if (itemType === "separator") {
             return 10
@@ -113,49 +166,51 @@ QtObject {
         if (itemType === "spacer") {
             return Math.max(12, effectiveIconSize * 0.5)
         }
-        return panelItemWidth
+        return root.verticalPanel ? panelItemHeight : panelItemWidth
     }
 
-    readonly property int panelFixedContentWidth: {
+    readonly property int panelFixedContentLength: {
         let extent = 0
         const items = root.dockItems || []
         for (let index = 0; index < items.length; index++) {
-            extent += root.panelWidthForDockItem(items[index])
+            extent += root.panelMainAxisExtentForDockItem(items[index])
         }
         return Math.ceil(extent + (Math.max(0, items.length - 1) * dockSpacing))
     }
     readonly property int renderedDynamicItemCount: root.visibleTaskCount
         + (root.overflowTaskCount > 0 ? 1 : 0)
-    readonly property int panelCompactContentWidth: {
+    readonly property int panelCompactContentLength: {
         const boundarySpacing = root.dockItems.length > 0 && renderedDynamicItemCount > 0
             ? dockSpacing
             : 0
-        const dynamicWidth = renderedDynamicItemCount > 0
-            ? (renderedDynamicItemCount * panelItemWidth)
+        const dynamicItemExtent = root.verticalPanel ? panelItemHeight : panelItemWidth
+        const dynamicLength = renderedDynamicItemCount > 0
+            ? (renderedDynamicItemCount * dynamicItemExtent)
                 + (Math.max(0, renderedDynamicItemCount - 1) * dockSpacing)
             : 0
-        return Math.ceil(panelFixedContentWidth + boundarySpacing + dynamicWidth)
+        return Math.ceil(panelFixedContentLength + boundarySpacing + dynamicLength)
     }
-    readonly property int panelMinimumContentWidth: {
+    readonly property int panelMinimumContentLength: {
         const hasDynamicGroups = root.totalDynamicGroups > 0
         const boundarySpacing = root.dockItems.length > 0 && hasDynamicGroups ? dockSpacing : 0
-        return Math.ceil(panelFixedContentWidth + boundarySpacing
-            + (hasDynamicGroups ? panelItemWidth : 0))
+        const dynamicItemExtent = root.verticalPanel ? panelItemHeight : panelItemWidth
+        return Math.ceil(panelFixedContentLength + boundarySpacing
+            + (hasDynamicGroups ? dynamicItemExtent : 0))
     }
-    readonly property int panelContentWidth: panelFillLengthEnabled
-        ? panelMinimumContentWidth
-        : Math.max(panelItemWidth, panelCompactContentWidth)
-    readonly property int panelContentHeight: panelItemHeight
+    readonly property int panelContentLength: panelFillLengthEnabled
+        ? panelMinimumContentLength
+        : Math.max(root.verticalPanel ? panelItemHeight : panelItemWidth,
+            panelCompactContentLength)
     readonly property int panelMinimumWidth: root.hiddenByVirtualDesktop
         ? 0
         : Math.ceil((root.verticalPanel
-            ? Math.max(panelContentWidth, panelHoverCrossAxisExtent)
-            : panelContentWidth) + (dockBackgroundHorizontalPadding * 2))
+            ? panelHoverCrossAxisExtent
+            : panelContentLength) + (dockBackgroundHorizontalPadding * 2))
     readonly property int panelMinimumHeight: root.hiddenByVirtualDesktop
         ? 0
-        : Math.ceil(root.horizontalPanel
-            ? panelContentHeight
-            : panelContentHeight + (dockBackgroundVerticalPadding * 2))
+        : Math.ceil(root.verticalPanel
+            ? panelContentLength + (dockBackgroundVerticalPadding * 2)
+            : panelItemHeight + (root.inPanel ? 0 : (dockBackgroundVerticalPadding * 2)))
     readonly property int panelPreferredWidth: root.hiddenByVirtualDesktop ? 0 : panelMinimumWidth
     readonly property int panelPreferredHeight: root.hiddenByVirtualDesktop ? 0 : panelMinimumHeight
     readonly property real panelReflectionAvailableExtent: {

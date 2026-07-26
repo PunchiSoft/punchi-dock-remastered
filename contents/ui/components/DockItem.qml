@@ -21,10 +21,10 @@ Item {
     property bool separatorGlowSetting: false
 
     readonly property string effectiveIndicatorPosition: {
-        if (inPanel && panelLocation === PlasmaCore.Types.LeftEdge) {
+        if (panelLocation === PlasmaCore.Types.LeftEdge) {
             return "right"
         }
-        if (inPanel && panelLocation === PlasmaCore.Types.RightEdge) {
+        if (panelLocation === PlasmaCore.Types.RightEdge) {
             return "left"
         }
         return indicatorPosition
@@ -171,7 +171,7 @@ Item {
     }
     readonly property real hoverTravel: waveScale <= 1.0 ? 0.0 : Math.round(iconSize * 0.32 * ((waveScale - 1.0) / hoverScaleDelta))
     readonly property real hoverOffsetX: {
-        if (!inPanel || hoverTravel <= 0.0) {
+        if (!verticalPanelMode || hoverTravel <= 0.0) {
             return 0.0
         }
         if (panelLocation === PlasmaCore.Types.LeftEdge) {
@@ -186,16 +186,13 @@ Item {
         if (hoverTravel <= 0.0) {
             return 0.0
         }
-        if (!inPanel) {
-            return -hoverTravel
-        }
         if (panelLocation === PlasmaCore.Types.TopEdge) {
             return hoverTravel
         }
         if (panelLocation === PlasmaCore.Types.BottomEdge) {
             return -hoverTravel
         }
-        return 0.0
+        return !inPanel && !verticalPanelMode ? -hoverTravel : 0.0
     }
 
     property string itemType: "app"
@@ -287,7 +284,8 @@ Item {
         mouseArea.forceActiveFocus(Qt.OtherFocusReason)
     }
 
-    readonly property bool verticalPanelMode: inPanel && (panelLocation === PlasmaCore.Types.LeftEdge || panelLocation === PlasmaCore.Types.RightEdge)
+    readonly property bool verticalPanelMode: panelLocation === PlasmaCore.Types.LeftEdge
+        || panelLocation === PlasmaCore.Types.RightEdge
 
     // Keep layout container measurements fully static to prevent jitter.
     implicitWidth: verticalPanelMode
@@ -350,9 +348,7 @@ Item {
         targetIndex: dockItemContainer.minimizeReactionTargetIndex
         revision: dockItemContainer.minimizeReactionRevision
         iconSize: dockItemContainer.iconSize
-        verticalPanel: dockItemContainer.inPanel
-            && (dockItemContainer.panelLocation === PlasmaCore.Types.LeftEdge
-                || dockItemContainer.panelLocation === PlasmaCore.Types.RightEdge)
+        verticalPanel: dockItemContainer.verticalPanelMode
         bounceDirection: dockItemContainer.panelLocation === PlasmaCore.Types.RightEdge
             || dockItemContainer.panelLocation === PlasmaCore.Types.BottomEdge
             ? -1
@@ -481,8 +477,11 @@ Item {
         ThemedSeparator {
             visible: dockItemContainer.separatorItem
             anchors.centerIn: parent
+            theme: dockItemContainer.customSeparatorEnabled
+                ? dockItemContainer.separatorTheme : ({})
             verticalPanel: dockItemContainer.verticalPanelMode
-            availableLength: verticalPanel ? visualArea.width : visualArea.height
+            availableLength: dockItemContainer.verticalPanelMode
+                ? visualArea.width : visualArea.height
             style: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.style ? dockItemContainer.separatorTheme.style : dockItemContainer.separatorStyleSetting
             thickness: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.thickness ? dockItemContainer.separatorTheme.thickness : dockItemContainer.separatorThicknessSetting
             lengthRatio: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.lengthRatio ? dockItemContainer.separatorTheme.lengthRatio : dockItemContainer.separatorLengthRatioSetting

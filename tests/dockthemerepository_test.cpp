@@ -273,6 +273,34 @@ int main(int argc, char **argv)
         && batchImporter.errorCode() == QLatin1String("unreadableDirectory"),
         "batch import rejects an unavailable directory");
 
+    QTemporaryDir limitedImportDirectory;
+    if (!limitedImportDirectory.isValid()) {
+        std::cerr << "FAILED: limited batch import directory unavailable\n";
+        return 1;
+    }
+    for (int index = 0; index < 257; ++index) {
+        QByteArray limitedThemeData = themeData;
+        limitedThemeData.replace("External Test Theme",
+            QStringLiteral("Limited Batch Theme %1").arg(index).toUtf8());
+        QFile limitedThemeFile(QDir(limitedImportDirectory.path()).filePath(
+            QStringLiteral("theme-%1.json").arg(index, 3, 10, QLatin1Char('0'))));
+        if (!limitedThemeFile.open(QIODevice::WriteOnly | QIODevice::Truncate)
+            || limitedThemeFile.write(limitedThemeData) != limitedThemeData.size()) {
+            std::cerr << "FAILED: limited batch fixture could not be created\n";
+            return 1;
+        }
+    }
+
+    DockThemeRepository limitedBatchImporter;
+    const QVariantMap limitedBatchResult = limitedBatchImporter.importThemeDirectory(
+        QUrl::fromLocalFile(limitedImportDirectory.path()));
+    passed &= expect(limitedBatchResult.value(QStringLiteral("candidateCount")).toInt() == 257
+        && limitedBatchResult.value(QStringLiteral("truncatedCount")).toInt() == 1
+        && limitedBatchResult.value(QStringLiteral("scanLimitReached")).toBool(),
+        "batch import stops scanning after the bounded theme limit");
+    passed &= expect(limitedBatchResult.value(QStringLiteral("importedCount")).toInt() == 256,
+        "batch import processes at most 256 discovered theme files");
+
     const QString importedThemeDirectory = QFileInfo(managedThemePath).absolutePath();
     passed &= expect(importer.removeTheme(themeId),
         "managed theme can be removed by its validated identifier");

@@ -3,16 +3,24 @@
 
 // Central business logic module, decoupled from the UI.
 
+const maximumDockItemsJsonLength = 1024 * 1024
+const maximumDockItemCount = 512
+
 function loadItems(jsonString) {
-    if (jsonString && typeof jsonString === "string" && jsonString.trim().length > 0) {
+    if (jsonString && typeof jsonString === "string" && jsonString.trim().length > 0
+            && jsonString.length <= maximumDockItemsJsonLength) {
         try {
             var parsed = JSON.parse(jsonString);
-            if (Array.isArray(parsed)) {
+            if (Array.isArray(parsed) && parsed.length <= maximumDockItemCount) {
                 return parsed;
             }
         } catch (e) {
             console.warn("Punchi Dock: Failed to parse dockItemsJson. Falling back to defaults.", e);
         }
+    }
+    if (jsonString && typeof jsonString === "string"
+            && jsonString.length > maximumDockItemsJsonLength) {
+        console.warn("Punchi Dock: dockItemsJson exceeds the supported size. Falling back to defaults.");
     }
     return DockDefaults.cloneItems();
 }

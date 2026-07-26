@@ -11,6 +11,8 @@ Item {
     property real spectrumIntensity: 0.35
     property bool spectrumUsePlasmaTheme: true
     property int spectrumBarCount: 12
+    property bool spectrumVertical: false
+    property bool dockVertical: false
     property int spectrumOriginEdge: Qt.BottomEdge
     property real spectrumEdgeInset: 0
     property string spectrumBarStyle: "edge"
@@ -56,6 +58,7 @@ Item {
         visible: backgroundRoot.customThemeVisible
             && backgroundRoot.customTheme.renderer === "flat"
         theme: backgroundRoot.customTheme
+        dockVertical: backgroundRoot.dockVertical
     }
 
     ShelfThemeBackground {
@@ -83,6 +86,7 @@ Item {
         intensity: backgroundRoot.spectrumIntensity
         usePlasmaTheme: backgroundRoot.spectrumUsePlasmaTheme
         barCount: backgroundRoot.spectrumBarCount
+        vertical: backgroundRoot.spectrumVertical
         originEdge: backgroundRoot.spectrumOriginEdge
         edgeInset: Math.max(0,
             backgroundRoot.spectrumEdgeInset - Kirigami.Units.smallSpacing)

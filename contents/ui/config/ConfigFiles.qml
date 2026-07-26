@@ -7,6 +7,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.kcmutils as KCM
 import "code/configItems.js" as ConfigItemsJS
 import "code/items.js" as ItemsJS
+import "../../code/logic.js" as DockLogic
 import "components"
 
 KCM.SimpleKCM {
@@ -25,6 +26,7 @@ KCM.SimpleKCM {
     property string pendingOperation: "load"
     property bool syncing: false
     property bool loadingFromDisk: false
+    property alias statusMessage: statusLabel
 
     function initialJson() {
         return ItemsJS.defaultJson()
@@ -39,8 +41,16 @@ KCM.SimpleKCM {
     }
 
     function advancedJsonChanged(text) {
+        if (text.length > DockLogic.maximumDockItemsJsonLength) {
+            // qmllint disable unqualified
+            page.statusMessage.text = i18n("The dock configuration is too large. The maximum supported size is 1 MiB.")
+            // qmllint enable unqualified
+            page.statusMessage.type = Kirigami.MessageType.Error
+            return false
+        }
         editorDockItemsJson = text
         cfg_dockItemsJson = text
+        return true
     }
 
     function setItems(nextItems) {
@@ -48,11 +58,25 @@ KCM.SimpleKCM {
     }
 
     function validateJson() {
+        if (advancedJsonEditor.text.length > DockLogic.maximumDockItemsJsonLength) {
+            // qmllint disable unqualified
+            page.statusMessage.text = i18n("The dock configuration is too large. The maximum supported size is 1 MiB.")
+            // qmllint enable unqualified
+            page.statusMessage.type = Kirigami.MessageType.Error
+            return false
+        }
         try {
             var result = ConfigItemsJS.parseJsonArray(advancedJsonEditor.text)
             if (!result.ok) {
                 statusLabel.text = i18n("The root value must be a JSON array.")
                 statusLabel.type = Kirigami.MessageType.Error
+                return false
+            }
+            if (result.items.length > DockLogic.maximumDockItemCount) {
+                // qmllint disable unqualified
+                page.statusMessage.text = i18n("The dock configuration contains too many items. The maximum is %1.", DockLogic.maximumDockItemCount)
+                // qmllint enable unqualified
+                page.statusMessage.type = Kirigami.MessageType.Error
                 return false
             }
         } catch (error) {
@@ -156,12 +180,24 @@ KCM.SimpleKCM {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
                     if (xhr.status === 200 || xhr.status === 0) {
                         var text = xhr.responseText
+                        if (text.length > DockLogic.maximumDockItemsJsonLength) {
+                            // qmllint disable unqualified
+                            page.statusMessage.text = i18n("The dock configuration is too large. The maximum supported size is 1 MiB.")
+                            // qmllint enable unqualified
+                            page.statusMessage.type = Kirigami.MessageType.Error
+                            return
+                        }
                         var result = ConfigItemsJS.parseJsonArray(text)
-                        if (result.ok) {
+                        if (result.ok && result.items.length <= DockLogic.maximumDockItemCount) {
                             var formatted = JSON.stringify(ItemsJS.withConfigureDockItem(result.items), null, 4)
                             setEditorText(formatted)
                             statusLabel.text = i18n("Configuration imported successfully.")
                             statusLabel.type = Kirigami.MessageType.Positive
+                        } else if (result.ok) {
+                            // qmllint disable unqualified
+                            page.statusMessage.text = i18n("The dock configuration contains too many items. The maximum is %1.", DockLogic.maximumDockItemCount)
+                            // qmllint enable unqualified
+                            page.statusMessage.type = Kirigami.MessageType.Error
                         } else {
                             statusLabel.text = i18n("Loaded file, but JSON is invalid: %1", result.error)
                             statusLabel.type = Kirigami.MessageType.Error

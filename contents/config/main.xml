@@ -79,6 +79,9 @@
     <entry name="dockThemeCustomId" type="String">
       <default></default>
     </entry>
+    <entry name="floatingDockOrientation" type="String">
+      <default>horizontal</default>
+    </entry>
     <entry name="folderGridIconSize" type="Int">
       <default>36</default>
     </entry>

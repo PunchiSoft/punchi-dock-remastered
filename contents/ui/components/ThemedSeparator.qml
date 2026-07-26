@@ -15,7 +15,7 @@ Item {
     property bool glowEnabled: theme.glowEnabled === true || (theme.glow && theme.glow.size > 0)
     property bool verticalPanel: false
 
-    readonly property string effectiveStyle: style
+    readonly property string effectiveStyle: style === "capsule" ? "pill" : style
     readonly property real effectiveThickness: Math.max(1, thickness)
     readonly property real effectiveLength: (effectiveStyle === "dot" || effectiveStyle === "square" || effectiveStyle === "star")
         ? (effectiveStyle === "star" ? Math.max(12, effectiveThickness * 2.5) : effectiveThickness)

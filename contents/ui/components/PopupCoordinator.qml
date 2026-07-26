@@ -10,6 +10,7 @@ Item {
     property bool inPanel: false
     property int panelPopupDirection: Qt.TopEdge
     property rect availableScreenRect: Qt.rect(0, 0, 800, 640)
+    property var geometryStateRef: null
     property int popupDirection: panelPopupDirection
     property var dockFallbackAnchor: null
     property var taskStructureSource: null
@@ -147,14 +148,18 @@ Item {
     }
 
     function popupDirectionForAnchor(anchor) {
-        if (inPanel || !anchor || typeof anchor.mapToScene !== "function") {
+        if (inPanel || !anchor) {
             return panelPopupDirection
         }
 
         try {
-            const scenePosition = anchor.mapToScene(Qt.point(0, 0))
-            const centerX = scenePosition.x + (Math.max(0, Number(anchor.width || 0)) / 2)
-            const centerY = scenePosition.y + (Math.max(0, Number(anchor.height || 0)) / 2)
+            const anchorPoint = Qt.point(Math.max(0, Number(anchor.width || 0)) / 2,
+                Math.max(0, Number(anchor.height || 0)) / 2)
+            const center = typeof anchor.mapToGlobal === "function"
+                ? anchor.mapToGlobal(anchorPoint)
+                : anchor.mapToScene(anchorPoint)
+            const centerX = center.x
+            const centerY = center.y
             const screen = availableScreenRect
             const distances = [
                 { "direction": Qt.BottomEdge,
@@ -180,6 +185,10 @@ Item {
 
     function preparePopupAnchor(visualParent) {
         const anchor = popupAnchor(visualParent)
+        if (!inPanel && geometryStateRef
+                && typeof geometryStateRef.updateFloatingScreenEdge === "function") {
+            geometryStateRef.updateFloatingScreenEdge(anchor)
+        }
         popupDirection = popupDirectionForAnchor(anchor)
         return anchor
     }

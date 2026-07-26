@@ -1,60 +1,59 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR Punchi Dock Contributors
+# German translations for Punchi Dock Remastered package.
+# Copyright (C) 2026 Punchi Dock Contributors
 # This file is distributed under the same license as the Punchi Dock Remastered package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Automatically generated, 2026.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.0\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
 "POT-Creation-Date: 2026-07-26 04:24-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2026-07-26 04:24-0400\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: contents/ui/components/CalendarPopup.qml:358
 msgctxt "@title:column calendar week number"
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: contents/ui/components/NotePopup.qml:379
 msgid "%1 / %2"
-msgstr ""
+msgstr "%1 / %2"
 
 #: contents/ui/config/code/configItemsFormHelper.js:309
 msgid "%1 items loaded."
-msgstr ""
+msgstr "%1 Elemente geladen."
 
 #: contents/ui/main.qml:829
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%1 weitere Fenstergruppe"
+msgstr[1] "%1 weitere Fenstergruppen"
 
 #: contents/ui/components/NotePopup.qml:385
 msgid "%1 of %2 characters"
-msgstr ""
+msgstr "%1 von %2 Zeichen"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:170
 msgid "%1 of %2 items"
-msgstr ""
+msgstr "%1 von %2 Artikeln"
 
 #: contents/ui/components/TaskOverflowPopup.qml:65
 msgid "%1 open window"
 msgid_plural "%1 open windows"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%1 Fenster öffnen"
+msgstr[1] "%1 Fenster öffnen"
 
 #: contents/ui/config/ConfigFolderPopups.qml:407
 msgid "%1 pt"
-msgstr ""
+msgstr "%1 pt"
 
 #: contents/ui/config/ConfigFolderPopups.qml:225
 #: contents/ui/config/ConfigFolderPopups.qml:285
@@ -62,253 +61,253 @@ msgstr ""
 #: contents/ui/config/ConfigMenus.qml:186
 #: contents/ui/config/ConfigMenus.qml:214
 msgid "%1 px"
-msgstr ""
+msgstr "%1 px"
 
 #: contents/ui/config/ConfigItems.qml:603
 #: contents/ui/config/ItemActionEditor.qml:34
 #: contents/ui/config/ItemActionEditor.qml:100
 #: contents/ui/config/components/ActionDialog.qml:82
 msgid "%1 rows"
-msgstr ""
+msgstr "%1 Zeilen"
 
 #: contents/ui/config/ConfigMenus.qml:282
 #: contents/ui/config/components/PopupAnimationSettings.qml:90
 #: contents/ui/config/components/PopupAnimationSettings.qml:119
 #, javascript-format
 msgid "%1%"
-msgstr ""
+msgstr "%1%"
 
 #: contents/ui/components/MediaVolumeControl.qml:102
 #, javascript-format
 msgctxt "@label"
 msgid "%1%"
-msgstr ""
+msgstr "%1%"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:162
 #, javascript-format
 msgid "%1% completed"
-msgstr ""
+msgstr "%1% abgeschlossen"
 
 #: contents/ui/config/ConfigFolderPopups.qml:322
 #, javascript-format
 msgid "%1x"
-msgstr ""
+msgstr "%1x"
 
 #: contents/ui/config/ConfigPopups.qml:211
 msgid ""
 "1.00x uses the recommended base size. Larger previews keep their aspect "
 "ratio and remain limited by the available screen space."
-msgstr ""
+msgstr "1,00x verwendet die empfohlene Basisgröße. Größere Vorschauen behalten ihr Seitenverhältnis und bleiben durch den verfügbaren Platz auf dem Bildschirm begrenzt."
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:38
 msgid "12 bars"
-msgstr ""
+msgstr "12 Takte"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:39
 msgid "16 bars"
-msgstr ""
+msgstr "16 Takte"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:40
 msgid "24 bars"
-msgstr ""
+msgstr "24 Takte"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:41
 msgid "32 bars"
-msgstr ""
+msgstr "32 Takte"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:42
 msgid "48 bars"
-msgstr ""
+msgstr "48 Takte"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:37
 msgid "8 bars"
-msgstr ""
+msgstr "8 Takte"
 
 #: contents/ui/config/ConfigItems.qml:606
 msgid "Action command:"
-msgstr ""
+msgstr "Aktionsbefehl:"
 
 #: contents/ui/config/ConfigItems.qml:605
 msgid "Action icon:"
-msgstr ""
+msgstr "Aktionssymbol:"
 
 #: contents/ui/config/ConfigItems.qml:604
 msgid "Action name:"
-msgstr ""
+msgstr "Aktionsname:"
 
 #: contents/ui/components/TaskWindowsPopup.qml:131
 #: contents/ui/components/WindowPreviewCard.qml:40
 msgid "Activate window"
-msgstr ""
+msgstr "Fenster aktivieren"
 
 #: contents/ui/config/ConfigPopups.qml:133
 msgid ""
 "Active applications do not show hover previews or grouped-window popups."
-msgstr ""
+msgstr "Aktive Anwendungen zeigen keine Hover-Vorschauen oder Popups mit gruppierten Fenstern an."
 
 #: contents/ui/components/TaskWindowsPopup.qml:113
 #: contents/ui/components/TaskWindowsPopup.qml:131
 #: contents/ui/components/WindowPreviewCard.qml:24
 #: contents/ui/components/WindowPreviewCard.qml:40
 msgid "Active window"
-msgstr ""
+msgstr "Aktives Fenster"
 
 #: contents/ui/main.qml:26
 msgctxt "@action:context"
 msgid "Add Quick Note"
-msgstr ""
+msgstr "Kurznotiz hinzufügen"
 
 #: contents/ui/main.qml:31
 msgctxt "@action:context"
 msgid "Add Separator"
-msgstr ""
+msgstr "Trennzeichen hinzufügen"
 
 #: contents/ui/config/AddItemPalette.qml:25
 msgid "Add a visual separator"
-msgstr ""
+msgstr "Fügen Sie eine visuelle Trennlinie hinzu"
 
 #: contents/ui/config/AddItemPalette.qml:23
 msgid "Add an app or container item"
-msgstr ""
+msgstr "Fügen Sie eine App oder ein Containerelement hinzu"
 
 #: contents/ui/config/AddItemPalette.qml:26
 msgid "Add empty space between items"
-msgstr ""
+msgstr "Fügen Sie Leerraum zwischen Elementen hinzu"
 
 #: contents/ui/config/ConfigFolderPopups.qml:428
 msgid "Additional applications remain available by scrolling."
-msgstr ""
+msgstr "Weitere Anwendungen bleiben durch Scrollen verfügbar."
 
 #: contents/ui/config/ConfigFolderPopups.qml:427
 msgid ""
 "Additional applications remain available by scrolling. On narrow screens, "
 "the popup safely reduces the number of columns."
-msgstr ""
+msgstr "Weitere Anwendungen bleiben durch Scrollen verfügbar. Auf schmalen Bildschirmen reduziert das Popup sicher die Anzahl der Spalten."
 
 #: contents/ui/config/ConfigAspect.qml:688
 msgid "Adds a short decorative reflection below icons in a floating dock."
-msgstr ""
+msgstr "Fügt eine kurze dekorative Reflexion unter den Symbolen in einem schwimmenden Dock hinzu."
 
 #: contents/ui/config/ConfigAspect.qml:687
 msgid ""
 "Adds an adaptive decorative reflection below icons in a horizontal panel."
-msgstr ""
+msgstr "Fügt eine adaptive dekorative Reflexion unter den Symbolen in einem horizontalen Bereich hinzu."
 
 #: contents/ui/config/ConfigFolderPopups.qml:276
 msgid "Adds safe spacing between the dock item and folder popups."
-msgstr ""
+msgstr "Fügt einen sicheren Abstand zwischen dem Dock-Element und den Ordner-Popups hinzu."
 
 #: contents/ui/components/MediaVolumeControl.qml:83
 msgctxt "@info:accessible"
 msgid "Adjust the media player volume"
-msgstr ""
+msgstr "Passen Sie die Lautstärke des Mediaplayers an"
 
 #: contents/ui/config/ConfigAspect.qml:713
 msgid "Adjusts how strongly icon reflections appear."
-msgstr ""
+msgstr "Passt an, wie stark Symbolreflexionen angezeigt werden."
 
 #: contents/ui/config/ConfigItems.qml:573
 msgid "Alias/Quick Search:"
-msgstr ""
+msgstr "Alias/Schnellsuche:"
 
 #: contents/ui/config/ConfigGeneral.qml:259
 msgid "All desktops"
-msgstr ""
+msgstr "Alle Desktops"
 
 #: contents/ui/config/ConfigAspect.qml:334
 #: contents/ui/config/ConfigItems.qml:667
 #: contents/ui/config/SoundFileDialog.qml:9
 msgid "All files"
-msgstr ""
+msgstr "Alle Dateien"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:44
 msgid "All items were permanently removed."
-msgstr ""
+msgstr "Alle Elemente wurden dauerhaft entfernt."
 
 #: contents/ui/config/ConfigMouse.qml:137
 msgid ""
 "Animates the matching dock item when a window is minimized. Lateral ripple "
 "also moves the nearest items."
-msgstr ""
+msgstr "Animiert das passende Dock-Element, wenn ein Fenster minimiert wird. Die seitliche Welligkeit bewegt auch die nächstgelegenen Elemente."
 
 #: contents/ui/config/ConfigItems.qml:606
 msgid "App command:"
-msgstr ""
+msgstr "App-Befehl:"
 
 #: contents/ui/config/ConfigItems.qml:605
 msgid "App icon:"
-msgstr ""
+msgstr "App-Symbol:"
 
 #: contents/ui/config/ConfigItems.qml:604
 msgid "App name:"
-msgstr ""
+msgstr "App-Name:"
 
 #: contents/config/config.qml:17
 msgid "Appearance"
-msgstr ""
+msgstr "Aussehen"
 
 #: contents/ui/config/ConfigAspect.qml:128
 msgid "Appearance sections"
-msgstr ""
+msgstr "Abschnitte zum Erscheinungsbild"
 
 #: contents/ui/components/AppActionsPopup.qml:55
 #: contents/ui/components/DockItemsController.qml:144
 #: contents/ui/components/FolderPopup.qml:248
 msgid "Application"
-msgstr ""
+msgstr "Bewerbung"
 
 #: contents/ui/config/ConfigItems.qml:596
 msgid "Application category"
-msgstr ""
+msgstr "Anwendungskategorie"
 
 #: contents/ui/config/ConfigMenus.qml:233
 msgid "Applies to context menu headers, action labels and secondary details."
-msgstr ""
+msgstr "Gilt für Kontextmenü-Überschriften, Aktionsbezeichnungen und sekundäre Details."
 
 #: contents/ui/config/ConfigAspect.qml:657
 msgid "Applies to dock labels and the calendar item text."
-msgstr ""
+msgstr "Gilt für Dockbeschriftungen und den Kalenderelementtext."
 
 #: contents/ui/config/ConfigFolderPopups.qml:418
 msgid "Applies to folder popup labels and note popup titles."
-msgstr ""
+msgstr "Gilt für Ordner-Popup-Beschriftungen und Notiz-Popup-Titel."
 
 #: contents/ui/config/ConfigPopups.qml:261
 msgid "Applies to window titles, window details and overflow group labels."
-msgstr ""
+msgstr "Gilt für Fenstertitel, Fensterdetails und Überlaufgruppenbezeichnungen."
 
 #: contents/ui/config/ConfigItems.qml:666
 #: contents/ui/config/SoundFileDialog.qml:8
 msgid "Audio files"
-msgstr ""
+msgstr "Audiodateien"
 
 #: contents/ui/config/ConfigAspect.qml:147
 msgid "Audio visualizer"
-msgstr ""
+msgstr "Audiovisualisierer"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:230
 msgid "Audio visualizer density"
-msgstr ""
+msgstr "Dichte des Audiovisualisierers"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:137
 msgid "Audio visualizer dock background"
-msgstr ""
+msgstr "Audio-Visualizer-Dock-Hintergrund"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:308
 msgid "Audio visualizer edge direction"
-msgstr ""
+msgstr "Kantenrichtung des Audiovisualisierers"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:175
 msgid "Audio visualizer intensity"
-msgstr ""
+msgstr "Intensität des Audiovisualisierers"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:281
 msgid "Audio visualizer rhythmic movement"
-msgstr ""
+msgstr "Rhythmische Bewegung des Audiovisualisierers"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:256
 msgid "Audio visualizer style"
-msgstr ""
+msgstr "Audio-Visualizer-Stil"
 
 #: contents/ui/config/ConfigFolderPopups.qml:133
 #: contents/ui/config/ConfigItems.qml:256
@@ -319,213 +318,213 @@ msgstr ""
 #: contents/ui/config/components/TimedDialog.qml:116
 #: contents/ui/config/components/TimedDialog.qml:119
 msgid "Automatic"
-msgstr ""
+msgstr "Automatisch"
 
 #: contents/ui/components/AppActionsPopup.qml:86
 msgid "Back to media controls"
-msgstr ""
+msgstr "Zurück zur Mediensteuerung"
 
 #: contents/ui/components/AppActionsPopup.qml:87
 msgid "Back to window previews"
-msgstr ""
+msgstr "Zurück zur Fenstervorschau"
 
 #: contents/ui/config/ConfigAspect.qml:474
 msgid "Background:"
-msgstr ""
+msgstr "Hintergrund:"
 
 #: contents/ui/config/ConfigAspect.qml:121
 msgid "Bottom"
-msgstr ""
+msgstr "Unten"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:65
 #: contents/ui/config/ConfigGeneral.qml:65
 msgid "Bottom to top"
-msgstr ""
+msgstr "Von unten nach oben"
 
 #: contents/ui/config/ConfigMouse.qml:33
 #: contents/ui/config/components/PopupAnimationSettings.qml:20
 msgid "Bounce"
-msgstr ""
+msgstr "Hüpfen"
 
 #: contents/ui/components/TaskWindowsPopup.qml:252
 #: contents/ui/components/WindowPreviewCard.qml:146
 msgid "Bring window to front"
-msgstr ""
+msgstr "Fenster nach vorne bringen"
 
 #: contents/ui/components/DockItem.qml:38
 #: contents/ui/config/ConfigItems.qml:131
 msgid "Calendar"
-msgstr ""
+msgstr "Kalender"
 
 #: contents/ui/config/ConfigItems.qml:139
 msgid "Calendar color:"
-msgstr ""
+msgstr "Kalenderfarbe:"
 
 #: contents/ui/config/ConfigItems.qml:135
 msgid "Calendar font:"
-msgstr ""
+msgstr "Kalenderschriftart:"
 
 #: contents/ui/config/CalendarOptions.qml:160
 msgid "Calendar popup scale"
-msgstr ""
+msgstr "Kalender-Popup-Skala"
 
 #: contents/ui/config/AddItemPalette.qml:27
 msgid "Calendar/Clock"
-msgstr ""
+msgstr "Kalender/Uhr"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:200
 msgid "Cancel"
-msgstr ""
+msgstr "Abbrechen"
 
 #: contents/ui/components/NotePopup.qml:308
 #: contents/ui/config/ConfigAspect.qml:407
 msgctxt "@action:button"
 msgid "Cancel"
-msgstr ""
+msgstr "Abbrechen"
 
 #: contents/ui/config/ConfigPopups.qml:34
 msgid "Cards (recommended)"
-msgstr ""
+msgstr "Karten (empfohlen)"
 
 #: contents/ui/config/ConfigItems.qml:598
 msgid "Category:"
-msgstr ""
+msgstr "Kategorie:"
 
 #: contents/ui/config/ConfigGeneral.qml:64
 #: contents/ui/config/ConfigGeneral.qml:68
 msgid "Center"
-msgstr ""
+msgstr "Mitte"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:54
 msgid "Centered wave"
-msgstr ""
+msgstr "Zentrierte Welle"
 
 #: contents/ui/components/NotePopup.qml:368
 msgid "Changes pending"
-msgstr ""
+msgstr "Änderungen stehen noch aus"
 
 #: contents/ui/config/FolderPathDialog.qml:7
 msgid "Choose Folder"
-msgstr ""
+msgstr "Wählen Sie Ordner"
 
 #: contents/ui/config/SoundFileDialog.qml:11
 msgid "Choose Sound File"
-msgstr ""
+msgstr "Wählen Sie Sounddatei"
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:101
 msgid "Choose a folder first."
-msgstr ""
+msgstr "Wählen Sie zunächst einen Ordner."
 
 #: contents/ui/config/ConfigAspect.qml:258
 msgid "Choose a local JSON file."
-msgstr ""
+msgstr "Wählen Sie eine lokale JSON-Datei."
 
 #: contents/ui/config/ConfigAspect.qml:277
 msgid "Choose a local folder containing JSON themes."
-msgstr ""
+msgstr "Wählen Sie einen lokalen Ordner mit JSON-Designs."
 
 #: contents/ui/config/ConfigItems.qml:145
 msgid "Choose calendar background color"
-msgstr ""
+msgstr "Wählen Sie die Hintergrundfarbe des Kalenders"
 
 #: contents/ui/config/ConfigItems.qml:151
 msgid "Choose calendar border color"
-msgstr ""
+msgstr "Wählen Sie die Farbe des Kalenderrahmens"
 
 #: contents/ui/config/ConfigItems.qml:168
 msgid "Choose calendar color"
-msgstr ""
+msgstr "Wählen Sie die Kalenderfarbe"
 
 #: contents/ui/config/ConfigItems.qml:148
 msgid "Choose calendar header color"
-msgstr ""
+msgstr "Wählen Sie die Farbe der Kalenderkopfzeile"
 
 #: contents/ui/config/ConfigItems.qml:156
 msgid "Choose clock accent color"
-msgstr ""
+msgstr "Wählen Sie die Akzentfarbe der Uhr"
 
 #: contents/ui/config/ConfigItems.qml:162
 msgid "Choose clock border color"
-msgstr ""
+msgstr "Wählen Sie die Farbe des Uhrenrahmens"
 
 #: contents/ui/config/ConfigItems.qml:168
 msgid "Choose clock color"
-msgstr ""
+msgstr "Wählen Sie die Farbe der Uhr"
 
 #: contents/ui/config/ConfigItems.qml:165
 msgid "Choose clock face color"
-msgstr ""
+msgstr "Wählen Sie die Farbe des Zifferblatts"
 
 #: contents/ui/config/ConfigItems.qml:159
 msgid "Choose clock marker color"
-msgstr ""
+msgstr "Wählen Sie die Farbe der Uhrmarkierung"
 
 #: contents/ui/config/ConfigItems.qml:539
 msgid "Choose folder"
-msgstr ""
+msgstr "Ordner auswählen"
 
 #: contents/ui/config/ConfigItems.qml:531
 #: contents/ui/config/ConfigItems.qml:590
 #: contents/ui/config/components/TrashDialog.qml:106
 #: contents/ui/config/components/TrashDialog.qml:136
 msgid "Choose icon"
-msgstr ""
+msgstr "Symbol auswählen"
 
 #: contents/ui/config/ConfigItems.qml:664
 #: contents/ui/config/components/TrashDialog.qml:203
 msgid "Choose sound"
-msgstr ""
+msgstr "Wählen Sie Ton"
 
 #: contents/ui/config/ConfigAspect.qml:536
 msgid ""
 "Choose whether to import one JSON theme or all JSON themes from a folder."
-msgstr ""
+msgstr "Wählen Sie, ob Sie ein JSON-Design oder alle JSON-Designs aus einem Ordner importieren möchten."
 
 #: contents/ui/config/ConfigPopups.qml:247
 msgid ""
 "Choose whether window previews show the app icon with window details, only "
 "the icon, or no information overlay."
-msgstr ""
+msgstr "Wählen Sie, ob in der Fenstervorschau das App-Symbol mit Fensterdetails, nur das Symbol oder keine Informationsüberlagerung angezeigt wird."
 
 #: contents/ui/config/SeparatorOptions.qml:44
 msgid "Circle"
-msgstr ""
+msgstr "Kreis"
 
 #: contents/ui/config/ConfigFileToolbar.qml:48
 msgid "Clean"
-msgstr ""
+msgstr "Sauber"
 
 #: contents/ui/config/ConfigFiles.qml:96
 msgid "Clean completed."
-msgstr ""
+msgstr "Reinigung abgeschlossen."
 
 #: contents/ui/config/ConfigFiles.qml:146
 msgid "Clean configuration file?"
-msgstr ""
+msgstr "Konfigurationsdatei bereinigen?"
 
 #: contents/ui/components/NotePopup.qml:180
 msgid "Clear"
-msgstr ""
+msgstr "Klar"
 
 #: contents/ui/components/NotePopup.qml:203
 msgid "Cleared"
-msgstr ""
+msgstr "Gelöscht"
 
 #: contents/ui/config/ConfigMouse.qml:90
 msgid "Click effect:"
-msgstr ""
+msgstr "Klickeffekt:"
 
 #: contents/ui/config/ConfigItems.qml:131
 msgid "Clock"
-msgstr ""
+msgstr "Uhr"
 
 #: contents/ui/config/ConfigItems.qml:139
 msgid "Clock color:"
-msgstr ""
+msgstr "Uhrfarbe:"
 
 #: contents/ui/config/ConfigItems.qml:135
 msgid "Clock font:"
-msgstr ""
+msgstr "Schriftart der Uhr:"
 
 #: contents/ui/components/AppActionsPopup.qml:88
 #: contents/ui/components/CalendarPopup.qml:325
@@ -535,138 +534,138 @@ msgstr ""
 #: contents/ui/components/TaskModelController.qml:804
 #: contents/ui/components/TrashContextPopup.qml:133
 msgid "Close"
-msgstr ""
+msgstr "Schließen"
 
 #: contents/ui/components/TaskModelController.qml:745
 msgid "Close %1 window"
 msgid_plural "Close all %1 windows"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Schließen Sie das Fenster %1"
+msgstr[1] "Schließen Sie alle %1-Fenster"
 
 #: contents/ui/components/TaskWindowsPopup.qml:355
 #: contents/ui/components/WindowPreviewCard.qml:246
 msgid "Close window"
-msgstr ""
+msgstr "Fenster schließen"
 
 #: contents/ui/components/MediaControlsCard.qml:833
 msgctxt "@action:button"
 msgid "Close window"
-msgstr ""
+msgstr "Fenster schließen"
 
 #: contents/ui/components/TaskOverflowPopup.qml:45
 msgid "Close window group list"
-msgstr ""
+msgstr "Fenstergruppenliste schließen"
 
 #: contents/ui/config/ConfigMenus.qml:36
 msgctxt "@item:inlistbox Context menu size"
 msgid "Comfortable"
-msgstr ""
+msgstr "Bequem"
 
 #: contents/ui/config/ConfigItems.qml:588
 msgid "Command:"
-msgstr ""
+msgstr "Befehl:"
 
 #: contents/ui/config/ConfigMenus.qml:35
 msgctxt "@item:inlistbox Context menu size"
 msgid "Compact"
-msgstr ""
+msgstr "Kompakt"
 
 #: contents/ui/config/ConfigFileToolbar.qml:16
 msgid "Configuration file"
-msgstr ""
+msgstr "Konfigurationsdatei"
 
 #: contents/ui/config/ConfigFiles.qml:185
 msgid "Configuration imported successfully."
-msgstr ""
+msgstr "Konfiguration erfolgreich importiert."
 
 #: contents/ui/config/DockItemListEditor.qml:95
 msgid "Configure"
-msgstr ""
+msgstr "Konfigurieren"
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:187
 msgid "Configure app"
-msgstr ""
+msgstr "App konfigurieren"
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:176
 msgid "Configure calendar"
-msgstr ""
+msgstr "Kalender konfigurieren"
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:173
 msgid "Configure clock"
-msgstr ""
+msgstr "Uhr konfigurieren"
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:167
 msgid "Configure folder"
-msgstr ""
+msgstr "Ordner konfigurieren"
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:179
 msgid "Configure note"
-msgstr ""
+msgstr "Notiz konfigurieren"
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:182
 msgid "Configure separator"
-msgstr ""
+msgstr "Trennzeichen konfigurieren"
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:185
 msgid "Configure spacer"
-msgstr ""
+msgstr "Abstandhalter konfigurieren"
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:170
 #: contents/ui/config/components/TrashDialog.qml:27
 msgid "Configure trash"
-msgstr ""
+msgstr "Papierkorb konfigurieren"
 
 #: contents/ui/config/ConfigItems.qml:578
 msgid "Container"
-msgstr ""
+msgstr "Behälter"
 
 #: contents/ui/config/ConfigItems.qml:592
 msgid "Container applications"
-msgstr ""
+msgstr "Containeranwendungen"
 
 #: contents/ui/config/ConfigItems.qml:593
 msgid "Content:"
-msgstr ""
+msgstr "Inhalt:"
 
 #: contents/ui/config/ConfigMenus.qml:248
 msgid "Context menu entrance direction"
-msgstr ""
+msgstr "Einstiegsrichtung des Kontextmenüs"
 
 #: contents/ui/config/ConfigMenus.qml:177
 msgid "Context menu icon size"
-msgstr ""
+msgstr "Größe des Kontextmenüsymbols"
 
 #: contents/ui/config/ConfigMenus.qml:149
 msgid "Context menu row height"
-msgstr ""
+msgstr "Zeilenhöhe des Kontextmenüs"
 
 #: contents/ui/config/ConfigMenus.qml:114
 msgid "Context menu size preset"
-msgstr ""
+msgstr "Voreingestellte Größe des Kontextmenüs"
 
 #: contents/ui/config/ConfigMenus.qml:205
 msgid "Context menu target width"
-msgstr ""
+msgstr "Zielbreite des Kontextmenüs"
 
 #: contents/ui/components/NotePopup.qml:85
 msgid "Copied"
-msgstr ""
+msgstr "Kopiert"
 
 #: contents/ui/config/ConfigFiles.qml:115
 msgid ""
 "Copied to clipboard! You can paste this in any file to save your backup."
-msgstr ""
+msgstr "In die Zwischenablage kopiert! Sie können dies in eine beliebige Datei einfügen, um Ihr Backup zu speichern."
 
 #: contents/ui/components/NotePopup.qml:217
 msgid "Copy note"
-msgstr ""
+msgstr "Notiz kopieren"
 
 #: contents/ui/config/ConfigGeneral.qml:331
 msgctxt "@info:status <b> marks the current dock mode"
 msgid ""
 "Current dock state: <b>Floating mode</b>.<br>Panel-only sizing and "
 "integration options are unavailable."
-msgstr ""
+msgstr "Aktueller Dock-Status: <b>Floating-Modus</b>.<br>Nur Panel-Größen- und Integrationsoptionen sind nicht verfügbar."
 
 #: contents/ui/config/ConfigGeneral.qml:334
 msgctxt "@info:status <b> marks the current dock mode"
@@ -674,7 +673,7 @@ msgid ""
 "Current dock state: <b>Horizontal panel</b>.<br>Fill free panel space is "
 "active only when the Plasma panel is set to Fill available; otherwise Punchi "
 "Dock remains compact."
-msgstr ""
+msgstr "Aktueller Dock-Status: <b>Horizontales Panel</b>.<br>Freien Panel-Bereich füllen ist nur aktiv, wenn das Plasma-Panel auf „Füllen verfügbar“ eingestellt ist; ansonsten bleibt Punchi Dock kompakt."
 
 #: contents/ui/config/ConfigGeneral.qml:333
 msgctxt "@info:status <b> marks the current dock mode"
@@ -682,1080 +681,1080 @@ msgid ""
 "Current dock state: <b>Vertical panel</b>.<br>Fill free panel space is "
 "active only when the Plasma panel is set to Fill available; otherwise Punchi "
 "Dock remains compact."
-msgstr ""
+msgstr "Aktueller Dock-Status: <b>Vertikales Panel</b>.<br>Freien Panel-Bereich füllen ist nur aktiv, wenn das Plasma-Panel auf „Füllen verfügbar“ eingestellt ist; ansonsten bleibt Punchi Dock kompakt."
 
 #: contents/ui/config/ConfigMenus.qml:38
 msgctxt "@item:inlistbox Context menu size"
 msgid "Custom"
-msgstr ""
+msgstr "Benutzerdefiniert"
 
 #: contents/ui/components/AppActionsPopup.qml:118
 msgid "Custom action"
-msgstr ""
+msgstr "Benutzerdefinierte Aktion"
 
 #: contents/ui/config/CalendarOptions.qml:117
 msgid "Date text scale"
-msgstr ""
+msgstr "Datumstextskala"
 
 #: contents/ui/config/CalendarOptions.qml:95
 msgid "Date text scale:"
-msgstr ""
+msgstr "Datumstextskala:"
 
 #: contents/ui/config/ConfigFileToolbar.qml:41
 #: contents/ui/config/components/TrashDialog.qml:194
 msgid "Default"
-msgstr ""
+msgstr "Standard"
 
 #: contents/ui/config/ConfigFiles.qml:89
 msgid "Default items restored."
-msgstr ""
+msgstr "Standardelemente wiederhergestellt."
 
 #: contents/ui/config/ConfigAspect.qml:547
 msgctxt "@action:button"
 msgid "Delete"
-msgstr ""
+msgstr "Löschen"
 
 #: contents/ui/config/ConfigAspect.qml:395
 msgctxt "@title:window"
 msgid "Delete Installed Theme?"
-msgstr ""
+msgstr "Installiertes Theme löschen?"
 
 #: contents/ui/components/NotePopup.qml:246
 #: contents/ui/components/NotePopup.qml:316
 msgctxt "@action:button"
 msgid "Delete Note"
-msgstr ""
+msgstr "Notiz löschen"
 
 #: contents/ui/config/ConfigAspect.qml:402
 msgctxt "@action:button"
 msgid "Delete Theme"
-msgstr ""
+msgstr "Thema löschen"
 
 #: contents/ui/config/ConfigAspect.qml:552
 msgid "Delete the selected installed Punchi Dock theme"
-msgstr ""
+msgstr "Löschen Sie das ausgewählte installierte Punchi Dock-Design"
 
 #: contents/ui/components/NotePopup.qml:305
 msgid "Delete this note from the dock? Its contents cannot be recovered."
-msgstr ""
+msgstr "Diese Notiz aus dem Dock löschen? Der Inhalt kann nicht wiederhergestellt werden."
 
 #: contents/ui/config/ConfigAspect.qml:396
 msgid "Delete “%1” permanently from the Punchi Dock Remastered theme library?"
-msgstr ""
+msgstr "„%1“ dauerhaft aus der Punchi Dock Remastered-Themenbibliothek löschen?"
 
 #: contents/ui/config/ConfigItems.qml:574
 msgid "Description:"
-msgstr ""
+msgstr "Beschreibung:"
 
 #: contents/ui/config/ConfigGeneral.qml:79
 msgid "Desktop %1"
-msgstr ""
+msgstr "Desktop %1"
 
 #: contents/ui/config/ConfigGeneral.qml:249
 msgid "Desktop visibility:"
-msgstr ""
+msgstr "Desktop-Sichtbarkeit:"
 
 #: contents/ui/config/ConfigItems.qml:582
 msgid "Detailed"
-msgstr ""
+msgstr "Ausführlich"
 
 #: contents/ui/config/ConfigFolderPopups.qml:77
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
-msgstr ""
+msgstr "Ausführlich"
 
 #: contents/ui/config/ConfigPopups.qml:49
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Disabled"
-msgstr ""
+msgstr "Deaktiviert"
 
 #: contents/ui/config/ConfigAspect.qml:776
 msgid "Disables the active-window indicator entirely."
-msgstr ""
+msgstr "Deaktiviert die Anzeige des aktiven Fensters vollständig."
 
 #: contents/ui/config/ConfigFolderPopups.qml:341
 msgid ""
 "Displays the folder title header label and close button at the top of the "
 "popup."
-msgstr ""
+msgstr "Zeigt die Kopfzeilenbeschriftung des Ordnertitels und die Schaltfläche „Schließen“ oben im Popup an."
 
 #: contents/ui/components/TaskModelController.qml:783
 msgid "Do not keep above"
-msgstr ""
+msgstr "Bleiben Sie nicht oben"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:37
 msgid "Do you want to empty the trash?"
-msgstr ""
+msgstr "Möchten Sie den Papierkorb leeren?"
 
 #: contents/ui/config/ConfigAspect.qml:131
 msgid "Dock"
-msgstr ""
+msgstr "Dock"
 
 #: contents/ui/config/ConfigFileToolbar.qml:21
 msgid "Dock Items Configuration"
-msgstr ""
+msgstr "Konfiguration der Dock-Elemente"
 
 #: contents/ui/config/ConfigAspect.qml:443
 msgid "Dock background theme"
-msgstr ""
+msgstr "Dock-Hintergrundthema"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:126
 msgid "Dock background:"
-msgstr ""
+msgstr "Dock-Hintergrund:"
 
 #: contents/ui/config/AddItemPalette.qml:23
 msgid "Dock item"
-msgstr ""
+msgstr "Dockelement"
 
 #: contents/ui/config/ConfigAspect.qml:467
 msgid "Dock orientation"
-msgstr ""
+msgstr "Dockausrichtung"
 
 #: contents/ui/config/ConfigAspect.qml:455
 msgid "Dock orientation:"
-msgstr ""
+msgstr "Dockausrichtung:"
 
 #: contents/ui/config/ConfigAspect.qml:115
 msgid "Dot"
-msgstr ""
+msgstr "Punkt"
 
 #: contents/ui/config/components/TrashDialog.qml:75
 msgid "Drag files"
-msgstr ""
+msgstr "Dateien ziehen"
 
 #: contents/ui/config/ConfigWindows.qml:95
 msgid "Dynamic groups:"
-msgstr ""
+msgstr "Dynamische Gruppen:"
 
 #: contents/ui/config/ConfigWindows.qml:172
 msgid ""
 "Dynamic task entries share one dock item per application, while pinned "
 "launchers keep their current grouped behavior."
-msgstr ""
+msgstr "Dynamische Aufgabeneinträge teilen sich ein Dockelement pro Anwendung, während angeheftete Startprogramme ihr aktuelles gruppiertes Verhalten beibehalten."
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:192
 msgid "EQ theme:"
-msgstr ""
+msgstr "EQ-Thema:"
 
 #: contents/ui/config/ConfigWindows.qml:173
 msgid ""
 "Each dynamic window gets its own dock item, while pinned launchers still "
 "accumulate their matching windows by application."
-msgstr ""
+msgstr "Jedes dynamische Fenster erhält sein eigenes Dockelement, während angeheftete Starter weiterhin ihre passenden Fenster nach Anwendung sammeln."
 
 #: contents/ui/config/ConfigFolderPopups.qml:194
 msgid ""
 "Each profile applies to every folder that uses that layout. Choose a profile "
 "here to edit it; folder layouts are selected in Items."
-msgstr ""
+msgstr "Jedes Profil gilt für jeden Ordner, der dieses Layout verwendet. Wählen Sie hier ein Profil aus, um es zu bearbeiten; Ordnerlayouts werden unter „Elemente“ ausgewählt."
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:295
 msgid "Edge direction:"
-msgstr ""
+msgstr "Kantenrichtung:"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:207
 #: contents/ui/components/TrashContextPopup.qml:55
 msgid "Empty Trash"
-msgstr ""
+msgstr "Leeren Sie den Papierkorb"
 
 #: contents/ui/config/components/TrashDialog.qml:91
 msgid "Empty icon:"
-msgstr ""
+msgstr "Leeres Symbol:"
 
 #: contents/ui/config/components/TrashDialog.qml:157
 msgid "Empty sound:"
-msgstr ""
+msgstr "Leerer Ton:"
 
 #: contents/ui/components/TrashMenuPopup.qml:75
 msgid "Empty trash"
-msgstr ""
+msgstr "Leeren Sie den Müll"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:114
 msgid "Emptying trash"
-msgstr ""
+msgstr "Müll entleeren"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:29
 msgid "Emptying trash…"
-msgstr ""
+msgstr "Müll entleeren…"
 
 #: contents/ui/config/ConfigItems.qml:600
 msgid "Enable right-click menu"
-msgstr ""
+msgstr "Aktivieren Sie das Rechtsklick-Menü"
 
 #: contents/ui/config/SeparatorOptions.qml:176
 msgid "Enable separator glow effect"
-msgstr ""
+msgstr "Aktivieren Sie den Separator-Glüheffekt"
 
 #: contents/ui/config/SeparatorOptions.qml:170
 msgid "Enable subtle glow effect"
-msgstr ""
+msgstr "Aktivieren Sie einen subtilen Leuchteffekt"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:110
 msgid "Enable the audio visualizer"
-msgstr ""
+msgstr "Aktivieren Sie den Audiovisualisierer"
 
 #: contents/ui/config/ConfigGeneral.qml:217
 msgid "Estimated panel-safe maximum: %1 px"
-msgstr ""
+msgstr "Geschätztes Panel-sicheres Maximum: %1 px"
 
 #: contents/ui/components/TaskModelController.qml:793
 msgid "Exit full screen"
-msgstr ""
+msgstr "Verlassen Sie den Vollbildmodus"
 
 #: contents/ui/config/ConfigFileToolbar.qml:55
 msgid "Export..."
-msgstr ""
+msgstr "Exportieren..."
 
 #: contents/ui/config/ConfigAspect.qml:154 contents/ui/main.qml:46
 msgid "External JSON theme"
-msgstr ""
+msgstr "Externes JSON-Theme"
 
 #: contents/ui/config/components/PopupAnimationSettings.qml:21
 msgid "Fade"
-msgstr ""
+msgstr "Verblassen"
 
 #: contents/ui/config/ConfigFiles.qml:195
 msgid "Failed to read file."
-msgstr ""
+msgstr "Datei konnte nicht gelesen werden."
 
 #: contents/config/config.qml:35
 msgid "Files"
-msgstr ""
+msgstr "Dateien"
 
 #: contents/ui/config/ConfigGeneral.qml:59
 msgid "Fill free panel space"
-msgstr ""
+msgstr "Füllen Sie den freien Platz im Panel aus"
 
 #: contents/ui/config/ConfigGeneral.qml:58
 msgid "Fit content"
-msgstr ""
+msgstr "Passende Inhalte"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:55
 msgid "Floating capsules"
-msgstr ""
+msgstr "Schwimmende Kapseln"
 
 #: contents/ui/config/ConfigGeneral.qml:186
 msgid "Floating icon size:"
-msgstr ""
+msgstr "Größe des schwebenden Symbols:"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:70
 msgid "Flow to the left"
-msgstr ""
+msgstr "Nach links fließen"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:71
 msgid "Flow to the right"
-msgstr ""
+msgstr "Nach rechts fließen"
 
 #: contents/ui/components/FolderPopup.qml:115
 #: contents/ui/config/ConfigItems.qml:595
 msgid "Folder"
-msgstr ""
+msgstr "Ordner"
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:136
 msgid ""
 "Folder configuration was removed temporarily while it is rebuilt safely."
-msgstr ""
+msgstr "Die Ordnerkonfiguration wurde vorübergehend entfernt, während sie sicher neu erstellt wird."
 
 #: contents/ui/config/ConfigAspect.qml:302
 msgid ""
 "Folder import finished — added: %1, already installed: %2, rejected: %3, not "
 "processed because of the 256-theme limit: %4."
-msgstr ""
+msgstr "Ordnerimport abgeschlossen – hinzugefügt: %1, bereits installiert: %2, abgelehnt: %3, nicht verarbeitet aufgrund der Beschränkung auf 256 Themes: %4."
 
 #: contents/ui/config/ConfigAspect.qml:306
 msgid ""
 "Folder import finished — added: %1, already installed: %2, rejected: %3."
-msgstr ""
+msgstr "Ordnerimport abgeschlossen – hinzugefügt: %1, bereits installiert: %2, abgelehnt: %3."
 
 #: contents/ui/config/ConfigAspect.qml:298
 msgid ""
 "Folder import reached the 256-theme safety limit — added: %1, already "
 "installed: %2, rejected: %3. Additional themes were not processed."
-msgstr ""
+msgstr "Der Ordnerimport hat die Sicherheitsgrenze von 256 Designs erreicht – hinzugefügt: %1, bereits installiert: %2, abgelehnt: %3. Weitere Themen wurden nicht bearbeitet."
 
 #: contents/ui/config/ConfigFolderPopups.qml:275
 msgid "Folder popup distance"
-msgstr ""
+msgstr "Popup-Abstand des Ordners"
 
 #: contents/ui/config/ConfigFolderPopups.qml:373
 msgid "Folder popup font family"
-msgstr ""
+msgstr "Ordner-Popup-Schriftfamilie"
 
 #: contents/ui/config/ConfigFolderPopups.qml:398
 msgid "Folder popup font size"
-msgstr ""
+msgstr "Schriftgröße des Ordner-Popups"
 
 #: contents/ui/config/ConfigFolderPopups.qml:216
 msgid "Folder popup icon size"
-msgstr ""
+msgstr "Größe des Ordner-Popup-Symbols"
 
 #: contents/ui/config/ConfigFolderPopups.qml:185
 msgid "Folder popup layout profile"
-msgstr ""
+msgstr "Ordner-Popup-Layoutprofil"
 
 #: contents/ui/config/ConfigFolderPopups.qml:312
 msgid "Folder popup scale"
-msgstr ""
+msgstr "Ordner-Popup-Skala"
 
 #: contents/ui/config/ConfigFolderPopups.qml:173
 msgid "Folder popups"
-msgstr ""
+msgstr "Ordner-Popups"
 
 #: contents/ui/config/ConfigItems.qml:597
 msgid "Folder:"
-msgstr ""
+msgstr "Ordner:"
 
 #: contents/ui/config/ConfigFolderPopups.qml:364
 msgid "Font family:"
-msgstr ""
+msgstr "Schriftfamilie:"
 
 #: contents/ui/config/ConfigFolderPopups.qml:385
 msgid "Font size:"
-msgstr ""
+msgstr "Schriftgröße:"
 
 #: contents/ui/config/ConfigPopups.qml:167
 msgid ""
 "For MPRIS-compatible applications, displays media playback controls below "
 "the window preview list."
-msgstr ""
+msgstr "Bei MPRIS-kompatiblen Anwendungen werden Steuerelemente für die Medienwiedergabe unterhalb der Fenstervorschauliste angezeigt."
 
 #: contents/ui/config/ConfigPopups.qml:169
 msgid ""
 "For MPRIS-compatible applications, replaces the window preview with a full "
 "cover background media card."
-msgstr ""
+msgstr "Ersetzt bei MPRIS-kompatiblen Anwendungen die Fenstervorschau durch eine vollflächige Hintergrundmedienkarte."
 
 #: contents/ui/config/ConfigPopups.qml:171
 msgid ""
 "For MPRIS-compatible applications, replaces the window preview with artwork, "
 "playback controls, and volume card."
-msgstr ""
+msgstr "Ersetzt bei MPRIS-kompatiblen Anwendungen die Fenstervorschau durch Bildmaterial, Wiedergabesteuerung und Lautstärkekarte."
 
 #: contents/ui/config/AdvancedJsonEditor.qml:55
 msgid "Format"
-msgstr ""
+msgstr "Formatieren"
 
 #: contents/ui/config/CalendarOptions.qml:34
 msgid "Format:"
-msgstr ""
+msgstr "Format:"
 
 #: contents/ui/config/ConfigMenus.qml:63
 msgctxt "@item:inlistbox Context menu entrance"
 msgid "From the bottom"
-msgstr ""
+msgstr "Von unten"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:53
 msgid "From the edge"
-msgstr ""
+msgstr "Vom Rand"
 
 #: contents/ui/config/ConfigMenus.qml:61
 msgctxt "@item:inlistbox Context menu entrance"
 msgid "From the left"
-msgstr ""
+msgstr "Von links"
 
 #: contents/ui/config/ConfigMenus.qml:60
 msgctxt "@item:inlistbox Context menu entrance"
 msgid "From the right"
-msgstr ""
+msgstr "Von rechts"
 
 #: contents/ui/config/ConfigMenus.qml:62
 msgctxt "@item:inlistbox Context menu entrance"
 msgid "From the top"
-msgstr ""
+msgstr "Von oben"
 
 #: contents/ui/config/components/TrashDialog.qml:121
 msgid "Full icon:"
-msgstr ""
+msgstr "Vollständiges Symbol:"
 
 #: contents/ui/components/TaskModelController.qml:793
 msgid "Full screen"
-msgstr ""
+msgstr "Vollbild"
 
 #: contents/config/config.qml:11
 msgid "General"
-msgstr ""
+msgstr "Allgemein"
 
 #: contents/ui/config/ConfigFolderPopups.qml:442
 msgid "General popup animation"
-msgstr ""
+msgstr "Allgemeine Popup-Animation"
 
 #: contents/ui/components/CalendarPopup.qml:261
 msgid "Go to today"
-msgstr ""
+msgstr "Gehen Sie zu heute"
 
 #: contents/ui/config/ConfigItems.qml:580
 msgid "Grid"
-msgstr ""
+msgstr "Gitter"
 
 #: contents/ui/config/ConfigFolderPopups.qml:75
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Grid"
-msgstr ""
+msgstr "Gitter"
 
 #: contents/ui/config/ConfigWindows.qml:29
 msgid "Group by application"
-msgstr ""
+msgstr "Nach Anwendung gruppieren"
 
 #: contents/ui/config/ConfigWindows.qml:143
 msgid "Grouping and limits"
-msgstr ""
+msgstr "Gruppierung und Grenzen"
 
 #: contents/ui/config/components/TimedDialog.qml:103
 msgid "Height:"
-msgstr ""
+msgstr "Höhe:"
 
 #: contents/ui/config/ConfigPopups.qml:43
 msgctxt "@item:inlistbox Window preview information"
 msgid "Hidden"
-msgstr ""
+msgstr "Versteckt"
 
 #: contents/ui/config/ConfigAspect.qml:734
 msgid "Hide item names to use icon reflections."
-msgstr ""
+msgstr "Blenden Sie Elementnamen aus, um Symbolreflexionen zu verwenden."
 
 #: contents/ui/config/ConfigAspect.qml:157
 msgid "Horizontal"
-msgstr ""
+msgstr "Horizontal"
 
 #: contents/ui/config/ConfigGeneral.qml:175
 msgid "Horizontal alignment"
-msgstr ""
+msgstr "Horizontale Ausrichtung"
 
 #: contents/ui/config/ConfigGeneral.qml:163
 msgid "Horizontal alignment:"
-msgstr ""
+msgstr "Horizontale Ausrichtung:"
 
 #: contents/ui/config/ConfigMouse.qml:67
 msgid "Hover animation:"
-msgstr ""
+msgstr "Hover-Animation:"
 
 #: contents/ui/config/ConfigAspect.qml:619
 msgid "Hover background:"
-msgstr ""
+msgstr "Hover-Hintergrund:"
 
 #: contents/ui/config/ConfigGeneral.qml:223
 msgid "Hover zoom scale:"
-msgstr ""
+msgstr "Hover-Zoom-Skala:"
 
 #: contents/ui/config/ConfigPopups.qml:41
 msgctxt "@item:inlistbox Window preview information"
 msgid "Icon and text"
-msgstr ""
+msgstr "Symbol und Text"
 
 #: contents/ui/config/ConfigPopups.qml:42
 msgctxt "@item:inlistbox Window preview information"
 msgid "Icon only"
-msgstr ""
+msgstr "Nur Symbol"
 
 #: contents/ui/config/ConfigAspect.qml:675
 msgid "Icon reflections"
-msgstr ""
+msgstr "Symbolreflexionen"
 
 #: contents/ui/config/ConfigAspect.qml:732
 msgid "Icon reflections are not available in vertical panels."
-msgstr ""
+msgstr "Symbolreflexionen sind in vertikalen Panels nicht verfügbar."
 
 #: contents/ui/config/ConfigAspect.qml:685
 msgid "Icon reflections are unavailable in vertical panels."
-msgstr ""
+msgstr "Symbolreflexionen sind in vertikalen Panels nicht verfügbar."
 
 #: contents/ui/config/ConfigFolderPopups.qml:203
 #: contents/ui/config/ConfigMenus.qml:165
 msgid "Icon size:"
-msgstr ""
+msgstr "Symbolgröße:"
 
 #: contents/ui/config/ConfigItems.qml:587
 msgid "Icon:"
-msgstr ""
+msgstr "Symbol:"
 
 #: contents/ui/config/ConfigFiles.qml:162
 msgid "Import JSON Configuration"
-msgstr ""
+msgstr "JSON-Konfiguration importieren"
 
 #: contents/ui/config/ConfigAspect.qml:535
 msgid "Import Punchi Dock JSON themes"
-msgstr ""
+msgstr "Importieren Sie Punchi Dock JSON-Designs"
 
 #: contents/ui/config/ConfigAspect.qml:332
 msgid "Import Punchi Dock Theme"
-msgstr ""
+msgstr "Importieren Sie das Punchi Dock-Design"
 
 #: contents/ui/config/ConfigAspect.qml:350
 msgid "Import Punchi Dock Theme Folder"
-msgstr ""
+msgstr "Importieren Sie den Punchi Dock Theme-Ordner"
 
 #: contents/ui/config/ConfigAspect.qml:568
 msgid "Import a JSON theme to add it to your Punchi Dock Remastered library."
-msgstr ""
+msgstr "Importieren Sie ein JSON-Design, um es Ihrer Punchi Dock Remastered-Bibliothek hinzuzufügen."
 
 #: contents/ui/config/ConfigAspect.qml:383
 msgid "Import all Punchi Dock JSON themes from a folder and its subfolders"
-msgstr ""
+msgstr "Importieren Sie alle Punchi Dock JSON-Designs aus einem Ordner und seinen Unterordnern"
 
 #: contents/ui/config/ConfigAspect.qml:370
 msgid "Import file…"
-msgstr ""
+msgstr "Datei importieren…"
 
 #: contents/ui/config/ConfigAspect.qml:381
 msgid "Import folder…"
-msgstr ""
+msgstr "Ordner importieren…"
 
 #: contents/ui/config/ConfigAspect.qml:372
 msgid "Import one Punchi Dock JSON theme"
-msgstr ""
+msgstr "Importieren Sie ein Punchi Dock JSON-Design"
 
 #: contents/ui/config/ConfigFileToolbar.qml:34
 msgid "Import..."
-msgstr ""
+msgstr "Importieren..."
 
 #: contents/ui/config/ConfigAspect.qml:449
 msgid ""
 "Imported themes are stored in the Punchi Dock Remastered user library and "
 "currently apply only to a floating dock. Plasma panels keep their native "
 "background."
-msgstr ""
+msgstr "Importierte Designs werden in der Punchi Dock Remastered-Benutzerbibliothek gespeichert und gelten derzeit nur für ein Floating Dock. Plasmabildschirme behalten ihren ursprünglichen Hintergrund."
 
 #: contents/ui/config/ConfigAspect.qml:533
 msgid "Import…"
-msgstr ""
+msgstr "Importieren…"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:152
 msgid ""
 "In floating mode, only the spectrum and dock items remain visible. A Plasma "
 "panel keeps its own background."
-msgstr ""
+msgstr "Im schwebenden Modus bleiben nur das Spektrum und die Dockelemente sichtbar. Ein Plasma-Panel behält seinen eigenen Hintergrund."
 
 #: contents/ui/config/ConfigAspect.qml:748
 msgid "Indicator"
-msgstr ""
+msgstr "Indikator"
 
 #: contents/ui/config/ConfigAspect.qml:822
 msgid "Indicator opacity:"
-msgstr ""
+msgstr "Deckkraft des Indikators:"
 
 #: contents/ui/config/ConfigAspect.qml:788
 msgid "Indicator position:"
-msgstr ""
+msgstr "Anzeigeposition:"
 
 #: contents/ui/config/ConfigAspect.qml:752
 msgid "Indicator shape:"
-msgstr ""
+msgstr "Form des Indikators:"
 
 #: contents/ui/config/ConfigAspect.qml:847
 msgid "Indicator size:"
-msgstr ""
+msgstr "Indikatorgröße:"
 
 #: contents/ui/config/ConfigAspect.qml:519
 msgid "Installed Punchi Dock theme"
-msgstr ""
+msgstr "Punchi Dock-Design installiert"
 
 #: contents/ui/config/ConfigAspect.qml:498
 msgid "Installed theme:"
-msgstr ""
+msgstr "Installiertes Theme:"
 
 #: contents/ui/config/components/PopupAnimationSettings.qml:97
 msgid "Intensity:"
-msgstr ""
+msgstr "Intensität:"
 
 #: contents/ui/config/ConfigFiles.qml:76
 msgid "Invalid JSON: %1"
-msgstr ""
+msgstr "Ungültiger JSON: %1"
 
 #: contents/ui/config/components/TimedDialog.qml:124
 msgid "Item height:"
-msgstr ""
+msgstr "Artikelhöhe:"
 
 #: contents/ui/config/ConfigAspect.qml:614
 msgid "Item highlight"
-msgstr ""
+msgstr "Artikel-Highlight"
 
 #: contents/ui/config/ConfigFolderPopups.qml:351
 msgid "Item text:"
-msgstr ""
+msgstr "Artikeltext:"
 
 #: contents/ui/config/components/TimedDialog.qml:65
 #: contents/ui/config/components/TimedDialog.qml:98
 msgid "Item width:"
-msgstr ""
+msgstr "Artikelbreite:"
 
 #: contents/config/config.qml:5 contents/ui/config/ConfigItems.qml:26
 msgid "Items"
-msgstr ""
+msgstr "Artikel"
 
 #: contents/ui/config/ConfigItemsMainView.qml:81
 msgid "Items in Dock"
-msgstr ""
+msgstr "Elemente im Dock"
 
 #: contents/ui/config/ConfigItemsMainView.qml:59
 msgid "Items to add"
-msgstr ""
+msgstr "Elemente zum Hinzufügen"
 
 #: contents/ui/config/ConfigFiles.qml:16
 msgid "JSON Configuration"
-msgstr ""
+msgstr "JSON-Konfiguration"
 
 #: contents/ui/config/ConfigFiles.qml:81
 msgid "JSON looks valid."
-msgstr ""
+msgstr "JSON sieht gültig aus."
 
 #: contents/ui/config/ConfigAspect.qml:334
 msgid "JSON theme files"
-msgstr ""
+msgstr "JSON-Designdateien"
 
 #: contents/ui/components/TaskModelController.qml:783
 msgid "Keep above"
-msgstr ""
+msgstr "Oben bleiben"
 
 #: contents/ui/config/ConfigAspect.qml:640
 msgid "Labels"
-msgstr ""
+msgstr "Etiketten"
 
 #: contents/ui/config/ConfigAspect.qml:665
 msgid ""
 "Labels use a compact single-line style so the dock can remain readable "
 "without turning every item into a large card."
-msgstr ""
+msgstr "Etiketten verwenden einen kompakten einzeiligen Stil, sodass das Dock lesbar bleibt, ohne dass jedes Element zu einer großen Karte wird."
 
 #: contents/ui/config/ConfigAspect.qml:645
 msgid "Labels:"
-msgstr ""
+msgstr "Etiketten:"
 
 #: contents/ui/config/ConfigMenus.qml:37
 msgctxt "@item:inlistbox Context menu size"
 msgid "Large"
-msgstr ""
+msgstr "Groß"
 
 #: contents/ui/config/ConfigMouse.qml:39
 msgid "Lateral ripple"
-msgstr ""
+msgstr "Seitliche Welligkeit"
 
 #: contents/ui/config/ConfigItems.qml:577
 msgid "Launch app"
-msgstr ""
+msgstr "App starten"
 
 #: contents/ui/config/ConfigFolderPopups.qml:178
 msgid "Layout profile:"
-msgstr ""
+msgstr "Layoutprofil:"
 
 #: contents/ui/config/ConfigGeneral.qml:67
 msgid "Left to right"
-msgstr ""
+msgstr "Von links nach rechts"
 
 #: contents/ui/config/SeparatorOptions.qml:94
 msgid "Length:"
-msgstr ""
+msgstr "Länge:"
 
 #: contents/ui/config/ConfigItems.qml:601
 msgid "Limit menu rows"
-msgstr ""
+msgstr "Beschränken Sie die Menüzeilen"
 
 #: contents/ui/config/ConfigGeneral.qml:211
 msgid "Limit:"
-msgstr ""
+msgstr "Limit:"
 
 #: contents/ui/config/ConfigPopups.qml:283
 msgid ""
 "Limits visible popup rows; additional entries remain accessible by scrolling."
-msgstr ""
+msgstr "Begrenzt sichtbare Popup-Zeilen; Weitere Einträge bleiben durch Scrollen zugänglich."
 
 #: contents/ui/config/ConfigAspect.qml:114
 #: contents/ui/config/SeparatorOptions.qml:43
 msgid "Line"
-msgstr ""
+msgstr "Linie"
 
 #: contents/ui/config/ConfigAspect.qml:779
 msgid ""
 "Line, dot and rounded square can be placed at the top or bottom edge of the "
 "icon."
-msgstr ""
+msgstr "Am oberen oder unteren Rand des Symbols können Linien, Punkte und abgerundete Quadrate platziert werden."
 
 #: contents/ui/config/ConfigItems.qml:581
 msgid "List"
-msgstr ""
+msgstr "Liste"
 
 #: contents/ui/config/ConfigFolderPopups.qml:76
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
-msgstr ""
+msgstr "Liste"
 
 #: contents/ui/config/ConfigItems.qml:599
 msgid "Load content"
-msgstr ""
+msgstr "Inhalte laden"
 
 #: contents/ui/config/ConfigFiles.qml:191
 msgid "Loaded file, but JSON is invalid: %1"
-msgstr ""
+msgstr "Geladene Datei, aber JSON ist ungültig: %1"
 
 #: contents/ui/config/ConfigMenus.qml:289
 msgid ""
 "Lower values make the preview-to-menu movement gentler; higher values make "
 "it faster. 100% follows the Plasma theme duration."
-msgstr ""
+msgstr "Niedrigere Werte machen die Bewegung von der Vorschau zum Menü sanfter; Höhere Werte machen es schneller. Folgt zu 100 % der Dauer des Plasma-Themas."
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:57
 msgid "Luminous cloud"
-msgstr ""
+msgstr "Leuchtende Wolke"
 
 #: contents/ui/components/MediaControlsCard.qml:72
 msgid "MPRIS controls"
-msgstr ""
+msgstr "MPRIS-Kontrollen"
 
 #: contents/ui/config/ConfigItems.qml:594
 msgid "Manual"
-msgstr ""
+msgstr "Handbuch"
 
 #: contents/ui/components/TaskModelController.qml:774
 msgid "Maximize"
-msgstr ""
+msgstr "Maximieren"
 
 #: contents/ui/components/TaskWindowsPopup.qml:322
 #: contents/ui/components/WindowPreviewCard.qml:214
 msgid "Maximize window"
-msgstr ""
+msgstr "Fenster maximieren"
 
 #: contents/ui/config/ConfigWindows.qml:100
 msgid "Maximum dynamic groups shown in the dock"
-msgstr ""
+msgstr "Maximale dynamische Gruppen, die im Dock angezeigt werden"
 
 #: contents/ui/components/NotePopup.qml:100
 msgid "Maximum length reached"
-msgstr ""
+msgstr "Maximale Länge erreicht"
 
 #: contents/ui/config/ConfigMenus.qml:129
 msgid "Maximum visible context menu actions"
-msgstr ""
+msgstr "Maximal sichtbare Kontextmenüaktionen"
 
 #: contents/ui/config/ConfigFolderPopups.qml:241
 msgid "Maximum visible folder popup columns"
-msgstr ""
+msgstr "Maximal sichtbare Ordner-Popup-Spalten"
 
 #: contents/ui/config/ConfigFolderPopups.qml:256
 msgid "Maximum visible folder popup rows"
-msgstr ""
+msgstr "Maximal sichtbare Ordner-Popup-Zeilen"
 
 #: contents/ui/config/ConfigPopups.qml:275
 msgid "Maximum visible popup rows"
-msgstr ""
+msgstr "Maximal sichtbare Popup-Zeilen"
 
 #: contents/ui/components/MediaControlsCard.qml:813
 msgctxt "@info:accessible"
 msgid "Media application"
-msgstr ""
+msgstr "Medienanwendung"
 
 #: contents/ui/config/ConfigPopups.qml:172
 msgid ""
 "Media applications behave like standard windows without showing media "
 "controls on hover."
-msgstr ""
+msgstr "Medienanwendungen verhalten sich wie Standardfenster, ohne dass beim Schweben Mediensteuerelemente angezeigt werden."
 
 #: contents/ui/components/MediaControlsCard.qml:100
 msgctxt "@info:accessible"
 msgid "Media controls for %1"
-msgstr ""
+msgstr "Mediensteuerelemente für %1"
 
 #: contents/ui/components/MediaControlsCard.qml:67
 msgid "Media playback"
-msgstr ""
+msgstr "Medienwiedergabe"
 
 #: contents/ui/config/ConfigPopups.qml:142
 msgid "Media players:"
-msgstr ""
+msgstr "Mediaplayer:"
 
 #: contents/ui/components/MediaVolumeControl.qml:82
 msgctxt "@label:slider"
 msgid "Media volume"
-msgstr ""
+msgstr "Medienlautstärke"
 
 #: contents/ui/config/ConfigMenus.qml:311
 msgid "Menu animation"
-msgstr ""
+msgstr "Menüanimation"
 
 #: contents/ui/config/ConfigMenus.qml:242
 msgid "Menu entrance:"
-msgstr ""
+msgstr "Menüeinstieg:"
 
 #: contents/ui/config/ConfigMenus.qml:302
 msgid ""
 "Menu entries and per-item actions remain configured from the Items section."
-msgstr ""
+msgstr "Menüeinträge und Aktionen pro Element bleiben im Abschnitt „Elemente“ konfiguriert."
 
 #: contents/ui/config/ConfigMenus.qml:107
 msgid "Menu size:"
-msgstr ""
+msgstr "Menügröße:"
 
 #: contents/ui/config/ConfigMenus.qml:261
 msgid "Menu transition speed:"
-msgstr ""
+msgstr "Geschwindigkeit des Menüübergangs:"
 
 #: contents/ui/config/ConfigMenus.qml:193
 msgid "Menu width:"
-msgstr ""
+msgstr "Menübreite:"
 
 #: contents/ui/config/ConfigAspect.qml:143
 msgid "Menus"
-msgstr ""
+msgstr "Menüs"
 
 #: contents/ui/config/ConfigMenus.qml:221
 msgid ""
 "Menus use these target dimensions after morphing from a window preview. "
 "Screen limits can reduce the effective size safely."
-msgstr ""
+msgstr "Menüs verwenden diese Zielabmessungen nach dem Morphing aus einer Fenstervorschau. Bildschirmgrenzen können die effektive Größe sicher reduzieren."
 
 #: contents/ui/components/TaskModelController.qml:764
 msgid "Minimize"
-msgstr ""
+msgstr "Minimieren"
 
 #: contents/ui/components/TaskWindowsPopup.qml:287
 #: contents/ui/components/WindowPreviewCard.qml:180
 msgid "Minimize window"
-msgstr ""
+msgstr "Fenster minimieren"
 
 #: contents/ui/components/TaskOverflowPopup.qml:35
 msgid "More window groups"
-msgstr ""
+msgstr "Weitere Fenstergruppen"
 
 #: contents/ui/config/ConfigMenus.qml:64
 msgctxt "@item:inlistbox Context menu entrance"
 msgid "Morph only"
-msgstr ""
+msgstr "Nur Morph"
 
 #: contents/config/config.qml:23
 msgid "Mouse"
-msgstr ""
+msgstr "Maus"
 
 #: contents/ui/components/MediaVolumeControl.qml:56
 msgctxt "@action:button"
 msgid "Mute media volume"
-msgstr ""
+msgstr "Medienlautstärke stumm schalten"
 
 #: contents/ui/config/ConfigItems.qml:572
 #: contents/ui/config/components/TimedDialog.qml:45
 #: contents/ui/config/components/TrashDialog.qml:43
 msgid "Name:"
-msgstr ""
+msgstr "Name:"
 
 #: contents/ui/components/TaskModelController.qml:726
 msgid "New window"
-msgstr ""
+msgstr "Neues Fenster"
 
 #: contents/ui/components/CalendarPopup.qml:288
 msgid "Next month"
-msgstr ""
+msgstr "Nächsten Monat"
 
 #: contents/ui/components/MediaTransportControls.qml:113
 msgctxt "@action:button"
 msgid "Next track"
-msgstr ""
+msgstr "Nächster Titel"
 
 #: contents/ui/config/ConfigAspect.qml:518
 msgid "No imported themes"
-msgstr ""
+msgstr "Keine importierten Themes"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:69
 msgid "No movement"
-msgstr ""
+msgstr "Keine Bewegung"
 
 #: src/dockruntimeservice.cpp:122
 msgid "No sound player or usable sound was found."
-msgstr ""
+msgstr "Es wurde kein Soundplayer oder brauchbarer Sound gefunden."
 
 #: contents/ui/config/ConfigGeneral.qml:318
 msgid "No virtual desktops were found."
-msgstr ""
+msgstr "Es wurden keine virtuellen Desktops gefunden."
 
 #: contents/ui/config/ConfigAspect.qml:118
 #: contents/ui/config/ConfigMouse.qml:24 contents/ui/config/ConfigMouse.qml:30
 #: contents/ui/config/ConfigMouse.qml:37 contents/ui/config/ConfigPopups.qml:36
 #: contents/ui/config/components/PopupAnimationSettings.qml:23
 msgid "None"
-msgstr ""
+msgstr "Keine"
 
 #: contents/ui/components/NotePopup.qml:134
 #: contents/ui/config/AddItemPalette.qml:24
 #: contents/ui/config/ConfigItems.qml:584
 msgid "Note"
-msgstr ""
+msgstr "Hinweis"
 
 #: contents/ui/components/NotePopup.qml:339
 msgid "Note content"
-msgstr ""
+msgstr "Inhalt beachten"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:231
 msgid "Number of audio visualizer bars"
-msgstr ""
+msgstr "Anzahl der Audiovisualisierungsbalken"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:216
 msgid "Number of bars:"
-msgstr ""
+msgstr "Anzahl der Balken:"
 
 #: contents/ui/config/ConfigWindows.qml:130
 msgid "Only tasks on the current desktop will appear."
-msgstr ""
+msgstr "Es werden nur Aufgaben auf dem aktuellen Desktop angezeigt."
 
 #: contents/ui/config/SeparatorOptions.qml:131
 msgid "Opacity:"
-msgstr ""
+msgstr "Deckkraft:"
 
 #: contents/ui/config/AddItemPalette.qml:28
 msgid "Open or empty the trash"
-msgstr ""
+msgstr "Öffnen oder leeren Sie den Papierkorb"
 
 #: contents/ui/config/ColorPaletteDialog.qml:140
 msgid "Open the Plasma color selector"
-msgstr ""
+msgstr "Öffnen Sie die Plasma-Farbauswahl"
 
 #: contents/ui/components/TrashMenuPopup.qml:47
 msgid "Open the trash folder in the file manager"
-msgstr ""
+msgstr "Öffnen Sie den Papierkorb-Ordner im Dateimanager"
 
 #: contents/ui/components/TrashMenuPopup.qml:43
 msgid "Open trash"
-msgstr ""
+msgstr "Öffnen Sie den Papierkorb"
 
 #: contents/ui/config/components/PopupAnimationSettings.qml:110
 msgid "Opening animation intensity"
-msgstr ""
+msgstr "Intensität der Eröffnungsanimation"
 
 #: contents/ui/config/components/PopupAnimationSettings.qml:81
 msgid "Opening animation speed"
-msgstr ""
+msgstr "Geschwindigkeit der Eröffnungsanimation"
 
 #: contents/ui/config/components/PopupAnimationSettings.qml:50
 msgid "Opening effect:"
-msgstr ""
+msgstr "Eröffnungseffekt:"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:61
 msgid "Over the Plasma background"
-msgstr ""
+msgstr "Über dem Plasma-Hintergrund"
 
 #: contents/ui/config/ConfigGeneral.qml:186
 msgid "Panel icon size:"
-msgstr ""
+msgstr "Größe des Bedienfeldsymbols:"
 
 #: contents/ui/config/ConfigGeneral.qml:152
 msgid "Panel length"
-msgstr ""
+msgstr "Panellänge"
 
 #: contents/ui/config/ConfigGeneral.qml:140
 msgid "Panel length:"
-msgstr ""
+msgstr "Plattenlänge:"
 
 #: contents/ui/config/ConfigMouse.qml:27
 msgid "Paragraph"
-msgstr ""
+msgstr "Absatz"
 
 #: contents/ui/components/MediaTransportControls.qml:83
 msgctxt "@action:button"
 msgid "Pause"
-msgstr ""
+msgstr "Pause"
 
 #: contents/ui/components/TrashMenuPopup.qml:80
 msgid "Permanently remove all items from the trash"
-msgstr ""
+msgstr "Entfernen Sie alle Elemente dauerhaft aus dem Papierkorb"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:211
 msgid "Permanently remove all trashed items"
-msgstr ""
+msgstr "Entfernen Sie alle weggeworfenen Gegenstände dauerhaft"
 
 #: contents/ui/components/DockContextActionsController.qml:52
 msgctxt "@action:context"
 msgid "Pin to Dock"
-msgstr ""
+msgstr "An Dock anpinnen"
 
 #: contents/ui/config/ConfigWindows.qml:84
 msgid ""
 "Pinned launchers can act as task entries when their application is already "
 "open."
-msgstr ""
+msgstr "Angeheftete Starter können als Aufgabeneinträge fungieren, wenn ihre Anwendung bereits geöffnet ist."
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:56
 msgid "Pixel spectrum"
-msgstr ""
+msgstr "Pixelspektrum"
 
 #: contents/ui/config/CalendarOptions.qml:218
 #: contents/ui/config/ConfigAspect.qml:153
 #: contents/ui/config/ConfigItems.qml:550 contents/ui/main.qml:37
 msgid "Plasma theme"
-msgstr ""
+msgstr "Plasma-Thema"
 
 #: contents/ui/components/MediaTransportControls.qml:84
 msgctxt "@action:button"
 msgid "Play"
-msgstr ""
+msgstr "Spielen"
 
 #: contents/ui/components/MediaControlsCard.qml:185
 msgctxt "@info:accessible"
 msgid "Playback progress"
-msgstr ""
+msgstr "Wiedergabefortschritt"
 
 #: contents/ui/config/ConfigFolderPopups.qml:264
 msgid "Popup distance:"
-msgstr ""
+msgstr "Popup-Entfernung:"
 
 #: contents/ui/config/ConfigPopups.qml:270
 msgid "Popup rows:"
-msgstr ""
+msgstr "Popup-Zeilen:"
 
 #: contents/ui/config/CalendarOptions.qml:138
 #: contents/ui/config/ConfigFolderPopups.qml:301
 msgid "Popup scale:"
-msgstr ""
+msgstr "Popup-Skala:"
 
 #: contents/ui/config/ConfigAspect.qml:139
 msgid "Popups"
-msgstr ""
+msgstr "Popups"
 
 #: contents/ui/config/ConfigAspect.qml:813
 msgid "Position is not used with the current indicator shape."
-msgstr ""
+msgstr "Die Position wird mit der aktuellen Indikatorform nicht verwendet."
 
 #: contents/ui/config/ConfigMouse.qml:32
 msgid "Press"
-msgstr ""
+msgstr "Drücken Sie"
 
 #: contents/ui/config/ConfigItems.qml:575
 msgid "Press Enter to search..."
-msgstr ""
+msgstr "Drücken Sie die Eingabetaste, um zu suchen..."
 
 #: contents/ui/components/DockItem.qml:601
 msgctxt "@info:accessible"
 msgid "Press M to open media controls"
-msgstr ""
+msgstr "Drücken Sie M, um die Mediensteuerung zu öffnen"
 
 #: contents/ui/components/TaskWindowsPopup.qml:215
 #: contents/ui/components/WindowPreviewCard.qml:109
 msgid "Preview disabled"
-msgstr ""
+msgstr "Vorschau deaktiviert"
 
 #: contents/ui/config/ConfigPopups.qml:221
 msgid "Preview information:"
-msgstr ""
+msgstr "Vorschauinformationen:"
 
 #: contents/ui/config/ConfigPopups.qml:105
 msgid "Preview popup:"
-msgstr ""
+msgstr "Vorschau-Popup:"
 
 #: contents/ui/config/ConfigPopups.qml:181
 msgid "Preview size:"
-msgstr ""
+msgstr "Vorschaugröße:"
 
 #: contents/ui/config/ConfigMenus.qml:273
 msgid "Preview to context menu transition speed"
-msgstr ""
+msgstr "Übergangsgeschwindigkeit von Vorschau zum Kontextmenü"
 
 #: contents/ui/components/TaskWindowsPopup.qml:216
 #: contents/ui/components/WindowPreviewCard.qml:111
 msgid "Preview unavailable"
-msgstr ""
+msgstr "Vorschau nicht verfügbar"
 
 #: contents/ui/components/CalendarPopup.qml:234
 msgid "Previous month"
-msgstr ""
+msgstr "Vorheriger Monat"
 
 #: contents/ui/components/MediaTransportControls.qml:68
 msgctxt "@action:button"
 msgid "Previous track"
-msgstr ""
+msgstr "Vorheriger Titel"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:120
 msgid ""
@@ -1763,728 +1762,728 @@ msgid ""
 "audio visualizer is enabled. It does not select the microphone, record or "
 "store audio samples, or send audio over the network. Plasma may still show a "
 "recording indicator because output monitoring uses an input audio stream."
-msgstr ""
+msgstr "Datenschutzhinweis: Punchi Dock überwacht den Systemausgangsmix nur, während der Audiovisualisierer aktiviert ist. Es erfolgt keine Auswahl des Mikrofons, keine Aufnahme oder Speicherung von Audio-Samples oder das Senden von Audio über das Netzwerk. Plasma zeigt möglicherweise immer noch eine Aufnahmeanzeige an, da die Ausgabeüberwachung einen Eingabe-Audiostream verwendet."
 
 #: contents/ui/config/ConfigMouse.qml:31
 msgid "Pulse"
-msgstr ""
+msgstr "Puls"
 
 #: contents/ui/config/ConfigAspect.qml:283
 msgid "Punchi Dock could not delete the selected theme."
-msgstr ""
+msgstr "Punchi Dock konnte das ausgewählte Thema nicht löschen."
 
 #: contents/ui/config/ConfigAspect.qml:275
 msgid "Punchi Dock could not store the imported theme."
-msgstr ""
+msgstr "Punchi Dock konnte das importierte Theme nicht speichern."
 
 #: contents/ui/components/DockItem.qml:41
 #: contents/ui/components/DockItemsController.qml:202
 msgctxt "@title"
 msgid "Quick Note"
-msgstr ""
+msgstr "Kurzer Hinweis"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:58
 msgid "Reactive particles"
-msgstr ""
+msgstr "Reaktive Partikel"
 
 #: contents/ui/config/ConfigAspect.qml:712
 msgid "Reflection opacity"
-msgstr ""
+msgstr "Reflexionsopazität"
 
 #: contents/ui/config/ConfigAspect.qml:701
 msgid "Reflection opacity:"
-msgstr ""
+msgstr "Reflexionsopazität:"
 
 #: contents/ui/config/ConfigAspect.qml:681
 msgid "Reflection:"
-msgstr ""
+msgstr "Reflexion:"
 
 #: contents/ui/components/MediaTransportControls.qml:129
 msgctxt "@action:button"
 msgid "Repeat"
-msgstr ""
+msgstr "Wiederholen"
 
 #: contents/ui/components/MediaTransportControls.qml:128
 msgctxt "@action:button"
 msgid "Repeat track"
-msgstr ""
+msgstr "Titel wiederholen"
 
 #: contents/ui/config/ConfigPopups.qml:47
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with full cover media card"
-msgstr ""
+msgstr "Ersetzen Sie die Vorschau durch eine vollflächige Medienkarte"
 
 #: contents/ui/config/ConfigPopups.qml:46
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with media card"
-msgstr ""
+msgstr "Ersetzen Sie die Vorschau durch eine Medienkarte"
 
 #: contents/ui/components/TaskModelController.qml:764
 msgid "Restore"
-msgstr ""
+msgstr "Wiederherstellen"
 
 #: contents/ui/components/TaskModelController.qml:774
 msgid "Restore from maximized"
-msgstr ""
+msgstr "Aus maximiertem Zustand wiederherstellen"
 
 #: contents/ui/components/TaskWindowsPopup.qml:286
 #: contents/ui/components/WindowPreviewCard.qml:179
 msgid "Restore from minimized state"
-msgstr ""
+msgstr "Aus minimiertem Zustand wiederherstellen"
 
 #: contents/ui/components/MediaVolumeControl.qml:55
 msgctxt "@action:button"
 msgid "Restore media volume"
-msgstr ""
+msgstr "Medienvolumen wiederherstellen"
 
 #: contents/ui/components/TaskWindowsPopup.qml:321
 #: contents/ui/components/WindowPreviewCard.qml:213
 msgid "Restore window size"
-msgstr ""
+msgstr "Fenstergröße wiederherstellen"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:270
 msgid "Rhythmic movement:"
-msgstr ""
+msgstr "Rhythmische Bewegung:"
 
 #: contents/ui/config/ConfigGeneral.qml:69
 msgid "Right to left"
-msgstr ""
+msgstr "Von rechts nach links"
 
 #: contents/ui/config/ConfigItems.qml:591
 msgid "Right-click commands"
-msgstr ""
+msgstr "Rechtsklick-Befehle"
 
 #: contents/ui/config/ConfigAspect.qml:116
 msgid "Ring"
-msgstr ""
+msgstr "Klingeln"
 
 #: contents/ui/config/SeparatorOptions.qml:46
 msgid "Rounded pill"
-msgstr ""
+msgstr "Abgerundete Pille"
 
 #: contents/ui/config/ConfigAspect.qml:117
 msgid "Rounded square"
-msgstr ""
+msgstr "Abgerundetes Quadrat"
 
 #: contents/ui/config/ConfigMenus.qml:137
 msgid "Row height:"
-msgstr ""
+msgstr "Zeilenhöhe:"
 
 #: contents/ui/components/NotePopup.qml:150
 msgid "Save note"
-msgstr ""
+msgstr "Notiz speichern"
 
 #: contents/ui/components/NotePopup.qml:59
 #: contents/ui/components/NotePopup.qml:368
 msgid "Saved"
-msgstr ""
+msgstr "Gespeichert"
 
 #: contents/ui/config/ConfigFolderPopups.qml:329
 msgid ""
 "Scales folder popup contents between 0.5x and 3.0x while maintaining fixed "
 "window geometry."
-msgstr ""
+msgstr "Skaliert Ordner-Popup-Inhalte zwischen 0,5x und 3,0x und behält dabei die feste Fenstergeometrie bei."
 
 #: contents/ui/config/ConfigFolderPopups.qml:313
 msgid "Scales popup dimensions, icons, and text proportionally."
-msgstr ""
+msgstr "Skaliert Popup-Abmessungen, Symbole und Text proportional."
 
 #: contents/ui/config/ConfigWindows.qml:119
 msgid "Scope:"
-msgstr ""
+msgstr "Geltungsbereich:"
 
 #: contents/ui/config/ConfigAspect.qml:517
 msgid "Select a theme"
-msgstr ""
+msgstr "Wählen Sie ein Thema aus"
 
 #: contents/ui/config/ColorPaletteDialog.qml:134
 msgid "Select custom color"
-msgstr ""
+msgstr "Wählen Sie eine benutzerdefinierte Farbe"
 
 #: contents/ui/config/AddItemPalette.qml:25
 #: contents/ui/config/ConfigItems.qml:585
 msgid "Separator"
-msgstr ""
+msgstr "Trennzeichen"
 
 #: contents/ui/config/SeparatorOptions.qml:119
 msgid "Separator length ratio"
-msgstr ""
+msgstr "Längenverhältnis der Separatoren"
 
 #: contents/ui/config/SeparatorOptions.qml:156
 msgid "Separator opacity"
-msgstr ""
+msgstr "Deckkraft des Trennzeichens"
 
 #: contents/ui/config/SeparatorOptions.qml:82
 msgid "Separator thickness"
-msgstr ""
+msgstr "Dicke des Separators"
 
 #: contents/ui/config/SeparatorOptions.qml:22
 msgid ""
 "Separators help group items on your dock. Shape, size, and glow adapt "
 "automatically to your Plasma theme."
-msgstr ""
+msgstr "Trennzeichen helfen dabei, Elemente auf Ihrem Dock zu gruppieren. Form, Größe und Glanz passen sich automatisch an Ihr Plasma-Thema an."
 
 #: contents/ui/config/ConfigMouse.qml:149
 msgid "Settings cursor:"
-msgstr ""
+msgstr "Einstellungscursor:"
 
 #: contents/ui/config/SeparatorOptions.qml:33
 msgid "Shape:"
-msgstr ""
+msgstr "Form:"
 
 #: src/dockthemerepository.cpp:382
 msgid "Shaped"
-msgstr ""
+msgstr "Geformt"
 
 #: contents/ui/config/ConfigAspect.qml:620
 msgid "Show a themed background behind items"
-msgstr ""
+msgstr "Zeigen Sie einen thematischen Hintergrund hinter den Elementen an"
 
 #: contents/ui/config/ConfigWindows.qml:76
 msgid "Show active windows in the dock"
-msgstr ""
+msgstr "Aktive Fenster im Dock anzeigen"
 
 #: contents/ui/config/ConfigFolderPopups.qml:352
 msgid "Show application names and details"
-msgstr ""
+msgstr "Anwendungsnamen und -details anzeigen"
 
 #: contents/ui/config/CalendarOptions.qml:134
 msgid "Show calendar week numbers"
-msgstr ""
+msgstr "Kalenderwochennummern anzeigen"
 
 #: contents/ui/config/AddItemPalette.qml:27
 msgid "Show date information"
-msgstr ""
+msgstr "Datumsinformationen anzeigen"
 
 #: contents/ui/config/ConfigWindows.qml:30
 msgid "Show each window"
-msgstr ""
+msgstr "Jedes Fenster anzeigen"
 
 #: contents/ui/config/ConfigFolderPopups.qml:340
 msgid "Show folder name header at top of popups"
-msgstr ""
+msgstr "Ordnernamen-Kopfzeile oben in Popups anzeigen"
 
 #: contents/ui/config/ConfigAspect.qml:646
 msgid "Show item names in the dock"
-msgstr ""
+msgstr "Elementnamen im Dock anzeigen"
 
 #: contents/ui/config/ConfigItems.qml:583
 msgid "Show labels"
-msgstr ""
+msgstr "Beschriftungen anzeigen"
 
 #: contents/ui/config/ConfigPopups.qml:48
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Show media card below window previews"
-msgstr ""
+msgstr "Medienkarte unterhalb der Fenstervorschau anzeigen"
 
 #: contents/ui/config/ConfigWindows.qml:120
 msgid "Show only windows from the current virtual desktop"
-msgstr ""
+msgstr "Nur Fenster des aktuellen virtuellen Desktops anzeigen"
 
 #: contents/ui/config/ConfigAspect.qml:682
 msgid "Show reflections below dock items"
-msgstr ""
+msgstr "Reflexionen unter Dock-Elementen anzeigen"
 
 #: contents/ui/config/ConfigAspect.qml:656
 msgid "Show subtle shadows on dock text"
-msgstr ""
+msgstr "Zeigen Sie subtile Schatten auf dem Docktext an"
 
 #: contents/ui/config/ConfigMenus.qml:232
 msgid "Show subtle shadows on menu text"
-msgstr ""
+msgstr "Zeigen Sie subtile Schatten im Menütext an"
 
 #: contents/ui/config/ConfigFolderPopups.qml:417
 msgid "Show subtle shadows on popup text"
-msgstr ""
+msgstr "Zeigen Sie subtile Schatten im Popup-Text an"
 
 #: contents/ui/config/ConfigPopups.qml:259
 msgid "Show subtle shadows on window preview text"
-msgstr ""
+msgstr "Zeigen Sie subtile Schatten im Fenstervorschautext an"
 
 #: contents/ui/config/components/TrashDialog.qml:68
 msgid "Show trash state"
-msgstr ""
+msgstr "Papierkorbstatus anzeigen"
 
 #: contents/ui/config/CalendarOptions.qml:131
 msgid "Show week numbers"
-msgstr ""
+msgstr "Wochennummern anzeigen"
 
 #: contents/ui/config/ConfigFolderPopups.qml:354
 msgid ""
 "Shows application names in every layout and command details in the detailed "
 "layout."
-msgstr ""
+msgstr "Zeigt Anwendungsnamen in jedem Layout und Befehlsdetails im detaillierten Layout an."
 
 #: contents/ui/config/ConfigAspect.qml:621
 msgid ""
 "Shows the Plasma highlight background when an item is hovered or its "
 "application is active."
-msgstr ""
+msgstr "Zeigt den Plasma-Hervorhebungshintergrund an, wenn der Mauszeiger über ein Element bewegt wird oder seine Anwendung aktiv ist."
 
 #: contents/ui/components/MediaTransportControls.qml:49
 msgctxt "@action:button"
 msgid "Shuffle"
-msgstr ""
+msgstr "Mischen"
 
 #: contents/ui/config/ConfigMouse.qml:26
 msgid "Single"
-msgstr ""
+msgstr "Single"
 
 #: contents/ui/config/ConfigGeneral.qml:260
 msgid "Single desktop"
-msgstr ""
+msgstr "Einzelner Desktop"
 
 #: contents/ui/config/components/PopupAnimationSettings.qml:22
 msgid "Slide from the dock"
-msgstr ""
+msgstr "Vom Dock rutschen"
 
 #: contents/ui/config/ConfigMouse.qml:38
 msgid "Slow bounce"
-msgstr ""
+msgstr "Langsamer Sprung"
 
 #: contents/ui/config/AddItemPalette.qml:26
 #: contents/ui/config/ConfigItems.qml:586
 msgid "Spacer"
-msgstr ""
+msgstr "Abstandshalter"
 
 #: contents/ui/config/ConfigItems.qml:589
 msgid "Spacer size:"
-msgstr ""
+msgstr "Abstandshaltergröße:"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:62
 msgid "Spectrum only, without background"
-msgstr ""
+msgstr "Nur Spektrum, ohne Hintergrund"
 
 #: contents/ui/config/components/PopupAnimationSettings.qml:68
 msgid "Speed:"
-msgstr ""
+msgstr "Geschwindigkeit:"
 
 #: contents/ui/config/SeparatorOptions.qml:45
 msgid "Square"
-msgstr ""
+msgstr "Quadratisch"
 
 #: contents/ui/config/SeparatorOptions.qml:47
 msgid "Star"
-msgstr ""
+msgstr "Stern"
 
 #: contents/ui/config/components/PopupAnimationSettings.qml:19
 msgid "Subtle scale"
-msgstr ""
+msgstr "Subtile Skala"
 
 #: contents/ui/config/ConfigItems.qml:75
 msgid "System operation failed: %1"
-msgstr ""
+msgstr "Systemvorgang fehlgeschlagen: %1"
 
 #: contents/ui/config/ConfigGeneral.qml:281
 msgid "Target desktop:"
-msgstr ""
+msgstr "Zieldesktop:"
 
 #: contents/ui/config/ConfigWindows.qml:69
 msgid "Task visibility"
-msgstr ""
+msgstr "Aufgabensichtbarkeit"
 
 #: contents/ui/config/ConfigWindows.qml:131
 msgid "Tasks from all virtual desktops can appear."
-msgstr ""
+msgstr "Aufgaben von allen virtuellen Desktops können angezeigt werden."
 
 #: contents/ui/config/ConfigWindows.qml:75
 msgid "Tasks:"
-msgstr ""
+msgstr "Aufgaben:"
 
 #: contents/ui/config/components/TrashDialog.qml:185
 msgid "Test sound"
-msgstr ""
+msgstr "Ton testen"
 
 #: contents/ui/config/CalendarOptions.qml:172
 msgid "Text color:"
-msgstr ""
+msgstr "Textfarbe:"
 
 #: contents/ui/config/components/TimedDialog.qml:131
 msgid "Text scale:"
-msgstr ""
+msgstr "Textmaßstab:"
 
 #: contents/ui/config/ConfigAspect.qml:655
 #: contents/ui/config/ConfigFolderPopups.qml:416
 #: contents/ui/config/ConfigMenus.qml:231
 #: contents/ui/config/ConfigPopups.qml:258
 msgid "Text shadows:"
-msgstr ""
+msgstr "Textschatten:"
 
 #: src/systemdiscovery.cpp:460
 msgid "The application action could not be found."
-msgstr ""
+msgstr "Die Anwendungsaktion konnte nicht gefunden werden."
 
 #: src/systemdiscovery.cpp:422
 msgid "The application could not be found."
-msgstr ""
+msgstr "Die Anwendung konnte nicht gefunden werden."
 
 #: src/dockruntimeservice.cpp:89
 msgid "The command could not be started."
-msgstr ""
+msgstr "Der Befehl konnte nicht gestartet werden."
 
 #: src/dockruntimeservice.cpp:62
 msgid "The configuration directory could not be created."
-msgstr ""
+msgstr "Das Konfigurationsverzeichnis konnte nicht erstellt werden."
 
 #: src/dockruntimeservice.cpp:56
 msgid "The configuration directory is unavailable."
-msgstr ""
+msgstr "Das Konfigurationsverzeichnis ist nicht verfügbar."
 
 #: contents/ui/config/ConfigAspect.qml:272
 msgid ""
 "The configured external theme is unavailable. The Plasma background will be "
 "used."
-msgstr ""
+msgstr "Das konfigurierte externe Design ist nicht verfügbar. Es wird der Plasma-Hintergrund verwendet."
 
 #: contents/ui/config/ConfigFolderPopups.qml:292
 msgid ""
 "The distance is added to Plasma's normal popup margin and only affects "
 "folder popups."
-msgstr ""
+msgstr "Der Abstand wird zum normalen Popup-Rand von Plasma addiert und betrifft nur Ordner-Popups."
 
 #: contents/ui/config/ConfigFiles.qml:71 contents/ui/config/ConfigFiles.qml:188
 msgid "The dock configuration contains too many items. The maximum is %1."
-msgstr ""
+msgstr "Die Dockkonfiguration enthält zu viele Elemente. Das Maximum beträgt %1."
 
 #: src/dockruntimeservice.cpp:50
 msgid "The dock configuration is too large."
-msgstr ""
+msgstr "Die Dockkonfiguration ist zu groß."
 
 #: contents/ui/config/ConfigFiles.qml:44 contents/ui/config/ConfigFiles.qml:59
 #: contents/ui/config/ConfigFiles.qml:177
 msgid ""
 "The dock configuration is too large. The maximum supported size is 1 MiB."
-msgstr ""
+msgstr "Die Dockkonfiguration ist zu groß. Die maximal unterstützte Größe beträgt 1 MiB."
 
 #: src/systemdiscovery.cpp:282
 msgid "The folder location is invalid."
-msgstr ""
+msgstr "Der Ordnerspeicherort ist ungültig."
 
 #: contents/ui/config/ConfigGeneral.qml:218
 msgid ""
 "The real panel thickness is not available in this view, so a safe fallback "
 "limit is being used."
-msgstr ""
+msgstr "Die tatsächliche Plattendicke ist in dieser Ansicht nicht verfügbar, daher wird ein sicherer Fallback-Grenzwert verwendet."
 
 #: contents/ui/config/ConfigAspect.qml:736
 msgid ""
 "The reflection adapts to the available panel thickness and is hidden when "
 "there is not enough space."
-msgstr ""
+msgstr "Die Spiegelung passt sich der verfügbaren Plattenstärke an und wird ausgeblendet, wenn nicht genügend Platz vorhanden ist."
 
 #: contents/ui/config/ConfigAspect.qml:737
 msgid ""
 "The reflection is decorative and does not change the size or interaction "
 "area of dock items."
-msgstr ""
+msgstr "Die Reflexion ist dekorativ und verändert weder die Größe noch den Interaktionsbereich von Dock-Elementen."
 
 #: contents/ui/config/ConfigAspect.qml:778
 msgid ""
 "The ring surrounds the icon, so it does not use a top or bottom position."
-msgstr ""
+msgstr "Der Ring umgibt das Symbol, sodass keine obere oder untere Position verwendet wird."
 
 #: contents/ui/config/ConfigFiles.qml:66
 msgid "The root value must be a JSON array."
-msgstr ""
+msgstr "Der Stammwert muss ein JSON-Array sein."
 
 #: contents/ui/config/ConfigGeneral.qml:319
 msgid "The selected desktop no longer exists. Choose another desktop."
-msgstr ""
+msgstr "Der ausgewählte Desktop existiert nicht mehr. Wählen Sie einen anderen Desktop."
 
 #: contents/ui/config/ConfigAspect.qml:266
 msgid "The selected file does not contain valid JSON."
-msgstr ""
+msgstr "Die ausgewählte Datei enthält kein gültiges JSON."
 
 #: contents/ui/config/ConfigAspect.qml:285
 msgid "The selected file is not a supported Punchi Dock theme."
-msgstr ""
+msgstr "Die ausgewählte Datei ist kein unterstütztes Punchi Dock-Design."
 
 #: contents/ui/config/ConfigAspect.qml:294
 msgid "The selected folder and its subfolders do not contain JSON theme files."
-msgstr ""
+msgstr "Der ausgewählte Ordner und seine Unterordner enthalten keine JSON-Designdateien."
 
 #: contents/ui/config/ConfigAspect.qml:281
 msgid "The selected installed theme has an invalid identifier."
-msgstr ""
+msgstr "Das ausgewählte installierte Design hat eine ungültige Kennung."
 
 #: contents/ui/config/ConfigAspect.qml:260
 msgid "The selected theme file could not be read."
-msgstr ""
+msgstr "Die ausgewählte Theme-Datei konnte nicht gelesen werden."
 
 #: contents/ui/config/ConfigAspect.qml:262
 msgid "The selected theme file is empty."
-msgstr ""
+msgstr "Die ausgewählte Theme-Datei ist leer."
 
 #: contents/ui/config/ConfigAspect.qml:279
 msgid "The selected theme folder could not be read."
-msgstr ""
+msgstr "Der ausgewählte Theme-Ordner konnte nicht gelesen werden."
 
 #: contents/ui/config/ConfigAspect.qml:264
 msgid "The selected theme is larger than the 64 KiB limit."
-msgstr ""
+msgstr "Das ausgewählte Theme ist größer als die 64-KiB-Grenze."
 
 #: contents/ui/config/ConfigAspect.qml:268
 msgid "The selected theme uses an unsupported schema version."
-msgstr ""
+msgstr "Das ausgewählte Design verwendet eine nicht unterstützte Schemaversion."
 
 #: contents/ui/config/ConfigItems.qml:85
 msgid "The sound could not be played: %1"
-msgstr ""
+msgstr "Der Ton konnte nicht abgespielt werden: %1"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:153
 msgid "The spectrum is drawn over the Plasma-themed dock background."
-msgstr ""
+msgstr "Das Spektrum wird über den Dock-Hintergrund im Plasma-Stil gezeichnet."
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:35
 msgid "The trash could not be emptied."
-msgstr ""
+msgstr "Der Papierkorb konnte nicht geleert werden."
 
 #: contents/ui/config/ConfigAspect.qml:230
 msgid "Theme “%1” was deleted."
-msgstr ""
+msgstr "Theme „%1“ wurde gelöscht."
 
 #: contents/ui/config/SeparatorOptions.qml:57
 msgid "Thickness:"
-msgstr ""
+msgstr "Dicke:"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:41
 msgid "This action cannot be undone."
-msgstr ""
+msgstr "Diese Aktion kann nicht rückgängig gemacht werden."
 
 #: contents/ui/config/ConfigWindows.qml:108
 msgid ""
 "This manual limit applies in floating and compact modes. While Fill free "
 "panel space is active, Punchi Dock automatically uses the available panel "
 "capacity. Additional groups remain available from the overflow item."
-msgstr ""
+msgstr "Dieser manuelle Grenzwert gilt im Floating- und Compact-Modus. Während „Freien Panel-Platz füllen“ aktiv ist, nutzt Punchi Dock automatisch die verfügbare Panel-Kapazität. Weitere Gruppen bleiben über das Überlaufelement verfügbar."
 
 #: contents/ui/config/ConfigAspect.qml:270
 msgid ""
 "This version of Punchi Dock does not support the renderer requested by the "
 "theme."
-msgstr ""
+msgstr "Diese Version von Punchi Dock unterstützt den vom Thema angeforderten Renderer nicht."
 
 #: contents/ui/config/ConfigFiles.qml:156
 msgid ""
 "This will replace the saved dock items with an empty array. This cannot be "
 "undone from Punchi Dock."
-msgstr ""
+msgstr "Dadurch werden die gespeicherten Dock-Elemente durch ein leeres Array ersetzt. Dies kann vom Punchi Dock aus nicht rückgängig gemacht werden."
 
 #: contents/ui/config/CalendarOptions.qml:83
 msgid "Time text scale"
-msgstr ""
+msgstr "Zeittextskala"
 
 #: contents/ui/config/CalendarOptions.qml:61
 msgid "Time text scale:"
-msgstr ""
+msgstr "Zeittextskala:"
 
 #: contents/ui/config/ConfigFolderPopups.qml:339
 msgid "Title header:"
-msgstr ""
+msgstr "Titelüberschrift:"
 
 #: contents/ui/config/ConfigAspect.qml:122
 msgid "Top"
-msgstr ""
+msgstr "Top"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:66
 #: contents/ui/config/ConfigGeneral.qml:63
 msgid "Top to bottom"
-msgstr ""
+msgstr "Von oben nach unten"
 
 #: contents/ui/components/DockItem.qml:35
 #: contents/ui/components/TrashContextPopup.qml:56
 #: contents/ui/config/AddItemPalette.qml:28
 msgid "Trash"
-msgstr ""
+msgstr "Müll"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:32
 msgid "Trash emptied successfully."
-msgstr ""
+msgstr "Der Papierkorb wurde erfolgreich geleert."
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:161
 msgid "Trash emptying progress"
-msgstr ""
+msgstr "Fortschritt beim Leeren des Mülls"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:183
 msgid "Trash error: %1"
-msgstr ""
+msgstr "Papierkorbfehler: %1"
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:226
 msgid "Try Again"
-msgstr ""
+msgstr "Versuchen Sie es erneut"
 
 #: contents/ui/config/ConfigItems.qml:576
 msgid "Type:"
-msgstr ""
+msgstr "Typ:"
 
 #: contents/ui/components/DockContextActionsController.qml:63
 msgctxt "@action:context"
 msgid "Unpin from Dock"
-msgstr ""
+msgstr "Vom Dock lösen"
 
 #: contents/ui/config/CalendarOptions.qml:201
 msgid "Use Plasma color"
-msgstr ""
+msgstr "Verwenden Sie Plasmafarbe"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:193
 msgid "Use Plasma theme colors"
-msgstr ""
+msgstr "Verwenden Sie Plasma-Designfarben"
 
 #: contents/ui/config/ColorPaletteDialog.qml:94
 msgid "Use environment color"
-msgstr ""
+msgstr "Umgebungsfarbe verwenden"
 
 #: contents/ui/config/ConfigMouse.qml:150
 msgid "Use interactive cursors in the settings window"
-msgstr ""
+msgstr "Verwenden Sie interaktive Cursor im Einstellungsfenster"
 
 #: contents/ui/config/ColorPaletteDialog.qml:100
 msgid "Use the color provided by the Plasma theme"
-msgstr ""
+msgstr "Verwenden Sie die vom Plasma-Design bereitgestellte Farbe"
 
 #: contents/ui/config/AdvancedJsonEditor.qml:48
 msgid "Validate"
-msgstr ""
+msgstr "Validieren"
 
 #: contents/ui/config/ConfigAspect.qml:158
 msgid "Vertical"
-msgstr ""
+msgstr "Vertikal"
 
 #: contents/ui/config/ConfigGeneral.qml:175
 msgid "Vertical alignment"
-msgstr ""
+msgstr "Vertikale Ausrichtung"
 
 #: contents/ui/config/ConfigGeneral.qml:163
 msgid "Vertical alignment:"
-msgstr ""
+msgstr "Vertikale Ausrichtung:"
 
 #: contents/ui/config/ConfigWindows.qml:64
 msgid ""
 "Vertical panels remain supported, but advanced visual tuning is currently "
 "focused on horizontal panels."
-msgstr ""
+msgstr "Vertikale Panels werden weiterhin unterstützt, aber die erweiterte visuelle Optimierung konzentriert sich derzeit auf horizontale Panels."
 
 #: contents/ui/config/ConfigItems.qml:579
 msgid "View:"
-msgstr ""
+msgstr "Ansicht:"
 
 #: contents/ui/config/ConfigMenus.qml:124
 msgid "Visible actions:"
-msgstr ""
+msgstr "Sichtbare Aktionen:"
 
 #: contents/ui/config/ConfigFolderPopups.qml:235
 msgid "Visible columns:"
-msgstr ""
+msgstr "Sichtbare Spalten:"
 
 #: contents/ui/config/ConfigFolderPopups.qml:250
 msgid "Visible rows:"
-msgstr ""
+msgstr "Sichtbare Zeilen:"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:215
 msgid "Visual density:"
-msgstr ""
+msgstr "Visuelle Dichte:"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:203
 msgid "Visualizer elements use Plasma's highlight color."
-msgstr ""
+msgstr "Visualizer-Elemente verwenden die Hervorhebungsfarbe von Plasma."
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:204
 msgid ""
 "Visualizer elements use dynamic colors that react to each frequency level."
-msgstr ""
+msgstr "Visualizer-Elemente verwenden dynamische Farben, die auf jede Frequenzebene reagieren."
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:163
 msgid "Visualizer intensity:"
-msgstr ""
+msgstr "Intensität des Visualisierers:"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:245
 msgid "Visualizer style:"
-msgstr ""
+msgstr "Visualizer-Stil:"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:109
 msgid "Visualizer:"
-msgstr ""
+msgstr "Visualisierer:"
 
 #: contents/ui/config/ConfigMouse.qml:25
 msgid "Wave"
-msgstr ""
+msgstr "Welle"
 
 #: contents/ui/config/ConfigMouse.qml:159
 msgid ""
 "When enabled, text fields use an I-beam cursor while sliders, buttons and "
 "selectors use an interactive pointer."
-msgstr ""
+msgstr "Wenn diese Option aktiviert ist, verwenden Textfelder einen I-Beam-Cursor, während Schieberegler, Schaltflächen und Selektoren einen interaktiven Zeiger verwenden."
 
 #: contents/ui/config/components/TimedDialog.qml:78
 msgid "Width:"
-msgstr ""
+msgstr "Breite:"
 
 #: contents/ui/components/TaskWindowsPopup.qml:111
 #: contents/ui/components/WindowPreviewCard.qml:22
 msgid "Window"
-msgstr ""
+msgstr "Fenster"
 
 #: contents/ui/config/ConfigWindows.qml:147
 msgid "Window behavior:"
-msgstr ""
+msgstr "Fensterverhalten:"
 
 #: contents/ui/config/ConfigAspect.qml:629
 msgid "Window indicators remain visible when the item background is hidden."
-msgstr ""
+msgstr "Fensterindikatoren bleiben sichtbar, wenn der Elementhintergrund ausgeblendet ist."
 
 #: contents/ui/config/ConfigMouse.qml:114
 msgid "Window minimize effect:"
-msgstr ""
+msgstr "Fensterminimierungseffekt:"
 
 #: contents/ui/components/TaskWindowsPopup.qml:114
 #: contents/ui/components/WindowPreviewCard.qml:25
 msgid "Window preview"
-msgstr ""
+msgstr "Fenstervorschau"
 
 #: contents/ui/config/ConfigPopups.qml:299
 msgid "Window preview animation"
-msgstr ""
+msgstr "Fenstervorschau-Animation"
 
 #: contents/ui/config/ConfigPopups.qml:233
 msgid "Window preview information"
-msgstr ""
+msgstr "Informationen zur Fenstervorschau"
 
 #: contents/ui/config/ConfigPopups.qml:195
 msgid "Window preview size"
-msgstr ""
+msgstr "Größe der Fenstervorschau"
 
 #: contents/ui/config/ConfigAspect.qml:135
 #: contents/ui/config/ConfigPopups.qml:35
 #: contents/ui/config/ConfigPopups.qml:101
 msgid "Window previews"
-msgstr ""
+msgstr "Fenstervorschauen"
 
 #: contents/ui/config/ConfigPopups.qml:132
 msgid ""
 "Window selectors and hover previews use cards with the app icon and no live "
 "window content."
-msgstr ""
+msgstr "Fensterauswahlen und Hover-Vorschauen verwenden Karten mit dem App-Symbol und keinen Live-Fensterinhalt."
 
 #: contents/ui/config/ConfigPopups.qml:130
 msgid ""
 "Window selectors and hover previews use live thumbnails when the compositor "
 "can provide them."
-msgstr ""
+msgstr "Fensterauswahlen und Hover-Vorschauen verwenden Live-Miniaturansichten, wenn der Compositor diese bereitstellen kann."
 
 #: contents/config/config.qml:29
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: contents/ui/config/AddItemPalette.qml:24
 msgid "Write a quick editable note"
-msgstr ""
+msgstr "Schreiben Sie eine schnell bearbeitbare Notiz"
 
 #: contents/ui/components/NotePopup.qml:335
 msgid "Write a quick note"
-msgstr ""
+msgstr "Schreiben Sie eine kurze Notiz"
 
 #: contents/ui/config/ConfigItems.qml:602
 #: contents/ui/config/ItemActionEditor.qml:33
 #: contents/ui/config/components/ActionDialog.qml:81
 msgid "rows"
-msgstr ""
+msgstr "Reihen"

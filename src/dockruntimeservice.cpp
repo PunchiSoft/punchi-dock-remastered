@@ -15,6 +15,7 @@
 namespace
 {
 constexpr auto TranslationDomain = "plasma_applet_org.kde.plasma.punchi-dock-remastered";
+constexpr qsizetype maximumDockItemsJsonSize = 1024 * 1024;
 
 QString sanitizedInstanceId(QString instanceId)
 {
@@ -43,6 +44,13 @@ DockRuntimeService::DockRuntimeService(QObject *parent)
 
 bool DockRuntimeService::persistDockItemsJson(const QString &json, const QString &instanceId)
 {
+    const QByteArray data = (json.trimmed().isEmpty() ? QStringLiteral("[]") : json).toUtf8();
+    if (data.size() > maximumDockItemsJsonSize) {
+        Q_EMIT operationFailed(QStringLiteral("persist"),
+            i18nd(TranslationDomain, "The dock configuration is too large."));
+        return false;
+    }
+
     const QString configRoot = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation);
     if (configRoot.isEmpty()) {
         Q_EMIT operationFailed(QStringLiteral("persist"), i18nd(TranslationDomain, "The configuration directory is unavailable."));
@@ -62,7 +70,6 @@ bool DockRuntimeService::persistDockItemsJson(const QString &json, const QString
         return false;
     }
 
-    const QByteArray data = (json.trimmed().isEmpty() ? QStringLiteral("[]") : json).toUtf8();
     if (file.write(data) != data.size() || !file.commit()) {
         Q_EMIT operationFailed(QStringLiteral("persist"), file.errorString());
         return false;

@@ -120,10 +120,15 @@ Item {
 
     function syncDockItemsConfiguration() {
         const raw = JSON.stringify(root.dockItems)
+        if (raw.length > Logic.maximumDockItemsJsonLength) {
+            console.warn("Punchi Dock: Refused to persist an oversized dock configuration.")
+            return false
+        }
         Plasmoid.configuration.dockItemsJson = raw
         if (root.runtimeService) {
-            root.runtimeService.persistDockItemsJson(raw, root.configInstanceId())
+            return root.runtimeService.persistDockItemsJson(raw, root.configInstanceId())
         }
+        return true
     }
 
     function pinTaskToDock(descriptor) {

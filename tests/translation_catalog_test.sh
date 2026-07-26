@@ -4,17 +4,19 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TRANSLATION_DOMAIN="plasma_applet_org.kde.plasma.punchi-dock-remastered"
 POT_FILE="$PROJECT_ROOT/po/$TRANSLATION_DOMAIN.pot"
-SPANISH_CATALOG="$PROJECT_ROOT/po/es.po"
 
-for required_file in "$POT_FILE" "$SPANISH_CATALOG"; do
-    if [[ ! -f "$required_file" ]]; then
-        echo "Required translation file is missing: $required_file" >&2
-        exit 1
-    fi
-done
+if [[ ! -f "$POT_FILE" ]]; then
+    echo "Required translation template is missing: $POT_FILE" >&2
+    exit 1
+fi
 
 shopt -s nullglob
 catalogs=("$PROJECT_ROOT/po"/*.po)
+if (( ${#catalogs[@]} == 0 )); then
+    echo "No translation catalogs were found in $PROJECT_ROOT/po" >&2
+    exit 1
+fi
+
 for catalog in "${catalogs[@]}"; do
     msgfmt --check --check-format --output-file=/dev/null "$catalog"
     msgcmp --use-fuzzy "$catalog" "$POT_FILE"
