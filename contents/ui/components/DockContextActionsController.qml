@@ -7,6 +7,14 @@ QtObject {
     property var taskController: null
     property var dockItemsController: null
 
+    function removablePinnedItem(item) {
+        if (!item) {
+            return false
+        }
+        const type = String(item.type || "app")
+        return type === "app" || type === "folder" || type === "media"
+    }
+
     function applicationIdentityForItem(item) {
         if (!item) {
             return ""
@@ -37,13 +45,14 @@ QtObject {
     }
 
     function actionsForItem(item, taskRows, itemOrigin, persistentIndex) {
-        if (!item || (item.type || "app") !== "app" || !root.taskController) {
+        if (!item || !root.taskController) {
             return []
         }
 
+        const itemType = String(item.type || "app")
         const actions = []
         const seenNames = {}
-        if (itemOrigin === "dynamic") {
+        if (itemType === "app" && itemOrigin === "dynamic") {
             const pinDescriptor = root.taskController.pinDescriptorForEntry(item)
             if (pinDescriptor && !root.taskController.dockContainsPinDescriptor(pinDescriptor)) {
                 root.appendUniqueActions(actions, [{
@@ -57,7 +66,7 @@ QtObject {
                     "pinDescriptor": pinDescriptor
                 }], seenNames)
             }
-        } else if (itemOrigin === "pinned") {
+        } else if (itemOrigin === "pinned" && root.removablePinnedItem(item)) {
             root.appendUniqueActions(actions, [{
                 // qmllint disable unqualified
                 "name": i18nc("@action:context", "Unpin from Dock"),
@@ -66,9 +75,17 @@ QtObject {
                 "kind": "unpinFromDock",
                 "enabled": true,
                 "targetIndex": persistentIndex,
-                "targetApplicationId": root.taskController.dockItemApplicationId(item),
-                "targetLauncherUrl": root.taskController.dockItemLauncherUrl(item)
+                "targetApplicationId": itemType === "app"
+                    ? root.taskController.dockItemApplicationId(item)
+                    : "",
+                "targetLauncherUrl": itemType === "app"
+                    ? root.taskController.dockItemLauncherUrl(item)
+                    : ""
             }], seenNames)
+        }
+
+        if (itemType !== "app") {
+            return actions
         }
 
         const applicationId = root.applicationIdentityForItem(item)
@@ -96,8 +113,12 @@ QtObject {
     }
 
     function itemHasContextMenu(item, taskRows, itemOrigin) {
-        if (!item || (item.type || "app") !== "app" || !root.taskController) {
+        if (!item || !root.taskController) {
             return false
+        }
+        const itemType = String(item.type || "app")
+        if (itemType !== "app") {
+            return itemOrigin === "pinned" && root.removablePinnedItem(item)
         }
         return itemOrigin === "pinned"
             || (itemOrigin === "dynamic" && !!root.taskController.pinDescriptorForEntry(item))

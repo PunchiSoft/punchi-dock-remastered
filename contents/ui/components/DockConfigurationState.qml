@@ -19,6 +19,8 @@ QtObject {
         return Plasmoid.configuration.mediaControlsOnHover === true ? "card" : "none"
     }
     readonly property bool mediaControlsOnHover: mediaControlsMode !== "none"
+    readonly property bool appDragAndDropEnabled:
+        Plasmoid.configuration.enableAppDragAndDrop !== false
     readonly property real windowPreviewScale: Math.max(1.5, Math.min(4.5,
         Number(Plasmoid.configuration.windowPreviewScale || 1.5)))
     readonly property string windowPreviewInfoMode: {
@@ -103,7 +105,32 @@ QtObject {
             : "none"
     }
     readonly property string dockIndicatorType: String(Plasmoid.configuration.indicatorType || "line")
-    readonly property string dockIndicatorPosition: String(Plasmoid.configuration.indicatorPosition || "bottom")
+    readonly property string dockIndicatorPosition: {
+        const position = String(Plasmoid.configuration.indicatorPosition || "bottom")
+        return position === "top" ? "top" : "bottom"
+    }
+    readonly property bool windowCountBadgeEnabled:
+        Plasmoid.configuration.showWindowCountBadge === true
+    readonly property string windowCountBadgePosition: {
+        const position = String(Plasmoid.configuration.windowCountBadgePosition || "top-right")
+        return ["top-left", "top-right", "bottom-left", "bottom-right", "center"].indexOf(position) >= 0
+            ? position
+            : "top-right"
+    }
+    readonly property string windowCountEmblemColor: {
+        const value = String(Plasmoid.configuration.windowCountEmblemColor || "").trim()
+        return /^#[0-9a-fA-F]{6}$/.test(value) ? value : ""
+    }
+    readonly property real windowCountEmblemOpacity: {
+        const configuredPercent = Number(Plasmoid.configuration.windowCountEmblemOpacityPercent)
+        const safePercent = Number.isFinite(configuredPercent) ? configuredPercent : 100
+        return Math.max(60, Math.min(100, safePercent)) / 100.0
+    }
+    readonly property real windowCountEmblemScale: {
+        const configuredPercent = Number(Plasmoid.configuration.windowCountEmblemScalePercent)
+        const safePercent = Number.isFinite(configuredPercent) ? configuredPercent : 100
+        return Math.max(80, Math.min(120, safePercent)) / 100.0
+    }
     readonly property real dockIndicatorOpacity: Math.max(0.0, Math.min(1.0,
         Number(Plasmoid.configuration.indicatorOpacity || 100) / 100.0))
     readonly property int dockIndicatorThickness: Math.max(2,

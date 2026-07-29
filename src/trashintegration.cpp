@@ -2,7 +2,10 @@
 
 #include "trashintegration.h"
 
+#include "dropurlpolicy.h"
+
 #include <KDirWatch>
+#include <KIO/CopyJob>
 #include <KIO/EmptyTrashJob>
 #include <KIO/OpenUrlJob>
 #include <KNotificationJobUiDelegate>
@@ -110,6 +113,25 @@ void TrashIntegration::openTrash()
         }
     });
     job->start();
+}
+
+void TrashIntegration::trashUrls(const QVariantList &urls)
+{
+    const DropUrlPolicy::Result validation = DropUrlPolicy::validate(urls);
+    if (!validation.accepted()) {
+        Q_EMIT operationFailed(QStringLiteral("trashUrls"), validation.errorCode);
+        return;
+    }
+
+    auto *job = KIO::trash(validation.urls, KIO::HideProgressInfo);
+    job->setUiDelegate(nullptr);
+    connect(job, &KJob::result, this, [this, job]() {
+        if (job->error()) {
+            Q_EMIT operationFailed(QStringLiteral("trashUrls"), job->errorString());
+            return;
+        }
+        refresh();
+    });
 }
 
 void TrashIntegration::emptyTrash()

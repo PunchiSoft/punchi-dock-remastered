@@ -210,12 +210,21 @@ Module {
             lineNumber: 17
         }
         Property {
+            name: "selectionMode"
+            type: "QString"
+            read: "selectionMode"
+            write: "setSelectionMode"
+            notify: "selectionModeChanged"
+            index: 1
+            lineNumber: 18
+        }
+        Property {
             name: "available"
             type: "bool"
             read: "available"
             notify: "stateChanged"
-            index: 1
-            lineNumber: 18
+            index: 2
+            lineNumber: 19
             isReadonly: true
         }
         Property {
@@ -223,8 +232,8 @@ Module {
             type: "QString"
             read: "identity"
             notify: "stateChanged"
-            index: 2
-            lineNumber: 19
+            index: 3
+            lineNumber: 20
             isReadonly: true
         }
         Property {
@@ -232,8 +241,8 @@ Module {
             type: "QString"
             read: "track"
             notify: "stateChanged"
-            index: 3
-            lineNumber: 20
+            index: 4
+            lineNumber: 21
             isReadonly: true
         }
         Property {
@@ -241,8 +250,8 @@ Module {
             type: "QString"
             read: "artist"
             notify: "stateChanged"
-            index: 4
-            lineNumber: 21
+            index: 5
+            lineNumber: 22
             isReadonly: true
         }
         Property {
@@ -250,8 +259,8 @@ Module {
             type: "QString"
             read: "artUrl"
             notify: "stateChanged"
-            index: 5
-            lineNumber: 22
+            index: 6
+            lineNumber: 23
             isReadonly: true
         }
         Property {
@@ -259,8 +268,8 @@ Module {
             type: "bool"
             read: "canGoPrevious"
             notify: "stateChanged"
-            index: 6
-            lineNumber: 23
+            index: 7
+            lineNumber: 24
             isReadonly: true
         }
         Property {
@@ -268,8 +277,8 @@ Module {
             type: "bool"
             read: "canPlay"
             notify: "stateChanged"
-            index: 7
-            lineNumber: 24
+            index: 8
+            lineNumber: 25
             isReadonly: true
         }
         Property {
@@ -277,8 +286,8 @@ Module {
             type: "bool"
             read: "canPause"
             notify: "stateChanged"
-            index: 8
-            lineNumber: 25
+            index: 9
+            lineNumber: 26
             isReadonly: true
         }
         Property {
@@ -286,8 +295,8 @@ Module {
             type: "bool"
             read: "canGoNext"
             notify: "stateChanged"
-            index: 9
-            lineNumber: 26
+            index: 10
+            lineNumber: 27
             isReadonly: true
         }
         Property {
@@ -295,8 +304,8 @@ Module {
             type: "bool"
             read: "canControl"
             notify: "stateChanged"
-            index: 10
-            lineNumber: 27
+            index: 11
+            lineNumber: 28
             isReadonly: true
         }
         Property {
@@ -304,8 +313,8 @@ Module {
             type: "bool"
             read: "canSeek"
             notify: "stateChanged"
-            index: 11
-            lineNumber: 28
+            index: 12
+            lineNumber: 29
             isReadonly: true
         }
         Property {
@@ -313,8 +322,8 @@ Module {
             type: "bool"
             read: "playing"
             notify: "stateChanged"
-            index: 12
-            lineNumber: 29
+            index: 13
+            lineNumber: 30
             isReadonly: true
         }
         Property {
@@ -322,8 +331,8 @@ Module {
             type: "qlonglong"
             read: "positionUs"
             notify: "stateChanged"
-            index: 13
-            lineNumber: 30
+            index: 14
+            lineNumber: 31
             isReadonly: true
         }
         Property {
@@ -331,8 +340,8 @@ Module {
             type: "qlonglong"
             read: "lengthUs"
             notify: "stateChanged"
-            index: 14
-            lineNumber: 31
+            index: 15
+            lineNumber: 32
             isReadonly: true
         }
         Property {
@@ -340,8 +349,8 @@ Module {
             type: "bool"
             read: "shuffleAvailable"
             notify: "stateChanged"
-            index: 15
-            lineNumber: 32
+            index: 16
+            lineNumber: 33
             isReadonly: true
         }
         Property {
@@ -349,8 +358,8 @@ Module {
             type: "bool"
             read: "shuffle"
             notify: "stateChanged"
-            index: 16
-            lineNumber: 33
+            index: 17
+            lineNumber: 34
             isReadonly: true
         }
         Property {
@@ -358,8 +367,8 @@ Module {
             type: "QString"
             read: "loopStatus"
             notify: "stateChanged"
-            index: 17
-            lineNumber: 34
+            index: 18
+            lineNumber: 35
             isReadonly: true
         }
         Property {
@@ -367,8 +376,8 @@ Module {
             type: "bool"
             read: "volumeAvailable"
             notify: "stateChanged"
-            index: 18
-            lineNumber: 35
+            index: 19
+            lineNumber: 36
             isReadonly: true
         }
         Property {
@@ -376,39 +385,47 @@ Module {
             type: "double"
             read: "volume"
             notify: "stateChanged"
-            index: 19
-            lineNumber: 36
+            index: 20
+            lineNumber: 37
             isReadonly: true
         }
-        Signal { name: "applicationIdChanged"; lineNumber: 72 }
-        Signal { name: "stateChanged"; lineNumber: 73 }
+        Signal { name: "applicationIdChanged"; lineNumber: 78 }
+        Signal { name: "selectionModeChanged"; lineNumber: 79 }
+        Signal { name: "stateChanged"; lineNumber: 80 }
         Method {
             name: "onServiceOwnerChanged"
-            lineNumber: 76
+            lineNumber: 83
             Parameter { name: "name"; type: "QString" }
             Parameter { name: "oldOwner"; type: "QString" }
             Parameter { name: "newOwner"; type: "QString" }
         }
         Method {
             name: "onPropertiesChanged"
-            lineNumber: 77
+            lineNumber: 84
             Parameter { name: "interfaceName"; type: "QString" }
             Parameter { name: "changedProperties"; type: "QVariantMap" }
             Parameter { name: "invalidatedProperties"; type: "QStringList" }
         }
-        Method { name: "refresh"; lineNumber: 63 }
-        Method { name: "previous"; lineNumber: 64 }
-        Method { name: "togglePlaying"; lineNumber: 65 }
-        Method { name: "next"; lineNumber: 66 }
+        Method { name: "refresh"; lineNumber: 66 }
+        Method { name: "previous"; lineNumber: 67 }
+        Method { name: "togglePlaying"; lineNumber: 68 }
+        Method {
+            name: "requestPlayWhenAvailable"
+            lineNumber: 69
+            Parameter { name: "timeoutMs"; type: "int" }
+        }
+        Method { name: "cancelPlayWhenAvailable"; lineNumber: 70 }
+        Method { name: "next"; lineNumber: 71 }
         Method {
             name: "setShuffle"
-            lineNumber: 67
+            lineNumber: 72
             Parameter { name: "enabled"; type: "bool" }
         }
-        Method { name: "cycleLoopStatus"; lineNumber: 68 }
+        Method { name: "cycleLoopStatus"; lineNumber: 73 }
+        Method { name: "toggleMute"; lineNumber: 74 }
         Method {
             name: "setVolume"
-            lineNumber: 69
+            lineNumber: 75
             Parameter { name: "volume"; type: "double" }
         }
     }
@@ -468,22 +485,22 @@ Module {
         exportMetaObjectRevisions: [256]
         Signal {
             name: "folderEntriesReady"
-            lineNumber: 37
+            lineNumber: 40
             Parameter { name: "entries"; type: "QVariantList" }
         }
         Signal {
             name: "applicationsReady"
-            lineNumber: 38
+            lineNumber: 41
             Parameter { name: "applications"; type: "QVariantList" }
         }
         Signal {
             name: "applicationReady"
-            lineNumber: 39
+            lineNumber: 42
             Parameter { name: "application"; type: "QVariantMap" }
         }
         Signal {
             name: "operationFailed"
-            lineNumber: 40
+            lineNumber: 43
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
@@ -540,26 +557,42 @@ Module {
             Parameter { name: "applicationId"; type: "QString" }
         }
         Method {
-            name: "launchApplication"
+            name: "validateDroppedUrls"
+            type: "QVariantMap"
+            isMethodConstant: true
             lineNumber: 31
+            Parameter { name: "urls"; type: "QVariantList" }
+        }
+        Method {
+            name: "launchApplication"
+            lineNumber: 32
             Parameter { name: "storageId"; type: "QString" }
+        }
+        Method {
+            name: "launchApplicationWithUrls"
+            type: "bool"
+            lineNumber: 33
+            Parameter { name: "applicationId"; type: "QString" }
+            Parameter { name: "command"; type: "QString" }
+            Parameter { name: "launcherUrl"; type: "QString" }
+            Parameter { name: "urls"; type: "QVariantList" }
         }
         Method {
             name: "launchApplicationAction"
             type: "bool"
-            lineNumber: 32
+            lineNumber: 35
             Parameter { name: "applicationId"; type: "QString" }
             Parameter { name: "actionId"; type: "QString" }
         }
         Method {
             name: "launchApplicationByCommand"
             type: "bool"
-            lineNumber: 33
+            lineNumber: 36
             Parameter { name: "command"; type: "QString" }
         }
         Method {
             name: "openUrl"
-            lineNumber: 34
+            lineNumber: 37
             Parameter { name: "url"; type: "QString" }
         }
     }
@@ -584,7 +617,7 @@ Module {
     }
     Component {
         file: "trashintegration.h"
-        lineNumber: 13
+        lineNumber: 14
         name: "TrashIntegration"
         accessSemantics: "reference"
         prototype: "QObject"
@@ -596,7 +629,7 @@ Module {
             read: "hasItems"
             notify: "stateChanged"
             index: 0
-            lineNumber: 17
+            lineNumber: 18
             isReadonly: true
         }
         Property {
@@ -605,7 +638,7 @@ Module {
             read: "emptying"
             notify: "operationStateChanged"
             index: 1
-            lineNumber: 18
+            lineNumber: 19
             isReadonly: true
         }
         Property {
@@ -614,7 +647,7 @@ Module {
             read: "operationState"
             notify: "operationStateChanged"
             index: 2
-            lineNumber: 19
+            lineNumber: 20
             isReadonly: true
         }
         Property {
@@ -623,7 +656,7 @@ Module {
             read: "progressPercent"
             notify: "progressChanged"
             index: 3
-            lineNumber: 20
+            lineNumber: 21
             isReadonly: true
         }
         Property {
@@ -632,7 +665,7 @@ Module {
             read: "progressDeterminate"
             notify: "progressChanged"
             index: 4
-            lineNumber: 21
+            lineNumber: 22
             isReadonly: true
         }
         Property {
@@ -641,7 +674,7 @@ Module {
             read: "processedItems"
             notify: "progressChanged"
             index: 5
-            lineNumber: 22
+            lineNumber: 23
             isReadonly: true
         }
         Property {
@@ -650,7 +683,7 @@ Module {
             read: "totalItems"
             notify: "progressChanged"
             index: 6
-            lineNumber: 23
+            lineNumber: 24
             isReadonly: true
         }
         Property {
@@ -659,30 +692,35 @@ Module {
             read: "errorMessage"
             notify: "operationStateChanged"
             index: 7
-            lineNumber: 24
+            lineNumber: 25
             isReadonly: true
         }
         Signal {
             name: "stateChanged"
-            lineNumber: 45
+            lineNumber: 47
             Parameter { name: "hasItems"; type: "bool" }
         }
-        Signal { name: "operationStateChanged"; lineNumber: 46 }
-        Signal { name: "progressChanged"; lineNumber: 47 }
+        Signal { name: "operationStateChanged"; lineNumber: 48 }
+        Signal { name: "progressChanged"; lineNumber: 49 }
         Signal {
             name: "operationSucceeded"
-            lineNumber: 48
+            lineNumber: 50
             Parameter { name: "operation"; type: "QString" }
         }
         Signal {
             name: "operationFailed"
-            lineNumber: 49
+            lineNumber: 51
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
-        Method { name: "refresh"; lineNumber: 39 }
-        Method { name: "openTrash"; lineNumber: 40 }
-        Method { name: "emptyTrash"; lineNumber: 41 }
-        Method { name: "resetOperationState"; lineNumber: 42 }
+        Method { name: "refresh"; lineNumber: 40 }
+        Method { name: "openTrash"; lineNumber: 41 }
+        Method {
+            name: "trashUrls"
+            lineNumber: 42
+            Parameter { name: "urls"; type: "QVariantList" }
+        }
+        Method { name: "emptyTrash"; lineNumber: 43 }
+        Method { name: "resetOperationState"; lineNumber: 44 }
     }
 }

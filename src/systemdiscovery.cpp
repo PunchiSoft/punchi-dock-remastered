@@ -3,8 +3,10 @@
 #include "systemdiscovery.h"
 
 #include <KLocalizedString>
+#include <KNotificationJobUiDelegate>
 
 #include "commandclassification.h"
+#include "dropurlpolicy.h"
 
 #include <KIO/ApplicationLauncherJob>
 #include <KIO/ListJob>
@@ -415,6 +417,25 @@ QVariantList SystemDiscovery::applicationActions(const QString &applicationId) c
     return result;
 }
 
+QVariantMap SystemDiscovery::validateDroppedUrls(const QVariantList &urls) const
+{
+    const DropUrlPolicy::Result result = DropUrlPolicy::validate(urls);
+    QVariantList normalizedUrls;
+    normalizedUrls.reserve(result.urls.size());
+    for (const QUrl &url : result.urls) {
+        normalizedUrls.append(QVariant::fromValue(url));
+    }
+
+    return {
+        {QStringLiteral("accepted"), result.accepted()},
+        {QStringLiteral("errorCode"), result.errorCode},
+        {QStringLiteral("urls"), normalizedUrls},
+        {QStringLiteral("maximumUrlCount"), DropUrlPolicy::maximumUrlCount},
+        {QStringLiteral("maximumUrlBytes"), DropUrlPolicy::maximumUrlBytes},
+        {QStringLiteral("maximumBatchBytes"), DropUrlPolicy::maximumBatchBytes},
+    };
+}
+
 void SystemDiscovery::launchApplication(const QString &storageId)
 {
     const KService::Ptr service = KService::serviceByStorageId(storageId);
@@ -431,6 +452,48 @@ void SystemDiscovery::launchApplication(const QString &storageId)
         }
     });
     job->start();
+}
+
+bool SystemDiscovery::launchApplicationWithUrls(const QString &applicationId, const QString &command,
+    const QString &launcherUrl, const QVariantList &urls)
+{
+    const DropUrlPolicy::Result validatedUrls = DropUrlPolicy::validate(urls);
+    if (!validatedUrls.accepted()) {
+        return false;
+    }
+
+    const QString rawId = applicationId.trimmed();
+    const QString normalizedId = normalizedApplicationId(rawId);
+    KService::Ptr service;
+    if (!rawId.isEmpty()) {
+        service = KService::serviceByStorageId(rawId);
+    }
+    if (!service && !normalizedId.isEmpty()) {
+        service = KService::serviceByStorageId(normalizedId);
+        if (!service) {
+            service = KService::serviceByDesktopName(normalizedId);
+        }
+    }
+    if (!service) {
+        service = findLauncherService(rawId, launcherUrl);
+    }
+    if (!service && CommandClassification::canResolveToDesktopService(command)) {
+        service = findApplicationService(commandLookupKey(command));
+    }
+    if (!service || !service->isApplication()) {
+        return false;
+    }
+
+    auto *job = new KIO::ApplicationLauncherJob(service, this);
+    job->setUrls(validatedUrls.urls);
+    job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoErrorHandlingEnabled));
+    connect(job, &KJob::result, this, [this, job]() {
+        if (job->error()) {
+            Q_EMIT operationFailed(QStringLiteral("dropLaunch"), job->errorString());
+        }
+    });
+    job->start();
+    return true;
 }
 
 bool SystemDiscovery::launchApplicationAction(const QString &applicationId, const QString &actionId)

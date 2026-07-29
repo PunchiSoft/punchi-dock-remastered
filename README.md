@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.2">
-    <img src="https://img.shields.io/badge/release-v0.9.2-4caf50" alt="Release v0.9.2">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.3">
+    <img src="https://img.shields.io/badge/release-v0.9.3-4caf50" alt="Release v0.9.3">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -22,7 +22,7 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
-The current release is [v0.9.2](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.2).
+The current release is [v0.9.3](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.3).
 
 ## Screenshots
 
@@ -60,6 +60,9 @@ contribution requirements.
 - Plasma-themed popups with configurable opening animations, smooth preview-to-menu transitions, and continuous retargeting between dock items.
 - Native application and window actions in the context menus of pinned launchers and dynamic tasks.
 - Contextual MPRIS media cards with artwork, track information, playback controls, and an accessible mute or restore-volume action in every card layout.
+- A compact dock MPRIS item with selectable player, artwork fallback, vertical text modes, and launch-then-Play behavior.
+- Circular theme/custom color controls and configurable icon spacing with explicit visual units.
+- Safe file drag-and-drop onto pinned applications and folder-aware unpin actions.
 - An optional MPRIS card below live window previews, revealed after the preview to preserve visual continuity.
 - Asynchronous trash operations with activity, progress, completion sound, and themed KDE notifications.
 - External JSON background themes stored in a managed user library, with recursive folder import, removal, and safe Plasma fallback.
@@ -98,13 +101,13 @@ On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.2-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.3-fedora44-x86_64.plasmoid
 ```
 
 To update an existing installation:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.2-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.3-fedora44-x86_64.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
@@ -157,9 +160,9 @@ Shell restarted. Never relabel an artifact built for another distribution.
 dist/punchi-dock-remastered-<version>-<distribution><version>-<architecture>.plasmoid
 ```
 
-Examples include `punchi-dock-remastered-0.9.2-fedora44-x86_64.plasmoid`,
-`punchi-dock-remastered-0.9.2-debian13-x86_64.plasmoid`, and
-`punchi-dock-remastered-0.9.2-kubuntu<version>-plasma6.6.4-x86_64.plasmoid`.
+Examples include `punchi-dock-remastered-0.9.3-fedora44-x86_64.plasmoid`,
+`punchi-dock-remastered-0.9.3-debian13-x86_64.plasmoid`, and
+`punchi-dock-remastered-0.9.3-kubuntu<version>-plasma6.6.4-x86_64.plasmoid`.
 Never install an artifact labeled for a different distribution.
 
 The Debian 13 workflow was verified separately from Debian 14/testing. Kubuntu

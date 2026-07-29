@@ -64,6 +64,10 @@ KCM.SimpleKCM {
             text: i18n("Vertical panels remain supported, but advanced visual tuning is currently focused on horizontal panels.")
         }
 
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+        }
+
         SectionTitle {
             Kirigami.FormData.isSection: true
             text: i18n("Task visibility")
@@ -138,6 +142,9 @@ KCM.SimpleKCM {
         }
         // qmllint enable unqualified
 
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+        }
         SectionTitle {
             Kirigami.FormData.isSection: true
             text: i18n("Grouping and limits")

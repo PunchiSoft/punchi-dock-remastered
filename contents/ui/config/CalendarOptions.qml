@@ -2,9 +2,16 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import org.kde.kirigami as Kirigami
+import "components"
 
 ColumnLayout {
     id: root
+
+    QtObject {
+        id: calendarTextColor
+
+        property string text: ""
+    }
 
     property var controller
     property string calendarDisplayModeValue: "text"
@@ -157,13 +164,16 @@ ColumnLayout {
                         controller.applyItemForm()
                     }
                 }
+                // qmllint disable unqualified
                 Accessible.name: i18n("Calendar popup scale")
+                Accessible.description: i18n("Adjusts the calendar popup scale between 50 and 300 percent.")
+                // qmllint enable unqualified
             }
 
             Controls.Label {
                 Layout.minimumWidth: Kirigami.Units.gridUnit * 2.8
                 horizontalAlignment: Text.AlignRight
-                text: (Math.round(calendarPopupScale.value * 100) / 100) + "x"
+                text: Math.round(calendarPopupScale.value * 100) + "%"
                 opacity: 0.75
             }
         }
@@ -177,45 +187,15 @@ ColumnLayout {
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
 
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 2.2
-                Layout.preferredHeight: Kirigami.Units.gridUnit * 2
-                onClicked: controller.openTimedColorDialog("text")
-
-                contentItem: Rectangle {
-                    anchors.centerIn: parent
-                    width: Kirigami.Units.gridUnit * 1.35
-                    height: width
-                    radius: 4
-                    color: root.clockColorControl.text.length > 0 ? root.clockColorControl.text : Kirigami.Theme.textColor
-                    border.width: 1
-                    border.color: Kirigami.Theme.textColor
-                    opacity: root.clockColorControl.text.length > 0 ? 1 : 0.55
-                }
-            }
-
-            Controls.TextField {
-                id: calendarTextColor
+            ColorModeControl {
                 Layout.fillWidth: true
-                placeholderText: i18n("Use Plasma color")
-                onEditingFinished: {
-                    controller.applyItemForm()
-                }
-            }
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                icon.name: "edit-reset-symbolic"
-                display: Controls.AbstractButton.IconOnly
-                enabled: root.clockColorControl.text.length > 0
-                onClicked: {
+                customColor: root.clockColorControl.text
+                fallbackColor: Kirigami.Theme.textColor
+                onColorRequested: root.controller.openTimedColorDialog("text")
+                onThemeRequested: {
                     root.clockColorControl.text = ""
-                    controller.applyItemForm()
+                    root.controller.applyItemForm()
                 }
-
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Plasma theme")
             }
         }
     }

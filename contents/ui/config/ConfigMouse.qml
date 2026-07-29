@@ -18,6 +18,7 @@ KCM.SimpleKCM {
     property string cfg_clickEffect: "none"
     property string cfg_windowMinimizeEffect: "none"
     property alias cfg_globalMouseCursor: globalMouseCursorCheck.checked
+    property alias cfg_enableAppDragAndDrop: enableAppDragAndDropCheck.checked
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     readonly property var hoverAnimationOptions: [
@@ -164,5 +165,28 @@ KCM.SimpleKCM {
             color: Kirigami.Theme.disabledTextColor
         }
         // qmllint enable unqualified
+
+        // qmllint disable unqualified
+        Controls.CheckBox {
+            id: enableAppDragAndDropCheck
+            Kirigami.FormData.label: i18n("Application file drop:")
+            text: i18n("Enable file drag and drop onto application icons")
+            Layout.maximumWidth: page.contentWidthHint
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.cfg_globalMouseCursor
+            }
+        }
+
+        Controls.Label {
+            text: i18n("When disabled, application icons ignore dragged files. The Trash can still receive files.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+        // qmllint enable unqualified
+
     }
 }

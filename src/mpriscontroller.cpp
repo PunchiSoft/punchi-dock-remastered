@@ -3,6 +3,7 @@
 #include "mpriscontroller.h"
 
 #include "mediaartworkresolver.h"
+#include "mprisplayerselection.h"
 
 #include <QDBusArgument>
 #include <QDBusConnection>
@@ -10,7 +11,6 @@
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
 #include <QDBusVariant>
-#include <QRegularExpression>
 #include <QTimer>
 #include <QUrl>
 
@@ -25,34 +25,15 @@ constexpr auto playerInterface = "org.mpris.MediaPlayer2.Player";
 constexpr auto propertiesInterface = "org.freedesktop.DBus.Properties";
 constexpr double mutedVolumeThreshold = 0.001;
 constexpr double defaultRestoredVolume = 0.5;
+constexpr qsizetype maximumMetadataTextLength = 512;
+constexpr qsizetype maximumMetadataUrlLength = 4096;
+constexpr qlonglong maximumMediaDurationUs = 7LL * 24 * 60 * 60 * 1000000;
+constexpr int minimumPendingPlayTimeoutMs = 1000;
+constexpr int maximumPendingPlayTimeoutMs = 30000;
 
-QString normalizedIdentity(QString value)
+QString boundedText(const QVariant &value, qsizetype maximumLength = maximumMetadataTextLength)
 {
-    value = value.trimmed().toLower();
-    if (value.endsWith(QLatin1String(".desktop"))) {
-        value.chop(8);
-    }
-    value.remove(QRegularExpression(QStringLiteral("[^a-z0-9]+")));
-    return value;
-}
-
-int identityScore(const QString &applicationId, const QString &candidate)
-{
-    const QString target = normalizedIdentity(applicationId);
-    const QString source = normalizedIdentity(candidate);
-    if (target.isEmpty() || source.isEmpty()) {
-        return 0;
-    }
-    if (target == source) {
-        return 100;
-    }
-    if (source.size() >= 4 && target.contains(source)) {
-        return 75;
-    }
-    if (target.size() >= 4 && source.contains(target)) {
-        return 65;
-    }
-    return 0;
+    return value.toString().trimmed().left(maximumLength);
 }
 
 QVariantMap mapValue(const QVariant &value)
@@ -67,7 +48,7 @@ QString artistValue(const QVariant &value)
 {
     const QStringList artists = value.toStringList();
     if (!artists.isEmpty()) {
-        return artists.join(QStringLiteral(", "));
+        return artists.join(QStringLiteral(", ")).trimmed().left(maximumMetadataTextLength);
     }
 
     const QVariantList artistVariants = value.toList();
@@ -79,17 +60,22 @@ QString artistValue(const QVariant &value)
             converted.append(text);
         }
     }
-    return converted.join(QStringLiteral(", "));
+    return converted.join(QStringLiteral(", ")).left(maximumMetadataTextLength);
 }
 }
 
 MprisController::MprisController(QObject *parent)
     : QObject(parent)
     , m_refreshTimer(new QTimer(this))
+    , m_pendingPlayTimer(new QTimer(this))
 {
     m_refreshTimer->setSingleShot(true);
     m_refreshTimer->setInterval(80);
     connect(m_refreshTimer, &QTimer::timeout, this, &MprisController::refresh);
+    m_pendingPlayTimer->setSingleShot(true);
+    connect(m_pendingPlayTimer, &QTimer::timeout, this, [this]() {
+        m_playWhenAvailablePending = false;
+    });
 
     QDBusConnection bus = QDBusConnection::sessionBus();
     bus.connect(QStringLiteral("org.freedesktop.DBus"),
@@ -118,12 +104,41 @@ void MprisController::setApplicationId(const QString &applicationId)
         refresh();
         return;
     }
+    cancelPlayWhenAvailable();
     m_applicationId = normalized;
     Q_EMIT applicationIdChanged();
-    if (m_applicationId.isEmpty()) {
+    if (!selectionAvailable()) {
         clearState();
     } else {
-        clearState();
+        if (m_selectionMode == QLatin1String("application")) {
+            clearState();
+        }
+        refresh();
+    }
+}
+
+QString MprisController::selectionMode() const
+{
+    return m_selectionMode;
+}
+
+void MprisController::setSelectionMode(const QString &selectionMode)
+{
+    const QString normalized = selectionMode == QLatin1String("activePlayer")
+        ? QStringLiteral("activePlayer")
+        : QStringLiteral("application");
+    if (m_selectionMode == normalized) {
+        if (selectionAvailable()) {
+            refresh();
+        }
+        return;
+    }
+
+    cancelPlayWhenAvailable();
+    m_selectionMode = normalized;
+    Q_EMIT selectionModeChanged();
+    clearState();
+    if (selectionAvailable()) {
         refresh();
     }
 }
@@ -155,7 +170,7 @@ void MprisController::refresh()
     m_candidates.clear();
     m_pendingPropertyRequests = 0;
 
-    if (m_applicationId.isEmpty()) {
+    if (!selectionAvailable()) {
         clearState();
         return;
     }
@@ -232,8 +247,7 @@ void MprisController::completePropertyRequest(const QString &service,
 
 void MprisController::selectBestCandidate()
 {
-    QVariantMap best;
-    int bestScore = 0;
+    QList<MprisPlayerSelection::Candidate> selectableCandidates;
     for (auto it = m_candidates.cbegin(); it != m_candidates.cend(); ++it) {
         const QVariantMap candidate = it.value();
         const QVariantMap root = candidate.value(QStringLiteral("root")).toMap();
@@ -241,24 +255,22 @@ void MprisController::selectBestCandidate()
         if (player.isEmpty()) {
             continue;
         }
-        int score = std::max(identityScore(m_applicationId, root.value(QStringLiteral("DesktopEntry")).toString()),
-                             identityScore(m_applicationId, root.value(QStringLiteral("Identity")).toString()));
-        if (score == 0) {
-            continue;
-        }
-        const QString playbackStatus = player.value(QStringLiteral("PlaybackStatus")).toString();
-        if (playbackStatus == QLatin1String("Playing")) {
-            score += 20;
-        } else if (playbackStatus == QLatin1String("Paused")) {
-            score += 10;
-        }
-        if (score > bestScore) {
-            bestScore = score;
-            best = candidate;
-        }
+        selectableCandidates.append({
+            candidate.value(QStringLiteral("service")).toString(),
+            boundedText(root.value(QStringLiteral("DesktopEntry"))),
+            boundedText(root.value(QStringLiteral("Identity"))),
+            boundedText(player.value(QStringLiteral("PlaybackStatus")), 32),
+            player.value(QStringLiteral("CanControl")).toBool(),
+        });
     }
 
-    if (best.isEmpty()) {
+    const auto mode = m_selectionMode == QLatin1String("activePlayer")
+        ? MprisPlayerSelection::Mode::ActivePlayer
+        : MprisPlayerSelection::Mode::Application;
+    const QString selectedService = MprisPlayerSelection::selectService(
+        selectableCandidates, mode, m_applicationId, m_service);
+    const QVariantMap best = m_candidates.value(selectedService);
+    if (selectedService.isEmpty() || best.isEmpty()) {
         clearState();
         return;
     }
@@ -267,20 +279,21 @@ void MprisController::selectBestCandidate()
     const QVariantMap player = best.value(QStringLiteral("player")).toMap();
     const QVariantMap metadata = mapValue(player.value(QStringLiteral("Metadata")));
     const QString service = best.value(QStringLiteral("service")).toString();
-    const QString track = metadata.value(QStringLiteral("xesam:title")).toString();
+    const QString track = boundedText(metadata.value(QStringLiteral("xesam:title")));
     const QString artist = artistValue(metadata.value(QStringLiteral("xesam:artist")));
-    const QString mediaUrl = metadata.value(QStringLiteral("xesam:url")).toString();
+    const QString mediaUrl = boundedText(
+        metadata.value(QStringLiteral("xesam:url")), maximumMetadataUrlLength);
     const QString mediaIdentity =
         MediaArtworkResolver::mediaIdentityKey(service, track, artist, mediaUrl);
     const QString artworkUrl = MediaArtworkResolver::stabilizedArtworkUrl(
-        metadata.value(QStringLiteral("mpris:artUrl")).toString(),
+        boundedText(metadata.value(QStringLiteral("mpris:artUrl")), maximumMetadataUrlLength),
         mediaUrl,
         mediaIdentity,
         m_mediaIdentity,
         m_artUrl);
 
     m_service = service;
-    m_identity = root.value(QStringLiteral("Identity")).toString();
+    m_identity = boundedText(root.value(QStringLiteral("Identity")));
     m_track = track;
     m_artist = artist;
     m_artUrl = artworkUrl;
@@ -292,8 +305,14 @@ void MprisController::selectBestCandidate()
     m_canControl = player.value(QStringLiteral("CanControl")).toBool();
     m_canSeek = player.value(QStringLiteral("CanSeek")).toBool();
     m_playing = player.value(QStringLiteral("PlaybackStatus")).toString() == QLatin1String("Playing");
-    m_positionUs = std::max<qlonglong>(0, player.value(QStringLiteral("Position")).toLongLong());
-    m_lengthUs = std::max<qlonglong>(0, metadata.value(QStringLiteral("mpris:length")).toLongLong());
+    m_lengthUs = std::clamp<qlonglong>(
+        metadata.value(QStringLiteral("mpris:length")).toLongLong(),
+        0,
+        maximumMediaDurationUs);
+    m_positionUs = std::clamp<qlonglong>(
+        player.value(QStringLiteral("Position")).toLongLong(),
+        0,
+        m_lengthUs > 0 ? m_lengthUs : maximumMediaDurationUs);
     m_shuffleAvailable = player.contains(QStringLiteral("Shuffle"));
     m_shuffle = player.value(QStringLiteral("Shuffle")).toBool();
     const QString loopStatus = player.value(QStringLiteral("LoopStatus")).toString();
@@ -310,6 +329,7 @@ void MprisController::selectBestCandidate()
     }
     m_available = true;
     Q_EMIT stateChanged();
+    completePendingPlayRequest();
 }
 
 void MprisController::clearState()
@@ -356,6 +376,29 @@ void MprisController::togglePlaying()
     } else if (!m_playing && m_canPlay) {
         callPlayerMethod(QStringLiteral("Play"));
     }
+}
+
+void MprisController::requestPlayWhenAvailable(int timeoutMs)
+{
+    cancelPlayWhenAvailable();
+    if (!selectionAvailable() || (m_available && m_playing)) {
+        return;
+    }
+
+    m_playWhenAvailablePending = true;
+    m_pendingPlayTimer->start(std::clamp(timeoutMs,
+                                         minimumPendingPlayTimeoutMs,
+                                         maximumPendingPlayTimeoutMs));
+    completePendingPlayRequest();
+    if (m_playWhenAvailablePending) {
+        refresh();
+    }
+}
+
+void MprisController::cancelPlayWhenAvailable()
+{
+    m_playWhenAvailablePending = false;
+    m_pendingPlayTimer->stop();
 }
 
 void MprisController::next()
@@ -476,11 +519,33 @@ void MprisController::callPlayerMethod(const QString &method)
     QTimer::singleShot(120, this, &MprisController::scheduleRefresh);
 }
 
+void MprisController::completePendingPlayRequest()
+{
+    if (!m_playWhenAvailablePending || !m_available) {
+        return;
+    }
+    if (m_playing) {
+        cancelPlayWhenAvailable();
+        return;
+    }
+    if (!m_canPlay) {
+        return;
+    }
+
+    cancelPlayWhenAvailable();
+    callPlayerMethod(QStringLiteral("Play"));
+}
+
 void MprisController::scheduleRefresh()
 {
-    if (!m_applicationId.isEmpty()) {
+    if (selectionAvailable()) {
         m_refreshTimer->start();
     }
+}
+
+bool MprisController::selectionAvailable() const
+{
+    return m_selectionMode == QLatin1String("activePlayer") || !m_applicationId.isEmpty();
 }
 
 void MprisController::onServiceOwnerChanged(const QString &name, const QString &, const QString &)

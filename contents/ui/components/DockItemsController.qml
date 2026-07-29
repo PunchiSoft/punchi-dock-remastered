@@ -86,6 +86,15 @@ Item {
     }
 
     function launchDockItem(item) {
+        if (item && item.type === "trash") {
+            if (root.trashIntegration) {
+                root.trashIntegration.openTrash()
+            } else {
+                console.warn("Punchi Dock: Trash integration is unavailable.")
+            }
+            return
+        }
+
         if (item && item.storageId && root.systemDiscovery) {
             root.systemDiscovery.launchApplication(item.storageId)
         } else if (item && item.type === "app" && item.command
@@ -116,6 +125,66 @@ Item {
         }
 
         root.launchDockItem(item)
+    }
+
+    function validateDroppedUrls(urls) {
+        if (!root.systemDiscovery) {
+            return {
+                "accepted": false,
+                "errorCode": "applicationUnavailable",
+                "urls": []
+            }
+        }
+        return root.systemDiscovery.validateDroppedUrls(urls || [])
+    }
+
+    function handleApplicationUrlsDrop(item, taskRows, urls) {
+        const validation = root.validateDroppedUrls(urls)
+        if (!validation.accepted) {
+            return validation
+        }
+
+        const rows = taskRows || []
+        if (rows.length > 0) {
+            if (root.taskController
+                    && root.taskController.openUrlsWithTaskRows(rows, validation.urls)) {
+                return {
+                    "accepted": true,
+                    "errorCode": "",
+                    "urls": validation.urls
+                }
+            }
+            return {
+                "accepted": false,
+                "errorCode": "applicationUnavailable",
+                "urls": []
+            }
+        }
+
+        if (!item || !root.systemDiscovery) {
+            return {
+                "accepted": false,
+                "errorCode": "applicationUnavailable",
+                "urls": []
+            }
+        }
+
+        const applicationId = String(item.storageId || item.appId || "")
+        const command = String(item.command || "")
+        const launcherUrl = String(item.url || "")
+        if (!root.systemDiscovery.launchApplicationWithUrls(
+                applicationId, command, launcherUrl, validation.urls)) {
+            return {
+                "accepted": false,
+                "errorCode": "applicationUnavailable",
+                "urls": []
+            }
+        }
+        return {
+            "accepted": true,
+            "errorCode": "",
+            "urls": validation.urls
+        }
     }
 
     function syncDockItemsConfiguration() {
@@ -162,21 +231,24 @@ Item {
     }
 
     function unpinItemFromDock(targetIndex, expectedApplicationId, expectedLauncherUrl) {
-        if (!root.taskController) {
-            return false
-        }
         const index = Number(targetIndex)
         if (!Number.isInteger(index) || index < 0 || index >= root.dockItems.length) {
             return false
         }
 
         const dockItem = root.dockItems[index]
-        const actualApplicationId = root.taskController.dockItemApplicationId(dockItem)
-        const actualLauncherUrl = root.taskController.dockItemLauncherUrl(dockItem)
-        const normalizedExpectedApplicationId = root.taskController.normalizeApplicationId(
-            expectedApplicationId || "")
-        const normalizedExpectedLauncherUrl = root.taskController.normalizeLauncherUrl(
-            expectedLauncherUrl || "")
+        const actualApplicationId = root.taskController
+            ? root.taskController.dockItemApplicationId(dockItem)
+            : ""
+        const actualLauncherUrl = root.taskController
+            ? root.taskController.dockItemLauncherUrl(dockItem)
+            : ""
+        const normalizedExpectedApplicationId = root.taskController
+            ? root.taskController.normalizeApplicationId(expectedApplicationId || "")
+            : String(expectedApplicationId || "")
+        const normalizedExpectedLauncherUrl = root.taskController
+            ? root.taskController.normalizeLauncherUrl(expectedLauncherUrl || "")
+            : String(expectedLauncherUrl || "")
         if (normalizedExpectedApplicationId.length > 0
                 && actualApplicationId !== normalizedExpectedApplicationId) {
             return false

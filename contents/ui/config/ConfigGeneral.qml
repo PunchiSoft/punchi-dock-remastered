@@ -20,6 +20,7 @@ KCM.SimpleKCM {
 
     // Variables prefixed with "cfg_" map automatically to KConfig (main.xml).
     property alias cfg_iconSize: iconSizeSlider.value
+    property alias cfg_iconSpacing: iconSpacingSlider.value
     property alias cfg_hoverScale: hoverScaleSlider.value
     property string cfg_virtualDesktopMode: "all"
     property string cfg_targetVirtualDesktop: ""
@@ -207,6 +208,35 @@ KCM.SimpleKCM {
                 }
             }
 
+            // qmllint disable unqualified
+            RowLayout {
+                Kirigami.FormData.label: i18n("Icon spacing:")
+                Layout.maximumWidth: page.contentWidthHint
+
+                Controls.Slider {
+                    id: iconSpacingSlider
+                    from: 0
+                    to: 24
+                    stepSize: 1
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: page.contentWidthHint - 60
+                    Accessible.name: i18n("Icon spacing")
+                    Accessible.description: i18n("Adjusts the spacing between dock icons from 0 to 24 pixels.")
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                        role: "slider"
+                    }
+                }
+
+                Controls.Label {
+                    text: Math.round(iconSpacingSlider.value) + " px"
+                    font.bold: true
+                    Layout.preferredWidth: 50
+                }
+            }
+            // qmllint enable unqualified
+
             Kirigami.InlineMessage {
                 Kirigami.FormData.label: page.inPanel ? i18n("Limit:") : ""
                 Layout.fillWidth: true
@@ -230,6 +260,10 @@ KCM.SimpleKCM {
                     stepSize: 0.05
                     Layout.fillWidth: true
                     Layout.preferredWidth: page.contentWidthHint - 60
+                    // qmllint disable unqualified
+                    Accessible.name: i18n("Hover zoom scale")
+                    Accessible.description: i18n("Adjusts hover zoom between 105 and 200 percent.")
+                    // qmllint enable unqualified
 
                     ConfigCursorBehavior {
                         cursorEnabled: page.interactiveCursorEnabled
@@ -238,7 +272,7 @@ KCM.SimpleKCM {
                 }
 
                 Controls.Label {
-                    text: hoverScaleSlider.value.toFixed(2) + "x"
+                    text: Math.round(hoverScaleSlider.value * 100) + "%"
                     font.bold: true
                     Layout.preferredWidth: 50
                 }

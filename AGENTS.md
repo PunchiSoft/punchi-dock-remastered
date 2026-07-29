@@ -8,7 +8,6 @@ Este archivo es la fuente canónica de instrucciones para todo el repositorio.
 - Las instrucciones específicas complementan estas reglas; no deben contradecirlas sin explicar la excepción.
 - `.agents/skills/` contiene procedimientos especializados que se activan según la tarea.
 - Si una skill contradice este archivo, prevalece este archivo.
-- `.agents/skills 2/` es una copia no canónica detectada durante la auditoría. No debe consultarse ni editarse.
 
 ## Contexto del proyecto
 
@@ -102,6 +101,8 @@ La estructura real del repositorio puede evolucionar. No crear carpetas o abstra
 
 - Preferir componentes oficiales de Plasma y Kirigami cuando correspondan al contexto del plasmoide.
 - Usar colores, tipografía, medidas y métricas proporcionadas por el tema y el sistema.
+- Usar unidades visibles coherentes en la configuración: `px` para medidas físicas o de trazo, `%` para escalas visuales relativas, opacidad, intensidad y proporciones. Los multiplicadores `1x`, `1.5x` o similares deben quedar como representación interna salvo que el contexto técnico exija mostrarlos.
+- Nombrar los controles según su unidad real: `grosor` para trazos en `px`, `escala` para valores relativos en `%`, y `tamaño` solo cuando no oculte la diferencia entre medida absoluta y escala visual.
 - No introducir colores fijos para elementos que deban adaptarse al tema claro u oscuro.
 - Componer cada popup alrededor de una sola superficie visual principal. Añadir fondos, bordes o marcos internos únicamente cuando cumplan una función concreta de recorte, contraste, interacción o comunicación de estado; evitar composiciones de tarjeta dentro de tarjeta y separar colecciones mediante espaciado y estados transitorios antes que con contornos permanentes.
 - Favorecer bindings declarativos legibles; evitar bindings costosos, ciclos y actualizaciones continuas innecesarias.

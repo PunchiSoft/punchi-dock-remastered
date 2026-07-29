@@ -27,10 +27,14 @@ target_sources(punchidockintegration PRIVATE
     dockthemevalidator.h
     dockruntimeservice.cpp
     dockruntimeservice.h
+    dropurlpolicy.cpp
+    dropurlpolicy.h
     mediaartworkresolver.cpp
     mediaartworkresolver.h
     mpriscontroller.cpp
     mpriscontroller.h
+    mprisplayerselection.cpp
+    mprisplayerselection.h
     panellengthmodebridge.cpp
     panellengthmodebridge.h
     pipewireaudiobackend.cpp

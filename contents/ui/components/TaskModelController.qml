@@ -27,6 +27,8 @@ Item {
     property int structureRevision: 0
     property bool pendingStructureRefresh: false
     property bool useLegacyCurrentDesktopFilter: false
+    property string pendingMinimizeApplicationId: ""
+    property string pendingMinimizeStorageId: ""
 
     TaskManager.VirtualDesktopInfo {
         id: virtualDesktopInfo
@@ -49,6 +51,14 @@ Item {
         onTriggered: root.flushRefresh()
     }
 
+    Timer {
+        id: mediaLaunchMinimizeTimer
+
+        interval: 8000
+        repeat: false
+        onTriggered: root.cancelPendingMediaWindowMinimize()
+    }
+
     Connections {
         target: tasksModel
 
@@ -58,6 +68,10 @@ Item {
 
         function onDataChanged(_topLeft, _bottomRight, roles) {
             root.scheduleRefresh(root.dataChangeNeedsStructureRefresh(roles))
+            if (root.pendingMinimizeApplicationId.length > 0
+                    || root.pendingMinimizeStorageId.length > 0) {
+                Qt.callLater(root.tryPendingMediaWindowMinimize)
+            }
         }
 
         function onActiveTaskChanged() {
@@ -66,6 +80,10 @@ Item {
 
         function onRowsInserted() {
             root.scheduleRefresh(true)
+            if (root.pendingMinimizeApplicationId.length > 0
+                    || root.pendingMinimizeStorageId.length > 0) {
+                Qt.callLater(root.tryPendingMediaWindowMinimize)
+            }
         }
 
         function onRowsRemoved() {
@@ -167,6 +185,106 @@ Item {
         const taskIndex = tasksModel.index(row, 0)
         return String(tasksModel.data(
             taskIndex, TaskManager.AbstractTasksModel.LauncherUrlWithoutIcon) || "").trim()
+    }
+
+    function taskMatchesApplicationIdentity(row, applicationId, storageId) {
+        const expectedApplicationId = normalizeApplicationId(applicationId).toLowerCase()
+        const expectedStorageId = normalizeApplicationId(storageId).toLowerCase()
+        const taskApplicationId = taskAppIdForRow(row).toLowerCase()
+        const taskLauncherUrl = taskLauncherUrlForRow(row).toLowerCase()
+
+        if ((expectedApplicationId.length > 0 && taskApplicationId === expectedApplicationId)
+                || (expectedStorageId.length > 0 && taskApplicationId === expectedStorageId)
+                || (expectedApplicationId.length > 0
+                    && taskLauncherUrl === "applications:" + expectedApplicationId)
+                || (expectedStorageId.length > 0
+                    && taskLauncherUrl === "applications:" + expectedStorageId)) {
+            return true
+        }
+
+        if (!root.systemDiscovery) {
+            return false
+        }
+        const resolved = root.systemDiscovery.applicationForLauncher(
+            taskAppIdForRow(row), taskRawLauncherUrlForRow(row))
+        const resolvedStorageId = normalizeApplicationId(
+            resolved && resolved.storageId || "").toLowerCase()
+        const resolvedApplicationId = normalizeApplicationId(
+            resolved && resolved.appId || "").toLowerCase()
+        return (expectedApplicationId.length > 0
+                && (resolvedApplicationId === expectedApplicationId
+                    || resolvedStorageId === expectedApplicationId))
+            || (expectedStorageId.length > 0
+                && (resolvedApplicationId === expectedStorageId
+                    || resolvedStorageId === expectedStorageId))
+    }
+
+    function matchingApplicationWindowExists(applicationId, storageId) {
+        for (let row = 0; row < tasksModel.count; row++) {
+            const taskIndex = tasksModel.index(row, 0)
+            if (!taskIndex.valid
+                    || !tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsWindow)
+                    || tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.SkipTaskbar)) {
+                continue
+            }
+            if (taskMatchesApplicationIdentity(row, applicationId, storageId)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    function cancelPendingMediaWindowMinimize() {
+        mediaLaunchMinimizeTimer.stop()
+        pendingMinimizeApplicationId = ""
+        pendingMinimizeStorageId = ""
+    }
+
+    function requestMinimizeNextApplicationWindow(applicationId, storageId) {
+        cancelPendingMediaWindowMinimize()
+        const expectedApplicationId = normalizeApplicationId(applicationId)
+        const expectedStorageId = normalizeApplicationId(storageId)
+        if (expectedApplicationId.length === 0 && expectedStorageId.length === 0) {
+            return false
+        }
+        if (matchingApplicationWindowExists(expectedApplicationId, expectedStorageId)) {
+            return false
+        }
+
+        pendingMinimizeApplicationId = expectedApplicationId
+        pendingMinimizeStorageId = expectedStorageId
+        mediaLaunchMinimizeTimer.restart()
+        return true
+    }
+
+    function tryPendingMediaWindowMinimize() {
+        if (pendingMinimizeApplicationId.length === 0
+                && pendingMinimizeStorageId.length === 0) {
+            return false
+        }
+
+        for (let row = 0; row < tasksModel.count; row++) {
+            const taskIndex = tasksModel.index(row, 0)
+            if (!taskIndex.valid
+                    || !tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsWindow)
+                    || tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.SkipTaskbar)
+                    || !taskMatchesApplicationIdentity(row,
+                        pendingMinimizeApplicationId, pendingMinimizeStorageId)) {
+                continue
+            }
+            if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimized)) {
+                cancelPendingMediaWindowMinimize()
+                return true
+            }
+            if (!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimizable)) {
+                continue
+            }
+
+            tasksModel.requestToggleMinimized(taskIndex)
+            cancelPendingMediaWindowMinimize()
+            return true
+        }
+        return false
     }
 
     function dockItemMatchesTaskRow(item, row) {
@@ -877,6 +995,63 @@ Item {
         }
 
         activateTaskRow(Number(rows[0]))
+    }
+
+    function openUrlsWithTaskRows(rows, urls) {
+        if (!rows || rows.length === 0 || !urls || urls.length === 0) {
+            return false
+        }
+
+        let preferredRow = -1
+        for (let index = 0; index < rows.length; index++) {
+            const row = Number(rows[index])
+            const taskIndex = tasksModel.index(row, 0)
+            if (!taskIndex.valid) {
+                continue
+            }
+            if (preferredRow < 0) {
+                preferredRow = row
+            }
+            if (isTaskRowActive(row)) {
+                preferredRow = row
+                break
+            }
+        }
+        if (preferredRow < 0) {
+            return false
+        }
+
+        const preferredIndex = tasksModel.index(preferredRow, 0)
+        tasksModel.requestActivate(preferredIndex)
+        tasksModel.requestOpenUrls(preferredIndex, urls)
+        return true
+    }
+
+    function activateTaskRowsForExternalDrop(rows) {
+        if (!rows || rows.length === 0) {
+            return false
+        }
+
+        let preferredRow = -1
+        for (let index = 0; index < rows.length; index++) {
+            const row = Number(rows[index])
+            const taskIndex = tasksModel.index(row, 0)
+            if (!taskIndex.valid) {
+                continue
+            }
+            if (isTaskRowActive(row)) {
+                return false
+            }
+            if (preferredRow < 0) {
+                preferredRow = row
+            }
+        }
+        if (preferredRow < 0) {
+            return false
+        }
+
+        tasksModel.requestActivate(tasksModel.index(preferredRow, 0))
+        return true
     }
 
     function closeTaskRow(row) {

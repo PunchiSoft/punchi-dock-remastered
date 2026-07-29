@@ -7,9 +7,19 @@ PipeWire.PipeWireSourceItem {
 
     property string windowUuid: ""
     readonly property bool hasThumbnail: root.ready
+    readonly property bool supportsObjectSerial: "objectSerial" in root
+        && "objectSerial" in screencastingRequest
 
     anchors.fill: parent
-    nodeId: screencastingRequest.nodeId
+    nodeId: root.supportsObjectSerial ? 0 : screencastingRequest.nodeId
+
+    Binding {
+        target: root
+        property: "objectSerial"
+        value: screencastingRequest.objectSerial
+        when: root.supportsObjectSerial
+        restoreMode: Binding.RestoreBindingOrValue
+    }
 
     TaskManager.ScreencastingRequest {
         id: screencastingRequest

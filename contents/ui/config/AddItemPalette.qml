@@ -7,6 +7,9 @@ import org.kde.kirigami as Kirigami
 ColumnLayout {
     id: root
 
+    // Translation helpers and controller delegates are supplied by the QML context.
+    // qmllint disable unqualified
+
     property var controller
     signal addRequested(string type)
 
@@ -25,6 +28,7 @@ ColumnLayout {
             { "type": "separator", "title": i18n("Separator"), "description": i18n("Add a visual separator"), "icon": "draw-line" },
             { "type": "spacer", "title": i18n("Spacer"), "description": i18n("Add empty space between items"), "icon": "distribute-horizontal-x" },
             { "type": "calendar", "title": i18n("Calendar/Clock"), "description": i18n("Show date information"), "icon": "x-office-calendar" },
+            { "type": "media", "title": i18n("Media player"), "description": i18n("Automatically select the active player"), "icon": "emblem-music-symbolic" },
             { "type": "trash", "title": i18n("Trash"), "description": i18n("Open or empty the trash"), "icon": "user-trash" }
         ]
 
@@ -33,6 +37,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
             height: Math.max(Kirigami.Units.gridUnit * 3.4, itemRow.implicitHeight + Kirigami.Units.smallSpacing * 2)
+            enabled: modelData.type !== "media" || !root.controller.hasItemType("media")
             onClicked: root.addRequested(modelData.type)
 
             contentItem: RowLayout {
@@ -70,7 +75,10 @@ ColumnLayout {
             }
 
             Controls.ToolTip.visible: hovered
-            Controls.ToolTip.text: modelData.title
+            Controls.ToolTip.text: enabled
+                ? modelData.title
+                : i18n("Only one media player item can be added")
         }
     }
 }
+// qmllint enable unqualified

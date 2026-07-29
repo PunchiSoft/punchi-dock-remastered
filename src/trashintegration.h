@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QPointer>
 #include <QString>
+#include <QVariantList>
 #include <qqmlregistration.h>
 
 class KDirWatch;
@@ -38,6 +39,7 @@ public:
 
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void openTrash();
+    Q_INVOKABLE void trashUrls(const QVariantList &urls);
     Q_INVOKABLE void emptyTrash();
     Q_INVOKABLE void resetOperationState();
 

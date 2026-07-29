@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.2">
-    <img src="https://img.shields.io/badge/release-v0.9.2-4caf50" alt="Versión v0.9.2">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.3">
+    <img src="https://img.shields.io/badge/release-v0.9.3-4caf50" alt="Versión v0.9.3">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -22,7 +22,7 @@ Punchi Dock Remastered es un dock de lanzadores e interfaz de tareas nativo para
 
 Este repositorio es una reescritura modular del proyecto original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). Actualmente el proyecto está preparando su camino hacia una versión estable 1.0.
 
-La versión actual es [v0.9.2](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.2).
+La versión actual es [v0.9.3](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.3).
 
 ## Capturas
 
@@ -49,6 +49,9 @@ La versión actual es [v0.9.2](https://github.com/PunchiSoft/punchi-dock-remaste
 - Popups adaptados al tema de Plasma con animaciones de apertura configurables, transiciones fluidas entre miniaturas y menús, y retargeting continuo entre elementos del dock.
 - Acciones nativas de aplicacion y ventana en los menus contextuales de launchers fijados y tareas dinamicas.
 - Tarjetas multimedia MPRIS contextuales con caratula, informacion de pista, controles de reproduccion y una accion accesible para silenciar o restaurar el volumen en todos los formatos de tarjeta.
+- Item MPRIS compacto para el dock con reproductor seleccionable, fallback de caratula, modos de texto vertical y apertura seguida de Play.
+- Controles circulares de color Plasma/personalizado y separacion configurable entre iconos con unidades visuales explicitas.
+- Arrastre seguro de archivos hacia aplicaciones fijadas y acciones de desanclado conscientes del tipo de item, incluidas carpetas.
 - Tarjeta MPRIS opcional bajo las miniaturas vivas, revelada despues de la vista previa para conservar la continuidad visual.
 - Operaciones asíncronas de papelera con actividad, progreso, sonido de finalización y notificaciones temáticas de KDE.
 - Temas externos JSON almacenados en una biblioteca administrada, con importación recursiva de carpetas, borrado y fallback seguro al fondo Plasma.
@@ -87,13 +90,13 @@ En Fedora, `kpackagetool6` pertenece a `kf6-kpackage` y normalmente ya está dis
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.2-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.3-fedora44-x86_64.plasmoid
 ```
 
 Para actualizar una instalación existente:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.2-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.3-fedora44-x86_64.plasmoid
 ```
 
 Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actualizado no se carga inmediatamente.
@@ -147,9 +150,9 @@ distribución.
 dist/punchi-dock-remastered-<version>-<distribución><versión>-<arquitectura>.plasmoid
 ```
 
-Por ejemplo: `punchi-dock-remastered-0.9.2-fedora44-x86_64.plasmoid`,
-`punchi-dock-remastered-0.9.2-debian13-x86_64.plasmoid` o
-`punchi-dock-remastered-0.9.2-kubuntu<versión>-plasma6.6.4-x86_64.plasmoid`.
+Por ejemplo: `punchi-dock-remastered-0.9.3-fedora44-x86_64.plasmoid`,
+`punchi-dock-remastered-0.9.3-debian13-x86_64.plasmoid` o
+`punchi-dock-remastered-0.9.3-kubuntu<versión>-plasma6.6.4-x86_64.plasmoid`.
 No instales un artefacto identificado para otra distribución.
 
 El flujo Debian 13 fue comprobado por separado de Debian 14/testing. Kubuntu

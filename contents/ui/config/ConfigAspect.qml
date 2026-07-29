@@ -27,6 +27,11 @@ KCM.SimpleKCM {
     property alias cfg_iconReflectionOpacity: iconReflectionOpacitySlider.value
     property string cfg_indicatorType: "line"
     property string cfg_indicatorPosition: "bottom"
+    property alias cfg_showWindowCountBadge: showWindowCountBadgeCheck.checked
+    property string cfg_windowCountBadgePosition: "top-right"
+    property string cfg_windowCountEmblemColor: ""
+    property alias cfg_windowCountEmblemOpacityPercent: windowCountEmblemOpacitySlider.value
+    property alias cfg_windowCountEmblemScalePercent: windowCountEmblemScaleSlider.value
     property alias cfg_indicatorOpacity: indicatorOpacitySlider.value
     property alias cfg_indicatorThickness: indicatorThicknessSlider.value
     property string cfg_dockThemeMode: "plasma"
@@ -106,21 +111,33 @@ KCM.SimpleKCM {
         || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool horizontalPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
     readonly property bool iconReflectionsSupported: !inPanel || horizontalPanel
-    readonly property bool indicatorPositionApplicable: cfg_indicatorType !== "ring"
-        && cfg_indicatorType !== "none"
+    readonly property bool indicatorPositionApplicable: cfg_indicatorType !== "none"
+    readonly property string effectiveWindowCountEmblemColor: {
+        const value = String(cfg_windowCountEmblemColor || "").trim()
+        return /^#[0-9a-fA-F]{6}$/.test(value) ? value : ""
+    }
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     readonly property var indicatorTypeOptions: [
         { "text": i18n("Line"), "value": "line" },
         { "text": i18n("Dot"), "value": "dot" },
-        { "text": i18n("Ring"), "value": "ring" },
+        { "text": i18n("Small ring"), "value": "ring" },
         { "text": i18n("Rounded square"), "value": "square" },
         { "text": i18n("None"), "value": "none" }
     ]
+    // qmllint disable unqualified
     readonly property var indicatorPositionOptions: [
-        { "text": i18n("Bottom"), "value": "bottom" },
-        { "text": i18n("Top"), "value": "top" }
+        { "text": i18nc("Indicator position", "Bottom"), "value": "bottom" },
+        { "text": i18nc("Indicator position", "Top"), "value": "top" }
     ]
+    readonly property var windowCountBadgePositionOptions: [
+        { "text": i18n("Top left"), "value": "top-left" },
+        { "text": i18n("Top right"), "value": "top-right" },
+        { "text": i18n("Bottom left"), "value": "bottom-left" },
+        { "text": i18n("Bottom right"), "value": "bottom-right" },
+        { "text": i18n("Center"), "value": "center" }
+    ]
+    // qmllint enable unqualified
 
     // qmllint disable unqualified
     header: Controls.TabBar {
@@ -179,6 +196,7 @@ KCM.SimpleKCM {
     function syncIndicatorSelectors() {
         syncComboValue(indicatorTypeCombo, page.cfg_indicatorType)
         syncComboValue(indicatorPositionCombo, page.cfg_indicatorPosition)
+        syncComboValue(windowCountBadgePositionCombo, page.cfg_windowCountBadgePosition)
     }
 
     function syncDockThemeSelector() {
@@ -310,6 +328,8 @@ KCM.SimpleKCM {
 
     onCfg_indicatorTypeChanged: syncIndicatorSelectors()
     onCfg_indicatorPositionChanged: syncIndicatorSelectors()
+    onCfg_windowCountBadgePositionChanged: syncIndicatorSelectors()
+    onCfg_showWindowCountBadgeChanged: syncIndicatorSelectors()
     onCfg_dockThemeModeChanged: syncDockThemeSelector()
     onCfg_dockThemeCustomIdChanged: syncThemeLibrarySelector()
     Component.onCompleted: {
@@ -325,6 +345,20 @@ KCM.SimpleKCM {
 
         onThemesChanged: page.syncThemeLibrarySelector()
     }
+
+    // qmllint disable unqualified
+    ColorPaletteDialog {
+        id: windowCountEmblemColorDialog
+        width: Math.min(page.width - Kirigami.Units.largeSpacing * 2,
+            Kirigami.Units.gridUnit * 24)
+        title: i18n("Choose Window Count Badge Color")
+        currentColor: page.effectiveWindowCountEmblemColor
+        fallbackColor: Kirigami.Theme.highlightColor
+        onColorChosen: function(color) {
+            page.cfg_windowCountEmblemColor = color
+        }
+    }
+    // qmllint enable unqualified
 
     // qmllint disable unqualified
     QtDialogs.FileDialog {
@@ -451,6 +485,7 @@ KCM.SimpleKCM {
             Layout.maximumWidth: page.contentWidthHint
         }
 
+        // qmllint disable unqualified
         RowLayout {
             Kirigami.FormData.label: i18n("Dock orientation:")
             Layout.maximumWidth: page.contentWidthHint
@@ -493,6 +528,7 @@ KCM.SimpleKCM {
                 }
             }
         }
+        // qmllint enable unqualified
 
         RowLayout {
             Kirigami.FormData.label: i18n("Installed theme:")
@@ -635,6 +671,10 @@ KCM.SimpleKCM {
         }
         // qmllint enable unqualified
 
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+        }
+
         SectionTitle {
             Kirigami.FormData.isSection: true
             text: i18n("Labels")
@@ -668,6 +708,10 @@ KCM.SimpleKCM {
             Layout.maximumWidth: page.contentWidthHint
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
+        }
+
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
         }
 
         SectionTitle {
@@ -743,6 +787,10 @@ KCM.SimpleKCM {
             color: Kirigami.Theme.disabledTextColor
         }
 
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+        }
+
         SectionTitle {
             Kirigami.FormData.isSection: true
             text: i18n("Indicator")
@@ -771,19 +819,20 @@ KCM.SimpleKCM {
             }
         }
 
+        // qmllint disable unqualified
         Controls.Label {
             text: page.cfg_indicatorType === "none"
                 ? i18n("Disables the active-window indicator entirely.")
-                : page.cfg_indicatorType === "ring"
-                    ? i18n("The ring surrounds the icon, so it does not use a top or bottom position.")
-                    : i18n("Line, dot and rounded square can be placed at the top or bottom edge of the icon.")
+                : i18n("Line, dot, small ring and rounded square can be placed at the top or bottom edge of the icon.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
         }
+        // qmllint enable unqualified
 
+        // qmllint disable unqualified
         RowLayout {
             Kirigami.FormData.label: i18n("Indicator position:")
             Layout.maximumWidth: page.contentWidthHint
@@ -844,7 +893,7 @@ KCM.SimpleKCM {
         }
 
         RowLayout {
-            Kirigami.FormData.label: i18n("Indicator size:")
+            Kirigami.FormData.label: i18n("Indicator thickness:")
             Layout.maximumWidth: page.contentWidthHint
 
             Controls.Slider {
@@ -854,6 +903,8 @@ KCM.SimpleKCM {
                 stepSize: 1
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Indicator thickness")
+                Accessible.description: i18n("Adjusts the indicator thickness between 2 and 10 pixels.")
 
                 ConfigCursorBehavior {
                     cursorEnabled: page.interactiveCursorEnabled
@@ -867,6 +918,143 @@ KCM.SimpleKCM {
                 Layout.preferredWidth: 56
             }
         }
+
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+        }
+
+        Kirigami.Heading {
+            Kirigami.FormData.isSection: true
+            level: 3
+            text: i18n("Window count badge")
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Badge:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.CheckBox {
+                id: showWindowCountBadgeCheck
+                text: i18n("Show the number of open windows")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+        }
+
+        Controls.Label {
+            text: i18n("The badge appears from two grouped windows and is hidden when window grouping is disabled.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Badge position:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.ComboBox {
+                id: windowCountBadgePositionCombo
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                textRole: "text"
+                valueRole: "value"
+                model: page.windowCountBadgePositionOptions
+                enabled: page.cfg_showWindowCountBadge
+                onActivated: {
+                    if (page.cfg_windowCountBadgePosition !== currentValue) {
+                        page.cfg_windowCountBadgePosition = currentValue
+                    }
+                }
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Badge color:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            ColorModeControl {
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                customColor: page.effectiveWindowCountEmblemColor
+                fallbackColor: Kirigami.Theme.highlightColor
+                selectorWidth: page.selectorWidthHint - Kirigami.Units.iconSizes.medium
+                enabled: page.cfg_showWindowCountBadge
+                onColorRequested: windowCountEmblemColorDialog.open()
+                onThemeRequested: page.cfg_windowCountEmblemColor = ""
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Badge opacity:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: windowCountEmblemOpacitySlider
+                from: 60
+                to: 100
+                stepSize: 5
+                snapMode: Controls.Slider.SnapAlways
+                enabled: page.cfg_showWindowCountBadge
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Badge opacity")
+                Accessible.description: i18n("Adjusts badge visibility between 60 and 100 percent.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: Math.round(windowCountEmblemOpacitySlider.value) + "%"
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 56
+            }
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Badge scale:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: windowCountEmblemScaleSlider
+                from: 80
+                to: 120
+                stepSize: 5
+                snapMode: Controls.Slider.SnapAlways
+                enabled: page.cfg_showWindowCountBadge
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Badge scale")
+                Accessible.description: i18n("Adjusts the badge scale between 80 and 120 percent of its default size.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: Math.round(windowCountEmblemScaleSlider.value) + "%"
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 56
+            }
+        }
+
+        // qmllint enable unqualified
         }
 
         ConfigPopups {
@@ -912,4 +1100,5 @@ KCM.SimpleKCM {
             Layout.fillWidth: true
         }
     }
+
 }

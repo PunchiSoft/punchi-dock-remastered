@@ -11,6 +11,9 @@
     <entry name="iconSize" type="Int">
       <default>48</default>
     </entry>
+    <entry name="iconSpacing" type="Int">
+      <default>8</default>
+    </entry>
     <entry name="hoverScale" type="Double">
       <default>1.35</default>
     </entry>
@@ -63,6 +66,21 @@
     </entry>
     <entry name="indicatorPosition" type="String">
       <default>bottom</default>
+    </entry>
+    <entry name="showWindowCountBadge" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="windowCountBadgePosition" type="String">
+      <default>top-right</default>
+    </entry>
+    <entry name="windowCountEmblemColor" type="String">
+      <default></default>
+    </entry>
+    <entry name="windowCountEmblemOpacityPercent" type="Int">
+      <default>100</default>
+    </entry>
+    <entry name="windowCountEmblemScalePercent" type="Int">
+      <default>100</default>
     </entry>
     <entry name="indicatorColor" type="String">
       <default></default>
@@ -224,6 +242,9 @@
     </entry>
     <entry name="globalMouseCursor" type="Bool">
       <default>false</default>
+    </entry>
+    <entry name="enableAppDragAndDrop" type="Bool">
+      <default>true</default>
     </entry>
   </group>
   <group name="Windows">

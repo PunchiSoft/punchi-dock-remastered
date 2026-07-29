@@ -310,7 +310,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Folder popup scale")
-                Accessible.description: i18n("Scales popup dimensions, icons, and text proportionally.")
+                Accessible.description: i18n("Adjusts the folder popup content scale between 50 and 300 percent.")
 
                 ConfigCursorBehavior {
                     cursorEnabled: page.interactiveCursorEnabled
@@ -319,14 +319,14 @@ Item {
             }
 
             Controls.Label {
-                text: i18n("%1x", Number(folderPopupScaleSlider.value || 1.0).toFixed(1))
+                text: i18n("%1%", Math.round(Number(folderPopupScaleSlider.value || 1.0) * 100))
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 56
             }
         }
 
         Controls.Label {
-            text: i18n("Scales folder popup contents between 0.5x and 3.0x while maintaining fixed window geometry.")
+            text: i18n("Scales folder popup contents between 50 and 300 percent while maintaining fixed window geometry.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

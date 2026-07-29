@@ -25,17 +25,20 @@ Item {
     readonly property real lineWidth: Math.max(0,
         Math.min(root.width - 12, Math.max(sizeHint * 2.5, 8 + Math.min(count, 3) * 5)))
     readonly property real dotSize: Math.max(sizeHint + 3, Math.min(iconSize * 0.18, 12))
-    readonly property real ringSize: Math.min(root.width - 8, iconSize + 8)
+    readonly property real ringSize: Math.max(sizeHint + 6, Math.min(iconSize * 0.2, 14))
+    readonly property real ringStrokeWidth: Math.max(1, Math.min(3, sizeHint * 0.45))
 
     visible: !hiddenIndicator
     opacity: resolvedOpacity
 
     Rectangle {
         id: edgeIndicator
-        visible: root.type === "line" || root.type === "dot" || root.type === "square"
+        visible: root.type === "line" || root.type === "dot" || root.type === "square" || root.type === "ring"
         width: root.type === "line"
             ? (root.position === "left" || root.position === "right" ? root.sizeHint : root.lineWidth)
-            : root.dotSize + (root.type === "square" ? 2 : 0)
+            : (root.type === "ring"
+                ? root.ringSize
+                : root.dotSize + (root.type === "square" ? 2 : 0))
         height: root.type === "line"
             ? (root.position === "left" || root.position === "right" ? root.lineWidth : root.sizeHint)
             : width
@@ -50,18 +53,8 @@ Item {
                 ? Math.max(1, root.height - height - 1)
                 : Math.round((root.height - height) / 2))
         radius: root.type === "square" ? Math.max(2, root.dotSize * 0.28) : Math.min(width, height) / 2
-        color: root.resolvedColor
-    }
-
-    Rectangle {
-        visible: root.type === "ring"
-        width: root.ringSize
-        height: root.ringSize
-        x: Math.round((root.width - width) / 2)
-        y: Math.round((root.height - height) / 2)
-        radius: width / 2
-        color: "transparent"
-        border.width: Math.max(1, Math.min(4, root.sizeHint))
+        color: root.type === "ring" ? "transparent" : root.resolvedColor
+        border.width: root.type === "ring" ? root.ringStrokeWidth : 0
         border.color: root.resolvedColor
     }
 }

@@ -28,7 +28,10 @@ public:
     Q_INVOKABLE QString applicationIdForCommand(const QString &command) const;
     Q_INVOKABLE QVariantMap applicationForLauncher(const QString &applicationId, const QString &launcherUrl) const;
     Q_INVOKABLE QVariantList applicationActions(const QString &applicationId) const;
+    Q_INVOKABLE QVariantMap validateDroppedUrls(const QVariantList &urls) const;
     Q_INVOKABLE void launchApplication(const QString &storageId);
+    Q_INVOKABLE bool launchApplicationWithUrls(const QString &applicationId, const QString &command,
+        const QString &launcherUrl, const QVariantList &urls);
     Q_INVOKABLE bool launchApplicationAction(const QString &applicationId, const QString &actionId);
     Q_INVOKABLE bool launchApplicationByCommand(const QString &command);
     Q_INVOKABLE void openUrl(const QString &url);

@@ -188,7 +188,7 @@ Item {
         }
 
         RowLayout {
-            Kirigami.FormData.label: i18n("Preview size:")
+            Kirigami.FormData.label: i18n("Preview scale:")
             enabled: page.previewStyle !== "none"
             Layout.maximumWidth: page.contentWidthHint
 
@@ -202,7 +202,8 @@ Item {
                 onMoved: page.cfg_windowPreviewScale = value * 1.5
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
-                Accessible.name: i18n("Window preview size")
+                Accessible.name: i18n("Window preview scale")
+                Accessible.description: i18n("Adjusts the window preview scale between 100 and 300 percent.")
 
                 ConfigCursorBehavior {
                     cursorEnabled: page.interactiveCursorEnabled
@@ -211,14 +212,14 @@ Item {
             }
 
             Controls.Label {
-                text: previewScaleSlider.value.toFixed(2) + "x"
+                text: i18n("%1%", Math.round(previewScaleSlider.value * 100))
                 font.bold: true
                 Layout.preferredWidth: 54
             }
         }
 
         Controls.Label {
-            text: i18n("1.00x uses the recommended base size. Larger previews keep their aspect ratio and remain limited by the available screen space.")
+            text: i18n("100 percent uses the recommended base size. Larger previews keep their aspect ratio and remain limited by the available screen space.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

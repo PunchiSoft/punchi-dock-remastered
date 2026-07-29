@@ -79,7 +79,7 @@ function refreshItemForm() {
     calendarFormat.editText = item.format || "HH:mm"
     clockColor.text = item.color || ""
     if (calendarTimeTextScale) {
-        calendarTimeTextScale.value = item.timeTextScale === undefined ? (item.textScale === undefined ? 1.0 : item.timeTextScale) : item.timeTextScale
+        calendarTimeTextScale.value = item.timeTextScale === undefined ? (item.textScale === undefined ? 1.0 : item.textScale) : item.timeTextScale
     }
     if (calendarDateTextScale) {
         calendarDateTextScale.value = item.dateTextScale === undefined ? (item.textScale === undefined ? 1.0 : item.textScale) : item.dateTextScale

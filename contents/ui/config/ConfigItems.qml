@@ -11,7 +11,6 @@ import "../org/punchi/dock" as Punchi
 import "code/configItemsController.js" as ConfigItemsControllerJS
 import "code/configItems.js" as ConfigItemsJS
 import "code/configScripts.js" as ConfigScriptsJS
-import "code/configUi.js" as ConfigUiJS
 import "code/items.js" as ItemsJS
 import "code/configItemsStateHelper.js" as StateHelper
 import "code/configItemsFormHelper.js" as FormHelper
@@ -36,6 +35,7 @@ KCM.SimpleKCM {
     property string configFile: ConfigScriptsJS.localPath(configDirectory + "/" + instanceConfigFileName())
     property string pendingOperation: "load"
     property string pendingContainerSource: ""
+    property string pendingApplicationListTarget: ""
     property var items: []
     property int selectedIndex: -1
     property int selectedActionIndex: -1
@@ -60,13 +60,17 @@ KCM.SimpleKCM {
     property real itemsColumnBodyHeight: Math.max(itemListHeight, page.height > 0 ? page.height - Kirigami.Units.gridUnit * 8 : itemListHeight)
     property string defaultTrashEmptySound: "/usr/share/sounds/ocean/stereo/trash-empty.oga"
     property var fontChoices: ["Anurati", "Noto Sans", "Noto Sans Mono", "Inter", "Roboto", "Ubuntu", "Cantarell", "DejaVu Sans", "Liberation Sans", "Monospace", "Serif", "Sans Serif"]
-    property var colorChoices: ConfigUiJS.colorChoices()
 
     SystemDiscoveryManager {
         id: systemDiscovery
 
         onAppsDiscovered: function(apps) {
-            page.applyContainerApps(apps)
+            if (page.pendingApplicationListTarget === "media") {
+                page.pendingApplicationListTarget = ""
+                mediaPlayerDialog.applications = apps || []
+            } else {
+                page.applyContainerApps(apps)
+            }
         }
         onApplicationDiscovered: function(application) {
             page.applyDiscoveredApplication(application)
@@ -179,7 +183,7 @@ KCM.SimpleKCM {
             return calendarBorderColor.text
         }
         if (timedColorTarget === "analogAccent") {
-        return ""
+        return clockColor.text
         }
         if (timedColorTarget === "analogTick") {
         return ""
@@ -333,6 +337,15 @@ KCM.SimpleKCM {
         return ConfigItemsJS.clone(value)
     }
 
+    function hasItemType(type) {
+        for (var index = 0; index < items.length; index++) {
+            if (items[index] && items[index].type === type) {
+                return true
+            }
+        }
+        return false
+    }
+
         function selectedItem() { return StateHelper.selectedItem() }
 
         function selectedAction() { return StateHelper.selectedAction() }
@@ -437,6 +450,14 @@ KCM.SimpleKCM {
     function openTrashDialog(index) { WorkflowHelper.openTrashDialog(index) }
 
     function openTimedDialog(index) { WorkflowHelper.openTimedDialog(index) }
+
+    function openMediaPlayerDialog(index) { WorkflowHelper.openMediaPlayerDialog(index) }
+
+    function setMediaDefaultPlayer(application) { WorkflowHelper.setMediaDefaultPlayer(application) }
+
+    function setMediaTextMode(mode) { WorkflowHelper.setMediaTextMode(mode) }
+
+    function setMediaOpenPlayerMinimized(enabled) { WorkflowHelper.setMediaOpenPlayerMinimized(enabled) }
 
     function selectedConfigureTitle() { return WorkflowHelper.selectedConfigureTitle() }
 
@@ -546,10 +567,7 @@ KCM.SimpleKCM {
         width: Math.min(page.width - Kirigami.Units.largeSpacing * 2, Kirigami.Units.gridUnit * 24)
         currentColor: page.timedColorValue()
         fallbackColor: page.timedFallbackColor()
-        colorChoices: page.colorChoices
-        themeText: i18n("Plasma theme")
         onColorChosen: page.applyTimedColor(color)
-        onThemeChosen: page.applyTimedColor("")
     }
 
     ActionDialog {
@@ -652,6 +670,23 @@ KCM.SimpleKCM {
     TimedDialog {
         id: timedDialog
         controller: page
+    }
+
+    MediaPlayerDialog {
+        id: mediaPlayerDialog
+        title: i18n("Configure media player")
+        width: Math.min(page.width - Kirigami.Units.largeSpacing * 2,
+            Kirigami.Units.gridUnit * 28)
+        selectorWidth: layoutMetrics.selectorWidth
+        onPlayerSelected: function(application) {
+            page.setMediaDefaultPlayer(application)
+        }
+        onMediaTextModeSelected: function(mode) {
+            page.setMediaTextMode(mode)
+        }
+        onOpenPlayerMinimizedSelected: function(enabled) {
+            page.setMediaOpenPlayerMinimized(enabled)
+        }
     }
 
     Controls.TextField {

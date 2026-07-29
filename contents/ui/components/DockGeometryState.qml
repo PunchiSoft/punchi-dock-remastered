@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 
 QtObject {
@@ -10,6 +11,7 @@ QtObject {
     property bool horizontalPanel: false
     property int panelLocation: PlasmaCore.Types.BottomEdge
     property int configuredIconSize: 48
+    property int configuredIconSpacing: 8
     property string configuredPanelLengthMode: "fit"
     property string configuredPanelAlignmentMode: "start"
     property int folderPopupExtraDistance: 0
@@ -27,7 +29,11 @@ QtObject {
     property var panelWindow: null
     property var containment: null
 
-    readonly property int dockSpacing: 8
+    readonly property int dockSpacing: {
+        const spacing = Number(root.configuredIconSpacing)
+        return Math.round(Math.max(0, Math.min(24,
+            Number.isFinite(spacing) ? spacing : 8)))
+    }
     readonly property int dockBackgroundHorizontalPadding: 18
     readonly property int dockBackgroundVerticalPadding: 12
     readonly property int floatingExtraWidth: 48
@@ -146,6 +152,10 @@ QtObject {
     readonly property int effectiveIconSize: root.inPanel
         ? Math.min(root.configuredIconSize, effectivePanelBaseIconLimit)
         : root.configuredIconSize
+    readonly property int mediaItemMainAxisLength: Math.round(Math.max(120,
+        Math.min(320, effectiveIconSize * 4.2)))
+    readonly property int compactMediaItemMainAxisLength: Math.round(Math.max(120,
+        Math.min(240, effectiveIconSize * 2.9)))
     readonly property bool panelFillLengthEnabled: root.inPanel
         && panelUsesFillAvailable
         && !root.hiddenByVirtualDesktop
@@ -158,6 +168,25 @@ QtObject {
         ? (effectiveIconSize * root.panelHoverScale) + 12 + root.dockLabelAreaHeight
         : Math.max(panelItemWidth, (effectiveIconSize * root.panelHoverScale) + 12))
 
+    function normalizedMediaTextMode(item) {
+        const mode = item ? String(item.mediaTextMode || "automatic") : "automatic"
+        return mode === "always" || mode === "hidden" ? mode : "automatic"
+    }
+
+    function mediaMetadataVisibleForItem(item) {
+        const mode = root.normalizedMediaTextMode(item)
+        return mode === "always"
+            || (mode === "automatic"
+                && (!root.verticalPanel
+                    || root.effectiveIconSize >= Kirigami.Units.gridUnit * 5))
+    }
+
+    function mediaItemMainAxisLengthForItem(item) {
+        return root.mediaMetadataVisibleForItem(item)
+            ? root.mediaItemMainAxisLength
+            : root.compactMediaItemMainAxisLength
+    }
+
     function panelMainAxisExtentForDockItem(item) {
         const itemType = item && item.type ? String(item.type) : "app"
         if (itemType === "separator") {
@@ -165,6 +194,9 @@ QtObject {
         }
         if (itemType === "spacer") {
             return Math.max(12, effectiveIconSize * 0.5)
+        }
+        if (itemType === "media") {
+            return root.mediaItemMainAxisLengthForItem(item) + 12
         }
         return root.verticalPanel ? panelItemHeight : panelItemWidth
     }

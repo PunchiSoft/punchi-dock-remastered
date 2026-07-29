@@ -15,6 +15,7 @@ class MprisController : public QObject
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(QString applicationId READ applicationId WRITE setApplicationId NOTIFY applicationIdChanged)
+    Q_PROPERTY(QString selectionMode READ selectionMode WRITE setSelectionMode NOTIFY selectionModeChanged)
     Q_PROPERTY(bool available READ available NOTIFY stateChanged)
     Q_PROPERTY(QString identity READ identity NOTIFY stateChanged)
     Q_PROPERTY(QString track READ track NOTIFY stateChanged)
@@ -40,6 +41,8 @@ public:
 
     QString applicationId() const;
     void setApplicationId(const QString &applicationId);
+    QString selectionMode() const;
+    void setSelectionMode(const QString &selectionMode);
     bool available() const;
     QString identity() const;
     QString track() const;
@@ -63,6 +66,8 @@ public:
     Q_INVOKABLE void refresh();
     Q_INVOKABLE void previous();
     Q_INVOKABLE void togglePlaying();
+    Q_INVOKABLE void requestPlayWhenAvailable(int timeoutMs);
+    Q_INVOKABLE void cancelPlayWhenAvailable();
     Q_INVOKABLE void next();
     Q_INVOKABLE void setShuffle(bool enabled);
     Q_INVOKABLE void cycleLoopStatus();
@@ -71,6 +76,7 @@ public:
 
 Q_SIGNALS:
     void applicationIdChanged();
+    void selectionModeChanged();
     void stateChanged();
 
 private Q_SLOTS:
@@ -83,9 +89,12 @@ private:
     void selectBestCandidate();
     void clearState();
     void callPlayerMethod(const QString &method);
+    void completePendingPlayRequest();
     void scheduleRefresh();
+    bool selectionAvailable() const;
 
     QString m_applicationId;
+    QString m_selectionMode = QStringLiteral("application");
     QString m_service;
     QString m_identity;
     QString m_track;
@@ -112,4 +121,6 @@ private:
     int m_pendingPropertyRequests = 0;
     QHash<QString, QVariantMap> m_candidates;
     QTimer *m_refreshTimer = nullptr;
+    QTimer *m_pendingPlayTimer = nullptr;
+    bool m_playWhenAvailablePending = false;
 };

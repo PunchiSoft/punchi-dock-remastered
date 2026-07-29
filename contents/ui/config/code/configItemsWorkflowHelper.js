@@ -162,6 +162,93 @@ function openTimedDialog(index) {
     timedDialog.open()
 }
 
+function openMediaPlayerDialog(index) {
+    if (index !== undefined && index >= 0 && index < items.length) {
+        selectItem(index)
+    }
+
+    var item = selectedItem()
+    if (!item || item.type !== "media") {
+        return
+    }
+
+    mediaPlayerDialog.applications = []
+    mediaPlayerDialog.selectedStorageId = String(item.defaultPlayerStorageId || "")
+    mediaPlayerDialog.mediaTextMode = String(item.mediaTextMode || "automatic")
+    mediaPlayerDialog.openPlayerMinimized = item.openPlayerMinimized === true
+    mediaPlayerDialog.open()
+    pendingApplicationListTarget = "media"
+    systemDiscovery.requestApplications("AudioVideo")
+}
+
+function setMediaDefaultPlayer(application) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "media") {
+        return
+    }
+
+    var selectedApplication = application || {}
+    var storageId = String(selectedApplication.storageId || "").trim()
+    if (storageId.length === 0) {
+        delete item.defaultPlayerStorageId
+        delete item.defaultPlayerAppId
+        delete item.defaultPlayerName
+        delete item.defaultPlayerIcon
+    } else {
+        item.defaultPlayerStorageId = storageId
+        item.defaultPlayerAppId = ConfigItemsJS.normalizedApplicationId(
+            selectedApplication.appId || storageId)
+        item.defaultPlayerName = String(selectedApplication.name || storageId)
+        item.defaultPlayerIcon = String(selectedApplication.icon || "applications-multimedia")
+    }
+    ConfigItemsJS.pruneMedia(item)
+    setItems(nextItems)
+    mediaPlayerDialog.selectedStorageId = String(item.defaultPlayerStorageId || "")
+    mediaPlayerDialog.openPlayerMinimized = item.openPlayerMinimized === true
+}
+
+function setMediaTextMode(mode) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "media") {
+        return
+    }
+
+    var normalizedMode = String(mode || "automatic")
+    item.mediaTextMode = normalizedMode === "always" || normalizedMode === "hidden"
+        ? normalizedMode
+        : "automatic"
+    ConfigItemsJS.pruneMedia(item)
+    setItems(nextItems)
+    mediaPlayerDialog.mediaTextMode = String(item.mediaTextMode || "automatic")
+}
+
+function setMediaOpenPlayerMinimized(enabled) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "media") {
+        return
+    }
+
+    item.openPlayerMinimized = enabled === true
+    ConfigItemsJS.pruneMedia(item)
+    setItems(nextItems)
+    mediaPlayerDialog.openPlayerMinimized = item.openPlayerMinimized === true
+}
+
 function selectedConfigureTitle() {
     if (selectedItemType === "folder") {
         return i18n("Configure folder")
@@ -184,11 +271,16 @@ function selectedConfigureTitle() {
     if (selectedItemType === "spacer") {
         return i18n("Configure spacer")
     }
+    if (selectedItemType === "media") {
+        return i18n("Media player item")
+    }
     return i18n("Configure app")
 }
 
 function configureSelectedItem() {
-    if (selectedItemType === "folder" || selectedItemType === "note" || selectedItemType === "separator" || selectedItemType === "spacer") {
+    if (selectedItemType === "media") {
+        openMediaPlayerDialog(selectedIndex)
+    } else if (selectedItemType === "folder" || selectedItemType === "note" || selectedItemType === "separator" || selectedItemType === "spacer") {
         openAppActionsDialog(selectedIndex)
     } else if (selectedItemType === "trash") {
         openTrashDialog(selectedIndex)
@@ -200,6 +292,12 @@ function configureSelectedItem() {
 }
 
 function addItem(type) {
+    if (type === "media" && hasItemType("media")) {
+        mainView.showStatus(
+            i18n("Only one media player item can be added."),
+            Kirigami.MessageType.Information)
+        return
+    }
     var nextItems = clone(items)
     nextItems.push(ConfigItemsJS.newItem(type, defaultTrashEmptySound))
     selectedIndex = nextItems.length - 1
@@ -217,6 +315,8 @@ function applyTimedColor(value) {
     } else if (timedColorTarget === "analogTick") {
     } else if (timedColorTarget === "analogBorder") {
     } else if (timedColorTarget === "analogFace") {
+    } else {
+        clockColor.text = value
     }
     applyItemForm()
 }

@@ -2,6 +2,62 @@
 
 Todos los cambios notables de este proyecto serán documentados en este archivo.
 
+## [0.9.3] - 2026-07-28
+
+### Agregado
+
+- Item multimedia MPRIS compacto configurable con reproductor predeterminado,
+  carátula con esquinas redondeadas, icono de aplicación y controles de pista.
+- Selección de reproductor mediante aplicaciones multimedia descubiertas por
+  KDE, con apertura segura de la aplicación configurada.
+- Inicio diferido de reproducción: el botón Play abre el reproductor cerrado y
+  envía `Play` cuando su servicio MPRIS anuncia `CanPlay`.
+- Modos de información de pista `Automático`, `Siempre visible` y `Oculto`,
+  adaptados a paneles verticales estrechos y con tooltip accesible.
+- Apertura opcional del reproductor seleccionado en estado minimizado.
+- Selector circular de color junto a un `ComboBox` para elegir color Plasma o
+  color personalizado.
+- Separación configurable entre iconos del dock y controles de tamaño con
+  unidades explícitas (`px` para medidas físicas y `%` para escalas visuales).
+- Arrastre seguro de archivos hacia aplicaciones fijadas, con validación de
+  URLs, activación temporal de la ventana y feedback visual y accesible.
+- Acciones de contexto para desanclar aplicaciones y carpetas del dock.
+
+### Cambiado
+
+- La geometría del item MPRIS comparte una única decisión de visibilidad entre
+  el delegate y la capacidad del panel; en vertical sin texto se elimina la
+  fila intermedia y los controles permanecen dentro del marco.
+- La configuración de calendario, apariencia, popups, carpetas y menús usa
+  controles compactos coherentes con Kirigami y métricas de accesibilidad.
+- Las preferencias nuevas se normalizan y persisten de forma compatible con
+  configuraciones existentes.
+- Se ampliaron los catálogos de alemán, español y portugués brasileño y se
+  actualizaron las descripciones accesibles de los controles multimedia.
+
+### Corregido
+
+- La carátula del item MPRIS ya no pisa el borde inferior y se recorta con
+  esquinas redondeadas.
+- El fallback de reproductores cerrados conserva el icono de la aplicación o
+  usa un icono multimedia adaptable al tema.
+- El texto multimedia no reinicia su desplazamiento cada segundo mientras
+  avanza la duración de la pista.
+- El item MPRIS vertical no reserva espacio invisible ni recorta Play/Siguiente
+  cuando el texto está oculto.
+- La selección de reproductor admite correctamente listas expuestas por C++ y
+  no queda limitada a la opción automática.
+
+### Validación
+
+- Fedora 44, Qt 6.11.1 y Plasma 6.7.3: `qmllint` dentro del baseline, compilación
+  Release y paquete `.plasmoid` generado para `x86_64`.
+- CTest completo: `14/14` pruebas correctas.
+- Catálogos `de`, `es` y `pt_BR` validados con `msgfmt` y sin entradas vacías
+  o difusas.
+- El usuario confirmó en Plasma real el funcionamiento completo del item MPRIS
+  vertical y del inicio mediante Play.
+
 ## [0.9.2] - 2026-07-23
 
 ### Agregado

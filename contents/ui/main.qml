@@ -65,6 +65,19 @@ PlasmoidItem {
     readonly property var visibleTaskRows: taskController.visibleTaskRows
     readonly property var overflowTaskRows: taskController.overflowTaskRows
     readonly property int taskVisualRevision: taskController.visualRevision
+    readonly property var configuredMediaItem: {
+        const items = dockItemsController.dockItems || []
+        for (let index = 0; index < items.length; index++) {
+            if (items[index] && items[index].type === "media") {
+                return items[index]
+            }
+        }
+        return null
+    }
+    readonly property string configuredMediaApplicationId: configuredMediaItem
+        ? String(configuredMediaItem.defaultPlayerAppId
+            || configuredMediaItem.defaultPlayerStorageId || "").substring(0, 512)
+        : ""
     signal taskStructureChanged()
 
     // Virtual desktop visibility.
@@ -85,6 +98,13 @@ PlasmoidItem {
     }
     Punchi.MprisController {
         id: mprisController
+    }
+    Punchi.MprisController {
+        id: dockMediaController
+        selectionMode: root.configuredMediaApplicationId.length > 0
+            ? "application"
+            : "activePlayer"
+        applicationId: root.configuredMediaApplicationId
     }
     Punchi.ThemeIntegration {
         id: themeIntegration
@@ -109,6 +129,10 @@ PlasmoidItem {
         horizontalPanel: root.inPanel ? Plasmoid.formFactor === PlasmaCore.Types.Horizontal : !root.floatingVertical
         panelLocation: root.floatingVertical ? PlasmaCore.Types.LeftEdge : Plasmoid.location
         configuredIconSize: Number(Plasmoid.configuration.iconSize || 48)
+        configuredIconSpacing: {
+            const spacing = Number(Plasmoid.configuration.iconSpacing)
+            return Number.isFinite(spacing) ? spacing : 8
+        }
         configuredPanelLengthMode: String(Plasmoid.configuration.panelLengthMode || "fit")
         configuredPanelAlignmentMode: String(Plasmoid.configuration.panelAlignmentMode || "start")
         panelHoverScale: dockConfig.panelHoverScale
@@ -164,12 +188,78 @@ PlasmoidItem {
         taskController: taskController
         dockItemsController: dockItemsController
     }
+    DropFeedbackPopup {
+        id: dropFeedbackPopup
+    }
     readonly property string currentVirtualDesktopId: String(virtualDesktopInfo.currentDesktop || "")
     readonly property bool singleVirtualDesktopMode: Plasmoid.configuration.virtualDesktopMode === "single"
         && Plasmoid.configuration.targetVirtualDesktop !== ""
     readonly property bool hiddenByVirtualDesktop: singleVirtualDesktopMode
         && currentVirtualDesktopId !== Plasmoid.configuration.targetVirtualDesktop
     property int panelDynamicGroupCapacity: -1
+
+    // Translation functions and controller ids are provided by the plasmoid
+    // context and remain valid at runtime.
+    // qmllint disable unqualified
+    function droppedUrlErrorMessage(result) {
+        const errorCode = String(result && result.errorCode || "")
+        if (errorCode === "noUrls") {
+            return i18nc("@info:status", "No local files were found in this drop.")
+        }
+        if (errorCode === "tooManyUrls") {
+            const maximumCount = Number(result.maximumUrlCount || 64)
+            return i18nc("@info:status", "You can open up to %1 local files at once.",
+                maximumCount)
+        }
+        if (errorCode === "invalidUrl") {
+            return i18nc("@info:status", "The drop contains an invalid local file location.")
+        }
+        if (errorCode === "unsupportedScheme") {
+            return i18nc("@info:status", "Only local files can be opened with an application.")
+        }
+        if (errorCode === "urlTooLong") {
+            return i18nc("@info:status", "A file location is too long to open safely.")
+        }
+        if (errorCode === "batchTooLarge") {
+            return i18nc("@info:status", "The dropped file list is too large to open safely.")
+        }
+        if (errorCode === "applicationUnavailable") {
+            return i18nc("@info:status", "This application cannot be resolved safely for file opening.")
+        }
+        return i18nc("@info:status", "The dropped files could not be opened.")
+    }
+
+    function handleApplicationUrlsDrop(item, taskRows, urls, visualParent) {
+        const result = dockItemsController.handleApplicationUrlsDrop(
+            item, taskRows, urls)
+        if (!result.accepted) {
+            dropFeedbackPopup.presentFeedback(visualParent,
+                root.droppedUrlErrorMessage(result))
+            return
+        }
+        dropFeedbackPopup.dismissFeedback()
+        popupCoordinator.closeAllPopups(null)
+    }
+
+    function launchConfiguredMediaPlayer(item, playWhenReady) {
+        const storageId = String(
+            item.defaultPlayerStorageId || "").substring(0, 512)
+        if (storageId.length === 0) {
+            return
+        }
+
+        taskController.cancelPendingMediaWindowMinimize()
+        if (item.openPlayerMinimized === true) {
+            taskController.requestMinimizeNextApplicationWindow(
+                String(item.defaultPlayerAppId || "").substring(0, 512),
+                storageId)
+        }
+        if (playWhenReady) {
+            dockMediaController.requestPlayWhenAvailable(10000)
+        }
+        systemDiscovery.launchApplication(storageId)
+    }
+    // qmllint enable unqualified
 
     implicitWidth: inPanel ? dockGeometry.panelPreferredWidth : 0
     implicitHeight: inPanel ? dockGeometry.panelPreferredHeight : 0
@@ -504,6 +594,8 @@ PlasmoidItem {
                 
                 property int hoveredIndex: -1
                 property real mouseOffset: 0.0
+                property real pointerPrimaryAxis: -1
+                property real lastPointerPrimaryAxis: -1
 
                 // State used for smooth transitions when entering or leaving the dock.
                 property int lastHoveredIndex: -1
@@ -530,19 +622,42 @@ PlasmoidItem {
 
                 signal trashUrlsDropped(var urls)
                 onTrashUrlsDropped: function(urls) {
-                    var cmd = Logic.trashUrlsScript(urls)
-                    dockItemsController.runCommand(cmd)
+                    trashIntegration.trashUrls(urls)
                 }
 
                 Repeater {
                     model: dockItemsController.dockItems
                     delegate: DockItem {
                         id: dockItemDelegate
+                        layoutController: dockLayout
                         itemIndex: index
                         hoveredIndex: dockLayout.hoveredIndex
                         inPanel: root.inPanel
                         panelLocation: dockGeometry.effectivePanelLocation
                         iconSize: dockGeometry.effectiveIconSize
+                        // The media item's text preference belongs to modelData.
+                        // qmllint disable unqualified
+                        mediaMainAxisLength: dockGeometry.mediaItemMainAxisLengthForItem(modelData)
+                        // qmllint enable unqualified
+                        mediaController: modelData.type === "media"
+                            ? dockMediaController
+                            : null
+                        mediaLaunchAvailable: modelData.type === "media"
+                            && String(modelData.defaultPlayerStorageId || "").length > 0
+                        mediaDefaultPlayerName: modelData.type === "media"
+                            ? String(modelData.defaultPlayerName || "")
+                            : ""
+                        mediaDefaultPlayerIcon: modelData.type === "media"
+                            ? String(modelData.defaultPlayerIcon || "")
+                            : ""
+                        // The delegate model supplies modelData at runtime.
+                        // qmllint disable unqualified
+                        mediaTextMode: modelData.type === "media"
+                            ? String(modelData.mediaTextMode || "automatic")
+                            : "automatic"
+                        // qmllint enable unqualified
+                        mediaMotionEnabled: dockConfig.menuAnimationStyle !== "none"
+                            && String(Plasmoid.configuration.hoverAnimation || "wave") !== "none"
                         hoverScaleSetting: dockConfig.panelHoverScale
                         hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "wave"
                         clickEffect: dockConfig.dockClickEffect
@@ -569,15 +684,25 @@ PlasmoidItem {
                                     && launcherUrl === dockItemsController.recentlyTransitionedLauncherUrl)
                         }
                         // qmllint enable unqualified
+                        // qmllint disable unqualified
                         showPersistentLabel: dockConfig.dockShowLabels
                         textShadowsEnabled: dockConfig.dockTextShadowsEnabled
                         labelFontSize: dockConfig.dockLabelFontSize
                         indicatorType: dockConfig.dockIndicatorType
                         indicatorPosition: dockConfig.dockIndicatorPosition
+                        // qmllint disable unqualified
                         indicatorThickness: dockConfig.dockIndicatorThickness
                         indicatorOpacity: dockConfig.dockIndicatorOpacity
+                        windowCountBadgeEnabled: dockConfig.windowCountBadgeEnabled
+                        windowCountBadgePosition: dockConfig.windowCountBadgePosition
+                        windowGroupingEnabled: taskController.groupingEnabled()
+                        windowCountEmblemColor: dockConfig.windowCountEmblemColor
+                        windowCountEmblemOpacity: dockConfig.windowCountEmblemOpacity
+                        windowCountEmblemScale: dockConfig.windowCountEmblemScale
+                        // qmllint enable unqualified
                         customSeparatorEnabled: dockConfig.customDockSeparatorActive
                         separatorTheme: dockConfig.customDockSeparatorTheme
+                        // qmllint enable unqualified
                         
                         // Wave animation state.
                         hoverZoomProgress: dockLayout.hoverZoomProgress
@@ -609,6 +734,18 @@ PlasmoidItem {
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === dockItemDelegate)
                         supportsContextMenu: dockContextActionsController.itemHasContextMenu(modelData, taskState.rows, "pinned")
                         mediaHoverControlsEnabled: dockConfig.mediaControlsOnHover && taskState.count > 0
+                        // qmllint disable unqualified
+                        externalDropEnabled: modelData.type === "app"
+                            && dockConfig.appDragAndDropEnabled
+                        externalDropValidator: function(urls) {
+                            return dockItemsController.validateDroppedUrls(urls)
+                        }
+                        externalDropActivationEnabled: taskState.count > 0
+                            && !taskState.isActive
+                        externalDropActivator: function() {
+                            return taskController.activateTaskRowsForExternalDrop(taskState.rows)
+                        }
+                        // qmllint enable unqualified
 
                         // qmllint disable unqualified
                         TaskDelegateGeometryPublisher {
@@ -633,6 +770,16 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         onTaskMinimized: function(minimizedItemIndex) {
                             dockItemsController.triggerMinimizeReaction(minimizedItemIndex)
+                        }
+                        onExternalUrlsDropped: function(urls, visualParent) {
+                            root.handleApplicationUrlsDrop(
+                                modelData, taskState.rows, urls, visualParent)
+                        }
+                        onMediaLaunchRequested: {
+                            root.launchConfiguredMediaPlayer(modelData, false)
+                        }
+                        onMediaPlaybackLaunchRequested: {
+                            root.launchConfiguredMediaPlayer(modelData, true)
                         }
                         // qmllint enable unqualified
                         onContextMenuRequested: function(visualParent, keyboardInvoked) {
@@ -665,6 +812,7 @@ PlasmoidItem {
                     model: root.visibleTaskRows
                     delegate: DockItem {
                         id: taskDockItemDelegate
+                        layoutController: dockLayout
                         required property var modelData
                         required property int index
                         readonly property int taskRevision: root.taskVisualRevision
@@ -706,13 +854,22 @@ PlasmoidItem {
                                     && launcherUrls.indexOf(dockItemsController.recentlyTransitionedLauncherUrl) >= 0)
                         }
                         // qmllint enable unqualified
+                        // qmllint disable unqualified
                         showPersistentLabel: dockConfig.dockShowLabels
                         textShadowsEnabled: dockConfig.dockTextShadowsEnabled
                         labelFontSize: dockConfig.dockLabelFontSize
                         indicatorType: dockConfig.dockIndicatorType
                         indicatorPosition: dockConfig.dockIndicatorPosition
+                        // qmllint disable unqualified
                         indicatorThickness: dockConfig.dockIndicatorThickness
                         indicatorOpacity: dockConfig.dockIndicatorOpacity
+                        windowCountBadgeEnabled: dockConfig.windowCountBadgeEnabled
+                        windowCountBadgePosition: dockConfig.windowCountBadgePosition
+                        windowGroupingEnabled: taskController.groupingEnabled()
+                        windowCountEmblemColor: dockConfig.windowCountEmblemColor
+                        windowCountEmblemOpacity: dockConfig.windowCountEmblemOpacity
+                        windowCountEmblemScale: dockConfig.windowCountEmblemScale
+                        // qmllint enable unqualified
                         hoverZoomProgress: dockLayout.hoverZoomProgress
                         lastHoveredIndex: dockLayout.lastHoveredIndex
                         lastMouseOffset: dockLayout.lastMouseOffset
@@ -727,6 +884,17 @@ PlasmoidItem {
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === taskDockItemDelegate)
                         supportsContextMenu: dockContextActionsController.itemHasContextMenu(modelData, taskData.rows, "dynamic")
                         mediaHoverControlsEnabled: dockConfig.mediaControlsOnHover && taskData.count > 0
+                        externalDropEnabled: dockConfig.appDragAndDropEnabled
+                        // qmllint disable unqualified
+                        externalDropValidator: function(urls) {
+                            return dockItemsController.validateDroppedUrls(urls)
+                        }
+                        externalDropActivationEnabled: taskData.count > 0
+                            && !taskData.active
+                        externalDropActivator: function() {
+                            return taskController.activateTaskRowsForExternalDrop(taskData.rows)
+                        }
+                        // qmllint enable unqualified
 
                         // qmllint disable unqualified
                         TaskDelegateGeometryPublisher {
@@ -747,6 +915,10 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         onTaskMinimized: function(minimizedItemIndex) {
                             dockItemsController.triggerMinimizeReaction(minimizedItemIndex)
+                        }
+                        onExternalUrlsDropped: function(urls, visualParent) {
+                            root.handleApplicationUrlsDrop(
+                                modelData, taskData.rows, urls, visualParent)
                         }
                         // qmllint enable unqualified
                         onContextMenuRequested: function(visualParent) {
@@ -798,6 +970,7 @@ PlasmoidItem {
 
                 DockItem {
                     id: taskOverflowDockItem
+                    layoutController: dockLayout
                     width: implicitWidth
                     height: implicitHeight
                     itemIndex: dockItemsController.dockItems.length + root.visibleTaskRows.length

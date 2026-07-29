@@ -269,6 +269,9 @@ function itemTitle(item, translate) {
     if (item.type === "note") {
         return defaultName(item.name, "Note", translate)
     }
+    if (item.type === "media") {
+        return defaultName(item.name, "Media player", translate)
+    }
     return defaultName(item.name, "Application", translate)
 }
 
@@ -294,6 +297,9 @@ function itemTypeTitle(type, translate) {
     if (type === "note") {
         return translate("Note")
     }
+    if (type === "media") {
+        return translate("Media player")
+    }
     return translate("Application")
 }
 
@@ -318,6 +324,11 @@ function itemSubtitle(item, translate, translatePlural) {
     }
     if (item.type === "note") {
         return translate("Simple note")
+    }
+    if (item.type === "media") {
+        return item.defaultPlayerName
+            ? String(item.defaultPlayerName)
+            : translate("Automatically select the active player")
     }
     if (item.type === "spacer") {
         return translate("%1 px", item.size || 24)
@@ -349,6 +360,9 @@ function itemIcon(item) {
     }
     if (item.type === "note") {
         return !item.icon || item.icon === "note" ? "knotes" : item.icon
+    }
+    if (item.type === "media") {
+        return "emblem-music-symbolic"
     }
     return item.icon || "application-x-executable"
 }
@@ -461,6 +475,39 @@ function pruneNote(item) {
     item.popupHeight = Math.max(160, item.popupHeight || 260)
 }
 
+function pruneMedia(item) {
+    removeKeys(item, [
+        "command", "apps", "actions", "actionsEnabled", "storageId", "appId",
+        "description"
+    ])
+    item.name = "Media player"
+    item.icon = "emblem-music-symbolic"
+    var mediaTextMode = String(item.mediaTextMode || "automatic")
+    if (mediaTextMode !== "always" && mediaTextMode !== "hidden") {
+        delete item.mediaTextMode
+    } else {
+        item.mediaTextMode = mediaTextMode
+    }
+    var storageId = String(item.defaultPlayerStorageId || "").trim().substring(0, 512)
+    if (storageId.length === 0) {
+        removeKeys(item, [
+            "defaultPlayerStorageId", "defaultPlayerAppId",
+            "defaultPlayerName", "defaultPlayerIcon", "openPlayerMinimized"
+        ])
+        return
+    }
+    item.defaultPlayerStorageId = storageId
+    item.defaultPlayerAppId = normalizedApplicationId(
+        item.defaultPlayerAppId || storageId).substring(0, 512)
+    item.defaultPlayerName = String(item.defaultPlayerName || storageId)
+        .trim().substring(0, 256)
+    item.defaultPlayerIcon = String(item.defaultPlayerIcon || "applications-multimedia")
+        .trim().substring(0, 512)
+    if (item.openPlayerMinimized !== true) {
+        delete item.openPlayerMinimized
+    }
+}
+
 function pruneApp(item) {
     removeKeys(item, ["apps"])
     if (!item.storageId || String(item.storageId).trim().length === 0) {
@@ -547,6 +594,13 @@ function newItem(type, defaultTrashEmptySound) {
             "note": "",
             "popupWidth": 360,
             "popupHeight": 260
+        }
+    }
+    if (type === "media") {
+        return {
+            "type": "media",
+            "name": "Media player",
+            "icon": "emblem-music-symbolic"
         }
     }
     if (type === "folder") {
