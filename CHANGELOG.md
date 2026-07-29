@@ -21,6 +21,8 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
   unidades explícitas (`px` para medidas físicas y `%` para escalas visuales).
 - Arrastre seguro de archivos hacia aplicaciones fijadas, con validación de
   URLs, activación temporal de la ventana y feedback visual y accesible.
+- Operación de arrastre hacia Papelera mediante `KIO::trash`, con validación
+  local de URLs, límites de lote, actualización asíncrona y reporte de errores.
 - Acciones de contexto para desanclar aplicaciones y carpetas del dock.
 
 ### Cambiado
@@ -39,6 +41,8 @@ Todos los cambios notables de este proyecto serán documentados en este archivo.
 
 - La carátula del item MPRIS ya no pisa el borde inferior y se recorta con
   esquinas redondeadas.
+- El arrastre de archivos a Papelera ya no construye comandos shell: valida los
+  elementos recibidos y usa el job nativo de KDE para moverlos de forma segura.
 - El fallback de reproductores cerrados conserva el icono de la aplicación o
   usa un icono multimedia adaptable al tema.
 - El texto multimedia no reinicia su desplazamiento cada segundo mientras
