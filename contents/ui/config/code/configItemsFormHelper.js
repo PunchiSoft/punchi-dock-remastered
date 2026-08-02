@@ -42,6 +42,7 @@ function refreshItemForm() {
         calendarAccentColor.text = ""
         calendarBorderColor.text = ""
         calendarRadius.value = 0
+        calendarTextShadows.checked = true
         calendarShowWeekNumbers.checked = true
         calendarPopupScale.value = 1.0
         calendarDisplayMode.currentIndex = 0
@@ -84,12 +85,19 @@ function refreshItemForm() {
     if (calendarDateTextScale) {
         calendarDateTextScale.value = item.dateTextScale === undefined ? (item.textScale === undefined ? 1.0 : item.textScale) : item.dateTextScale
     }
+    calendarTextShadows.checked = item.calendarTextShadowsEnabled !== false
     calendarShowWeekNumbers.checked = item.showWeekNumbers === undefined ? true : item.showWeekNumbers
     calendarPopupScale.value = Math.max(0.5, Math.min(3.0,
         Number(item.popupScale === undefined ? 1.0 : item.popupScale)))
 
     if (separatorStyle && separatorStyle.model) {
-        separatorStyle.currentIndex = Math.max(0, ["line", "dot", "square", "pill", "star"].indexOf(item.separatorStyle || "line"))
+        var requestedSeparatorStyle = item.separatorStyle === "pill"
+            ? "capsule"
+            : (item.separatorStyle || "line")
+        separatorStyle.currentIndex = Math.max(0, [
+            "line", "dot", "square", "capsule", "star", "diamond", "ring",
+            "doubleLine", "chevron"
+        ].indexOf(requestedSeparatorStyle))
     }
     if (separatorThickness) {
         separatorThickness.value = item.separatorThickness === undefined ? 2 : item.separatorThickness
@@ -197,6 +205,7 @@ function applyItemForm(force) {
         item.format = calendarFormat.editText || "HH:mm"
         item.timeTextScale = calendarTimeTextScale ? calendarTimeTextScale.value : 1.0
         item.dateTextScale = calendarDateTextScale ? calendarDateTextScale.value : 1.0
+        item.calendarTextShadowsEnabled = calendarTextShadows.checked
         item.showWeekNumbers = calendarShowWeekNumbers.checked
         item.popupScale = calendarPopupScale.value
         ConfigItemsJS.pruneCalendar(item)

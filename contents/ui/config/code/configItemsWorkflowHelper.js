@@ -175,10 +175,116 @@ function openMediaPlayerDialog(index) {
     mediaPlayerDialog.applications = []
     mediaPlayerDialog.selectedStorageId = String(item.defaultPlayerStorageId || "")
     mediaPlayerDialog.mediaTextMode = String(item.mediaTextMode || "automatic")
+    mediaPlayerDialog.mediaDisplayMode = String(item.mediaDisplayMode || "normal") === "compact"
+        ? "compact"
+        : "normal"
     mediaPlayerDialog.openPlayerMinimized = item.openPlayerMinimized === true
+    mediaPlayerDialog.autoCollapseDelaySeconds = Number.isFinite(
+        Number(item.mediaAutoCollapseDelaySeconds))
+        ? Math.max(0, Math.min(30, Math.round(Number(item.mediaAutoCollapseDelaySeconds))))
+        : 3
     mediaPlayerDialog.open()
     pendingApplicationListTarget = "media"
     systemDiscovery.requestApplications("AudioVideo")
+}
+
+function openPunchiMenuDialog(index) {
+    if (index !== undefined && index >= 0 && index < items.length) {
+        selectItem(index)
+    }
+
+    var item = selectedItem()
+    if (!item || item.type !== "punchimenu") {
+        return
+    }
+
+    punchiMenuDialog.menuMode = ConfigItemsJS.normalizedPunchiMenuMode(
+        item.menuMode)
+    punchiMenuDialog.gridIconScalePercent =
+        ConfigItemsJS.normalizedPunchiMenuGridIconScalePercent(
+            item.gridIconScalePercent)
+    punchiMenuDialog.normalWidthPercent =
+        ConfigItemsJS.normalizedPunchiMenuNormalWidthPercent(
+            item.normalWidthPercent)
+    punchiMenuDialog.normalHeightPercent =
+        ConfigItemsJS.normalizedPunchiMenuNormalHeightPercent(
+            item.normalHeightPercent)
+    punchiMenuDialog.iconName = ConfigItemsJS.normalizedPunchiMenuIcon(
+        item.icon)
+    punchiMenuDialog.open()
+}
+
+function setPunchiMenuIcon(iconName) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "punchimenu") {
+        return
+    }
+
+    item.icon = ConfigItemsJS.normalizedPunchiMenuIcon(iconName)
+    ConfigItemsJS.prunePunchiMenu(item)
+    setItems(nextItems)
+    punchiMenuDialog.iconName = item.icon
+}
+
+function setPunchiMenuMode(mode) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "punchimenu") {
+        return
+    }
+
+    item.menuMode = ConfigItemsJS.normalizedPunchiMenuMode(mode)
+    ConfigItemsJS.prunePunchiMenu(item)
+    setItems(nextItems)
+    punchiMenuDialog.menuMode = item.menuMode
+}
+
+function setPunchiMenuGridIconScalePercent(percent) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "punchimenu") {
+        return
+    }
+
+    item.gridIconScalePercent =
+        ConfigItemsJS.normalizedPunchiMenuGridIconScalePercent(percent)
+    ConfigItemsJS.prunePunchiMenu(item)
+    setItems(nextItems)
+    punchiMenuDialog.gridIconScalePercent = item.gridIconScalePercent
+}
+
+function setPunchiMenuNormalSizePercent(widthPercent, heightPercent) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "punchimenu") {
+        return
+    }
+
+    item.normalWidthPercent =
+        ConfigItemsJS.normalizedPunchiMenuNormalWidthPercent(widthPercent)
+    item.normalHeightPercent =
+        ConfigItemsJS.normalizedPunchiMenuNormalHeightPercent(heightPercent)
+    ConfigItemsJS.prunePunchiMenu(item)
+    setItems(nextItems)
+    punchiMenuDialog.normalWidthPercent = item.normalWidthPercent
+    punchiMenuDialog.normalHeightPercent = item.normalHeightPercent
 }
 
 function setMediaDefaultPlayer(application) {
@@ -232,6 +338,25 @@ function setMediaTextMode(mode) {
     mediaPlayerDialog.mediaTextMode = String(item.mediaTextMode || "automatic")
 }
 
+function setMediaDisplayMode(mode) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "media") {
+        return
+    }
+
+    item.mediaDisplayMode = String(mode || "normal") === "compact"
+        ? "compact"
+        : "normal"
+    ConfigItemsJS.pruneMedia(item)
+    setItems(nextItems)
+    mediaPlayerDialog.mediaDisplayMode = String(item.mediaDisplayMode || "normal")
+}
+
 function setMediaOpenPlayerMinimized(enabled) {
     if (selectedIndex < 0 || selectedIndex >= items.length) {
         return
@@ -249,7 +374,33 @@ function setMediaOpenPlayerMinimized(enabled) {
     mediaPlayerDialog.openPlayerMinimized = item.openPlayerMinimized === true
 }
 
+function setMediaAutoCollapseDelaySeconds(seconds) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "media") {
+        return
+    }
+
+    var requestedSeconds = Number(seconds)
+    item.mediaAutoCollapseDelaySeconds = Number.isFinite(requestedSeconds)
+        ? Math.max(0, Math.min(30, Math.round(requestedSeconds)))
+        : 3
+    ConfigItemsJS.pruneMedia(item)
+    setItems(nextItems)
+    mediaPlayerDialog.autoCollapseDelaySeconds = Number.isFinite(
+        Number(item.mediaAutoCollapseDelaySeconds))
+        ? Number(item.mediaAutoCollapseDelaySeconds)
+        : 3
+}
+
 function selectedConfigureTitle() {
+    if (selectedItemType === "punchimenu") {
+        return i18n("Configure PunchiMenu")
+    }
     if (selectedItemType === "folder") {
         return i18n("Configure folder")
     }
@@ -277,8 +428,17 @@ function selectedConfigureTitle() {
     return i18n("Configure app")
 }
 
+function canConfigureSelectedItem() {
+    return selectedIndex >= 0
+}
+
 function configureSelectedItem() {
-    if (selectedItemType === "media") {
+    if (!canConfigureSelectedItem()) {
+        return
+    }
+    if (selectedItemType === "punchimenu") {
+        openPunchiMenuDialog(selectedIndex)
+    } else if (selectedItemType === "media") {
         openMediaPlayerDialog(selectedIndex)
     } else if (selectedItemType === "folder" || selectedItemType === "note" || selectedItemType === "separator" || selectedItemType === "spacer") {
         openAppActionsDialog(selectedIndex)
@@ -295,6 +455,12 @@ function addItem(type) {
     if (type === "media" && hasItemType("media")) {
         mainView.showStatus(
             i18n("Only one media player item can be added."),
+            Kirigami.MessageType.Information)
+        return
+    }
+    if (type === "punchimenu" && hasItemType("punchimenu")) {
+        mainView.showStatus(
+            i18n("Only one PunchiMenu item can be added."),
             Kirigami.MessageType.Information)
         return
     }

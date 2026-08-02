@@ -48,6 +48,7 @@ Item {
     property bool contextMenuOpening: false
     property string mediaHoverMode: "card"
     property bool mediaHoverEnabled: mediaHoverMode !== "none"
+    property bool windowPreviewsEnabled: true
     property bool mediaHoverActive: false
     property bool pendingTaskPopupKeyboardInvoked: false
     property bool pendingTaskPopupPreviewFallback: true
@@ -56,6 +57,19 @@ Item {
         || (appActionsDialogRef && appActionsDialogRef.visible)
         || (trashMenuDialogRef && trashMenuDialogRef.visible)
         || (taskWindowsPopupContentRef && taskWindowsPopupContentRef.actionsVisible)
+
+    onWindowPreviewsEnabledChanged: {
+        if (windowPreviewsEnabled) {
+            return
+        }
+        pendingTaskPopupPreviewFallback = false
+        taskPopupOpenTimer.stop()
+        if (!mediaHoverActive && taskWindowsDialogRef
+                && taskWindowsDialogRef.visible) {
+            taskWindowsDialogRef.visible = false
+            resetTaskPopupState()
+        }
+    }
 
     Timer {
         id: taskPopupOpenTimer
@@ -354,7 +368,8 @@ Item {
             && (mediaHoverMode === "card" || mediaHoverMode === "fullCard")
             && mprisControllerRef.applicationId === applicationId
             && mprisControllerRef.available
-        if (!showMedia && !previewFallback) {
+        const previewAllowed = windowPreviewsEnabled && previewFallback !== false
+        if (!showMedia && !previewAllowed) {
             resetTaskPopupState()
             return
         }
@@ -407,7 +422,12 @@ Item {
         pendingTaskPopupRows = rows || []
         taskPopupVisualParent = visualParent || null
         pendingTaskPopupKeyboardInvoked = !!keyboardInvoked
-        pendingTaskPopupPreviewFallback = previewFallback !== false
+        pendingTaskPopupPreviewFallback = windowPreviewsEnabled
+            && previewFallback !== false
+        if (!pendingTaskPopupPreviewFallback && !mediaHoverEnabled) {
+            resetTaskPopupState()
+            return
+        }
         if (mediaHoverEnabled && mprisControllerRef && taskControllerRef) {
             mprisControllerRef.applicationId = taskControllerRef.taskApplicationIdForRows(
                 pendingTaskPopupRows)

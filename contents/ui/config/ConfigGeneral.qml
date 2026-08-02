@@ -50,7 +50,7 @@ KCM.SimpleKCM {
         }
     }
     // qmllint enable missing-property
-    readonly property int panelCrossAxisPadding: verticalPanel ? 36 : 24
+    readonly property int panelCrossAxisPadding: verticalPanel ? 20 : 24
     readonly property int safePanelIconSizeMax: detectedPanelThickness > 0
         ? Math.max(32, detectedPanelThickness - panelCrossAxisPadding - 12)
         : 96

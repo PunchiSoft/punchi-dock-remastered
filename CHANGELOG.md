@@ -2,6 +2,84 @@
 
 Todos los cambios notables de este proyecto serán documentados en este archivo.
 
+## [0.9.4] - 2026-08-01
+
+### Agregado
+
+- Primera versión pública preliminar de PunchiMenu como ítem singleton del
+  dock, con modo Normal y modo Pantalla completa. Normal es la presentación más
+  pulida de esta versión; Pantalla completa continúa en una fase preliminar y
+  Compacto permanece reservado para una versión futura.
+- Modo Normal con búsqueda de aplicaciones, categorías desplazables, grilla de
+  seis columnas, favoritos persistentes por instancia y acciones contextuales
+  para añadir o retirar favoritos.
+- Navegación completa por teclado para búsqueda, categorías, aplicaciones y
+  favoritos, con foco visible, `Enter`, `Espacio`, flechas, `Tab`, menú
+  contextual y cierre mediante `Escape`.
+- Configuración de PunchiMenu para elegir presentación, dimensiones seguras del
+  modo Normal, escala de iconos, icono del ítem y atajo global dedicado.
+- Acciones nativas de cerrar sesión, reiniciar y apagar desde PunchiMenu,
+  respetando las capacidades expuestas por la sesión Plasma.
+- Blur nativo mediante KWindowSystem con fallback transparente ligero cuando el
+  efecto no está disponible.
+- Efecto de hover `Axis zoom` como opción predeterminada y control global de
+  velocidad del movimiento del dock.
+- Nuevas formas de separador para ítems y temas JSON: diamante, anillo, chevrón
+  y doble línea, además del catálogo visual existente.
+- Pruebas para descubrimiento de aplicaciones, propiedad de geometría de tareas
+  entre instancias y contaminación semántica de catálogos de traducción.
+
+### Cambiado
+
+- PunchiMenu Normal se ancla desde el borde del ítem correspondiente y respeta
+  el borde real del panel, la orientación, la pantalla disponible y límites de
+  geometría seguros.
+- El dock dentro de un panel neutraliza su representación expandida propia al
+  abrir PunchiMenu; el menú conserva su popup independiente.
+- Las categorías y favoritos usan desplazamiento horizontal suavizado con
+  controles laterales reservados, sin barras redundantes.
+- La grilla Normal reserva una zona independiente para Favoritos y mantiene el
+  scroll vertical de aplicaciones dentro de su área disponible.
+- El indicador de conteo de ventanas pasa a estar habilitado por defecto y la
+  publicación de geometría de tareas elige una sola instancia propietaria.
+- El ítem MPRIS compacto reduce trabajo visual innecesario y comparte controles
+  configurables de movimiento con el resto del dock.
+- La página de Elementos presenta una paleta compacta de dos columnas, con
+  encabezados superiores, descripciones accesibles y alturas simétricas.
+- El sombreado del Calendario/Reloj se independiza del sombreado global de
+  etiquetas persistentes.
+- Los scripts de Fedora, Debian y Kubuntu incorporan las dependencias nativas de
+  GlobalAccel y Plasma Workspace requeridas por PunchiMenu.
+
+### Corregido
+
+- La navegación repetida del carrusel ya no acumula destinos ni acelera de
+  forma descontrolada; flechas, rueda y teclado comparten límites coherentes.
+- El segundo clic sobre el ítem PunchiMenu vuelve a cerrar el modo Normal sin
+  afectar la minimización esperada de aplicaciones, carpetas u otros ítems.
+- PunchiMenu en panel ya no fuerza la expansión visual completa del plasmoide ni
+  coloca el dock por encima del menú.
+- Los estados de carga, vacío y error de la grilla permanecen visibles y
+  diferenciados durante el descubrimiento de aplicaciones.
+- La resolución de favoritos elimina duplicados, descarta identificadores no
+  válidos y no persiste comandos ni rutas externas como fuente de verdad.
+- La geometría de minimización deja de competir entre varias instancias del
+  dock y conserva una única fuente para el compositor.
+- Los catálogos alemán, español y portugués brasileño ya no concatenan contexto
+  interno, texto fuente inglés y traducción; una prueba semántica impide que la
+  contaminación vuelva a pasar como catálogo válido.
+
+### Validación
+
+- Fedora 44, Qt 6.11.1 y Plasma 6.7.3: `qmllint` dentro del baseline conocido,
+  compilación Release y paquete nativo para `x86_64`.
+- CTest completo: `16/16` pruebas correctas.
+- Catálogos `de`, `es` y `pt_BR`: 734 de 734 mensajes traducidos, sin difusos ni
+  prefijos semánticamente contaminados.
+- El usuario confirmó en Plasma real el modo Normal, Favoritos, navegación por
+  teclado, cierre mediante segundo clic, atajo dedicado, suavidad horizontal y
+  recuperación del idioma. Pantalla completa continúa declarada preliminar.
+
 ## [0.9.3] - 2026-07-28
 
 ### Agregado

@@ -6,6 +6,7 @@ QtObject {
     property var systemDiscovery: null
     property var taskController: null
     property var dockItemsController: null
+    property var editDockItemHandler: null
 
     function removablePinnedItem(item) {
         if (!item) {
@@ -13,6 +14,18 @@ QtObject {
         }
         const type = String(item.type || "app")
         return type === "app" || type === "folder" || type === "media"
+            || type === "punchimenu"
+    }
+
+    function editablePinnedItem(item, persistentIndex) {
+        if (!item) {
+            return false
+        }
+        const type = String(item.type || "app")
+        return Number.isInteger(persistentIndex) && persistentIndex >= 0
+            && (type === "app" || type === "folder" || type === "media"
+                || type === "punchimenu")
+            && typeof root.editDockItemHandler === "function"
     }
 
     function applicationIdentityForItem(item) {
@@ -52,7 +65,18 @@ QtObject {
         const itemType = String(item.type || "app")
         const actions = []
         const seenNames = {}
-        if (itemType === "app" && itemOrigin === "dynamic") {
+        if (itemType === "app" && itemOrigin === "folder") {
+            root.appendUniqueActions(actions, [{
+                // Plasma injects translation functions into the applet context.
+                // qmllint disable unqualified
+                "name": i18nc("@action:context", "Open"),
+                // qmllint enable unqualified
+                "icon": String(item.icon || "application-x-executable"),
+                "kind": "launchDockItem",
+                "enabled": true,
+                "targetItem": item
+            }], seenNames)
+        } else if (itemType === "app" && itemOrigin === "dynamic") {
             const pinDescriptor = root.taskController.pinDescriptorForEntry(item)
             if (pinDescriptor && !root.taskController.dockContainsPinDescriptor(pinDescriptor)) {
                 root.appendUniqueActions(actions, [{
@@ -67,7 +91,19 @@ QtObject {
                 }], seenNames)
             }
         } else if (itemOrigin === "pinned" && root.removablePinnedItem(item)) {
-            root.appendUniqueActions(actions, [{
+            const itemActions = []
+            if (root.editablePinnedItem(item, persistentIndex)) {
+                itemActions.push({
+                    // qmllint disable unqualified
+                    "name": i18nc("@action:context", "Edit item…"),
+                    // qmllint enable unqualified
+                    "icon": "configure",
+                    "kind": "editDockItem",
+                    "enabled": true,
+                    "targetIndex": persistentIndex
+                })
+            }
+            itemActions.push({
                 // qmllint disable unqualified
                 "name": i18nc("@action:context", "Unpin from Dock"),
                 // qmllint enable unqualified
@@ -81,7 +117,8 @@ QtObject {
                 "targetLauncherUrl": itemType === "app"
                     ? root.taskController.dockItemLauncherUrl(item)
                     : ""
-            }], seenNames)
+            })
+            root.appendUniqueActions(actions, itemActions, seenNames)
         }
 
         if (itemType !== "app") {
@@ -131,12 +168,21 @@ QtObject {
         if (!action || action.enabled === false || !root.dockItemsController) {
             return false
         }
+        if (action.kind === "launchDockItem") {
+            root.dockItemsController.launchDockItem(action.targetItem)
+            return true
+        }
         if (action.kind === "pinToDock") {
             return root.dockItemsController.pinTaskToDock(action.pinDescriptor)
         }
         if (action.kind === "unpinFromDock") {
             return root.dockItemsController.unpinItemFromDock(action.targetIndex,
                 action.targetApplicationId, action.targetLauncherUrl)
+        }
+        if (action.kind === "editDockItem") {
+            return root.editDockItemHandler
+                ? root.editDockItemHandler(action.targetIndex)
+                : false
         }
         if (action.kind === "desktopAction") {
             return root.systemDiscovery

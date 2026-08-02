@@ -99,6 +99,7 @@ Item {
 
     // Signals for launching applications and closing the popup.
     signal appLaunched(var app)
+    signal appContextMenuRequested(var app)
     signal closeRequested()
 
     ColumnLayout {
@@ -243,14 +244,31 @@ Item {
                     id: itemMouse
                     anchors.fill: parent
                     hoverEnabled: true
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
                     Accessible.name: modelData.name || i18n("Application")
-                    onClicked: {
+                    // The delegate model and owning popup are provided by the
+                    // GridView context and resolve correctly at runtime.
+                    // qmllint disable unqualified
+                    onClicked: function(mouse) {
+                        if (mouse.button === Qt.RightButton) {
+                            folderRoot.appContextMenuRequested(modelData)
+                            return
+                        }
                         folderRoot.appLaunched(modelData)
                     }
                     Keys.onReturnPressed: folderRoot.appLaunched(modelData)
                     Keys.onSpacePressed: folderRoot.appLaunched(modelData)
+                    Keys.onPressed: function(event) {
+                        if (event.key === Qt.Key_Menu
+                                || (event.key === Qt.Key_F10
+                                    && (event.modifiers & Qt.ShiftModifier))) {
+                            folderRoot.appContextMenuRequested(modelData)
+                            event.accepted = true
+                        }
+                    }
+                    // qmllint enable unqualified
                 }
             }
         }

@@ -428,7 +428,16 @@ function removeKeys(item, keys) {
 
 function pruneSeparator(item) {
     removeKeys(item, ["name", "icon", "command", "apps"])
-    item.separatorStyle = item.separatorStyle || "line"
+    var requestedStyle = item.separatorStyle === "pill"
+        ? "capsule"
+        : String(item.separatorStyle || "line")
+    var supportedStyles = [
+        "line", "dot", "square", "capsule", "star", "diamond", "ring",
+        "doubleLine", "chevron"
+    ]
+    item.separatorStyle = supportedStyles.indexOf(requestedStyle) >= 0
+        ? requestedStyle
+        : "line"
     item.separatorThickness = Math.max(1, Math.min(16, Number(item.separatorThickness === undefined ? 2 : item.separatorThickness)))
     item.separatorLengthRatio = Math.max(0.20, Math.min(1.0, Number(item.separatorLengthRatio === undefined ? 0.72 : item.separatorLengthRatio)))
     item.separatorOpacity = Math.max(0.10, Math.min(1.0, Number(item.separatorOpacity === undefined ? 0.34 : item.separatorOpacity)))
@@ -457,6 +466,7 @@ function pruneCalendar(item) {
     removeKeys(item, ["icon", "fontFamily", "mode", "showSeconds", "command", "apps", "width", "height", "backgroundColor", "accentColor", "borderColor", "radius", "textScale"])
     item.timeTextScale = Math.max(0.75, Math.min(2.0, Number(item.timeTextScale === undefined ? 1.0 : item.timeTextScale)))
     item.dateTextScale = Math.max(0.75, Math.min(2.0, Number(item.dateTextScale === undefined ? 1.0 : item.dateTextScale)))
+    item.calendarTextShadowsEnabled = item.calendarTextShadowsEnabled !== false
     item.showWeekNumbers = item.showWeekNumbers === undefined ? true : !!item.showWeekNumbers
     item.popupScale = Math.max(0.5, Math.min(3.0,
         Number(item.popupScale === undefined ? 1.0 : item.popupScale)))
@@ -488,6 +498,21 @@ function pruneMedia(item) {
     } else {
         item.mediaTextMode = mediaTextMode
     }
+    var mediaDisplayMode = String(item.mediaDisplayMode || "normal")
+    if (mediaDisplayMode === "compact") {
+        item.mediaDisplayMode = mediaDisplayMode
+    } else {
+        delete item.mediaDisplayMode
+    }
+    var requestedAutoCollapseDelaySeconds = Number(item.mediaAutoCollapseDelaySeconds)
+    var autoCollapseDelaySeconds = Number.isFinite(requestedAutoCollapseDelaySeconds)
+        ? Math.max(0, Math.min(30, Math.round(requestedAutoCollapseDelaySeconds)))
+        : 3
+    if (autoCollapseDelaySeconds === 3) {
+        delete item.mediaAutoCollapseDelaySeconds
+    } else {
+        item.mediaAutoCollapseDelaySeconds = autoCollapseDelaySeconds
+    }
     var storageId = String(item.defaultPlayerStorageId || "").trim().substring(0, 512)
     if (storageId.length === 0) {
         removeKeys(item, [
@@ -506,6 +531,63 @@ function pruneMedia(item) {
     if (item.openPlayerMinimized !== true) {
         delete item.openPlayerMinimized
     }
+}
+
+function normalizedPunchiMenuGridIconScalePercent(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 100
+    }
+    return Math.max(75, Math.min(150, Math.round(requestedValue / 5) * 5))
+}
+
+function normalizedPunchiMenuNormalWidthPercent(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 55
+    }
+    return Math.max(40, Math.min(80, Math.round(requestedValue / 5) * 5))
+}
+
+function normalizedPunchiMenuNormalHeightPercent(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 65
+    }
+    return Math.max(45, Math.min(85, Math.round(requestedValue / 5) * 5))
+}
+
+function normalizedPunchiMenuMode(value) {
+    var availableModes = ["fullScreen", "normal"]
+    var requestedMode = String(value || "fullScreen")
+    return availableModes.indexOf(requestedMode) >= 0
+        ? requestedMode
+        : "fullScreen"
+}
+
+function normalizedPunchiMenuIcon(value) {
+    var requestedIcon = String(value || "").trim()
+    if (requestedIcon.length === 0 || requestedIcon.length > 2048
+            || /[\u0000-\u001f\u007f]/.test(requestedIcon)) {
+        return "start-here-kde"
+    }
+    return requestedIcon
+}
+
+function prunePunchiMenu(item) {
+    removeKeys(item, [
+        "command", "apps", "actions", "actionsEnabled", "storageId", "appId",
+        "description"
+    ])
+    item.name = "PunchiMenu"
+    item.icon = normalizedPunchiMenuIcon(item.icon)
+    item.menuMode = normalizedPunchiMenuMode(item.menuMode)
+    item.gridIconScalePercent = normalizedPunchiMenuGridIconScalePercent(
+        item.gridIconScalePercent)
+    item.normalWidthPercent = normalizedPunchiMenuNormalWidthPercent(
+        item.normalWidthPercent)
+    item.normalHeightPercent = normalizedPunchiMenuNormalHeightPercent(
+        item.normalHeightPercent)
 }
 
 function pruneApp(item) {
@@ -568,6 +650,7 @@ function newItem(type, defaultTrashEmptySound) {
             "textScale": 1.15,
             "popupScale": 1.0,
             "calendarDisplayMode": "tile",
+            "calendarTextShadowsEnabled": true,
             "textShowWeekday": true,
             "textShowDay": true,
             "textShowMonth": true,
@@ -594,6 +677,17 @@ function newItem(type, defaultTrashEmptySound) {
             "note": "",
             "popupWidth": 360,
             "popupHeight": 260
+        }
+    }
+    if (type === "punchimenu") {
+        return {
+            "type": "punchimenu",
+            "name": "PunchiMenu",
+            "icon": "start-here-kde",
+            "menuMode": "fullScreen",
+            "gridIconScalePercent": 100,
+            "normalWidthPercent": 55,
+            "normalHeightPercent": 65
         }
     }
     if (type === "media") {

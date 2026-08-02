@@ -20,13 +20,20 @@ KCM.SimpleKCM {
         availableWidth: page.width
     }
 
+    QtObject {
+        id: dockTextShadowPreference
+
+        property bool value: true
+    }
+
     property alias cfg_showLabels: showLabelsCheck.checked
-    property alias cfg_dockTextShadowsEnabled: dockTextShadowsCheck.checked
+    property alias cfg_dockTextShadowsEnabled: dockTextShadowPreference.value
     property alias cfg_showItemHoverBackground: showItemHoverBackgroundCheck.checked
     property alias cfg_iconReflectionsEnabled: iconReflectionsCheck.checked
     property alias cfg_iconReflectionOpacity: iconReflectionOpacitySlider.value
     property string cfg_indicatorType: "line"
     property string cfg_indicatorPosition: "bottom"
+    property string cfg_indicatorColor: ""
     property alias cfg_showWindowCountBadge: showWindowCountBadgeCheck.checked
     property string cfg_windowCountBadgePosition: "top-right"
     property string cfg_windowCountEmblemColor: ""
@@ -112,6 +119,10 @@ KCM.SimpleKCM {
     readonly property bool horizontalPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
     readonly property bool iconReflectionsSupported: !inPanel || horizontalPanel
     readonly property bool indicatorPositionApplicable: cfg_indicatorType !== "none"
+    readonly property string effectiveIndicatorColor: {
+        const value = String(cfg_indicatorColor || "").trim()
+        return /^#[0-9a-fA-F]{6}$/.test(value) ? value : ""
+    }
     readonly property string effectiveWindowCountEmblemColor: {
         const value = String(cfg_windowCountEmblemColor || "").trim()
         return /^#[0-9a-fA-F]{6}$/.test(value) ? value : ""
@@ -347,6 +358,18 @@ KCM.SimpleKCM {
     }
 
     // qmllint disable unqualified
+    ColorPaletteDialog {
+        id: indicatorColorDialog
+        width: Math.min(page.width - Kirigami.Units.largeSpacing * 2,
+            Kirigami.Units.gridUnit * 24)
+        title: i18n("Choose Indicator Color")
+        currentColor: page.effectiveIndicatorColor
+        fallbackColor: Kirigami.Theme.highlightColor
+        onColorChosen: function(color) {
+            page.cfg_indicatorColor = color
+        }
+    }
+
     ColorPaletteDialog {
         id: windowCountEmblemColorDialog
         width: Math.min(page.width - Kirigami.Units.largeSpacing * 2,
@@ -693,8 +716,11 @@ KCM.SimpleKCM {
         Controls.CheckBox {
             id: dockTextShadowsCheck
             Kirigami.FormData.label: i18n("Text shadows:")
-            text: i18n("Show subtle shadows on dock text")
-            Accessible.description: i18n("Applies to dock labels and the calendar item text.")
+            text: i18n("Show subtle shadows on dock labels")
+            checked: showLabelsCheck.checked && dockTextShadowPreference.value
+            enabled: showLabelsCheck.checked
+            Accessible.description: i18n("Available when dock item names are shown.")
+            onClicked: dockTextShadowPreference.value = checked
 
             ConfigCursorBehavior {
                 cursorEnabled: page.interactiveCursorEnabled
@@ -865,6 +891,26 @@ KCM.SimpleKCM {
             Layout.maximumWidth: page.contentWidthHint
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Indicator color:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            ColorModeControl {
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                customColor: page.effectiveIndicatorColor
+                fallbackColor: Kirigami.Theme.highlightColor
+                selectorWidth: page.selectorWidthHint - Kirigami.Units.iconSizes.medium
+                enabled: page.indicatorPositionApplicable
+                onColorRequested: indicatorColorDialog.open()
+                onThemeRequested: page.cfg_indicatorColor = ""
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
         }
 
         RowLayout {

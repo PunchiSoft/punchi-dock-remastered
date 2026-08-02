@@ -52,7 +52,9 @@ Controls.Frame {
                     acceptedButtons: Qt.LeftButton
                     onDoubleTapped: {
                         controller.selectItem(index)
-                        controller.configureSelectedItem()
+                        if (controller.canConfigureSelectedItem()) {
+                            controller.configureSelectedItem()
+                        }
                     }
                 }
 
@@ -95,7 +97,7 @@ Controls.Frame {
                 text: i18n("Configure")
                 icon.name: "configure-symbolic"
                 display: Controls.AbstractButton.TextBesideIcon
-                enabled: controller.selectedIndex >= 0
+                enabled: controller.canConfigureSelectedItem()
                 onClicked: controller.configureSelectedItem()
 
                 Controls.ToolTip.visible: hovered

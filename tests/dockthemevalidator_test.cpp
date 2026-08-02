@@ -3,6 +3,7 @@
 #include "dockthemevalidator.h"
 
 #include <QFile>
+#include <QStringList>
 #include <QVariantList>
 
 #include <iostream>
@@ -105,6 +106,30 @@ int main(int argc, char **argv)
     passed &= expect(separator.value(QStringLiteral("pattern")).toMap()
         .value(QStringLiteral("style")).toString() == QLatin1String("centerLine"),
         "separator pattern preserved");
+
+    const QStringList supportedSeparatorStyles{
+        QStringLiteral("line"),
+        QStringLiteral("dot"),
+        QStringLiteral("square"),
+        QStringLiteral("capsule"),
+        QStringLiteral("star"),
+        QStringLiteral("diamond"),
+        QStringLiteral("ring"),
+        QStringLiteral("doubleLine"),
+        QStringLiteral("chevron"),
+    };
+    for (const QString &style : supportedSeparatorStyles) {
+        QByteArray themeWithStyle = validTheme;
+        themeWithStyle.replace("\"capsule\"", QStringLiteral("\"%1\"").arg(style).toUtf8());
+        const DockThemeValidator::Result styleResult =
+            DockThemeValidator::validate(themeWithStyle);
+        const QByteArray expectation = QStringLiteral("separator style %1 accepted")
+            .arg(style).toUtf8();
+        passed &= expect(styleResult.ok
+                && styleResult.theme.value(QStringLiteral("separator")).toMap()
+                    .value(QStringLiteral("style")).toString() == style,
+            expectation.constData());
+    }
 
     const QByteArray invalidCssColor = validTheme;
     QByteArray cssColorTheme = invalidCssColor;

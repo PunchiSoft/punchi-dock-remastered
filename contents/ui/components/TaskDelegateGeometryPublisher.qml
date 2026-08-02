@@ -7,6 +7,7 @@ Item {
     property var taskModelController: null
     property Item targetItem: null
     property var taskRows: []
+    property bool publicationEnabled: true
 
     visible: false
 
@@ -55,6 +56,7 @@ Item {
     onTaskModelControllerChanged: schedulePublish()
     onTargetItemChanged: schedulePublish()
     onTaskRowsChanged: schedulePublish()
+    onPublicationEnabledChanged: schedulePublish()
 
     Component.onCompleted: schedulePublish()
 
@@ -63,7 +65,7 @@ Item {
     }
 
     function publishGeometry() {
-        if (!taskModelController || !targetItem || !targetItem.visible
+        if (!publicationEnabled || !taskModelController || !targetItem || !targetItem.visible
                 || targetItem.width <= 0 || targetItem.height <= 0) {
             return
         }

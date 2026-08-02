@@ -34,6 +34,9 @@ Item {
         if (itemType === "note" && itemName === "Quick Note") {
             return i18nc("@title", "Quick Note")
         }
+        if (itemType === "punchimenu" && (itemName === "PunchiMenu" || !itemName)) {
+            return i18nc("@title", "PunchiMenu")
+        }
         return itemName
     }
 
@@ -47,7 +50,7 @@ Item {
 
     // Wave geometry follows the original project while preserving smooth transitions.
     property real hoverScaleSetting: 1.35
-    property string hoverAnimationMode: "wave"
+    property string hoverAnimationMode: "axisZoom"
     property string clickEffect: "none"
     property string windowMinimizeEffect: "none"
     property int taskMinimizedCount: 0
@@ -67,9 +70,11 @@ Item {
     property bool positionAnimationReady: false
     property bool showPersistentLabel: false
     property bool textShadowsEnabled: true
+    property bool calendarTextShadowsEnabled: true
     property int labelFontSize: Math.max(10, Math.round(iconSize * 0.22))
     property string indicatorType: "line"
     property string indicatorPosition: "bottom"
+    property string indicatorColor: ""
     property int indicatorThickness: 4
     property real indicatorOpacity: 1.0
     property bool windowCountBadgeEnabled: false
@@ -86,6 +91,22 @@ Item {
     property string mediaDefaultPlayerName: ""
     property string mediaDefaultPlayerIcon: ""
     property string mediaTextMode: "automatic"
+    property string mediaDisplayMode: "normal"
+    property int mediaAutoCollapseDelaySeconds: 3
+    property int dockMotionSpeedPercent: 100
+    readonly property int resolvedDockMotionSpeedPercent: Math.max(50,
+        Math.min(150, Number.isFinite(dockMotionSpeedPercent)
+            ? Math.round(dockMotionSpeedPercent)
+            : 100))
+    readonly property int dockMotionDuration: Math.round(
+        Kirigami.Units.longDuration * 100 / resolvedDockMotionSpeedPercent)
+    readonly property int resolvedMediaAutoCollapseDelaySeconds: Math.max(0,
+        Math.min(30, Number.isFinite(mediaAutoCollapseDelaySeconds)
+            ? Math.round(mediaAutoCollapseDelaySeconds)
+            : 3))
+    readonly property real mediaCurrentMainAxisLength: mediaItem
+        ? mediaDockItem.currentMainAxisLength
+        : mediaMainAxisLength
     property var layoutController: parent
     property int highQualityIconSize: {
         const targetSize = Math.ceil(iconSize * Math.max(1.0, hoverScaleSetting))
@@ -125,7 +146,7 @@ Item {
     // a circular binding (implicitHeight depends on visualAreaHeight).
     readonly property real visualAreaHeight: {
         if (mediaItem && verticalPanelMode) {
-            return mediaMainAxisLength + 12
+            return mediaCurrentMainAxisLength + 12
         }
         if ((separatorItem || spacerItem) && verticalPanelMode) {
             return separatorItem
@@ -153,7 +174,15 @@ Item {
             return 1.0
         }
 
-        if (hoverAnimationMode === "single") {
+        if (Kirigami.Units.longDuration === 0) {
+            // Under Reduce Motion, restrict wave zoom to subtle instant scale on active item only
+            if (itemIndex === activeIndex) {
+                return 1.0 + Math.min(0.08, (hoverScaleSetting - 1.0) * 0.25)
+            }
+            return 1.0
+        }
+
+        if (hoverAnimationMode === "single" || hoverAnimationMode === "axisZoom") {
             return itemIndex === activeIndex
                 ? 1.0 + (hoverScaleSetting - 1.0) * hoverZoomProgress
                 : 1.0
@@ -181,8 +210,10 @@ Item {
         var distance = Math.abs(itemCenter - pointerPosition)
         if (distance >= radius) return 1.0
         
-        var influence = 1.0 - (distance / radius)
-        return 1.0 + (hoverScaleSetting - 1.0) * (influence * influence) * hoverZoomProgress
+        // Organic smooth cosine wave curve (0.5 * (1 + cos(pi * d / r)))
+        var normalizedDistance = distance / radius
+        var influence = 0.5 * (1.0 + Math.cos(Math.PI * normalizedDistance))
+        return 1.0 + (hoverScaleSetting - 1.0) * influence * hoverZoomProgress
     }
 
     property bool inPanel: false
@@ -190,7 +221,9 @@ Item {
     readonly property int tooltipLocation: {
         return panelLocation
     }
-    readonly property real hoverTravel: waveScale <= 1.0 ? 0.0 : Math.round(iconSize * 0.32 * ((waveScale - 1.0) / hoverScaleDelta))
+    readonly property real hoverTravel: (waveScale <= 1.0 || hoverAnimationMode === "axisZoom")
+        ? 0.0
+        : Math.round(iconSize * 0.32 * ((waveScale - 1.0) / hoverScaleDelta))
     readonly property real hoverOffsetX: {
         if (!verticalPanelMode || hoverTravel <= 0.0) {
             return 0.0
@@ -306,6 +339,7 @@ Item {
     signal itemClicked(string cmd)
     signal contextMenuRequested(var visualParent, bool keyboardInvoked)
     signal mediaControlsRequested(var visualParent)
+    signal mediaExpansionChanged(bool expanded, int transitionDuration)
     signal hoverEntered(var visualParent)
     signal hoverExited(var visualParent)
     signal taskMinimized(int itemIndex)
@@ -364,7 +398,7 @@ Item {
             : (spacerItem
                 ? Math.max(12, iconSize * 0.5)
                 : (mediaItem
-                    ? mediaMainAxisLength + 12
+                    ? mediaCurrentMainAxisLength + 12
                     : Math.max(iconSize + 12,
                         showPersistentLabel ? Math.round(iconSize * 1.85) : 0))))
     implicitHeight: verticalPanelMode
@@ -373,25 +407,29 @@ Item {
             : (spacerItem
                 ? Math.max(12, iconSize * 0.5)
                 : (mediaItem
-                    ? mediaMainAxisLength + 12
+                    ? mediaCurrentMainAxisLength + 12
                     : (visualAreaHeight + labelAreaHeight))))
         : (visualAreaHeight + labelAreaHeight)
     opacity: entryOpacity
 
     Behavior on x {
         enabled: dockItemContainer.positionAnimationReady
-            && dockItemContainer.positionTransitionEnabled
+            && (dockItemContainer.positionTransitionEnabled
+                || (dockItemContainer.layoutController
+                    && dockItemContainer.layoutController.mediaMorphActive))
         NumberAnimation {
-            duration: Kirigami.Units.longDuration
+            duration: dockItemContainer.dockMotionDuration
             easing.type: Easing.InOutCubic
         }
     }
 
     Behavior on y {
         enabled: dockItemContainer.positionAnimationReady
-            && dockItemContainer.positionTransitionEnabled
+            && (dockItemContainer.positionTransitionEnabled
+                || (dockItemContainer.layoutController
+                    && dockItemContainer.layoutController.mediaMorphActive))
         NumberAnimation {
-            duration: Kirigami.Units.longDuration
+            duration: dockItemContainer.dockMotionDuration
             easing.type: Easing.InOutCubic
         }
     }
@@ -437,7 +475,7 @@ Item {
             target: dockItemContainer
             property: "entryOpacity"
             to: 1.0
-            duration: Kirigami.Units.longDuration
+            duration: dockItemContainer.dockMotionDuration
             easing.type: Easing.OutCubic
         }
 
@@ -445,7 +483,7 @@ Item {
             target: dockItemContainer
             property: "entryScale"
             to: 1.0
-            duration: Kirigami.Units.longDuration
+            duration: dockItemContainer.dockMotionDuration
             easing.type: Easing.OutCubic
         }
     }
@@ -597,7 +635,7 @@ Item {
 
             PlasmaExtras.ShadowedLabel {
                 text: currentTime
-                renderShadow: dockItemContainer.textShadowsEnabled
+                renderShadow: dockItemContainer.calendarTextShadowsEnabled
                 font.pixelSize: Math.round(14 * dockItemContainer.timeTextScale)
                 font.weight: Font.Normal
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -605,7 +643,7 @@ Item {
 
             PlasmaExtras.ShadowedLabel {
                 text: currentDate
-                renderShadow: dockItemContainer.textShadowsEnabled
+                renderShadow: dockItemContainer.calendarTextShadowsEnabled
                 font.pixelSize: Math.round(9 * dockItemContainer.dateTextScale)
                 opacity: 0.68
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -637,6 +675,9 @@ Item {
             demandsAttention: taskDemandsAttention
             type: indicatorType
             position: effectiveIndicatorPosition
+            customColor: dockItemContainer.indicatorColor.length > 0
+                ? dockItemContainer.indicatorColor
+                : "transparent"
             thickness: indicatorThickness
             indicatorOpacity: dockItemContainer.indicatorOpacity
             iconSize: iconSize
@@ -661,20 +702,24 @@ Item {
             anchors.centerIn: parent
             width: dockItemContainer.verticalPanelMode
                 ? dockItemContainer.iconSize
-                : dockItemContainer.mediaMainAxisLength
+                : currentMainAxisLength
             height: dockItemContainer.verticalPanelMode
-                ? dockItemContainer.mediaMainAxisLength
+                ? currentMainAxisLength
                 : dockItemContainer.iconSize
             visible: dockItemContainer.mediaItem
             controller: dockItemContainer.mediaController
             iconSize: dockItemContainer.iconSize
             vertical: dockItemContainer.verticalPanelMode
             motionEnabled: dockItemContainer.mediaMotionEnabled
+            motionSpeedPercent: dockItemContainer.resolvedDockMotionSpeedPercent
+            autoCollapseDelaySeconds: dockItemContainer.resolvedMediaAutoCollapseDelaySeconds
             contextMenuEnabled: dockItemContainer.supportsContextMenu
             launchAvailable: dockItemContainer.mediaLaunchAvailable
             defaultPlayerName: dockItemContainer.mediaDefaultPlayerName
             defaultPlayerIcon: dockItemContainer.mediaDefaultPlayerIcon
             textMode: dockItemContainer.mediaTextMode
+            displayMode: dockItemContainer.mediaDisplayMode
+            expandedMainAxisLength: dockItemContainer.mediaMainAxisLength
             onLaunchRequested: dockItemContainer.mediaLaunchRequested()
             onPlaybackLaunchRequested: dockItemContainer.mediaPlaybackLaunchRequested()
             onContextMenuRequested: function(keyboardInvoked) {
@@ -695,6 +740,9 @@ Item {
                 } else if (dockItemContainer.layoutController.hoveredIndex === dockItemContainer.itemIndex) {
                     dockItemContainer.layoutController.hoveredIndex = -1
                 }
+            }
+            onExpansionChanged: function(expanded, transitionDuration) {
+                dockItemContainer.mediaExpansionChanged(expanded, transitionDuration)
             }
         }
     }
@@ -873,23 +921,28 @@ Item {
                 dockItemContainer.layoutController.lastPointerPrimaryAxis = position
             }
         }
+
+        onPressed: function(mouse) {
+            if (mouse.button === Qt.RightButton) {
+                dockItemContainer.contextMenuRequested(dockItemContainer, false)
+            }
+        }
         
         onClicked: function(mouse) {
             if (separatorItem || spacerItem) {
                 return
             }
             if (mouse.button === Qt.RightButton) {
-                dockItemContainer.contextMenuRequested(dockItemContainer, false)
-            } else {
-                if (clickEffect === "pulse") {
-                    clickPulseAnimation.restart()
-                } else if (clickEffect === "bounce") {
-                    clickBounceAnimation.restart()
-                } else if (clickEffect === "press") {
-                    clickPressAnimation.restart()
-                }
-                dockItemContainer.itemClicked(itemCommand)
+                return
             }
+            if (clickEffect === "pulse") {
+                clickPulseAnimation.restart()
+            } else if (clickEffect === "bounce") {
+                clickBounceAnimation.restart()
+            } else if (clickEffect === "press") {
+                clickPressAnimation.restart()
+            }
+            dockItemContainer.itemClicked(itemCommand)
         }
         Keys.onReturnPressed: if (!separatorItem && !spacerItem) dockItemContainer.itemClicked(itemCommand)
         Keys.onSpacePressed: if (!separatorItem && !spacerItem) dockItemContainer.itemClicked(itemCommand)

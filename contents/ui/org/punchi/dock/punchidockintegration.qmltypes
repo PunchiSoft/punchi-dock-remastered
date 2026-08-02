@@ -56,6 +56,76 @@ Module {
         Signal { name: "levelsChanged"; lineNumber: 35 }
     }
     Component {
+        file: "blurbehindcontroller.h"
+        lineNumber: 11
+        name: "BlurBehindController"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/BlurBehindController 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "window"
+            type: "QObject"
+            isPointer: true
+            read: "window"
+            write: "setWindow"
+            notify: "windowChanged"
+            index: 0
+            lineNumber: 16
+        }
+        Property {
+            name: "region"
+            type: "QRect"
+            read: "region"
+            write: "setRegion"
+            notify: "regionChanged"
+            index: 1
+            lineNumber: 17
+        }
+        Property {
+            name: "fullWindow"
+            type: "bool"
+            read: "fullWindow"
+            write: "setFullWindow"
+            notify: "fullWindowChanged"
+            index: 2
+            lineNumber: 18
+        }
+        Property {
+            name: "enabled"
+            type: "bool"
+            read: "enabled"
+            write: "setEnabled"
+            notify: "enabledChanged"
+            index: 3
+            lineNumber: 19
+        }
+        Property {
+            name: "available"
+            type: "bool"
+            read: "available"
+            index: 4
+            lineNumber: 20
+            isReadonly: true
+            isPropertyConstant: true
+        }
+        Property {
+            name: "active"
+            type: "bool"
+            read: "active"
+            notify: "activeChanged"
+            index: 5
+            lineNumber: 21
+            isReadonly: true
+        }
+        Signal { name: "windowChanged"; lineNumber: 41 }
+        Signal { name: "regionChanged"; lineNumber: 42 }
+        Signal { name: "fullWindowChanged"; lineNumber: 43 }
+        Signal { name: "enabledChanged"; lineNumber: 44 }
+        Signal { name: "activeChanged"; lineNumber: 45 }
+        Method { name: "reapply"; lineNumber: 38 }
+    }
+    Component {
         file: "dockruntimeservice.h"
         lineNumber: 8
         name: "DockRuntimeService"
@@ -476,6 +546,111 @@ Module {
         Signal { name: "panelLengthModeChanged"; lineNumber: 32 }
     }
     Component {
+        file: "punchimenushortcutcontroller.h"
+        lineNumber: 11
+        name: "PunchiMenuShortcutController"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/PunchiMenuShortcutController 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "instanceId"
+            type: "uint"
+            read: "instanceId"
+            write: "setInstanceId"
+            notify: "instanceIdChanged"
+            index: 0
+            lineNumber: 16
+        }
+        Property {
+            name: "configuredShortcut"
+            type: "QString"
+            read: "configuredShortcut"
+            write: "setConfiguredShortcut"
+            notify: "configuredShortcutChanged"
+            index: 1
+            lineNumber: 17
+        }
+        Property {
+            name: "activeShortcut"
+            type: "QString"
+            read: "activeShortcut"
+            notify: "activeShortcutChanged"
+            index: 2
+            lineNumber: 18
+            isReadonly: true
+        }
+        Property {
+            name: "enabled"
+            type: "bool"
+            read: "enabled"
+            write: "setEnabled"
+            notify: "enabledChanged"
+            index: 3
+            lineNumber: 19
+        }
+        Property {
+            name: "registered"
+            type: "bool"
+            read: "registered"
+            notify: "registeredChanged"
+            index: 4
+            lineNumber: 20
+            isReadonly: true
+        }
+        Signal { name: "instanceIdChanged"; lineNumber: 40 }
+        Signal { name: "configuredShortcutChanged"; lineNumber: 41 }
+        Signal { name: "activeShortcutChanged"; lineNumber: 42 }
+        Signal { name: "enabledChanged"; lineNumber: 43 }
+        Signal { name: "registeredChanged"; lineNumber: 44 }
+        Signal { name: "activated"; lineNumber: 45 }
+        Signal {
+            name: "shortcutRegistrationFailed"
+            lineNumber: 46
+            Parameter { name: "requestedShortcut"; type: "QString" }
+        }
+    }
+    Component {
+        file: "sessionactionscontroller.h"
+        lineNumber: 10
+        name: "SessionActionsController"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/SessionActionsController 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "canLogout"
+            type: "bool"
+            read: "canLogout"
+            notify: "capabilitiesChanged"
+            index: 0
+            lineNumber: 15
+            isReadonly: true
+        }
+        Property {
+            name: "canReboot"
+            type: "bool"
+            read: "canReboot"
+            notify: "capabilitiesChanged"
+            index: 1
+            lineNumber: 16
+            isReadonly: true
+        }
+        Property {
+            name: "canShutdown"
+            type: "bool"
+            read: "canShutdown"
+            notify: "capabilitiesChanged"
+            index: 2
+            lineNumber: 17
+            isReadonly: true
+        }
+        Signal { name: "capabilitiesChanged"; lineNumber: 32 }
+        Method { name: "requestLogout"; lineNumber: 27 }
+        Method { name: "requestReboot"; lineNumber: 28 }
+        Method { name: "requestShutdown"; lineNumber: 29 }
+    }
+    Component {
         file: "systemdiscovery.h"
         lineNumber: 15
         name: "SystemDiscovery"
@@ -499,8 +674,14 @@ Module {
             Parameter { name: "application"; type: "QVariantMap" }
         }
         Signal {
-            name: "operationFailed"
+            name: "applicationLaunchFinished"
             lineNumber: 43
+            Parameter { name: "succeeded"; type: "bool" }
+            Parameter { name: "message"; type: "QString" }
+        }
+        Signal {
+            name: "operationFailed"
+            lineNumber: 44
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
@@ -595,6 +776,55 @@ Module {
             lineNumber: 37
             Parameter { name: "url"; type: "QString" }
         }
+    }
+    Component {
+        file: "taskgeometryownershipbridge.h"
+        lineNumber: 8
+        name: "TaskGeometryOwnershipBridge"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/TaskGeometryOwnershipBridge 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "instanceId"
+            type: "uint"
+            read: "instanceId"
+            write: "setInstanceId"
+            notify: "instanceIdChanged"
+            index: 0
+            lineNumber: 13
+        }
+        Property {
+            name: "panel"
+            type: "bool"
+            read: "panel"
+            write: "setPanel"
+            notify: "panelChanged"
+            index: 1
+            lineNumber: 14
+        }
+        Property {
+            name: "eligible"
+            type: "bool"
+            read: "eligible"
+            write: "setEligible"
+            notify: "eligibleChanged"
+            index: 2
+            lineNumber: 15
+        }
+        Property {
+            name: "ownsTaskGeometry"
+            type: "bool"
+            read: "ownsTaskGeometry"
+            notify: "ownsTaskGeometryChanged"
+            index: 3
+            lineNumber: 16
+            isReadonly: true
+        }
+        Signal { name: "instanceIdChanged"; lineNumber: 36 }
+        Signal { name: "panelChanged"; lineNumber: 37 }
+        Signal { name: "eligibleChanged"; lineNumber: 38 }
+        Signal { name: "ownsTaskGeometryChanged"; lineNumber: 39 }
     }
     Component {
         file: "themeintegration.h"

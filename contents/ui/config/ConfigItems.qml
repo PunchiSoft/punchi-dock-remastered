@@ -15,6 +15,7 @@ import "code/items.js" as ItemsJS
 import "code/configItemsStateHelper.js" as StateHelper
 import "code/configItemsFormHelper.js" as FormHelper
 import "code/configItemsWorkflowHelper.js" as WorkflowHelper
+import "../../code/logic.js" as DockLogic
 import "components"
 
 import org.kde.kcmutils as KCM
@@ -47,6 +48,7 @@ KCM.SimpleKCM {
     property string timedColorTarget: "text"
     property string cfg_dockItemsJson: ""
     property int cfg_pendingEditDockItemIndex: -1
+    property string cfg_punchiMenuShortcut: ""
     property alias cfg_actionPopupLimitRows: actionDialog.actionPopupLimitRowsChecked
     property alias cfg_actionPopupMaxVisibleRows: actionDialog.actionPopupMaxVisibleRowsValue
     property bool pendingEditConsumed: false
@@ -97,6 +99,7 @@ KCM.SimpleKCM {
     property alias calendarItemHeight: timedDialog.calendarItemHeightControl
     property alias calendarTimeTextScale: timedDialog.calendarTimeTextScaleControl
     property alias calendarDateTextScale: timedDialog.calendarDateTextScaleControl
+    property alias calendarTextShadows: timedDialog.calendarTextShadowsControl
     property alias calendarFormat: timedDialog.calendarFormatControl
     property alias calendarShowWeekNumbers: timedDialog.calendarShowWeekNumbersControl
     property alias calendarPopupScale: timedDialog.calendarPopupScaleControl
@@ -361,20 +364,29 @@ KCM.SimpleKCM {
         function compactListHeight(count, minRows, maxRows) { return StateHelper.compactListHeight(count, minRows, maxRows) }
 
     function setItems(nextItems, markAsChanged) {
-        items = clone(nextItems)
+        items = DockLogic.withSingletonItems(clone(nextItems))
         selectedIndex = items.length > 0 ? Math.min(Math.max(selectedIndex, 0), items.length - 1) : -1
         refreshFromItems(markAsChanged)
         consumePendingEditRequest()
     }
 
     function consumePendingEditRequest() {
-        var pendingIndex = parseInt(cfg_pendingEditDockItemIndex, 10)
-        if (pendingEditConsumed || isNaN(pendingIndex) || pendingIndex < 0 || pendingIndex >= items.length) {
+        const pendingIndex = parseInt(cfg_pendingEditDockItemIndex, 10)
+        if (pendingEditConsumed || isNaN(pendingIndex) || pendingIndex < 0) {
             return
         }
 
         pendingEditConsumed = true
+        Plasmoid.configuration.pendingEditDockItemIndex = -1
+        // KConfigPropertyMap exposes writeConfig() as Q_INVOKABLE, but its
+        // generated QML type metadata does not advertise the method.
+        // qmllint disable missing-property
+        Plasmoid.configuration.writeConfig()
+        // qmllint enable missing-property
         cfg_pendingEditDockItemIndex = -1
+        if (pendingIndex >= items.length) {
+            return
+        }
         Qt.callLater(function() {
             page.selectItem(pendingIndex)
             page.configureSelectedItem()
@@ -453,13 +465,29 @@ KCM.SimpleKCM {
 
     function openMediaPlayerDialog(index) { WorkflowHelper.openMediaPlayerDialog(index) }
 
+    function openPunchiMenuDialog(index) { WorkflowHelper.openPunchiMenuDialog(index) }
+
+    function setPunchiMenuMode(mode) { WorkflowHelper.setPunchiMenuMode(mode) }
+
+    function setPunchiMenuIcon(iconName) { WorkflowHelper.setPunchiMenuIcon(iconName) }
+
+    function setPunchiMenuGridIconScalePercent(percent) { WorkflowHelper.setPunchiMenuGridIconScalePercent(percent) }
+
+    function setPunchiMenuNormalSizePercent(widthPercent, heightPercent) { WorkflowHelper.setPunchiMenuNormalSizePercent(widthPercent, heightPercent) }
+
     function setMediaDefaultPlayer(application) { WorkflowHelper.setMediaDefaultPlayer(application) }
 
     function setMediaTextMode(mode) { WorkflowHelper.setMediaTextMode(mode) }
 
+    function setMediaDisplayMode(mode) { WorkflowHelper.setMediaDisplayMode(mode) }
+
     function setMediaOpenPlayerMinimized(enabled) { WorkflowHelper.setMediaOpenPlayerMinimized(enabled) }
 
+    function setMediaAutoCollapseDelaySeconds(seconds) { WorkflowHelper.setMediaAutoCollapseDelaySeconds(seconds) }
+
     function selectedConfigureTitle() { return WorkflowHelper.selectedConfigureTitle() }
+
+    function canConfigureSelectedItem() { return WorkflowHelper.canConfigureSelectedItem() }
 
     function configureSelectedItem() { WorkflowHelper.configureSelectedItem() }
 
@@ -493,6 +521,11 @@ KCM.SimpleKCM {
         if (iconPickerTarget === "trash") {
             trashDialog.emptyIconText = selectedIcon
             applyItemForm()
+            return
+        }
+
+        if (iconPickerTarget === "punchimenu") {
+            setPunchiMenuIcon(selectedIcon)
             return
         }
 
@@ -684,8 +717,35 @@ KCM.SimpleKCM {
         onMediaTextModeSelected: function(mode) {
             page.setMediaTextMode(mode)
         }
+        onMediaDisplayModeSelected: function(mode) {
+            page.setMediaDisplayMode(mode)
+        }
         onOpenPlayerMinimizedSelected: function(enabled) {
             page.setMediaOpenPlayerMinimized(enabled)
+        }
+        onAutoCollapseDelaySecondsSelected: function(seconds) {
+            page.setMediaAutoCollapseDelaySeconds(seconds)
+        }
+    }
+
+    PunchiMenuDialog {
+        id: punchiMenuDialog
+        width: Math.min(page.width - Kirigami.Units.largeSpacing * 2,
+            Kirigami.Units.gridUnit * 28)
+        selectorWidth: layoutMetrics.selectorWidth
+        shortcut: page.cfg_punchiMenuShortcut
+        onMenuModeSelected: function(mode) {
+            page.setPunchiMenuMode(mode)
+        }
+        onGridIconScalePercentSelected: function(percent) {
+            page.setPunchiMenuGridIconScalePercent(percent)
+        }
+        onNormalSizePercentSelected: function(widthPercent, heightPercent) {
+            page.setPunchiMenuNormalSizePercent(widthPercent, heightPercent)
+        }
+        onIconPickerRequested: page.openIconPicker("punchimenu")
+        onShortcutSelected: function(shortcut) {
+            page.cfg_punchiMenuShortcut = shortcut
         }
     }
 

@@ -19,6 +19,7 @@ QtObject {
     property bool dockShowLabels: false
     property int dockLabelAreaHeight: 0
     property var dockItems: []
+    property bool mediaItemExpanded: true
     property int visibleTaskCount: 0
     property int overflowTaskCount: 0
     property int totalDynamicGroups: 0
@@ -34,7 +35,7 @@ QtObject {
         return Math.round(Math.max(0, Math.min(24,
             Number.isFinite(spacing) ? spacing : 8)))
     }
-    readonly property int dockBackgroundHorizontalPadding: 18
+    readonly property int dockBackgroundHorizontalPadding: 10
     readonly property int dockBackgroundVerticalPadding: 12
     readonly property int floatingExtraWidth: 48
     readonly property int floatingExtraHeight: 32
@@ -182,6 +183,14 @@ QtObject {
     }
 
     function mediaItemMainAxisLengthForItem(item) {
+        if (item && String(item.mediaDisplayMode || "normal") !== "compact") {
+            return root.mediaMetadataVisibleForItem(item)
+                ? root.mediaItemMainAxisLength
+                : root.compactMediaItemMainAxisLength
+        }
+        if (!root.mediaItemExpanded) {
+            return root.effectiveIconSize
+        }
         return root.mediaMetadataVisibleForItem(item)
             ? root.mediaItemMainAxisLength
             : root.compactMediaItemMainAxisLength

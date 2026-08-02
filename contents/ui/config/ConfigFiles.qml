@@ -79,6 +79,14 @@ KCM.SimpleKCM {
                 page.statusMessage.type = Kirigami.MessageType.Error
                 return false
             }
+            var duplicateSingleton = DockLogic.duplicateSingletonType(result.items)
+            if (duplicateSingleton.length > 0) {
+                statusLabel.text = duplicateSingleton === "punchimenu"
+                    ? i18n("Only one PunchiMenu item is allowed in the dock configuration.")
+                    : i18n("Only one media player item is allowed in the dock configuration.")
+                statusLabel.type = Kirigami.MessageType.Error
+                return false
+            }
         } catch (error) {
             statusLabel.text = i18n("Invalid JSON: %1", error)
             statusLabel.type = Kirigami.MessageType.Error
@@ -189,7 +197,8 @@ KCM.SimpleKCM {
                         }
                         var result = ConfigItemsJS.parseJsonArray(text)
                         if (result.ok && result.items.length <= DockLogic.maximumDockItemCount) {
-                            var formatted = JSON.stringify(ItemsJS.withConfigureDockItem(result.items), null, 4)
+                            var normalizedItems = DockLogic.withSingletonItems(result.items)
+                            var formatted = JSON.stringify(ItemsJS.withConfigureDockItem(normalizedItems), null, 4)
                             setEditorText(formatted)
                             statusLabel.text = i18n("Configuration imported successfully.")
                             statusLabel.type = Kirigami.MessageType.Positive

@@ -173,6 +173,101 @@ Item {
             text: i18n("Folder popups")
         }
 
+        RowLayout {
+            Kirigami.FormData.label: i18n("Popup scale:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: folderPopupScaleSlider
+                from: 0.5
+                to: 3.0
+                stepSize: 0.1
+                snapMode: Controls.Slider.SnapAlways
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Folder popup scale")
+                Accessible.description: i18n("Adjusts the folder popup content scale between 50 and 300 percent.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: i18n("%1%", Math.round(Number(folderPopupScaleSlider.value || 1.0) * 100))
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 56
+            }
+        }
+
+        Controls.Label {
+            text: i18n("This global scale applies to all folder popup layout profiles while maintaining fixed window geometry.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Popup distance:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: folderPopupExtraDistanceSlider
+                from: 0
+                to: 32
+                stepSize: 1
+                snapMode: Controls.Slider.SnapAlways
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Folder popup distance")
+                Accessible.description: i18n("Adds safe spacing between the dock item and folder popups.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: i18n("%1 px", Math.round(folderPopupExtraDistanceSlider.value))
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 56
+            }
+        }
+
+        Controls.Label {
+            text: i18n("The distance is added to Plasma's normal popup margin and only affects folder popups.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+
+        Controls.CheckBox {
+            id: showFolderHeaderCheck
+            Kirigami.FormData.label: i18n("Title header:")
+            text: i18n("Show folder name header at top of popups")
+            Accessible.description: i18n("Displays the folder title header label and close button at the top of the popup.")
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.interactiveCursorEnabled
+                role: "checkbox"
+            }
+        }
+
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+        }
+
+        SectionTitle {
+            Kirigami.FormData.isSection: true
+            text: i18n("Layout customization")
+        }
+
         Controls.ComboBox {
             id: profileCombo
             Kirigami.FormData.label: i18n("Layout profile:")
@@ -260,92 +355,6 @@ Item {
             }
         }
 
-        RowLayout {
-            Kirigami.FormData.label: i18n("Popup distance:")
-            Layout.maximumWidth: page.contentWidthHint
-
-            Controls.Slider {
-                id: folderPopupExtraDistanceSlider
-                from: 0
-                to: 32
-                stepSize: 1
-                snapMode: Controls.Slider.SnapAlways
-                Layout.fillWidth: true
-                Layout.preferredWidth: page.contentWidthHint - 64
-                Accessible.name: i18n("Folder popup distance")
-                Accessible.description: i18n("Adds safe spacing between the dock item and folder popups.")
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
-            }
-
-            Controls.Label {
-                text: i18n("%1 px", Math.round(folderPopupExtraDistanceSlider.value))
-                horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: 56
-            }
-        }
-
-        Controls.Label {
-            text: i18n("The distance is added to Plasma's normal popup margin and only affects folder popups.")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: layoutMetrics.helperIndent
-            opacity: 0.7
-        }
-
-        RowLayout {
-            Kirigami.FormData.label: i18n("Popup scale:")
-            Layout.maximumWidth: page.contentWidthHint
-
-            Controls.Slider {
-                id: folderPopupScaleSlider
-                from: 0.5
-                to: 3.0
-                stepSize: 0.1
-                snapMode: Controls.Slider.SnapAlways
-                Layout.fillWidth: true
-                Layout.preferredWidth: page.contentWidthHint - 64
-                Accessible.name: i18n("Folder popup scale")
-                Accessible.description: i18n("Adjusts the folder popup content scale between 50 and 300 percent.")
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
-            }
-
-            Controls.Label {
-                text: i18n("%1%", Math.round(Number(folderPopupScaleSlider.value || 1.0) * 100))
-                horizontalAlignment: Text.AlignRight
-                Layout.preferredWidth: 56
-            }
-        }
-
-        Controls.Label {
-            text: i18n("Scales folder popup contents between 50 and 300 percent while maintaining fixed window geometry.")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: layoutMetrics.helperIndent
-            opacity: 0.7
-        }
-
-        Controls.CheckBox {
-            id: showFolderHeaderCheck
-            Kirigami.FormData.label: i18n("Title header:")
-            text: i18n("Show folder name header at top of popups")
-            Accessible.description: i18n("Displays the folder title header label and close button at the top of the popup.")
-
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-                role: "checkbox"
-            }
-        }
-
         Controls.CheckBox {
             id: showLabelsCheck
             Kirigami.FormData.label: i18n("Item text:")
@@ -411,6 +420,26 @@ Item {
             }
         }
 
+        Controls.Label {
+            text: page.activeProfile === "grid"
+                ? i18n("Additional applications remain available by scrolling. On narrow screens, the popup safely reduces the number of columns.")
+                : i18n("Additional applications remain available by scrolling.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+        }
+
+        SectionTitle {
+            Kirigami.FormData.isSection: true
+            text: i18n("Popup text appearance")
+        }
+
         Controls.CheckBox {
             id: popupTextShadowsCheck
             Kirigami.FormData.label: i18n("Text shadows:")
@@ -422,16 +451,9 @@ Item {
             }
         }
 
-            Controls.Label {
-                text: page.activeProfile === "grid"
-                    ? i18n("Additional applications remain available by scrolling. On narrow screens, the popup safely reduces the number of columns.")
-                    : i18n("Additional applications remain available by scrolling.")
-                wrapMode: Text.WordWrap
-                Layout.fillWidth: true
-                Layout.maximumWidth: page.contentWidthHint
-                leftPadding: layoutMetrics.helperIndent
-                color: Kirigami.Theme.disabledTextColor
-            }
+        Kirigami.Separator {
+            Kirigami.FormData.isSection: true
+        }
         }
         // qmllint enable unqualified
 

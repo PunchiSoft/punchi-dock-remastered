@@ -43,8 +43,12 @@ ColumnLayout {
                 { "text": i18n("Line"), "value": "line" },
                 { "text": i18n("Circle"), "value": "dot" },
                 { "text": i18n("Square"), "value": "square" },
-                { "text": i18n("Rounded pill"), "value": "pill" },
-                { "text": i18n("Star"), "value": "star" }
+                { "text": i18n("Rounded pill"), "value": "capsule" },
+                { "text": i18n("Star"), "value": "star" },
+                { "text": i18nc("@item:inlistbox Separator shape", "Diamond"), "value": "diamond" },
+                { "text": i18nc("@item:inlistbox Separator shape", "Ring"), "value": "ring" },
+                { "text": i18nc("@item:inlistbox Separator shape", "Double line"), "value": "doubleLine" },
+                { "text": i18nc("@item:inlistbox Separator shape", "Chevron"), "value": "chevron" }
             ]
             onActivated: {
                 if (controller && controller.applyItemForm) {

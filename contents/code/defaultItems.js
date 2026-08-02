@@ -2,6 +2,22 @@
 
 var items = [
     {
+        "_comment": "PunchiMenu launcher item. Opens the configured application menu presentation.",
+        "type": "punchimenu",
+        "name": "PunchiMenu",
+        "icon": "start-here-kde",
+        "menuMode": "fullScreen",
+        "gridIconScalePercent": 100,
+        "normalWidthPercent": 55,
+        "normalHeightPercent": 65
+    },
+    {
+        "_comment": "Media player item. Automatically follows the active MPRIS player.",
+        "type": "media",
+        "name": "Media player",
+        "icon": "emblem-music-symbolic"
+    },
+    {
         "_comment": "Pinned application. Runs command and can expose optional right-click actions.",
         "type": "app",
         "name": "Mozilla Firefox",

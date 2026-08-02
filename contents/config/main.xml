@@ -8,6 +8,15 @@
     <entry name="dockItemsJson" type="String">
       <default></default>
     </entry>
+    <entry name="pendingEditDockItemIndex" type="Int">
+      <default>-1</default>
+    </entry>
+    <entry name="punchiMenuShortcut" type="String">
+      <default></default>
+    </entry>
+    <entry name="punchiMenuFavoriteStorageIds" type="StringList">
+      <default></default>
+    </entry>
     <entry name="iconSize" type="Int">
       <default>48</default>
     </entry>
@@ -68,7 +77,7 @@
       <default>bottom</default>
     </entry>
     <entry name="showWindowCountBadge" type="Bool">
-      <default>false</default>
+      <default>true</default>
     </entry>
     <entry name="windowCountBadgePosition" type="String">
       <default>top-right</default>
@@ -184,13 +193,16 @@
   </group>
   <group name="Mouse">
     <entry name="hoverAnimation" type="String">
-      <default>wave</default>
+      <default>axisZoom</default>
     </entry>
     <entry name="clickEffect" type="String">
       <default>none</default>
     </entry>
     <entry name="windowMinimizeEffect" type="String">
       <default>none</default>
+    </entry>
+    <entry name="dockMotionSpeedPercent" type="Int">
+      <default>100</default>
     </entry>
     <entry name="popupAnimation" type="String">
       <default>scale</default>

@@ -109,6 +109,9 @@ La estructura real del repositorio puede evolucionar. No crear carpetas o abstra
 - Mantener animaciones sutiles y acotadas. Considerar coste de CPU/GPU y preferencias de reducción de movimiento.
 - Preservar navegación por teclado, foco visible, nombres accesibles y escalado.
 - No asumir que una API de compatibilidad con Plasma 5 está prohibida solo por su nombre. Si el proyecto ya depende de `Plasma5Support`, evaluar su disponibilidad, necesidad y alternativa antes de retirarla.
+- **Animaciones de Superficies Flotantes (Fade In / Fade Out):** Al abrir o cerrar overlays o diálogos flotantes a pantalla completa, diferir la visibilidad (`visible = false`) mediante un temporizador `closeTimer` hasta que concluya la animación de Fade Out (`opacity: 1.0 -> 0.0`), evitando cortes abruptos en la interfaz.
+- **Geometría de Diálogos Flotantes a Pantalla Completa:** Utilizar `PlasmaCore.Dialog` con `location: Floating`, `x: 0, y: 0`, `width: Screen.width, height: Screen.height` e integración `openWithReveal()` / `closeWithFade()` para cubrir el monitor sin interferencia de struts.
+- **Poblado Reactivo de Vistas QML:** Alimentar vistas dinámicas asíncronas (`GridView` / `ListView`) desde C++ a través de un `ListModel` reactivo para garantizar la renderización inmediata de elementos.
 
 ## JavaScript, procesos y seguridad
 
@@ -165,7 +168,44 @@ Durante el trabajo:
 - documentar decisiones que no sean evidentes desde el código;
 - mantener las operaciones reversibles siempre que sea posible.
 
+## Operaciones destructivas, movimientos y renombrados
+
+Activar `safe-removal-review` antes de borrar, sobrescribir, reemplazar, mover o
+renombrar archivos y directorios, y antes de retirar funcionalidad. Una
+sobrescritura se considera eliminación del contenido anterior.
+
+Reglas obligatorias:
+
+1. Resolver y mostrar objetivos exactos dentro de la raíz autorizada; no operar
+   con globs, variables vacías o rutas amplias sin validar.
+2. Para dos o más movimientos, construir primero el mapa completo
+   `origen → destino` sin mutar el árbol.
+3. Comprobar que orígenes y destinos sean únicos, que ningún destino esté vacío
+   o exista previamente y que la cantidad de destinos únicos coincida con la
+   cantidad de orígenes.
+4. No calcular nombres y ejecutar `mv` dentro del mismo bucle sin una fase de
+   validación independiente. No permitir sobrescritura por defecto.
+5. `BASH_REMATCH` es estado mutable: copiar sus capturas inmediatamente y no
+   leerlas después de otra evaluación `=~`. Una captura vacía detiene la tarea.
+6. Antes de modificar material ignorado o no rastreado, crear un respaldo
+   recuperable y verificar que Git no sea asumido como única vía de retorno.
+7. Comparar inventario, tamaños o hashes y referencias después de cada lote
+   pequeño. Toda reducción no autorizada obliga a detenerse y tratar el hecho
+   como incidente.
+8. No retirar fuentes legacy ni respaldos hasta comprobar que todos los
+   destinos existen, no están vacíos y sus referencias fueron actualizadas.
+
 ## Bitácora y documentación
+
+Para mantener trazabilidad en la documentación local, los documentos nuevos de
+`docs/revisiones/` deben usar `revision-YYYY-MM-DD-descriptor.md`. Los
+documentos nuevos de `docs/nuevas-modificaciones/` deben usar
+`modificaciones_YYYY-MM-DD-descriptor.md`, y los de `docs/auditorias/` deben
+usar `auditoria-YYYY-MM-DD-descriptor.md`. Toda carpeta documental nueva debe
+incluir un `README.md`; si contiene un flujo repetible, también debe incluir
+una plantilla. Los README y plantillas de cada carpeta son la referencia
+operativa; no reescribir documentos históricos para adaptarlos a versiones
+posteriores.
 
 Crear o actualizar una entrada en `bitacora/` cuando ocurra al menos una de estas condiciones:
 

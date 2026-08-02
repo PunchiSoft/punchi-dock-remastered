@@ -40,5 +40,6 @@ Q_SIGNALS:
     void folderEntriesReady(const QVariantList &entries);
     void applicationsReady(const QVariantList &applications);
     void applicationReady(const QVariantMap &application);
+    void applicationLaunchFinished(bool succeeded, const QString &message);
     void operationFailed(const QString &operation, const QString &message);
 };

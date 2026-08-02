@@ -11,7 +11,9 @@ Controls.Dialog {
     property var applications: []
     property string selectedStorageId: ""
     property string mediaTextMode: "automatic"
+    property string mediaDisplayMode: "normal"
     property bool openPlayerMinimized: false
+    property int autoCollapseDelaySeconds: 3
     property real selectorWidth: Kirigami.Units.gridUnit * 16
     property var playerOptions: []
     readonly property var textModeOptions: [
@@ -28,10 +30,22 @@ Controls.Dialog {
             "value": "hidden"
         }
     ]
+    readonly property var displayModeOptions: [
+        {
+            "text": i18nc("@option:media-display-mode", "Normal (recommended)"),
+            "value": "normal"
+        },
+        {
+            "text": i18nc("@option:media-display-mode", "Compact"),
+            "value": "compact"
+        }
+    ]
 
     signal playerSelected(var application)
     signal mediaTextModeSelected(string mode)
+    signal mediaDisplayModeSelected(string mode)
     signal openPlayerMinimizedSelected(bool enabled)
+    signal autoCollapseDelaySecondsSelected(int seconds)
 
     function rebuildOptions() {
         const discovered = []
@@ -92,12 +106,25 @@ Controls.Dialog {
         textModeCombo.currentIndex = nextIndex
     }
 
+    function syncDisplayModeSelection() {
+        let nextIndex = 0
+        for (let index = 0; index < displayModeOptions.length; index++) {
+            if (String(displayModeOptions[index].value || "") === mediaDisplayMode) {
+                nextIndex = index
+                break
+            }
+        }
+        displayModeCombo.currentIndex = nextIndex
+    }
+
     onApplicationsChanged: rebuildOptions()
     onSelectedStorageIdChanged: syncSelection()
     onMediaTextModeChanged: syncTextModeSelection()
+    onMediaDisplayModeChanged: syncDisplayModeSelection()
     Component.onCompleted: {
         rebuildOptions()
         syncTextModeSelection()
+        syncDisplayModeSelection()
     }
 
     modal: true
@@ -200,6 +227,66 @@ Controls.Dialog {
             Layout.fillWidth: true
             Layout.maximumWidth: root.selectorWidth
             text: i18n("Automatic hides inline information in narrow vertical panels. Full details remain available in the tooltip.")
+            color: Kirigami.Theme.disabledTextColor
+            wrapMode: Text.WordWrap
+            font.pointSize: Kirigami.Theme.smallFont.pointSize
+        }
+
+        Controls.Label {
+            Layout.fillWidth: true
+            Layout.maximumWidth: root.selectorWidth
+            text: i18n("Display mode:")
+            wrapMode: Text.WordWrap
+        }
+
+        Controls.ComboBox {
+            id: displayModeCombo
+
+            Layout.fillWidth: true
+            Layout.preferredWidth: root.selectorWidth
+            Layout.maximumWidth: root.selectorWidth
+            model: root.displayModeOptions
+            textRole: "text"
+            valueRole: "value"
+            Accessible.name: i18n("Media item display mode")
+            Accessible.description: i18n("Choose Compact to collapse to the player icon after inactivity, or Normal to keep the full controls visible.")
+            onActivated: root.mediaDisplayModeSelected(String(currentValue || "normal"))
+        }
+
+        Controls.Label {
+            Layout.fillWidth: true
+            Layout.maximumWidth: root.selectorWidth
+            visible: root.mediaDisplayMode === "compact"
+            text: i18n("Collapse controls after:")
+            wrapMode: Text.WordWrap
+        }
+
+        Controls.SpinBox {
+            id: autoCollapseDelaySpin
+            from: 0
+            to: 30
+            value: root.autoCollapseDelaySeconds
+            visible: root.mediaDisplayMode === "compact"
+            Layout.fillWidth: true
+            Layout.preferredWidth: root.selectorWidth
+            Layout.maximumWidth: root.selectorWidth
+            Accessible.name: i18n("Media controls auto-collapse delay")
+            Accessible.description: i18n("Choose how long the media controls stay expanded after interaction. Zero keeps them expanded.")
+            textFromValue: function(value, locale) {
+                return value === 0
+                    ? i18nc("@option:media-auto-collapse", "Never")
+                    : i18np("%1 second", "%1 seconds", value)
+            }
+            onValueModified: {
+                root.autoCollapseDelaySeconds = value
+                root.autoCollapseDelaySecondsSelected(value)
+            }
+        }
+
+        Controls.Label {
+            Layout.fillWidth: true
+            Layout.maximumWidth: root.selectorWidth
+            text: i18n("This setting applies only to this media item.")
             color: Kirigami.Theme.disabledTextColor
             wrapMode: Text.WordWrap
             font.pointSize: Kirigami.Theme.smallFont.pointSize

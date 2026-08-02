@@ -3,8 +3,10 @@ import QtQuick.Layouts
 import org.kde.plasma.plasmoid
 import org.kde.plasma.core as PlasmaCore
 import org.kde.taskmanager as TaskManager
+import org.kde.kirigami as Kirigami
 import "org/punchi/dock" as Punchi
 import "components"
+import "components/punchimenu"
 
 PlasmoidItem {
     id: root
@@ -14,6 +16,14 @@ PlasmoidItem {
     toolTipSubText: ""
     preferredRepresentation: fullRepresentation
     compactRepresentation: fullRepresentation
+
+    onExpandedChanged: {
+        // A dock hosted in a panel owns its popups and must never expose its
+        // full representation through Plasma's generic activation lifecycle.
+        if (root.inPanel && root.configuredPunchiMenuItem && root.expanded) {
+            root.expanded = false
+        }
+    }
 
     // Plasma documents PlasmaCore.Action as the QAction factory for
     // Plasmoid.contextualActions. Qt 6.8 qmllint cannot resolve that type from
@@ -62,6 +72,7 @@ PlasmoidItem {
         && String(Plasmoid.configuration.floatingDockOrientation || "horizontal") === "vertical"
     property var floatingDockAnchor: null
     property bool floatingOrientationReady: false
+    property bool mediaItemExpanded: true
     readonly property var visibleTaskRows: taskController.visibleTaskRows
     readonly property var overflowTaskRows: taskController.overflowTaskRows
     readonly property int taskVisualRevision: taskController.visualRevision
@@ -78,6 +89,44 @@ PlasmoidItem {
         ? String(configuredMediaItem.defaultPlayerAppId
             || configuredMediaItem.defaultPlayerStorageId || "").substring(0, 512)
         : ""
+    readonly property var configuredPunchiMenuItem: {
+        const items = dockItemsController.dockItems || []
+        for (let index = 0; index < items.length; index++) {
+            if (items[index] && items[index].type === "punchimenu") {
+                return items[index]
+            }
+        }
+        return null
+    }
+    readonly property real configuredPunchiMenuGridIconScale: {
+        const requestedPercent = Number(configuredPunchiMenuItem
+            ? configuredPunchiMenuItem.gridIconScalePercent
+            : 100)
+        const safePercent = Number.isFinite(requestedPercent)
+            ? Math.max(75, Math.min(150, Math.round(requestedPercent / 5) * 5))
+            : 100
+        return safePercent / 100
+    }
+    readonly property string configuredPunchiMenuMode: configuredPunchiMenuItem
+        && String(configuredPunchiMenuItem.menuMode || "fullScreen") === "normal"
+        ? "normal"
+        : "fullScreen"
+    readonly property int configuredPunchiMenuNormalWidthPercent: {
+        const requestedPercent = Number(configuredPunchiMenuItem
+            ? configuredPunchiMenuItem.normalWidthPercent
+            : 55)
+        return Number.isFinite(requestedPercent)
+            ? Math.max(40, Math.min(80, Math.round(requestedPercent / 5) * 5))
+            : 55
+    }
+    readonly property int configuredPunchiMenuNormalHeightPercent: {
+        const requestedPercent = Number(configuredPunchiMenuItem
+            ? configuredPunchiMenuItem.normalHeightPercent
+            : 65)
+        return Number.isFinite(requestedPercent)
+            ? Math.max(45, Math.min(85, Math.round(requestedPercent / 5) * 5))
+            : 65
+    }
     signal taskStructureChanged()
 
     // Virtual desktop visibility.
@@ -90,6 +139,7 @@ PlasmoidItem {
             console.warn("Punchi Dock:", operation, message)
         }
     }
+    readonly property var systemDiscoveryService: systemDiscovery
     Punchi.DockRuntimeService {
         id: runtimeService
         onOperationFailed: function(operation, message) {
@@ -140,6 +190,7 @@ PlasmoidItem {
         dockShowLabels: dockConfig.dockShowLabels
         dockLabelAreaHeight: dockConfig.dockLabelAreaHeight
         dockItems: dockItemsController.dockItems
+        mediaItemExpanded: root.mediaItemExpanded
         visibleTaskCount: root.visibleTaskRows.length
         overflowTaskCount: root.overflowTaskRows.length
         totalDynamicGroups: taskController.totalDynamicGroups
@@ -156,11 +207,265 @@ PlasmoidItem {
         containmentId: Plasmoid.containment ? Plasmoid.containment.id : 0
         reportedPanelLengthMode: dockGeometry.detectedPanelLengthMode
     }
+    Punchi.TaskGeometryOwnershipBridge {
+        id: taskGeometryOwnership
+        instanceId: Plasmoid.id
+        panel: root.inPanel
+        eligible: !root.hiddenByVirtualDesktop
+    }
+    Punchi.PunchiMenuShortcutController {
+        id: punchiMenuShortcutController
+        instanceId: Plasmoid.id
+        configuredShortcut: String(Plasmoid.configuration.punchiMenuShortcut || "")
+        enabled: Boolean(root.configuredPunchiMenuItem)
+        onActivated: {
+            if (root.configuredPunchiMenuItem) {
+                root.togglePunchiMenu()
+            }
+        }
+        onShortcutRegistrationFailed: function(requestedShortcut) {
+            console.warn("Punchi Dock: PunchiMenu shortcut registration failed:",
+                requestedShortcut)
+        }
+    }
     Punchi.AudioSpectrumController {
         id: audioSpectrumController
         enabled: dockConfig.audioSpectrumConfigured
             && !root.hiddenByVirtualDesktop
     }
+
+    property var punchiMenuDialogInstance: null
+    property var punchiMenuAnchorItem: null
+
+    function togglePunchiMenu(anchorItem) {
+        if (anchorItem && typeof anchorItem.mapToGlobal === "function") {
+            root.punchiMenuAnchorItem = anchorItem
+        }
+        const requestedMode = root.configuredPunchiMenuMode
+        if (punchiMenuDialogInstance
+                && punchiMenuDialogInstance.menuMode !== requestedMode) {
+            punchiMenuDialogInstance.closeImmediately()
+            punchiMenuDialogInstance.destroy()
+            punchiMenuDialogInstance = null
+        }
+
+        if (requestedMode === "normal" && anchorItem
+                && punchiMenuDialogInstance
+                && typeof punchiMenuDialogInstance.consumeRecentExternalHide
+                    === "function"
+                && punchiMenuDialogInstance.consumeRecentExternalHide()) {
+            return
+        }
+
+        if (!punchiMenuDialogInstance) {
+            const component = requestedMode === "normal"
+                ? punchiMenuNormalDialogComponent
+                : punchiMenuFullscreenDialogComponent
+            punchiMenuDialogInstance = component.createObject(root)
+            if (!punchiMenuDialogInstance) {
+                return
+            }
+        }
+
+        if (punchiMenuDialogInstance.visible) {
+            punchiMenuDialogInstance.closeImmediately()
+        } else {
+            punchiMenuDialogInstance.openWithReveal()
+        }
+    }
+
+    Component {
+        id: punchiMenuFullscreenDialogComponent
+
+        PlasmaCore.Dialog {
+            id: punchiMenuDialog
+            readonly property string menuMode: "fullScreen"
+            location: PlasmaCore.Types.Floating
+            type: PlasmaCore.Dialog.OnScreenDisplay
+            flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.BypassWindowManagerHint
+            backgroundHints: PlasmaCore.Dialog.NoBackground
+            x: 0
+            y: 0
+            width: Screen.width
+            height: Screen.height
+            hideOnWindowDeactivate: true
+            visible: false
+            opacity: 0
+
+            function openWithReveal() {
+                opacity = 1
+                visible = true
+                requestActivate()
+                punchiMenuOverlay.openOverlay()
+            }
+
+            function closeImmediately() {
+                punchiMenuOverlay.resetOverlay()
+                opacity = 0
+                visible = false
+            }
+
+            onVisibleChanged: {
+                if (!visible) {
+                    punchiMenuOverlay.resetOverlay()
+                    opacity = 0
+                }
+            }
+
+            mainItem: PunchiMenuOverlay {
+                id: punchiMenuOverlay
+                width: Screen.width
+                height: Screen.height
+                systemDiscovery: root.systemDiscoveryService
+                // This component is created lazily and reads the owning
+                // plasmoid's persisted PunchiMenu preference.
+                // qmllint disable unqualified
+                applicationIconScale: root.configuredPunchiMenuGridIconScale
+                // qmllint enable unqualified
+                onCloseFinished: punchiMenuDialog.closeImmediately()
+            }
+        }
+    }
+
+    Component {
+        id: punchiMenuNormalDialogComponent
+
+        PlasmaCore.Dialog {
+            id: punchiMenuNormalDialog
+
+            readonly property string menuMode: "normal"
+            property double lastExternalHideTimestamp: -1
+            property bool internalCloseRequested: false
+            readonly property int safeScreenWidth: Math.max(1, Screen.desktopAvailableWidth)
+            readonly property int safeScreenHeight: Math.max(1, Screen.desktopAvailableHeight)
+            readonly property int screenMargin: Kirigami.Units.gridUnit * 2
+            readonly property int usableScreenWidth: Math.max(1,
+                safeScreenWidth - screenMargin)
+            readonly property int usableScreenHeight: Math.max(1,
+                safeScreenHeight - screenMargin)
+
+            // The normal menu is a lazily created component whose owner ids
+            // remain available in the plasmoid runtime context.
+            // qmllint disable unqualified
+            visualParent: root.punchiMenuAnchorItem || root
+            location: root.inPanel ? Plasmoid.location : PlasmaCore.Types.Floating
+            type: PlasmaCore.Dialog.PopupMenu
+            flags: Qt.Dialog | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+            backgroundHints: PlasmaCore.Dialog.NoBackground
+            width: Math.min(usableScreenWidth,
+                Math.max(Kirigami.Units.gridUnit * 36,
+                    Math.round(safeScreenWidth
+                        * root.configuredPunchiMenuNormalWidthPercent / 100)))
+            height: Math.min(usableScreenHeight,
+                Math.max(Kirigami.Units.gridUnit * 28,
+                    Math.round(safeScreenHeight
+                        * root.configuredPunchiMenuNormalHeightPercent / 100)))
+            hideOnWindowDeactivate: true
+            visible: false
+            opacity: 0
+
+            readonly property PunchiMenuNormalPlacement normalPlacement: PunchiMenuNormalPlacement {
+
+                inPanel: root.inPanel
+                panelLocation: dockGeometry.effectivePanelLocation
+                availableScreenRect: root.availableScreenRect
+                screenGeometry: Plasmoid.containment
+                    && Plasmoid.containment.screenGeometry
+                    ? Plasmoid.containment.screenGeometry
+                    : Qt.rect(0, 0, Screen.width, Screen.height)
+                itemAnchor: root.punchiMenuAnchorItem
+                floatingDockAnchor: root.floatingDockAnchor
+                panelWindow: root.Window.window
+                menuWidth: punchiMenuNormalDialog.width
+                menuHeight: punchiMenuNormalDialog.height
+                panelGap: 0
+                floatingGap: 0
+            }
+
+            function positionAtAnchor() {
+                const targetPosition = normalPlacement.calculatePosition()
+                x = targetPosition.x
+                y = targetPosition.y
+            }
+
+            function consumeRecentExternalHide() {
+                const hideTimestamp = lastExternalHideTimestamp
+                lastExternalHideTimestamp = -1
+                if (hideTimestamp < 0) {
+                    return false
+                }
+                const elapsed = Date.now() - hideTimestamp
+                // QtStyleHints exposes this property at runtime, but qmllint
+                // resolves Qt.styleHints as a generic QObject.
+                // qmllint disable missing-property
+                const guardInterval = Math.max(1,
+                    Qt.styleHints.mouseDoubleClickInterval)
+                // qmllint enable missing-property
+                return elapsed >= 0
+                    && elapsed <= guardInterval
+            }
+
+            function finishOpening() {
+                if (!visible) {
+                    return
+                }
+                positionAtAnchor()
+                opacity = 1
+                requestActivate()
+                punchiMenuFavoritesController.refresh()
+                punchiMenuNormal.openMenu()
+            }
+
+            function openWithReveal() {
+                internalCloseRequested = false
+                lastExternalHideTimestamp = -1
+                opacity = 0
+                positionAtAnchor()
+                visible = true
+                Qt.callLater(finishOpening)
+            }
+
+            function closeImmediately() {
+                internalCloseRequested = true
+                lastExternalHideTimestamp = -1
+                punchiMenuNormal.resetMenu()
+                opacity = 0
+                visible = false
+                Qt.callLater(function() {
+                    punchiMenuNormalDialog.internalCloseRequested = false
+                })
+            }
+
+            onVisibleChanged: {
+                if (!visible) {
+                    if (!internalCloseRequested) {
+                        lastExternalHideTimestamp = Date.now()
+                    }
+                    punchiMenuNormal.resetMenu()
+                    opacity = 0
+                }
+            }
+
+            mainItem: PunchiMenuNormal {
+                id: punchiMenuNormal
+                width: punchiMenuNormalDialog.width
+                height: punchiMenuNormalDialog.height
+                systemDiscovery: root.systemDiscoveryService
+                applicationIconScale: root.configuredPunchiMenuGridIconScale
+                favorites: punchiMenuFavoritesController.favorites
+                favoriteLimitReached: punchiMenuFavoritesController.limitReached
+                onAddFavoriteRequested: function(storageId) {
+                    punchiMenuFavoritesController.addFavorite(storageId)
+                }
+                onRemoveFavoriteRequested: function(storageId) {
+                    punchiMenuFavoritesController.removeFavorite(storageId)
+                }
+                onCloseFinished: punchiMenuNormalDialog.closeImmediately()
+            }
+            // qmllint enable unqualified
+        }
+    }
+
     TaskModelController {
         id: taskController
         dockItems: dockItemsController.dockItems
@@ -182,11 +487,18 @@ PlasmoidItem {
         trashIntegration: trashIntegration
         minimizeEffect: dockConfig.dockWindowMinimizeEffect
     }
+    PunchiMenuFavoritesController {
+        id: punchiMenuFavoritesController
+        systemDiscovery: systemDiscovery
+    }
     DockContextActionsController {
         id: dockContextActionsController
         systemDiscovery: systemDiscovery
         taskController: taskController
         dockItemsController: dockItemsController
+        editDockItemHandler: function(index) {
+            return root.openDockItemEditor(index)
+        }
     }
     DropFeedbackPopup {
         id: dropFeedbackPopup
@@ -201,6 +513,21 @@ PlasmoidItem {
     // Translation functions and controller ids are provided by the plasmoid
     // context and remain valid at runtime.
     // qmllint disable unqualified
+    function openDockItemEditor(index) {
+        if (!Number.isInteger(index) || index < 0) {
+            return false
+        }
+
+        const configureAction = Plasmoid.internalAction("configure")
+        if (!configureAction || configureAction.enabled === false) {
+            return false
+        }
+
+        Plasmoid.configuration.pendingEditDockItemIndex = index
+        configureAction.trigger()
+        return true
+    }
+
     function droppedUrlErrorMessage(result) {
         const errorCode = String(result && result.errorCode || "")
         if (errorCode === "noUrls") {
@@ -356,8 +683,12 @@ PlasmoidItem {
             taskWindowsPopupContentRef: taskWindowsPopupContent
             taskContextSurfaceStackRef: taskContextSurfaceStack
             taskPopupAnimatedContentRef: taskPopupAnimatedContent
+            // These ids belong to the owning full representation.
+            // qmllint disable unqualified
             mediaHoverMode: dockConfig.mediaControlsMode
             mediaHoverEnabled: dockConfig.mediaControlsOnHover
+            windowPreviewsEnabled: dockConfig.windowPreviewStyle !== "none"
+            // qmllint enable unqualified
             folderPopupDialogRef: folderPopupDialog
             calendarPopupDialogRef: calendarPopupDialog
             trashMenuDialogRef: trashMenuDialog
@@ -549,6 +880,7 @@ PlasmoidItem {
 
             GridLayout {
                 id: dockLayout
+                z: 10
                 flow: dockGeometry.verticalPanel ? GridLayout.TopToBottom : GridLayout.LeftToRight
                 columns: dockGeometry.verticalPanel ? 1 : -1
                 rows: dockGeometry.verticalPanel ? -1 : 1
@@ -601,6 +933,20 @@ PlasmoidItem {
                 property int lastHoveredIndex: -1
                 property real lastMouseOffset: 0.0
                 property real hoverZoomProgress: hoveredIndex >= 0 ? 1.0 : 0.0
+                property bool mediaMorphActive: false
+
+                function beginMediaMorph(transitionDuration) {
+                    mediaMorphActive = true
+                    mediaMorphTimer.interval = Math.max(1, Number(transitionDuration) || 220)
+                    mediaMorphTimer.restart()
+                }
+
+                Timer {
+                    id: mediaMorphTimer
+                    interval: 220
+                    repeat: false
+                    onTriggered: dockLayout.mediaMorphActive = false
+                }
 
                 onHoveredIndexChanged: {
                     if (hoveredIndex >= 0) {
@@ -614,9 +960,12 @@ PlasmoidItem {
                 }
 
                 Behavior on hoverZoomProgress {
+                    enabled: Kirigami.Units.longDuration > 0
                     NumberAnimation {
-                        duration: 180
-                        easing.type: Easing.OutCubic
+                        duration: dockLayout.hoveredIndex >= 0
+                            ? Math.max(80, Math.round(Kirigami.Units.shortDuration * 1.1))
+                            : Math.max(60, Math.round(Kirigami.Units.shortDuration * 0.85))
+                        easing.type: dockLayout.hoveredIndex >= 0 ? Easing.OutCubic : Easing.InQuad
                     }
                 }
 
@@ -655,11 +1004,19 @@ PlasmoidItem {
                         mediaTextMode: modelData.type === "media"
                             ? String(modelData.mediaTextMode || "automatic")
                             : "automatic"
+                        mediaDisplayMode: modelData.type === "media"
+                            ? String(modelData.mediaDisplayMode || "normal")
+                            : "normal"
+                        mediaAutoCollapseDelaySeconds: modelData.type === "media"
+                            ? Number(modelData.mediaAutoCollapseDelaySeconds === undefined
+                                ? 3 : modelData.mediaAutoCollapseDelaySeconds)
+                            : 3
+                        dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                         // qmllint enable unqualified
                         mediaMotionEnabled: dockConfig.menuAnimationStyle !== "none"
-                            && String(Plasmoid.configuration.hoverAnimation || "wave") !== "none"
+                            && String(Plasmoid.configuration.hoverAnimation || "axisZoom") !== "none"
                         hoverScaleSetting: dockConfig.panelHoverScale
-                        hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "wave"
+                        hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "axisZoom"
                         clickEffect: dockConfig.dockClickEffect
                         // qmllint disable unqualified
                         windowMinimizeEffect: dockConfig.dockWindowMinimizeEffect
@@ -687,9 +1044,11 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         showPersistentLabel: dockConfig.dockShowLabels
                         textShadowsEnabled: dockConfig.dockTextShadowsEnabled
+                        calendarTextShadowsEnabled: modelData.calendarTextShadowsEnabled !== false
                         labelFontSize: dockConfig.dockLabelFontSize
                         indicatorType: dockConfig.dockIndicatorType
                         indicatorPosition: dockConfig.dockIndicatorPosition
+                        indicatorColor: dockConfig.dockIndicatorColor
                         // qmllint disable unqualified
                         indicatorThickness: dockConfig.dockIndicatorThickness
                         indicatorOpacity: dockConfig.dockIndicatorOpacity
@@ -747,11 +1106,27 @@ PlasmoidItem {
                         }
                         // qmllint enable unqualified
 
+                        // The delegate is compiled separately and these handlers
+                        // intentionally retain its owning plasmoid and model row.
+                        // qmllint disable unqualified
+                        Component.onCompleted: {
+                            if (modelData.type === "punchimenu") {
+                                root.punchiMenuAnchorItem = dockItemDelegate
+                            }
+                        }
+                        Component.onDestruction: {
+                            if (root.punchiMenuAnchorItem === dockItemDelegate) {
+                                root.punchiMenuAnchorItem = null
+                            }
+                        }
+                        // qmllint enable unqualified
+
                         // qmllint disable unqualified
                         TaskDelegateGeometryPublisher {
                             taskModelController: taskController
                             targetItem: dockItemDelegate.taskGeometryItem
                             taskRows: dockItemDelegate.taskState.rows
+                            publicationEnabled: taskGeometryOwnership.ownsTaskGeometry
                         }
                         // qmllint enable unqualified
                         
@@ -762,6 +1137,9 @@ PlasmoidItem {
                                 popupCoordinator.openCalendarPopup(modelData, dockItemDelegate)
                             } else if (modelData.type === "note") {
                                 popupCoordinator.openNotePopup(modelData, dockItemDelegate, index)
+                            } else if (modelData.type === "punchimenu") {
+                                popupCoordinator.closeAllPopups(null)
+                                root.togglePunchiMenu(dockItemDelegate)
                             } else {
                                 popupCoordinator.closeAllPopups(null)
                                 dockItemsController.handleDockItemActivation(modelData, dockItemDelegate)
@@ -780,6 +1158,10 @@ PlasmoidItem {
                         }
                         onMediaPlaybackLaunchRequested: {
                             root.launchConfiguredMediaPlayer(modelData, true)
+                        }
+                        onMediaExpansionChanged: function(expanded, transitionDuration) {
+                            root.mediaItemExpanded = expanded
+                            dockLayout.beginMediaMorph(transitionDuration)
                         }
                         // qmllint enable unqualified
                         onContextMenuRequested: function(visualParent, keyboardInvoked) {
@@ -827,7 +1209,8 @@ PlasmoidItem {
                         panelLocation: dockGeometry.effectivePanelLocation
                         iconSize: dockGeometry.effectiveIconSize
                         hoverScaleSetting: dockConfig.panelHoverScale
-                        hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "wave"
+                        hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "axisZoom"
+                        dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                         clickEffect: dockConfig.dockClickEffect
                         // qmllint disable unqualified
                         windowMinimizeEffect: dockConfig.dockWindowMinimizeEffect
@@ -860,6 +1243,7 @@ PlasmoidItem {
                         labelFontSize: dockConfig.dockLabelFontSize
                         indicatorType: dockConfig.dockIndicatorType
                         indicatorPosition: dockConfig.dockIndicatorPosition
+                        indicatorColor: dockConfig.dockIndicatorColor
                         // qmllint disable unqualified
                         indicatorThickness: dockConfig.dockIndicatorThickness
                         indicatorOpacity: dockConfig.dockIndicatorOpacity
@@ -901,6 +1285,7 @@ PlasmoidItem {
                             taskModelController: taskController
                             targetItem: taskDockItemDelegate.taskGeometryItem
                             taskRows: taskDockItemDelegate.taskData.rows
+                            publicationEnabled: taskGeometryOwnership.ownsTaskGeometry
                         }
                         // qmllint enable unqualified
 
@@ -979,7 +1364,8 @@ PlasmoidItem {
                     panelLocation: dockGeometry.effectivePanelLocation
                     iconSize: dockGeometry.effectiveIconSize
                     hoverScaleSetting: dockConfig.panelHoverScale
-                    hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "wave"
+                    hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "axisZoom"
+                    dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                     clickEffect: dockConfig.dockClickEffect
                     windowMinimizeEffect: dockConfig.dockWindowMinimizeEffect
                     taskMinimizedCount: {
@@ -1007,6 +1393,7 @@ PlasmoidItem {
                         taskModelController: taskController
                         targetItem: taskOverflowDockItem.taskGeometryItem
                         taskRows: taskController.taskRowsForEntries(root.overflowTaskRows)
+                        publicationEnabled: taskGeometryOwnership.ownsTaskGeometry
                     }
 
                     onItemClicked: popupCoordinator.openTaskOverflowPopup(taskOverflowDockItem)
@@ -1083,6 +1470,12 @@ PlasmoidItem {
                     onAppLaunched: function(app) {
                         folderPopupDialog.visible = false
                         dockItemsController.launchDockItem(app)
+                    }
+
+                    onAppContextMenuRequested: function(app) {
+                        popupCoordinator.openAppContextMenu(app,
+                            folderPopupDialog.visualParent, undefined,
+                            "folder", -1)
                     }
 
                     onCloseRequested: {

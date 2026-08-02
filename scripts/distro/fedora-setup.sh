@@ -18,12 +18,14 @@ DNF_PACKAGES=(
     gettext
     git
     kf6-kcoreaddons-devel
+    kf6-kglobalaccel-devel
     kf6-ki18n-devel
     kf6-kio-devel
     kf6-kjobwidgets-devel
     kf6-kpackage
     kf6-kservice-devel
     libplasma-devel
+    plasma-workspace-devel
     ninja-build
     pipewire-devel
     pkgconf-pkg-config

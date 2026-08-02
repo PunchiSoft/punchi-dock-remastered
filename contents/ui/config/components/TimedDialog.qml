@@ -15,6 +15,7 @@ Controls.Dialog {
     property alias calendarFormatControl: calendarOptions.calendarFormatControl
     property alias calendarTimeTextScaleControl: calendarOptions.calendarTimeTextScaleControl
     property alias calendarDateTextScaleControl: calendarOptions.calendarDateTextScaleControl
+    property alias calendarTextShadowsControl: calendarOptions.calendarTextShadowsControl
     property alias calendarShowWeekNumbersControl: calendarOptions.calendarShowWeekNumbersControl
     property alias calendarPopupScaleControl: calendarOptions.calendarPopupScaleControl
     property var calendarTextColorControl

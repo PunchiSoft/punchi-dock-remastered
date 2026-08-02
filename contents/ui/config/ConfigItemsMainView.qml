@@ -11,6 +11,10 @@ ColumnLayout {
     property var statusHideTimer
     property alias statusText: statusLabel.text
     property alias statusType: statusLabel.type
+    readonly property real columnsBodyHeight: Math.max(
+        root.controller ? root.controller.itemsColumnBodyHeight : 0,
+        addItemPalette.implicitHeight
+    )
 
     function positionAtIndex(index) {
         itemListEditor.positionAtIndex(index)
@@ -47,13 +51,6 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignTop
                 spacing: Kirigami.Units.smallSpacing
 
-                AddItemPalette {
-                    controller: root.controller
-                    onAddRequested: function(type) {
-                        root.controller.addItem(type)
-                    }
-                }
-
                 Controls.Label {
                     Layout.fillWidth: true
                     text: i18n("Items to add")
@@ -61,6 +58,17 @@ ColumnLayout {
                     horizontalAlignment: Text.AlignHCenter
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     font.bold: true
+                }
+
+                AddItemPalette {
+                    id: addItemPalette
+                    controller: root.controller
+                    Layout.preferredHeight: root.columnsBodyHeight
+                    Layout.minimumHeight: root.columnsBodyHeight
+                    Layout.maximumHeight: root.columnsBodyHeight
+                    onAddRequested: function(type) {
+                        root.controller.addItem(type)
+                    }
                 }
             }
 
@@ -70,12 +78,6 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignTop
                 spacing: Kirigami.Units.smallSpacing
 
-                DockItemListEditor {
-                    id: itemListEditor
-                    controller: root.controller
-                    itemModel: root.itemModel
-                }
-
                 Controls.Label {
                     Layout.fillWidth: true
                     text: i18n("Items in Dock")
@@ -83,6 +85,15 @@ ColumnLayout {
                     horizontalAlignment: Text.AlignHCenter
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
                     font.bold: true
+                }
+
+                DockItemListEditor {
+                    id: itemListEditor
+                    controller: root.controller
+                    itemModel: root.itemModel
+                    Layout.preferredHeight: root.columnsBodyHeight
+                    Layout.minimumHeight: root.columnsBodyHeight
+                    Layout.maximumHeight: root.columnsBodyHeight
                 }
             }
         }

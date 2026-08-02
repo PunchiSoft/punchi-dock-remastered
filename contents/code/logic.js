@@ -6,16 +6,35 @@
 const maximumDockItemsJsonLength = 1024 * 1024
 const maximumDockItemCount = 512
 
-function withSingleMediaItem(items) {
-    var result = []
-    var mediaItemAdded = false
+const singletonDockItemTypes = ["media", "punchimenu"]
+
+function duplicateSingletonType(items) {
+    var seenTypes = {}
     for (var index = 0; index < items.length; index++) {
         var item = items[index]
-        if (item && item.type === "media") {
-            if (mediaItemAdded) {
+        var type = String(item && item.type ? item.type : "")
+        if (singletonDockItemTypes.indexOf(type) < 0) {
+            continue
+        }
+        if (seenTypes[type]) {
+            return type
+        }
+        seenTypes[type] = true
+    }
+    return ""
+}
+
+function withSingletonItems(items) {
+    var result = []
+    var seenTypes = {}
+    for (var index = 0; index < items.length; index++) {
+        var item = items[index]
+        var type = String(item && item.type ? item.type : "")
+        if (singletonDockItemTypes.indexOf(type) >= 0) {
+            if (seenTypes[type]) {
                 continue
             }
-            mediaItemAdded = true
+            seenTypes[type] = true
         }
         result.push(item)
     }
@@ -28,7 +47,7 @@ function loadItems(jsonString) {
         try {
             var parsed = JSON.parse(jsonString);
             if (Array.isArray(parsed) && parsed.length <= maximumDockItemCount) {
-                return withSingleMediaItem(parsed);
+                return withSingletonItems(parsed);
             }
         } catch (e) {
             console.warn("Punchi Dock: Failed to parse dockItemsJson. Falling back to defaults.", e);

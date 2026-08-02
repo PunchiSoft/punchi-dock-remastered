@@ -19,6 +19,8 @@ set_target_properties(punchidockintegrationplugin PROPERTIES
 target_sources(punchidockintegration PRIVATE
     audiospectrumcontroller.cpp
     audiospectrumcontroller.h
+    blurbehindcontroller.cpp
+    blurbehindcontroller.h
     commandclassification.cpp
     commandclassification.h
     dockthemerepository.cpp
@@ -39,10 +41,16 @@ target_sources(punchidockintegration PRIVATE
     panellengthmodebridge.h
     pipewireaudiobackend.cpp
     pipewireaudiobackend.h
+    punchimenushortcutcontroller.cpp
+    punchimenushortcutcontroller.h
+    sessionactionscontroller.cpp
+    sessionactionscontroller.h
     spectrumanalyzer.cpp
     spectrumanalyzer.h
     systemdiscovery.cpp
     systemdiscovery.h
+    taskgeometryownershipbridge.cpp
+    taskgeometryownershipbridge.h
     themeintegration.cpp
     themeintegration.h
     trashintegration.cpp
@@ -56,13 +64,16 @@ target_link_libraries(punchidockintegration
         Qt6::Gui
         Qt6::Qml
         KF6::CoreAddons
+        KF6::GlobalAccel
         KF6::I18n
         KF6::JobWidgets
         KF6::KIOCore
         KF6::KIOGui
         KF6::Service
+        KF6::WindowSystem
         PkgConfig::PipeWire
         Plasma::Plasma
+        PW::KWorkspace
 )
 
 install(TARGETS punchidockintegration ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})

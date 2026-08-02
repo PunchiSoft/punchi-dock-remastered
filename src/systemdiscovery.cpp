@@ -8,6 +8,7 @@
 #include "commandclassification.h"
 #include "dropurlpolicy.h"
 
+#include <KApplicationTrader>
 #include <KIO/ApplicationLauncherJob>
 #include <KIO/ListJob>
 #include <KIO/OpenUrlJob>
@@ -270,6 +271,37 @@ QString desktopDirectoryIconForCategory(const QString &category)
 
     return {};
 }
+
+bool isCategoryMatch(const QStringList &serviceCategories, const QString &requestedCategory)
+{
+    const QString trimmedRequested = requestedCategory.trimmed();
+    if (trimmedRequested.isEmpty()) {
+        return true;
+    }
+
+    static const QHash<QString, QStringList> categoryFamilies = {
+        {QStringLiteral("AudioVideo"),  {QStringLiteral("AudioVideo"), QStringLiteral("Audio"), QStringLiteral("Video"), QStringLiteral("Player"), QStringLiteral("Music"), QStringLiteral("Recorder"), QStringLiteral("TV"), QStringLiteral("AudioVideoEditing")}},
+        {QStringLiteral("Network"),     {QStringLiteral("Network"), QStringLiteral("WebBrowser"), QStringLiteral("Email"), QStringLiteral("IRCClient"), QStringLiteral("Feed"), QStringLiteral("FileTransfer"), QStringLiteral("RemoteAccess"), QStringLiteral("Internet")}},
+        {QStringLiteral("Development"), {QStringLiteral("Development"), QStringLiteral("IDE"), QStringLiteral("Building"), QStringLiteral("Debugger"), QStringLiteral("TextEditor"), QStringLiteral("RevisionControl"), QStringLiteral("WebDevelopment")}},
+        {QStringLiteral("Graphics"),    {QStringLiteral("Graphics"), QStringLiteral("VectorGraphics"), QStringLiteral("RasterGraphics"), QStringLiteral("3DGraphics"), QStringLiteral("Photography"), QStringLiteral("Viewer"), QStringLiteral("Paint")}},
+        {QStringLiteral("Office"),      {QStringLiteral("Office"), QStringLiteral("WordProcessor"), QStringLiteral("Spreadsheet"), QStringLiteral("Presentation"), QStringLiteral("Publishing"), QStringLiteral("Finance"), QStringLiteral("Calendar"), QStringLiteral("Calculator")}},
+        {QStringLiteral("System"),      {QStringLiteral("System"), QStringLiteral("Monitor"), QStringLiteral("Security"), QStringLiteral("Settings"), QStringLiteral("PackageManager"), QStringLiteral("TerminalEmulator")}},
+        {QStringLiteral("Utility"),     {QStringLiteral("Utility"), QStringLiteral("Utilities"), QStringLiteral("FileTools"), QStringLiteral("Archiving"), QStringLiteral("Clock"), QStringLiteral("TextEditor")}},
+        {QStringLiteral("Game"),        {QStringLiteral("Game"), QStringLiteral("ActionGame"), QStringLiteral("AdventureGame"), QStringLiteral("ArcadeGame"), QStringLiteral("BoardGame"), QStringLiteral("CardGame"), QStringLiteral("BlocksGame"), QStringLiteral("Emulator")}},
+        {QStringLiteral("Education"),   {QStringLiteral("Education"), QStringLiteral("Science"), QStringLiteral("Math"), QStringLiteral("History"), QStringLiteral("Geography")}}
+    };
+
+    const QStringList targetSubcategories = categoryFamilies.value(trimmedRequested, QStringList{trimmedRequested});
+    for (const QString &subCat : targetSubcategories) {
+        for (const QString &serviceCat : serviceCategories) {
+            if (serviceCat.compare(subCat, Qt::CaseInsensitive) == 0) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
 }
 
 SystemDiscovery::SystemDiscovery(QObject *parent)
@@ -331,14 +363,14 @@ void SystemDiscovery::requestApplications(const QString &category)
     applications.reserve(maximumResults);
     QSet<QString> seenStorageIds;
 
-    const KService::List services = KService::allServices();
-    for (const KService::Ptr &service : services) {
+    const KService::List services = KApplicationTrader::query([&category](const KService::Ptr &service) {
         if (!service || service->noDisplay() || !service->isApplication()) {
-            continue;
+            return false;
         }
-        if (!category.isEmpty() && !service->categories().contains(category, Qt::CaseInsensitive)) {
-            continue;
-        }
+        return isCategoryMatch(service->categories(), category);
+    });
+
+    for (const KService::Ptr &service : services) {
         if (seenStorageIds.contains(service->storageId())) {
             continue;
         }
@@ -438,9 +470,14 @@ QVariantMap SystemDiscovery::validateDroppedUrls(const QVariantList &urls) const
 
 void SystemDiscovery::launchApplication(const QString &storageId)
 {
-    const KService::Ptr service = KService::serviceByStorageId(storageId);
+    KService::Ptr service = KService::serviceByStorageId(storageId);
     if (!service) {
-        Q_EMIT operationFailed(QStringLiteral("launch"), i18nd(TranslationDomain, "The application could not be found."));
+        service = findApplicationService(storageId);
+    }
+    if (!service) {
+        const QString message = i18nd(TranslationDomain, "The application could not be found.");
+        Q_EMIT applicationLaunchFinished(false, message);
+        Q_EMIT operationFailed(QStringLiteral("launch"), message);
         return;
     }
 
@@ -448,7 +485,10 @@ void SystemDiscovery::launchApplication(const QString &storageId)
     job->setUiDelegate(nullptr);
     connect(job, &KJob::result, this, [this, job]() {
         if (job->error()) {
+            Q_EMIT applicationLaunchFinished(false, job->errorString());
             Q_EMIT operationFailed(QStringLiteral("launch"), job->errorString());
+        } else {
+            Q_EMIT applicationLaunchFinished(true, QString());
         }
     });
     job->start();

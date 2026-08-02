@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.3">
-    <img src="https://img.shields.io/badge/release-v0.9.3-4caf50" alt="Versión v0.9.3">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.4">
+    <img src="https://img.shields.io/badge/release-v0.9.4-4caf50" alt="Versión v0.9.4">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -22,21 +22,49 @@ Punchi Dock Remastered es un dock de lanzadores e interfaz de tareas nativo para
 
 Este repositorio es una reescritura modular del proyecto original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). Actualmente el proyecto está preparando su camino hacia una versión estable 1.0.
 
-La versión actual es [v0.9.3](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.3).
+La versión actual es [v0.9.4](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.4).
+
+## Novedades de la versión 0.9.4
+
+- PunchiMenu llega como ítem preliminar del dock con dos presentaciones. El modo
+  **Normal** es el más pulido de esta versión e incluye búsqueda, categorías,
+  grilla estable, favoritos persistentes, navegación por teclado y acciones de
+  sesión nativas. **Pantalla completa** continúa como una vista preliminar
+  temprana; Compacto queda reservado para una versión futura.
+- PunchiMenu admite icono y atajo global propios. El modo Normal también permite
+  configurar ancho, alto y escala de iconos dentro de límites seguros.
+- El blur nativo usa una superficie transparente ligera como fallback, mientras
+  que la geometría de panel y multinstancia evita expansión y propiedad de
+  tareas duplicadas.
+- Axis Zoom pasa a ser la animación hover ligera predeterminada, con velocidad
+  configurable y desplazamiento horizontal suavizado y acotado.
+- Los catálogos incorporan una validación semántica adicional a las pruebas de
+  formato y completitud ya existentes.
+
+Consulta el [changelog de la versión 0.9.4](CHANGELOG.md#094---2026-08-01) para
+ver las notas detalladas y la validación realizada para esta versión.
 
 ## Capturas
 
-<p align="center">
-  <img src="Images/banner_00.png" alt="Resumen de funciones de Punchi Dock Remastered" width="900">
-</p>
+| PunchiMenu Normal — vista preliminar recomendada |
+|:--:|
+| <img src="Images/PunchiMenuNormal.png" alt="PunchiMenu Normal con categorías, grilla de aplicaciones y favoritos" width="760"> |
+
+| PunchiMenu Pantalla completa — vista preliminar temprana |
+|:--:|
+| <img src="Images/PunchiMenuFullScreen.png" alt="Carrusel preliminar de PunchiMenu en Pantalla completa" width="760"> |
+
+| Controles multimedia MPRIS |
+|:--:|
+| <img src="Images/MPRIS-Controls.png" alt="Formatos de popup MPRIS con carátula y controles de reproducción" width="760"> |
 
 | Disposiciones del dock |
 |:--:|
 | <img src="Images/desktop-layouts.png" alt="Punchi Dock en disposición horizontal, vertical y como panel de Plasma" width="760"> |
 
-| Multimedia MPRIS | Carpeta en cuadrícula | Calendario y reloj |
-|:--:|:--:|:--:|
-| <img src="Images/Mpris_01.png" alt="Tarjeta multimedia MPRIS con portada y controles de reproducción" width="210"> | <img src="Images/MenuGrid.png" alt="Popup de carpeta en vista de cuadrícula" width="210"> | <img src="Images/Calendar_clock.png" alt="Popup de calendario y reloj" width="210"> |
+| Carpeta en cuadrícula | Calendario y reloj |
+|:--:|:--:|
+| <img src="Images/MenuGrid.png" alt="Popup de carpeta en vista de cuadrícula" width="300"> | <img src="Images/Calendar_clock.png" alt="Popup de calendario y reloj" width="300"> |
 
 ## Características
 
@@ -45,13 +73,18 @@ La versión actual es [v0.9.3](https://github.com/PunchiSoft/punchi-dock-remaste
 - Lanzadores personalizados con preservación segura de comandos y argumentos.
 - Tarjetas de ventanas, miniaturas vivas y controles para ventanas agrupadas, con selección entre tarjetas, miniaturas en vivo o sin ventana emergente.
 - Carpetas configurables con vistas de rejilla, lista y detalle, además de notas rápidas, papelera, separadores y calendario.
+- Ítem preliminar PunchiMenu con modos Normal y Pantalla completa. Normal ofrece
+  búsqueda, categorías, favoritos persistentes, operación por teclado, atajo
+  global dedicado y acciones de sesión nativas; Pantalla completa continúa
+  preliminar y Compacto aún no está disponible.
 - Visualizador de audio PipeWire opcional con seis estilos, colores dinámicos o del tema Plasma y hasta 48 elementos visuales.
 - Popups adaptados al tema de Plasma con animaciones de apertura configurables, transiciones fluidas entre miniaturas y menús, y retargeting continuo entre elementos del dock.
 - Acciones nativas de aplicacion y ventana en los menus contextuales de launchers fijados y tareas dinamicas.
+- Badges opcionales de conteo para aplicaciones agrupadas con varias ventanas.
 - Tarjetas multimedia MPRIS contextuales con caratula, informacion de pista, controles de reproduccion y una accion accesible para silenciar o restaurar el volumen en todos los formatos de tarjeta.
 - Item MPRIS compacto para el dock con reproductor seleccionable, fallback de caratula, modos de texto vertical y apertura seguida de Play.
 - Controles circulares de color Plasma/personalizado y separacion configurable entre iconos con unidades visuales explicitas.
-- Arrastre seguro de archivos hacia aplicaciones fijadas y acciones de desanclado conscientes del tipo de item, incluidas carpetas.
+- Arrastre seguro de archivos hacia aplicaciones fijadas y la Papelera, además de acciones de desanclado adaptadas a aplicaciones y carpetas.
 - Tarjeta MPRIS opcional bajo las miniaturas vivas, revelada despues de la vista previa para conservar la continuidad visual.
 - Operaciones asíncronas de papelera con actividad, progreso, sonido de finalización y notificaciones temáticas de KDE.
 - Temas externos JSON almacenados en una biblioteca administrada, con importación recursiva de carpetas, borrado y fallback seguro al fondo Plasma.
@@ -90,13 +123,13 @@ En Fedora, `kpackagetool6` pertenece a `kf6-kpackage` y normalmente ya está dis
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.3-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.4-fedora44-x86_64.plasmoid
 ```
 
 Para actualizar una instalación existente:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.3-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.4-fedora44-x86_64.plasmoid
 ```
 
 Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actualizado no se carga inmediatamente.
@@ -121,8 +154,8 @@ En Fedora 44+, instala las dependencias de compilación:
 sudo dnf install \
     binutils cmake gcc-c++ ninja-build extra-cmake-modules \
     qt6-qtdeclarative-devel \
-    kf6-kcoreaddons-devel kf6-kio-devel kf6-kjobwidgets-devel \
-    kf6-kservice-devel libplasma-devel \
+    kf6-kcoreaddons-devel kf6-kglobalaccel-devel kf6-kio-devel kf6-kjobwidgets-devel \
+    kf6-kservice-devel kf6-kwindowsystem-devel libplasma-devel plasma-workspace-devel \
     pipewire-devel gettext \
     zip unzip
 ```
@@ -150,9 +183,9 @@ distribución.
 dist/punchi-dock-remastered-<version>-<distribución><versión>-<arquitectura>.plasmoid
 ```
 
-Por ejemplo: `punchi-dock-remastered-0.9.3-fedora44-x86_64.plasmoid`,
-`punchi-dock-remastered-0.9.3-debian13-x86_64.plasmoid` o
-`punchi-dock-remastered-0.9.3-kubuntu<versión>-plasma6.6.4-x86_64.plasmoid`.
+Por ejemplo: `punchi-dock-remastered-0.9.4-fedora44-x86_64.plasmoid`,
+`punchi-dock-remastered-0.9.4-debian13-x86_64.plasmoid` o
+`punchi-dock-remastered-0.9.4-kubuntu<versión>-plasma6.6.4-x86_64.plasmoid`.
 No instales un artefacto identificado para otra distribución.
 
 El flujo Debian 13 fue comprobado por separado de Debian 14/testing. Kubuntu

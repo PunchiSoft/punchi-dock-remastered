@@ -25,12 +25,14 @@ APT_PACKAGES=(
     git
     kpackagetool6
     libkf6coreaddons-dev
+    libkf6globalaccel-dev
     libkf6i18n-dev
     libkf6jobwidgets-dev
     libkf6kio-dev
     libkf6service-dev
     libpipewire-0.3-dev
     libplasma-dev
+    plasma-workspace-dev
     ninja-build
     pkg-config
     qt6-base-dev

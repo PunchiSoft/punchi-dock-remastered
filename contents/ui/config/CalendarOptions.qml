@@ -20,6 +20,7 @@ ColumnLayout {
     property alias calendarFormatControl: calendarFormatCombo
     property alias calendarTimeTextScaleControl: calendarTimeTextScale
     property alias calendarDateTextScaleControl: calendarDateTextScale
+    property alias calendarTextShadowsControl: calendarTextShadows
     property alias calendarShowWeekNumbersControl: calendarShowWeekNumbers
     property alias calendarPopupScaleControl: calendarPopupScale
     property var calendarBackgroundColorControl: null
@@ -130,6 +131,15 @@ ColumnLayout {
                 text: Math.round(calendarDateTextScale.value * 100) + "%"
                 opacity: 0.75
             }
+        }
+
+        Controls.CheckBox {
+            id: calendarTextShadows
+            Layout.columnSpan: 2
+            text: i18n("Show shadows on clock and date text")
+            visible: controller.selectedItemType === "calendar"
+            enabled: controller.selectedIndex >= 0
+            onToggled: controller.applyItemForm()
         }
 
         Controls.CheckBox {

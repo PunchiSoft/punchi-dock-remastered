@@ -14,9 +14,10 @@ KCM.SimpleKCM {
         availableWidth: page.width
     }
 
-    property string cfg_hoverAnimation: "wave"
+    property string cfg_hoverAnimation: "axisZoom"
     property string cfg_clickEffect: "none"
     property string cfg_windowMinimizeEffect: "none"
+    property alias cfg_dockMotionSpeedPercent: dockMotionSpeedSlider.value
     property alias cfg_globalMouseCursor: globalMouseCursorCheck.checked
     property alias cfg_enableAppDragAndDrop: enableAppDragAndDropCheck.checked
     readonly property int contentWidthHint: layoutMetrics.contentWidth
@@ -25,6 +26,7 @@ KCM.SimpleKCM {
         { "text": i18n("None"), "value": "none" },
         { "text": i18n("Wave"), "value": "wave" },
         { "text": i18n("Single"), "value": "single" },
+        { "text": i18n("Axis zoom"), "value": "axisZoom" },
         { "text": i18n("Paragraph"), "value": "paragraph" }
     ]
     readonly property var clickEffectOptions: [
@@ -85,6 +87,43 @@ KCM.SimpleKCM {
                     cursorEnabled: page.cfg_globalMouseCursor
                 }
             }
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Dock motion speed:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: dockMotionSpeedSlider
+                from: 50
+                to: 150
+                stepSize: 25
+                snapMode: Controls.Slider.SnapAlways
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Dock motion speed")
+                Accessible.description: i18n("Controls how quickly dock items enter, move, and resize. It does not change popup or menu animations.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.cfg_globalMouseCursor
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: i18n("%1%", Math.round(dockMotionSpeedSlider.value))
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 56
+            }
+        }
+
+        Controls.Label {
+            text: i18n("100% preserves the current timing. Lower values are slower and higher values are faster.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
         }
 
         RowLayout {

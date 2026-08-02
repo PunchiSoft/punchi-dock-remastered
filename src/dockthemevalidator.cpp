@@ -16,7 +16,13 @@ constexpr int maximumGradientStops = 8;
 const QStringList separatorStyles{
     QStringLiteral("line"),
     QStringLiteral("dot"),
+    QStringLiteral("square"),
     QStringLiteral("capsule"),
+    QStringLiteral("star"),
+    QStringLiteral("diamond"),
+    QStringLiteral("ring"),
+    QStringLiteral("doubleLine"),
+    QStringLiteral("chevron"),
 };
 const QStringList separatorPatternStyles{
     QStringLiteral("none"),

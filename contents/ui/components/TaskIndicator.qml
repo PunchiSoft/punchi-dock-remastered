@@ -15,9 +15,9 @@ Item {
     property int iconSize: 48
 
     readonly property bool hiddenIndicator: type === "none" || count <= 0
-    readonly property color resolvedColor: customColor.a > 0
-        ? customColor
-        : (demandsAttention ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.highlightColor)
+    readonly property color resolvedColor: demandsAttention
+        ? Kirigami.Theme.negativeTextColor
+        : (customColor.a > 0 ? customColor : Kirigami.Theme.highlightColor)
     readonly property real stateOpacity: active || demandsAttention ? 1.0 : 0.5
     readonly property real resolvedOpacity: Math.max(0.0,
         Math.min(1.0, indicatorOpacity)) * stateOpacity

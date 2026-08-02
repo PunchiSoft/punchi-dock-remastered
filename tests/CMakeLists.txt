@@ -27,6 +27,16 @@ target_link_libraries(dropurlpolicy_test PRIVATE Qt6::Core)
 
 add_test(NAME dropurlpolicy_test COMMAND dropurlpolicy_test)
 
+add_executable(taskgeometryownershipbridge_test
+    taskgeometryownershipbridge_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/taskgeometryownershipbridge.cpp
+)
+
+target_include_directories(taskgeometryownershipbridge_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(taskgeometryownershipbridge_test PRIVATE Qt6::Core Qt6::Qml)
+
+add_test(NAME taskgeometryownershipbridge_test COMMAND taskgeometryownershipbridge_test)
+
 add_executable(mediaartworkresolver_test
     mediaartworkresolver_test.cpp
     ${CMAKE_SOURCE_DIR}/src/mediaartworkresolver.cpp
@@ -107,3 +117,13 @@ add_executable(pipewirebackend_probe EXCLUDE_FROM_ALL
 
 target_include_directories(pipewirebackend_probe PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(pipewirebackend_probe PRIVATE PkgConfig::PipeWire)
+
+add_executable(systemdiscovery_test
+    ${CMAKE_SOURCE_DIR}/src/systemdiscovery.cpp
+    ${CMAKE_SOURCE_DIR}/src/commandclassification.cpp
+    ${CMAKE_SOURCE_DIR}/src/dropurlpolicy.cpp
+    systemdiscovery_test.cpp
+)
+target_include_directories(systemdiscovery_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(systemdiscovery_test PRIVATE Qt6::Core Qt6::Qml KF6::Service KF6::KIOCore KF6::KIOGui KF6::JobWidgets KF6::I18n)
+add_test(NAME systemdiscovery_test COMMAND systemdiscovery_test)

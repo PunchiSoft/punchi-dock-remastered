@@ -17,9 +17,13 @@ if (( ${#catalogs[@]} == 0 )); then
     exit 1
 fi
 
+python3 "$PROJECT_ROOT/tests/translation_catalog_semantics.py" --self-test
+
 for catalog in "${catalogs[@]}"; do
     msgfmt --check --check-format --output-file=/dev/null "$catalog"
     msgcmp --use-fuzzy "$catalog" "$POT_FILE"
+
+    python3 "$PROJECT_ROOT/tests/translation_catalog_semantics.py" --check "$catalog"
 
     untranslated_count="$(msgattrib --untranslated --no-obsolete "$catalog" | grep -c '^msgid ' || true)"
     if (( untranslated_count > 1 )); then

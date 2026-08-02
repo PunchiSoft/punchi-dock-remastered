@@ -23,6 +23,7 @@ ColumnLayout {
 
     Repeater {
         model: [
+            { "type": "punchimenu", "title": i18n("PunchiMenu"), "description": i18n("Open application menu & carousel"), "icon": "start-here-kde" },
             { "type": "app", "title": i18n("Dock item"), "description": i18n("Add an app or container item"), "icon": "application-x-executable" },
             { "type": "note", "title": i18n("Note"), "description": i18n("Write a quick editable note"), "icon": "knotes" },
             { "type": "separator", "title": i18n("Separator"), "description": i18n("Add a visual separator"), "icon": "draw-line" },
@@ -36,9 +37,14 @@ ColumnLayout {
             HoverHandler { cursorShape: Qt.PointingHandCursor }
 
             Layout.fillWidth: true
-            height: Math.max(Kirigami.Units.gridUnit * 3.4, itemRow.implicitHeight + Kirigami.Units.smallSpacing * 2)
-            enabled: modelData.type !== "media" || !root.controller.hasItemType("media")
+            Layout.preferredHeight: Kirigami.Units.gridUnit * 2.8
+            Layout.minimumHeight: Layout.preferredHeight
+            Layout.maximumHeight: Layout.preferredHeight
+            enabled: (modelData.type !== "media" || !root.controller.hasItemType("media"))
+                && (modelData.type !== "punchimenu" || !root.controller.hasItemType("punchimenu"))
             onClicked: root.addRequested(modelData.type)
+            Accessible.name: modelData.title
+            Accessible.description: modelData.description
 
             contentItem: RowLayout {
                 id: itemRow
@@ -48,7 +54,7 @@ ColumnLayout {
                 Kirigami.Icon {
                     Layout.preferredWidth: Kirigami.Units.iconSizes.medium
                     Layout.preferredHeight: Kirigami.Units.iconSizes.medium
-                    Layout.alignment: Qt.AlignTop
+                    Layout.alignment: Qt.AlignVCenter
                     source: modelData.icon
                     isMask: String(modelData.icon).indexOf("-symbolic") >= 0
                 }
@@ -61,6 +67,8 @@ ColumnLayout {
                     Controls.Label {
                         Layout.fillWidth: true
                         text: modelData.title
+                        maximumLineCount: 1
+                        wrapMode: Text.NoWrap
                         elide: Text.ElideRight
                     }
 
@@ -68,16 +76,23 @@ ColumnLayout {
                         Layout.fillWidth: true
                         text: modelData.description
                         opacity: 0.68
-                        wrapMode: Text.WordWrap
+                        maximumLineCount: 1
+                        wrapMode: Text.NoWrap
+                        elide: Text.ElideRight
                         font.pointSize: Kirigami.Theme.smallFont.pointSize
                     }
                 }
             }
 
             Controls.ToolTip.visible: hovered
-            Controls.ToolTip.text: enabled
-                ? modelData.title
-                : i18n("Only one media player item can be added")
+            Controls.ToolTip.text: {
+                if (enabled) {
+                    return modelData.description
+                }
+                return modelData.type === "punchimenu"
+                    ? i18n("Only one PunchiMenu item can be added.")
+                    : i18n("Only one media player item can be added.")
+            }
         }
     }
 }

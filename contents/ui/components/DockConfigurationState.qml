@@ -21,6 +21,11 @@ QtObject {
     readonly property bool mediaControlsOnHover: mediaControlsMode !== "none"
     readonly property bool appDragAndDropEnabled:
         Plasmoid.configuration.enableAppDragAndDrop !== false
+    readonly property int dockMotionSpeedPercent: {
+        const configuredPercent = Number(Plasmoid.configuration.dockMotionSpeedPercent)
+        const safePercent = Number.isFinite(configuredPercent) ? configuredPercent : 100
+        return Math.max(50, Math.min(150, Math.round(safePercent)))
+    }
     readonly property real windowPreviewScale: Math.max(1.5, Math.min(4.5,
         Number(Plasmoid.configuration.windowPreviewScale || 1.5)))
     readonly property string windowPreviewInfoMode: {
@@ -108,6 +113,10 @@ QtObject {
     readonly property string dockIndicatorPosition: {
         const position = String(Plasmoid.configuration.indicatorPosition || "bottom")
         return position === "top" ? "top" : "bottom"
+    }
+    readonly property string dockIndicatorColor: {
+        const value = String(Plasmoid.configuration.indicatorColor || "").trim()
+        return /^#[0-9a-fA-F]{6}$/.test(value) ? value : ""
     }
     readonly property bool windowCountBadgeEnabled:
         Plasmoid.configuration.showWindowCountBadge === true
