@@ -12,6 +12,7 @@
 /.gemini/
 /.vscode/
 /.idea/
+/AGENTS.md
 
 # Documentacion interna, bitacoras y logs no trackeados
 /docs/
