@@ -13,17 +13,8 @@ source "$LIB_DIR/local-package-install.sh"
 # shellcheck disable=SC1091
 source /etc/os-release
 PACKAGE_VERSION="$(awk -F '"' '/"Version"[[:space:]]*:/ { print $4; exit }' "$PROJECT_ROOT/metadata.json")"
-PLATFORM_LABEL="${ID:-linux}${VERSION_ID:-unknown}-$(uname -m)"
-if [[ "${ID:-}" == "ubuntu" ]]; then
-    PLASMA_VERSION_OUTPUT="$(plasmashell --version 2>&1 || true)"
-    PLASMA_VERSION="$(punchi_extract_plasma_version "$PLASMA_VERSION_OUTPUT")"
-    if [[ ! "$PLASMA_VERSION" =~ ^6\. ]]; then
-        echo "Error: Punchi Dock requires Plasma 6 (version output: ${PLASMA_VERSION_OUTPUT:-empty})." >&2
-        exit 1
-    fi
-    SAFE_PLASMA_VERSION="${PLASMA_VERSION//[^[:alnum:]._-]/_}"
-    PLATFORM_LABEL="kubuntu${VERSION_ID:-unknown}-plasma${SAFE_PLASMA_VERSION:-unknown}-$(uname -m)"
-fi
+DEFAULT_PLATFORM_LABEL="${ID:-distro}${VERSION_ID:-unknown}-$(uname -m)"
+PLATFORM_LABEL="${PLATFORM_LABEL:-$DEFAULT_PLATFORM_LABEL}"
 ZIP_FILE="$PROJECT_ROOT/dist/punchi-dock-remastered-${PACKAGE_VERSION}-${PLATFORM_LABEL}-local-test.plasmoid"
 DEBUG_LOG="$PROJECT_ROOT/debug.log"
 PLUGIN_ID="org.kde.plasma.punchi-dock-remastered"

@@ -9,11 +9,11 @@ ecm_add_qml_module(punchidockintegration
 
 set_target_properties(punchidockintegration PROPERTIES
     BUILD_WITH_INSTALL_RPATH TRUE
-    INSTALL_RPATH "$ORIGIN"
+    INSTALL_RPATH "$ORIGIN:$ORIGIN/compat"
 )
 set_target_properties(punchidockintegrationplugin PROPERTIES
     BUILD_WITH_INSTALL_RPATH TRUE
-    INSTALL_RPATH "$ORIGIN"
+    INSTALL_RPATH "$ORIGIN:$ORIGIN/compat"
 )
 
 target_sources(punchidockintegration PRIVATE

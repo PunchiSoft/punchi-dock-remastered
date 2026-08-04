@@ -6,7 +6,7 @@ var items = [
         "type": "punchimenu",
         "name": "PunchiMenu",
         "icon": "start-here-kde",
-        "menuMode": "fullScreen",
+        "menuMode": "normal",
         "gridIconScalePercent": 100,
         "normalWidthPercent": 55,
         "normalHeightPercent": 65

@@ -205,6 +205,7 @@ build_plasmoid() {
     fi
     artifact_file="$PROJECT_ROOT/dist/punchi-dock-remastered-${package_version}-${platform_label}${artifact_suffix}.plasmoid"
 
+    export PLATFORM_LABEL="$platform_label"
     run_command "$build_command"
     (( DRY_RUN == 1 )) || [[ -f "$artifact_file" ]] \
         || die "the build finished without creating the expected artifact: $artifact_file"
@@ -227,4 +228,6 @@ main() {
     log "Fedora setup completed"
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

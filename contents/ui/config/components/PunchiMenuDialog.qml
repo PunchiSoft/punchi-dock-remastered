@@ -9,7 +9,7 @@ import org.kde.kquickcontrols as KQuickControls
 Controls.Dialog {
     id: root
 
-    property string menuMode: "fullScreen"
+    property string menuMode: "normal"
     property int gridIconScalePercent: 100
     property int normalWidthPercent: 55
     property int normalHeightPercent: 65
@@ -178,8 +178,8 @@ Controls.Dialog {
                 id: normalWidthSlider
 
                 Layout.fillWidth: true
-                from: 40
-                to: 80
+                from: 30
+                to: 90
                 stepSize: 5
                 snapMode: Controls.Slider.SnapAlways
                 value: 55
@@ -189,6 +189,16 @@ Controls.Dialog {
                     root.normalWidthPercent = normalizedPercent
                     root.normalSizePercentSelected(normalizedPercent,
                         root.normalHeightPercent)
+                }
+                onValueChanged: {
+                    if (activeFocus && !pressed) {
+                        const normalizedPercent = Math.round(value / stepSize) * stepSize
+                        if (normalizedPercent !== root.normalWidthPercent) {
+                            root.normalWidthPercent = normalizedPercent
+                            root.normalSizePercentSelected(normalizedPercent,
+                                root.normalHeightPercent)
+                        }
+                    }
                 }
             }
 
@@ -217,8 +227,8 @@ Controls.Dialog {
                 id: normalHeightSlider
 
                 Layout.fillWidth: true
-                from: 45
-                to: 85
+                from: 30
+                to: 90
                 stepSize: 5
                 snapMode: Controls.Slider.SnapAlways
                 value: 65
@@ -228,6 +238,16 @@ Controls.Dialog {
                     root.normalHeightPercent = normalizedPercent
                     root.normalSizePercentSelected(root.normalWidthPercent,
                         normalizedPercent)
+                }
+                onValueChanged: {
+                    if (activeFocus && !pressed) {
+                        const normalizedPercent = Math.round(value / stepSize) * stepSize
+                        if (normalizedPercent !== root.normalHeightPercent) {
+                            root.normalHeightPercent = normalizedPercent
+                            root.normalSizePercentSelected(root.normalWidthPercent,
+                                normalizedPercent)
+                        }
+                    }
                 }
             }
 
@@ -242,7 +262,7 @@ Controls.Dialog {
             Layout.fillWidth: true
             Layout.maximumWidth: root.selectorWidth
             visible: root.normalModeSelected
-            text: i18n("The percentages are limited to keep the menu usable on the current screen.")
+            text: i18n("The percentages adjust the menu size relative to your screen width and height (from 30% to 90%).")
             wrapMode: Text.WordWrap
             color: Kirigami.Theme.disabledTextColor
         }

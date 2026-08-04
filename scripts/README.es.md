@@ -1,221 +1,122 @@
-# Scripts de empaquetado y prueba
+# Scripts de Empaquetado y Setup
 
 [English](README.md) | [Español](README.es.md)
 
-## Comprobar el entorno
+## Asistente Maestro de Setup (`scripts/setup.sh`)
+
+El punto principal de entrada para compilar, probar, instalar y administrar Punchi Dock Remastered es:
+
+```bash
+scripts/setup.sh
+```
+
+Al ejecutar `scripts/setup.sh` sin argumentos, se despliega un **menú interactivo en terminal** que detecta automáticamente tu distribución anfitriona (Fedora o Debian 13).
+
+```text
+==========================================================
+   Punchi Dock Remastered - Asistente Maestro de Setup    
+==========================================================
+Sistema detectado: Fedora Linux 44 (x86_64)
+
+¿Qué deseas hacer?
+  [1] Compilar paquete de versión oficial (Release en dist/)
+  [2] Compilar, instalar y probar localmente (--local-test)
+  [3] Instalar un paquete .plasmoid ya existente desde dist/
+  [4] Instalación limpia (eliminar actual + recompilar + instalar)
+  [5] Verificar e instalar dependencias de compilación
+  [6] Desinstalar el plasmoide de este sistema
+  [7] Ayuda (ver referencia de comandos CLI)
+  [8] Salir
+```
+
+### Auto-Detección de Idioma y Anulación (`PUNCHI_LANG`)
+
+El asistente detecta automáticamente la configuración regional del sistema (`LC_ALL` / `LC_MESSAGES` / `LANG`). También puedes forzar un idioma específico usando `PUNCHI_LANG`:
+
+```bash
+PUNCHI_LANG=es ./scripts/setup.sh    # Forzar interfaz en Español
+PUNCHI_LANG=en ./scripts/setup.sh    # Forzar interfaz en Inglés
+```
+
+### Modo de Banderas CLI Directas
+
+Puedes enviar banderas directamente para automatización en terminal, scripts de desarrollo o CI:
+
+```bash
+# Compilar e instalar de inmediato para pruebas locales en tu escritorio
+scripts/setup.sh --local-test
+
+# Instalación limpia: elimina la instalación actual, borra la caché de compilación, recompila e instala
+scripts/setup.sh --clean-install
+
+# Verificar e instalar dependencias de compilación requeridas (DNF/APT) sin compilar
+scripts/setup.sh --dependencies-only
+
+# Desinstalar el plasmoide del entorno de escritorio Plasma local
+scripts/setup.sh --uninstall
+
+# Responder afirmativamente de forma automática a los gestores DNF/APT
+scripts/setup.sh --yes --local-test
+
+# Modo simulación: previsualizar comandos planificados sin modificar el sistema
+scripts/setup.sh --dry-run
+
+# Mostrar la ayuda completa y referencia de opciones del comando
+scripts/setup.sh --help
+
+# Instalar directamente un paquete .plasmoid ya construido sin volver a compilar
+scripts/setup.sh dist/punchi-dock-remastered-0.9.5-universal.plasmoid
+```
+
+---
+
+## Matriz de Distribución y Artefactos
+
+| Distribución Anfitriona | Perfil de Destino | Artefacto de Salida Generado |
+|---|---|---|
+| **Fedora 44+** (`x86_64`) | Fedora Nativo | `dist/punchi-dock-remastered-<version>-fedora44-x86_64.plasmoid` |
+| **Debian 13 (Trixie)** (`x86_64`) | KDE Store Universal | `dist/punchi-dock-remastered-<version>-universal.plasmoid` *(Con redirección dinámica `$ORIGIN/compat`)* |
+| **Prueba Local (Cualquier host)** | Test Local de Distro | `dist/punchi-dock-remastered-<version>-<distro>-x86_64-local-test.plasmoid` |
+
+---
+
+## Sistema de Registro Persistente de Log
+
+Todas las ejecuciones de `scripts/setup.sh` (interactivas o CLI) canalizan su salida mediante `scripts/lib/setup-logging.sh` (`punchi_run_setup_with_log`).
+
+Los archivos de log se guardan en:
+```text
+docs/logs/<distribución>/
+```
+
+- **Log con marca de tiempo**: `setup-<distro>-YYYYMMDD-HHMMSS.log`
+- **Última ejecución**: `setup-<distro>-latest.log`
+
+---
+
+## Diagnóstico del Entorno de Compilación
+
+Para diagnosticar las librerías del sistema, Qt 6, KDE Frameworks 6 y la línea base de `qmllint` sin modificar el sistema:
 
 ```bash
 scripts/check-build-environment.sh
 ```
 
-Este comando no instala ni reemplaza paquetes. Informa la distribución,
-arquitectura y versiones locales de Plasma, CMake y `qmllint`, y clasifica el
-perfil de lint encontrado:
+---
 
-| Versión de `qmllint` | Tratamiento |
-|---|---|
-| Qt 6.11 | Perfil principal de desarrollo y validación. |
-| Qt 6.8 | Perfil de compatibilidad con baseline separado; puede producir diagnósticos distintos. |
-| Otra versión Qt 6 | Perfil aún no calibrado; deben ejecutarse las pruebas y revisarse sus diagnósticos antes de crear un baseline propio. |
+## Herramientas Útiles de Desarrollo (`scripts/dev/`)
 
-El baseline de `qmllint` mide los diagnósticos de una combinación concreta de
-herramienta y plataforma. No define la versión mínima de ejecución del
-plasmoide. Los usuarios que instalan un `.plasmoid` precompilado para su sistema
-no necesitan `qmllint`.
+- `scripts/dev/instalar-plasmoide.sh`: Selector interactivo para instalar paquetes `.plasmoid` vigentes desde `dist/`.
+- `scripts/dev/validar-empaquetado-limpio.sh`: Realiza una compilación y validación temporal limpia sin instalar.
+- `scripts/dev/update-translations.sh`: Regenera plantillas POT y actualiza catálogos PO en `po/`.
+- `scripts/dev/watch-plasmoidviewer.sh`: Ayuda a previsualizar la UI en `plasmoidviewer`.
 
-Para compilar, deben usarse los paquetes Qt 6, KF6 y Plasma proporcionados por
-la misma distribución. No se debe reemplazar Qt del sistema por una instalación
-independiente de Qt 6.11 para silenciar el lint: el módulo QML nativo necesita
-una pila de bibliotecas coherente.
+---
 
-## Comandos recomendados
+## Organización Interna y Árbol de Scripts
 
-```bash
-scripts/setup-fedora.sh
-scripts/setup-debian13.sh
-scripts/setup-debian14-testing.sh
-scripts/setup-kubuntu.sh
-```
-
-Cada comando valida su distribución, detecta las dependencias instaladas y usa
-el ejecutable de `qmllint` y baseline correspondientes. Los motores comunes de
-compilación e instalación permanecen internos en `scripts/lib/`.
-
-Cada comando `setup-*.sh` también duplica toda su salida de terminal en una
-carpeta de la distribución dentro del proyecto compartido:
-
-```text
-docs/logs/<distribución>/
-```
-
-Las líneas finales indican la ruta exacta del log y el código de salida. Un
-archivo estable llamado `setup-<distribución>-latest.log` contiene siempre la
-ejecución más reciente, incluso en carpetas compartidas de VirtualBox que no
-exponen enlaces simbólicos. Se puede definir `PUNCHI_LOG_DIR` para usar otro
-directorio local. Todo `docs/` está excluido de Git y de los paquetes del
-plasmoide. Los logs pueden contener rutas del usuario e información del sistema;
-deben revisarse antes de compartirlos públicamente.
-
-Fedora y Debian conservan sus perfiles validados. Kubuntu dispone de un perfil
-de compilación local validado en Plasma 6.6.4: prepara una instalación limpia,
-compila el módulo contra las bibliotecas anfitrionas, instala el paquete y
-permite su prueba funcional. No es un binario universal ni reemplaza el objetivo
-principal de publicación Fedora.
-
-| Sistema detectado | Artefacto esperado |
-|---|---|
-| Fedora 44 `x86_64` | `dist/punchi-dock-remastered-<version>-fedora44-x86_64.plasmoid` |
-| Debian 13 `x86_64` | `dist/punchi-dock-remastered-<version>-debian13-x86_64.plasmoid` |
-| Kubuntu con Plasma 6 `x86_64` | `dist/punchi-dock-remastered-<version>-kubuntu<version>-plasma<version>-x86_64.plasmoid` |
-
-## Debian 13
-
-El perfil estable validado para Debian 13/trixie se ejecuta con:
-
-```bash
-scripts/setup-debian13.sh
-```
-
-Sin opciones genera el artefacto publicable `debian13`. Para instalarlo y
-reiniciar Plasma durante una prueba local:
-
-```bash
-scripts/setup-debian13.sh --local-test
-```
-
-El script rechaza Debian 14/testing y detecta mediante `dpkg-query` si las
-dependencias ya están instaladas. `--dependencies-only`, `--skip-apt` y
-`--dry-run` permiten limitar explícitamente el flujo.
-
-En Debian y Kubuntu, los objetos de compilación se guardan por defecto en
-`~/.cache/punchi-dock-remastered/`. Esto evita problemas de marcas de tiempo y
-rendimiento cuando el repositorio está montado mediante una carpeta compartida
-de VirtualBox. El `.plasmoid` final continúa apareciendo en `dist/`.
-
-Kubuntu mantiene en esa caché un baseline de `qmllint` propio y separado por
-versión del paquete. La primera prueba local de cada versión de Punchi Dock lo
-registra automáticamente para la combinación concreta de Kubuntu, Plasma y Qt;
-las siguientes ejecuciones de esa versión rechazan aumentos de advertencias.
-Ese baseline local sirve para diagnóstico; la validación de Kubuntu corresponde
-al flujo de compilación nativa, no a reutilizar paquetes de otras distribuciones.
-
-## Preparar Debian 14/testing experimental
-
-Para probar desde un Live CD o instalación limpia de Debian 14/testing `forky`,
-usar el wrapper dedicado:
-
-```bash
-scripts/setup-debian14-testing.sh --yes
-```
-
-El script detecta las dependencias ya instaladas mediante `dpkg-query` y usa APT
-únicamente para los paquetes faltantes. Sin opciones registra, si hace falta,
-un baseline local de `qmllint` separado por versión del paquete y crea el
-artefacto publicable `debian14testing` sin instalarlo. Una nueva versión de
-Punchi Dock no reutiliza así los conteos registrados para una versión anterior.
-Debe ejecutarse como usuario normal de Plasma; solo solicita `sudo` para APT. No
-añade repositorios externos ni reemplaza Qt/KDE del sistema.
-
-Opciones útiles:
-
-```bash
-scripts/setup-debian14-testing.sh --dry-run
-scripts/setup-debian14-testing.sh --skip-apt
-scripts/setup-debian14-testing.sh --yes --local-test
-scripts/setup-debian14-testing.sh --yes --local-test --skip-restart
-```
-
-## Prueba local Fedora
-
-```bash
-scripts/setup-fedora.sh --local-test
-```
-
-Genera un artefacto como
-`dist/punchi-dock-remastered-0.9.1-fedora44-x86_64-local-test.plasmoid`, verifica
-su instalación para el usuario actual y reinicia Plasma Shell. En sistemas que
-exponen `plasma-plasmashell.service` usa el servicio systemd de usuario; si el
-servicio conserva el proceso anterior, solicita primero el cierre mediante KDE
-y vuelve a iniciar el servicio. En los demás sistemas conserva el control
-mediante `kquitapp6` y `kstart`. El script muestra los PID anterior y posterior
-y solo declara éxito cuando confirma un proceso nuevo. El sufijo `local-test`
-distingue este paquete temporal de un artefacto publicable.
-
-En Kubuntu, `scripts/setup-kubuntu.sh --local-test` ejecuta el equivalente con
-la versión local de Plasma. No deben reutilizarse paquetes Debian o Fedora.
-
-## Preparar una instalación limpia de Kubuntu
-
-Desde la raíz del repositorio, ejecutar como el usuario normal de Plasma:
-
-```bash
-scripts/setup-kubuntu.sh
-```
-
-El script detecta qué dependencias oficiales faltan, actualiza APT solo cuando
-debe instalarlas y genera el artefacto Kubuntu sin instalarlo. Solicita `sudo`
-únicamente para APT; no debe ejecutarse anteponiendo `sudo` al script completo.
-
-Opciones principales:
-
-```bash
-# Instalar dependencias y empaquetar sin preguntas de APT
-scripts/setup-kubuntu.sh --yes
-
-# Preparar, empaquetar, instalar y reiniciar Plasma para probarlo
-scripts/setup-kubuntu.sh --yes --local-test
-
-# Instalar y comprobar dependencias sin compilar
-scripts/setup-kubuntu.sh --dependencies-only
-
-# Compilar usando dependencias que ya fueron instaladas
-scripts/setup-kubuntu.sh --skip-apt
-
-# Mostrar las operaciones sin modificar el sistema
-scripts/setup-kubuntu.sh --dry-run
-```
-
-Si un paquete no aparece en los repositorios configurados, el proceso se
-detiene y muestra la lista. No se añaden PPAs ni se mezclan versiones de Qt/KDE.
-
-## Validación limpia
-
-```bash
-scripts/validar-empaquetado-limpio.sh
-```
-
-Reconstruye desde una copia temporal limpia y verifica lint, CTest, contenido y
-ZIP. No instala el plasmoide.
-
-## Traducciones
-
-```bash
-scripts/update-translations.sh
-```
-
-Regenera la plantilla POT y fusiona los cambios en todos los catálogos PO. El
-código ejecutable conserva el inglés como único idioma fuente; las traducciones
-se mantienen exclusivamente en `po/`. El empaquetado rechaza catálogos
-incompletos o difusos, los compila y coloca únicamente los MO resultantes bajo
-`contents/locale/` dentro del `.plasmoid`, que es la ruta resuelta por el
-prefijo de contenidos de KPackage.
-
-## Regla de seguridad
-
-Instala únicamente el artefacto cuyo nombre coincide con el sistema donde fue
-compilado. El módulo QML nativo enlaza bibliotecas Qt y KDE del host y no es un
-binario universal.
-
-Ningún script vigente genera `dist/punchi-dock-remastered.plasmoid` sin una
-etiqueta de plataforma.
-
-## Organización interna
-
-La raíz de `scripts/` conserva wrappers cortos para comandos habituales y
-compatibilidad con documentación anterior. Las implementaciones viven en:
-
-- `scripts/distro/`: flujos específicos por distribución.
-- `scripts/dev/`: herramientas de desarrollo, diagnóstico y validación.
-- `scripts/lib/`: motores y helpers compartidos; no son comandos principales.
-
-No ejecutar archivos generados como `__pycache__`; no forman parte del proyecto.
+- `scripts/setup.sh`: Script maestro interactivo y CLI con i18n (Inglés/Español).
+- `scripts/setup-universal.sh`: Instalador de paquetes `.plasmoid` precompilados.
+- `scripts/distro/`: Perfiles por distribución (`fedora-setup.sh`, `debian13-setup.sh`, etc.).
+- `scripts/lib/`: Motores de compilación e instalación compartidos (`package-plasmoid.sh`, `install-local-test.sh`, `local-package-install.sh`, `setup-logging.sh`).
+- `scripts/dev/`: Herramientas auxiliares de desarrollo y diagnóstico.

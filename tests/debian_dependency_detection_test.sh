@@ -4,8 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# shellcheck source=../scripts/distro/debian14-testing-setup.sh
-source "$PROJECT_ROOT/scripts/distro/debian14-testing-setup.sh"
+# shellcheck source=../scripts/distro/debian13-setup.sh
+source "$PROJECT_ROOT/scripts/distro/debian13-setup.sh"
 
 fail() {
     printf 'FAIL: %s\n' "$*" >&2

@@ -23,6 +23,8 @@ Item {
     property bool trashHasItems: false
     readonly property bool itemTransitionActive: itemTransitionTimer.running
 
+    signal configurationChanged()
+
     Timer {
         id: itemTransitionTimer
         interval: 500
@@ -45,6 +47,7 @@ Item {
             if (root.trashIntegration) {
                 root.trashIntegration.refresh()
             }
+            root.configurationChanged()
         }
     }
 

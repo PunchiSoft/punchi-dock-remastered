@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.0\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-01 23:09-0400\n"
+"POT-Creation-Date: 2026-08-02 19:03-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,7 +47,7 @@ msgstr ""
 msgid "%1 items loaded."
 msgstr ""
 
-#: contents/ui/main.qml:1388
+#: contents/ui/main.qml:1396
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] ""
@@ -117,8 +117,8 @@ msgstr ""
 #: contents/ui/config/components/PopupAnimationSettings.qml:90
 #: contents/ui/config/components/PopupAnimationSettings.qml:119
 #: contents/ui/config/components/PunchiMenuDialog.qml:151
-#: contents/ui/config/components/PunchiMenuDialog.qml:198
-#: contents/ui/config/components/PunchiMenuDialog.qml:237
+#: contents/ui/config/components/PunchiMenuDialog.qml:208
+#: contents/ui/config/components/PunchiMenuDialog.qml:257
 #: contents/ui/config/ConfigFolderPopups.qml:198
 #: contents/ui/config/ConfigMenus.qml:282
 #: contents/ui/config/ConfigMouse.qml:114
@@ -184,7 +184,7 @@ msgstr ""
 msgid "8 bars"
 msgstr ""
 
-#: contents/ui/main.qml:548
+#: contents/ui/main.qml:556
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr ""
@@ -359,7 +359,7 @@ msgid "Appearance sections"
 msgstr ""
 
 #: contents/ui/components/AppActionsPopup.qml:55
-#: contents/ui/components/DockItemsController.qml:213
+#: contents/ui/components/DockItemsController.qml:216
 #: contents/ui/components/FolderPopup.qml:250
 msgid "Application"
 msgstr ""
@@ -368,7 +368,7 @@ msgstr ""
 msgid "Application category"
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1067
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1107
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:829
 msgctxt "@info:status"
 msgid "Application could not be opened: %1"
@@ -616,7 +616,7 @@ msgstr ""
 msgid "Choose Indicator Color"
 msgstr ""
 
-#: contents/ui/config/components/PunchiMenuDialog.qml:279
+#: contents/ui/config/components/PunchiMenuDialog.qml:299
 msgctxt "@action:button"
 msgid "Choose PunchiMenu icon"
 msgstr ""
@@ -776,7 +776,7 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:604
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:632
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:364
 msgctxt "@action:button"
 msgid "Close"
@@ -971,7 +971,7 @@ msgid ""
 "Dock remains compact."
 msgstr ""
 
-#: contents/ui/config/components/PunchiMenuDialog.qml:280
+#: contents/ui/config/components/PunchiMenuDialog.qml:300
 msgctxt "@info:accessibility"
 msgid "Current icon: %1"
 msgstr ""
@@ -1286,7 +1286,7 @@ msgstr ""
 msgid "Failed to read file."
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1099
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1139
 msgctxt "@title:section"
 msgid "Favorites"
 msgstr ""
@@ -1582,7 +1582,7 @@ msgstr ""
 msgid "Icon spacing:"
 msgstr ""
 
-#: contents/ui/config/components/PunchiMenuDialog.qml:260
+#: contents/ui/config/components/PunchiMenuDialog.qml:280
 #: contents/ui/config/ConfigItems.qml:638
 msgid "Icon:"
 msgstr ""
@@ -1751,7 +1751,7 @@ msgctxt "@info:accessible"
 msgid "Keep holding to bring %1 to the front"
 msgstr ""
 
-#: contents/ui/config/components/PunchiMenuDialog.qml:266
+#: contents/ui/config/components/PunchiMenuDialog.qml:286
 msgid "Keyboard shortcut:"
 msgstr ""
 
@@ -1844,13 +1844,13 @@ msgstr ""
 msgid "Loaded file, but JSON is invalid: %1"
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1050
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1090
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:814
 msgctxt "@info:status"
 msgid "Loading applications…"
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:568
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:570
 msgctxt "@action:button"
 msgid "Log Out"
 msgstr ""
@@ -2079,12 +2079,12 @@ msgctxt "@info:accessible"
 msgid "No MPRIS player is active"
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1052
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1092
 msgctxt "@info:status"
 msgid "No applications match your search."
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1053
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1093
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:815
 msgctxt "@info:status"
 msgid "No applications were found in this category."
@@ -2100,7 +2100,7 @@ msgid ""
 "available."
 msgstr ""
 
-#: contents/ui/main.qml:534
+#: contents/ui/main.qml:542
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr ""
@@ -2139,11 +2139,11 @@ msgctxt "@option:media-display-mode"
 msgid "Normal (recommended)"
 msgstr ""
 
-#: contents/ui/config/components/PunchiMenuDialog.qml:225
+#: contents/ui/config/components/PunchiMenuDialog.qml:235
 msgid "Normal menu height"
 msgstr ""
 
-#: contents/ui/config/components/PunchiMenuDialog.qml:206
+#: contents/ui/config/components/PunchiMenuDialog.qml:216
 msgid "Normal menu height:"
 msgstr ""
 
@@ -2188,7 +2188,7 @@ msgstr ""
 msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 
-#: contents/ui/main.qml:545
+#: contents/ui/main.qml:553
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr ""
@@ -2475,12 +2475,12 @@ msgstr ""
 msgid "PunchiMenu display mode"
 msgstr ""
 
-#: contents/ui/config/components/PunchiMenuDialog.qml:301
+#: contents/ui/config/components/PunchiMenuDialog.qml:321
 msgid "PunchiMenu keyboard shortcut"
 msgstr ""
 
 #: contents/ui/components/DockItem.qml:35
-#: contents/ui/components/DockItemsController.qml:274
+#: contents/ui/components/DockItemsController.qml:277
 msgctxt "@title"
 msgid "Quick Note"
 msgstr ""
@@ -2531,7 +2531,7 @@ msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with media card"
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:580
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:590
 msgctxt "@action:button"
 msgid "Restart"
 msgstr ""
@@ -2606,22 +2606,22 @@ msgstr ""
 msgid "Scope:"
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:629
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:664
 msgctxt "@action:button"
 msgid "Scroll categories left"
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:799
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:837
 msgctxt "@action:button"
 msgid "Scroll categories right"
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1125
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1165
 msgctxt "@action:button"
 msgid "Scroll favorites left"
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1354
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1394
 msgctxt "@action:button"
 msgid "Scroll favorites right"
 msgstr ""
@@ -2779,7 +2779,7 @@ msgctxt "@action:button"
 msgid "Shuffle"
 msgstr ""
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:592
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:611
 msgctxt "@action:button"
 msgid "Shut Down"
 msgstr ""
@@ -2935,17 +2935,17 @@ msgid ""
 "The dock configuration is too large. The maximum supported size is 1 MiB."
 msgstr ""
 
-#: contents/ui/main.qml:542
+#: contents/ui/main.qml:550
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr ""
 
-#: contents/ui/main.qml:551
+#: contents/ui/main.qml:559
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
 
-#: contents/ui/main.qml:556
+#: contents/ui/main.qml:564
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr ""
@@ -2958,9 +2958,10 @@ msgstr ""
 msgid "The folder location is invalid."
 msgstr ""
 
-#: contents/ui/config/components/PunchiMenuDialog.qml:245
+#: contents/ui/config/components/PunchiMenuDialog.qml:265
 msgid ""
-"The percentages are limited to keep the menu usable on the current screen."
+"The percentages adjust the menu size relative to your screen width and "
+"height (from 30% to 90%)."
 msgstr ""
 
 #: contents/ui/config/ConfigGeneral.qml:248
@@ -3049,7 +3050,7 @@ msgstr ""
 msgid "This action cannot be undone."
 msgstr ""
 
-#: contents/ui/main.qml:554
+#: contents/ui/main.qml:562
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -3081,7 +3082,7 @@ msgstr ""
 msgid "This setting applies only to this media item."
 msgstr ""
 
-#: contents/ui/config/components/PunchiMenuDialog.qml:316
+#: contents/ui/config/components/PunchiMenuDialog.qml:336
 msgid ""
 "This shortcut controls PunchiMenu independently from the widget activation "
 "shortcut."
@@ -3338,7 +3339,7 @@ msgstr ""
 msgid "Write a quick note"
 msgstr ""
 
-#: contents/ui/main.qml:538
+#: contents/ui/main.qml:546
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr ""

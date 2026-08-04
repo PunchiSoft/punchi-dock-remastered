@@ -235,17 +235,19 @@ build_plasmoid() {
     package_version="$(awk -F '"' '/"Version"[[:space:]]*:/ { print $4; exit }' "$PROJECT_ROOT/metadata.json")"
     [[ -n "$package_version" ]] || die "the package version could not be read from metadata.json"
 
-    platform_label="debian13-$(uname -m)"
+    platform_label="universal"
     if (( LOCAL_TEST == 1 )); then
+        platform_label="debian13-$(uname -m)"
         artifact_suffix="-local-test"
         build_command="$SCRIPTS_DIR/lib/install-local-test.sh"
     fi
     artifact_file="$PROJECT_ROOT/dist/punchi-dock-remastered-${package_version}-${platform_label}${artifact_suffix}.plasmoid"
 
+    export PLATFORM_LABEL="$platform_label"
     run_command "$build_command"
     (( DRY_RUN == 1 )) || [[ -f "$artifact_file" ]] \
         || die "the build finished without creating the expected artifact: $artifact_file"
-    log "Debian 13 artifact ready: $artifact_file"
+    log "Universal artifact ready: $artifact_file"
 }
 
 main() {
@@ -264,4 +266,6 @@ main() {
     log "Debian 13 setup completed"
 }
 
-main "$@"
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi

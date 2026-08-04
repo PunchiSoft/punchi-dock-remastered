@@ -9,12 +9,9 @@ if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     cat <<'EOF'
 Usage: scripts/lib/package-plasmoid.sh
 
-Internal packaging engine. It detects Fedora, Debian, or Kubuntu and creates a
-versioned package for the current system. Prefer a distribution setup command:
-  scripts/setup-fedora.sh
-  scripts/setup-debian13.sh
-  scripts/setup-debian14-testing.sh
-  scripts/setup-kubuntu.sh
+Internal packaging engine. It detects Fedora or Debian 13 and creates a
+versioned package for the current system. Prefer the master setup command:
+  scripts/setup.sh
 
 EOF
     exit 0
@@ -285,6 +282,54 @@ for required_file in \
     fi
 done
 
+COMPAT_DIR="$PACKAGE_ROOT/contents/ui/org/punchi/dock/compat"
+cmake -E make_directory "$COMPAT_DIR"
+
+(
+    cd "$COMPAT_DIR"
+
+    # Create C constructor source for binary compat proxy shared libraries
+    cat << 'EOF' > compat_proxy.c
+#include <dlfcn.h>
+#include <stddef.h>
+
+__attribute__((constructor)) static void init(void) {
+    void *hp = NULL;
+    if (!hp) hp = dlopen("libPlasma.so.7", RTLD_GLOBAL | RTLD_NOW);
+    if (!hp) hp = dlopen("libPlasma.so.6", RTLD_GLOBAL | RTLD_NOW);
+    if (!hp) hp = dlopen("libPlasma.so", RTLD_GLOBAL | RTLD_NOW);
+    if (!hp) hp = dlopen("libKF6Plasma.so.6", RTLD_GLOBAL | RTLD_NOW);
+    if (!hp) hp = dlopen("libKF6Plasma.so", RTLD_GLOBAL | RTLD_NOW);
+
+    void *hq = NULL;
+    if (!hq) hq = dlopen("libPlasmaQuick.so.7", RTLD_GLOBAL | RTLD_NOW);
+    if (!hq) hq = dlopen("libPlasmaQuick.so.6", RTLD_GLOBAL | RTLD_NOW);
+    if (!hq) hq = dlopen("libPlasmaQuick.so", RTLD_GLOBAL | RTLD_NOW);
+    if (!hq) hq = dlopen("libKF6PlasmaQuick.so.6", RTLD_GLOBAL | RTLD_NOW);
+    if (!hq) hq = dlopen("libKF6PlasmaQuick.so", RTLD_GLOBAL | RTLD_NOW);
+
+    void *ha = NULL;
+    if (!ha) ha = dlopen("libPlasmaActivities.so.7", RTLD_GLOBAL | RTLD_NOW);
+    if (!ha) ha = dlopen("libPlasmaActivities.so.6", RTLD_GLOBAL | RTLD_NOW);
+    if (!ha) ha = dlopen("libPlasmaActivities.so", RTLD_GLOBAL | RTLD_NOW);
+    if (!ha) ha = dlopen("libKF6PlasmaActivities.so.6", RTLD_GLOBAL | RTLD_NOW);
+    if (!ha) ha = dlopen("libKF6PlasmaActivities.so", RTLD_GLOBAL | RTLD_NOW);
+}
+EOF
+
+    CC_BIN="${CC:-gcc}"
+    if ! command -v "$CC_BIN" >/dev/null 2>&1; then
+        CC_BIN="cc"
+    fi
+
+    if command -v "$CC_BIN" >/dev/null 2>&1; then
+        "$CC_BIN" -shared -fPIC -O2 -Wl,-soname,libPlasma.so.6 compat_proxy.c -o libPlasma.so.6 -ldl 2>/dev/null || true
+        "$CC_BIN" -shared -fPIC -O2 -Wl,-soname,libPlasmaQuick.so.6 compat_proxy.c -o libPlasmaQuick.so.6 -ldl 2>/dev/null || true
+        "$CC_BIN" -shared -fPIC -O2 -Wl,-soname,libPlasmaActivities.so.6 compat_proxy.c -o libPlasmaActivities.so.6 -ldl 2>/dev/null || true
+    fi
+    rm -f compat_proxy.c
+)
+
 native_libraries=(
     "$PACKAGE_ROOT/contents/ui/org/punchi/dock/libpunchidockintegration.so"
     "$PACKAGE_ROOT/contents/ui/org/punchi/dock/libpunchidockintegrationplugin.so"
@@ -305,7 +350,7 @@ mkdir -p "$DIST_DIR"
 rm -f "$ZIP_FILE"
 (
     cd "$PACKAGE_ROOT"
-    zip -rq "$ZIP_FILE" metadata.json LICENSE contents
+    zip -ryq "$ZIP_FILE" metadata.json LICENSE contents
 )
 unzip -tq "$ZIP_FILE" >/dev/null
 

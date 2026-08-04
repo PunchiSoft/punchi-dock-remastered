@@ -108,7 +108,7 @@ PlasmoidItem {
         return safePercent / 100
     }
     readonly property string configuredPunchiMenuMode: configuredPunchiMenuItem
-        && String(configuredPunchiMenuItem.menuMode || "fullScreen") === "normal"
+        && String(configuredPunchiMenuItem.menuMode || "normal") === "normal"
         ? "normal"
         : "fullScreen"
     readonly property int configuredPunchiMenuNormalWidthPercent: {
@@ -116,7 +116,7 @@ PlasmoidItem {
             ? configuredPunchiMenuItem.normalWidthPercent
             : 55)
         return Number.isFinite(requestedPercent)
-            ? Math.max(40, Math.min(80, Math.round(requestedPercent / 5) * 5))
+            ? Math.max(30, Math.min(90, Math.round(requestedPercent / 5) * 5))
             : 55
     }
     readonly property int configuredPunchiMenuNormalHeightPercent: {
@@ -124,7 +124,7 @@ PlasmoidItem {
             ? configuredPunchiMenuItem.normalHeightPercent
             : 65)
         return Number.isFinite(requestedPercent)
-            ? Math.max(45, Math.min(85, Math.round(requestedPercent / 5) * 5))
+            ? Math.max(30, Math.min(90, Math.round(requestedPercent / 5) * 5))
             : 65
     }
     signal taskStructureChanged()
@@ -353,11 +353,11 @@ PlasmoidItem {
             flags: Qt.Dialog | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
             backgroundHints: PlasmaCore.Dialog.NoBackground
             width: Math.min(usableScreenWidth,
-                Math.max(Kirigami.Units.gridUnit * 36,
+                Math.max(Kirigami.Units.gridUnit * 22,
                     Math.round(safeScreenWidth
                         * root.configuredPunchiMenuNormalWidthPercent / 100)))
             height: Math.min(usableScreenHeight,
-                Math.max(Kirigami.Units.gridUnit * 28,
+                Math.max(Kirigami.Units.gridUnit * 16,
                     Math.round(safeScreenHeight
                         * root.configuredPunchiMenuNormalHeightPercent / 100)))
             hideOnWindowDeactivate: true
@@ -479,6 +479,13 @@ PlasmoidItem {
         systemDiscovery: systemDiscovery
         onStructureChanged: root.taskStructureChanged()
     }
+    function invalidatePunchiMenuInstance() {
+        if (punchiMenuDialogInstance && !punchiMenuDialogInstance.visible) {
+            punchiMenuDialogInstance.destroy()
+            punchiMenuDialogInstance = null
+        }
+    }
+
     DockItemsController {
         id: dockItemsController
         runtimeService: runtimeService
@@ -486,6 +493,7 @@ PlasmoidItem {
         taskController: taskController
         trashIntegration: trashIntegration
         minimizeEffect: dockConfig.dockWindowMinimizeEffect
+        onConfigurationChanged: root.invalidatePunchiMenuInstance()
     }
     PunchiMenuFavoritesController {
         id: punchiMenuFavoritesController

@@ -33,10 +33,10 @@ fi
 
 platform_version="${VERSION_ID:-unknown}"
 package_arch="${PACKAGE_ARCH:-$(uname -m)}"
-platform_label="debian${platform_version}-${package_arch}"
+platform_label="universal"
 default_build_root="${XDG_CACHE_HOME:-$HOME/.cache}/punchi-dock-remastered"
 
-export BUILD_DIR="${BUILD_DIR:-$default_build_root/$platform_label}"
+export BUILD_DIR="${BUILD_DIR:-$default_build_root/debian${platform_version}-${package_arch}}"
 export PACKAGE_OUTPUT_FILE="${PACKAGE_OUTPUT_FILE:-$PROJECT_ROOT/dist/punchi-dock-remastered-${package_version}-${platform_label}.plasmoid}"
 export QMLLINT_BASELINE_FILE="${QMLLINT_BASELINE_FILE:-$SCRIPTS_DIR/qmllint-baseline-debian.env}"
 export QMLLINT_BIN="${QMLLINT_BIN:-/usr/lib/qt6/bin/qmllint}"

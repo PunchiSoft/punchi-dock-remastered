@@ -85,6 +85,7 @@ Aplicar estas reglas cuando las capas correspondientes existan:
 6. Los proxies adaptan modelos nativos sin duplicar estructuras que ya expone `QAbstractItemModel`.
 7. Ningún módulo lógico o de datos puede depender de componentes visuales.
 8. Evitar dependencias circulares entre capas.
+9. **Sincronización Reactiva de Configuración (Hot Refresh Obligatorio):** Toda nueva opción, control o ventana emergente de configuración debe reaccionar de forma reactiva y desacoplada a los cambios de configuración (evento "Aplicar" / `onConfigChanged`), invalidando o actualizando las instancias en memoria al instante sin requerir reiniciar `plasmashell`.
 
 La estructura real del repositorio puede evolucionar. No crear carpetas o abstracciones vacías solo para imitar el diagrama; introducir una capa cuando tenga una responsabilidad concreta.
 
@@ -231,6 +232,9 @@ Toda modificación debe verificarse en proporción a su riesgo.
 - Documentación: revisar enlaces, rutas, consistencia y afirmaciones verificables.
 - QML/JavaScript: ejecutar validación sintáctica o lint cuando exista la herramienta adecuada.
 - Empaquetado: comprobar estructura, metadata y exclusiones.
+- Empaquetado Universal (`.plasmoid` para publicación):
+  1. Compilar obligatoriamente sobre **Debian 13 (Trixie)** (Qt 6.7) para garantizar la compatibilidad binaria hacia adelante en distros con versiones superiores de Qt (Debian 14, Fedora, Arch, Ubuntu).
+  2. Usar módulos proxy binarios C reales (`.so`) en `contents/ui/org/punchi/dock/compat/` compilados con `-Wl,-soname,<librería.so.6>` y constructor `dlopen()`. NUNCA incluir symlinks en `compat/` dentro del archivo `.plasmoid`, ya que el descompresor gráfico de KDE Plasma (`KZip`) los elimina por seguridad dejando la carpeta vacía.
 - Integración visual: complementar la inspección estática con una prueba en Plasma cuando sea posible.
 - Cambios de comportamiento: probar el flujo normal, errores previsibles y estados vacíos.
 
@@ -259,5 +263,6 @@ Antes de finalizar una modificación, comprobar lo que aplique:
 - [ ] No se introdujeron colores, dimensiones o textos visibles inadecuadamente fijos.
 - [ ] Entradas, procesos y errores se manejan de forma segura.
 - [ ] Las exclusiones de paquete siguen cubriendo artefactos de desarrollo.
+- [ ] Toda opción o control de configuración reacciona de forma reactiva en caliente ("Aplicar") sin requerir reiniciar plasmashell.
 - [ ] Se ejecutaron validaciones proporcionales y se comunicaron sus límites.
 - [ ] La bitácora se actualizó si el cambio lo amerita.

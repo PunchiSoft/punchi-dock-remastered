@@ -546,7 +546,7 @@ function normalizedPunchiMenuNormalWidthPercent(value) {
     if (!Number.isFinite(requestedValue)) {
         return 55
     }
-    return Math.max(40, Math.min(80, Math.round(requestedValue / 5) * 5))
+    return Math.max(30, Math.min(90, Math.round(requestedValue / 5) * 5))
 }
 
 function normalizedPunchiMenuNormalHeightPercent(value) {
@@ -554,7 +554,7 @@ function normalizedPunchiMenuNormalHeightPercent(value) {
     if (!Number.isFinite(requestedValue)) {
         return 65
     }
-    return Math.max(45, Math.min(85, Math.round(requestedValue / 5) * 5))
+    return Math.max(30, Math.min(90, Math.round(requestedValue / 5) * 5))
 }
 
 function normalizedPunchiMenuMode(value) {
@@ -684,7 +684,7 @@ function newItem(type, defaultTrashEmptySound) {
             "type": "punchimenu",
             "name": "PunchiMenu",
             "icon": "start-here-kde",
-            "menuMode": "fullScreen",
+            "menuMode": "normal",
             "gridIconScalePercent": 100,
             "normalWidthPercent": 55,
             "normalHeightPercent": 65

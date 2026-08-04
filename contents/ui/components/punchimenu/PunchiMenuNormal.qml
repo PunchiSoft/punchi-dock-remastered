@@ -549,6 +549,7 @@ FocusScope {
                     Layout.fillWidth: true
                     placeholderText: i18nc("@placeholder", "Search applications…")
                     Accessible.name: i18nc("@label", "Search applications")
+                    KeyNavigation.tab: btnLogOut.enabled ? btnLogOut : (btnReboot.enabled ? btnReboot : (btnShutdown.enabled ? btnShutdown : btnClose))
                     onTextChanged: {
                         if (!root.suppressSearchChange) {
                             root.filterAllApplications()
@@ -563,11 +564,19 @@ FocusScope {
                 }
 
                 PlasmaComponents.ToolButton {
+                    id: btnLogOut
                     icon.name: "system-log-out"
                     display: PlasmaComponents.AbstractButton.IconOnly
                     text: i18nc("@action:button", "Log Out")
                     Accessible.name: text
+                    Controls.ToolTip.visible: hovered || activeFocus
+                    Controls.ToolTip.text: text
+                    Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
                     enabled: sessionActions.canLogout
+                    KeyNavigation.backtab: searchField
+                    KeyNavigation.tab: categoriesView
+                    KeyNavigation.right: btnReboot.enabled ? btnReboot : (btnShutdown.enabled ? btnShutdown : btnClose)
+                    KeyNavigation.down: categoriesView
                     onClicked: {
                         root.forceClose()
                         sessionActions.requestLogout()
@@ -575,11 +584,20 @@ FocusScope {
                 }
 
                 PlasmaComponents.ToolButton {
+                    id: btnReboot
                     icon.name: "system-reboot"
                     display: PlasmaComponents.AbstractButton.IconOnly
                     text: i18nc("@action:button", "Restart")
                     Accessible.name: text
+                    Controls.ToolTip.visible: hovered || activeFocus
+                    Controls.ToolTip.text: text
+                    Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
                     enabled: sessionActions.canReboot
+                    KeyNavigation.backtab: searchField
+                    KeyNavigation.tab: categoriesView
+                    KeyNavigation.left: btnLogOut.enabled ? btnLogOut : null
+                    KeyNavigation.right: btnShutdown.enabled ? btnShutdown : btnClose
+                    KeyNavigation.down: categoriesView
                     onClicked: {
                         root.forceClose()
                         sessionActions.requestReboot()
@@ -587,11 +605,20 @@ FocusScope {
                 }
 
                 PlasmaComponents.ToolButton {
+                    id: btnShutdown
                     icon.name: "system-shutdown"
                     display: PlasmaComponents.AbstractButton.IconOnly
                     text: i18nc("@action:button", "Shut Down")
                     Accessible.name: text
+                    Controls.ToolTip.visible: hovered || activeFocus
+                    Controls.ToolTip.text: text
+                    Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
                     enabled: sessionActions.canShutdown
+                    KeyNavigation.backtab: searchField
+                    KeyNavigation.tab: categoriesView
+                    KeyNavigation.left: btnReboot.enabled ? btnReboot : (btnLogOut.enabled ? btnLogOut : null)
+                    KeyNavigation.right: btnClose
+                    KeyNavigation.down: categoriesView
                     onClicked: {
                         root.forceClose()
                         sessionActions.requestShutdown()
@@ -599,10 +626,18 @@ FocusScope {
                 }
 
                 PlasmaComponents.ToolButton {
+                    id: btnClose
                     icon.name: "window-close-symbolic"
                     display: PlasmaComponents.AbstractButton.IconOnly
                     text: i18nc("@action:button", "Close")
                     Accessible.name: text
+                    Controls.ToolTip.visible: hovered || activeFocus
+                    Controls.ToolTip.text: text
+                    Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
+                    KeyNavigation.backtab: searchField
+                    KeyNavigation.tab: categoriesView
+                    KeyNavigation.left: btnShutdown.enabled ? btnShutdown : (btnReboot.enabled ? btnReboot : (btnLogOut.enabled ? btnLogOut : null))
+                    KeyNavigation.down: categoriesView
                     onClicked: root.forceClose()
                 }
             }
@@ -628,6 +663,7 @@ FocusScope {
                         display: PlasmaComponents.AbstractButton.IconOnly
                         text: i18nc("@action:button", "Scroll categories left")
                         Accessible.name: text
+                        activeFocusOnTab: false
                         enabled: canScroll
                         opacity: canScroll ? (hovered ? 0.90 : 0.55) : 0.0
                         onHoveredChanged: {
@@ -658,6 +694,8 @@ FocusScope {
                         boundsBehavior: Flickable.StopAtBounds
                         keyNavigationWraps: false
                         activeFocusOnTab: true
+                        KeyNavigation.tab: applicationsGrid
+                        KeyNavigation.backtab: btnClose
 
                         onDraggingChanged: {
                             if (dragging) {
@@ -798,6 +836,7 @@ FocusScope {
                         display: PlasmaComponents.AbstractButton.IconOnly
                         text: i18nc("@action:button", "Scroll categories right")
                         Accessible.name: text
+                        activeFocusOnTab: false
                         enabled: canScroll
                         opacity: canScroll ? (hovered ? 0.90 : 0.55) : 0.0
                         onHoveredChanged: {
@@ -847,6 +886,7 @@ FocusScope {
                     activeFocusOnTab: true
                     enabled: !root.applicationLaunchPending
                     keyNavigationWraps: false
+                    KeyNavigation.backtab: categoriesView
 
                     onActiveFocusChanged: {
                         if (activeFocus && visibleApplicationsModel.count > 0) {

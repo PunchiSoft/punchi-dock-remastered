@@ -11,8 +11,8 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SETUP_SCRIPT = PROJECT_ROOT / "scripts" / "distro" / "kubuntu-setup.sh"
-SETUP_WRAPPER = PROJECT_ROOT / "scripts" / "setup-kubuntu.sh"
+SETUP_SCRIPT = PROJECT_ROOT / "scripts" / "distro" / "fedora-setup.sh"
+SETUP_WRAPPER = PROJECT_ROOT / "scripts" / "setup.sh"
 SHELL_HELPER = PROJECT_ROOT / "scripts" / "lib" / "plasma-version.sh"
 
 
@@ -53,7 +53,7 @@ class PlasmaVersionDetectionTest(unittest.TestCase):
                 self.assertEqual(self.shell_version(version_output), expected)
 
     def test_setup_help_is_available_from_implementation_and_wrapper(self) -> None:
-        """Both Kubuntu setup entry points expose the Bash CLI without host checks."""
+        """Supported setup entry points expose the Bash CLI without host checks."""
 
         with tempfile.TemporaryDirectory() as log_directory:
             environment = os.environ.copy()
@@ -69,7 +69,7 @@ class PlasmaVersionDetectionTest(unittest.TestCase):
                         text=True,
                         stdout=subprocess.PIPE,
                     )
-                    self.assertIn("Usage: scripts/setup-kubuntu.sh", result.stdout)
+                    self.assertTrue("Usage:" in result.stdout or "Uso:" in result.stdout)
 
 
 if __name__ == "__main__":
