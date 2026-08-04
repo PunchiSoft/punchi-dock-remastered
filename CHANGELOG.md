@@ -1,6 +1,18 @@
-# Changelog
+## [0.9.5] - 2026-08-03
 
-Todos los cambios notables de este proyecto serán documentados en este archivo.
+### Agregado
+
+- Paquete universal `.plasmoid` con soporte transparente para múltiples distribuciones Linux (Fedora 44, Arch Linux, Debian 13/14, Kubuntu 26.04+).
+- Arquitectura de compatibilidad dinámica basada en módulos binarios compartidos C proxy (`libPlasma.so.6`, `libPlasmaQuick.so.6`, `libPlasmaActivities.so.6`) en `$ORIGIN/compat` compilados con constructores `dlopen()` y banderas `-Wl,-soname`, evitando la pérdida de symlinks provocada por la extracción con `KZip` en la interfaz gráfica de Plasma.
+- Script maestro unificado `scripts/setup.sh` con menú interactivo CLI de 8 opciones, auto-detección de SO e internacionalización.
+- Script de instalación universal para usuarios finales `scripts/setup-universal.sh`.
+- Etiquetas emergentes (ToolTips) accesibles en los botones de acción de PunchiMenu visible tanto al pasar el ratón (`hover`) como al navegar por teclado (`foco`).
+
+### Cambiado
+
+- Las dimensiones de PunchiMenu (ancho y alto entre 30% y 90%) reaccionan en caliente al presionar "Aplicar" de forma reactiva sin requerir el reinicio de `plasmashell`.
+- Modo Normal fijado como la opción predeterminada al añadir PunchiMenu.
+- Catálogos de traducción al 100% actualizados para alemán (`de.po`), español (`es.po`) y portugués de Brasil (`pt_BR.po`).
 
 ## [0.9.4] - 2026-08-01
 

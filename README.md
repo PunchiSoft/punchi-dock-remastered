@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.4">
-    <img src="https://img.shields.io/badge/release-v0.9.4-4caf50" alt="Release v0.9.4">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.5">
+    <img src="https://img.shields.io/badge/release-v0.9.5-4caf50" alt="Release v0.9.5">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -22,26 +22,18 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
-The current release is [v0.9.4](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.4).
+The current release is [v0.9.5](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.5).
 
-## What's New in 0.9.4
+## What's New in 0.9.5
 
-- PunchiMenu arrives as a preview dock item with two presentations. **Normal**
-  is the most polished mode in this release, with search, categories, a fixed
-  application grid, persistent favorites, keyboard navigation, and native
-  session actions. **Full Screen** remains an early preview; Compact mode is
-  reserved for a future release.
-- PunchiMenu can use its own icon and global shortcut. Normal mode also exposes
-  safe width, height, and application-icon scaling controls.
-- Native blur falls back to a lightweight transparent surface when unavailable,
-  while panel and multi-instance geometry avoid duplicate expansion and task
-  ownership.
-- Axis Zoom becomes the lightweight default hover animation, with configurable
-  motion speed and smoother bounded horizontal navigation.
-- Translation catalogs now include semantic contamination checks in addition
-  to the existing completeness and format validation.
+- **Enhanced Universal Plasmoid Package**: Single `.plasmoid` package runs transparently across Fedora 44, Arch Linux, Debian 13/14, and Kubuntu 26.04+ using compiled C binary proxy shared libraries (`$ORIGIN/compat`) with `dlopen()` constructors.
+- **Master Setup Assistant**: Unified `scripts/setup.sh` script featuring an 8-option interactive CLI menu, OS auto-detection, persistent logging, and full i18n support.
+- **Reactive Hot Refresh**: Configuration edits (such as PunchiMenu dimensions) take effect immediately upon clicking "Apply" without restarting `plasmashell`.
+- **Expanded PunchiMenu Size Range**: Width and height sliders range from 30% to 90% in 5% increments.
+- **Accessible Action Tooltips**: Tooltips for top buttons (Log Out, Restart, Shut Down, Close) visible on mouse `hover` and keyboard `focus`.
+- **100% Localization**: Refreshed translation catalogs for German (`de.po`), Spanish (`es.po`), and Brazilian Portuguese (`pt_BR.po`).
 
-See the [0.9.4 changelog](CHANGELOG.md#094---2026-08-01) for detailed release
+See the [0.9.5 changelog](CHANGELOG.md#095---2026-08-03) for detailed release
 notes and the validation performed for this version.
 
 ## Screenshots
@@ -134,13 +126,13 @@ On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.4-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.5-universal.plasmoid
 ```
 
 To update an existing installation:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.4-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.5-universal.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
@@ -176,26 +168,24 @@ Plasma, PipeWire, ECM, CMake, gettext, and ZIP development packages. The Debian
 wrapper was validated on Debian 13 with Qt 6.8.2; the Kubuntu source-build,
 installation, startup, and functional flow was validated on Plasma 6.6.4.
 
-Build the native module and create the Fedora artifact:
+Build the native module and create the artifact using the master setup script:
 
 ```bash
-scripts/setup-fedora.sh
+scripts/setup.sh
 ```
 
-Use `scripts/setup-debian13.sh` on Debian 13,
-`scripts/setup-debian14-testing.sh` on Debian 14/testing, and
-`scripts/setup-kubuntu.sh` on Kubuntu. Each setup rejects a different release,
-detects installed build dependencies, and uses only its native distribution
-profile. Add `--local-test` when the artifact should be installed and Plasma
-Shell restarted. Never relabel an artifact built for another distribution.
+Or for automated non-interactive universal package generation:
+
+```bash
+scripts/setup-universal.sh
+```
 
 ```text
-dist/punchi-dock-remastered-<version>-<distribution><version>-<architecture>.plasmoid
+dist/punchi-dock-remastered-<version>-<distribution>-<architecture>.plasmoid
 ```
 
-Examples include `punchi-dock-remastered-0.9.4-fedora44-x86_64.plasmoid`,
-`punchi-dock-remastered-0.9.4-debian13-x86_64.plasmoid`, and
-`punchi-dock-remastered-0.9.4-kubuntu<version>-plasma6.6.4-x86_64.plasmoid`.
+Examples include `punchi-dock-remastered-0.9.5-universal.plasmoid` and
+`punchi-dock-remastered-0.9.5-fedora44-x86_64.plasmoid`.
 Never install an artifact labeled for a different distribution.
 
 The Debian 13 workflow was verified separately from Debian 14/testing. Kubuntu
