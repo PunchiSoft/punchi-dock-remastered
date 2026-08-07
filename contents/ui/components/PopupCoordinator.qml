@@ -30,6 +30,7 @@ Item {
     property var appActionsDialogRef: null
     property var taskWindowsDialogRef: null
     property var taskOverflowDialogRef: null
+    property var punchiMenuDialogRef: null
 
     property var applicationIdentityResolver: null
     property var contextActionsResolver: null
@@ -57,6 +58,18 @@ Item {
         || (appActionsDialogRef && appActionsDialogRef.visible)
         || (trashMenuDialogRef && trashMenuDialogRef.visible)
         || (taskWindowsPopupContentRef && taskWindowsPopupContentRef.actionsVisible)
+
+    readonly property bool isAnyPopupActiveGlobally: {
+        return (folderPopupDialogRef && folderPopupDialogRef.visible)
+            || (calendarPopupDialogRef && calendarPopupDialogRef.visible)
+            || (trashMenuDialogRef && trashMenuDialogRef.visible)
+            || (notePopupDialogRef && notePopupDialogRef.visible)
+            || (appActionsDialogRef && appActionsDialogRef.visible)
+            || (taskWindowsDialogRef && taskWindowsDialogRef.visible)
+            || (taskOverflowDialogRef && taskOverflowDialogRef.visible)
+            || (punchiMenuDialogRef && punchiMenuDialogRef.visible)
+            || contextMenuOpening
+    }
 
     onWindowPreviewsEnabledChanged: {
         if (windowPreviewsEnabled) {
@@ -588,5 +601,23 @@ Item {
         popupDirection = popupDirectionForAnchor(anchor)
         taskWindowsDialogRef.visualParent = null
         taskWindowsDialogRef.visualParent = anchor
+    }
+
+    function isPopupActiveForVisualParent(targetItem) {
+        if (!targetItem) {
+            return false
+        }
+        const anchor = popupAnchor(targetItem)
+        const isTarget = function(dialog) {
+            return !!(dialog && dialog.visible && (dialog.visualParent === targetItem || dialog.visualParent === anchor))
+        }
+        return isTarget(folderPopupDialogRef)
+            || isTarget(calendarPopupDialogRef)
+            || isTarget(notePopupDialogRef)
+            || isTarget(trashMenuDialogRef)
+            || isTarget(appActionsDialogRef)
+            || isTarget(taskWindowsDialogRef)
+            || isTarget(taskOverflowDialogRef)
+            || isTarget(punchiMenuDialogRef)
     }
 }

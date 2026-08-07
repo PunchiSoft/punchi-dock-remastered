@@ -10,6 +10,7 @@ Item {
     visible: false
 
     property var runtimeService: null
+    property var persistenceAdapter: null
     property var systemDiscovery: null
     property var taskController: null
     property var trashIntegration: null
@@ -203,6 +204,259 @@ Item {
         return true
     }
 
+    function punchiMenuLayoutPersistenceResult(success, errorCode, currentJson) {
+        return {
+            "success": success,
+            "errorCode": String(errorCode || ""),
+            "currentJson": String(currentJson || ""),
+            "changed": false,
+            "rolledBack": false
+        }
+    }
+
+    function emptyPunchiMenuApplicationLayout() {
+        return {
+            "version": 1,
+            "nodes": []
+        }
+    }
+
+    function clonedJsonObject(value) {
+        if (!value || typeof value !== "object" || Array.isArray(value)) {
+            return null
+        }
+        try {
+            return JSON.parse(JSON.stringify(value))
+        } catch (error) {
+            return null
+        }
+    }
+
+    function sortedJsonValue(value, depth) {
+        if (depth > 8) {
+            throw new Error("nested-json-limit")
+        }
+        if (value instanceof Array) {
+            const result = []
+            for (let index = 0; index < value.length; index++) {
+                result.push(root.sortedJsonValue(value[index], depth + 1))
+            }
+            return result
+        }
+        if (value && typeof value === "object") {
+            const keys = Object.keys(value).sort()
+            if (keys.length > 2048) {
+                throw new Error("object-key-limit")
+            }
+            const result = {}
+            for (let index = 0; index < keys.length; index++) {
+                const key = keys[index]
+                result[key] = root.sortedJsonValue(value[key], depth + 1)
+            }
+            return result
+        }
+        return value
+    }
+
+    function canonicalJsonText(value) {
+        try {
+            return JSON.stringify(root.sortedJsonValue(value, 0))
+        } catch (error) {
+            return ""
+        }
+    }
+
+    function punchiMenuItemIndex(items) {
+        const source = items instanceof Array ? items : []
+        for (let index = 0; index < source.length; index++) {
+            if (source[index] && source[index].type === "punchimenu") {
+                return index
+            }
+        }
+        return -1
+    }
+
+    function punchiMenuApplicationLayout() {
+        const itemIndex = root.punchiMenuItemIndex(root.dockItems)
+        if (itemIndex < 0) {
+            return root.emptyPunchiMenuApplicationLayout()
+        }
+        const item = root.dockItems[itemIndex]
+        if (item.applicationLayout === undefined) {
+            return root.emptyPunchiMenuApplicationLayout()
+        }
+        const layout = root.clonedJsonObject(item.applicationLayout)
+        return layout === null
+            ? { "version": -1, "nodes": [] }
+            : layout
+    }
+
+    function commitPunchiMenuApplicationLayout(expectedDocument, nextDocument) {
+        if (!root.persistenceAdapter) {
+            return root.punchiMenuLayoutPersistenceResult(
+                false, "persistence-adapter-unavailable", "")
+        }
+
+        const expectedLayout = root.clonedJsonObject(expectedDocument)
+        const candidateLayout = root.clonedJsonObject(nextDocument)
+        if (expectedLayout === null || candidateLayout === null) {
+            return root.punchiMenuLayoutPersistenceResult(
+                false, "invalid-application-layout", "")
+        }
+
+        const expectedRaw = String(Plasmoid.configuration.dockItemsJson || "")
+        let sourceItems = null
+        if (expectedRaw.trim().length === 0) {
+            try {
+                sourceItems = JSON.parse(JSON.stringify(root.dockItems))
+            } catch (error) {
+                sourceItems = null
+            }
+        } else {
+            try {
+                sourceItems = JSON.parse(expectedRaw)
+            } catch (error) {
+                sourceItems = null
+            }
+        }
+        if (!(sourceItems instanceof Array) || sourceItems.length > 512) {
+            return root.punchiMenuLayoutPersistenceResult(
+                false, "invalid-dock-configuration", expectedRaw)
+        }
+
+        const itemIndex = root.punchiMenuItemIndex(sourceItems)
+        if (itemIndex < 0) {
+            return root.punchiMenuLayoutPersistenceResult(
+                false, "punchimenu-item-unavailable", expectedRaw)
+        }
+
+        const currentItem = sourceItems[itemIndex]
+        let currentLayout = root.emptyPunchiMenuApplicationLayout()
+        if (currentItem.applicationLayout !== undefined) {
+            currentLayout = root.clonedJsonObject(currentItem.applicationLayout)
+            if (currentLayout === null) {
+                return root.punchiMenuLayoutPersistenceResult(
+                    false, "invalid-application-layout", expectedRaw)
+            }
+        }
+        const currentLayoutText = root.canonicalJsonText(currentLayout)
+        const expectedLayoutText = root.canonicalJsonText(expectedLayout)
+        if (currentLayoutText.length === 0
+                || currentLayoutText !== expectedLayoutText) {
+            return root.punchiMenuLayoutPersistenceResult(
+                false, "layout-conflict", expectedRaw)
+        }
+
+        const nextItem = root.clonedJsonObject(currentItem)
+        if (nextItem === null) {
+            return root.punchiMenuLayoutPersistenceResult(
+                false, "invalid-punchimenu-item", expectedRaw)
+        }
+        nextItem.applicationLayout = candidateLayout
+        sourceItems[itemIndex] = nextItem
+
+        let candidateRaw = ""
+        try {
+            candidateRaw = JSON.stringify(sourceItems)
+        } catch (error) {
+            return root.punchiMenuLayoutPersistenceResult(
+                false, "invalid-dock-configuration", expectedRaw)
+        }
+        if (candidateRaw.length > Logic.maximumDockItemsJsonLength) {
+            return root.punchiMenuLayoutPersistenceResult(
+                false, "dock-configuration-too-large", expectedRaw)
+        }
+
+        return root.persistenceAdapter.commitDockItemsJson(
+            expectedRaw, candidateRaw)
+    }
+
+    function normalizedPunchiMenuHiddenApplicationId(value) {
+        const storageId = String(value || "").trim()
+        if (storageId.length === 0 || storageId.length > 512
+                || /[\u0000-\u001f\u007f]/.test(storageId)) {
+            return ""
+        }
+        return storageId
+    }
+
+    function punchiMenuHiddenApplicationIds(item) {
+        const source = item && item.hiddenApplicationIds instanceof Array
+            ? item.hiddenApplicationIds
+            : []
+        const result = []
+        const seen = {}
+        for (let index = 0; index < source.length && result.length < 512; index++) {
+            const storageId = root.normalizedPunchiMenuHiddenApplicationId(source[index])
+            const comparisonKey = "#" + storageId
+            if (storageId.length === 0 || seen[comparisonKey] === true) {
+                continue
+            }
+            seen[comparisonKey] = true
+            result.push(storageId)
+        }
+        return result
+    }
+
+    function setPunchiMenuApplicationHidden(storageId, hidden) {
+        const normalizedId = root.normalizedPunchiMenuHiddenApplicationId(storageId)
+        if (normalizedId.length === 0) {
+            return false
+        }
+
+        let punchiMenuIndex = -1
+        for (let index = 0; index < root.dockItems.length; index++) {
+            if (root.dockItems[index] && root.dockItems[index].type === "punchimenu") {
+                punchiMenuIndex = index
+                break
+            }
+        }
+        if (punchiMenuIndex < 0) {
+            return false
+        }
+
+        const currentItem = root.dockItems[punchiMenuIndex]
+        const currentIds = root.punchiMenuHiddenApplicationIds(currentItem)
+        const comparisonKey = normalizedId
+        const nextIds = []
+        let alreadyHidden = false
+        for (let index = 0; index < currentIds.length; index++) {
+            const currentId = currentIds[index]
+            if (currentId === comparisonKey) {
+                alreadyHidden = true
+                if (!hidden) {
+                    continue
+                }
+            }
+            nextIds.push(currentId)
+        }
+        if (hidden && !alreadyHidden) {
+            if (nextIds.length >= 512) {
+                return false
+            }
+            nextIds.push(normalizedId)
+        }
+        if ((hidden && alreadyHidden) || (!hidden && !alreadyHidden)) {
+            return true
+        }
+
+        const nextItem = JSON.parse(JSON.stringify(currentItem))
+        if (nextIds.length > 0) {
+            nextItem.hiddenApplicationIds = nextIds
+        } else {
+            delete nextItem.hiddenApplicationIds
+        }
+        const previousItems = root.dockItems
+        const nextItems = root.dockItems.slice()
+        nextItems[punchiMenuIndex] = nextItem
+        root.dockItems = nextItems
+        if (!root.syncDockItemsConfiguration()) {
+            root.dockItems = previousItems
+            return false
+        }
+        return true
+    }
+
     function pinTaskToDock(descriptor) {
         if (!root.taskController || !descriptor
                 || String(descriptor.storageId || "").trim().length === 0
@@ -231,6 +485,141 @@ Item {
         root.dockItems = root.dockItems.concat([pinnedItem])
         root.syncDockItemsConfiguration()
         return true
+    }
+
+    // Translation functions are provided by the plasmoid context.
+    // qmllint disable unqualified
+    function operationResult(success, status, applicationName) {
+        const name = String(applicationName || "").trim()
+        let message = ""
+        switch (status) {
+        case "pinned":
+            message = i18nc("@info:status", "%1 was pinned to the Dock.", name)
+            break
+        case "unpinned":
+            message = i18nc("@info:status", "%1 was removed from the Dock.", name)
+            break
+        case "created":
+            message = i18nc("@info:status", "A desktop shortcut for %1 was created.", name)
+            break
+        case "already-exists":
+            message = i18nc("@info:status", "A desktop shortcut for %1 already exists.", name)
+            break
+        case "ambiguous":
+            message = i18nc("@info:status", "The application identity is ambiguous.")
+            break
+        case "not-found":
+            message = i18nc("@info:status", "The application could not be resolved.")
+            break
+        case "persist-failed":
+            message = i18nc("@info:status", "The Dock configuration could not be saved.")
+            break
+        case "invalid-source":
+        case "invalid-target":
+            message = i18nc("@info:status", "The desktop shortcut source is not safe.")
+            break
+        case "desktop-unavailable":
+            message = i18nc("@info:status", "The desktop folder is not available.")
+            break
+        case "permissions-failed":
+            message = i18nc("@info:status", "The desktop shortcut permissions could not be set.")
+            break
+        case "read-failed":
+        case "write-failed":
+            message = i18nc("@info:status", "The desktop shortcut could not be written.")
+            break
+        default:
+            message = i18nc("@info:status", "The requested application action could not be completed.")
+            break
+        }
+        return { "success": !!success, "status": String(status || "failed"), "message": message }
+    }
+    // qmllint enable unqualified
+
+    function resolveApplication(storageId, command) {
+        if (!root.systemDiscovery || typeof root.systemDiscovery.resolveApplication !== "function") {
+            return { "resolved": false, "status": "unavailable" }
+        }
+        return root.systemDiscovery.resolveApplication(
+            String(storageId || ""), String(command || ""), "")
+    }
+
+    function findDockItemIndexForResolvedApplication(resolved) {
+        if (!resolved || !resolved.resolved) {
+            return -1
+        }
+        const targetStorageId = String(resolved.storageId || "").toLowerCase()
+        const targetAppId = String(resolved.appId || "").toLowerCase()
+        for (let i = 0; i < root.dockItems.length; i++) {
+            const item = root.dockItems[i]
+            if (!item || (item.type && item.type !== "app")) {
+                continue
+            }
+            const itemResolution = root.resolveApplication(
+                item.storageId || item.appId || "", item.command || "")
+            if (!itemResolution || !itemResolution.resolved) {
+                continue
+            }
+            const itemStorageId = String(itemResolution.storageId || "").toLowerCase()
+            const itemAppId = String(itemResolution.appId || "").toLowerCase()
+            if ((targetStorageId.length > 0 && itemStorageId === targetStorageId)
+                    || (targetAppId.length > 0 && itemAppId === targetAppId)) {
+                return i
+            }
+        }
+        return -1
+    }
+
+    function isAppPinnedToDock(storageId, command) {
+        return root.findDockItemIndexForResolvedApplication(
+            root.resolveApplication(storageId, command)) >= 0
+    }
+
+    function togglePinAppToDock(storageId, name, icon, command) {
+        const resolved = root.resolveApplication(storageId, command)
+        if (!resolved || !resolved.resolved) {
+            return root.operationResult(false, resolved ? resolved.status : "unavailable", name)
+        }
+
+        const appName = String(resolved.name || name || resolved.storageId || "")
+        const existingIndex = root.findDockItemIndexForResolvedApplication(resolved)
+        const previousItems = root.dockItems
+        if (existingIndex >= 0) {
+            root.dockItems = root.dockItems.slice(0, existingIndex)
+                .concat(root.dockItems.slice(existingIndex + 1))
+            if (!root.syncDockItemsConfiguration()) {
+                root.dockItems = previousItems
+                return root.operationResult(false, "persist-failed", appName)
+            }
+            return root.operationResult(true, "unpinned", appName)
+        }
+
+        const pinDescriptor = {
+            "type": "app",
+            "name": appName,
+            "icon": String(resolved.icon || icon || "application-x-executable"),
+            "storageId": String(resolved.storageId || ""),
+            "appId": String(resolved.appId || ""),
+            "command": String(resolved.command || command || ""),
+            "launcherUrl": String(resolved.launcherUrl || "")
+        }
+
+        root.dockItems = root.dockItems.concat([pinDescriptor])
+        if (!root.syncDockItemsConfiguration()) {
+            root.dockItems = previousItems
+            return root.operationResult(false, "persist-failed", appName)
+        }
+        return root.operationResult(true, "pinned", appName)
+    }
+
+    function pinAppToDesktop(storageId, command) {
+        if (root.systemDiscovery && typeof root.systemDiscovery.createDesktopShortcut === "function") {
+            const result = root.systemDiscovery.createDesktopShortcut(
+                String(storageId || ""), String(command || ""))
+            return root.operationResult(!!result.success, result.status,
+                result.name || storageId || command)
+        }
+        return root.operationResult(false, "unavailable", storageId || command)
     }
 
     function unpinItemFromDock(targetIndex, expectedApplicationId, expectedLauncherUrl) {

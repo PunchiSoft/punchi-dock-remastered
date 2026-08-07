@@ -80,7 +80,7 @@ Item {
             if (!favorite) {
                 continue
             }
-            const identity = favorite.appStorageId.toLocaleLowerCase()
+            const identity = favorite.appStorageId
             if (seen[identity]) {
                 continue
             }
@@ -104,12 +104,12 @@ Item {
     }
 
     function containsFavorite(storageId) {
-        const requestedId = normalizeStorageId(storageId).toLocaleLowerCase()
+        const requestedId = normalizeStorageId(storageId)
         if (requestedId.length === 0) {
             return false
         }
         for (let index = 0; index < favorites.length; index++) {
-            if (String(favorites[index].appStorageId || "").toLocaleLowerCase()
+            if (String(favorites[index].appStorageId || "").trim()
                     === requestedId) {
                 return true
             }
@@ -131,7 +131,7 @@ Item {
     }
 
     function removeFavorite(storageId) {
-        const requestedId = normalizeStorageId(storageId).toLocaleLowerCase()
+        const requestedId = normalizeStorageId(storageId)
         if (requestedId.length === 0) {
             return false
         }
@@ -140,7 +140,7 @@ Item {
         let removed = false
         for (let index = 0; index < favorites.length; index++) {
             const favorite = favorites[index]
-            if (String(favorite.appStorageId || "").toLocaleLowerCase()
+            if (String(favorite.appStorageId || "").trim()
                     === requestedId) {
                 removed = true
             } else {

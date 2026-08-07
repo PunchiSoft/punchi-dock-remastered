@@ -17,7 +17,7 @@ class BlurBehindController : public QObject
     Q_PROPERTY(QRect region READ region WRITE setRegion NOTIFY regionChanged)
     Q_PROPERTY(bool fullWindow READ fullWindow WRITE setFullWindow NOTIFY fullWindowChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
-    Q_PROPERTY(bool available READ available CONSTANT)
+    Q_PROPERTY(bool available READ available NOTIFY availableChanged)
     Q_PROPERTY(bool active READ active NOTIFY activeChanged)
 
 public:
@@ -42,10 +42,12 @@ Q_SIGNALS:
     void regionChanged();
     void fullWindowChanged();
     void enabledChanged();
+    void availableChanged();
     void activeChanged();
 
 private:
     bool eventFilter(QObject *watched, QEvent *event) override;
+    void refreshAvailability();
     void apply();
     void disableOnCurrentWindow();
     void updateActive(bool active);

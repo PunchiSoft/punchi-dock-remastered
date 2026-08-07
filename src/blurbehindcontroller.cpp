@@ -11,8 +11,8 @@
 
 BlurBehindController::BlurBehindController(QObject *parent)
     : QObject(parent)
-    , m_available(KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind))
 {
+    refreshAvailability();
 }
 
 BlurBehindController::~BlurBehindController()
@@ -133,6 +133,8 @@ void BlurBehindController::reapply()
 
 void BlurBehindController::apply()
 {
+    refreshAvailability();
+
     const bool hasRegion = m_fullWindow || (m_region.isValid() && !m_region.isEmpty());
     const bool shouldEnable = m_window && m_available && m_enabled && hasRegion;
     if (!m_window) {
@@ -143,6 +145,16 @@ void BlurBehindController::apply()
     const QRegion requestedRegion = m_fullWindow ? QRegion() : QRegion(m_region);
     KWindowEffects::enableBlurBehind(m_window, shouldEnable, shouldEnable ? requestedRegion : QRegion());
     updateActive(shouldEnable);
+}
+
+void BlurBehindController::refreshAvailability()
+{
+    const bool available = KWindowEffects::isEffectAvailable(KWindowEffects::BlurBehind);
+    if (m_available == available) {
+        return;
+    }
+    m_available = available;
+    Q_EMIT availableChanged();
 }
 
 void BlurBehindController::disableOnCurrentWindow()

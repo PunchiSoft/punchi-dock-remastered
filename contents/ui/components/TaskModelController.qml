@@ -371,6 +371,20 @@ Item {
         return winIds.length > 0 ? String(winIds[0]) : ""
     }
 
+    function taskWinIdForRow(row) {
+        const taskIndex = tasksModel.index(row, 0)
+        if (!taskIndex.valid) {
+            return 0
+        }
+
+        const winIds = tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.WinIdList) || []
+        if (winIds.length > 0) {
+            const parsed = Number(winIds[0])
+            return !isNaN(parsed) && parsed > 0 ? parsed : 0
+        }
+        return 0
+    }
+
     function taskRowsForEntries(entries) {
         const sourceEntries = entries instanceof Array ? entries : []
         const rows = []
@@ -678,7 +692,8 @@ Item {
                 "maximizable": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMaximizable),
                 "maximized": !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMaximized),
                 "icon": taskIconSourceForRow(row),
-                "windowUuid": taskWindowUuidForRow(row)
+                "windowUuid": taskWindowUuidForRow(row),
+                "winId": taskWinIdForRow(row)
             })
         }
         return windows

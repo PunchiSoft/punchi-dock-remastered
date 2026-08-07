@@ -16,6 +16,7 @@
 
 # Documentacion interna, bitacoras y logs no trackeados
 /docs/
+/Documents/
 /bitacora/
 /scratch/
 *.log

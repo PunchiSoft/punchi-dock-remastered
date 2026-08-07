@@ -5,12 +5,14 @@ QtObject {
     id: root
 
     property bool inPanel: false
+    property string placementMode: "anchored"
     property int panelLocation: PlasmaCore.Types.BottomEdge
     property rect availableScreenRect: Qt.rect(0, 0, 1, 1)
     property rect screenGeometry: Qt.rect(0, 0, 1, 1)
     property var itemAnchor: null
     property var floatingDockAnchor: null
     property var panelWindow: null
+    property real panelThickness: 0
     property real menuWidth: 1
     property real menuHeight: 1
     property real panelGap: 0
@@ -84,6 +86,24 @@ QtObject {
             if (root.validRect(panelRectangle)) {
                 return panelRectangle
             }
+            const screen = root.screenGeometry
+            const thickness = Math.max(0, root.finiteNumber(
+                root.panelThickness, 0))
+            if (root.validRect(screen) && thickness > 0) {
+                if (root.panelLocation === PlasmaCore.Types.TopEdge) {
+                    return Qt.rect(screen.x, screen.y, screen.width, thickness)
+                }
+                if (root.panelLocation === PlasmaCore.Types.BottomEdge) {
+                    return Qt.rect(screen.x,
+                        screen.y + screen.height - thickness,
+                        screen.width, thickness)
+                }
+                if (root.panelLocation === PlasmaCore.Types.LeftEdge) {
+                    return Qt.rect(screen.x, screen.y, thickness, screen.height)
+                }
+                return Qt.rect(screen.x + screen.width - thickness,
+                    screen.y, thickness, screen.height)
+            }
         } else {
             const dockRectangle = root.globalItemRect(root.floatingDockAnchor)
             if (root.validRect(dockRectangle)) {
@@ -99,6 +119,24 @@ QtObject {
 
     function calculatePosition() {
         const available = root.absoluteAvailableRect()
+        const width = Math.max(1, root.finiteNumber(root.menuWidth, 1))
+        const height = Math.max(1, root.finiteNumber(root.menuHeight, 1))
+        const inset = Math.max(0, root.finiteNumber(root.screenInset, 0))
+        const minimumX = available.x + inset
+        const minimumY = available.y + inset
+        const maximumX = available.x + available.width - inset - width
+        const maximumY = available.y + available.height - inset - height
+
+        if (root.placementMode === "centered") {
+            return Qt.point(
+                Math.round(root.clamp(
+                    available.x + (available.width - width) / 2,
+                    minimumX, maximumX)),
+                Math.round(root.clamp(
+                    available.y + (available.height - height) / 2,
+                    minimumY, maximumY)))
+        }
+
         let anchorRectangle = root.globalItemRect(root.itemAnchor)
         const fallbackSurface = root.surfaceRect(anchorRectangle)
         if (!root.validRect(anchorRectangle)) {
@@ -107,12 +145,9 @@ QtObject {
         }
         const surface = root.validRect(fallbackSurface)
             ? fallbackSurface : anchorRectangle
-        const width = Math.max(1, root.finiteNumber(root.menuWidth, 1))
-        const height = Math.max(1, root.finiteNumber(root.menuHeight, 1))
         const gap = Math.max(0, root.inPanel
             ? root.finiteNumber(root.panelGap, 0)
             : root.finiteNumber(root.floatingGap, 0))
-        const inset = Math.max(0, root.finiteNumber(root.screenInset, 0))
         const availableCenterX = available.x + available.width / 2
         const availableCenterY = available.y + available.height / 2
         const anchorCenterX = anchorRectangle.x + anchorRectangle.width / 2
@@ -137,10 +172,6 @@ QtObject {
                 : anchorRectangle.y + anchorRectangle.height - height
         }
 
-        const minimumX = available.x + inset
-        const minimumY = available.y + inset
-        const maximumX = available.x + available.width - inset - width
-        const maximumY = available.y + available.height - inset - height
         return Qt.point(
             Math.round(root.clamp(targetX, minimumX, maximumX)),
             Math.round(root.clamp(targetY, minimumY, maximumY)))

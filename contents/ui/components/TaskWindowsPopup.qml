@@ -1,7 +1,10 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import org.kde.kirigami as Kirigami
+import org.kde.kwindowsystem
 import org.kde.plasma.extras as PlasmaExtras
 Item {
     id: taskPopupRoot
@@ -117,9 +120,11 @@ Item {
                     readonly property bool canMaximize: !!modelData.maximizable
                     readonly property bool isMaximized: !!modelData.maximized
                     readonly property string previewWindowUuid: String(modelData.windowUuid || "")
+                    readonly property var previewWinId: modelData.winId !== undefined
+                        && modelData.winId !== null ? modelData.winId : 0
                     readonly property bool previewStreamActive: taskPopupRoot.visible
                         && taskPopupRoot.showLiveThumbnails
-                        && previewWindowUuid.length > 0
+                        && (previewWindowUuid.length > 0 || Number(previewWinId) > 0)
                         && (windowRow.y + windowRow.height >= windowList.contentY - 8)
                         && (windowRow.y <= windowList.contentY + windowList.height + 8)
 
@@ -211,9 +216,15 @@ Item {
                                         width: parent.width
                                         horizontalAlignment: Text.AlignHCenter
                                         elide: Text.ElideRight
+                                        // Translation functions are provided by the plasmoid context.
+                                        // qmllint disable unqualified
                                         text: !taskPopupRoot.showLiveThumbnails
                                             ? i18n("Preview disabled")
+                                            : KWindowSystem.isPlatformX11
+                                                && windowRow.isMinimized
+                                                ? i18n("Window minimized")
                                             : i18n("Preview unavailable")
+                                        // qmllint enable unqualified
                                         color: Kirigami.Theme.disabledTextColor
                                         font.pixelSize: 11
                                     }
@@ -430,6 +441,8 @@ Item {
                         WindowLiveThumbnail {
                             anchors.fill: parent
                             windowUuid: windowRow.previewWindowUuid
+                            winId: windowRow.previewWinId
+                            minimized: windowRow.isMinimized
                         }
                     }
                 }

@@ -17,6 +17,7 @@ DNF_PACKAGES=(
     gcc-c++
     gettext
     git
+    kf6-kconfig-devel
     kf6-kcoreaddons-devel
     kf6-kglobalaccel-devel
     kf6-ki18n-devel
@@ -31,6 +32,7 @@ DNF_PACKAGES=(
     pkgconf-pkg-config
     qt6-qtbase-devel
     qt6-qtdeclarative-devel
+    qt6-qtshadertools
     unzip
     zip
 )

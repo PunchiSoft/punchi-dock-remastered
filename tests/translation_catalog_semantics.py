@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+from collections import Counter
 import json
 import re
 import sys
@@ -17,6 +18,7 @@ FIELD_PATTERN = re.compile(
     r'^(?P<name>msgctxt|msgid|msgid_plural|msgstr(?:\[(?:0|[1-9][0-9]*)\])?)\s+(?P<value>".*")\s*$'
 )
 CONTINUATION_PATTERN = re.compile(r'^\s*(?P<value>".*")\s*$')
+PLACEHOLDER_PATTERN = re.compile(r"%[1-9][0-9]*")
 
 
 @dataclass(frozen=True)
@@ -35,6 +37,14 @@ class Contamination:
 
     field: PoField
     prefix: str
+    source: str
+
+
+@dataclass(frozen=True)
+class PlaceholderMismatch:
+    """A translation whose placeholders differ from its source form."""
+
+    field: PoField
     source: str
 
 
@@ -148,6 +158,36 @@ def contaminations(lines: Sequence[str], path: Path) -> list[Contamination]:
     return issues
 
 
+def placeholder_mismatches(lines: Sequence[str], path: Path) -> list[PlaceholderMismatch]:
+    """Return plural translations that lose or add positional placeholders."""
+
+    issues: list[PlaceholderMismatch] = []
+    for start, end in entry_ranges(lines):
+        relative_fields = parse_fields(lines[start:end], path)
+        values = {field.name: field.value for field in relative_fields}
+        singular = values.get("msgid", "")
+        plural = values.get("msgid_plural", "")
+        if not singular or not plural:
+            continue
+
+        for relative_field in relative_fields:
+            if not relative_field.name.startswith("msgstr") or not relative_field.value:
+                continue
+            source = singular if relative_field.name in ("msgstr", "msgstr[0]") else plural
+            if Counter(PLACEHOLDER_PATTERN.findall(relative_field.value)) == Counter(
+                PLACEHOLDER_PATTERN.findall(source)
+            ):
+                continue
+            field = PoField(
+                relative_field.name,
+                start + relative_field.start,
+                start + relative_field.end,
+                relative_field.value,
+            )
+            issues.append(PlaceholderMismatch(field, source))
+    return issues
+
+
 def repair_lines(lines: Sequence[str], path: Path) -> tuple[list[str], list[Contamination]]:
     """Remove only confirmed prefixes and preserve every other PO line."""
 
@@ -169,14 +209,21 @@ def read_catalog(path: Path) -> list[str]:
 def check_catalog(path: Path) -> int:
     """Report semantic contamination and return the number of affected entries."""
 
-    issues = contaminations(read_catalog(path), path)
-    for issue in issues:
+    lines = read_catalog(path)
+    contamination_issues = contaminations(lines, path)
+    for issue in contamination_issues:
         preview = issue.source.replace("\n", " ")[:100]
         print(
             f"{path}:{issue.field.start + 1}: translation starts with its source/context: {preview}",
             file=sys.stderr,
         )
-    return len(issues)
+    placeholder_issues = placeholder_mismatches(lines, path)
+    for issue in placeholder_issues:
+        print(
+            f"{path}:{issue.field.start + 1}: translation placeholders differ from source: {issue.source}",
+            file=sys.stderr,
+        )
+    return len(contamination_issues) + len(placeholder_issues)
 
 
 def repair_catalog(source: Path, destination: Path) -> int:
@@ -213,6 +260,16 @@ def self_test() -> None:
     for expected in ("Estado actual", "Cuando está activado", "%1 segundo", "%1 segundos"):
         if expected not in repaired_text:
             raise AssertionError(f"repaired fixture lost translation: {expected}")
+
+    placeholder_fixture = [
+        'msgid "%1 second"\n',
+        'msgid_plural "%1 seconds"\n',
+        'msgstr[0] "%1 segundo"\n',
+        'msgstr[1] "s"\n',
+    ]
+    placeholder_issues = placeholder_mismatches(placeholder_fixture, fixture_path)
+    if len(placeholder_issues) != 1 or placeholder_issues[0].field.name != "msgstr[1]":
+        raise AssertionError("expected a missing plural placeholder to be detected")
 
 
 def parse_arguments() -> argparse.Namespace:

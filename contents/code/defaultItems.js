@@ -7,7 +7,11 @@ var items = [
         "name": "PunchiMenu",
         "icon": "start-here-kde",
         "menuMode": "normal",
+        "normalPlacementMode": "anchored",
         "gridIconScalePercent": 100,
+        "favoriteIconScalePercent": 100,
+        "fullScreenBackgroundOpacityPercent": 50,
+        "normalBackgroundOpacityPercent": 75,
         "normalWidthPercent": 55,
         "normalHeightPercent": 65
     },

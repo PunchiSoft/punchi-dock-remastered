@@ -1,0 +1,1545 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+from pathlib import Path
+import sys
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+def argument_counts(source: str, symbol: str) -> list[int]:
+    counts: list[int] = []
+    offset = 0
+    marker = f"{symbol}("
+    while True:
+        start = source.find(marker, offset)
+        if start < 0:
+            return counts
+        index = start + len(marker)
+        depth = 1
+        commas = 0
+        quote = ""
+        escaped = False
+        while index < len(source) and depth > 0:
+            character = source[index]
+            if quote:
+                if escaped:
+                    escaped = False
+                elif character == "\\":
+                    escaped = True
+                elif character == quote:
+                    quote = ""
+            elif character in {'"', "'"}:
+                quote = character
+            elif character == "(":
+                depth += 1
+            elif character == ")":
+                depth -= 1
+            elif character == "," and depth == 1:
+                commas += 1
+            index += 1
+        if depth != 0:
+            raise ValueError(f"Unbalanced call to {symbol}")
+        counts.append(commas + 1)
+        offset = index
+
+
+def check_component(relative_path: str) -> bool:
+    source = (PROJECT_ROOT / relative_path).read_text(encoding="utf-8")
+    expected_signal = (
+        "signal pinToDockRequested(string storageId, string appName, "
+        "string appIcon, string appCommand)"
+    )
+    if expected_signal not in source:
+        print(f"{relative_path}: incomplete pinToDockRequested contract", file=sys.stderr)
+        return False
+    counts = argument_counts(source, "openApplicationContextMenu")
+    if not counts or any(count != 7 for count in counts):
+        print(f"{relative_path}: context-menu argument counts are {counts}", file=sys.stderr)
+        return False
+    return True
+
+
+def main() -> int:
+    passed = check_component(
+        "contents/ui/components/punchimenu/PunchiMenuNormal.qml"
+    )
+    passed = check_component(
+        "contents/ui/components/punchimenu/PunchiMenuOverlay.qml"
+    ) and passed
+
+    normal_source = (
+        PROJECT_ROOT / "contents/ui/components/punchimenu/PunchiMenuNormal.qml"
+    ).read_text(encoding="utf-8")
+    normal_context_surface_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuContextSurface.qml"
+    ).read_text(encoding="utf-8")
+    overlay_source = (
+        PROJECT_ROOT / "contents/ui/components/punchimenu/PunchiMenuOverlay.qml"
+    ).read_text(encoding="utf-8")
+    main_source = (PROJECT_ROOT / "contents/ui/main.qml").read_text(encoding="utf-8")
+    config_items_source = (
+        PROJECT_ROOT / "contents/ui/config/code/configItems.js"
+    ).read_text(encoding="utf-8")
+    dock_items_controller_source = (
+        PROJECT_ROOT / "contents/ui/components/DockItemsController.qml"
+    ).read_text(encoding="utf-8")
+    dialog_source = (
+        PROJECT_ROOT / "contents/ui/config/components/PunchiMenuDialog.qml"
+    ).read_text(encoding="utf-8")
+    placement_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuNormalPlacement.qml"
+    ).read_text(encoding="utf-8")
+    category_pill_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuCategoryPill.qml"
+    ).read_text(encoding="utf-8")
+    search_background_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuSearchBackground.qml"
+    ).read_text(encoding="utf-8")
+    action_background_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuActionBackground.qml"
+    ).read_text(encoding="utf-8")
+    session_view_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuSessionView.qml"
+    ).read_text(encoding="utf-8")
+    avatar_component_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuUserAvatar.qml"
+    ).read_text(encoding="utf-8")
+    avatar_shader_source = (
+        PROJECT_ROOT / "src/shaders/PunchiMenuAvatar.frag"
+    ).read_text(encoding="utf-8")
+    native_build_source = (
+        PROJECT_ROOT / "src/CMakeLists.txt"
+    ).read_text(encoding="utf-8")
+    fedora_setup_source = (
+        PROJECT_ROOT / "scripts/distro/fedora-setup.sh"
+    ).read_text(encoding="utf-8")
+    debian_setup_source = (
+        PROJECT_ROOT / "scripts/distro/debian13-setup.sh"
+    ).read_text(encoding="utf-8")
+    session_controller_source = (
+        PROJECT_ROOT / "src/sessionactionscontroller.cpp"
+    ).read_text(encoding="utf-8")
+    workflow_source = (
+        PROJECT_ROOT / "contents/ui/config/code/configItemsWorkflowHelper.js"
+    ).read_text(encoding="utf-8")
+    config_page_source = (
+        PROJECT_ROOT / "contents/ui/config/ConfigItems.qml"
+    ).read_text(encoding="utf-8")
+    punchi_menu_config_source = (
+        PROJECT_ROOT / "contents/ui/config/ConfigPunchiMenu.qml"
+    ).read_text(encoding="utf-8")
+    config_model_source = (
+        PROJECT_ROOT / "contents/config/config.qml"
+    ).read_text(encoding="utf-8")
+    discovery_header_source = (
+        PROJECT_ROOT / "src/systemdiscovery.h"
+    ).read_text(encoding="utf-8")
+    discovery_implementation_source = (
+        PROJECT_ROOT / "src/systemdiscovery.cpp"
+    ).read_text(encoding="utf-8")
+    if "readonly property string appCommand" not in normal_source:
+        print("PunchiMenuNormal.qml: favorite appCommand is not exposed", file=sys.stderr)
+        passed = False
+    if "readonly property bool isX11Session" in overlay_source:
+        print("PunchiMenuOverlay.qml: retired automatic opacity policy remains", file=sys.stderr)
+        passed = False
+    if "PathView {" in overlay_source or "id: categoryModel" in overlay_source:
+        print("PunchiMenuOverlay.qml: the retired category carousel is still present", file=sys.stderr)
+        passed = False
+    icon_scale_contract = (
+        (config_items_source, "Math.max(75, Math.min(200", "persistent normalization"),
+        (main_source, "Math.max(75, Math.min(200", "runtime percentage clamp"),
+        (dialog_source, "to: 200", "configuration slider maximum"),
+        (overlay_source, "Math.max(0.75, Math.min(2.0", "fullscreen scale clamp"),
+        (normal_source, "Math.max(0.75, Math.min(2.0", "Normal scale clamp"),
+    )
+    for source, marker, description in icon_scale_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu icon scale: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    distribution_name_contract = (
+        (
+            discovery_header_source,
+            "Q_PROPERTY(QString distributionName READ distributionName CONSTANT)",
+            "read-only backend property",
+        ),
+        (
+            discovery_header_source,
+            "Q_PROPERTY(QString distributionLogo READ distributionLogo CONSTANT)",
+            "read-only distribution logo property",
+        ),
+        (discovery_implementation_source, "KOSRelease", "KDE OS release API"),
+        (discovery_implementation_source, "osRelease.logo().trimmed()", "OS logo source"),
+        (config_items_source, "item.showDistributionName !== false", "default-on persistence"),
+        (workflow_source, "function setPunchiMenuShowDistributionName(enabled)", "configuration workflow"),
+        (config_page_source, "onShowDistributionNameSelected:", "configuration signal routing"),
+        (dialog_source, 'i18n("Show distribution name in full screen")', "translated option"),
+        (main_source, "readonly property bool configuredPunchiMenuShowDistributionName", "reactive runtime setting"),
+        (overlay_source, "property bool showDistributionName: true", "fullscreen display option"),
+        (overlay_source, "String(systemDiscovery.distributionName", "distribution label source"),
+        (overlay_source, "String(systemDiscovery.distributionLogo", "distribution logo source"),
+        (overlay_source, "Kirigami.Units.iconSizes.small", "standard small icon limit"),
+        (overlay_source, "Math.round(distributionFontMetrics.height)", "heading line-height limit"),
+        (overlay_source, "Accessible.ignored: true", "decorative logo semantics"),
+        (search_background_source, "radius: height / 2", "pill-shaped search background"),
+        (search_background_source, "color: Kirigami.Theme.backgroundColor", "theme-aware search background"),
+        (search_background_source, "? Kirigami.Theme.highlightColor", "themed search focus border"),
+    )
+    for source, marker, description in distribution_name_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu distribution label: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if 'i18nc("@title:menu", "PunchiMenu")' in overlay_source:
+        print(
+            "PunchiMenu distribution label: disabled label still has a title fallback",
+            file=sys.stderr,
+        )
+        passed = False
+    if ("visible: root.showDistributionName" not in overlay_source
+            or "Layout.preferredHeight: visible" not in overlay_source):
+        print(
+            "PunchiMenu distribution label: hidden state still reserves title space",
+            file=sys.stderr,
+        )
+        passed = False
+    if normal_source.count("showDistributionName") != 0:
+        print(
+            "PunchiMenuNormal.qml: fullscreen distribution setting leaked into Normal mode",
+            file=sys.stderr,
+        )
+        passed = False
+    if main_source.count(
+        "showDistributionName: root.configuredPunchiMenuShowDistributionName"
+    ) != 1:
+        print(
+            "main.qml: distribution setting must be bound only to Fullscreen",
+            file=sys.stderr,
+        )
+        passed = False
+    legacy_dialog_basic_contract = (
+        "Controls.Switch {",
+        'i18n("Show distribution name in full screen")',
+        'i18n("Application grid icon scale:")',
+        'i18n("Favorites icon scale:")',
+    )
+    for marker in legacy_dialog_basic_contract:
+        if marker not in dialog_source:
+            print(
+                f"PunchiMenuDialog.qml: missing basic editor control: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "visible: !root.normalModeSelected" not in dialog_source:
+        print(
+            "PunchiMenuDialog.qml: fullscreen distribution option remains visible in Normal mode",
+            file=sys.stderr,
+        )
+        passed = False
+    legacy_dialog_forbidden_markers = (
+        "KQuickControls.KeySequenceItem",
+        "signal shortcutSelected",
+        "signal iconPickerRequested",
+        "property string shortcut",
+        "property string iconName",
+        'i18n("Full screen and Normal are available. Compact will be enabled in a future update.")',
+        'i18n("The effective size adapts to the screen and available grid cell space.")',
+        'i18n("The safe range applies to the reserved Favorites section in both menu modes.")',
+        'i18n("Attached keeps the menu next to its dock or panel. Centered uses the available area of the active screen.")',
+        'i18n("The percentages adjust the menu size relative to your screen width and height (from 30% to 90%).")',
+        'i18n("This shortcut controls PunchiMenu independently from the widget activation shortcut.")',
+    )
+    for marker in legacy_dialog_forbidden_markers:
+        if marker in dialog_source:
+            print(
+                f"PunchiMenuDialog.qml: advanced duplicate remains in basic editor: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    legacy_dialog_consumer_forbidden_markers = (
+        "shortcut: page.cfg_punchiMenuShortcut",
+        'onIconPickerRequested: page.openIconPicker("punchimenu")',
+        "onShortcutSelected:",
+    )
+    for marker in legacy_dialog_consumer_forbidden_markers:
+        if marker in config_page_source:
+            print(
+                f"ConfigItems.qml: retired PunchiMenuDialog binding remains: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "punchiMenuDialog.iconName" in workflow_source:
+        print(
+            "configItemsWorkflowHelper.js: retired PunchiMenuDialog icon property is still used",
+            file=sys.stderr,
+        )
+        passed = False
+    advanced_configuration_contract = (
+        "KQuickControls.KeySequenceItem",
+        'i18nc("@action:button", "Choose PunchiMenu icon")',
+        'i18n("The effective size adapts to the screen and available grid cell space.")',
+        'i18n("The safe range applies to the reserved Favorites section in both menu modes.")',
+        'i18n("Attached keeps the menu next to its dock or panel. Centered uses the available area of the active screen.")',
+        'i18n("The percentages adjust the menu size relative to your screen width and height (from 30% to 90%).")',
+    )
+    for marker in advanced_configuration_contract:
+        if marker not in punchi_menu_config_source:
+            print(
+                f"ConfigPunchiMenu.qml: advanced setting/help is missing: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if punchi_menu_config_source.count("Controls.Switch {") < 2:
+        print(
+            "ConfigPunchiMenu.qml: distribution label must use a switch like the basic editor",
+            file=sys.stderr,
+        )
+        passed = False
+    advanced_configuration_layout_contract = (
+        'i18n("Icon and keyboard shortcut:")',
+        "display: Controls.AbstractButton.IconOnly",
+        "id: shortcutItem",
+    )
+    for marker in advanced_configuration_layout_contract:
+        if marker not in punchi_menu_config_source:
+            print(
+                f"ConfigPunchiMenu.qml: icon/shortcut row is incomplete: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "Plasmoid.configuration.writeConfig()" not in main_source:
+        print("main.qml: quick editor hand-off is not persisted", file=sys.stderr)
+        passed = False
+    pending_editor_contract = (
+        "onCfg_pendingEditDockItemIndexChanged: consumePendingEditRequest()",
+        "onDiskItemsLoadedChanged:",
+        "if (!diskItemsLoaded || pendingEditConsumed",
+    )
+    for marker in pending_editor_contract:
+        if marker not in config_page_source:
+            print(
+                f"ConfigItems.qml: quick editor hand-off is incomplete: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    category_arrow_contract = (
+        "Layout.preferredWidth: Kirigami.Units.gridUnit * 2.1",
+        "Layout.preferredHeight: Kirigami.Units.gridUnit * 2.1",
+        "Layout.alignment: Qt.AlignVCenter",
+    )
+    for marker in category_arrow_contract:
+        if normal_source.count(marker) < 2:
+            print(
+                f"PunchiMenu Normal: category arrows do not match the pills: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    session_view_contract = (
+        (overlay_source, "property bool sessionViewActive: false", "explicit view state"),
+        (overlay_source, "KCoreAddons.KUser {", "local user identity source"),
+        (overlay_source, "Punchi.SessionActionsController {", "native session controller"),
+        (overlay_source, "PunchiMenuSessionView {", "dedicated session view"),
+        (overlay_source, '? "view-grid"', "theme-native return-to-grid icon"),
+        (overlay_source, "readonly property int headerControlSize", "shared header control metric"),
+        (overlay_source, "background: PunchiMenuSearchBackground {", "themed header action surface"),
+        (overlay_source, "if (!root.sessionViewActive)", "wheel isolation"),
+        (session_view_source, "signal logoutRequested()", "logout intent"),
+        (session_view_source, "signal restartRequested()", "restart intent"),
+        (session_view_source, "signal shutdownRequested()", "shutdown intent"),
+        (session_view_source, "readonly property int avatarSize: Kirigami.Units.gridUnit * 9", "larger avatar metric"),
+        (session_view_source, "PunchiMenuUserAvatar {", "dedicated avatar component"),
+        (avatar_component_source, "Image.PreserveAspectCrop", "avatar crop policy"),
+        (avatar_component_source, "Screen.devicePixelRatio", "device-pixel avatar source"),
+        (avatar_component_source, "mipmap: true", "downsampling quality"),
+        (avatar_component_source, "ShaderEffectSource {", "shader input source"),
+        (avatar_component_source, "supportsAtlasTextures: true", "atlas-safe shader"),
+        (avatar_component_source, "PunchiMenuAvatar.frag.qsb", "embedded avatar shader"),
+        (avatar_component_source, "Effects.MultiEffect {", "software-rendering fallback"),
+        (avatar_component_source, "maskEnabled: true", "fallback circular mask"),
+        (avatar_component_source, 'fallbackIcon: "user-identity"', "avatar fallback"),
+        (avatar_shader_source, "const highp float innerRadius", "inner avatar radius"),
+        (avatar_shader_source, "const highp float outerRadius", "outer border radius"),
+        (avatar_shader_source, "mix(colorSource, colorBorder", "image-to-border blend"),
+        (avatar_shader_source, "mix(colorBorder, colorEmpty", "border-to-alpha blend"),
+        (native_build_source, "--qsbversion 65", "shader format compatible with Qt 6.6"),
+        (native_build_source, "qt_add_resources(punchidockintegration", "embedded shader resource"),
+        (fedora_setup_source, "qt6-qtshadertools", "Fedora shader build dependency"),
+        (debian_setup_source, "qt6-shader-baker", "Debian shader build dependency"),
+        (session_view_source, "PlasmaComponents.Button {", "Plasma-themed session controls"),
+        (session_controller_source, "ConfirmationMode::ForcePrompt", "forced KDE confirmation"),
+    )
+    for source, marker, description in session_view_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu Fullscreen session view: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if session_view_source.count("cursorShape: Qt.PointingHandCursor") < 3:
+        print(
+            "PunchiMenu Fullscreen session view: every action needs a pointing cursor",
+            file=sys.stderr,
+        )
+        passed = False
+    if session_view_source.count(
+        "readonly property bool highlightedContent: enabled"
+    ) < 3:
+        print(
+            "PunchiMenu Fullscreen session view: every action needs a themed highlight state",
+            file=sys.stderr,
+        )
+        passed = False
+    if session_view_source.count(
+        "readonly property color foregroundColor: highlightedContent"
+    ) < 3:
+        print(
+            "PunchiMenu Fullscreen session view: every action needs a shared themed foreground color",
+            file=sys.stderr,
+        )
+        passed = False
+    if session_view_source.count("Kirigami.Theme.textColor: foregroundColor") < 3:
+        print(
+            "PunchiMenu Fullscreen session view: action labels must inherit the shared themed foreground color",
+            file=sys.stderr,
+        )
+        passed = False
+    if session_view_source.count("icon.color: foregroundColor") < 3:
+        print(
+            "PunchiMenu Fullscreen session view: action icons must inherit the shared themed foreground color",
+            file=sys.stderr,
+        )
+        passed = False
+    if session_view_source.count("background: PunchiMenuActionBackground {") < 3:
+        print(
+            "PunchiMenu Fullscreen session view: every action needs the shared themed background",
+            file=sys.stderr,
+        )
+        passed = False
+    action_background_contract = (
+        "property bool highlighted: false",
+        "property bool showBaseSurface: false",
+        "Kirigami.Theme.highlightColor",
+        "Kirigami.Theme.textColor",
+        "Behavior on color",
+    )
+    for marker in action_background_contract:
+        if marker not in action_background_source:
+            print(
+                f"PunchiMenu themed action background: missing contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if avatar_component_source.count("antialiasing: true") < 3:
+        print(
+            "PunchiMenu Fullscreen avatar: background, mask and fallback border need antialiasing",
+            file=sys.stderr,
+        )
+        passed = False
+    if "Kirigami.Theme.inherit: false" in session_view_source:
+        print(
+            "PunchiMenu Fullscreen session view: the inherited theme must not be isolated",
+            file=sys.stderr,
+        )
+        passed = False
+    session_transition_contract = (
+        "property bool sessionViewRequested: false",
+        "property real modeContentOpacity: 1.0",
+        "readonly property bool modeTransitionActive",
+        "function commitSessionViewState(active)",
+        "id: modeFadeOutAnimation",
+        "easing.type: Easing.InCubic",
+        "id: modeFadeInAnimation",
+        "easing.type: Easing.OutCubic",
+        "root.commitSessionViewState(root.sessionViewRequested)",
+        "enabled: !root.modeTransitionActive",
+    )
+    for marker in session_transition_contract:
+        if marker not in overlay_source:
+            print(
+                f"PunchiMenu Fullscreen session transition: missing {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    paged_grid_contract = (
+        'systemDiscovery.requestApplications("All")',
+        "snapMode: ListView.SnapOneItem",
+        "preferredHighlightEnd: 0",
+        "maximumFlickVelocity: 4 * width",
+        "cacheBuffer: Math.max(0, width)",
+        "onMovementStarted: root.resetPageNavigation()",
+        "preventStealing: false",
+        "readonly property int pageCapacity",
+        "readonly property int pageCount",
+        "readonly property int pageIndicatorDotDiameter",
+        "readonly property int pageIndicatorTargetDiameter",
+        "readonly property int compactSearchWidth",
+        "readonly property int applicationGridHorizontalInset",
+        "id: searchContainer",
+        "PlasmaComponents.TextField {",
+        'icon.name: "configure"',
+        "PlasmaCore.ToolTipArea {",
+        "mainText: configureButton.text",
+        "mainText: previousPageButton.text",
+        "mainText: nextPageButton.text",
+        "spacing: Math.max(1, Math.round(root.pageIndicatorDotDiameter * 0.5))",
+        "signal configureRequested()",
+        'i18nc("@action:button", "Page %1 of %2"',
+        'i18nc("@placeholder", "Search applications…")',
+        "anchors.leftMargin: root.applicationGridHorizontalInset",
+        "anchors.rightMargin: root.applicationGridHorizontalInset",
+        'icon.name: "go-previous-symbolic"',
+        'icon.name: "go-next-symbolic"',
+        'i18nc("@action:button", "Previous page")',
+        'i18nc("@action:button", "Next page")',
+        "onClicked: root.requestPageStep(-1)",
+        "onClicked: root.requestPageStep(1)",
+        "property real wheelPageAccumulator: 0",
+        "property bool wheelGestureCommitted: false",
+        "function handlePageWheel(wheel)",
+        "wheelGestureResetTimer.restart()",
+        "const threshold = usesPixelDelta ? wheelPixelThreshold : 120",
+        "root.handlePageWheel(wheel)",
+        "readonly property bool pageTransitionActive",
+        "readonly property bool applicationHoverAllowed",
+        "appMouseArea.containsMouse\n                                        && root.applicationHoverAllowed",
+        "if (root.applicationHoverAllowed)",
+        "Kirigami.WheelHandler {",
+        "id: wheelInputHandler",
+        "target: pagesView",
+        "scrollFlickableTarget: false",
+        "blockTargetWheel: true",
+    )
+    for marker in paged_grid_contract:
+        if marker not in overlay_source:
+            print(
+                f"PunchiMenuOverlay.qml: missing paged-grid contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if overlay_source.count("Layout.preferredWidth: root.headerControlSize") < 3:
+        print(
+            "PunchiMenu Fullscreen: header actions must share the search field height",
+            file=sys.stderr,
+        )
+        passed = False
+    if overlay_source.count("background: PunchiMenuSearchBackground {") != 3:
+        print(
+            "PunchiMenu Fullscreen: search and header actions must share one themed surface",
+            file=sys.stderr,
+        )
+        passed = False
+    if overlay_source.count("icon.color: highlightedContent") < 1:
+        print(
+            "PunchiMenu Fullscreen: Close must use the theme highlighted text color",
+            file=sys.stderr,
+        )
+        passed = False
+    if normal_source.count("icon.color: highlightedContent") < 4:
+        print(
+            "PunchiMenu Normal: session and Close icons must use the theme highlighted text color",
+            file=sys.stderr,
+        )
+        passed = False
+    header_cursor_contract = (
+        "enabled: hiddenApplicationsButton.enabled\n                    cursorShape: Qt.PointingHandCursor",
+        "enabled: configureButton.enabled\n                    cursorShape: Qt.PointingHandCursor",
+        "enabled: sessionButton.enabled\n                    cursorShape: Qt.PointingHandCursor",
+    )
+    for marker in header_cursor_contract:
+        if marker not in overlay_source:
+            print(
+                "PunchiMenu Fullscreen: every header action needs a pointing cursor",
+                file=sys.stderr,
+            )
+            passed = False
+    if "Controls.Menu {" in overlay_source:
+        print(
+            "PunchiMenu Fullscreen: context menu must use PlasmaComponents.Menu",
+            file=sys.stderr,
+        )
+        passed = False
+    fullscreen_context_menu_icon_contract = (
+        '? "favorite-favorited"',
+        ': "favorite"',
+        '? "window-unpin"',
+        ': "window-pin"',
+        'icon.name: "user-desktop"',
+        '? "view-visible"',
+        ': "view-hidden"',
+    )
+    for marker in fullscreen_context_menu_icon_contract:
+        if marker not in overlay_source:
+            print(
+                f"PunchiMenu Fullscreen: missing themed context-menu icon: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    normal_context_menu_icon_contract = (
+        '? "favorite-favorited"',
+        ': "favorite"',
+        '? "window-unpin"',
+        ': "window-pin"',
+        '"user-desktop", true',
+        '? "view-visible"',
+        ': "view-hidden"',
+    )
+    for marker in normal_context_menu_icon_contract:
+        if marker not in normal_source:
+            print(
+                f"PunchiMenu Normal: missing native themed menu icon: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    fullscreen_context_menu_interaction_contract = (
+        "modal: false",
+        "Controls.Popup.CloseOnEscape",
+        "requestContextMenu(targetMenu, sourceItem, x, y)",
+        "property Item pendingSourceItem: null",
+        "function requestContextMenu(menu, sourceItem, x, y)",
+        "if (menu.opened || menu.visible)",
+        "function completeContextMenuClose(menu)",
+        "onClosed:",
+        "Qt.callLater(function()",
+        "folderSurface.restoreFocus()",
+    )
+    for marker in fullscreen_context_menu_interaction_contract:
+        if marker not in overlay_source:
+            print(
+                f"PunchiMenu Fullscreen: missing retarget/close contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "Controls.Popup.CloseOnPressOutside" not in overlay_source:
+        print(
+            "PunchiMenu Fullscreen: context menu no longer closes on an outside press",
+            file=sys.stderr,
+        )
+        passed = False
+    normal_context_menu_contract = (
+        "function standaloneApplicationContextEntries(context)",
+        "function folderMemberContextEntries(context)",
+        "function folderContextEntries()",
+        "function activateContextMenuAction(actionId)",
+        "applicationContextMenuSurface.openAt(sourceItem",
+        "id: applicationContextMenuSurface",
+        "allowedExternalFocusItems: [applicationContextMenuSurface]",
+        "root.openApplicationContextMenu(\n                                            applicationMouseArea",
+        "root.openApplicationContextMenu(\n                                                favoriteMouseArea",
+    )
+    for marker in normal_context_menu_contract:
+        if marker not in normal_source:
+            print(
+                f"PunchiMenu Normal: missing embedded context surface contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    normal_context_surface_contract = (
+        "FocusScope {",
+        "targetItem.mapToItem(root,",
+        "signal actionTriggered(string actionId)",
+        "signal closeRequested(bool restoreFocus)",
+        "acceptedButtons: Qt.LeftButton",
+        "propagateComposedEvents: true",
+        "mouse.accepted = false",
+        'imagePath: "widgets/background"',
+        "PlasmaComponents.MenuItem {",
+        "PlasmaComponents.MenuSeparator {",
+        "Keys.priority: Keys.BeforeItem",
+        "event.key === Qt.Key_Escape",
+        "root.width - width - root.edgeMargin",
+        "root.height - height - root.edgeMargin",
+    )
+    for marker in normal_context_surface_contract:
+        if marker not in normal_context_surface_source:
+            print(
+                f"PunchiMenu Normal context surface: missing contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if normal_source.count("onPressed: function(mouse)") < 2:
+        print(
+            "PunchiMenu Normal: right-click menus must open from the press event",
+            file=sys.stderr,
+        )
+        passed = False
+    obsolete_normal_context_markers = (
+        "PlasmaComponents.Menu {",
+        "Controls.Menu {",
+        "Controls.MenuItem {",
+        "Controls.MenuSeparator {",
+        "PlasmaExtras.Menu {",
+        "PlasmaExtras.MenuItem {",
+        "standaloneApplicationContextMenuComponent",
+        "folderMemberContextMenuComponent",
+        "folderContextMenuComponent",
+        "menuComponent.createObject(root,",
+        "status === PlasmaExtras.Menu.Closed",
+        "property bool pendingPopupRequested: false",
+        "function requestPopup(sourceItem, x, y)",
+        "popupType:",
+        "function dismissForTarget(storageId)",
+        "function dismissForNavigation()",
+        "id: contextDismissArea",
+        "[PunchiMenuContextTrace]",
+        "[PunchiMenuPopupGeometry]",
+    )
+    for marker in obsolete_normal_context_markers:
+        if marker in normal_source:
+            print(
+                f"PunchiMenu Normal: obsolete Quick popup workaround remains: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "configureToolTip.showToolTip()" in overlay_source:
+        print(
+            "PunchiMenu Fullscreen: configuration tooltip still opens automatically on focus",
+            file=sys.stderr,
+        )
+        passed = False
+    if "screenInset: root.configuredPunchiMenuNormalPanelGap" not in main_source:
+        print(
+            "PunchiMenu Normal: configured edge distance is not applied to screen bounds",
+            file=sys.stderr,
+        )
+        passed = False
+    if "wheel.angleDelta.y > 0 || wheel.angleDelta.x < 0" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: wheel events still request pages without gesture arbitration",
+            file=sys.stderr,
+        )
+        passed = False
+    pages_view_index = overlay_source.find("id: pagesView")
+    wheel_handler_index = overlay_source.find("id: wheelInputHandler")
+    if pages_view_index < 0 or wheel_handler_index <= pages_view_index:
+        print(
+            "PunchiMenuOverlay.qml: wheel handler must be declared after the ListView",
+            file=sys.stderr,
+        )
+        passed = False
+    if "id: wheelInputInterceptor" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: wheel interception still creates a cursor-blocking MouseArea",
+            file=sys.stderr,
+        )
+        passed = False
+    if "id: wheelInputHandler\n                target: null" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: wheel handler is detached from the paged ListView",
+            file=sys.stderr,
+        )
+        passed = False
+    if overlay_source.count("cursorShape: Qt.PointingHandCursor") < 2:
+        print(
+            "PunchiMenuOverlay.qml: application and Favorite delegates must preserve the pointing cursor",
+            file=sys.stderr,
+        )
+        passed = False
+    if "appMouseArea.containsMouse && !pagesView.moving" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: hover still relies only on interactive movement state",
+            file=sys.stderr,
+        )
+        passed = False
+    if "parent.activeFocus || pagesView.currentIndex === index" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: page dots still change diameter with focus or selection",
+            file=sys.stderr,
+        )
+        passed = False
+    if "Controls.TextField {\n            id: searchField" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: fullscreen search still uses the generic wide field",
+            file=sys.stderr,
+        )
+        passed = False
+    if "Kirigami.SearchField {" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: Kirigami.SearchField reintroduces non-Plasma tooltips",
+            file=sys.stderr,
+        )
+        passed = False
+    if "Controls.ToolTip.visible: hovered || activeFocus" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: configuration tooltip does not use Plasma styling",
+            file=sys.stderr,
+        )
+        passed = False
+    if "PlasmaComponents.ToolTip." in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: attached tooltips can inherit the fullscreen color scheme",
+            file=sys.stderr,
+        )
+        passed = False
+    if "id: clearSearchToolTip" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: the approved tooltip-free search bar still creates a tooltip",
+            file=sys.stderr,
+        )
+        passed = False
+    if overlay_source.count("PlasmaCore.ToolTipArea {") < 7:
+        print(
+            "PunchiMenuOverlay.qml: every fullscreen action tooltip must use a Plasma tooltip window",
+            file=sys.stderr,
+        )
+        passed = False
+
+    fullscreen_favorites_contract = (
+        "readonly property bool favoritesSectionVisible",
+        "id: favoritesSection",
+        "readonly property real reservedHeight",
+        'i18nc("@title:section", "Favorites")',
+        "model: root.favorites",
+        "function launchFavoriteAt(index)",
+        "function openCurrentFavoriteContextMenu()",
+        "root.openApplicationContextMenu(\n                                                favoriteDelegate",
+        "id: favoritesLeftToolTip",
+        "id: favoritesRightToolTip",
+    )
+    for marker in fullscreen_favorites_contract:
+        if marker not in overlay_source:
+            print(
+                f"PunchiMenuOverlay.qml: missing fullscreen favorites contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+
+    favorite_scale_contract = (
+        (
+            config_items_source,
+            "function normalizedPunchiMenuFavoriteIconScalePercent(value)",
+            "safe Favorites scale normalization",
+        ),
+        (
+            config_items_source,
+            "Math.max(75, Math.min(150",
+            "safe Favorites scale range",
+        ),
+        (
+            punchi_menu_config_source,
+            'i18n("Favorites icon scale:")',
+            "dedicated Favorites scale control",
+        ),
+        (
+            dialog_source,
+            "signal favoriteIconScalePercentSelected(int percent)",
+            "legacy editor Favorites scale signal",
+        ),
+        (
+            workflow_source,
+            "function setPunchiMenuFavoriteIconScalePercent(percent)",
+            "legacy editor Favorites scale persistence",
+        ),
+        (
+            main_source,
+            "readonly property real configuredPunchiMenuFavoriteIconScale",
+            "reactive Favorites scale projection",
+        ),
+        (
+            normal_source,
+            "readonly property real safeFavoriteIconScale",
+            "Normal Favorites scale clamp",
+        ),
+        (
+            overlay_source,
+            "readonly property real safeFavoriteIconScale",
+            "Fullscreen Favorites scale clamp",
+        ),
+    )
+    for source, marker, description in favorite_scale_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu Favorites scale: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+
+    background_legibility_contract = (
+        (
+            config_items_source,
+            "function normalizedPunchiMenuFullScreenBackgroundOpacityPercent(value)",
+            "Fullscreen opacity normalization",
+        ),
+        (
+            config_items_source,
+            "function normalizedPunchiMenuNormalBackgroundOpacityPercent(value)",
+            "Normal opacity normalization",
+        ),
+        (
+            config_items_source,
+            "Math.max(50, Math.min(100",
+            "safe opacity percentage range",
+        ),
+        (
+            punchi_menu_config_source,
+            "Controls.Switch {",
+            "native blur switch",
+        ),
+        (
+            punchi_menu_config_source,
+            'i18n("Use background blur when available")',
+            "translated blur option",
+        ),
+        (
+            punchi_menu_config_source,
+            'i18n("Background opacity:")',
+            "translated opacity control",
+        ),
+        (
+            punchi_menu_config_source,
+            "visible: page.selectedBackgroundOpacityPercent < 70",
+            "low-opacity warning threshold",
+        ),
+        (
+            main_source,
+            "readonly property bool configuredPunchiMenuFullScreenBlurEnabled",
+            "Fullscreen reactive blur projection",
+        ),
+        (
+            main_source,
+            "readonly property real configuredPunchiMenuFullScreenBackgroundOpacity",
+            "Fullscreen reactive opacity projection",
+        ),
+        (
+            main_source,
+            "readonly property bool configuredPunchiMenuNormalBlurEnabled",
+            "Normal reactive blur projection",
+        ),
+        (
+            main_source,
+            "readonly property real configuredPunchiMenuNormalBackgroundOpacity",
+            "Normal reactive opacity projection",
+        ),
+        (
+            main_source,
+            "window: punchiMenuNormalDialog",
+            "Normal dialog-owned blur controller",
+        ),
+        (
+            overlay_source,
+            "enabled: root.menuOpen && root.backgroundBlurEnabled",
+            "Fullscreen blur switch binding",
+        ),
+        (
+            overlay_source,
+            "opacity: root.safeBackgroundOpacity",
+            "Fullscreen background-only opacity",
+        ),
+        (
+            normal_source,
+            "property real backgroundOpacity: 0.75",
+            "Normal background opacity input",
+        ),
+        (
+            normal_source,
+            "opacity: root.safeBackgroundOpacity",
+            "Normal background-only opacity",
+        ),
+    )
+    for source, marker, description in background_legibility_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu background legibility: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    normal_frame_contract = (
+        (main_source, 'themeFrameMargin("left")', "native left margin projection"),
+        (main_source, 'themeFrameMargin("top")', "native top margin projection"),
+        (main_source, 'themeFrameMargin("right")', "native right margin projection"),
+        (main_source, 'themeFrameMargin("bottom")', "native bottom margin projection"),
+        (normal_source, "readonly property real nativeFrameThickness: 2", "two-pixel native frame"),
+        (normal_source, "anchors.leftMargin: -root.themeFrameOverlapLeft", "left native-frame overlap"),
+        (normal_source, "anchors.topMargin: -root.themeFrameOverlapTop", "top native-frame overlap"),
+        (normal_source, "anchors.rightMargin: -root.themeFrameOverlapRight", "right native-frame overlap"),
+        (normal_source, "anchors.bottomMargin: -root.themeFrameOverlapBottom", "bottom native-frame overlap"),
+        (main_source, "backgroundHints: PlasmaCore.Dialog.StandardBackground", "preserved Plasma background"),
+    )
+    for source, marker, description in normal_frame_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu Normal frame: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if main_source.count(
+        "backgroundOpacity: root.configuredPunchiMenu"
+    ) != 2:
+        print(
+            "main.qml: both PunchiMenu modes must receive their background opacity",
+            file=sys.stderr,
+        )
+        passed = False
+    if main_source.count(
+        "favoriteIconScale: root.configuredPunchiMenuFavoriteIconScale"
+    ) != 2:
+        print(
+            "main.qml: both PunchiMenu modes must receive the shared Favorites scale",
+            file=sys.stderr,
+        )
+        passed = False
+    if 'icon.name: "window-close"' not in normal_source:
+        print(
+            "PunchiMenuNormal.qml: Close must use the theme-aware full icon",
+            file=sys.stderr,
+        )
+        passed = False
+    if 'icon.name: "window-close-symbolic"' in normal_source:
+        print(
+            "PunchiMenuNormal.qml: the low-contrast symbolic Close icon remains",
+            file=sys.stderr,
+        )
+        passed = False
+    if 'icon.name: "window-close"' not in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: Close must match the theme-aware Normal icon",
+            file=sys.stderr,
+        )
+        passed = False
+    if 'icon.name: "window-close-symbolic"' in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: the neutral symbolic Close icon remains",
+            file=sys.stderr,
+        )
+        passed = False
+    if overlay_source.count("PunchiMenuSearchBackground {") != 4:
+        print(
+            "PunchiMenuOverlay.qml: search and its three header actions must share the pill surface",
+            file=sys.stderr,
+        )
+        passed = False
+    if normal_source.count("PunchiMenuSearchBackground {") != 1:
+        print("PunchiMenuNormal.qml: shared search pill is missing", file=sys.stderr)
+        passed = False
+    if "contentItem: Rectangle {" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: page dot is still stretched as the button content item",
+            file=sys.stderr,
+        )
+        passed = False
+    if "preferredHighlightEnd: width" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: page snapping still uses the entire viewport as its highlight range",
+            file=sys.stderr,
+        )
+        passed = False
+    if "currentIndex: 0\n                cacheBuffer" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: a constant current-page binding can fight interactive swipes",
+            file=sys.stderr,
+        )
+        passed = False
+    if "positionViewAtIndex(safePage, ListView.Center)" in overlay_source:
+        print(
+            "PunchiMenuOverlay.qml: immediate positioning still overrides smooth page motion",
+            file=sys.stderr,
+        )
+        passed = False
+
+    hidden_applications_contract = (
+        (
+            config_items_source,
+            "function normalizedPunchiMenuHiddenApplicationIds(value)",
+            "persistent identifier normalization",
+        ),
+        (
+            config_items_source,
+            "item.hiddenApplicationIds = normalizedPunchiMenuHiddenApplicationIds(",
+            "configuration pruning",
+        ),
+        (
+            dock_items_controller_source,
+            "function setPunchiMenuApplicationHidden(storageId, hidden)",
+            "controller-owned persistence",
+        ),
+        (
+            dock_items_controller_source,
+            "root.syncDockItemsConfiguration()",
+            "reactive configuration synchronization",
+        ),
+        (
+            main_source,
+            "readonly property var configuredPunchiMenuHiddenApplicationIds",
+            "runtime configuration projection",
+        ),
+        (
+            overlay_source,
+            "property var hiddenApplicationIds: []",
+            "fullscreen hidden identifiers",
+        ),
+        (
+            overlay_source,
+            "property bool revealHiddenApplications: false",
+            "transient reveal state",
+        ),
+        (
+            overlay_source,
+            "if (appHidden && !revealHiddenApplications)",
+            "catalog filtering",
+        ),
+        (
+            overlay_source,
+            "signal setApplicationHiddenRequested(string storageId, bool hidden)",
+            "view intent signal",
+        ),
+        (
+            overlay_source,
+            'i18nc("@action:inmenu", "Hide from listing")',
+            "context action for hiding",
+        ),
+        (
+            overlay_source,
+            'i18nc("@action:inmenu", "Show in listing")',
+            "context action for restoring",
+        ),
+        (
+            overlay_source,
+            'source: "view-hidden-symbolic"',
+            "non-color hidden marker",
+        ),
+        (
+            overlay_source,
+            'i18nc("@action:button", "Show hidden applications")',
+            "reveal action",
+        ),
+        (
+            overlay_source,
+            'i18nc("@action:button", "Hide hidden applications")',
+            "filter action",
+        ),
+        (
+            overlay_source,
+            'i18nc("@info:accessibility",\n                                        "Hidden from the application listing")',
+            "accessible hidden state",
+        ),
+        (
+            overlay_source,
+            "event.key === Qt.Key_Menu",
+            "keyboard context-menu access",
+        ),
+        (
+            overlay_source,
+            "const app = applicationAt(currentApplicationIndex)",
+            "selected application context-menu routing",
+        ),
+    )
+    for source, marker, description in hidden_applications_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu hidden applications: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    normal_hidden_contract = (
+        "property var hiddenApplicationIds: []",
+        "property bool revealHiddenApplications: false",
+        "function applicationShouldBeVisible(storageId)",
+        "signal setApplicationHiddenRequested(string storageId, bool hidden)",
+        'i18nc("@action:inmenu", "Hide from listing")',
+        'i18nc("@action:inmenu", "Show in listing")',
+        'i18nc("@action:button", "Show hidden applications")',
+        'i18nc("@action:button", "Hide hidden applications")',
+        'source: "view-hidden-symbolic"',
+        "event.key === Qt.Key_Menu",
+    )
+    for marker in normal_hidden_contract:
+        if marker not in normal_source:
+            print(
+                f"PunchiMenuNormal.qml: missing shared hidden-item contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if main_source.count(
+        "hiddenApplicationIds: root.configuredPunchiMenuHiddenApplicationIds"
+    ) != 2:
+        print(
+            "main.qml: both PunchiMenu presentations must share hidden applications",
+            file=sys.stderr,
+        )
+        passed = False
+    if main_source.count("onSetApplicationHiddenRequested:") != 2:
+        print(
+            "main.qml: both PunchiMenu presentations must persist hidden applications",
+            file=sys.stderr,
+        )
+        passed = False
+    if overlay_source.count("revealHiddenApplications = false") < 3:
+        print(
+            "PunchiMenuOverlay.qml: transient reveal state is not reset on every close path",
+            file=sys.stderr,
+        )
+        passed = False
+    if normal_source.count("revealHiddenApplications = false") < 3:
+        print(
+            "PunchiMenuNormal.qml: transient reveal state is not reset on every close path",
+            file=sys.stderr,
+        )
+        passed = False
+
+    normal_placement_contract = (
+        (
+            config_items_source,
+            "function normalizedPunchiMenuNormalPlacementMode(value)",
+            "persistent placement normalization",
+        ),
+        (
+            workflow_source,
+            "function setPunchiMenuNormalPlacementMode(mode)",
+            "configuration workflow",
+        ),
+        (
+            config_page_source,
+            "onNormalPlacementModeSelected:",
+            "configuration signal routing",
+        ),
+        (
+            dialog_source,
+            'i18n("Normal menu placement:")',
+            "translated setting label",
+        ),
+        (
+            main_source,
+            "readonly property string configuredPunchiMenuNormalPlacementMode",
+            "reactive runtime projection",
+        ),
+        (
+            placement_source,
+            'if (root.placementMode === "centered")',
+            "available-area centering",
+        ),
+        (
+            main_source,
+            "visualParent: null",
+            "single-owner Normal dialog positioning",
+        ),
+        (
+            main_source,
+            "location: PlasmaCore.Types.Floating",
+            "manual anchored and centered dialog positioning",
+        ),
+        (
+            main_source,
+            "backgroundHints: PlasmaCore.Dialog.StandardBackground",
+            "native Plasma dialog surface",
+        ),
+        (
+            main_source,
+            "readonly property real reportedAvailableWidth: Math.max(",
+            "pre-show screen geometry fallback",
+        ),
+        (
+            main_source,
+            "minimumContentWidth + screenMargin",
+            "non-empty initial dialog width",
+        ),
+        (
+            main_source,
+            "minimumContentHeight + screenMargin",
+            "non-empty initial dialog height",
+        ),
+        (
+            main_source,
+            "Layout.minimumWidth: punchiMenuNormalDialog.desiredContentWidth",
+            "native panel dialog minimum width",
+        ),
+        (
+            main_source,
+            "Layout.maximumWidth: punchiMenuNormalDialog.desiredContentWidth",
+            "native panel dialog fixed width",
+        ),
+        (
+            main_source,
+            "Layout.minimumHeight: punchiMenuNormalDialog.desiredContentHeight",
+            "native panel dialog minimum height",
+        ),
+        (
+            main_source,
+            "Layout.maximumHeight: punchiMenuNormalDialog.desiredContentHeight",
+            "native panel dialog fixed height",
+        ),
+        (
+            category_pill_source,
+            "radius: height / 2",
+            "pill geometry",
+        ),
+    )
+    for source, marker, description in normal_placement_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu Normal: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "visualParent: root.punchiMenuAnchorItem || root" in main_source \
+            or 'visualParent: root.configuredPunchiMenuNormalPlacementMode === "centered"' \
+            in main_source:
+        print(
+            "main.qml: Normal mode still allows Plasma to override its calculated position",
+            file=sys.stderr,
+        )
+        passed = False
+    if "PunchiMenuCategoryPill {" not in normal_source:
+        print("PunchiMenuNormal.qml: category pill component is not used", file=sys.stderr)
+        passed = False
+
+    normal_pointer_contract = (
+        (category_pill_source, "id: pointerHover", "category hover source"),
+        (
+            category_pill_source,
+            "Kirigami.Theme.highlightedTextColor",
+            "category highlighted text color",
+        ),
+        (
+            category_pill_source,
+            "cursorShape: Qt.PointingHandCursor",
+            "category pointing cursor",
+        ),
+        (normal_source, "id: logOutHover", "log-out hover source"),
+        (normal_source, "id: rebootHover", "restart hover source"),
+        (normal_source, "id: shutdownHover", "shutdown hover source"),
+        (normal_source, "id: categoryLeftHover", "left category cursor"),
+        (normal_source, "id: categoryRightHover", "right category cursor"),
+        (normal_source, "id: favoritesLeftHover", "left Favorites cursor"),
+        (normal_source, "id: favoritesRightHover", "right Favorites cursor"),
+    )
+    for source, marker, description in normal_pointer_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu Normal interaction: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+
+    normal_horizontal_wheel_contract = (
+        "function handleHorizontalWheel(",
+        "id: categoriesWheelHandler",
+        "target: categoriesView",
+        "id: favoritesWheelHandler",
+        "target: favoritesView",
+        "scrollFlickableTarget: false",
+        "blockTargetWheel: true",
+    )
+    for marker in normal_horizontal_wheel_contract:
+        if marker not in normal_source:
+            print(
+                f"PunchiMenu Normal wheel: missing smooth horizontal contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if normal_source.count("Kirigami.WheelHandler {") != 2:
+        print(
+            "PunchiMenu Normal wheel: categories and Favorites need exactly two handlers",
+            file=sys.stderr,
+        )
+        passed = False
+
+    normal_feedback_contract = (
+        "readonly property int operationMessageDuration: 7000",
+        "id: operationMessageTimer",
+        "id: operationFeedback",
+        "z: 400",
+        "showCloseButton: true",
+        "function dismissOperationMessage()",
+        "operationMessageTimer.stop()",
+        "operationMessageTimer.restart()",
+        "detailedApplicationFeedback: true",
+    )
+    for marker in normal_feedback_contract:
+        if marker not in normal_source:
+            print(
+                f"PunchiMenu Normal feedback: missing contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if normal_source.count("Kirigami.InlineMessage {") != 1:
+        print(
+            "PunchiMenu Normal feedback: status message must have one top-level owner",
+            file=sys.stderr,
+        )
+        passed = False
+
+    fullscreen_feedback_contract = (
+        "readonly property int operationMessageDuration: 7000",
+        "id: operationMessageTimer",
+        "id: operationInlineMessage",
+        "showCloseButton: true",
+        "function dismissOperationMessage()",
+        "operationMessageTimer.stop()",
+        "operationMessageTimer.restart()",
+    )
+    for marker in fullscreen_feedback_contract:
+        if marker not in overlay_source:
+            print(
+                f"PunchiMenu Fullscreen feedback: missing contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+
+    dedicated_config_contract = (
+        (
+            config_model_source,
+            'source: "config/ConfigPunchiMenu.qml"',
+            "main configuration category",
+        ),
+        (
+            punchi_menu_config_source,
+            '"PunchiMenu Full screen"',
+            "full-screen mode option",
+        ),
+        (
+            punchi_menu_config_source,
+            '"PunchiMenu Normal"',
+            "Normal mode option",
+        ),
+        (
+            punchi_menu_config_source,
+            "property string cfg_dockItemsJson",
+            "shared item persistence",
+        ),
+        (
+            punchi_menu_config_source,
+            "ConfigItemsJS.prunePunchiMenu(item)",
+            "shared item normalization",
+        ),
+        (
+            punchi_menu_config_source,
+            '"normalPanelGap", Math.round(value)',
+            "panel distance control",
+        ),
+        (
+            config_items_source,
+            "function normalizedPunchiMenuNormalPanelGap(value)",
+            "panel distance normalization",
+        ),
+        (
+            config_items_source,
+            '"normalPanelGap": 8',
+            "panel distance default",
+        ),
+        (
+            main_source,
+            "readonly property int configuredPunchiMenuNormalPanelGap",
+            "reactive panel distance projection",
+        ),
+        (
+            main_source,
+            "panelGap: root.configuredPunchiMenuNormalPanelGap",
+            "runtime panel distance binding",
+        ),
+        (
+            placement_source,
+            "property real panelThickness: 0",
+            "panel thickness fallback input",
+        ),
+        (
+            normal_source,
+            "readonly property real verticalScrollBarReserve:",
+            "scrollbar width reservation",
+        ),
+        (
+            normal_source,
+            "(width - verticalScrollBarReserve) / root.columnCount",
+            "grid width adjustment",
+        ),
+    )
+    for source, marker, description in dedicated_config_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu dedicated configuration: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "Punchi.BlurBehindController" in normal_source or "surfaceOpacity" in normal_source:
+        print("PunchiMenuNormal.qml: manual surface blur was not retired", file=sys.stderr)
+        passed = False
+    if "Controls.ToolTip" in normal_source:
+        print("PunchiMenuNormal.qml: a generic tooltip remains", file=sys.stderr)
+        passed = False
+    if normal_source.count("PlasmaCore.ToolTipArea {") < 6:
+        print("PunchiMenuNormal.qml: Plasma tooltips are incomplete", file=sys.stderr)
+        passed = False
+
+    main_source = (PROJECT_ROOT / "contents/ui/main.qml").read_text(encoding="utf-8")
+    if main_source.count("showOperationResult(") < 4:
+        print("main.qml: operation results are not handled by both menus", file=sys.stderr)
+        passed = False
+    if "import org.kde.kwindowsystem" not in main_source:
+        print("main.qml: KWindowSystem is used without its QML import", file=sys.stderr)
+        passed = False
+    if "readonly property var dockItemsControllerService: dockItemsController" not in main_source:
+        print("main.qml: the outer dock controller is not exposed explicitly", file=sys.stderr)
+        passed = False
+    if "readonly property int configuredPunchiMenuItemIndex" not in main_source:
+        print("main.qml: PunchiMenu configuration target index is missing", file=sys.stderr)
+        passed = False
+    if "onConfigureRequested:" not in main_source or "root.openDockItemEditor(itemIndex)" not in main_source:
+        print("main.qml: fullscreen configuration request is not routed", file=sys.stderr)
+        passed = False
+    if main_source.count("dockItemsController: root.dockItemsControllerService") != 2:
+        print("main.qml: both PunchiMenu instances must receive the outer controller", file=sys.stderr)
+        passed = False
+    if main_source.count("dockItemsController: dockItemsController") != 1:
+        print("main.qml: unexpected self-named dock controller binding in PunchiMenu", file=sys.stderr)
+        passed = False
+    if main_source.count("root.dockItemsControllerService.togglePinAppToDock(") != 2:
+        print("main.qml: pin handlers do not use the outer controller", file=sys.stderr)
+        passed = False
+    if main_source.count("root.dockItemsControllerService.pinAppToDesktop(") != 2:
+        print("main.qml: desktop shortcut handlers do not use the outer controller", file=sys.stderr)
+        passed = False
+    if "readonly property bool isX11Session: KWindowSystem.isPlatformX11" not in main_source:
+        print("main.qml: the normal menu does not detect X11 through KWindowSystem", file=sys.stderr)
+        passed = False
+    x11_popup_flags = "? Qt.Popup | Qt.FramelessWindowHint"
+    wayland_dialog_flags = (
+        ": Qt.Dialog | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint"
+    )
+    if x11_popup_flags not in main_source or wayland_dialog_flags not in main_source:
+        print("main.qml: PunchiMenu normal lacks separate X11 and Wayland flags", file=sys.stderr)
+        passed = False
+    fullscreen_panel_type = (
+        "type: openedFromPanel\n"
+        "                ? PlasmaCore.Dialog.Normal\n"
+        "                : PlasmaCore.Dialog.OnScreenDisplay"
+    )
+    fullscreen_panel_flags = (
+        "flags: openedFromPanel\n"
+        "                ? Qt.Window | Qt.FramelessWindowHint"
+    )
+    fullscreen_x11_flags = (
+        "? Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint"
+    )
+    fullscreen_wayland_flags = (
+        ": Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint\n"
+        "                        | Qt.BypassWindowManagerHint"
+    )
+    if ("property bool openedFromPanel: false" not in main_source
+            or "punchiMenuDialogInstance.openedFromPanel = root.inPanel" not in main_source
+            or fullscreen_panel_type not in main_source
+            or fullscreen_panel_flags not in main_source
+            or fullscreen_x11_flags not in main_source
+            or fullscreen_wayland_flags not in main_source):
+        print(
+            "main.qml: fullscreen PunchiMenu lacks conditional panel stacking",
+            file=sys.stderr,
+        )
+        passed = False
+
+    return 0 if passed else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

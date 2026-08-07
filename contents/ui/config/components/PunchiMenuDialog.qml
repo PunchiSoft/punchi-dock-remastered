@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
-import org.kde.kquickcontrols as KQuickControls
 
 // Translation helpers are supplied by the KCM context.
 // qmllint disable unqualified
@@ -10,16 +9,13 @@ Controls.Dialog {
     id: root
 
     property string menuMode: "normal"
+    property string normalPlacementMode: "anchored"
     property int gridIconScalePercent: 100
+    property int favoriteIconScalePercent: 100
+    property bool showDistributionName: true
     property int normalWidthPercent: 55
     property int normalHeightPercent: 65
-    property string iconName: defaultIconName
-    property string shortcut: ""
     property real selectorWidth: Kirigami.Units.gridUnit * 16
-    readonly property string defaultIconName: "start-here-kde"
-    readonly property real pairedControlWidth: Math.max(root.selectorWidth,
-        Math.min(root.width - Kirigami.Units.largeSpacing * 2,
-            root.selectorWidth * 1.5))
     readonly property var modeOptions: [
         {
             "text": i18nc("@option:punchimenu-mode", "Full screen"),
@@ -37,12 +33,23 @@ Controls.Dialog {
             "available": false
         }
     ]
+    readonly property var normalPlacementOptions: [
+        {
+            "text": i18nc("@option:punchimenu-placement", "Attached to dock or panel"),
+            "value": "anchored"
+        },
+        {
+            "text": i18nc("@option:punchimenu-placement", "Centered on desktop"),
+            "value": "centered"
+        }
+    ]
 
     signal menuModeSelected(string mode)
+    signal normalPlacementModeSelected(string mode)
     signal gridIconScalePercentSelected(int percent)
+    signal favoriteIconScalePercentSelected(int percent)
+    signal showDistributionNameSelected(bool enabled)
     signal normalSizePercentSelected(int widthPercent, int heightPercent)
-    signal iconPickerRequested()
-    signal shortcutSelected(string shortcut)
 
     readonly property bool normalModeSelected: root.menuMode === "normal"
 
@@ -55,15 +62,26 @@ Controls.Dialog {
         return 0
     }
 
+    function normalPlacementIndex(mode) {
+        for (let index = 0; index < normalPlacementOptions.length; index++) {
+            if (normalPlacementOptions[index].value === mode) {
+                return index
+            }
+        }
+        return 0
+    }
+
     title: i18n("Configure PunchiMenu")
     modal: true
     standardButtons: Controls.Dialog.Close
     onOpened: {
         modeCombo.currentIndex = root.modeIndex(root.menuMode)
+        normalPlacementCombo.currentIndex = root.normalPlacementIndex(
+            root.normalPlacementMode)
         iconScaleSlider.value = root.gridIconScalePercent
+        favoriteIconScaleSlider.value = root.favoriteIconScalePercent
         normalWidthSlider.value = root.normalWidthPercent
         normalHeightSlider.value = root.normalHeightPercent
-        shortcutItem.keySequence = root.shortcut
     }
 
     contentItem: ColumnLayout {
@@ -107,12 +125,18 @@ Controls.Dialog {
             }
         }
 
-        Controls.Label {
+        Controls.Switch {
+            id: distributionNameSwitch
+
             Layout.fillWidth: true
             Layout.maximumWidth: root.selectorWidth
-            text: i18n("Full screen and Normal are available. Compact will be enabled in a future update.")
-            wrapMode: Text.WordWrap
-            opacity: 0.75
+            visible: !root.normalModeSelected
+            text: i18n("Show distribution name in full screen")
+            checked: root.showDistributionName
+            onClicked: {
+                root.showDistributionName = checked
+                root.showDistributionNameSelected(checked)
+            }
         }
 
         Controls.Label {
@@ -132,7 +156,7 @@ Controls.Dialog {
 
                 Layout.fillWidth: true
                 from: 75
-                to: 150
+                to: 200
                 stepSize: 5
                 snapMode: Controls.Slider.SnapAlways
                 value: 100
@@ -155,9 +179,79 @@ Controls.Dialog {
         Controls.Label {
             Layout.fillWidth: true
             Layout.maximumWidth: root.selectorWidth
-            text: i18n("The effective size adapts to the screen and available grid cell space.")
+            text: i18n("Favorites icon scale:")
             wrapMode: Text.WordWrap
-            opacity: 0.75
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredWidth: root.selectorWidth
+            spacing: Kirigami.Units.smallSpacing
+
+            Controls.Slider {
+                id: favoriteIconScaleSlider
+
+                Layout.fillWidth: true
+                from: 75
+                to: 150
+                stepSize: 5
+                snapMode: Controls.Slider.SnapAlways
+                value: 100
+                Accessible.name: i18n("PunchiMenu Favorites icon scale")
+                Accessible.description: i18n("Changes the icon size in the reserved Favorites section in both menu modes.")
+
+                onMoved: {
+                    const normalizedPercent = Math.round(value / stepSize) * stepSize
+                    root.favoriteIconScalePercent = normalizedPercent
+                    root.favoriteIconScalePercentSelected(normalizedPercent)
+                }
+                onValueChanged: {
+                    if (activeFocus && !pressed) {
+                        const normalizedPercent = Math.round(value / stepSize) * stepSize
+                        if (normalizedPercent !== root.favoriteIconScalePercent) {
+                            root.favoriteIconScalePercent = normalizedPercent
+                            root.favoriteIconScalePercentSelected(normalizedPercent)
+                        }
+                    }
+                }
+            }
+
+            Controls.Label {
+                Layout.minimumWidth: Kirigami.Units.gridUnit * 3
+                horizontalAlignment: Text.AlignRight
+                text: i18n("%1%", Math.round(favoriteIconScaleSlider.value))
+            }
+        }
+
+        Controls.Label {
+            Layout.fillWidth: true
+            Layout.maximumWidth: root.selectorWidth
+            visible: root.normalModeSelected
+            text: i18n("Normal menu placement:")
+            wrapMode: Text.WordWrap
+        }
+
+        Controls.ComboBox {
+            id: normalPlacementCombo
+
+            Layout.fillWidth: true
+            Layout.preferredWidth: root.selectorWidth
+            Layout.maximumWidth: root.selectorWidth
+            visible: root.normalModeSelected
+            model: root.normalPlacementOptions
+            textRole: "text"
+            Accessible.name: i18n("Normal menu placement")
+
+            onActivated: function(index) {
+                const option = root.normalPlacementOptions[index]
+                if (!option) {
+                    currentIndex = root.normalPlacementIndex(
+                        root.normalPlacementMode)
+                    return
+                }
+                root.normalPlacementMode = String(option.value)
+                root.normalPlacementModeSelected(root.normalPlacementMode)
+            }
         }
 
         Controls.Label {
@@ -258,85 +352,6 @@ Controls.Dialog {
             }
         }
 
-        Controls.Label {
-            Layout.fillWidth: true
-            Layout.maximumWidth: root.selectorWidth
-            visible: root.normalModeSelected
-            text: i18n("The percentages adjust the menu size relative to your screen width and height (from 30% to 90%).")
-            wrapMode: Text.WordWrap
-            color: Kirigami.Theme.disabledTextColor
-        }
-
-        GridLayout {
-            Layout.fillWidth: true
-            Layout.preferredWidth: root.pairedControlWidth
-            Layout.maximumWidth: root.pairedControlWidth
-            columns: 2
-            columnSpacing: Kirigami.Units.largeSpacing
-            rowSpacing: Kirigami.Units.smallSpacing
-
-            Controls.Label {
-                Layout.fillWidth: true
-                text: i18n("Icon:")
-                wrapMode: Text.WordWrap
-            }
-
-            Controls.Label {
-                Layout.fillWidth: true
-                text: i18n("Keyboard shortcut:")
-                wrapMode: Text.WordWrap
-            }
-
-            Controls.Button {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                icon.name: root.iconName.length > 0
-                    ? root.iconName
-                    : root.defaultIconName
-                icon.source: root.iconName.length > 0
-                    ? root.iconName
-                    : root.defaultIconName
-                display: Controls.AbstractButton.IconOnly
-                Accessible.name: i18nc("@action:button", "Choose PunchiMenu icon")
-                Accessible.description: i18nc("@info:accessibility", "Current icon: %1",
-                    root.iconName.length > 0 ? root.iconName : root.defaultIconName)
-                onClicked: root.iconPickerRequested()
-
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: Accessible.name
-            }
-
-            KQuickControls.KeySequenceItem {
-                id: shortcutItem
-
-                Layout.fillWidth: true
-                showCancelButton: true
-                // Keep the Plasma 6.0-compatible properties. ShortcutPattern was
-                // introduced in a later KF6 release.
-                // qmllint disable deprecated
-                modifierOnlyAllowed: true
-                modifierlessAllowed: false
-                // qmllint enable deprecated
-                Accessible.name: i18n("PunchiMenu keyboard shortcut")
-
-                onKeySequenceModified: {
-                    // QKeySequence exposes toString() at runtime, but the Qt QML
-                    // metadata does not advertise the method to qmllint.
-                    // qmllint disable missing-property
-                    root.shortcutSelected(keySequence.toString())
-                    // qmllint enable missing-property
-                }
-            }
-        }
-
-        Controls.Label {
-            Layout.fillWidth: true
-            Layout.maximumWidth: root.selectorWidth
-            text: i18n("This shortcut controls PunchiMenu independently from the widget activation shortcut.")
-            wrapMode: Text.WordWrap
-            color: Kirigami.Theme.disabledTextColor
-        }
     }
 }
 // qmllint enable unqualified

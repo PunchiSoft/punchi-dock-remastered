@@ -48,7 +48,6 @@ KCM.SimpleKCM {
     property string timedColorTarget: "text"
     property string cfg_dockItemsJson: ""
     property int cfg_pendingEditDockItemIndex: -1
-    property string cfg_punchiMenuShortcut: ""
     property alias cfg_actionPopupLimitRows: actionDialog.actionPopupLimitRowsChecked
     property alias cfg_actionPopupMaxVisibleRows: actionDialog.actionPopupMaxVisibleRowsValue
     property bool pendingEditConsumed: false
@@ -372,7 +371,8 @@ KCM.SimpleKCM {
 
     function consumePendingEditRequest() {
         const pendingIndex = parseInt(cfg_pendingEditDockItemIndex, 10)
-        if (pendingEditConsumed || isNaN(pendingIndex) || pendingIndex < 0) {
+        if (!diskItemsLoaded || pendingEditConsumed
+                || isNaN(pendingIndex) || pendingIndex < 0) {
             return
         }
 
@@ -469,9 +469,15 @@ KCM.SimpleKCM {
 
     function setPunchiMenuMode(mode) { WorkflowHelper.setPunchiMenuMode(mode) }
 
+    function setPunchiMenuNormalPlacementMode(mode) { WorkflowHelper.setPunchiMenuNormalPlacementMode(mode) }
+
     function setPunchiMenuIcon(iconName) { WorkflowHelper.setPunchiMenuIcon(iconName) }
 
     function setPunchiMenuGridIconScalePercent(percent) { WorkflowHelper.setPunchiMenuGridIconScalePercent(percent) }
+
+    function setPunchiMenuFavoriteIconScalePercent(percent) { WorkflowHelper.setPunchiMenuFavoriteIconScalePercent(percent) }
+
+    function setPunchiMenuShowDistributionName(enabled) { WorkflowHelper.setPunchiMenuShowDistributionName(enabled) }
 
     function setPunchiMenuNormalSizePercent(widthPercent, heightPercent) { WorkflowHelper.setPunchiMenuNormalSizePercent(widthPercent, heightPercent) }
 
@@ -554,6 +560,12 @@ KCM.SimpleKCM {
     }
 
     onCfg_dockItemsJsonChanged: syncItemsFromConfigJson()
+    onCfg_pendingEditDockItemIndexChanged: consumePendingEditRequest()
+    onDiskItemsLoadedChanged: {
+        if (diskItemsLoaded) {
+            consumePendingEditRequest()
+        }
+    }
 
     Component.onDestruction: {
         if (pendingEditConsumed) {
@@ -733,19 +745,23 @@ KCM.SimpleKCM {
         width: Math.min(page.width - Kirigami.Units.largeSpacing * 2,
             Kirigami.Units.gridUnit * 28)
         selectorWidth: layoutMetrics.selectorWidth
-        shortcut: page.cfg_punchiMenuShortcut
         onMenuModeSelected: function(mode) {
             page.setPunchiMenuMode(mode)
+        }
+        onNormalPlacementModeSelected: function(mode) {
+            page.setPunchiMenuNormalPlacementMode(mode)
         }
         onGridIconScalePercentSelected: function(percent) {
             page.setPunchiMenuGridIconScalePercent(percent)
         }
+        onFavoriteIconScalePercentSelected: function(percent) {
+            page.setPunchiMenuFavoriteIconScalePercent(percent)
+        }
+        onShowDistributionNameSelected: function(enabled) {
+            page.setPunchiMenuShowDistributionName(enabled)
+        }
         onNormalSizePercentSelected: function(widthPercent, heightPercent) {
             page.setPunchiMenuNormalSizePercent(widthPercent, heightPercent)
-        }
-        onIconPickerRequested: page.openIconPicker("punchimenu")
-        onShortcutSelected: function(shortcut) {
-            page.cfg_punchiMenuShortcut = shortcut
         }
     }
 

@@ -1,3 +1,78 @@
+## [0.9.6] - 2026-08-07
+
+### Agregado
+
+- Carpetas de aplicaciones persistentes y con nombre en PunchiMenu Normal y
+  Pantalla completa, con acciones para crear, abrir, renombrar, mover, quitar,
+  disolver y deshacer la última operación mientras el menú permanece abierto.
+- Ocultación selectiva de aplicaciones, revelado temporal, indicador de estado
+  y comportamiento equivalente dentro de las carpetas.
+- Vista de sesión en Pantalla completa con avatar circular, cerrar sesión,
+  reiniciar y apagar; el recorte del avatar usa un shader empaquetado con
+  fallback de renderizado por software.
+- Categoría principal de configuración de PunchiMenu para presentación,
+  apariencia, desenfoque, opacidad, ubicación, separación, dimensiones,
+  escalas, etiqueta de distribución, icono y atajo global.
+- Reconocimiento seguro de lanzadores `.desktop` locales y enlaces simbólicos
+  autorizados por KDE en los contenedores Grid, List y Detail.
+- Soporte efectivo de miniaturas de ventanas en sesiones Plasma X11 mediante
+  una ruta dedicada, manteniendo Wayland como objetivo principal.
+
+### Cambiado
+
+- PunchiMenu Pantalla completa sustituye el carrusel preliminar de categorías
+  por una grilla paginada adaptable de aplicaciones con navegación mediante
+  rueda, touchpad, arrastre, teclado, indicadores y flechas laterales.
+- Favoritos dispone de un área reservada independiente en ambos modos y de una
+  escala de iconos configurable dentro de límites seguros.
+- PunchiMenu Normal puede abrirse centrado en el escritorio o acoplado al dock
+  o panel, considerando orientación, grosor real, límites de pantalla y una
+  separación configurable.
+- Búsqueda, categorías, controles, cursores, tooltips, foco y estados hover se
+  armonizaron con los colores y métricas del tema Plasma activo.
+- El diálogo rápido de cada ítem conserva solo opciones básicas; los editores
+  de icono y atajo global viven únicamente en la configuración principal.
+- La organización de carpetas persiste solo identidades canónicas, etiquetas,
+  membresía y orden; nunca guarda comandos ni iconos descubiertos.
+
+### Corregido
+
+- La rueda en Pantalla completa ya no avanza en exceso ni retrocede de página;
+  el arbitraje por ráfagas limita cada gesto y permite transiciones suaves e
+  interrumpibles.
+- Los menús contextuales de PunchiMenu Normal se posicionan junto al elemento
+  correcto incluso después de desplazar la grilla, se trasladan con un nuevo
+  clic derecho y se cierran al pulsar fuera.
+- Las carpetas de Normal calculan una superficie compacta según sus miembros y
+  reservan correctamente el espacio de la barra de desplazamiento.
+- Las notificaciones de operaciones aparecen sobre la superficie modal,
+  reinician su temporizador al repetirse y ofrecen cierre manual.
+- Los controles de sesión, categorías y navegación usan texto resaltado del
+  tema, cursor de mano y geometría que evita solapamientos en ambos modos.
+
+### Seguridad
+
+- Las acciones de aplicaciones resuelven identidades canónicas exactas en vez
+  de coincidencias parciales.
+- La creación de accesos de escritorio usa escrituras atómicas, límites de
+  recursos y comprobaciones de colisión y enlaces simbólicos.
+- Enlaces rotos, URLs remotas, destinos que no son `.desktop`, archivos fuera
+  de límites y lanzadores no autorizados por KDE permanecen no ejecutables.
+- Punchi Dock no incorpora telemetría; favoritos, carpetas, elementos ocultos,
+  configuración, temas y avatar permanecen locales.
+
+### Validación
+
+- Fedora 44 `x86_64`: compilación Release y paquete nativo `.plasmoid`
+  generados correctamente.
+- CTest completo: `25/25` pruebas correctas.
+- `qmllint`: línea base estable en 707 advertencias heredadas, sin aumento.
+- Catálogos alemán, español y portugués brasileño: 816 mensajes traducibles
+  por idioma y validación `msgfmt` correcta.
+- El usuario confirmó en Plasma real los dos modos de PunchiMenu, carpetas,
+  favoritos, ocultación, navegación, menús contextuales, avatar, controles de
+  sesión, temas claro/oscuro, opacidad y desenfoque.
+
 ## [0.9.5] - 2026-08-03
 
 ### Agregado

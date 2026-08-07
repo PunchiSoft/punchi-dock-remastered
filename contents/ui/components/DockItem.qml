@@ -273,12 +273,24 @@ Item {
     readonly property bool spacerItem: itemType === "spacer"
     readonly property bool mediaItem: itemType === "media"
     readonly property bool activeTaskItem: itemType === "app" && (taskIsActive || taskIndicatorCount > 0)
-    readonly property bool showAnyTooltip: !separatorItem
-        && !spacerItem
-        && !mediaItem
-        && itemName.length > 0
-        && !suppressTooltip
-        && !activeTaskItem
+    readonly property bool supportsPopupSurface: supportsContextMenu
+        || itemType === "app"
+        || itemType === "folder"
+        || itemType === "punchimenu"
+        || itemType === "note"
+        || itemType === "calendar"
+        || itemType === "trash"
+    readonly property bool isAnyPopupOrMenuOpen: {
+        if (layoutController && layoutController.popupCoordinator) {
+            const coordinator = layoutController.popupCoordinator
+            const targetActive = coordinator.isPopupActiveForVisualParent
+                && coordinator.isPopupActiveForVisualParent(dockItemContainer)
+            const globalActive = !!coordinator.isAnyPopupActiveGlobally
+            return targetActive || globalActive
+        }
+        return false
+    }
+    readonly property bool showAnyTooltip: false
     readonly property real requestedSeparatorThickness: customSeparatorEnabled
         ? Number(separatorTheme.thickness || 2)
         : 2

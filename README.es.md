@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.5">
-    <img src="https://img.shields.io/badge/release-v0.9.5-4caf50" alt="Versión v0.9.5">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.6">
+    <img src="https://img.shields.io/badge/release-v0.9.6-4caf50" alt="Versión v0.9.6">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -22,18 +22,24 @@ Punchi Dock Remastered es un dock de lanzadores e interfaz de tareas nativo para
 
 Este repositorio es una reescritura modular del proyecto original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). Actualmente el proyecto está preparando su camino hacia una versión estable 1.0.
 
-La versión actual es [v0.9.5](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.5).
+La versión actual es [v0.9.6](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.6).
 
-## Novedades de la versión 0.9.5
+## Novedades de la versión 0.9.6
 
-- **Paquete Plasmoid Universal Mejorado**: Un único paquete `.plasmoid` ejecutable de forma transparente en Fedora 44, Arch Linux, Debian 13/14 y Kubuntu 26.04+ utilizando módulos binarios proxy C (`$ORIGIN/compat`) compilados con constructores `dlopen()`.
-- **Asistente Maestro de Setup**: Script unificado `scripts/setup.sh` con menú CLI interactivo de 8 opciones, auto-detección de SO, logs persistentes e i18n.
-- **Refresco en Caliente Reactivo**: Toda modificación en la configuración de PunchiMenu se aplica al instante tras hacer clic en "Aplicar" sin requerir reiniciar `plasmashell`.
-- **Dimensiones de PunchiMenu ampliadas**: Deslizadores de ancho y alto del 30% al 90% en pasos de 5%.
-- **ToolTips Accesibles**: Etiquetas emergentes en botones superiores (Cerrar sesión, Reiniciar, Apagar, Cerrar) visibles en hover y foco.
-- **Localización al 100%**: Catálogos de traducción actualizados para alemán (`de.po`), español (`es.po`) y portugués de Brasil (`pt_BR.po`).
+- **Carpetas de aplicaciones**: PunchiMenu Normal y Pantalla completa permiten
+  crear, renombrar, poblar, disolver y deshacer carpetas persistentes con nombre.
+- **Lanzador de pantalla completa**: Paginación adaptable, navegación acotada
+  mediante rueda y arrastre, Favoritos, aplicaciones ocultas, búsqueda y sesión.
+- **Modo Normal refinado**: Posición centrada o acoplada al panel, carpetas
+  compactas, controles temáticos y menús contextuales correctamente ubicados.
+- **Lanzadores más seguros**: Los contenedores Grid, List y Detail reconocen
+  archivos `.desktop` locales validados y enlaces simbólicos autorizados.
+- **Miniaturas en X11**: Una ruta dedicada ofrece vistas previas efectivas en
+  Plasma X11, manteniendo Wayland como objetivo principal.
+- **Mayor cobertura**: 25 pruebas automatizadas y catálogos completos en alemán,
+  español y portugués brasileño con 816 mensajes por idioma.
 
-Consulta el [changelog de la versión 0.9.5](CHANGELOG.md#095---2026-08-03) para
+Consulta el [changelog de la versión 0.9.6](CHANGELOG.md#096---2026-08-07) para
 obtener las notas detalladas del lanzamiento.
 
 ## Capturas
@@ -42,9 +48,9 @@ obtener las notas detalladas del lanzamiento.
 |:--:|
 | <img src="Images/PunchiMenuNormal.png" alt="PunchiMenu Normal con categorías, grilla de aplicaciones y favoritos" width="760"> |
 
-| PunchiMenu Pantalla completa — vista preliminar temprana |
+| PunchiMenu Pantalla completa |
 |:--:|
-| <img src="Images/PunchiMenuFullScreen.png" alt="Carrusel preliminar de PunchiMenu en Pantalla completa" width="760"> |
+| <img src="Images/PunchiMenuFullScreen.png" alt="Lanzador de aplicaciones PunchiMenu en Pantalla completa" width="760"> |
 
 | Controles multimedia MPRIS |
 |:--:|
@@ -65,10 +71,10 @@ obtener las notas detalladas del lanzamiento.
 - Lanzadores personalizados con preservación segura de comandos y argumentos.
 - Tarjetas de ventanas, miniaturas vivas y controles para ventanas agrupadas, con selección entre tarjetas, miniaturas en vivo o sin ventana emergente.
 - Carpetas configurables con vistas de rejilla, lista y detalle, además de notas rápidas, papelera, separadores y calendario.
-- Ítem preliminar PunchiMenu con modos Normal y Pantalla completa. Normal ofrece
-  búsqueda, categorías, favoritos persistentes, operación por teclado, atajo
-  global dedicado y acciones de sesión nativas; Pantalla completa continúa
-  preliminar y Compacto aún no está disponible.
+- Lanzador de aplicaciones PunchiMenu con modos Normal y Pantalla completa,
+  búsqueda, categorías, favoritos, carpetas de aplicaciones con nombre,
+  ocultación selectiva, operación por teclado, atajo global y acciones de
+  sesión nativas. Compacto queda reservado para una versión futura.
 - Visualizador de audio PipeWire opcional con seis estilos, colores dinámicos o del tema Plasma y hasta 48 elementos visuales.
 - Popups adaptados al tema de Plasma con animaciones de apertura configurables, transiciones fluidas entre miniaturas y menús, y retargeting continuo entre elementos del dock.
 - Acciones nativas de aplicacion y ventana en los menus contextuales de launchers fijados y tareas dinamicas.
@@ -85,6 +91,7 @@ obtener las notas detalladas del lanzamiento.
 - Compatibilidad dinámica con APIs de TaskManager disponibles en distintas versiones de Plasma 6.
 - Iconos de ventanas para aplicaciones portables y asociación de tareas mediante identificadores de aplicación o URL de lanzador.
 - Tamaño estable de iconos al alternar un panel Plasma entre Siempre visible y Ocultar automáticamente.
+- Cumplimiento con estándares de almacenamiento de usuario XDG: Los temas JSON importados (`~/.local/share/punchi-dock-remastered/`) y la configuración de ítems por instancia (`~/.config/punchi-dock/`) utilizan almacenamiento aislado con escritura atómica para evitar la corrupción de `desktop-appletsrc` y conservar los datos del usuario al actualizar el plasmoide.
 - Integración QML nativa en C++ para descubrir aplicaciones, servicios de ejecución, análisis de audio y operaciones de papelera.
 
 ## Requisitos
@@ -115,13 +122,13 @@ En Fedora, `kpackagetool6` pertenece a `kf6-kpackage` y normalmente ya está dis
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.5-universal.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.6-fedora44-x86_64.plasmoid
 ```
 
 Para actualizar una instalación existente:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.5-universal.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.6-fedora44-x86_64.plasmoid
 ```
 
 Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actualizado no se carga inmediatamente.
@@ -146,7 +153,7 @@ En Fedora 44+, instala las dependencias de compilación:
 sudo dnf install \
     binutils cmake gcc-c++ ninja-build extra-cmake-modules \
     qt6-qtdeclarative-devel \
-    kf6-kcoreaddons-devel kf6-kglobalaccel-devel kf6-kio-devel kf6-kjobwidgets-devel \
+    kf6-kconfig-devel kf6-kcoreaddons-devel kf6-kglobalaccel-devel kf6-kio-devel kf6-kjobwidgets-devel \
     kf6-kservice-devel kf6-kwindowsystem-devel libplasma-devel plasma-workspace-devel \
     pipewire-devel gettext \
     zip unzip
@@ -173,8 +180,10 @@ scripts/setup-universal.sh
 dist/punchi-dock-remastered-<versión>-<distribución>-<arquitectura>.plasmoid
 ```
 
-Por ejemplo: `punchi-dock-remastered-0.9.5-universal.plasmoid` o
-`punchi-dock-remastered-0.9.5-fedora44-x86_64.plasmoid`.
+La release 0.9.6 de GitHub ofrece actualmente
+`punchi-dock-remastered-0.9.6-fedora44-x86_64.plasmoid`. Los artefactos
+universales se publican por separado después de completar su compilación en
+Debian 13 y su validación entre distribuciones.
 No instales un artefacto identificado para otra distribución.
 
 El flujo Debian 13 fue comprobado por separado de Debian 14/testing. Kubuntu

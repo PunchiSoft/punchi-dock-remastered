@@ -538,7 +538,31 @@ function normalizedPunchiMenuGridIconScalePercent(value) {
     if (!Number.isFinite(requestedValue)) {
         return 100
     }
+    return Math.max(75, Math.min(200, Math.round(requestedValue / 5) * 5))
+}
+
+function normalizedPunchiMenuFavoriteIconScalePercent(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 100
+    }
     return Math.max(75, Math.min(150, Math.round(requestedValue / 5) * 5))
+}
+
+function normalizedPunchiMenuFullScreenBackgroundOpacityPercent(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 50
+    }
+    return Math.max(50, Math.min(100, Math.round(requestedValue / 5) * 5))
+}
+
+function normalizedPunchiMenuNormalBackgroundOpacityPercent(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 75
+    }
+    return Math.max(50, Math.min(100, Math.round(requestedValue / 5) * 5))
 }
 
 function normalizedPunchiMenuNormalWidthPercent(value) {
@@ -557,12 +581,26 @@ function normalizedPunchiMenuNormalHeightPercent(value) {
     return Math.max(30, Math.min(90, Math.round(requestedValue / 5) * 5))
 }
 
+function normalizedPunchiMenuNormalPanelGap(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 8
+    }
+    return Math.max(0, Math.min(32, Math.round(requestedValue)))
+}
+
 function normalizedPunchiMenuMode(value) {
     var availableModes = ["fullScreen", "normal"]
     var requestedMode = String(value || "fullScreen")
     return availableModes.indexOf(requestedMode) >= 0
         ? requestedMode
         : "fullScreen"
+}
+
+function normalizedPunchiMenuNormalPlacementMode(value) {
+    return String(value || "anchored") === "centered"
+        ? "centered"
+        : "anchored"
 }
 
 function normalizedPunchiMenuIcon(value) {
@@ -574,6 +612,27 @@ function normalizedPunchiMenuIcon(value) {
     return requestedIcon
 }
 
+function normalizedPunchiMenuHiddenApplicationIds(value) {
+    var source = value instanceof Array ? value : []
+    var result = []
+    var seen = {}
+    var maximumEntries = 512
+    for (var index = 0; index < source.length && result.length < maximumEntries; index++) {
+        var storageId = String(source[index] || "").trim()
+        if (storageId.length === 0 || storageId.length > 512
+                || /[\u0000-\u001f\u007f]/.test(storageId)) {
+            continue
+        }
+        var comparisonKey = "#" + storageId.toLowerCase()
+        if (seen[comparisonKey] === true) {
+            continue
+        }
+        seen[comparisonKey] = true
+        result.push(storageId)
+    }
+    return result
+}
+
 function prunePunchiMenu(item) {
     removeKeys(item, [
         "command", "apps", "actions", "actionsEnabled", "storageId", "appId",
@@ -582,12 +641,44 @@ function prunePunchiMenu(item) {
     item.name = "PunchiMenu"
     item.icon = normalizedPunchiMenuIcon(item.icon)
     item.menuMode = normalizedPunchiMenuMode(item.menuMode)
+    item.normalPlacementMode = normalizedPunchiMenuNormalPlacementMode(
+        item.normalPlacementMode)
     item.gridIconScalePercent = normalizedPunchiMenuGridIconScalePercent(
         item.gridIconScalePercent)
+    item.favoriteIconScalePercent = normalizedPunchiMenuFavoriteIconScalePercent(
+        item.favoriteIconScalePercent)
+    if (item.fullScreenBlurEnabled !== false) {
+        delete item.fullScreenBlurEnabled
+    } else {
+        item.fullScreenBlurEnabled = false
+    }
+    item.fullScreenBackgroundOpacityPercent =
+        normalizedPunchiMenuFullScreenBackgroundOpacityPercent(
+            item.fullScreenBackgroundOpacityPercent)
+    if (item.normalBlurEnabled !== false) {
+        delete item.normalBlurEnabled
+    } else {
+        item.normalBlurEnabled = false
+    }
+    item.normalBackgroundOpacityPercent =
+        normalizedPunchiMenuNormalBackgroundOpacityPercent(
+            item.normalBackgroundOpacityPercent)
+    if (item.showDistributionName !== false) {
+        delete item.showDistributionName
+    } else {
+        item.showDistributionName = false
+    }
+    item.hiddenApplicationIds = normalizedPunchiMenuHiddenApplicationIds(
+        item.hiddenApplicationIds)
+    if (item.hiddenApplicationIds.length === 0) {
+        delete item.hiddenApplicationIds
+    }
     item.normalWidthPercent = normalizedPunchiMenuNormalWidthPercent(
         item.normalWidthPercent)
     item.normalHeightPercent = normalizedPunchiMenuNormalHeightPercent(
         item.normalHeightPercent)
+    item.normalPanelGap = normalizedPunchiMenuNormalPanelGap(
+        item.normalPanelGap)
 }
 
 function pruneApp(item) {
@@ -685,9 +776,14 @@ function newItem(type, defaultTrashEmptySound) {
             "name": "PunchiMenu",
             "icon": "start-here-kde",
             "menuMode": "normal",
+            "normalPlacementMode": "anchored",
             "gridIconScalePercent": 100,
+            "favoriteIconScalePercent": 100,
+            "fullScreenBackgroundOpacityPercent": 50,
+            "normalBackgroundOpacityPercent": 75,
             "normalWidthPercent": 55,
-            "normalHeightPercent": 65
+            "normalHeightPercent": 65,
+            "normalPanelGap": 8
         }
     }
     if (type === "media") {

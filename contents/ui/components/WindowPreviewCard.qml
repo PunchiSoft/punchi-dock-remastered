@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
+import org.kde.kwindowsystem
 import org.kde.plasma.extras as PlasmaExtras
 
 Controls.ItemDelegate {
@@ -24,6 +25,9 @@ Controls.ItemDelegate {
         ? i18n("Active window")
         : (windowData.subtitle || windowData.name || i18n("Window preview"))
     readonly property string windowUuid: String(windowData.windowUuid || "")
+    readonly property var winId: windowData.winId !== undefined && windowData.winId !== null
+        ? windowData.winId
+        : 0
     readonly property bool canMinimize: !!windowData.minimizable
     readonly property bool minimized: !!windowData.minimized
     readonly property bool canMaximize: !!windowData.maximizable
@@ -81,9 +85,11 @@ Controls.ItemDelegate {
                 anchors.fill: parent
                 z: 2
                 active: root.streamActive && root.liveThumbnailEnabled
-                    && root.windowUuid.length > 0
+                    && (root.windowUuid.length > 0 || Number(root.winId) > 0)
                 sourceComponent: WindowLiveThumbnail {
                     windowUuid: root.windowUuid
+                    winId: root.winId
+                    minimized: root.minimized
                 }
             }
 
@@ -106,10 +112,13 @@ Controls.ItemDelegate {
                     width: parent.width
                     horizontalAlignment: Text.AlignHCenter
                     elide: Text.ElideRight
-                    text: !root.liveThumbnailEnabled ? i18n("Preview disabled")
-                        // qmllint disable unqualified
+                    // Translation functions are provided by the plasmoid context.
+                    // qmllint disable unqualified
+                    text: KWindowSystem.isPlatformX11 && root.minimized
+                        ? i18n("Window minimized")
+                        : !root.liveThumbnailEnabled ? i18n("Preview disabled")
                         : i18n("Preview unavailable")
-                        // qmllint enable unqualified
+                    // qmllint enable unqualified
                     color: Kirigami.Theme.disabledTextColor
                     font.pixelSize: 11
                 }

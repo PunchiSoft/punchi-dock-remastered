@@ -1,5 +1,15 @@
 add_library(punchidockintegration)
 
+find_program(PUNCHI_QSB_EXECUTABLE
+    NAMES qsb qsb-qt6
+    HINTS /usr/lib/qt6/bin /usr/lib64/qt6/bin
+)
+if(NOT PUNCHI_QSB_EXECUTABLE)
+    message(FATAL_ERROR
+        "Qt 6 Shader Baker (qsb) is required to build Punchi Dock"
+    )
+endif()
+
 ecm_add_qml_module(punchidockintegration
     URI org.punchi.dock
     VERSION 1.0
@@ -23,10 +33,18 @@ target_sources(punchidockintegration PRIVATE
     blurbehindcontroller.h
     commandclassification.cpp
     commandclassification.h
+    desktopshortcutwriter.cpp
+    desktopshortcutwriter.h
+    desktoplauncherresolver.cpp
+    desktoplauncherresolver.h
     dockthemerepository.cpp
     dockthemerepository.h
     dockthemevalidator.cpp
     dockthemevalidator.h
+    dockitemsjsontransaction.cpp
+    dockitemsjsontransaction.h
+    dockitemspersistenceadapter.cpp
+    dockitemspersistenceadapter.h
     dockruntimeservice.cpp
     dockruntimeservice.h
     dropurlpolicy.cpp
@@ -41,6 +59,12 @@ target_sources(punchidockintegration PRIVATE
     panellengthmodebridge.h
     pipewireaudiobackend.cpp
     pipewireaudiobackend.h
+    punchimenulayoutcontroller.cpp
+    punchimenulayoutcontroller.h
+    punchimenulayoutdocument.cpp
+    punchimenulayoutdocument.h
+    punchimenulayoutmodel.cpp
+    punchimenulayoutmodel.h
     punchimenushortcutcontroller.cpp
     punchimenushortcutcontroller.h
     sessionactionscontroller.cpp
@@ -57,12 +81,40 @@ target_sources(punchidockintegration PRIVATE
     trashintegration.h
 )
 
+set(PUNCHI_AVATAR_SHADER_SOURCE
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/PunchiMenuAvatar.frag"
+)
+set(PUNCHI_AVATAR_SHADER_BINARY
+    "${CMAKE_CURRENT_BINARY_DIR}/PunchiMenuAvatar.frag.qsb"
+)
+add_custom_command(
+    OUTPUT "${PUNCHI_AVATAR_SHADER_BINARY}"
+    COMMAND "${PUNCHI_QSB_EXECUTABLE}"
+        --qt6
+        --qsbversion 65
+        -o "${PUNCHI_AVATAR_SHADER_BINARY}"
+        "${PUNCHI_AVATAR_SHADER_SOURCE}"
+    DEPENDS "${PUNCHI_AVATAR_SHADER_SOURCE}"
+    COMMENT "Baking PunchiMenu avatar shader"
+    VERBATIM
+)
+set_source_files_properties("${PUNCHI_AVATAR_SHADER_BINARY}" PROPERTIES
+    GENERATED TRUE
+    QT_RESOURCE_ALIAS "PunchiMenuAvatar.frag.qsb"
+)
+qt_add_resources(punchidockintegration "punchimenu_avatar_shader"
+    PREFIX "/qt/qml/org/punchi/dock/shaders"
+    FILES "${PUNCHI_AVATAR_SHADER_BINARY}"
+)
+
 target_link_libraries(punchidockintegration
     PRIVATE
         Qt6::Core
         Qt6::DBus
         Qt6::Gui
         Qt6::Qml
+        KF6::ConfigCore
+        KF6::ConfigGui
         KF6::CoreAddons
         KF6::GlobalAccel
         KF6::I18n

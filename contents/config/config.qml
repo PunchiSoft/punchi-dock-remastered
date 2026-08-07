@@ -6,6 +6,12 @@ ConfigModel {
         icon: "kmenuedit"
         source: "config/ConfigItems.qml"
     }
+
+    ConfigCategory {
+        name: i18n("PunchiMenu")
+        icon: "start-here-kde"
+        source: "config/ConfigPunchiMenu.qml"
+    }
     
     ConfigCategory {
         name: i18n("General")

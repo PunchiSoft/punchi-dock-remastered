@@ -66,7 +66,8 @@ Item {
                 "maximizable": !!windowData.maximizable,
                 "maximized": !!windowData.maximized,
                 "icon": String(windowData.icon || ""),
-                "windowUuid": String(windowData.windowUuid || "")
+                "windowUuid": String(windowData.windowUuid || ""),
+                "winId": Number(windowData.winId || 0)
             }
         }))
     }

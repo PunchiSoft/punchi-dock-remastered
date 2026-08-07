@@ -19,6 +19,7 @@ APT_PACKAGES=(
     gettext
     git
     kpackagetool6
+    libkf6config-dev
     libkf6coreaddons-dev
     libkf6globalaccel-dev
     libkf6i18n-dev
@@ -35,6 +36,7 @@ APT_PACKAGES=(
     qt6-declarative-dev
     qt6-declarative-dev-tools
     qt6-qmltooling-plugins
+    qt6-shader-baker
     unzip
     zip
 )

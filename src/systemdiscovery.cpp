@@ -4,8 +4,11 @@
 
 #include <KLocalizedString>
 #include <KNotificationJobUiDelegate>
+#include <KOSRelease>
 
 #include "commandclassification.h"
+#include "desktoplauncherresolver.h"
+#include "desktopshortcutwriter.h"
 #include "dropurlpolicy.h"
 
 #include <KApplicationTrader>
@@ -15,6 +18,7 @@
 #include <KIO/UDSEntry>
 #include <KService>
 #include <KServiceAction>
+#include <KShell>
 
 #include <QDir>
 #include <QFileInfo>
@@ -28,7 +32,11 @@ namespace
 {
 constexpr auto TranslationDomain = "plasma_applet_org.kde.plasma.punchi-dock-remastered";
 
-constexpr qsizetype maximumResults = 80;
+constexpr qsizetype maximumFolderResults = 80;
+constexpr qsizetype maximumApplicationResults = 80;
+constexpr qsizetype maximumPunchiMenuCatalogResults = 1024;
+
+QString serviceExecLookupKey(const KService::Ptr &service);
 
 QString normalizedApplicationId(QString applicationId)
 {
@@ -45,14 +53,19 @@ QVariantMap serviceMap(const KService::Ptr &service)
         return {};
     }
 
+    const QString storageId = service->storageId();
     return {
         {QStringLiteral("type"), QStringLiteral("app")},
         {QStringLiteral("name"), service->name()},
         {QStringLiteral("icon"), service->icon().isEmpty() ? QStringLiteral("application-x-executable") : service->icon()},
         {QStringLiteral("command"), service->exec()},
         {QStringLiteral("description"), service->comment()},
-        {QStringLiteral("storageId"), service->storageId()},
-        {QStringLiteral("appId"), normalizedApplicationId(service->storageId())},
+        {QStringLiteral("storageId"), storageId},
+        {QStringLiteral("appId"), normalizedApplicationId(storageId)},
+        {QStringLiteral("desktopEntryName"), service->desktopEntryName()},
+        {QStringLiteral("desktopFilePath"), service->entryPath()},
+        {QStringLiteral("executable"), serviceExecLookupKey(service)},
+        {QStringLiteral("launcherUrl"), QString(QStringLiteral("applications:") + storageId)},
     };
 }
 
@@ -79,8 +92,9 @@ QString commandLookupKey(QString command)
         return {};
     }
 
-    const QStringList parts = command.split(QRegularExpression(QStringLiteral("\\s+")), Qt::SkipEmptyParts);
-    if (parts.isEmpty()) {
+    KShell::Errors shellError = KShell::NoError;
+    const QStringList parts = KShell::splitArgs(command, KShell::AbortOnMeta, &shellError);
+    if (shellError != KShell::NoError || parts.isEmpty()) {
         return {};
     }
 
@@ -188,6 +202,84 @@ KService::Ptr findApplicationService(const QString &query)
     return {};
 }
 
+QVariantMap resolutionResult(const QString &status, const KService::Ptr &service = {})
+{
+    QVariantMap result = serviceMap(service);
+    result.insert(QStringLiteral("status"), status);
+    result.insert(QStringLiteral("resolved"), status == QLatin1String("resolved"));
+    return result;
+}
+
+QVariantMap resolveApplicationService(const QString &storageId, const QString &command, const QString &launcherUrlText)
+{
+    const QString requestedStorageId = storageId.trimmed();
+    const QString requestedCommand = command.trimmed();
+    const QString requestedLauncherUrl = launcherUrlText.trimmed();
+    if (requestedStorageId.isEmpty() && requestedCommand.isEmpty() && requestedLauncherUrl.isEmpty()) {
+        return resolutionResult(QStringLiteral("invalid"));
+    }
+
+    KService::Ptr service;
+    const QUrl launcherUrl(requestedLauncherUrl);
+    if (launcherUrl.isLocalFile()) {
+        const QFileInfo launcherInfo(launcherUrl.toLocalFile());
+        if (launcherInfo.exists() && launcherInfo.isFile() && !launcherInfo.isSymLink()) {
+            service = KService::serviceByDesktopPath(launcherInfo.canonicalFilePath());
+        }
+    } else if (launcherUrl.scheme() == QLatin1String("applications")) {
+        service = KService::serviceByMenuId(launcherUrl.path());
+    }
+
+    QString normalizedStorageId = requestedStorageId;
+    if (normalizedStorageId.startsWith(QLatin1String("applications:"), Qt::CaseInsensitive)) {
+        normalizedStorageId = normalizedStorageId.mid(13).trimmed();
+    }
+    if (!service && !normalizedStorageId.isEmpty()) {
+        service = KService::serviceByStorageId(normalizedStorageId);
+        if (!service) {
+            service = KService::serviceByMenuId(normalizedStorageId);
+        }
+
+        const QString desktopName = normalizedApplicationId(normalizedStorageId);
+        if (!service) {
+            service = KService::serviceByDesktopName(desktopName);
+        }
+        if (!service && !normalizedStorageId.endsWith(QLatin1String(".desktop"), Qt::CaseInsensitive)) {
+            service = KService::serviceByStorageId(normalizedStorageId + QStringLiteral(".desktop"));
+        }
+    }
+
+    if (service && service->isApplication() && !service->noDisplay()) {
+        return resolutionResult(QStringLiteral("resolved"), service);
+    }
+
+    const QString commandKey = commandLookupKey(requestedCommand);
+    if (commandKey.isEmpty()) {
+        return resolutionResult(QStringLiteral("not-found"));
+    }
+
+    KService::Ptr commandMatch;
+    int matchCount = 0;
+    const KService::List services = KService::allServices();
+    for (const KService::Ptr &candidate : services) {
+        if (!candidate || candidate->noDisplay() || !candidate->isApplication()) {
+            continue;
+        }
+        if (serviceExecLookupKey(candidate).compare(commandKey, Qt::CaseInsensitive) != 0) {
+            continue;
+        }
+        commandMatch = candidate;
+        ++matchCount;
+        if (matchCount > 1) {
+            return resolutionResult(QStringLiteral("ambiguous"));
+        }
+    }
+
+    return commandMatch
+        ? resolutionResult(QStringLiteral("resolved"), commandMatch)
+        : resolutionResult(QStringLiteral("not-found"));
+}
+
 KService::Ptr findLauncherService(const QString &applicationId, const QString &launcherUrlText)
 {
     KService::Ptr service;
@@ -275,7 +367,7 @@ QString desktopDirectoryIconForCategory(const QString &category)
 bool isCategoryMatch(const QStringList &serviceCategories, const QString &requestedCategory)
 {
     const QString trimmedRequested = requestedCategory.trimmed();
-    if (trimmedRequested.isEmpty()) {
+    if (trimmedRequested.isEmpty() || trimmedRequested.compare(QStringLiteral("All"), Qt::CaseInsensitive) == 0) {
         return true;
     }
 
@@ -302,65 +394,11 @@ bool isCategoryMatch(const QStringList &serviceCategories, const QString &reques
 
     return false;
 }
-}
 
-SystemDiscovery::SystemDiscovery(QObject *parent)
-    : QObject(parent)
-{
-}
-
-void SystemDiscovery::requestFolderEntries(const QString &path)
-{
-    const QUrl url = QUrl::fromUserInput(path, QDir::homePath(), QUrl::AssumeLocalFile);
-    if (!url.isValid()) {
-        Q_EMIT operationFailed(QStringLiteral("folder"), i18nd(TranslationDomain, "The folder location is invalid."));
-        return;
-    }
-
-    auto *job = KIO::listDir(url, KIO::HideProgressInfo);
-    auto *entries = new QVariantList;
-    entries->reserve(maximumResults);
-
-    connect(job, &KIO::ListJob::entries, this, [entries, url](KIO::Job *, const KIO::UDSEntryList &batch) {
-        for (const KIO::UDSEntry &entry : batch) {
-            if (entries->size() >= maximumResults) {
-                continue;
-            }
-
-            const QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
-            const bool hidden = entry.numberValue(KIO::UDSEntry::UDS_HIDDEN, name.startsWith(QLatin1Char('.'))) != 0;
-            if (hidden || name == QLatin1String(".") || name == QLatin1String("..")) {
-                continue;
-            }
-
-            QUrl entryUrl(url);
-            entryUrl.setPath(QDir(url.path()).filePath(name));
-            const bool directory = entry.isDir();
-            entries->append(QVariantMap{
-                {QStringLiteral("type"), QStringLiteral("app")},
-                {QStringLiteral("name"), entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME).isEmpty()
-                        ? name
-                        : entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME)},
-                {QStringLiteral("icon"), directory ? QStringLiteral("folder") : QStringLiteral("text-x-generic")},
-                {QStringLiteral("url"), entryUrl.toString()},
-            });
-        }
-    });
-
-    connect(job, &KJob::result, this, [this, job, entries]() {
-        if (job->error()) {
-            Q_EMIT operationFailed(QStringLiteral("folder"), job->errorString());
-        } else {
-            Q_EMIT folderEntriesReady(*entries);
-        }
-        delete entries;
-    });
-}
-
-void SystemDiscovery::requestApplications(const QString &category)
+QVariantList discoverApplications(const QString &category, qsizetype maximumCount)
 {
     QVariantList applications;
-    applications.reserve(maximumResults);
+    applications.reserve(maximumCount);
     QSet<QString> seenStorageIds;
 
     const KService::List services = KApplicationTrader::query([&category](const KService::Ptr &service) {
@@ -377,12 +415,125 @@ void SystemDiscovery::requestApplications(const QString &category)
 
         seenStorageIds.insert(service->storageId());
         applications.append(serviceMap(service));
-        if (applications.size() >= maximumResults) {
+        if (applications.size() >= maximumCount) {
             break;
         }
     }
 
-    Q_EMIT applicationsReady(applications);
+    return applications;
+}
+}
+
+SystemDiscovery::SystemDiscovery(QObject *parent)
+    : QObject(parent)
+{
+}
+
+QString SystemDiscovery::distributionName() const
+{
+    const KOSRelease osRelease;
+    const QString prettyName = osRelease.prettyName().trimmed();
+    return prettyName.isEmpty() ? osRelease.name().trimmed() : prettyName;
+}
+
+QString SystemDiscovery::distributionLogo() const
+{
+    const KOSRelease osRelease;
+    return osRelease.logo().trimmed();
+}
+
+void SystemDiscovery::requestFolderEntries(const QString &path)
+{
+    const QUrl url = QUrl::fromUserInput(path, QDir::homePath(), QUrl::AssumeLocalFile);
+    if (!url.isValid()) {
+        Q_EMIT operationFailed(QStringLiteral("folder"), i18nd(TranslationDomain, "The folder location is invalid."));
+        return;
+    }
+
+    auto *job = KIO::listDir(url, KIO::HideProgressInfo);
+    auto *entries = new QVariantList;
+    entries->reserve(maximumFolderResults);
+
+    connect(job, &KIO::ListJob::entries, this, [entries, url](KIO::Job *, const KIO::UDSEntryList &batch) {
+        for (const KIO::UDSEntry &entry : batch) {
+            if (entries->size() >= maximumFolderResults) {
+                continue;
+            }
+
+            const QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
+            const bool hidden = entry.numberValue(KIO::UDSEntry::UDS_HIDDEN, name.startsWith(QLatin1Char('.'))) != 0;
+            if (hidden || name == QLatin1String(".") || name == QLatin1String("..")) {
+                continue;
+            }
+
+            QUrl entryUrl(url);
+            entryUrl.setPath(QDir(url.path()).filePath(name));
+            const bool directory = entry.isDir();
+
+            QString displayName = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME).isEmpty()
+                    ? name
+                    : entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
+            QString iconName = entry.stringValue(KIO::UDSEntry::UDS_ICON_NAME);
+            QString storageId;
+
+            if (directory) {
+                iconName = QStringLiteral("folder");
+            } else if (name.endsWith(QLatin1String(".desktop"), Qt::CaseInsensitive)) {
+                const QString localPath = entryUrl.toLocalFile();
+                const DesktopLauncherResolver::Resolution launcher
+                    = DesktopLauncherResolver::resolveLocalFile(localPath);
+                if (launcher.service) {
+                    if (!launcher.service->name().isEmpty()) {
+                        displayName = launcher.service->name();
+                    }
+                    if (!launcher.service->icon().isEmpty()) {
+                        iconName = launcher.service->icon();
+                    }
+
+                    const KService::Ptr registeredService = KService::serviceByDesktopPath(launcher.canonicalPath);
+                    if (registeredService && registeredService->isApplication()) {
+                        storageId = registeredService->storageId();
+                    }
+                } else if (iconName.isEmpty()) {
+                    iconName = QStringLiteral("application-x-desktop");
+                }
+            } else if (iconName.isEmpty()) {
+                iconName = QStringLiteral("text-x-generic");
+            }
+
+            QVariantMap itemMap{
+                {QStringLiteral("type"), QStringLiteral("app")},
+                {QStringLiteral("name"), displayName},
+                {QStringLiteral("icon"), iconName},
+                {QStringLiteral("url"), entryUrl.toString()}
+            };
+            if (!storageId.isEmpty()) {
+                itemMap.insert(QStringLiteral("storageId"), storageId);
+            }
+
+            entries->append(itemMap);
+        }
+    });
+
+    connect(job, &KJob::result, this, [this, job, entries]() {
+        if (job->error()) {
+            Q_EMIT operationFailed(QStringLiteral("folder"), job->errorString());
+        } else {
+            Q_EMIT folderEntriesReady(*entries);
+        }
+        delete entries;
+    });
+}
+
+void SystemDiscovery::requestApplications(const QString &category)
+{
+    Q_EMIT applicationsReady(discoverApplications(category, maximumApplicationResults));
+}
+
+void SystemDiscovery::requestApplicationCatalog()
+{
+    Q_EMIT applicationCatalogReady(
+        discoverApplications({}, maximumPunchiMenuCatalogResults));
 }
 
 void SystemDiscovery::requestApplication(const QString &query)
@@ -413,13 +564,21 @@ QString SystemDiscovery::iconForCategory(const QString &category) const
 
 QString SystemDiscovery::applicationIdForCommand(const QString &command) const
 {
-    const KService::Ptr service = findApplicationService(commandLookupKey(command));
-    return service ? normalizedApplicationId(service->storageId()) : QString{};
+    const QVariantMap result = resolveApplicationService({}, command, {});
+    return result.value(QStringLiteral("resolved")).toBool()
+        ? result.value(QStringLiteral("appId")).toString()
+        : QString{};
 }
 
 QVariantMap SystemDiscovery::applicationForLauncher(const QString &applicationId, const QString &launcherUrl) const
 {
     return serviceMap(findLauncherService(applicationId, launcherUrl));
+}
+
+QVariantMap SystemDiscovery::resolveApplication(const QString &storageId, const QString &command,
+    const QString &launcherUrl) const
+{
+    return resolveApplicationService(storageId, command, launcherUrl);
 }
 
 QVariantList SystemDiscovery::applicationActions(const QString &applicationId) const
@@ -536,6 +695,25 @@ bool SystemDiscovery::launchApplicationWithUrls(const QString &applicationId, co
     return true;
 }
 
+QVariantMap SystemDiscovery::createDesktopShortcut(const QString &storageId, const QString &command)
+{
+    const QVariantMap resolution = resolveApplicationService(storageId, command, {});
+    if (!resolution.value(QStringLiteral("resolved")).toBool()) {
+        return resolution;
+    }
+
+    const QString desktopDir = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    if (desktopDir.isEmpty()) {
+        return resolutionResult(QStringLiteral("desktop-unavailable"));
+    }
+
+    QVariantMap result = DesktopShortcutWriter::create(
+        resolution.value(QStringLiteral("desktopFilePath")).toString(), desktopDir);
+    result.insert(QStringLiteral("name"), resolution.value(QStringLiteral("name")));
+    result.insert(QStringLiteral("storageId"), resolution.value(QStringLiteral("storageId")));
+    return result;
+}
+
 bool SystemDiscovery::launchApplicationAction(const QString &applicationId, const QString &actionId)
 {
     const KService::Ptr service = findApplicationService(applicationId);
@@ -588,8 +766,27 @@ bool SystemDiscovery::launchApplicationByCommand(const QString &command)
 
 void SystemDiscovery::openUrl(const QString &url)
 {
-    auto *job = new KIO::OpenUrlJob(QUrl::fromUserInput(url), QString(), this);
-    job->setUiDelegate(nullptr);
+    const QUrl inputUrl = QUrl::fromUserInput(url);
+    if (inputUrl.isLocalFile()) {
+        const QString localPath = inputUrl.toLocalFile();
+        const DesktopLauncherResolver::Resolution launcher
+            = DesktopLauncherResolver::resolveLocalFile(localPath);
+        if (launcher.service) {
+            auto *job = new KIO::ApplicationLauncherJob(launcher.service, this);
+            job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoErrorHandlingEnabled));
+            connect(job, &KJob::result, this, [this, job]() {
+                if (job->error()) {
+                    Q_EMIT operationFailed(QStringLiteral("openUrl"), job->errorString());
+                }
+            });
+            job->start();
+            return;
+        }
+    }
+
+    auto *job = new KIO::OpenUrlJob(inputUrl, QString(), this);
+    job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoErrorHandlingEnabled));
+    job->setRunExecutables(false);
     connect(job, &KJob::result, this, [this, job]() {
         if (job->error()) {
             Q_EMIT operationFailed(QStringLiteral("openUrl"), job->errorString());

@@ -200,17 +200,23 @@ function openPunchiMenuDialog(index) {
 
     punchiMenuDialog.menuMode = ConfigItemsJS.normalizedPunchiMenuMode(
         item.menuMode)
+    punchiMenuDialog.normalPlacementMode =
+        ConfigItemsJS.normalizedPunchiMenuNormalPlacementMode(
+            item.normalPlacementMode)
     punchiMenuDialog.gridIconScalePercent =
         ConfigItemsJS.normalizedPunchiMenuGridIconScalePercent(
             item.gridIconScalePercent)
+    punchiMenuDialog.favoriteIconScalePercent =
+        ConfigItemsJS.normalizedPunchiMenuFavoriteIconScalePercent(
+            item.favoriteIconScalePercent)
+    punchiMenuDialog.showDistributionName =
+        item.showDistributionName !== false
     punchiMenuDialog.normalWidthPercent =
         ConfigItemsJS.normalizedPunchiMenuNormalWidthPercent(
             item.normalWidthPercent)
     punchiMenuDialog.normalHeightPercent =
         ConfigItemsJS.normalizedPunchiMenuNormalHeightPercent(
             item.normalHeightPercent)
-    punchiMenuDialog.iconName = ConfigItemsJS.normalizedPunchiMenuIcon(
-        item.icon)
     punchiMenuDialog.open()
 }
 
@@ -228,7 +234,6 @@ function setPunchiMenuIcon(iconName) {
     item.icon = ConfigItemsJS.normalizedPunchiMenuIcon(iconName)
     ConfigItemsJS.prunePunchiMenu(item)
     setItems(nextItems)
-    punchiMenuDialog.iconName = item.icon
 }
 
 function setPunchiMenuMode(mode) {
@@ -248,6 +253,24 @@ function setPunchiMenuMode(mode) {
     punchiMenuDialog.menuMode = item.menuMode
 }
 
+function setPunchiMenuNormalPlacementMode(mode) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "punchimenu") {
+        return
+    }
+
+    item.normalPlacementMode =
+        ConfigItemsJS.normalizedPunchiMenuNormalPlacementMode(mode)
+    ConfigItemsJS.prunePunchiMenu(item)
+    setItems(nextItems)
+    punchiMenuDialog.normalPlacementMode = item.normalPlacementMode
+}
+
 function setPunchiMenuGridIconScalePercent(percent) {
     if (selectedIndex < 0 || selectedIndex >= items.length) {
         return
@@ -264,6 +287,41 @@ function setPunchiMenuGridIconScalePercent(percent) {
     ConfigItemsJS.prunePunchiMenu(item)
     setItems(nextItems)
     punchiMenuDialog.gridIconScalePercent = item.gridIconScalePercent
+}
+
+function setPunchiMenuFavoriteIconScalePercent(percent) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "punchimenu") {
+        return
+    }
+
+    item.favoriteIconScalePercent =
+        ConfigItemsJS.normalizedPunchiMenuFavoriteIconScalePercent(percent)
+    ConfigItemsJS.prunePunchiMenu(item)
+    setItems(nextItems)
+    punchiMenuDialog.favoriteIconScalePercent = item.favoriteIconScalePercent
+}
+
+function setPunchiMenuShowDistributionName(enabled) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "punchimenu") {
+        return
+    }
+
+    item.showDistributionName = enabled !== false
+    ConfigItemsJS.prunePunchiMenu(item)
+    setItems(nextItems)
+    punchiMenuDialog.showDistributionName = item.showDistributionName !== false
 }
 
 function setPunchiMenuNormalSizePercent(widthPercent, heightPercent) {

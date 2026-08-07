@@ -353,21 +353,22 @@ rm -f "$ZIP_FILE"
     zip -ryq "$ZIP_FILE" metadata.json LICENSE contents
 )
 unzip -tq "$ZIP_FILE" >/dev/null
+plasmoid_entries="$(unzip -Z1 "$ZIP_FILE")"
 
 for translation_catalog in "${translation_catalogs[@]}"; do
     language="$(basename "$translation_catalog" .po)"
-    if ! unzip -Z1 "$ZIP_FILE" | grep -qx "contents/locale/$language/LC_MESSAGES/$TRANSLATION_DOMAIN.mo"; then
+    if ! printf '%s\n' "$plasmoid_entries" | grep -qx "contents/locale/$language/LC_MESSAGES/$TRANSLATION_DOMAIN.mo"; then
         echo "The $language translation catalog is missing from the plasmoid" >&2
         exit 1
     fi
 done
 
-if unzip -Z1 "$ZIP_FILE" | grep -q '^locale/'; then
+if printf '%s\n' "$plasmoid_entries" | grep -q '^locale/'; then
     echo "Translation catalogs were staged outside the KPackage contents prefix" >&2
     exit 1
 fi
 
-if unzip -Z1 "$ZIP_FILE" | grep -Eq '\.(po|pot)$'; then
+if printf '%s\n' "$plasmoid_entries" | grep -Eq '\.(po|pot)$'; then
     echo "Translation source files were found in the plasmoid" >&2
     exit 1
 fi
