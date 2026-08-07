@@ -46,11 +46,11 @@ obtener las notas detalladas del lanzamiento.
 
 | PunchiMenu Normal — vista preliminar recomendada |
 |:--:|
-| <img src="Images/PunchiMenuNormal.png" alt="PunchiMenu Normal con categorías, grilla de aplicaciones y favoritos" width="760"> |
+| <img src="Images/PunchiMenuNormal.png?v=0.9.6" alt="PunchiMenu Normal con categorías, grilla de aplicaciones y favoritos" width="760"> |
 
 | PunchiMenu Pantalla completa |
 |:--:|
-| <img src="Images/PunchiMenuFullScreen.png" alt="Lanzador de aplicaciones PunchiMenu en Pantalla completa" width="760"> |
+| <img src="Images/PunchiMenuFullScreen.png?v=0.9.6" alt="Lanzador de aplicaciones PunchiMenu en Pantalla completa" width="760"> |
 
 | Controles multimedia MPRIS |
 |:--:|

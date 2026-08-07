@@ -46,11 +46,11 @@ notes and the validation performed for this version.
 
 | PunchiMenu Normal — recommended preview |
 |:--:|
-| <img src="Images/PunchiMenuNormal.png" alt="PunchiMenu Normal with application categories, grid, and favorites" width="760"> |
+| <img src="Images/PunchiMenuNormal.png?v=0.9.6" alt="PunchiMenu Normal with application categories, grid, and favorites" width="760"> |
 
 | PunchiMenu Full Screen |
 |:--:|
-| <img src="Images/PunchiMenuFullScreen.png" alt="PunchiMenu Full Screen application launcher" width="760"> |
+| <img src="Images/PunchiMenuFullScreen.png?v=0.9.6" alt="PunchiMenu Full Screen application launcher" width="760"> |
 
 | MPRIS media controls |
 |:--:|
