@@ -580,7 +580,7 @@ PlasmoidItem {
             flags: isX11Session
                 ? Qt.Popup | Qt.FramelessWindowHint
                 : Qt.Dialog | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
-            backgroundHints: PlasmaCore.Dialog.StandardBackground
+            backgroundHints: PlasmaCore.Dialog.NoBackground
             hideOnWindowDeactivate: true
             visible: false
             opacity: 0
@@ -588,7 +588,10 @@ PlasmoidItem {
             readonly property Punchi.BlurBehindController normalBlurController:
                 Punchi.BlurBehindController {
                     window: punchiMenuNormalDialog
-                    fullWindow: true
+                    fullWindow: false
+                    maskSource: punchiMenuNormal.backgroundBlurMaskSource
+                    useMaskSourceInsets: true
+                    maskOffset: punchiMenuNormal.backgroundBlurMaskOffset
                     enabled: punchiMenuNormalDialog.visible
                         && root.configuredPunchiMenuNormalBlurEnabled
                 }

@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include <QMargins>
 #include <QObject>
+#include <QPoint>
 #include <QPointer>
-#include <QRect>
+#include <QRegion>
 #include <QWindow>
 #include <qqmlintegration.h>
 
@@ -14,7 +16,9 @@ class BlurBehindController : public QObject
     QML_ELEMENT
 
     Q_PROPERTY(QObject *window READ window WRITE setWindow NOTIFY windowChanged)
-    Q_PROPERTY(QRect region READ region WRITE setRegion NOTIFY regionChanged)
+    Q_PROPERTY(QObject *maskSource READ maskSource WRITE setMaskSource NOTIFY maskSourceChanged)
+    Q_PROPERTY(QPoint maskOffset READ maskOffset WRITE setMaskOffset NOTIFY maskOffsetChanged)
+    Q_PROPERTY(bool useMaskSourceInsets READ useMaskSourceInsets WRITE setUseMaskSourceInsets NOTIFY useMaskSourceInsetsChanged)
     Q_PROPERTY(bool fullWindow READ fullWindow WRITE setFullWindow NOTIFY fullWindowChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool available READ available NOTIFY availableChanged)
@@ -26,8 +30,12 @@ public:
 
     QObject *window() const;
     void setWindow(QObject *window);
-    QRect region() const;
-    void setRegion(const QRect &region);
+    QObject *maskSource() const;
+    void setMaskSource(QObject *maskSource);
+    QPoint maskOffset() const;
+    void setMaskOffset(const QPoint &maskOffset);
+    bool useMaskSourceInsets() const;
+    void setUseMaskSourceInsets(bool useMaskSourceInsets);
     bool fullWindow() const;
     void setFullWindow(bool fullWindow);
     bool enabled() const;
@@ -35,11 +43,16 @@ public:
     bool available() const;
     bool active() const;
 
-    Q_INVOKABLE void reapply();
+    static QRegion contractMaskToInsets(const QRegion &sourceMask, const QMargins &insets);
+
+public Q_SLOTS:
+    void reapply();
 
 Q_SIGNALS:
     void windowChanged();
-    void regionChanged();
+    void maskSourceChanged();
+    void maskOffsetChanged();
+    void useMaskSourceInsetsChanged();
     void fullWindowChanged();
     void enabledChanged();
     void availableChanged();
@@ -47,13 +60,22 @@ Q_SIGNALS:
 
 private:
     bool eventFilter(QObject *watched, QEvent *event) override;
+    void invalidateMaskCache();
     void refreshAvailability();
     void apply();
     void disableOnCurrentWindow();
     void updateActive(bool active);
 
     QPointer<QWindow> m_window;
-    QRect m_region;
+    QPointer<QObject> m_maskSource;
+    QPointer<QObject> m_maskInsetSource;
+    QPoint m_maskOffset;
+    QRegion m_cachedSourceMask;
+    QRegion m_cachedContractedMask;
+    QMargins m_cachedInsets;
+    bool m_maskCacheValid = false;
+    bool m_reapplyScheduled = false;
+    bool m_useMaskSourceInsets = false;
     bool m_fullWindow = false;
     bool m_enabled = false;
     bool m_available = false;

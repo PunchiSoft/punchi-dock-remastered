@@ -10,8 +10,13 @@ FocusScope {
     property real iconScale: 1.0
     property var allowedExternalFocusItems: []
     property bool detailedApplicationFeedback: false
+    property real applicationHighlightOpacity: 0.30
+    property real applicationCornerRadiusScale: 1.0
+    property real applicationHoverScale: 1.0
     property bool returnToFolderAfterMemberRemoval: false
     property bool compactLayout: false
+    property rect backdropGeometry: Qt.rect(0, 0, -1, -1)
+    property real backdropRadius: 0
 
     property string viewMode: ""
     property string activeFolderId: ""
@@ -24,6 +29,8 @@ FocusScope {
     property string pendingCloseNodeId: ""
 
     readonly property bool active: modalSurface.active
+    readonly property bool useWidgetModalProfile: viewMode === "action"
+        || viewMode === "folder"
     readonly property int activeMemberCount: {
         const members = activeFolderInfo.members
             || activeFolderInfo.folderMembers || []
@@ -121,6 +128,21 @@ FocusScope {
         actionOpenedFromFolder = false
         showSurface("action")
         actionView.beginCreate(application)
+    }
+
+    function beginCreateFromStorageIds(storageIds) {
+        const requestedIds = storageIds instanceof Array ? storageIds : []
+        if (requestedIds.length !== 2) {
+            return false
+        }
+        returnNodeId = "application:" + String(requestedIds[0] || "")
+        actionOriginFolderId = ""
+        actionOpenedFromFolder = false
+        if (!actionView.beginCreateFromStorageIds(requestedIds)) {
+            return false
+        }
+        showSurface("action")
+        return true
     }
 
     function beginMove(application) {
@@ -287,6 +309,16 @@ FocusScope {
                 : Kirigami.Units.gridUnit * 34)
         maximumWidth: root.width - Kirigami.Units.largeSpacing * 2
         maximumHeight: root.height - Kirigami.Units.largeSpacing * 2
+        panelBackgroundImagePath: root.useWidgetModalProfile
+            ? "widgets/background"
+            : root.viewMode === "action"
+                ? "solid/dialogs/background" : "dialogs/background"
+        panelBackgroundOpacity: 1.0
+        panelShadowEnabled: root.viewMode === "action"
+            && !root.useWidgetModalProfile
+        backdropOpacity: 0.64
+        backdropGeometry: root.backdropGeometry
+        backdropRadius: root.backdropRadius
         allowedExternalFocusItems: root.allowedExternalFocusItems
         accessibleName: root.viewMode === "folder"
             ? folderView.effectiveLabel : actionView.operationTitle()
@@ -307,6 +339,10 @@ FocusScope {
             motionEnabled: root.motionEnabled
             iconScale: root.iconScale
             detailedApplicationFeedback: root.detailedApplicationFeedback
+            applicationHighlightOpacity: root.applicationHighlightOpacity
+            applicationCornerRadiusScale:
+                root.applicationCornerRadiusScale
+            applicationHoverScale: root.applicationHoverScale
 
             onLaunchRequested: function(storageId) {
                 root.launchRequested(storageId)

@@ -5,6 +5,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.coreaddons as KCoreAddons
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.core as PlasmaCore
+import org.kde.ksvg as KSvg
 import "../../org/punchi/dock" as Punchi
 
 // qmllint disable unqualified
@@ -22,6 +23,64 @@ FocusScope {
     property real themeFrameTopMargin: 0
     property real themeFrameRightMargin: 0
     property real themeFrameBottomMargin: 0
+    readonly property var backgroundBlurMaskSource: normalBackground
+    readonly property point backgroundBlurMaskOffset: {
+        // mapToItem() follows the complete visual hierarchy. Reading the
+        // participating geometry explicitly keeps the binding reactive while
+        // the surface translation is animated.
+        const geometryValues = [
+            root.x, root.y,
+            surface.x, surface.y,
+            surfaceTranslation.x, surfaceTranslation.y,
+            normalBackground.x, normalBackground.y
+        ]
+        if (geometryValues.some(value => !Number.isFinite(value))) {
+            return Qt.point(0, 0)
+        }
+        const scenePosition = normalBackground.mapToItem(
+            null, Qt.point(0, 0))
+        return Qt.point(Math.round(scenePosition.x),
+            Math.round(scenePosition.y))
+    }
+    readonly property real normalBackgroundBlurRadius: {
+        return Kirigami.Units.cornerRadius * 2
+            + root.maximumThemeFrameOverlap
+    }
+    readonly property rect folderDialogBackdropGeometry: {
+        // Match the effective themed surface: margins describe only its
+        // content area, while the uncontracted frame includes its projection.
+        const leftInset = Number(normalBackground.inset.left)
+        const topInset = Number(normalBackground.inset.top)
+        const rightInset = Number(normalBackground.inset.right)
+        const bottomInset = Number(normalBackground.inset.bottom)
+        const geometryValues = [
+            surface.x, surface.y,
+            surfaceTranslation.x, surfaceTranslation.y,
+            normalBackground.x, normalBackground.y,
+            normalBackground.width, normalBackground.height,
+            leftInset, topInset, rightInset, bottomInset
+        ]
+        const hasValidGeometry = geometryValues.every(
+            value => Number.isFinite(value))
+        const hasValidInsets = hasValidGeometry
+            && leftInset >= 0 && topInset >= 0
+            && rightInset >= 0 && bottomInset >= 0
+            && leftInset + rightInset < normalBackground.width
+            && topInset + bottomInset < normalBackground.height
+        if (!hasValidInsets) {
+            return Qt.rect(0, 0, root.width, root.height)
+        }
+        const topLeft = normalBackground.mapToItem(
+            root, Qt.point(leftInset, topInset))
+        const bottomRight = normalBackground.mapToItem(
+            root, Qt.point(normalBackground.width - rightInset,
+                normalBackground.height - bottomInset))
+        return Qt.rect(
+            Math.round(Math.min(topLeft.x, bottomRight.x)),
+            Math.round(Math.min(topLeft.y, bottomRight.y)),
+            Math.max(0, Math.round(Math.abs(bottomRight.x - topLeft.x))),
+            Math.max(0, Math.round(Math.abs(bottomRight.y - topLeft.y))))
+    }
     property var hiddenApplicationIds: []
     property bool revealHiddenApplications: false
     property bool favoriteLimitReached: false
@@ -1065,6 +1124,7 @@ FocusScope {
         anchors.fill: parent
         opacity: root.menuOpen ? 1.0 : 0.0
         transform: Translate {
+            id: surfaceTranslation
             y: root.menuOpen ? 0 : Kirigami.Units.gridUnit * 0.65
 
             Behavior on y {
@@ -1084,22 +1144,28 @@ FocusScope {
             }
         }
 
-        Rectangle {
+        KSvg.FrameSvgItem {
+            id: normalBackground
             anchors.fill: parent
             anchors.leftMargin: -root.themeFrameOverlapLeft
             anchors.topMargin: -root.themeFrameOverlapTop
             anchors.rightMargin: -root.themeFrameOverlapRight
             anchors.bottomMargin: -root.themeFrameOverlapBottom
-            radius: Kirigami.Units.cornerRadius * 2
-                + root.maximumThemeFrameOverlap
-            color: Kirigami.Theme.backgroundColor
+            imagePath: "widgets/background"
             opacity: root.safeBackgroundOpacity
             Accessible.ignored: true
         }
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: Kirigami.Units.largeSpacing
+            anchors.leftMargin: normalBackground.margins.left
+                + Kirigami.Units.largeSpacing
+            anchors.topMargin: normalBackground.margins.top
+                + Kirigami.Units.largeSpacing
+            anchors.rightMargin: normalBackground.margins.right
+                + Kirigami.Units.largeSpacing
+            anchors.bottomMargin: normalBackground.margins.bottom
+                + Kirigami.Units.largeSpacing
             spacing: Kirigami.Units.mediumSpacing
 
             RowLayout {
@@ -1755,8 +1821,11 @@ FocusScope {
                         readonly property bool keyboardFocused:
                             applicationsGrid.activeFocus
                             && applicationsGrid.currentIndex === index
+                        readonly property bool pointerHovered: isFolder
+                            ? folderTile.hovered
+                            : applicationMouseArea.containsMouse
                         readonly property bool selected: keyboardFocused
-                            || applicationMouseArea.containsMouse
+                            || pointerHovered
                         readonly property bool isHiddenApplication: appHidden
                         readonly property real iconSize: Math.max(
                             Kirigami.Units.iconSizes.medium,
@@ -1785,6 +1854,7 @@ FocusScope {
                         }
 
                         PunchiMenuFolderTile {
+                            id: folderTile
                             anchors.fill: parent
                             anchors.margins: Kirigami.Units.smallSpacing
                             visible: applicationDelegate.isFolder
@@ -1801,6 +1871,12 @@ FocusScope {
                             selected: applicationDelegate.selected
                             motionEnabled: root.motionEnabled
                             iconScale: root.safeApplicationIconScale
+                            onHoveredChanged: {
+                                if (hovered) {
+                                    applicationsGrid.currentIndex
+                                        = applicationDelegate.index
+                                }
+                            }
                             onActivated: applicationDelegate.launchApp()
                             onContextRequested: function(sourceItem, x, y) {
                                 applicationsGrid.currentIndex
@@ -1818,7 +1894,7 @@ FocusScope {
                             visible: !applicationDelegate.isFolder
                             radius: Kirigami.Units.cornerRadius * 1.5
                             color: applicationDelegate.selected
-                                ? Qt.alpha(Kirigami.Theme.highlightColor, 0.24)
+                                ? Qt.alpha(Kirigami.Theme.highlightColor, 0.30)
                                 : "transparent"
                             border.color: applicationDelegate.selected
                                 ? Kirigami.Theme.highlightColor
@@ -2185,7 +2261,7 @@ FocusScope {
                                 anchors.margins: Kirigami.Units.smallSpacing
                                 radius: Kirigami.Units.cornerRadius * 1.5
                                 color: favoriteDelegate.selected
-                                    ? Qt.alpha(Kirigami.Theme.highlightColor, 0.24)
+                                    ? Qt.alpha(Kirigami.Theme.highlightColor, 0.30)
                                     : "transparent"
                                 border.color: favoriteDelegate.selected
                                     ? Kirigami.Theme.highlightColor
@@ -2362,6 +2438,11 @@ FocusScope {
         motionEnabled: root.motionEnabled
         iconScale: root.safeApplicationIconScale
         detailedApplicationFeedback: true
+        applicationHighlightOpacity: 0.30
+        applicationCornerRadiusScale: 1.5
+        applicationHoverScale: 1.018
+        backdropGeometry: root.folderDialogBackdropGeometry
+        backdropRadius: root.normalBackgroundBlurRadius
         compactLayout: true
         allowedExternalFocusItems: [applicationContextMenuSurface]
 

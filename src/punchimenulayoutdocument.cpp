@@ -134,6 +134,34 @@ int folderIndex(const QVariantList &nodes, const QString &folderId)
     }
     return -1;
 }
+
+QString nodeId(const QVariantMap &node)
+{
+    const QString type = node.value(QString::fromLatin1(typeKey)).toString();
+    if (type == QLatin1String(applicationType)) {
+        const QString storageId = PunchiMenuLayoutDocument::normalizedStorageId(
+            node.value(QString::fromLatin1(storageIdKey)));
+        return storageId.isEmpty() ? QString{}
+                                   : QStringLiteral("application:") + storageId;
+    }
+    if (type == QLatin1String(folderType)) {
+        const QString folderId = PunchiMenuLayoutDocument::normalizedFolderId(
+            node.value(QString::fromLatin1(folderIdKey)));
+        return folderId.isEmpty() ? QString{}
+                                  : QStringLiteral("folder:") + folderId;
+    }
+    return {};
+}
+
+int nodeIndex(const QVariantList &nodes, const QString &requestedNodeId)
+{
+    for (int index = 0; index < nodes.size(); ++index) {
+        if (nodeId(nodes.at(index).toMap()) == requestedNodeId) {
+            return index;
+        }
+    }
+    return -1;
+}
 }
 
 QVariantMap PunchiMenuLayoutDocument::Result::toVariantMap() const
@@ -638,6 +666,48 @@ PunchiMenuLayoutDocument::Result PunchiMenuLayoutDocument::dissolveFolder(
         nodes.insert(targetFolderIndex + index,
             applicationNode(members.at(index).toString()));
     }
+
+    return sanitize({
+        {QString::fromLatin1(versionKey), CurrentVersion},
+        {QString::fromLatin1(nodesKey), nodes},
+    });
+}
+
+PunchiMenuLayoutDocument::Result PunchiMenuLayoutDocument::moveNode(
+    const QVariantMap &document,
+    const QString &sourceNodeId,
+    const QString &beforeNodeId)
+{
+    const Result normalized = sanitize(document);
+    if (!normalized.success) {
+        return normalized;
+    }
+
+    const QString requestedSourceId = sourceNodeId.trimmed();
+    const QString requestedBeforeId = beforeNodeId.trimmed();
+    QVariantList nodes = normalized.document.value(QString::fromLatin1(nodesKey))
+                             .toList();
+    const int sourceIndex = nodeIndex(nodes, requestedSourceId);
+    if (requestedSourceId.isEmpty() || sourceIndex < 0) {
+        return failure(QStringLiteral("move-source-not-found"));
+    }
+    if (requestedBeforeId == requestedSourceId) {
+        return failure(QStringLiteral("no-change"));
+    }
+
+    int insertionIndex = nodes.size();
+    if (!requestedBeforeId.isEmpty()) {
+        insertionIndex = nodeIndex(nodes, requestedBeforeId);
+        if (insertionIndex < 0) {
+            return failure(QStringLiteral("move-target-not-found"));
+        }
+    }
+
+    const QVariant sourceNode = nodes.takeAt(sourceIndex);
+    if (sourceIndex < insertionIndex) {
+        --insertionIndex;
+    }
+    nodes.insert(insertionIndex, sourceNode);
 
     return sanitize({
         {QString::fromLatin1(versionKey), CurrentVersion},

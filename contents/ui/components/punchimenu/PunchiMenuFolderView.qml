@@ -3,6 +3,7 @@ import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.components as PlasmaComponents
+import org.kde.plasma.core as PlasmaCore
 
 // Translation helpers are supplied by the plasmoid context.
 // qmllint disable unqualified
@@ -15,6 +16,9 @@ FocusScope {
     property bool motionEnabled: true
     property real iconScale: 1.0
     property bool detailedApplicationFeedback: false
+    property real applicationHighlightOpacity: 0.30
+    property real applicationCornerRadiusScale: 1.0
+    property real applicationHoverScale: 1.0
 
     readonly property real effectiveIconScale: Math.max(0.5,
         Math.min(2.0, Number(iconScale || 1.0)))
@@ -32,11 +36,19 @@ FocusScope {
     readonly property int effectiveCellWidth: availableGridWidth > 0
         ? Math.floor(availableGridWidth / columnCount)
         : targetCellWidth
-    readonly property int cellHeight: iconSize
-        + Kirigami.Units.gridUnit * 2.5
+    readonly property int maximumApplicationLabelHeight: Math.ceil(
+        applicationLabelFontMetrics.height * 2)
+    readonly property int cellHeight: Math.ceil(iconSize
+        + maximumApplicationLabelHeight
+        + Kirigami.Units.smallSpacing * 5)
     readonly property string effectiveLabel: folderLabel.length > 0
         ? folderLabel
         : i18nc("@label", "Applications folder")
+
+    FontMetrics {
+        id: applicationLabelFontMetrics
+        font: Kirigami.Theme.defaultFont
+    }
 
     signal launchRequested(string storageId)
     signal applicationContextRequested(var sourceItem, var application,
@@ -152,6 +164,39 @@ FocusScope {
                     cursorShape: Qt.PointingHandCursor
                 }
             }
+
+            PlasmaComponents.ToolButton {
+                id: dismissButton
+                readonly property bool highlightedContent: enabled
+                    && (hovered || down)
+                icon.name: "window-close"
+                icon.color: highlightedContent
+                    ? Kirigami.Theme.highlightedTextColor
+                    : Kirigami.Theme.textColor
+                text: i18nc("@action:button", "Close")
+                display: PlasmaComponents.AbstractButton.IconOnly
+                Accessible.name: text
+                onClicked: root.closeRequested()
+
+                PlasmaCore.ToolTipArea {
+                    id: dismissToolTip
+                    anchors.fill: parent
+                    active: dismissButton.enabled && dismissButton.visible
+                    mainText: dismissButton.text
+                }
+
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
+                }
+
+                onActiveFocusChanged: {
+                    if (activeFocus) {
+                        dismissToolTip.showToolTip()
+                    } else if (!dismissToolTip.containsMouse) {
+                        dismissToolTip.hideImmediately()
+                    }
+                }
+            }
         }
 
         Item {
@@ -186,6 +231,11 @@ FocusScope {
 
                     readonly property bool isHiddenApplication: Boolean(
                         modelData && modelData.appHidden)
+                    readonly property bool highlighted: activeFocus
+                        || appPointer.containsMouse
+                    readonly property bool outlined: activeFocus
+                        || (root.detailedApplicationFeedback
+                            && appPointer.containsMouse)
 
                     width: applicationGrid.cellWidth
                     height: applicationGrid.cellHeight
@@ -212,17 +262,36 @@ FocusScope {
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing
                         radius: Kirigami.Units.cornerRadius
-                        color: applicationDelegate.activeFocus
-                                || appPointer.containsMouse
-                            ? Qt.alpha(Kirigami.Theme.highlightColor, 0.20)
+                            * root.applicationCornerRadiusScale
+                        color: applicationDelegate.highlighted
+                            ? Qt.alpha(Kirigami.Theme.highlightColor,
+                                root.applicationHighlightOpacity)
                             : "transparent"
-                        border.width: applicationDelegate.activeFocus
-                                || (root.detailedApplicationFeedback
-                                    && appPointer.containsMouse)
-                            ? 2 : 0
-                        border.color: Kirigami.Theme.highlightColor
+                        border.width: applicationDelegate.outlined ? 2 : 0
+                        border.color: applicationDelegate.outlined
+                            ? Kirigami.Theme.highlightColor
+                            : "transparent"
+                        scale: applicationDelegate.highlighted
+                            ? root.applicationHoverScale : 1.0
+
+                        Behavior on scale {
+                            enabled: root.motionEnabled
+                            NumberAnimation {
+                                duration: Kirigami.Units.shortDuration
+                                easing.type: Easing.OutCubic
+                            }
+                        }
 
                         Behavior on color {
+                            enabled: root.motionEnabled
+                            ColorAnimation {
+                                duration: Math.max(90,
+                                    Math.min(150,
+                                        Kirigami.Units.shortDuration))
+                            }
+                        }
+
+                        Behavior on border.color {
                             enabled: root.motionEnabled
                             ColorAnimation {
                                 duration: Math.max(90,
@@ -255,6 +324,7 @@ FocusScope {
                             maximumLineCount: 2
                             wrapMode: Text.Wrap
                             elide: Text.ElideRight
+                            font: applicationLabelFontMetrics.font
                             Accessible.ignored: true
                         }
                     }

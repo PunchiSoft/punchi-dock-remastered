@@ -29,6 +29,7 @@ public:
         RemoveFromFolder,
         RenameFolder,
         DissolveFolder,
+        MoveNode,
         Undo,
     };
     Q_ENUM(Operation)
@@ -64,6 +65,8 @@ public:
         const QString &folderId, const QString &label);
     Q_INVOKABLE QVariantMap requestDissolveFolder(
         const QString &folderId, bool confirmation = false);
+    Q_INVOKABLE QVariantMap requestMoveNode(
+        const QString &sourceNodeId, const QString &beforeNodeId = QString());
     Q_INVOKABLE QVariantMap requestUndo();
 
     Q_INVOKABLE bool confirmPersistence(const QString &transactionId);

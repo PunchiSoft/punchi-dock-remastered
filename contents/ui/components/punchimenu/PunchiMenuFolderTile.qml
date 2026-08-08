@@ -15,6 +15,7 @@ FocusScope {
     property bool selected: false
     property bool motionEnabled: true
     property real iconScale: 1.0
+    readonly property alias hovered: pointer.containsMouse
 
     readonly property real effectiveIconScale: Math.max(0.5,
         Math.min(2.0, Number(iconScale || 1.0)))
@@ -49,7 +50,7 @@ FocusScope {
         anchors.fill: parent
         radius: Kirigami.Units.cornerRadius
         color: root.selected || root.activeFocus
-            ? Qt.alpha(Kirigami.Theme.highlightColor, 0.20)
+            ? Qt.alpha(Kirigami.Theme.highlightColor, 0.30)
             : pointer.containsMouse
                 ? Qt.alpha(Kirigami.Theme.textColor, 0.09)
                 : "transparent"

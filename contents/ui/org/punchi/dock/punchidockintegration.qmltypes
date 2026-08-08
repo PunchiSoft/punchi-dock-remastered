@@ -57,7 +57,7 @@ Module {
     }
     Component {
         file: "blurbehindcontroller.h"
-        lineNumber: 11
+        lineNumber: 13
         name: "BlurBehindController"
         accessSemantics: "reference"
         prototype: "QObject"
@@ -71,16 +71,35 @@ Module {
             write: "setWindow"
             notify: "windowChanged"
             index: 0
-            lineNumber: 16
+            lineNumber: 18
         }
         Property {
-            name: "region"
-            type: "QRect"
-            read: "region"
-            write: "setRegion"
-            notify: "regionChanged"
+            name: "maskSource"
+            type: "QObject"
+            isPointer: true
+            read: "maskSource"
+            write: "setMaskSource"
+            notify: "maskSourceChanged"
             index: 1
-            lineNumber: 17
+            lineNumber: 19
+        }
+        Property {
+            name: "maskOffset"
+            type: "QPoint"
+            read: "maskOffset"
+            write: "setMaskOffset"
+            notify: "maskOffsetChanged"
+            index: 2
+            lineNumber: 20
+        }
+        Property {
+            name: "useMaskSourceInsets"
+            type: "bool"
+            read: "useMaskSourceInsets"
+            write: "setUseMaskSourceInsets"
+            notify: "useMaskSourceInsetsChanged"
+            index: 3
+            lineNumber: 21
         }
         Property {
             name: "fullWindow"
@@ -88,8 +107,8 @@ Module {
             read: "fullWindow"
             write: "setFullWindow"
             notify: "fullWindowChanged"
-            index: 2
-            lineNumber: 18
+            index: 4
+            lineNumber: 22
         }
         Property {
             name: "enabled"
@@ -97,16 +116,16 @@ Module {
             read: "enabled"
             write: "setEnabled"
             notify: "enabledChanged"
-            index: 3
-            lineNumber: 19
+            index: 5
+            lineNumber: 23
         }
         Property {
             name: "available"
             type: "bool"
             read: "available"
             notify: "availableChanged"
-            index: 4
-            lineNumber: 20
+            index: 6
+            lineNumber: 24
             isReadonly: true
         }
         Property {
@@ -114,17 +133,19 @@ Module {
             type: "bool"
             read: "active"
             notify: "activeChanged"
-            index: 5
-            lineNumber: 21
+            index: 7
+            lineNumber: 25
             isReadonly: true
         }
-        Signal { name: "windowChanged"; lineNumber: 41 }
-        Signal { name: "regionChanged"; lineNumber: 42 }
-        Signal { name: "fullWindowChanged"; lineNumber: 43 }
-        Signal { name: "enabledChanged"; lineNumber: 44 }
-        Signal { name: "availableChanged"; lineNumber: 45 }
-        Signal { name: "activeChanged"; lineNumber: 46 }
-        Method { name: "reapply"; lineNumber: 38 }
+        Signal { name: "windowChanged"; lineNumber: 52 }
+        Signal { name: "maskSourceChanged"; lineNumber: 53 }
+        Signal { name: "maskOffsetChanged"; lineNumber: 54 }
+        Signal { name: "useMaskSourceInsetsChanged"; lineNumber: 55 }
+        Signal { name: "fullWindowChanged"; lineNumber: 56 }
+        Signal { name: "enabledChanged"; lineNumber: 57 }
+        Signal { name: "availableChanged"; lineNumber: 58 }
+        Signal { name: "activeChanged"; lineNumber: 59 }
+        Method { name: "reapply"; lineNumber: 49 }
     }
     Component {
         file: "dockitemspersistenceadapter.h"
@@ -597,6 +618,7 @@ Module {
                 "RemoveFromFolder",
                 "RenameFolder",
                 "DissolveFolder",
+                "MoveNode",
                 "Undo"
             ]
         }
@@ -663,20 +685,20 @@ Module {
             lineNumber: 22
             isReadonly: true
         }
-        Signal { name: "layoutDocumentChanged"; lineNumber: 76 }
-        Signal { name: "applicationStorageIdsChanged"; lineNumber: 77 }
-        Signal { name: "transactionPendingChanged"; lineNumber: 78 }
-        Signal { name: "canUndoChanged"; lineNumber: 79 }
-        Signal { name: "lastErrorCodeChanged"; lineNumber: 80 }
-        Signal { name: "revisionChanged"; lineNumber: 81 }
+        Signal { name: "layoutDocumentChanged"; lineNumber: 79 }
+        Signal { name: "applicationStorageIdsChanged"; lineNumber: 80 }
+        Signal { name: "transactionPendingChanged"; lineNumber: 81 }
+        Signal { name: "canUndoChanged"; lineNumber: 82 }
+        Signal { name: "lastErrorCodeChanged"; lineNumber: 83 }
+        Signal { name: "revisionChanged"; lineNumber: 84 }
         Signal {
             name: "validationFailed"
-            lineNumber: 82
+            lineNumber: 85
             Parameter { name: "errorCode"; type: "QString" }
         }
         Signal {
             name: "persistenceRequested"
-            lineNumber: 83
+            lineNumber: 86
             Parameter { name: "transactionId"; type: "QString" }
             Parameter { name: "document"; type: "QVariantMap" }
             Parameter { name: "operation"; type: "PunchiMenuLayoutController::Operation" }
@@ -684,28 +706,28 @@ Module {
         }
         Signal {
             name: "transactionCommitted"
-            lineNumber: 88
+            lineNumber: 91
             Parameter { name: "transactionId"; type: "QString" }
             Parameter { name: "operation"; type: "PunchiMenuLayoutController::Operation" }
             Parameter { name: "subjectId"; type: "QString" }
         }
         Signal {
             name: "transactionFailed"
-            lineNumber: 92
+            lineNumber: 95
             Parameter { name: "transactionId"; type: "QString" }
             Parameter { name: "operation"; type: "PunchiMenuLayoutController::Operation" }
             Parameter { name: "errorCode"; type: "QString" }
         }
         Signal {
             name: "operationRejected"
-            lineNumber: 96
+            lineNumber: 99
             Parameter { name: "operation"; type: "PunchiMenuLayoutController::Operation" }
             Parameter { name: "errorCode"; type: "QString" }
         }
         Method {
             name: "requestCreateFolder"
             type: "QVariantMap"
-            lineNumber: 50
+            lineNumber: 51
             Parameter { name: "firstStorageId"; type: "QString" }
             Parameter { name: "secondStorageId"; type: "QString" }
             Parameter { name: "label"; type: "QString" }
@@ -713,21 +735,21 @@ Module {
         Method {
             name: "requestCreateFolderFromApplications"
             type: "QVariantMap"
-            lineNumber: 54
+            lineNumber: 55
             Parameter { name: "storageIds"; type: "QStringList" }
             Parameter { name: "label"; type: "QString" }
         }
         Method {
             name: "requestAddApplicationToFolder"
             type: "QVariantMap"
-            lineNumber: 57
+            lineNumber: 58
             Parameter { name: "storageId"; type: "QString" }
             Parameter { name: "folderId"; type: "QString" }
         }
         Method {
             name: "requestRemoveApplicationFromFolder"
             type: "QVariantMap"
-            lineNumber: 59
+            lineNumber: 60
             Parameter { name: "storageId"; type: "QString" }
             Parameter { name: "folderId"; type: "QString" }
             Parameter { name: "confirmation"; type: "bool" }
@@ -736,21 +758,21 @@ Module {
             name: "requestRemoveApplicationFromFolder"
             type: "QVariantMap"
             isCloned: true
-            lineNumber: 59
+            lineNumber: 60
             Parameter { name: "storageId"; type: "QString" }
             Parameter { name: "folderId"; type: "QString" }
         }
         Method {
             name: "requestRenameFolder"
             type: "QVariantMap"
-            lineNumber: 63
+            lineNumber: 64
             Parameter { name: "folderId"; type: "QString" }
             Parameter { name: "label"; type: "QString" }
         }
         Method {
             name: "requestDissolveFolder"
             type: "QVariantMap"
-            lineNumber: 65
+            lineNumber: 66
             Parameter { name: "folderId"; type: "QString" }
             Parameter { name: "confirmation"; type: "bool" }
         }
@@ -758,20 +780,34 @@ Module {
             name: "requestDissolveFolder"
             type: "QVariantMap"
             isCloned: true
-            lineNumber: 65
+            lineNumber: 66
             Parameter { name: "folderId"; type: "QString" }
         }
-        Method { name: "requestUndo"; type: "QVariantMap"; lineNumber: 67 }
+        Method {
+            name: "requestMoveNode"
+            type: "QVariantMap"
+            lineNumber: 68
+            Parameter { name: "sourceNodeId"; type: "QString" }
+            Parameter { name: "beforeNodeId"; type: "QString" }
+        }
+        Method {
+            name: "requestMoveNode"
+            type: "QVariantMap"
+            isCloned: true
+            lineNumber: 68
+            Parameter { name: "sourceNodeId"; type: "QString" }
+        }
+        Method { name: "requestUndo"; type: "QVariantMap"; lineNumber: 70 }
         Method {
             name: "confirmPersistence"
             type: "bool"
-            lineNumber: 69
+            lineNumber: 72
             Parameter { name: "transactionId"; type: "QString" }
         }
         Method {
             name: "rejectPersistence"
             type: "bool"
-            lineNumber: 70
+            lineNumber: 73
             Parameter { name: "transactionId"; type: "QString" }
             Parameter { name: "errorCode"; type: "QString" }
         }
@@ -779,10 +815,10 @@ Module {
             name: "rejectPersistence"
             type: "bool"
             isCloned: true
-            lineNumber: 70
+            lineNumber: 73
             Parameter { name: "transactionId"; type: "QString" }
         }
-        Method { name: "discardUndoHistory"; lineNumber: 73 }
+        Method { name: "discardUndoHistory"; lineNumber: 76 }
     }
     Component {
         file: "punchimenulayoutmodel.h"

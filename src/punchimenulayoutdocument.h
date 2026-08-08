@@ -57,6 +57,10 @@ public:
         const QString &label);
     [[nodiscard]] static Result dissolveFolder(
         const QVariantMap &document, const QString &folderId);
+    [[nodiscard]] static Result moveNode(
+        const QVariantMap &document,
+        const QString &sourceNodeId,
+        const QString &beforeNodeId);
 
     [[nodiscard]] static QString normalizedStorageId(const QVariant &value);
     [[nodiscard]] static QString normalizedFolderId(const QVariant &value);

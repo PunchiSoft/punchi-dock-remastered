@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 from pathlib import Path
+import re
 import sys
 
 
@@ -78,6 +79,10 @@ def main() -> int:
     ).read_text(encoding="utf-8")
     overlay_source = (
         PROJECT_ROOT / "contents/ui/components/punchimenu/PunchiMenuOverlay.qml"
+    ).read_text(encoding="utf-8")
+    drag_layer_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuDragLayer.qml"
     ).read_text(encoding="utf-8")
     main_source = (PROJECT_ROOT / "contents/ui/main.qml").read_text(encoding="utf-8")
     config_items_source = (
@@ -481,7 +486,7 @@ def main() -> int:
         "maximumFlickVelocity: 4 * width",
         "cacheBuffer: Math.max(0, width)",
         "onMovementStarted: root.resetPageNavigation()",
-        "preventStealing: false",
+        "preventStealing: internalDragLayer.active",
         "readonly property int pageCapacity",
         "readonly property int pageCount",
         "readonly property int pageIndicatorDotDiameter",
@@ -515,7 +520,7 @@ def main() -> int:
         "root.handlePageWheel(wheel)",
         "readonly property bool pageTransitionActive",
         "readonly property bool applicationHoverAllowed",
-        "appMouseArea.containsMouse\n                                        && root.applicationHoverAllowed",
+        "delegatePointer.containsMouse\n                                        && root.applicationHoverAllowed",
         "if (root.applicationHoverAllowed)",
         "Kirigami.WheelHandler {",
         "id: wheelInputHandler",
@@ -530,6 +535,54 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+
+    fullscreen_internal_drag_contract = (
+        (overlay_source, "onPressAndHold: function(mouse)", "system long-press entry"),
+        (overlay_source, "preventStealing: internalDragLayer.active", "post-threshold page arbitration"),
+        (overlay_source, "interactive: root.pageCount > 1 && !internalDragLayer.active", "page gesture suspension"),
+        (overlay_source, "if (internalDragLayer.active) {\n            wheel.accepted = true", "wheel suspension"),
+        (overlay_source, "folderSurface.beginCreateFromStorageIds([", "application-to-application creation"),
+        (overlay_source, ".requestAddApplicationToFolder(", "application-to-folder move"),
+        (overlay_source, "requestMoveNode(", "transactional node reorder"),
+        (overlay_source, "event.source === internalDragLayer.dragSource", "source identity validation"),
+        (overlay_source, "root.cancelInternalLayoutDrag()", "explicit cancellation"),
+        (overlay_source, "function onActiveChanged()", "window-focus cancellation"),
+        (drag_layer_source, "Drag.keys: [root.dragKey]", "private drag key"),
+        (drag_layer_source, "Drag.source: dragProxy", "internal source identity"),
+        (drag_layer_source, "Drag.supportedActions: Qt.MoveAction", "internal move action"),
+        (drag_layer_source, "dragProxy.Drag.cancel()", "non-persistent cancel"),
+    )
+    for source, marker, description in fullscreen_internal_drag_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu Fullscreen DnD: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "Drag.mimeData" in drag_layer_source or "text/plain" in drag_layer_source:
+        print(
+            "PunchiMenu Fullscreen DnD: internal layout drag exposes external MIME data",
+            file=sys.stderr,
+        )
+        passed = False
+    if re.search(
+        r"enabled:\s*!root\.sessionViewActive\s*"
+        r"&&\s*!root\.modeTransitionActive\s*"
+        r"&&\s*!root\.applicationLaunchPending\s*"
+        r"&&\s*!internalDragLayer\.active",
+        overlay_source,
+    ):
+        print(
+            "PunchiMenu Fullscreen DnD: disabling pagesView also disables its drop targets",
+            file=sys.stderr,
+        )
+        passed = False
+    if "PunchiMenuDragLayer" in normal_source:
+        print(
+            "PunchiMenu Normal: Fullscreen DnD leaked into the deferred phase 3 mode",
+            file=sys.stderr,
+        )
+        passed = False
     if overlay_source.count("Layout.preferredWidth: root.headerControlSize") < 3:
         print(
             "PunchiMenu Fullscreen: header actions must share the search field height",
@@ -929,6 +982,26 @@ def main() -> int:
             "Normal dialog-owned blur controller",
         ),
         (
+            normal_source,
+            "readonly property var backgroundBlurMaskSource: normalBackground",
+            "Normal background-owned blur mask source",
+        ),
+        (
+            main_source,
+            "maskSource: punchiMenuNormal.backgroundBlurMaskSource",
+            "Normal themed blur source binding",
+        ),
+        (
+            normal_source,
+            "readonly property point backgroundBlurMaskOffset: {",
+            "Normal background-owned blur mask offset",
+        ),
+        (
+            main_source,
+            "maskOffset: punchiMenuNormal.backgroundBlurMaskOffset",
+            "Normal themed blur offset binding",
+        ),
+        (
             overlay_source,
             "enabled: root.menuOpen && root.backgroundBlurEnabled",
             "Fullscreen blur switch binding",
@@ -956,25 +1029,76 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
-    normal_frame_contract = (
-        (main_source, 'themeFrameMargin("left")', "native left margin projection"),
-        (main_source, 'themeFrameMargin("top")', "native top margin projection"),
-        (main_source, 'themeFrameMargin("right")', "native right margin projection"),
-        (main_source, 'themeFrameMargin("bottom")', "native bottom margin projection"),
-        (normal_source, "readonly property real nativeFrameThickness: 2", "two-pixel native frame"),
-        (normal_source, "anchors.leftMargin: -root.themeFrameOverlapLeft", "left native-frame overlap"),
-        (normal_source, "anchors.topMargin: -root.themeFrameOverlapTop", "top native-frame overlap"),
-        (normal_source, "anchors.rightMargin: -root.themeFrameOverlapRight", "right native-frame overlap"),
-        (normal_source, "anchors.bottomMargin: -root.themeFrameOverlapBottom", "bottom native-frame overlap"),
-        (main_source, "backgroundHints: PlasmaCore.Dialog.StandardBackground", "preserved Plasma background"),
+    normal_blur_region_pattern = re.compile(
+        r"readonly\s+property\s+Punchi\.BlurBehindController\s+"
+        r"normalBlurController\s*:\s*Punchi\.BlurBehindController\s*\{\s*"
+        r"window\s*:\s*punchiMenuNormalDialog\s*"
+        r"fullWindow\s*:\s*false\s*"
+        r"maskSource\s*:\s*punchiMenuNormal\.backgroundBlurMaskSource\s*"
+        r"useMaskSourceInsets\s*:\s*true\s*"
+        r"maskOffset\s*:\s*punchiMenuNormal\.backgroundBlurMaskOffset\s*"
+        r"enabled\s*:\s*punchiMenuNormalDialog\.visible\s*"
+        r"&&\s*root\.configuredPunchiMenuNormalBlurEnabled\s*\}",
+        re.DOTALL,
     )
-    for source, marker, description in normal_frame_contract:
-        if marker not in source:
+    if normal_blur_region_pattern.search(main_source) is None:
+        print(
+            "PunchiMenu background legibility: the Normal blur controller must "
+            "use the complete reactive mask-and-inset contract",
+            file=sys.stderr,
+        )
+        passed = False
+    normal_blur_mapping_contract = (
+        "normalBackground.mapToItem(",
+        "surfaceTranslation.x, surfaceTranslation.y",
+        "id: surfaceTranslation",
+    )
+    for marker in normal_blur_mapping_contract:
+        if marker not in normal_source:
             print(
-                f"PunchiMenu Normal frame: missing {description}: {marker}",
+                "PunchiMenu background legibility: the blur position must "
+                f"follow the animated visual hierarchy: {marker}",
                 file=sys.stderr,
             )
             passed = False
+    retired_blur_geometry_markers = (
+        "blurPadding",
+        "blurInsetPercent",
+        "blurCornerRadiusPercent",
+        "blurCornerRadius",
+        "cornerRadius: punchiMenuNormalDialog",
+    )
+    if any(marker in main_source for marker in retired_blur_geometry_markers):
+        print(
+            "PunchiMenu background legibility: independent Normal blur geometry must not return",
+            file=sys.stderr,
+        )
+        passed = False
+    normal_widget_background_contract = (
+        (main_source, "backgroundHints: PlasmaCore.Dialog.NoBackground", "transparent dialog host"),
+        (normal_source, "import org.kde.ksvg as KSvg", "KSvg import"),
+        (normal_source, "KSvg.FrameSvgItem {", "themed frame surface"),
+        (normal_source, "id: normalBackground", "single Normal background authority"),
+        (normal_source, 'imagePath: "widgets/background"', "widget background resource"),
+        (normal_source, "opacity: root.safeBackgroundOpacity", "background-only opacity"),
+        (normal_source, "normalBackground.margins.left", "themed left content margin"),
+        (normal_source, "normalBackground.margins.top", "themed top content margin"),
+        (normal_source, "normalBackground.margins.right", "themed right content margin"),
+        (normal_source, "normalBackground.margins.bottom", "themed bottom content margin"),
+    )
+    for source, marker, description in normal_widget_background_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu Normal widget background: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "backgroundHints: PlasmaCore.Dialog.StandardBackground" in main_source:
+        print(
+            "PunchiMenu Normal widget background: the old dialog background remains enabled",
+            file=sys.stderr,
+        )
+        passed = False
     if main_source.count(
         "backgroundOpacity: root.configuredPunchiMenu"
     ) != 2:
@@ -1232,8 +1356,8 @@ def main() -> int:
         ),
         (
             main_source,
-            "backgroundHints: PlasmaCore.Dialog.StandardBackground",
-            "native Plasma dialog surface",
+            "backgroundHints: PlasmaCore.Dialog.NoBackground",
+            "single custom Plasma widget surface",
         ),
         (
             main_source,

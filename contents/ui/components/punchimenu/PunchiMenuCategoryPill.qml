@@ -44,7 +44,7 @@ Kirigami.Chip {
         color: root.strongHighlight
             ? Kirigami.Theme.highlightColor
             : root.checked
-                ? Qt.alpha(Kirigami.Theme.highlightColor, 0.22)
+                ? Qt.alpha(Kirigami.Theme.highlightColor, 0.30)
                 : Qt.alpha(Kirigami.Theme.backgroundColor, 0.55)
         border.color: root.strongHighlight || root.checked
             ? Kirigami.Theme.highlightColor

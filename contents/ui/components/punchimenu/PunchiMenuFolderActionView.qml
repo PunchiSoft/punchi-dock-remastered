@@ -25,6 +25,14 @@ FocusScope {
         })
     }
 
+    function beginCreateFromStorageIds(storageIds) {
+        if (!actionState.beginCreateFromStorageIds(storageIds)) {
+            return false
+        }
+        Qt.callLater(actionContent.focusInitial)
+        return true
+    }
+
     function beginMove(application) {
         showAction(function() {
             actionState.beginMove(application)

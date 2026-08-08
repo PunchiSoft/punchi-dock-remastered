@@ -822,6 +822,12 @@ def assert_modal_interaction_and_accessibility(
         modal_compact.count("wheel.accepted = true") >= 2,
         "The modal backdrop and empty panel area must consume wheel input.",
     )
+    require(
+        "property real backdropOpacity: 0.64" in modal_compact
+        and "root.backdropOpacity" in modal_compact,
+        "The modal surface must expose a visual backdrop opacity without "
+        "removing its input-blocking layer.",
+    )
 
     folder_tile = compact(
         folder_sources[PUNCHIMENU_DIRECTORY / "PunchiMenuFolderTile.qml"]
@@ -829,13 +835,99 @@ def assert_modal_interaction_and_accessibility(
     folder_view = compact(
         folder_sources[PUNCHIMENU_DIRECTORY / "PunchiMenuFolderView.qml"]
     )
+    normal_source = menu_sources["Normal"]
+    normal_compact = compact(normal_source)
+    normal_backdrop_geometry = compact(
+        block_matching(
+            normal_source,
+            r"readonly property rect folderDialogBackdropGeometry\s*:\s*\{",
+            "PunchiMenu Normal folder backdrop geometry",
+        )
+    )
+    normal_folder_tile = compact(
+        qml_blocks(normal_source, "PunchiMenuFolderTile")[0]
+    )
+    require(
+        "normalBackground.inset.left" in normal_backdrop_geometry
+        and "normalBackground.inset.top" in normal_backdrop_geometry
+        and "normalBackground.inset.right" in normal_backdrop_geometry
+        and "normalBackground.inset.bottom" in normal_backdrop_geometry
+        and "root, Qt.point(leftInset, topInset)"
+        in normal_backdrop_geometry
+        and "normalBackground.width - rightInset" in normal_backdrop_geometry
+        and "normalBackground.height - bottomInset" in normal_backdrop_geometry
+        and "normalBackground.margins" not in normal_backdrop_geometry,
+        "PunchiMenu Normal folder veil must follow the effective themed "
+        "surface through FrameSvg insets instead of content margins or the "
+        "uncontracted projected frame.",
+    )
     require(
         "Accessible.onPressAction: root.activated()" in folder_tile,
         "Folder tiles must expose their activation action to assistive tech.",
     )
     require(
+        "readonly property alias hovered: pointer.containsMouse" in folder_tile,
+        "Folder tiles must expose their pointer hover state to their menu delegate.",
+    )
+    require(
+        "readonly property bool pointerHovered: isFolder ? folderTile.hovered "
+        ": applicationMouseArea.containsMouse" in normal_compact
+        and "readonly property bool selected: keyboardFocused || pointerHovered"
+        in normal_compact,
+        "PunchiMenu Normal must select applications and folders through one "
+        "pointer-hover contract.",
+    )
+    require(
+        "id: folderTile" in normal_folder_tile
+        and "onHoveredChanged:" in normal_folder_tile
+        and "applicationsGrid.currentIndex = applicationDelegate.index"
+        in normal_folder_tile,
+        "PunchiMenu Normal must synchronize its current index when a folder is hovered.",
+    )
+    require(
         "Accessible.onPressAction: launchApplication()" in folder_view,
         "Applications inside folders must expose their launch action.",
+    )
+    require(
+        "property real applicationHighlightOpacity: 0.30" in folder_view
+        and "property real applicationCornerRadiusScale: 1.0" in folder_view
+        and "property real applicationHoverScale: 1.0" in folder_view
+        and "root.applicationHighlightOpacity" in folder_view
+        and "root.applicationCornerRadiusScale" in folder_view
+        and "root.applicationHoverScale" in folder_view,
+        "Folder application delegates must expose a reusable themed hover profile.",
+    )
+    require(
+        "readonly property bool highlighted: activeFocus "
+        "|| appPointer.containsMouse" in folder_view
+        and "scale: applicationDelegate.highlighted "
+        "? root.applicationHoverScale : 1.0" in folder_view
+        and "Behavior on scale" in folder_view
+        and "Behavior on border.color" in folder_view,
+        "Folder application hover must preserve focus visibility and animate "
+        "the same visual properties as the parent grids.",
+    )
+    require(
+        "id: applicationLabelFontMetrics" in folder_view
+        and "font: Kirigami.Theme.defaultFont" in folder_view
+        and "applicationLabelFontMetrics.height * 2" in folder_view
+        and "maximumApplicationLabelHeight" in folder_view
+        and "Kirigami.Units.smallSpacing * 5" in folder_view
+        and "font: applicationLabelFontMetrics.font" in folder_view,
+        "Folder grid cells must reserve themed font space for two label lines, "
+        "the icon, layout spacing, and vertical margins.",
+    )
+    rename_button_position = folder_view.find("id: renameButton")
+    dismiss_button_position = folder_view.find("id: dismissButton")
+    require(
+        rename_button_position >= 0
+        and dismiss_button_position > rename_button_position
+        and 'icon.name: "window-close"' in folder_view
+        and 'text: i18nc("@action:button", "Close")' in folder_view
+        and "mainText: dismissButton.text" in folder_view
+        and "onClicked: root.closeRequested()" in folder_view,
+        "Folder views must expose a themed close button at the trailing edge "
+        "and reuse the existing close request.",
     )
     require(
         "readonly property bool isHiddenApplication" in folder_view
@@ -854,6 +946,37 @@ def assert_modal_interaction_and_accessibility(
     folder_surface_compact = compact(
         folder_sources[PUNCHIMENU_DIRECTORY / "PunchiMenuFolderSurface.qml"]
     )
+    require(
+        'readonly property bool useWidgetModalProfile: viewMode === "action" '
+        '|| viewMode === "folder"'
+        in folder_surface_compact
+        and 'root.useWidgetModalProfile ? "widgets/background"'
+        in folder_surface_compact
+        and "backdropOpacity: 0.64"
+        in folder_surface_compact
+        and "panelShadowEnabled: root.viewMode === \"action\" "
+        "&& !root.useWidgetModalProfile" in folder_surface_compact,
+        "All PunchiMenu folder and action surfaces must use the shared "
+        "widget-themed modal profile.",
+    )
+    for mode, expected_profile in {
+        "Normal": (
+            "applicationHighlightOpacity: 0.30",
+            "applicationCornerRadiusScale: 1.5",
+            "applicationHoverScale: 1.018",
+        ),
+        "Fullscreen": (
+            "applicationHighlightOpacity: 0.30",
+            "applicationCornerRadiusScale: 2.0",
+            "applicationHoverScale: 1.03",
+        ),
+    }.items():
+        menu_compact = compact(menu_sources[mode])
+        require(
+            all(fragment in menu_compact for fragment in expected_profile),
+            f"PunchiMenu {mode} must pass its main-grid hover profile to "
+            "applications opened inside folders.",
+        )
     require(
         "property bool returnToFolderAfterMemberRemoval: false"
         in folder_surface_compact

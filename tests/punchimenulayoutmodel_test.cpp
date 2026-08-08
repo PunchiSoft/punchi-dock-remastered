@@ -424,6 +424,37 @@ int main(int argc, char **argv)
             && created.document == beforeFailedProposal,
         "a rejected proposal leaves the confirmed source document unchanged");
 
+    const auto movedToFront = PunchiMenuLayoutDocument::moveNode(
+        seeded.document,
+        QStringLiteral("application:org.example.Three.desktop"),
+        QStringLiteral("application:org.example.One.desktop"));
+    const QVariantList movedToFrontNodes = documentNodes(movedToFront.document);
+    passed &= expect(movedToFront.success
+            && movedToFrontNodes.constFirst().toMap()
+                    .value(QStringLiteral("storageId")).toString()
+                == QStringLiteral("org.example.Three.desktop")
+            && seeded.document == beforeCreate,
+        "moving a node is pure and inserts it before the requested stable node");
+
+    const auto movedToEnd = PunchiMenuLayoutDocument::moveNode(
+        created.document, QStringLiteral("folder:folder-1"), {});
+    const QVariantList movedToEndNodes = documentNodes(movedToEnd.document);
+    passed &= expect(movedToEnd.success
+            && movedToEndNodes.constLast().toMap()
+                    .value(QStringLiteral("folderId")).toString()
+                == QStringLiteral("folder-1"),
+        "moving a folder keeps the complete node and supports insertion at the end");
+
+    const auto missingMoveTarget = PunchiMenuLayoutDocument::moveNode(
+        seeded.document,
+        QStringLiteral("application:org.example.One.desktop"),
+        QStringLiteral("application:org.example.Missing.desktop"));
+    passed &= expect(!missingMoveTarget.success
+            && missingMoveTarget.errorCode
+                == QStringLiteral("move-target-not-found")
+            && seeded.document == beforeCreate,
+        "a rejected move leaves the confirmed source document unchanged");
+
     PunchiMenuLayoutModel model;
     QVariantMap firstCatalogApplication = application(
         QStringLiteral("org.example.One.desktop"),

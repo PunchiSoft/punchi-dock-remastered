@@ -9,6 +9,12 @@ FocusScope {
     property bool active: false
     property bool motionEnabled: true
     property string accessibleName: ""
+    property real backdropOpacity: 0.64
+    property string panelBackgroundImagePath: "dialogs/background"
+    property real panelBackgroundOpacity: 1.0
+    property bool panelShadowEnabled: true
+    property rect backdropGeometry: Qt.rect(0, 0, -1, -1)
+    property real backdropRadius: 0
     property real preferredWidth: Kirigami.Units.gridUnit * 34
     property real preferredHeight: Kirigami.Units.gridUnit * 28
     property real maximumWidth: width - Kirigami.Units.largeSpacing * 2
@@ -76,6 +82,40 @@ FocusScope {
         return false
     }
 
+    readonly property bool usesBackdropGeometry: root.backdropGeometry.width > 0
+        && root.backdropGeometry.height > 0
+    readonly property real backdropVisualX: {
+        const rawX = Number(root.backdropGeometry.x)
+        const fallbackX = 0
+        const candidateX = Number.isFinite(rawX) ? rawX : fallbackX
+        return candidateX
+    }
+    readonly property real backdropVisualY: {
+        const rawY = Number(root.backdropGeometry.y)
+        const fallbackY = 0
+        const candidateY = Number.isFinite(rawY) ? rawY : fallbackY
+        return candidateY
+    }
+    readonly property real backdropVisualWidth: {
+        const rawWidth = Number(root.backdropGeometry.width)
+        if (!root.usesBackdropGeometry || !Number.isFinite(rawWidth)) {
+            return root.width
+        }
+        return Math.max(0, Math.round(rawWidth))
+    }
+    readonly property real backdropVisualHeight: {
+        const rawHeight = Number(root.backdropGeometry.height)
+        if (!root.usesBackdropGeometry || !Number.isFinite(rawHeight)) {
+            return root.height
+        }
+        return Math.max(0, Math.round(rawHeight))
+    }
+    readonly property real backdropVisualRadius: {
+        const candidateRadius = Number(root.backdropRadius)
+        return Number.isFinite(candidateRadius) && candidateRadius > 0
+            ? candidateRadius : 0
+    }
+
     onActiveChanged: {
         if (active) {
             forceActiveFocus()
@@ -88,8 +128,9 @@ FocusScope {
     }
 
     Rectangle {
+        id: backdrop
         anchors.fill: parent
-        color: Qt.alpha(Kirigami.Theme.backgroundColor, 0.64)
+        color: "transparent"
 
         MouseArea {
             anchors.fill: parent
@@ -98,6 +139,27 @@ FocusScope {
             onClicked: root.dismissed()
             onWheel: function(wheel) {
                 wheel.accepted = true
+            }
+        }
+
+        Rectangle {
+            x: root.usesBackdropGeometry ? root.backdropVisualX : 0
+            y: root.usesBackdropGeometry ? root.backdropVisualY : 0
+            width: root.backdropVisualWidth
+            height: root.backdropVisualHeight
+            radius: root.backdropVisualRadius
+            color: Qt.alpha(Kirigami.Theme.backgroundColor,
+                root.backdropOpacity)
+            clip: true
+
+            MouseArea {
+                anchors.fill: parent
+                acceptedButtons: Qt.AllButtons
+                hoverEnabled: true
+                onClicked: root.dismissed()
+                onWheel: function(wheel) {
+                    wheel.accepted = true
+                }
             }
         }
     }
@@ -114,7 +176,8 @@ FocusScope {
         KSvg.FrameSvgItem {
             id: background
             anchors.fill: parent
-            imagePath: "dialogs/background"
+            imagePath: root.panelBackgroundImagePath
+            opacity: root.panelBackgroundOpacity
         }
 
         MouseArea {

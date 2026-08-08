@@ -188,6 +188,43 @@ QtObject {
         applicationCandidates = queryStandaloneApplications()
     }
 
+    function beginCreateFromStorageIds(storageIds) {
+        reset()
+        const requestedIds = storageIds instanceof Array ? storageIds : []
+        const nodes = layoutModel ? layoutModel.nodes || [] : []
+        const selected = []
+        let firstApplication = ({})
+        for (let requestedIndex = 0; requestedIndex < requestedIds.length;
+                ++requestedIndex) {
+            const requestedId = String(requestedIds[requestedIndex] || "")
+            if (requestedId.length === 0 || selected.indexOf(requestedId) >= 0) {
+                continue
+            }
+            for (let nodeIndex = 0; nodeIndex < nodes.length; ++nodeIndex) {
+                const node = nodes[nodeIndex]
+                if (node && String(node.nodeType || "") === "application"
+                        && applicationStorageId(node) === requestedId) {
+                    if (selected.length === 0) {
+                        firstApplication = node
+                    }
+                    selected.push(requestedId)
+                    break
+                }
+            }
+            if (selected.length >= 2) {
+                break
+            }
+        }
+        if (selected.length !== 2) {
+            return false
+        }
+        mode = "create"
+        sourceApplication = firstApplication
+        selectedStorageIds = selected
+        applicationCandidates = queryStandaloneApplications()
+        return true
+    }
+
     function beginMove(application) {
         reset()
         mode = "move"

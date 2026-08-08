@@ -128,6 +128,43 @@ int main(int argc, char **argv)
                 == QStringLiteral("ORG.EXAMPLE.ONE.DESKTOP"),
         "catalog identities are bounded, deduplicated exactly, and case-sensitive");
 
+    PunchiMenuLayoutController moveController;
+    moveController.setApplicationStorageIds({
+        QString::fromLatin1(firstApplicationId),
+        QString::fromLatin1(secondApplicationId),
+        QString::fromLatin1(thirdApplicationId),
+    });
+    QString moveTransactionId;
+    QVariantMap moveProposal;
+    PunchiMenuLayoutController::Operation moveOperation
+        = PunchiMenuLayoutController::NoOperation;
+    QObject::connect(&moveController,
+        &PunchiMenuLayoutController::persistenceRequested,
+        [&](const QString &transactionId,
+            const QVariantMap &proposedDocument,
+            PunchiMenuLayoutController::Operation operation,
+            const QString &) {
+            moveTransactionId = transactionId;
+            moveProposal = proposedDocument;
+            moveOperation = operation;
+        });
+    const QVariantMap moveRequest = moveController.requestMoveNode(
+        QStringLiteral("application:") + QString::fromLatin1(thirdApplicationId),
+        QStringLiteral("application:") + QString::fromLatin1(firstApplicationId));
+    passed &= expect(moveRequest.value(QStringLiteral("accepted")).toBool()
+            && moveOperation == PunchiMenuLayoutController::MoveNode
+            && documentNodes(moveProposal).constFirst().toMap()
+                    .value(QStringLiteral("storageId")).toString()
+                == QString::fromLatin1(thirdApplicationId)
+            && moveController.confirmPersistence(moveTransactionId)
+            && moveController.canUndo(),
+        "a node move is proposed and committed through one transaction");
+    const QVariantMap undoMove = moveController.requestUndo();
+    passed &= expect(undoMove.value(QStringLiteral("accepted")).toBool()
+            && moveController.confirmPersistence(moveTransactionId)
+            && documentNodes(moveController.layoutDocument()).isEmpty(),
+        "undo restores the exact unseeded layout that preceded a committed node move");
+
     PunchiMenuLayoutController firstUndoController;
     firstUndoController.setApplicationStorageIds({
         QString::fromLatin1(firstApplicationId),

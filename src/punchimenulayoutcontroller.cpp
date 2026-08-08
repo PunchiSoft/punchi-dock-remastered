@@ -324,6 +324,28 @@ QVariantMap PunchiMenuLayoutController::requestDissolveFolder(
         proposal.document);
 }
 
+QVariantMap PunchiMenuLayoutController::requestMoveNode(
+    const QString &sourceNodeId, const QString &beforeNodeId)
+{
+    if (m_transactionPending) {
+        return rejectOperation(MoveNode, QStringLiteral("transaction-active"));
+    }
+    bool baseSucceeded = false;
+    const QVariantMap baseDocument
+        = operationBaseDocument(MoveNode, &baseSucceeded);
+    if (!baseSucceeded) {
+        return requestResult(false, MoveNode, {}, {}, m_lastErrorCode);
+    }
+    const PunchiMenuLayoutDocument::Result proposal
+        = PunchiMenuLayoutDocument::moveNode(
+            baseDocument, sourceNodeId, beforeNodeId);
+    if (!proposal.success) {
+        return rejectOperation(MoveNode, proposal.errorCode);
+    }
+    return beginTransaction(
+        MoveNode, sourceNodeId.trimmed(), m_layoutDocument, proposal.document);
+}
+
 QVariantMap PunchiMenuLayoutController::requestUndo()
 {
     if (m_transactionPending) {

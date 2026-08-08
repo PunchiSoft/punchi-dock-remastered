@@ -30,6 +30,9 @@ FocusScope {
     property bool menuOpen: false
     property bool applicationsLoading: false
     property bool applicationLaunchPending: false
+    property bool suppressDragReleaseClick: false
+    property int dragEdgeDirection: 0
+    property bool dragEdgeArmed: true
     property string applicationErrorMessage: ""
     property string operationMessage: ""
     property bool operationMessageIsError: false
@@ -164,6 +167,7 @@ FocusScope {
         && !modeTransitionActive
         && !pageTransitionActive
         && !applicationLaunchPending
+        && !internalDragLayer.active
     readonly property real responsiveApplicationIconBase: Math.max(
         Kirigami.Units.iconSizes.large,
         Math.min(Kirigami.Units.iconSizes.huge, Math.min(width, height) / 15))
@@ -247,6 +251,19 @@ FocusScope {
             root.operationMessage = i18nc("@info:status",
                 "The application folder could not be updated.")
             root.operationMessageIsError = true
+        }
+    }
+
+    Connections {
+        target: root.Window.window
+        enabled: target !== null
+        ignoreUnknownSignals: true
+
+        function onActiveChanged() {
+            if (internalDragLayer.active && root.Window.window
+                    && !root.Window.window.active) {
+                root.cancelInternalLayoutDrag()
+            }
         }
     }
 
@@ -499,6 +516,174 @@ FocusScope {
             Math.min(firstIndex + pageCapacity, visibleApplications.length))
     }
 
+    function isInternalLayoutDrag(event) {
+        return internalDragLayer.active && event
+            && event.source === internalDragLayer.dragSource
+            && event.keys && event.keys.indexOf(internalDragLayer.dragKey) >= 0
+    }
+
+    function beginInternalLayoutDrag(application, sourceItem, x, y) {
+        if (!organizedListingActive || folderSurface.active
+                || sessionViewActive || applicationLaunchPending
+                || !applicationLayoutController
+                || applicationLayoutController.transactionPending) {
+            return false
+        }
+        const nodeId = String(application ? application.nodeId || "" : "")
+        if (!sourceItem || nodeId.length === 0) {
+            return false
+        }
+        closeContextMenusExcept(null)
+        resetPageNavigation()
+        resetWheelGesture()
+        const position = sourceItem.mapToItem(root, x, y)
+        const started = internalDragLayer.begin(application, position,
+            Qt.size(sourceItem.width, sourceItem.height))
+        if (started) {
+            suppressDragReleaseClick = true
+            updateDragEdge(position)
+        }
+        return started
+    }
+
+    function updateInternalLayoutDrag(sourceItem, x, y) {
+        if (!internalDragLayer.active || !sourceItem) {
+            return
+        }
+        const position = sourceItem.mapToItem(root, x, y)
+        internalDragLayer.move(position)
+        updateDragEdge(position)
+    }
+
+    function finishInternalLayoutDrag() {
+        dragEdgeTimer.stop()
+        dragEdgeDirection = 0
+        dragEdgeArmed = true
+        internalDragLayer.drop()
+        Qt.callLater(function() {
+            root.suppressDragReleaseClick = false
+        })
+    }
+
+    function cancelInternalLayoutDrag() {
+        dragEdgeTimer.stop()
+        dragEdgeDirection = 0
+        dragEdgeArmed = true
+        internalDragLayer.cancel()
+        Qt.callLater(function() {
+            root.suppressDragReleaseClick = false
+        })
+    }
+
+    function updateDragEdge(position) {
+        if (!internalDragLayer.active || pageCount <= 1) {
+            dragEdgeTimer.stop()
+            dragEdgeDirection = 0
+            return
+        }
+        const edgeWidth = Math.max(Kirigami.Units.gridUnit * 3,
+            applicationGridHorizontalInset * 0.45)
+        let nextDirection = 0
+        if (position.x <= gridArea.x + edgeWidth
+                && pagesView.currentIndex > 0) {
+            nextDirection = -1
+        } else if (position.x >= gridArea.x + gridArea.width - edgeWidth
+                && pagesView.currentIndex < pageCount - 1) {
+            nextDirection = 1
+        }
+        if (nextDirection === 0) {
+            dragEdgeTimer.stop()
+            dragEdgeDirection = 0
+            dragEdgeArmed = true
+            return
+        }
+        if (dragEdgeDirection !== nextDirection) {
+            dragEdgeDirection = nextDirection
+            dragEdgeArmed = true
+            dragEdgeTimer.restart()
+        } else if (dragEdgeArmed && !dragEdgeTimer.running) {
+            dragEdgeTimer.restart()
+        }
+    }
+
+    function requestDraggedNodeMove(beforeNodeId) {
+        if (!applicationLayoutController
+                || typeof applicationLayoutController.requestMoveNode
+                    !== "function") {
+            return false
+        }
+        const result = applicationLayoutController.requestMoveNode(
+            internalDragLayer.nodeId, String(beforeNodeId || ""))
+        if (!result || result.accepted !== true) {
+            if (result && String(result.errorCode || "") === "no-change") {
+                return false
+            }
+            operationMessage = i18nc("@info:status",
+            "The application folder could not be updated.")
+            operationMessageIsError = true
+            return false
+        }
+        return true
+    }
+
+    function handleDraggedNodeDrop(targetApplication) {
+        if (!internalDragLayer.active || !targetApplication) {
+            return false
+        }
+        const targetNodeId = String(targetApplication.nodeId || "")
+        if (targetNodeId.length === 0
+                || targetNodeId === internalDragLayer.nodeId) {
+            return false
+        }
+        if (internalDragLayer.folder) {
+            return requestDraggedNodeMove(targetNodeId)
+        }
+        if (String(targetApplication.nodeType || "") === "folder") {
+            const folderId = String(targetApplication.folderId || "")
+            if (folderId.length === 0) {
+                return false
+            }
+            const result = applicationLayoutController
+                .requestAddApplicationToFolder(
+                    internalDragLayer.storageId, folderId)
+            if (!result || result.accepted !== true) {
+                operationMessage = i18nc("@info:status",
+                    "The application folder could not be updated.")
+                operationMessageIsError = true
+                return false
+            }
+            return true
+        }
+        const targetStorageId = String(targetApplication.appStorageId || "")
+        if (internalDragLayer.storageId.length === 0
+                || targetStorageId.length === 0
+                || internalDragLayer.storageId === targetStorageId) {
+            return false
+        }
+        return folderSurface.beginCreateFromStorageIds([
+            internalDragLayer.storageId, targetStorageId
+        ])
+    }
+
+    function nodeIdForGridDrop(pageIndex, x, y, grid) {
+        if (!grid || gridColumns <= 0 || gridRows <= 0) {
+            return ""
+        }
+        const cellWidth = (grid.width - grid.columnSpacing
+            * (gridColumns - 1)) / gridColumns
+        const cellHeight = (grid.height - grid.rowSpacing
+            * (gridRows - 1)) / gridRows
+        const column = Math.max(0, Math.min(gridColumns - 1,
+            Math.floor(x / Math.max(1, cellWidth + grid.columnSpacing))))
+        const row = Math.max(0, Math.min(gridRows - 1,
+            Math.floor(y / Math.max(1, cellHeight + grid.rowSpacing))))
+        const targetIndex = pageIndex * pageCapacity + row * gridColumns + column
+        if (targetIndex < 0 || targetIndex >= visibleApplications.length) {
+            return ""
+        }
+        return String(visibleApplications[targetIndex].nodeId || "")
+    }
+
     function applicationAt(index) {
         if (index < 0 || index >= visibleApplications.length) {
             return null
@@ -552,8 +737,11 @@ FocusScope {
         goToPage(pagesView.currentIndex + (step < 0 ? -1 : 1))
     }
 
-    function requestPageStep(step) {
+    function requestPageStep(step, fromInternalDrag) {
         if (!menuOpen || pageCount <= 1) {
+            return
+        }
+        if (internalDragLayer.active && fromInternalDrag !== true) {
             return
         }
         const normalizedStep = step < 0 ? -1 : 1
@@ -580,6 +768,10 @@ FocusScope {
     }
 
     function handlePageWheel(wheel) {
+        if (internalDragLayer.active) {
+            wheel.accepted = true
+            return
+        }
         const pixelX = Number(wheel.pixelDelta.x)
         const pixelY = Number(wheel.pixelDelta.y)
         const usesPixelDelta = pixelX !== 0 || pixelY !== 0
@@ -726,6 +918,7 @@ FocusScope {
     }
 
     function setSessionViewActive(active) {
+        cancelInternalLayoutDrag()
         const requestedState = Boolean(active)
         if (sessionViewRequested === requestedState
                 && (sessionViewActive === requestedState
@@ -762,6 +955,7 @@ FocusScope {
 
     function openOverlay() {
         closeTimer.stop()
+        cancelInternalLayoutDrag()
         folderSurface.reset()
         resetPageNavigation()
         resetWheelGesture()
@@ -781,6 +975,7 @@ FocusScope {
 
     function forceClose() {
         closeTimer.stop()
+        cancelInternalLayoutDrag()
         folderSurface.reset()
         if (applicationLayoutController) {
             applicationLayoutController.discardUndoHistory()
@@ -799,6 +994,7 @@ FocusScope {
 
     function resetOverlay() {
         closeTimer.stop()
+        cancelInternalLayoutDrag()
         folderSurface.reset()
         if (applicationLayoutController) {
             applicationLayoutController.discardUndoHistory()
@@ -817,7 +1013,15 @@ FocusScope {
         currentApplicationIndex = -1
     }
 
-    onSearchTextChanged: resetPagination()
+    onSearchTextChanged: {
+        cancelInternalLayoutDrag()
+        resetPagination()
+    }
+    onMenuOpenChanged: {
+        if (!menuOpen) {
+            cancelInternalLayoutDrag()
+        }
+    }
     onOperationMessageChanged: updateOperationMessageTimer()
     onApplicationErrorMessageChanged: updateOperationMessageTimer()
     onSessionViewActiveChanged: updateOperationMessageTimer()
@@ -838,6 +1042,7 @@ FocusScope {
     }
     onPageCapacityChanged: {
         if (menuOpen) {
+            cancelInternalLayoutDrag()
             const selectedIndex = Math.max(0, currentApplicationIndex)
             Qt.callLater(function() {
                 root.setCurrentApplication(selectedIndex)
@@ -852,6 +1057,13 @@ FocusScope {
     }
 
     Keys.onPressed: function(event) {
+        if (internalDragLayer.active) {
+            if (event.key === Qt.Key_Escape || event.key === Qt.Key_Back) {
+                root.cancelInternalLayoutDrag()
+                event.accepted = true
+            }
+            return
+        }
         if (folderSurface.active) {
             if (event.key === Qt.Key_Escape || event.key === Qt.Key_Back) {
                 folderSurface.closeCurrentView()
@@ -1230,6 +1442,20 @@ FocusScope {
         onTriggered: {
             root.wheelPageAccumulator = 0
             root.wheelGestureCommitted = false
+        }
+    }
+
+    Timer {
+        id: dragEdgeTimer
+        interval: Math.max(420, Math.round(Kirigami.Units.longDuration * 1.5))
+        repeat: false
+        onTriggered: {
+            if (!internalDragLayer.active || !root.dragEdgeArmed
+                    || root.dragEdgeDirection === 0) {
+                return
+            }
+            root.dragEdgeArmed = false
+            root.requestPageStep(root.dragEdgeDirection, true)
         }
     }
 
@@ -1675,7 +1901,7 @@ FocusScope {
                 orientation: ListView.Horizontal
                 model: root.pageCount
                 clip: true
-                interactive: root.pageCount > 1
+                interactive: root.pageCount > 1 && !internalDragLayer.active
                 boundsBehavior: Flickable.StopAtBounds
                 snapMode: ListView.SnapOneItem
                 highlightRangeMode: ListView.StrictlyEnforceRange
@@ -1704,6 +1930,30 @@ FocusScope {
                     height: pagesView.height
                     readonly property var pageApplications: root.applicationsForPage(index)
 
+                    DropArea {
+                        x: applicationsGrid.x
+                        y: applicationsGrid.y
+                        width: applicationsGrid.width
+                        height: applicationsGrid.height
+                        keys: [internalDragLayer.dragKey]
+                        z: 0
+
+                        onEntered: function(drag) {
+                            drag.accepted = root.isInternalLayoutDrag(drag)
+                        }
+                        onDropped: function(drop) {
+                            if (!root.isInternalLayoutDrag(drop)) {
+                                drop.accepted = false
+                                return
+                            }
+                            const beforeNodeId = root.nodeIdForGridDrop(
+                                pageDelegate.index, drop.x, drop.y,
+                                applicationsGrid)
+                            drop.accepted = root.requestDraggedNodeMove(
+                                beforeNodeId)
+                        }
+                    }
+
                     Grid {
                         id: applicationsGrid
                         anchors.centerIn: parent
@@ -1713,6 +1963,7 @@ FocusScope {
                         rows: root.gridRows
                         columnSpacing: Kirigami.Units.mediumSpacing
                         rowSpacing: Kirigami.Units.smallSpacing
+                        z: 1
 
                         Repeater {
                             model: pageDelegate.pageApplications
@@ -1730,10 +1981,14 @@ FocusScope {
                                 readonly property bool isSelected: root.currentApplicationIndex
                                     === globalIndex
                                 readonly property bool highlighted: isSelected
-                                    || (appMouseArea.containsMouse
+                                    || (delegatePointer.containsMouse
                                         && root.applicationHoverAllowed)
                                 readonly property bool isHiddenApplication:
                                     !isFolder && !!modelData.appHidden
+                                readonly property bool isDragSource:
+                                    internalDragLayer.active
+                                    && internalDragLayer.nodeId
+                                        === String(modelData.nodeId || "")
                                 readonly property real safeIconSize: Math.max(
                                     Kirigami.Units.iconSizes.medium,
                                     Math.min(root.responsiveApplicationIconBase
@@ -1746,7 +2001,8 @@ FocusScope {
                                 height: (applicationsGrid.height
                                     - applicationsGrid.rowSpacing
                                         * (root.gridRows - 1)) / root.gridRows
-                                opacity: isHiddenApplication ? 0.58 : 1.0
+                                opacity: isDragSource ? 0.34
+                                    : isHiddenApplication ? 0.58 : 1.0
                                 Accessible.ignored: isFolder
                                 Accessible.role: Accessible.Button
                                 Accessible.name: isFolder
@@ -1774,6 +2030,7 @@ FocusScope {
                                     memberCount: Number(appDelegate.modelData
                                         .folderMemberCount || 0)
                                     selected: appDelegate.isSelected
+                                        || nodeDropTarget.containsDrag
                                     motionEnabled: root.motionEnabled
                                     iconScale: root.safeApplicationIconScale
                                     onActivated: root.launchApplicationAt(
@@ -1788,27 +2045,17 @@ FocusScope {
                                         String(appDelegate.modelData.folderId || ""))
                                 }
 
-                                Rectangle {
+                                PunchiMenuItemHighlight {
                                     anchors.fill: parent
                                     anchors.margins: Kirigami.Units.smallSpacing
                                     visible: !appDelegate.isFolder
-                                    radius: Kirigami.Units.cornerRadius * 2
-                                    color: appDelegate.highlighted
-                                        ? Qt.alpha(Kirigami.Theme.highlightColor, 0.20)
-                                        : "transparent"
-                                    border.color: appDelegate.isSelected
-                                        ? Kirigami.Theme.highlightColor
-                                        : "transparent"
-                                    border.width: appDelegate.isSelected ? 2 : 0
-                                    scale: appDelegate.highlighted ? 1.03 : 1.0
-
-                                    Behavior on scale {
-                                        enabled: root.motionEnabled
-                                        NumberAnimation {
-                                            duration: Kirigami.Units.shortDuration
-                                            easing.type: Easing.OutCubic
-                                        }
-                                    }
+                                    hovered: delegatePointer.containsMouse
+                                        && root.applicationHoverAllowed
+                                    selected: appDelegate.isSelected
+                                        || nodeDropTarget.containsDrag
+                                    pressed: delegatePointer.pressed
+                                        && !internalDragLayer.active
+                                    motionEnabled: root.motionEnabled
 
                                     ColumnLayout {
                                         anchors.centerIn: parent
@@ -1846,40 +2093,117 @@ FocusScope {
                                         Accessible.ignored: true
                                     }
 
-                                    MouseArea {
-                                        id: appMouseArea
-                                        anchors.fill: parent
-                                        hoverEnabled: true
-                                        acceptedButtons: Qt.LeftButton | Qt.RightButton
-                                        preventStealing: false
-                                        cursorShape: Qt.PointingHandCursor
-                                        onEntered: {
-                                            if (root.applicationHoverAllowed) {
-                                                root.setCurrentApplication(appDelegate.globalIndex)
-                                            }
+                                }
+
+                                DropArea {
+                                    id: nodeDropTarget
+                                    anchors.fill: parent
+                                    anchors.margins: Kirigami.Units.smallSpacing
+                                    keys: [internalDragLayer.dragKey]
+                                    z: 20
+
+                                    onEntered: function(drag) {
+                                        drag.accepted = root.isInternalLayoutDrag(drag)
+                                            && internalDragLayer.nodeId
+                                                !== String(appDelegate.modelData.nodeId || "")
+                                    }
+                                    onDropped: function(drop) {
+                                        if (!root.isInternalLayoutDrag(drop)) {
+                                            drop.accepted = false
+                                            return
                                         }
-                                        onClicked: function(mouse) {
-                                            root.setCurrentApplication(appDelegate.globalIndex)
-                                            if (mouse.button === Qt.RightButton) {
-                                                if (appDelegate.isFolder) {
-                                                    root.openFolderContextMenu(
-                                                        appDelegate,
-                                                        appDelegate.modelData,
-                                                        mouse.x, mouse.y)
-                                                } else {
-                                                    root.openApplicationContextMenu(
-                                                        appDelegate,
-                                                        String(appDelegate.modelData.appStorageId || ""),
-                                                        String(appDelegate.modelData.appName || ""),
-                                                        String(appDelegate.modelData.appIcon || ""),
-                                                        root.organizedListingActive
-                                                            ? ""
-                                                            : String(appDelegate.modelData.appCommand || ""),
-                                                        mouse.x, mouse.y)
-                                                }
+                                        drop.accepted = root.handleDraggedNodeDrop(
+                                            appDelegate.modelData)
+                                    }
+                                }
+
+                                Kirigami.Icon {
+                                    anchors.right: parent.right
+                                    anchors.top: parent.top
+                                    anchors.margins: Kirigami.Units.smallSpacing
+                                    width: Kirigami.Units.iconSizes.small
+                                    height: width
+                                    visible: nodeDropTarget.containsDrag
+                                    source: internalDragLayer.folder
+                                        ? "transform-move-symbolic"
+                                        : appDelegate.isFolder
+                                            ? "folder-add-symbolic"
+                                            : "folder-new-symbolic"
+                                    color: Kirigami.Theme.highlightColor
+                                    z: 30
+                                    Accessible.ignored: true
+                                }
+
+                                MouseArea {
+                                    id: delegatePointer
+                                    anchors.fill: parent
+                                    z: 40
+                                    hoverEnabled: true
+                                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                                    preventStealing: internalDragLayer.active
+                                    cursorShape: appDelegate.isDragSource
+                                        ? Qt.ClosedHandCursor : Qt.PointingHandCursor
+
+                                    onEntered: {
+                                        if (root.applicationHoverAllowed) {
+                                            root.setCurrentApplication(
+                                                appDelegate.globalIndex)
+                                        }
+                                    }
+                                    onPressAndHold: function(mouse) {
+                                        if (mouse.button === Qt.LeftButton) {
+                                            root.setCurrentApplication(
+                                                appDelegate.globalIndex)
+                                            root.beginInternalLayoutDrag(
+                                                appDelegate.modelData,
+                                                delegatePointer,
+                                                mouse.x, mouse.y)
+                                        }
+                                    }
+                                    onPositionChanged: function(mouse) {
+                                        if (appDelegate.isDragSource) {
+                                            root.updateInternalLayoutDrag(
+                                                delegatePointer,
+                                                mouse.x, mouse.y)
+                                        }
+                                    }
+                                    onReleased: function(mouse) {
+                                        if (mouse.button === Qt.LeftButton
+                                                && appDelegate.isDragSource) {
+                                            root.finishInternalLayoutDrag()
+                                        }
+                                    }
+                                    onCanceled: {
+                                        if (appDelegate.isDragSource) {
+                                            root.cancelInternalLayoutDrag()
+                                        }
+                                    }
+                                    onClicked: function(mouse) {
+                                        if (root.suppressDragReleaseClick) {
+                                            return
+                                        }
+                                        root.setCurrentApplication(
+                                            appDelegate.globalIndex)
+                                        if (mouse.button === Qt.RightButton) {
+                                            if (appDelegate.isFolder) {
+                                                root.openFolderContextMenu(
+                                                    appDelegate,
+                                                    appDelegate.modelData,
+                                                    mouse.x, mouse.y)
                                             } else {
-                                                root.launchApplicationAt(appDelegate.globalIndex)
+                                                root.openApplicationContextMenu(
+                                                    appDelegate,
+                                                    String(appDelegate.modelData.appStorageId || ""),
+                                                    String(appDelegate.modelData.appName || ""),
+                                                    String(appDelegate.modelData.appIcon || ""),
+                                                    root.organizedListingActive
+                                                        ? ""
+                                                        : String(appDelegate.modelData.appCommand || ""),
+                                                    mouse.x, mouse.y)
                                             }
+                                        } else {
+                                            root.launchApplicationAt(
+                                                appDelegate.globalIndex)
                                         }
                                     }
                                 }
@@ -1916,6 +2240,7 @@ FocusScope {
                 z: 30
                 visible: !root.sessionViewActive && root.pageCount > 1
                 enabled: pagesView.currentIndex > 0 && !root.applicationLaunchPending
+                    && !internalDragLayer.active
                 opacity: enabled ? (hovered || activeFocus ? 1.0 : 0.62) : 0.20
                 focusPolicy: Qt.StrongFocus
                 icon.name: "go-previous-symbolic"
@@ -1961,6 +2286,7 @@ FocusScope {
                 visible: !root.sessionViewActive && root.pageCount > 1
                 enabled: pagesView.currentIndex < root.pageCount - 1
                     && !root.applicationLaunchPending
+                    && !internalDragLayer.active
                 opacity: enabled ? (hovered || activeFocus ? 1.0 : 0.62) : 0.20
                 focusPolicy: Qt.StrongFocus
                 icon.name: "go-next-symbolic"
@@ -2255,7 +2581,7 @@ FocusScope {
                             anchors.margins: Kirigami.Units.smallSpacing
                             radius: Kirigami.Units.cornerRadius * 1.5
                             color: favoriteDelegate.selected
-                                ? Qt.alpha(Kirigami.Theme.highlightColor, 0.24)
+                            ? Qt.alpha(Kirigami.Theme.highlightColor, 0.30)
                                 : "transparent"
                             border.color: favoriteDelegate.selected
                                 ? Kirigami.Theme.highlightColor
@@ -2437,6 +2763,13 @@ FocusScope {
         }
     }
 
+    PunchiMenuDragLayer {
+        id: internalDragLayer
+        anchors.fill: parent
+        z: 230
+        motionEnabled: root.motionEnabled
+    }
+
     PunchiMenuFolderSurface {
         id: folderSurface
         anchors.fill: parent
@@ -2446,6 +2779,9 @@ FocusScope {
         motionEnabled: root.motionEnabled
         iconScale: root.safeApplicationIconScale
         detailedApplicationFeedback: true
+        applicationHighlightOpacity: 0.30
+        applicationCornerRadiusScale: 2.0
+        applicationHoverScale: 1.03
         returnToFolderAfterMemberRemoval: true
         allowedExternalFocusItems: [
             standaloneApplicationContextMenu.contentItem,
