@@ -577,9 +577,36 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
-    if "PunchiMenuDragLayer" in normal_source:
+    normal_internal_drag_contract = (
+        (normal_source, "PunchiMenuDragLayer {", "shared internal transport"),
+        (normal_source, "onPressAndHold: function(mouse)", "system long-press entry"),
+        (normal_source, "preventStealing: internalDragLayer.active", "post-threshold scroll arbitration"),
+        (normal_source, "interactive: !internalDragLayer.active", "direct vertical gesture suspension"),
+        (normal_source, "target: internalDragLayer.active\n                            ? applicationsGrid : null", "wheel suspension without disabling targets"),
+        (normal_source, "function updateDragAutoScroll(position)", "viewport edge detection"),
+        (normal_source, "function performDragAutoScroll()", "bounded vertical autoscroll"),
+        (normal_source, "id: dragScrollTimer", "single bounded scroll timer"),
+        (normal_source, "folderSurface.beginCreateFromStorageIds([", "application-to-application creation"),
+        (normal_source, ".requestAddApplicationToFolder(", "application-to-folder move"),
+        (normal_source, "requestMoveNode(", "transactional node reorder"),
+        (normal_source, "event.source === internalDragLayer.dragSource", "source identity validation"),
+        (normal_source, "root.cancelInternalLayoutDrag()", "explicit cancellation"),
+        (normal_source, "function onActiveChanged()", "window-focus cancellation"),
+    )
+    for source, marker, description in normal_internal_drag_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu Normal DnD: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if re.search(
+        r"enabled:\s*!root\.applicationLaunchPending\s*"
+        r"&&\s*!internalDragLayer\.active",
+        normal_source,
+    ):
         print(
-            "PunchiMenu Normal: Fullscreen DnD leaked into the deferred phase 3 mode",
+            "PunchiMenu Normal DnD: disabling applicationsGrid also disables its drop targets",
             file=sys.stderr,
         )
         passed = False
@@ -690,7 +717,7 @@ def main() -> int:
         "applicationContextMenuSurface.openAt(sourceItem",
         "id: applicationContextMenuSurface",
         "allowedExternalFocusItems: [applicationContextMenuSurface]",
-        "root.openApplicationContextMenu(\n                                            applicationMouseArea",
+        "root.openApplicationContextMenu(\n                                        applicationDelegate",
         "root.openApplicationContextMenu(\n                                                favoriteMouseArea",
     )
     for marker in normal_context_menu_contract:
@@ -1453,6 +1480,8 @@ def main() -> int:
         "target: categoriesView",
         "id: favoritesWheelHandler",
         "target: favoritesView",
+        "id: applicationDragWheelBlocker",
+        "target: internalDragLayer.active",
         "scrollFlickableTarget: false",
         "blockTargetWheel: true",
     )
@@ -1463,9 +1492,9 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
-    if normal_source.count("Kirigami.WheelHandler {") != 2:
+    if normal_source.count("Kirigami.WheelHandler {") != 3:
         print(
-            "PunchiMenu Normal wheel: categories and Favorites need exactly two handlers",
+            "PunchiMenu Normal wheel: categories, Favorites, and active DnD need exactly three handlers",
             file=sys.stderr,
         )
         passed = False

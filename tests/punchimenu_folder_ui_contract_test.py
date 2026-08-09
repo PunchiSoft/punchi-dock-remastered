@@ -870,8 +870,9 @@ def assert_modal_interaction_and_accessibility(
         "Folder tiles must expose their pointer hover state to their menu delegate.",
     )
     require(
-        "readonly property bool pointerHovered: isFolder ? folderTile.hovered "
-        ": applicationMouseArea.containsMouse" in normal_compact
+        "readonly property bool pointerHovered: "
+        "delegatePointer.containsMouse "
+        "&& root.applicationHoverAllowed" in normal_compact
         and "readonly property bool selected: keyboardFocused || pointerHovered"
         in normal_compact,
         "PunchiMenu Normal must select applications and folders through one "
@@ -879,10 +880,11 @@ def assert_modal_interaction_and_accessibility(
     )
     require(
         "id: folderTile" in normal_folder_tile
-        and "onHoveredChanged:" in normal_folder_tile
-        and "applicationsGrid.currentIndex = applicationDelegate.index"
-        in normal_folder_tile,
-        "PunchiMenu Normal must synchronize its current index when a folder is hovered.",
+        and "selected: applicationDelegate.selected "
+        "|| nodeDropTarget.containsDrag" in normal_folder_tile
+        and "onHoveredChanged:" not in normal_folder_tile,
+        "PunchiMenu Normal must route folder hover and drag selection through "
+        "the shared delegate pointer.",
     )
     require(
         "Accessible.onPressAction: launchApplication()" in folder_view,
