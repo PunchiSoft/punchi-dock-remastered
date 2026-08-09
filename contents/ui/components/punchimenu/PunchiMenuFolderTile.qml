@@ -14,13 +14,10 @@ FocusScope {
     property int memberCount: 0
     property bool selected: false
     property bool motionEnabled: true
-    property real iconScale: 1.0
+    property real requestedIconSize: Kirigami.Units.iconSizes.huge
     readonly property alias hovered: pointer.containsMouse
 
-    readonly property real effectiveIconScale: Math.max(0.5,
-        Math.min(2.0, Number(iconScale || 1.0)))
-    readonly property int previewSize: Math.round(
-        Kirigami.Units.gridUnit * 3.7 * effectiveIconScale)
+    readonly property int previewSize: iconMetrics.effectiveSize
     readonly property string effectiveLabel: folderLabel.length > 0
         ? folderLabel
         : i18nc("@label", "Applications folder")
@@ -32,8 +29,8 @@ FocusScope {
     signal renameRequested()
 
     implicitWidth: Math.max(Kirigami.Units.gridUnit * 5.5,
-        previewSize + Kirigami.Units.largeSpacing * 2)
-    implicitHeight: previewSize + Kirigami.Units.gridUnit * 2.8
+        requestedIconSize + Kirigami.Units.largeSpacing * 2)
+    implicitHeight: requestedIconSize + Kirigami.Units.gridUnit * 2.8
     activeFocusOnTab: true
     scale: pointer.pressed ? 0.97
         : pointer.containsMouse || activeFocus ? 1.015 : 1.0
@@ -46,24 +43,26 @@ FocusScope {
     Accessible.focused: selected || activeFocus
     Accessible.onPressAction: root.activated()
 
-    Rectangle {
-        anchors.fill: parent
-        radius: Kirigami.Units.cornerRadius
-        color: root.selected || root.activeFocus
-            ? Qt.alpha(Kirigami.Theme.highlightColor, 0.30)
-            : pointer.containsMouse
-                ? Qt.alpha(Kirigami.Theme.textColor, 0.09)
-                : "transparent"
-        border.width: root.activeFocus ? 2 : root.selected ? 1 : 0
-        border.color: Kirigami.Theme.highlightColor
+    PunchiMenuIconMetrics {
+        id: iconMetrics
+        requestedScale: 1.0
+        minimumScale: 1.0
+        maximumScale: 1.0
+        baseSize: root.requestedIconSize
+        minimumSize: Kirigami.Units.iconSizes.medium
+        availableWidth: root.width > 0
+            ? root.width - Kirigami.Units.largeSpacing * 2 : -1
+        availableHeight: root.height > 0
+            ? root.height - Kirigami.Units.gridUnit * 2.8 : -1
+    }
 
-        Behavior on color {
-            enabled: root.motionEnabled
-            ColorAnimation {
-                duration: Math.max(90,
-                    Math.min(150, Kirigami.Units.shortDuration))
-            }
-        }
+    PunchiMenuItemHighlight {
+        anchors.fill: parent
+        hovered: pointer.containsMouse
+        selected: root.selected
+        focused: root.activeFocus
+        pressed: pointer.pressed
+        motionEnabled: root.motionEnabled
     }
 
     ColumnLayout {

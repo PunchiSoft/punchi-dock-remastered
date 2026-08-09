@@ -477,6 +477,14 @@ KCM.SimpleKCM {
 
     function setPunchiMenuFavoriteIconScalePercent(percent) { WorkflowHelper.setPunchiMenuFavoriteIconScalePercent(percent) }
 
+    function setPunchiMenuNormalFolderMaximumColumns(columns) { WorkflowHelper.setPunchiMenuNormalFolderMaximumColumns(columns) }
+
+    function setPunchiMenuNormalFolderMaximumRows(rows) { WorkflowHelper.setPunchiMenuNormalFolderMaximumRows(rows) }
+
+    function setPunchiMenuFullScreenFolderMaximumColumns(columns) { WorkflowHelper.setPunchiMenuFullScreenFolderMaximumColumns(columns) }
+
+    function setPunchiMenuFullScreenFolderMaximumRows(rows) { WorkflowHelper.setPunchiMenuFullScreenFolderMaximumRows(rows) }
+
     function setPunchiMenuShowDistributionName(enabled) { WorkflowHelper.setPunchiMenuShowDistributionName(enabled) }
 
     function setPunchiMenuNormalSizePercent(widthPercent, heightPercent) { WorkflowHelper.setPunchiMenuNormalSizePercent(widthPercent, heightPercent) }
@@ -643,7 +651,6 @@ KCM.SimpleKCM {
         gridText: i18n("Grid")
         listText: i18n("List")
         detailedText: i18n("Detailed")
-        showContainerLabelsText: i18n("Show labels")
         noteText: i18n("Note")
         separatorText: i18n("Separator")
         spacerText: i18n("Spacer")
@@ -756,6 +763,18 @@ KCM.SimpleKCM {
         }
         onFavoriteIconScalePercentSelected: function(percent) {
             page.setPunchiMenuFavoriteIconScalePercent(percent)
+        }
+        onNormalFolderMaximumColumnsSelected: function(columns) {
+            page.setPunchiMenuNormalFolderMaximumColumns(columns)
+        }
+        onNormalFolderMaximumRowsSelected: function(rows) {
+            page.setPunchiMenuNormalFolderMaximumRows(rows)
+        }
+        onFullScreenFolderMaximumColumnsSelected: function(columns) {
+            page.setPunchiMenuFullScreenFolderMaximumColumns(columns)
+        }
+        onFullScreenFolderMaximumRowsSelected: function(rows) {
+            page.setPunchiMenuFullScreenFolderMaximumRows(rows)
         }
         onShowDistributionNameSelected: function(enabled) {
             page.setPunchiMenuShowDistributionName(enabled)

@@ -318,6 +318,48 @@ Module {
         Method { name: "clearError"; lineNumber: 37 }
     }
     Component {
+        file: "launcherdragcontroller.h"
+        lineNumber: 9
+        name: "LauncherDragController"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/LauncherDragController 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "dragging"
+            type: "bool"
+            read: "dragging"
+            notify: "draggingChanged"
+            index: 0
+            lineNumber: 14
+            isReadonly: true
+        }
+        Property {
+            name: "iconSize"
+            type: "int"
+            read: "iconSize"
+            write: "setIconSize"
+            notify: "iconSizeChanged"
+            index: 1
+            lineNumber: 15
+        }
+        Signal { name: "draggingChanged"; lineNumber: 28 }
+        Signal { name: "iconSizeChanged"; lineNumber: 29 }
+        Signal {
+            name: "dragFinished"
+            lineNumber: 30
+            Parameter { name: "accepted"; type: "bool" }
+        }
+        Method {
+            name: "startApplicationDrag"
+            type: "bool"
+            lineNumber: 24
+            Parameter { name: "sourceItem"; type: "QQuickItem"; isPointer: true }
+            Parameter { name: "storageId"; type: "QString" }
+            Parameter { name: "iconName"; type: "QString" }
+        }
+    }
+    Component {
         file: "mpriscontroller.h"
         lineNumber: 13
         name: "MprisController"
@@ -344,12 +386,21 @@ Module {
             lineNumber: 18
         }
         Property {
+            name: "resolving"
+            type: "bool"
+            read: "resolving"
+            notify: "resolvingChanged"
+            index: 2
+            lineNumber: 19
+            isReadonly: true
+        }
+        Property {
             name: "available"
             type: "bool"
             read: "available"
             notify: "stateChanged"
-            index: 2
-            lineNumber: 19
+            index: 3
+            lineNumber: 20
             isReadonly: true
         }
         Property {
@@ -357,8 +408,8 @@ Module {
             type: "QString"
             read: "identity"
             notify: "stateChanged"
-            index: 3
-            lineNumber: 20
+            index: 4
+            lineNumber: 21
             isReadonly: true
         }
         Property {
@@ -366,8 +417,8 @@ Module {
             type: "QString"
             read: "track"
             notify: "stateChanged"
-            index: 4
-            lineNumber: 21
+            index: 5
+            lineNumber: 22
             isReadonly: true
         }
         Property {
@@ -375,8 +426,8 @@ Module {
             type: "QString"
             read: "artist"
             notify: "stateChanged"
-            index: 5
-            lineNumber: 22
+            index: 6
+            lineNumber: 23
             isReadonly: true
         }
         Property {
@@ -384,8 +435,8 @@ Module {
             type: "QString"
             read: "artUrl"
             notify: "stateChanged"
-            index: 6
-            lineNumber: 23
+            index: 7
+            lineNumber: 24
             isReadonly: true
         }
         Property {
@@ -393,8 +444,8 @@ Module {
             type: "bool"
             read: "canGoPrevious"
             notify: "stateChanged"
-            index: 7
-            lineNumber: 24
+            index: 8
+            lineNumber: 25
             isReadonly: true
         }
         Property {
@@ -402,8 +453,8 @@ Module {
             type: "bool"
             read: "canPlay"
             notify: "stateChanged"
-            index: 8
-            lineNumber: 25
+            index: 9
+            lineNumber: 26
             isReadonly: true
         }
         Property {
@@ -411,8 +462,8 @@ Module {
             type: "bool"
             read: "canPause"
             notify: "stateChanged"
-            index: 9
-            lineNumber: 26
+            index: 10
+            lineNumber: 27
             isReadonly: true
         }
         Property {
@@ -420,8 +471,8 @@ Module {
             type: "bool"
             read: "canGoNext"
             notify: "stateChanged"
-            index: 10
-            lineNumber: 27
+            index: 11
+            lineNumber: 28
             isReadonly: true
         }
         Property {
@@ -429,8 +480,8 @@ Module {
             type: "bool"
             read: "canControl"
             notify: "stateChanged"
-            index: 11
-            lineNumber: 28
+            index: 12
+            lineNumber: 29
             isReadonly: true
         }
         Property {
@@ -438,8 +489,8 @@ Module {
             type: "bool"
             read: "canSeek"
             notify: "stateChanged"
-            index: 12
-            lineNumber: 29
+            index: 13
+            lineNumber: 30
             isReadonly: true
         }
         Property {
@@ -447,8 +498,8 @@ Module {
             type: "bool"
             read: "playing"
             notify: "stateChanged"
-            index: 13
-            lineNumber: 30
+            index: 14
+            lineNumber: 31
             isReadonly: true
         }
         Property {
@@ -456,8 +507,8 @@ Module {
             type: "qlonglong"
             read: "positionUs"
             notify: "stateChanged"
-            index: 14
-            lineNumber: 31
+            index: 15
+            lineNumber: 32
             isReadonly: true
         }
         Property {
@@ -465,8 +516,8 @@ Module {
             type: "qlonglong"
             read: "lengthUs"
             notify: "stateChanged"
-            index: 15
-            lineNumber: 32
+            index: 16
+            lineNumber: 33
             isReadonly: true
         }
         Property {
@@ -474,8 +525,8 @@ Module {
             type: "bool"
             read: "shuffleAvailable"
             notify: "stateChanged"
-            index: 16
-            lineNumber: 33
+            index: 17
+            lineNumber: 34
             isReadonly: true
         }
         Property {
@@ -483,8 +534,8 @@ Module {
             type: "bool"
             read: "shuffle"
             notify: "stateChanged"
-            index: 17
-            lineNumber: 34
+            index: 18
+            lineNumber: 35
             isReadonly: true
         }
         Property {
@@ -492,8 +543,8 @@ Module {
             type: "QString"
             read: "loopStatus"
             notify: "stateChanged"
-            index: 18
-            lineNumber: 35
+            index: 19
+            lineNumber: 36
             isReadonly: true
         }
         Property {
@@ -501,8 +552,8 @@ Module {
             type: "bool"
             read: "volumeAvailable"
             notify: "stateChanged"
-            index: 19
-            lineNumber: 36
+            index: 20
+            lineNumber: 37
             isReadonly: true
         }
         Property {
@@ -510,47 +561,48 @@ Module {
             type: "double"
             read: "volume"
             notify: "stateChanged"
-            index: 20
-            lineNumber: 37
+            index: 21
+            lineNumber: 38
             isReadonly: true
         }
-        Signal { name: "applicationIdChanged"; lineNumber: 78 }
-        Signal { name: "selectionModeChanged"; lineNumber: 79 }
-        Signal { name: "stateChanged"; lineNumber: 80 }
+        Signal { name: "applicationIdChanged"; lineNumber: 80 }
+        Signal { name: "selectionModeChanged"; lineNumber: 81 }
+        Signal { name: "resolvingChanged"; lineNumber: 82 }
+        Signal { name: "stateChanged"; lineNumber: 83 }
         Method {
             name: "onServiceOwnerChanged"
-            lineNumber: 83
+            lineNumber: 86
             Parameter { name: "name"; type: "QString" }
             Parameter { name: "oldOwner"; type: "QString" }
             Parameter { name: "newOwner"; type: "QString" }
         }
         Method {
             name: "onPropertiesChanged"
-            lineNumber: 84
+            lineNumber: 87
             Parameter { name: "interfaceName"; type: "QString" }
             Parameter { name: "changedProperties"; type: "QVariantMap" }
             Parameter { name: "invalidatedProperties"; type: "QStringList" }
         }
-        Method { name: "refresh"; lineNumber: 66 }
-        Method { name: "previous"; lineNumber: 67 }
-        Method { name: "togglePlaying"; lineNumber: 68 }
+        Method { name: "refresh"; lineNumber: 68 }
+        Method { name: "previous"; lineNumber: 69 }
+        Method { name: "togglePlaying"; lineNumber: 70 }
         Method {
             name: "requestPlayWhenAvailable"
-            lineNumber: 69
+            lineNumber: 71
             Parameter { name: "timeoutMs"; type: "int" }
         }
-        Method { name: "cancelPlayWhenAvailable"; lineNumber: 70 }
-        Method { name: "next"; lineNumber: 71 }
+        Method { name: "cancelPlayWhenAvailable"; lineNumber: 72 }
+        Method { name: "next"; lineNumber: 73 }
         Method {
             name: "setShuffle"
-            lineNumber: 72
+            lineNumber: 74
             Parameter { name: "enabled"; type: "bool" }
         }
-        Method { name: "cycleLoopStatus"; lineNumber: 73 }
-        Method { name: "toggleMute"; lineNumber: 74 }
+        Method { name: "cycleLoopStatus"; lineNumber: 75 }
+        Method { name: "toggleMute"; lineNumber: 76 }
         Method {
             name: "setVolume"
-            lineNumber: 75
+            lineNumber: 77
             Parameter { name: "volume"; type: "double" }
         }
     }
@@ -1650,33 +1702,33 @@ Module {
         }
         Signal {
             name: "folderEntriesReady"
-            lineNumber: 49
+            lineNumber: 50
             Parameter { name: "entries"; type: "QVariantList" }
         }
         Signal {
             name: "applicationsReady"
-            lineNumber: 50
-            Parameter { name: "applications"; type: "QVariantList" }
-        }
-        Signal {
-            name: "applicationCatalogReady"
             lineNumber: 51
             Parameter { name: "applications"; type: "QVariantList" }
         }
         Signal {
-            name: "applicationReady"
+            name: "applicationCatalogReady"
             lineNumber: 52
+            Parameter { name: "applications"; type: "QVariantList" }
+        }
+        Signal {
+            name: "applicationReady"
+            lineNumber: 53
             Parameter { name: "application"; type: "QVariantMap" }
         }
         Signal {
             name: "applicationLaunchFinished"
-            lineNumber: 53
+            lineNumber: 54
             Parameter { name: "succeeded"; type: "bool" }
             Parameter { name: "message"; type: "QString" }
         }
         Signal {
             name: "operationFailed"
-            lineNumber: 54
+            lineNumber: 55
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
@@ -1767,14 +1819,21 @@ Module {
             Parameter { name: "urls"; type: "QVariantList" }
         }
         Method {
-            name: "launchApplication"
+            name: "validateApplicationLauncherDrop"
+            type: "QVariantMap"
+            isMethodConstant: true
             lineNumber: 40
+            Parameter { name: "urls"; type: "QVariantList" }
+        }
+        Method {
+            name: "launchApplication"
+            lineNumber: 41
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
             name: "createDesktopShortcut"
             type: "QVariantMap"
-            lineNumber: 41
+            lineNumber: 42
             Parameter { name: "storageId"; type: "QString" }
             Parameter { name: "command"; type: "QString" }
         }
@@ -1782,13 +1841,13 @@ Module {
             name: "createDesktopShortcut"
             type: "QVariantMap"
             isCloned: true
-            lineNumber: 41
+            lineNumber: 42
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
             name: "launchApplicationWithUrls"
             type: "bool"
-            lineNumber: 42
+            lineNumber: 43
             Parameter { name: "applicationId"; type: "QString" }
             Parameter { name: "command"; type: "QString" }
             Parameter { name: "launcherUrl"; type: "QString" }
@@ -1797,19 +1856,19 @@ Module {
         Method {
             name: "launchApplicationAction"
             type: "bool"
-            lineNumber: 44
+            lineNumber: 45
             Parameter { name: "applicationId"; type: "QString" }
             Parameter { name: "actionId"; type: "QString" }
         }
         Method {
             name: "launchApplicationByCommand"
             type: "bool"
-            lineNumber: 45
+            lineNumber: 46
             Parameter { name: "command"; type: "QString" }
         }
         Method {
             name: "openUrl"
-            lineNumber: 46
+            lineNumber: 47
             Parameter { name: "url"; type: "QString" }
         }
     }

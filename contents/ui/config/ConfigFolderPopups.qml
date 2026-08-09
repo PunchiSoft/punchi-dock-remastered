@@ -33,6 +33,7 @@ Item {
     property int cfg_folderDetailedFontSize: 10
     property alias cfg_folderPopupExtraDistance: folderPopupExtraDistanceSlider.value
     property alias cfg_folderPopupScale: folderPopupScaleSlider.value
+    property alias cfg_folderPopupBackgroundOpacityPercent: folderPopupBackgroundOpacitySlider.value
     property alias cfg_folderPopupShowHeader: showFolderHeaderCheck.checked
     property alias cfg_popupTextShadowsEnabled: popupTextShadowsCheck.checked
     property alias cfg_popupAnimation: generalPopupAnimationSettings.animationStyle
@@ -203,6 +204,45 @@ Item {
 
         Controls.Label {
             text: i18n("This global scale applies to all folder popup layout profiles while maintaining fixed window geometry.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Background opacity:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: folderPopupBackgroundOpacitySlider
+                from: 50
+                to: 100
+                stepSize: 5
+                snapMode: Controls.Slider.SnapAlways
+                value: 75
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Folder popup background opacity")
+                Accessible.description: i18n("Only the folder popup background changes; applications, icons, controls and text remain fully opaque.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: i18n("%1%", Math.round(folderPopupBackgroundOpacitySlider.value))
+                font.bold: true
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 54
+            }
+        }
+
+        Controls.Label {
+            text: i18n("Only the folder popup background changes; applications, icons, controls and text remain fully opaque.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

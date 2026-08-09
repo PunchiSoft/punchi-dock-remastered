@@ -30,10 +30,11 @@ Item {
         : 1
     readonly property int visibleRows: Math.max(1, Math.min(maxVisibleRows,
         rowsAllowedByHeight, actions.length > 0 ? actions.length : 1))
+    readonly property int actionViewportHeight: visibleRows * effectiveRowHeight
 
     implicitWidth: Math.max(240, Math.min(520, Number(targetWidth || 360),
         Number(maximumAvailableWidth || 752)))
-    implicitHeight: chromeHeight + (visibleRows * effectiveRowHeight)
+    implicitHeight: chromeHeight + actionViewportHeight
     width: implicitWidth
     height: implicitHeight
 
@@ -95,8 +96,9 @@ Item {
             id: actionScroll
             Layout.fillWidth: true
             Layout.fillHeight: appActionsRoot.embedded
-            Layout.preferredHeight: appActionsRoot.visibleRows
-                * appActionsRoot.effectiveRowHeight
+            Layout.minimumHeight: appActionsRoot.actionViewportHeight
+            Layout.preferredHeight: appActionsRoot.actionViewportHeight
+            Layout.maximumHeight: appActionsRoot.actionViewportHeight
             Layout.leftMargin: 12
             Layout.rightMargin: Kirigami.Units.smallSpacing
             Layout.bottomMargin: 12

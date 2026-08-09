@@ -7,6 +7,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.kquickcontrols as KQuickControls
 import org.kde.plasma.plasmoid
 import "code/configItems.js" as ConfigItemsJS
+import "code/items.js" as ItemsJS
 import "components"
 
 // Translation helpers are supplied by the KCM context.
@@ -33,6 +34,10 @@ KCM.SimpleKCM {
     property string normalPlacementMode: "anchored"
     property int gridIconScalePercent: 100
     property int favoriteIconScalePercent: 100
+    property int normalFolderMaximumColumns: 3
+    property int normalFolderMaximumRows: 3
+    property int fullScreenFolderMaximumColumns: 5
+    property int fullScreenFolderMaximumRows: 5
     property bool showDistributionName: true
     property bool fullScreenBlurEnabled: true
     property int fullScreenBackgroundOpacityPercent: 50
@@ -97,6 +102,13 @@ KCM.SimpleKCM {
         return -1
     }
 
+    function effectiveDockItemsJson() {
+        const configuredJson = String(cfg_dockItemsJson || "")
+        return configuredJson.trim().length > 0
+            ? configuredJson
+            : ItemsJS.defaultJson()
+    }
+
     function syncFromItem(item) {
         menuMode = ConfigItemsJS.normalizedPunchiMenuMode(item.menuMode)
         normalPlacementMode =
@@ -108,6 +120,18 @@ KCM.SimpleKCM {
         favoriteIconScalePercent =
             ConfigItemsJS.normalizedPunchiMenuFavoriteIconScalePercent(
                 item.favoriteIconScalePercent)
+        normalFolderMaximumColumns =
+            ConfigItemsJS.normalizedPunchiMenuNormalFolderMaximumColumns(
+                item.normalFolderMaximumColumns)
+        normalFolderMaximumRows =
+            ConfigItemsJS.normalizedPunchiMenuNormalFolderMaximumRows(
+                item.normalFolderMaximumRows)
+        fullScreenFolderMaximumColumns =
+            ConfigItemsJS.normalizedPunchiMenuFullScreenFolderMaximumColumns(
+                item.fullScreenFolderMaximumColumns)
+        fullScreenFolderMaximumRows =
+            ConfigItemsJS.normalizedPunchiMenuFullScreenFolderMaximumRows(
+                item.fullScreenFolderMaximumRows)
         showDistributionName = item.showDistributionName !== false
         fullScreenBlurEnabled = item.fullScreenBlurEnabled !== false
         fullScreenBackgroundOpacityPercent =
@@ -131,7 +155,7 @@ KCM.SimpleKCM {
     function reloadFromConfiguration() {
         let parsed
         try {
-            parsed = ConfigItemsJS.parseJsonArray(cfg_dockItemsJson || "[]")
+            parsed = ConfigItemsJS.parseJsonArray(effectiveDockItemsJson())
         } catch (error) {
             punchiMenuIndex = -1
             return
@@ -150,7 +174,7 @@ KCM.SimpleKCM {
     function setPunchiMenuValue(fieldName, value) {
         let parsed
         try {
-            parsed = ConfigItemsJS.parseJsonArray(cfg_dockItemsJson || "[]")
+            parsed = ConfigItemsJS.parseJsonArray(effectiveDockItemsJson())
         } catch (error) {
             return
         }
@@ -356,7 +380,7 @@ KCM.SimpleKCM {
                     Layout.preferredWidth: page.contentWidthHint
                         - Kirigami.Units.gridUnit * 4
                     from: 75
-                    to: 200
+                    to: 150
                     stepSize: 5
                     snapMode: Controls.Slider.SnapAlways
                     value: page.gridIconScalePercent
@@ -392,6 +416,61 @@ KCM.SimpleKCM {
                 color: Kirigami.Theme.disabledTextColor
             }
 
+            Controls.SpinBox {
+                id: folderMaximumColumnsSpin
+                Kirigami.FormData.label: i18n("Maximum folder columns:")
+                from: 1
+                to: page.normalModeSelected ? 3 : 5
+                value: page.normalModeSelected
+                    ? page.normalFolderMaximumColumns
+                    : page.fullScreenFolderMaximumColumns
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                Accessible.name: i18n("Maximum application columns inside folders")
+                Accessible.description: i18n("Sets an upper limit for columns inside folders in the selected menu mode. Available space may use fewer columns.")
+                onValueModified: page.setPunchiMenuValue(
+                    page.normalModeSelected
+                        ? "normalFolderMaximumColumns"
+                        : "fullScreenFolderMaximumColumns",
+                    value)
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+
+            Controls.SpinBox {
+                id: folderMaximumRowsSpin
+                Kirigami.FormData.label: i18n("Maximum folder rows:")
+                from: 1
+                to: page.normalModeSelected ? 3 : 5
+                value: page.normalModeSelected
+                    ? page.normalFolderMaximumRows
+                    : page.fullScreenFolderMaximumRows
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                Accessible.name: i18n("Maximum application rows inside folders")
+                Accessible.description: i18n("Limits the visible rows inside folders in the selected menu mode. Additional applications remain available by scrolling.")
+                onValueModified: page.setPunchiMenuValue(
+                    page.normalModeSelected
+                        ? "normalFolderMaximumRows"
+                        : "fullScreenFolderMaximumRows",
+                    value)
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+
+            Controls.Label {
+                Layout.fillWidth: true
+                Layout.maximumWidth: page.contentWidthHint
+                leftPadding: layoutMetrics.helperIndent
+                text: i18n("The menu reduces columns when the available width is insufficient and uses scrolling when content exceeds the selected row limit.")
+                wrapMode: Text.WordWrap
+                color: Kirigami.Theme.disabledTextColor
+            }
+
             RowLayout {
                 Kirigami.FormData.label: i18n("Favorites icon scale:")
                 Layout.maximumWidth: page.contentWidthHint
@@ -402,7 +481,7 @@ KCM.SimpleKCM {
                     Layout.preferredWidth: page.contentWidthHint
                         - Kirigami.Units.gridUnit * 4
                     from: 75
-                    to: 150
+                    to: 110
                     stepSize: 5
                     snapMode: Controls.Slider.SnapAlways
                     value: page.favoriteIconScalePercent

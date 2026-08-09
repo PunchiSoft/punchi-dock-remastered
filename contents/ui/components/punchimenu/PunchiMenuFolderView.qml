@@ -15,24 +15,29 @@ FocusScope {
     property var members: []
     property bool motionEnabled: true
     property real iconScale: 1.0
+    property int maximumColumnCount: 5
+    property int maximumRowCount: 5
     property bool detailedApplicationFeedback: false
-    property real applicationHighlightOpacity: 0.30
-    property real applicationCornerRadiusScale: 1.0
-    property real applicationHoverScale: 1.0
 
-    readonly property real effectiveIconScale: Math.max(0.5,
-        Math.min(2.0, Number(iconScale || 1.0)))
-    readonly property int iconSize: Math.round(
-        Kirigami.Units.gridUnit * 3.2 * effectiveIconScale)
-    readonly property int targetCellWidth: Math.max(
-        Kirigami.Units.gridUnit * 6,
-        iconSize + Kirigami.Units.gridUnit * 2.5)
+    readonly property real effectiveIconScale: Math.max(0.75,
+        Math.min(1.5, Number(iconScale || 1.0)))
+    readonly property int iconSize: iconMetrics.effectiveSize
+    readonly property int targetCellWidth: Math.round(
+        Kirigami.Units.gridUnit * 7.5)
     readonly property real gridScrollBarReserve:
         applicationScrollBar.implicitWidth + Kirigami.Units.smallSpacing
     readonly property real availableGridWidth: Math.max(1,
         applicationGrid.width - gridScrollBarReserve)
-    readonly property int columnCount: Math.max(1,
+    readonly property int safeMaximumColumnCount: {
+        const requestedCount = Number(maximumColumnCount)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(5, Math.round(requestedCount)))
+            : 5
+    }
+    readonly property int geometricColumnCapacity: Math.max(1,
         Math.floor(availableGridWidth / targetCellWidth))
+    readonly property int columnCount: Math.min(
+        safeMaximumColumnCount, geometricColumnCapacity)
     readonly property int effectiveCellWidth: availableGridWidth > 0
         ? Math.floor(availableGridWidth / columnCount)
         : targetCellWidth
@@ -41,9 +46,33 @@ FocusScope {
     readonly property int cellHeight: Math.ceil(iconSize
         + maximumApplicationLabelHeight
         + Kirigami.Units.smallSpacing * 5)
+    readonly property int rowCount: Math.max(1, Math.ceil(
+        Math.max(1, (members || []).length) / columnCount))
+    readonly property int safeMaximumRowCount: {
+        const requestedCount = Number(maximumRowCount)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(5, Math.round(requestedCount)))
+            : 5
+    }
+    readonly property int visibleRowCount: Math.min(
+        safeMaximumRowCount, rowCount)
+    readonly property real preferredContentHeight:
+        folderHeader.implicitHeight + folderLayout.spacing
+        + visibleRowCount * cellHeight
     readonly property string effectiveLabel: folderLabel.length > 0
         ? folderLabel
         : i18nc("@label", "Applications folder")
+
+    PunchiMenuIconMetrics {
+        id: iconMetrics
+        requestedScale: root.effectiveIconScale
+        minimumScale: 0.75
+        maximumScale: 1.5
+        baseSize: Kirigami.Units.gridUnit * 3.2
+        minimumSize: Kirigami.Units.iconSizes.medium
+        availableWidth: Math.max(0, root.effectiveCellWidth
+            - Kirigami.Units.gridUnit * 2.5)
+    }
 
     FontMetrics {
         id: applicationLabelFontMetrics
@@ -120,10 +149,12 @@ FocusScope {
         "Contents of the %1 folder", effectiveLabel)
 
     ColumnLayout {
+        id: folderLayout
         anchors.fill: parent
         spacing: Kirigami.Units.smallSpacing
 
         RowLayout {
+            id: folderHeader
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
 
@@ -258,47 +289,14 @@ FocusScope {
                         }
                     }
 
-                    Rectangle {
+                    PunchiMenuItemHighlight {
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing
-                        radius: Kirigami.Units.cornerRadius
-                            * root.applicationCornerRadiusScale
-                        color: applicationDelegate.highlighted
-                            ? Qt.alpha(Kirigami.Theme.highlightColor,
-                                root.applicationHighlightOpacity)
-                            : "transparent"
-                        border.width: applicationDelegate.outlined ? 2 : 0
-                        border.color: applicationDelegate.outlined
-                            ? Kirigami.Theme.highlightColor
-                            : "transparent"
-                        scale: applicationDelegate.highlighted
-                            ? root.applicationHoverScale : 1.0
-
-                        Behavior on scale {
-                            enabled: root.motionEnabled
-                            NumberAnimation {
-                                duration: Kirigami.Units.shortDuration
-                                easing.type: Easing.OutCubic
-                            }
-                        }
-
-                        Behavior on color {
-                            enabled: root.motionEnabled
-                            ColorAnimation {
-                                duration: Math.max(90,
-                                    Math.min(150,
-                                        Kirigami.Units.shortDuration))
-                            }
-                        }
-
-                        Behavior on border.color {
-                            enabled: root.motionEnabled
-                            ColorAnimation {
-                                duration: Math.max(90,
-                                    Math.min(150,
-                                        Kirigami.Units.shortDuration))
-                            }
-                        }
+                        hovered: appPointer.containsMouse
+                        selected: applicationDelegate.outlined
+                        focused: applicationDelegate.activeFocus
+                        pressed: appPointer.pressed
+                        motionEnabled: root.motionEnabled
                     }
 
                     ColumnLayout {

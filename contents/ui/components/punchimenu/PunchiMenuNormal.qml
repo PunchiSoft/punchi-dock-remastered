@@ -18,6 +18,8 @@ FocusScope {
     property var applicationLayoutController: null
     property real applicationIconScale: 1.0
     property real favoriteIconScale: 1.0
+    property int folderMaximumColumns: 3
+    property int folderMaximumRows: 3
     property real backgroundOpacity: 0.75
     property real themeFrameLeftMargin: 0
     property real themeFrameTopMargin: 0
@@ -88,16 +90,19 @@ FocusScope {
     property bool applicationsLoading: false
     property bool applicationLaunchPending: false
     property bool suppressDragReleaseClick: false
+    property string externalDragSourceNodeId: ""
     property int dragScrollDirection: 0
     property string applicationErrorMessage: ""
     property string operationMessage: ""
     property bool operationMessageIsError: false
     property bool operationMessageDismissalInProgress: false
+    property int operationSecondsRemaining: 0
     property string activeCategoryKey: "All"
     property string activeCategoryTitle: i18nc("@title:category", "All Applications")
     property string pendingCategoryKey: ""
     property bool suppressSearchChange: false
     property int preferredApplicationIndexAfterRefresh: -1
+    property var searchApplications: []
 
     readonly property int columnCount: 6
     readonly property bool motionEnabled: Kirigami.Units.longDuration > 0
@@ -108,18 +113,41 @@ FocusScope {
         ? Math.max(100, Math.min(160, Kirigami.Units.shortDuration))
         : 0
     readonly property int operationMessageDuration: 7000
+    readonly property string operationBaseMessage: operationMessage.length > 0
+        ? operationMessage
+        : applicationErrorMessage.length > 0
+            ? i18nc("@info:status", "Application could not be opened: %1",
+                applicationErrorMessage)
+            : ""
+    readonly property string operationCountdownText:
+        operationBaseMessage.length > 0 && operationSecondsRemaining > 0
+            ? i18nc("@info:status %1 is the result and %2 is seconds remaining",
+                "%1 · %2 s", operationBaseMessage, operationSecondsRemaining)
+            : operationBaseMessage
     readonly property int headerControlSize: Kirigami.Units.gridUnit * 2
     readonly property real safeApplicationIconScale: {
         const requestedScale = Number(applicationIconScale)
         return Number.isFinite(requestedScale)
-            ? Math.max(0.75, Math.min(2.0, requestedScale))
+            ? Math.max(0.75, Math.min(1.5, requestedScale))
             : 1.0
     }
     readonly property real safeFavoriteIconScale: {
         const requestedScale = Number(favoriteIconScale)
         return Number.isFinite(requestedScale)
-            ? Math.max(0.75, Math.min(1.5, requestedScale))
+            ? Math.max(0.75, Math.min(1.1, requestedScale))
             : 1.0
+    }
+    readonly property int safeFolderMaximumColumns: {
+        const requestedCount = Number(folderMaximumColumns)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(3, Math.round(requestedCount)))
+            : 3
+    }
+    readonly property int safeFolderMaximumRows: {
+        const requestedCount = Number(folderMaximumRows)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(3, Math.round(requestedCount)))
+            : 3
     }
     readonly property real safeBackgroundOpacity: {
         const requestedOpacity = Number(backgroundOpacity)
@@ -186,11 +214,15 @@ FocusScope {
         activeCategoryKey === "All"
         && searchField.text.trim().length === 0
         && applicationCatalog.length > 0
+    readonly property bool searchListingActive:
+        searchField.text.trim().length > 0
     readonly property bool applicationHoverAllowed:
         !internalDragLayer.active
-    readonly property int applicationListingCount: organizedListingActive
-        ? applicationLayoutModel.nodes.length
-        : visibleApplicationsModel.count
+    readonly property int applicationListingCount: searchListingActive
+        ? searchApplications.length
+        : organizedListingActive
+            ? applicationLayoutModel.nodes.length
+            : visibleApplicationsModel.count
 
     property var dockItemsController: null
 
@@ -255,8 +287,63 @@ FocusScope {
             return
         }
         const position = sourceItem.mapToItem(root, x, y)
-        internalDragLayer.move(position)
+        if (handleDragOutsideSurface(sourceItem, position)) {
+            return
+        }
+        internalDragLayer.move(position, false)
         updateDragAutoScroll(position)
+    }
+
+    function handleDragOutsideSurface(sourceItem, position) {
+        if (!internalDragLayer.active || launcherDragController.dragging) {
+            return false
+        }
+        if (internalDragLayer.folder) {
+            const bounds = root.folderDialogBackdropGeometry
+            const outsideBounds = position.x < bounds.x
+                || position.y < bounds.y
+                || position.x > bounds.x + bounds.width
+                || position.y > bounds.y + bounds.height
+            if (!outsideBounds) {
+                return false
+            }
+            dragScrollTimer.stop()
+            dragScrollDirection = 0
+            internalDragLayer.move(position, true)
+            return true
+        }
+
+        const surfacePosition = normalBackground.mapFromItem(root, position)
+        const outsideSurface = surfacePosition.x < 0 || surfacePosition.y < 0
+            || surfacePosition.x > normalBackground.width
+            || surfacePosition.y > normalBackground.height
+        if (!outsideSurface) {
+            return false
+        }
+
+        const nodeId = String(internalDragLayer.nodeId || "")
+        if (nodeId.length === 0) {
+            return false
+        }
+
+        const storageId = String(internalDragLayer.storageId || "")
+        const iconName = String(internalDragLayer.iconName
+            || "application-x-executable")
+        if (storageId.length === 0) {
+            return false
+        }
+
+        externalDragSourceNodeId = nodeId
+        cancelInternalLayoutDrag(true)
+        if (!launcherDragController.startApplicationDrag(
+                sourceItem, storageId, iconName)) {
+            externalDragSourceNodeId = ""
+            Qt.callLater(function() {
+                root.suppressDragReleaseClick = false
+            })
+            return false
+        }
+        return true
     }
 
     function finishInternalLayoutDrag() {
@@ -268,13 +355,15 @@ FocusScope {
         })
     }
 
-    function cancelInternalLayoutDrag() {
+    function cancelInternalLayoutDrag(preserveReleaseSuppression) {
         dragScrollTimer.stop()
         dragScrollDirection = 0
         internalDragLayer.cancel()
-        Qt.callLater(function() {
-            root.suppressDragReleaseClick = false
-        })
+        if (!preserveReleaseSuppression) {
+            Qt.callLater(function() {
+                root.suppressDragReleaseClick = false
+            })
+        }
     }
 
     function updateDragAutoScroll(position) {
@@ -395,6 +484,22 @@ FocusScope {
         return folderSurface.beginCreateFromStorageIds([
             internalDragLayer.storageId, targetStorageId
         ])
+    }
+
+    function beforeNodeIdForInsertion(targetIndex, insertAfter) {
+        let candidateIndex = Number(targetIndex) + (insertAfter ? 1 : 0)
+        while (candidateIndex >= 0
+                && candidateIndex < applicationListingCount) {
+            const candidate = applicationNodeAt(candidateIndex)
+            const candidateNodeId = String(candidate
+                ? candidate.nodeId || "" : "")
+            if (candidateNodeId.length > 0
+                    && candidateNodeId !== internalDragLayer.nodeId) {
+                return candidateNodeId
+            }
+            candidateIndex += 1
+        }
+        return ""
     }
 
     function nodeIdForGridDrop(x, y) {
@@ -549,14 +654,17 @@ FocusScope {
         const messageAvailable = operationMessage.length > 0
             || applicationErrorMessage.length > 0
         operationFeedback.visible = messageAvailable
-        if (messageAvailable) {
-            operationMessageTimer.restart()
+        operationSecondsRemaining = messageAvailable
+            ? Math.max(1, Math.ceil(operationMessageDuration / 1000)) : 0
+        if (messageAvailable && !operationFeedbackHover.hovered) {
+            operationMessageTimer.start()
         }
     }
 
     function dismissOperationMessage() {
         operationMessageDismissalInProgress = true
         operationMessageTimer.stop()
+        operationSecondsRemaining = 0
         operationMessage = ""
         applicationErrorMessage = ""
         operationFeedback.visible = false
@@ -638,7 +746,9 @@ FocusScope {
         if (organizedListingActive) {
             return applicationLayoutModel.nodes[index] || null
         }
-        const application = visibleApplicationsModel.get(index)
+        const application = searchListingActive
+            ? searchApplications[index]
+            : visibleApplicationsModel.get(index)
         return {
             nodeType: "application",
             nodeId: "application:" + String(application.appStorageId || ""),
@@ -1019,18 +1129,19 @@ FocusScope {
         }
         const query = searchField.text.trim().toLocaleLowerCase()
         if (query.length === 0) {
+            searchApplications = []
             selectCategory(activeCategoryKey, activeCategoryTitle, false)
             return
         }
 
-        visibleApplicationsModel.clear()
+        const matches = []
         for (let index = 0; index < allApplicationsModel.count; index++) {
             const application = allApplicationsModel.get(index)
             const storageId = String(application.appStorageId || "")
             if (applicationShouldBeVisible(storageId)
                     && String(application.appName || "").toLocaleLowerCase()
                         .indexOf(query) >= 0) {
-                visibleApplicationsModel.append({
+                matches.push({
                     appName: String(application.appName || ""),
                     appIcon: String(application.appIcon
                         || "application-x-executable"),
@@ -1040,6 +1151,7 @@ FocusScope {
                 })
             }
         }
+        searchApplications = matches
         applicationsLoading = allApplicationsModel.count === 0 && pendingCategoryKey === "__all__"
         restorePreferredApplicationIndex()
     }
@@ -1166,6 +1278,7 @@ FocusScope {
         suppressSearchChange = true
         searchField.clear()
         suppressSearchChange = false
+        searchApplications = []
         visibleApplicationsModel.clear()
         allApplicationsModel.clear()
         preferredApplicationIndexAfterRefresh = -1
@@ -1209,9 +1322,15 @@ FocusScope {
 
     Timer {
         id: operationMessageTimer
-        interval: root.operationMessageDuration
-        repeat: false
-        onTriggered: root.dismissOperationMessage()
+        interval: 1000
+        repeat: true
+        onTriggered: {
+            if (root.operationSecondsRemaining <= 1) {
+                root.dismissOperationMessage()
+            } else {
+                root.operationSecondsRemaining--
+            }
+        }
     }
 
     Timer {
@@ -1724,6 +1843,11 @@ FocusScope {
                 }
             }
 
+            Kirigami.Separator {
+                Layout.fillWidth: true
+                Accessible.ignored: true
+            }
+
             Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: Kirigami.Units.gridUnit * 2.65
@@ -1739,7 +1863,8 @@ FocusScope {
                             && !categoriesView.atXBeginning
                         property bool autoScrollSuppressed: false
                         readonly property bool highlightedContent: enabled
-                            && (categoryLeftHover.hovered || hovered || down)
+                            && (categoryLeftHover.hovered || hovered || down
+                                || activeFocus)
 
                         Layout.preferredWidth: Kirigami.Units.gridUnit * 2.1
                         Layout.preferredHeight: Kirigami.Units.gridUnit * 2.1
@@ -1753,7 +1878,13 @@ FocusScope {
                         Accessible.name: text
                         activeFocusOnTab: false
                         enabled: canScroll
-                        opacity: canScroll ? (hovered ? 0.90 : 0.55) : 0.0
+                        opacity: canScroll
+                            ? (highlightedContent ? 1.0 : 0.55) : 0.0
+
+                        background: PunchiMenuActionBackground {
+                            highlighted: categoryLeftEdge.highlightedContent
+                            circular: true
+                        }
                         onHoveredChanged: {
                             if (!hovered) {
                                 autoScrollSuppressed = false
@@ -1780,7 +1911,8 @@ FocusScope {
                     ListView {
                         id: categoriesView
                         Layout.fillWidth: true
-                        Layout.fillHeight: true
+                        Layout.preferredHeight: Kirigami.Units.gridUnit * 2.1
+                        Layout.alignment: Qt.AlignVCenter
                         orientation: ListView.Horizontal
                         spacing: Kirigami.Units.smallSpacing
                         clip: true
@@ -1882,7 +2014,8 @@ FocusScope {
                             && !categoriesView.atXEnd
                         property bool autoScrollSuppressed: false
                         readonly property bool highlightedContent: enabled
-                            && (categoryRightHover.hovered || hovered || down)
+                            && (categoryRightHover.hovered || hovered || down
+                                || activeFocus)
 
                         Layout.preferredWidth: Kirigami.Units.gridUnit * 2.1
                         Layout.preferredHeight: Kirigami.Units.gridUnit * 2.1
@@ -1896,7 +2029,13 @@ FocusScope {
                         Accessible.name: text
                         activeFocusOnTab: false
                         enabled: canScroll
-                        opacity: canScroll ? (hovered ? 0.90 : 0.55) : 0.0
+                        opacity: canScroll
+                            ? (highlightedContent ? 1.0 : 0.55) : 0.0
+
+                        background: PunchiMenuActionBackground {
+                            highlighted: categoryRightEdge.highlightedContent
+                            circular: true
+                        }
                         onHoveredChanged: {
                             if (!hovered) {
                                 autoScrollSuppressed = false
@@ -1933,6 +2072,11 @@ FocusScope {
                 }
             }
 
+            Kirigami.Separator {
+                Layout.fillWidth: true
+                Accessible.ignored: true
+            }
+
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -1958,25 +2102,27 @@ FocusScope {
 
                 GridView {
                     id: applicationsGrid
+                    readonly property int stableRowCount: Math.ceil(
+                        root.applicationListingCount / Math.max(1, root.columnCount))
+                    readonly property real stableContentHeight:
+                        stableRowCount * cellHeight
                     readonly property bool verticalScrollRequired:
-                        contentHeight > height + 0.5
+                        stableContentHeight > height + 0.5
                     readonly property real verticalScrollBarReserve:
-                        verticalScrollRequired
-                            ? Math.max(1,
-                                applicationsScrollBar.implicitWidth)
-                                + Kirigami.Units.smallSpacing
-                            : 0
+                        Math.max(1, applicationsScrollBar.implicitWidth)
+                            + Kirigami.Units.smallSpacing
                     anchors.fill: parent
                     z: 1
                     model: root.applicationListingCount
                     cellWidth: Math.max(1,
                         (width - verticalScrollBarReserve) / root.columnCount)
                     cellHeight: Math.max(Kirigami.Units.gridUnit * 7.5,
-                        Kirigami.Units.iconSizes.large * root.safeApplicationIconScale
+                        Kirigami.Units.iconSizes.huge * root.safeApplicationIconScale
                             + Kirigami.Units.gridUnit * 3)
                     clip: true
                     focus: true
                     activeFocusOnTab: true
+                    boundsBehavior: Flickable.StopAtBounds
                     interactive: !internalDragLayer.active
                     enabled: !root.applicationLaunchPending
                     keyNavigationWraps: false
@@ -1990,13 +2136,6 @@ FocusScope {
                             }
                             positionViewAtIndex(currentIndex, GridView.Contain)
                         }
-                    }
-
-                    PlasmaComponents.ScrollBar.vertical: PlasmaComponents.ScrollBar {
-                        id: applicationsScrollBar
-                        policy: applicationsGrid.verticalScrollRequired
-                            ? PlasmaComponents.ScrollBar.AlwaysOn
-                            : PlasmaComponents.ScrollBar.AlwaysOff
                     }
 
                     Kirigami.WheelHandler {
@@ -2088,10 +2227,30 @@ FocusScope {
                             internalDragLayer.active
                             && internalDragLayer.nodeId === nodeId
                         readonly property bool isHiddenApplication: appHidden
-                        readonly property real iconSize: Math.max(
-                            Kirigami.Units.iconSizes.medium,
-                            Math.min(Kirigami.Units.iconSizes.huge * root.safeApplicationIconScale,
-                                width * 0.58, height * 0.55))
+                        readonly property bool dropGroupingActive:
+                            nodeDropTarget.containsDrag
+                            && nodeDropTarget.dropIntent === "group"
+                        readonly property bool dropInsertionActive:
+                            nodeDropTarget.containsDrag
+                            && (nodeDropTarget.dropIntent === "insertBefore"
+                                || nodeDropTarget.dropIntent === "insertAfter")
+                        readonly property int iconSize:
+                            applicationIconMetrics.effectiveSize
+
+                        PunchiMenuIconMetrics {
+                            id: applicationIconMetrics
+                            requestedScale: root.safeApplicationIconScale
+                            minimumScale: 0.75
+                            maximumScale: 1.5
+                            baseSize: Kirigami.Units.iconSizes.huge
+                            minimumSize: Kirigami.Units.iconSizes.medium
+                            availableWidth: Math.max(0,
+                                applicationDelegate.width
+                                    - Kirigami.Units.gridUnit)
+                            availableHeight: Math.max(0,
+                                applicationDelegate.height
+                                    - Kirigami.Units.gridUnit * 3)
+                        }
                         Accessible.ignored: isFolder
                         Accessible.role: Accessible.Button
                         Accessible.name: isFolder
@@ -2131,9 +2290,9 @@ FocusScope {
                             memberCount: Number(applicationDelegate.nodeData
                                 ? applicationDelegate.nodeData.folderMemberCount || 0 : 0)
                             selected: applicationDelegate.selected
-                                || nodeDropTarget.containsDrag
+                                || applicationDelegate.dropGroupingActive
                             motionEnabled: root.motionEnabled
-                            iconScale: root.safeApplicationIconScale
+                            requestedIconSize: applicationDelegate.iconSize
                             onActivated: applicationDelegate.launchApp()
                             onContextRequested: function(sourceItem, x, y) {
                                 applicationsGrid.currentIndex
@@ -2150,8 +2309,9 @@ FocusScope {
                             anchors.margins: Kirigami.Units.smallSpacing
                             visible: !applicationDelegate.isFolder
                             hovered: applicationDelegate.pointerHovered
-                            selected: applicationDelegate.keyboardFocused
-                                || nodeDropTarget.containsDrag
+                            selected: applicationDelegate.selected
+                                || applicationDelegate.dropGroupingActive
+                            focused: applicationDelegate.keyboardFocused
                             pressed: delegatePointer.pressed
                                 && !internalDragLayer.active
                             motionEnabled: root.motionEnabled
@@ -2200,24 +2360,83 @@ FocusScope {
 
                         DropArea {
                             id: nodeDropTarget
+                            property string dropIntent: "none"
+                            readonly property real insertionEdgeWidth: Math.min(
+                                width * 0.25, Kirigami.Units.gridUnit * 1.75)
+
+                            function updateDropIntent(drag) {
+                                if (!root.isInternalLayoutDrag(drag)
+                                        || internalDragLayer.nodeId
+                                            === applicationDelegate.nodeId) {
+                                    dropIntent = "none"
+                                    return false
+                                }
+                                const pointerX = Number(drag.x)
+                                if (internalDragLayer.folder) {
+                                    dropIntent = pointerX < width / 2
+                                        ? "insertBefore" : "insertAfter"
+                                } else if (pointerX <= insertionEdgeWidth) {
+                                    dropIntent = "insertBefore"
+                                } else if (pointerX >= width
+                                        - insertionEdgeWidth) {
+                                    dropIntent = "insertAfter"
+                                } else {
+                                    dropIntent = "group"
+                                }
+                                return true
+                            }
+
                             anchors.fill: parent
                             anchors.margins: Kirigami.Units.smallSpacing
                             keys: [internalDragLayer.dragKey]
                             z: 20
 
                             onEntered: function(drag) {
-                                drag.accepted = root.isInternalLayoutDrag(drag)
-                                    && internalDragLayer.nodeId
-                                        !== applicationDelegate.nodeId
+                                drag.accepted = updateDropIntent(drag)
+                            }
+                            onPositionChanged: function(drag) {
+                                drag.accepted = updateDropIntent(drag)
+                            }
+                            onExited: {
+                                dropIntent = "none"
                             }
                             onDropped: function(drop) {
                                 if (!root.isInternalLayoutDrag(drop)) {
                                     drop.accepted = false
+                                    dropIntent = "none"
                                     return
                                 }
-                                drop.accepted = root.handleDraggedNodeDrop(
-                                    applicationDelegate.nodeData)
+                                if (dropIntent === "insertBefore"
+                                        || dropIntent === "insertAfter") {
+                                    drop.accepted = root.requestDraggedNodeMove(
+                                        root.beforeNodeIdForInsertion(
+                                            applicationDelegate.index,
+                                            dropIntent === "insertAfter"))
+                                } else {
+                                    drop.accepted = root.handleDraggedNodeDrop(
+                                        applicationDelegate.nodeData)
+                                }
+                                dropIntent = "none"
                             }
+                        }
+
+                        Rectangle {
+                            readonly property bool after:
+                                nodeDropTarget.dropIntent === "insertAfter"
+
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.topMargin: Kirigami.Units.smallSpacing
+                            anchors.bottomMargin: Kirigami.Units.smallSpacing
+                            x: after ? parent.width - width / 2 : -width / 2
+                            width: Kirigami.Units.largeSpacing
+                            radius: Kirigami.Units.cornerRadius
+                            color: Qt.alpha(Kirigami.Theme.highlightColor, 0.22)
+                            border.width: 2
+                            border.color: Kirigami.Theme.highlightColor
+                            visible: applicationDelegate.dropInsertionActive
+                            z: 25
+                            Accessible.ignored: true
                         }
 
                         Kirigami.Icon {
@@ -2227,7 +2446,8 @@ FocusScope {
                             width: Kirigami.Units.iconSizes.small
                             height: width
                             visible: nodeDropTarget.containsDrag
-                            source: internalDragLayer.folder
+                                && nodeDropTarget.dropIntent !== "none"
+                            source: applicationDelegate.dropInsertionActive
                                 ? "transform-move-symbolic"
                                 : applicationDelegate.isFolder
                                     ? "folder-add-symbolic"
@@ -2312,6 +2532,61 @@ FocusScope {
                                     applicationDelegate.launchApp()
                                 }
                             }
+                        }
+                    }
+                }
+
+                PlasmaComponents.ScrollBar {
+                    id: applicationsScrollBar
+
+                    readonly property real stableSize:
+                        applicationsGrid.stableContentHeight > 0
+                            ? Math.min(1, applicationsGrid.height
+                                / applicationsGrid.stableContentHeight)
+                            : 1
+                    readonly property real stablePosition: {
+                        const totalHeight = applicationsGrid.stableContentHeight
+                        if (totalHeight <= 0) {
+                            return 0
+                        }
+                        const maximumPosition = Math.max(0, 1 - stableSize)
+                        const logicalPosition = (applicationsGrid.contentY
+                            - applicationsGrid.originY) / totalHeight
+                        return Math.max(0, Math.min(maximumPosition,
+                            logicalPosition))
+                    }
+
+                    anchors.top: applicationsGrid.top
+                    anchors.right: applicationsGrid.right
+                    anchors.bottom: applicationsGrid.bottom
+                    z: 3
+                    orientation: Qt.Vertical
+                    policy: applicationsGrid.verticalScrollRequired
+                        ? PlasmaComponents.ScrollBar.AlwaysOn
+                        : PlasmaComponents.ScrollBar.AlwaysOff
+                    size: stableSize
+                    position: stablePosition
+                    stepSize: applicationsGrid.stableContentHeight > 0
+                        ? Math.min(1, applicationsGrid.cellHeight
+                            / applicationsGrid.stableContentHeight)
+                        : 0
+                    active: applicationsGrid.moving
+                        || applicationsGrid.flicking || hovered || pressed
+
+                    onPositionChanged: {
+                        if (!pressed) {
+                            return
+                        }
+                        const maximumContentY = Math.max(0,
+                            applicationsGrid.stableContentHeight
+                                - applicationsGrid.height)
+                        const targetContentY = applicationsGrid.originY
+                            + Math.max(0, Math.min(maximumContentY,
+                                position
+                                    * applicationsGrid.stableContentHeight))
+                        if (Math.abs(applicationsGrid.contentY
+                                - targetContentY) > 0.5) {
+                            applicationsGrid.contentY = targetContentY
                         }
                     }
                 }
@@ -2554,6 +2829,20 @@ FocusScope {
                                 && favoritesView.currentIndex === index
                             readonly property bool selected: keyboardFocused
                                 || favoriteMouseArea.containsMouse
+
+                            PunchiMenuIconMetrics {
+                                id: favoriteIconMetrics
+                                requestedScale: root.safeFavoriteIconScale
+                                minimumScale: 0.75
+                                maximumScale: 1.1
+                                baseSize: Kirigami.Units.iconSizes.large
+                                minimumSize: Kirigami.Units.iconSizes.medium
+                                availableWidth: Math.max(0,
+                                    favoriteDelegate.width
+                                        - Kirigami.Units.gridUnit)
+                                availableHeight: Math.max(0,
+                                    favoriteDelegate.height * 0.58)
+                            }
                             Accessible.role: Accessible.Button
                             Accessible.name: appName
                             Accessible.description: isHiddenApplication
@@ -2569,44 +2858,14 @@ FocusScope {
                                 root.launchApplication(appStorageId, appCommand)
                             }
 
-                            Rectangle {
+                            PunchiMenuItemHighlight {
                                 anchors.fill: parent
                                 anchors.margins: Kirigami.Units.smallSpacing
-                                radius: Kirigami.Units.cornerRadius * 1.5
-                                color: favoriteDelegate.selected
-                                    ? Qt.alpha(Kirigami.Theme.highlightColor, 0.30)
-                                    : "transparent"
-                                border.color: favoriteDelegate.selected
-                                    ? Kirigami.Theme.highlightColor
-                                    : "transparent"
-                                border.width: favoriteDelegate.selected ? 2 : 0
-                                scale: favoriteMouseArea.pressed
-                                    ? 0.97
-                                    : favoriteDelegate.selected ? 1.018 : 1.0
-
-                                Behavior on scale {
-                                    enabled: root.motionEnabled
-                                    NumberAnimation {
-                                        duration: favoriteMouseArea.pressed ? 80 : 130
-                                        easing.type: Easing.OutCubic
-                                    }
-                                }
-
-                                Behavior on color {
-                                    enabled: root.motionEnabled
-                                    ColorAnimation {
-                                        duration: Math.max(90,
-                                            Math.min(150, Kirigami.Units.shortDuration))
-                                    }
-                                }
-
-                                Behavior on border.color {
-                                    enabled: root.motionEnabled
-                                    ColorAnimation {
-                                        duration: Math.max(90,
-                                            Math.min(150, Kirigami.Units.shortDuration))
-                                    }
-                                }
+                                hovered: favoriteMouseArea.containsMouse
+                                selected: favoriteDelegate.selected
+                                focused: favoriteDelegate.keyboardFocused
+                                pressed: favoriteMouseArea.pressed
+                                motionEnabled: root.motionEnabled
 
                                 ColumnLayout {
                                     anchors.fill: parent
@@ -2615,10 +2874,8 @@ FocusScope {
 
                                     Kirigami.Icon {
                                         Layout.alignment: Qt.AlignHCenter
-                                        Layout.preferredWidth: Math.min(
-                                            Kirigami.Units.iconSizes.large
-                                                * root.safeFavoriteIconScale,
-                                            favoriteDelegate.height * 0.58)
+                                        Layout.preferredWidth:
+                                            favoriteIconMetrics.effectiveSize
                                         Layout.preferredHeight: width
                                         source: favoriteDelegate.appIcon
                                     }
@@ -2747,6 +3004,24 @@ FocusScope {
         anchors.fill: parent
         z: 230
         motionEnabled: root.motionEnabled
+        visualBounds: root.folderDialogBackdropGeometry
+    }
+
+    Punchi.LauncherDragController {
+        id: launcherDragController
+        iconSize: Math.round(Kirigami.Units.iconSizes.large
+            * root.safeApplicationIconScale)
+
+        onDragFinished: function(accepted) {
+            const nodeId = root.externalDragSourceNodeId
+            root.externalDragSourceNodeId = ""
+            root.suppressDragReleaseClick = false
+            if (accepted) {
+                root.forceClose()
+            } else if (nodeId.length > 0) {
+                root.restoreApplicationNodeFocus(nodeId)
+            }
+        }
     }
 
     PunchiMenuFolderSurface {
@@ -2757,10 +3032,9 @@ FocusScope {
         layoutController: root.applicationLayoutController
         motionEnabled: root.motionEnabled
         iconScale: root.safeApplicationIconScale
+        maximumColumnCount: root.safeFolderMaximumColumns
+        maximumRowCount: root.safeFolderMaximumRows
         detailedApplicationFeedback: true
-        applicationHighlightOpacity: 0.30
-        applicationCornerRadiusScale: 1.5
-        applicationHoverScale: 1.018
         backdropGeometry: root.folderDialogBackdropGeometry
         backdropRadius: root.normalBackgroundBlurRadius
         compactLayout: true
@@ -2812,16 +3086,16 @@ FocusScope {
         anchors.horizontalCenter: parent.horizontalCenter
         width: Math.max(0, Math.min(
             parent.width - Kirigami.Units.largeSpacing * 2,
-            Kirigami.Units.gridUnit * 30))
+            Kirigami.Units.gridUnit * 36))
         visible: false
         showCloseButton: true
         type: root.operationMessage.length > 0 && !root.operationMessageIsError
             ? Kirigami.MessageType.Positive
             : Kirigami.MessageType.Error
-        text: root.operationMessage.length > 0
-            ? root.operationMessage
-            : i18nc("@info:status", "Application could not be opened: %1",
-                root.applicationErrorMessage)
+        text: root.operationCountdownText
+        Accessible.name: root.operationBaseMessage
+        Accessible.description: i18nc("@info:accessible",
+            "Closes automatically")
         actions: [
             Kirigami.Action {
                 text: i18nc("@action:button", "Undo Folder Change")
@@ -2843,11 +3117,13 @@ FocusScope {
         }
 
         HoverHandler {
+            id: operationFeedbackHover
             onHoveredChanged: {
                 if (hovered) {
                     operationMessageTimer.stop()
-                } else if (operationFeedback.visible) {
-                    operationMessageTimer.restart()
+                } else if (operationFeedback.visible
+                        && root.operationSecondsRemaining > 0) {
+                    operationMessageTimer.start()
                 }
             }
         }

@@ -142,6 +142,18 @@ Item {
         return root.systemDiscovery.validateDroppedUrls(urls || [])
     }
 
+    function validateApplicationLauncherDrop(urls) {
+        if (!root.systemDiscovery
+                || typeof root.systemDiscovery.validateApplicationLauncherDrop
+                    !== "function") {
+            return {
+                "accepted": false,
+                "errorCode": "applicationUnavailable"
+            }
+        }
+        return root.systemDiscovery.validateApplicationLauncherDrop(urls || [])
+    }
+
     function handleApplicationUrlsDrop(item, taskRows, urls) {
         const validation = root.validateDroppedUrls(urls)
         if (!validation.accepted) {
@@ -496,6 +508,9 @@ Item {
         case "pinned":
             message = i18nc("@info:status", "%1 was pinned to the Dock.", name)
             break
+        case "moved":
+            message = i18nc("@info:status", "%1 was moved on the Dock.", name)
+            break
         case "unpinned":
             message = i18nc("@info:status", "%1 was removed from the Dock.", name)
             break
@@ -610,6 +625,73 @@ Item {
             return root.operationResult(false, "persist-failed", appName)
         }
         return root.operationResult(true, "pinned", appName)
+    }
+
+    function pinAppToDockAt(storageId, targetIndex) {
+        const resolved = root.resolveApplication(storageId, "")
+        if (!resolved || !resolved.resolved) {
+            return root.operationResult(false,
+                resolved ? resolved.status : "unavailable", storageId)
+        }
+
+        const appName = String(resolved.name || resolved.storageId || "")
+        const existingIndex = root.findDockItemIndexForResolvedApplication(resolved)
+        const boundedTarget = Math.max(0, Math.min(root.dockItems.length,
+            Number.isFinite(Number(targetIndex)) ? Math.round(Number(targetIndex)) : root.dockItems.length))
+        const previousItems = root.dockItems
+        let nextItems = root.dockItems.slice()
+        let pinDescriptor = null
+        let adjustedTarget = boundedTarget
+
+        if (existingIndex >= 0) {
+            pinDescriptor = nextItems[existingIndex]
+            nextItems.splice(existingIndex, 1)
+            if (existingIndex < adjustedTarget) {
+                adjustedTarget--
+            }
+        } else {
+            pinDescriptor = {
+                "type": "app",
+                "name": appName,
+                "icon": String(resolved.icon || "application-x-executable"),
+                "storageId": String(resolved.storageId || ""),
+                "appId": String(resolved.appId || ""),
+                "command": String(resolved.command || ""),
+                "launcherUrl": String(resolved.launcherUrl || "")
+            }
+        }
+
+        adjustedTarget = Math.max(0, Math.min(nextItems.length, adjustedTarget))
+        if (existingIndex >= 0 && adjustedTarget === existingIndex) {
+            return root.operationResult(true, "moved", appName)
+        }
+        nextItems.splice(adjustedTarget, 0, pinDescriptor)
+        root.dockItems = nextItems
+        if (!root.syncDockItemsConfiguration()) {
+            root.dockItems = previousItems
+            return root.operationResult(false, "persist-failed", appName)
+        }
+
+        root.recentlyTransitionedAppId = root.taskController
+            ? root.taskController.normalizeApplicationId(
+                resolved.appId || resolved.storageId || "")
+            : String(resolved.appId || resolved.storageId || "")
+        root.recentlyTransitionedLauncherUrl = root.taskController
+            ? root.taskController.normalizeLauncherUrl(
+                "applications:" + String(resolved.storageId || ""))
+            : String(resolved.launcherUrl || "")
+        itemTransitionTimer.restart()
+        return root.operationResult(true,
+            existingIndex >= 0 ? "moved" : "pinned", appName)
+    }
+
+    function pinApplicationLauncherAt(urls, targetIndex) {
+        const validation = root.validateApplicationLauncherDrop(urls)
+        if (!validation.accepted) {
+            return root.operationResult(false,
+                validation.errorCode || "invalid-source", "")
+        }
+        return root.pinAppToDockAt(validation.storageId, targetIndex)
     }
 
     function pinAppToDesktop(storageId, command) {

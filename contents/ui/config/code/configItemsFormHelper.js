@@ -69,7 +69,6 @@ function refreshItemForm() {
     actionDialog.appApplicationId = item.appId || ConfigItemsJS.applicationIdForCommand(item.command || "")
     actionDialog.itemModeIndex = item.type === "folder" ? 1 : (item.type === "note" ? 2 : (item.type === "separator" ? 3 : (item.type === "spacer" ? 4 : 0)))
     actionDialog.containerLayoutIndex = actionDialog.layoutIndexFor(item.layout || "grid")
-    actionDialog.containerShowLabelsChecked = item.showLabels === undefined ? true : item.showLabels
     actionDialog.spacerSizeValue = item.size || 24
     actionDialog.containerSourceIndex = actionDialog.sourceIndexFor(item.sourceType || "manual")
     actionDialog.containerPathText = item.sourcePath || ""
@@ -221,7 +220,6 @@ function applyItemForm(force) {
         item.name = actionDialog.appNameText || "Folder"
         item.icon = actionDialog.appIconText || "folder"
         item.layout = actionDialog.containerLayoutValue || "grid"
-        item.showLabels = actionDialog.containerShowLabelsChecked
         item.sourceType = actionDialog.containerSourceValue || "manual"
         item.sourcePath = actionDialog.containerPathText || ""
         item.sourceCategory = actionDialog.containerCategoryValue || "Development"

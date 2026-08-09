@@ -101,15 +101,27 @@ void MprisController::setApplicationId(const QString &applicationId)
 {
     const QString normalized = applicationId.trimmed();
     if (m_applicationId == normalized) {
-        refresh();
+        if (!selectionAvailable()) {
+            setResolving(false);
+            clearState();
+        } else if (!m_available && !m_resolving) {
+            setResolving(true);
+            scheduleRefresh();
+        }
         return;
     }
     cancelPlayWhenAvailable();
+    m_refreshTimer->stop();
+    ++m_refreshGeneration;
+    m_candidates.clear();
+    m_pendingPropertyRequests = 0;
     m_applicationId = normalized;
     Q_EMIT applicationIdChanged();
     if (!selectionAvailable()) {
         clearState();
+        setResolving(false);
     } else {
+        setResolving(true);
         if (m_selectionMode == QLatin1String("application")) {
             clearState();
         }
@@ -128,21 +140,35 @@ void MprisController::setSelectionMode(const QString &selectionMode)
         ? QStringLiteral("activePlayer")
         : QStringLiteral("application");
     if (m_selectionMode == normalized) {
-        if (selectionAvailable()) {
-            refresh();
+        if (!selectionAvailable()) {
+            setResolving(false);
+            clearState();
+        } else if (!m_available && !m_resolving) {
+            setResolving(true);
+            scheduleRefresh();
         }
         return;
     }
 
     cancelPlayWhenAvailable();
+    m_refreshTimer->stop();
+    ++m_refreshGeneration;
+    m_candidates.clear();
+    m_pendingPropertyRequests = 0;
     m_selectionMode = normalized;
     Q_EMIT selectionModeChanged();
+    if (selectionAvailable()) {
+        setResolving(true);
+    }
     clearState();
     if (selectionAvailable()) {
         refresh();
+    } else {
+        setResolving(false);
     }
 }
 
+bool MprisController::resolving() const { return m_resolving; }
 bool MprisController::available() const { return m_available; }
 QString MprisController::identity() const { return m_identity; }
 QString MprisController::track() const { return m_track; }
@@ -172,7 +198,11 @@ void MprisController::refresh()
 
     if (!selectionAvailable()) {
         clearState();
+        setResolving(false);
         return;
+    }
+    if (!m_available) {
+        setResolving(true);
     }
 
     QDBusInterface dbus(QStringLiteral("org.freedesktop.DBus"),
@@ -186,6 +216,7 @@ void MprisController::refresh()
         if (generation != m_refreshGeneration || reply.isError()) {
             if (generation == m_refreshGeneration) {
                 clearState();
+                setResolving(false);
             }
             return;
         }
@@ -198,6 +229,7 @@ void MprisController::refresh()
         }
         if (services.isEmpty()) {
             clearState();
+            setResolving(false);
             return;
         }
 
@@ -272,6 +304,7 @@ void MprisController::selectBestCandidate()
     const QVariantMap best = m_candidates.value(selectedService);
     if (selectedService.isEmpty() || best.isEmpty()) {
         clearState();
+        setResolving(false);
         return;
     }
 
@@ -328,6 +361,7 @@ void MprisController::selectBestCandidate()
         m_lastAudibleVolume = m_volume;
     }
     m_available = true;
+    setResolving(false);
     Q_EMIT stateChanged();
     completePendingPlayRequest();
 }
@@ -539,8 +573,20 @@ void MprisController::completePendingPlayRequest()
 void MprisController::scheduleRefresh()
 {
     if (selectionAvailable()) {
+        if (!m_available) {
+            setResolving(true);
+        }
         m_refreshTimer->start();
     }
+}
+
+void MprisController::setResolving(bool resolving)
+{
+    if (m_resolving == resolving) {
+        return;
+    }
+    m_resolving = resolving;
+    Q_EMIT resolvingChanged();
 }
 
 bool MprisController::selectionAvailable() const

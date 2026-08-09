@@ -8,11 +8,10 @@ FocusScope {
     property var layoutController: null
     property bool motionEnabled: true
     property real iconScale: 1.0
+    property int maximumColumnCount: 5
+    property int maximumRowCount: 5
     property var allowedExternalFocusItems: []
     property bool detailedApplicationFeedback: false
-    property real applicationHighlightOpacity: 0.30
-    property real applicationCornerRadiusScale: 1.0
-    property real applicationHoverScale: 1.0
     property bool returnToFolderAfterMemberRemoval: false
     property bool compactLayout: false
     property rect backdropGeometry: Qt.rect(0, 0, -1, -1)
@@ -36,22 +35,35 @@ FocusScope {
             || activeFolderInfo.folderMembers || []
         return members.length || 0
     }
-    readonly property int compactFolderColumnCount: Math.max(2,
+    readonly property int safeMaximumColumnCount: {
+        const requestedCount = Number(maximumColumnCount)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(5, Math.round(requestedCount)))
+            : 5
+    }
+    readonly property int safeMaximumRowCount: {
+        const requestedCount = Number(maximumRowCount)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(5, Math.round(requestedCount)))
+            : 5
+    }
+    readonly property int automaticCompactFolderColumnCount: Math.max(2,
         Math.min(5, Math.ceil(Math.sqrt(Math.max(1,
             activeMemberCount)))))
+    readonly property int compactFolderColumnCount: Math.min(
+        safeMaximumColumnCount, automaticCompactFolderColumnCount)
     readonly property int compactFolderRowCount: Math.max(1,
-        Math.ceil(Math.max(1, activeMemberCount)
-            / compactFolderColumnCount))
+        folderView.visibleRowCount)
     readonly property real compactFolderPreferredWidth: Math.max(
         Kirigami.Units.gridUnit * 20,
-        Math.min(Kirigami.Units.gridUnit * 34,
-            Kirigami.Units.gridUnit
-                * (compactFolderColumnCount * 6 + 4)))
+        folderView.targetCellWidth * compactFolderColumnCount
+            + folderView.gridScrollBarReserve
+            + modalSurface.panelContentHorizontalInset)
     readonly property real compactFolderPreferredHeight: Math.max(
         Kirigami.Units.gridUnit * 14,
         Math.min(Kirigami.Units.gridUnit * 26,
-            Kirigami.Units.gridUnit
-                * (compactFolderRowCount * 6 + 6)))
+            folderView.preferredContentHeight
+                + modalSurface.panelContentVerticalInset))
 
     signal launchRequested(string storageId)
     signal applicationContextRequested(var sourceItem, var application,
@@ -295,18 +307,18 @@ FocusScope {
         motionEnabled: root.motionEnabled
         preferredWidth: Math.min(root.width
             - Kirigami.Units.largeSpacing * 2,
-            root.compactLayout
-                ? root.viewMode === "folder"
-                    ? root.compactFolderPreferredWidth
-                    : Kirigami.Units.gridUnit * 34
-                : Kirigami.Units.gridUnit * 42)
+            root.viewMode === "folder"
+                ? root.compactFolderPreferredWidth
+                : root.compactLayout
+                    ? Kirigami.Units.gridUnit * 34
+                    : Kirigami.Units.gridUnit * 42)
         preferredHeight: Math.min(root.height
             - Kirigami.Units.largeSpacing * 2,
-            root.compactLayout
-                ? root.viewMode === "folder"
-                    ? root.compactFolderPreferredHeight
-                    : Kirigami.Units.gridUnit * 26
-                : Kirigami.Units.gridUnit * 34)
+            root.viewMode === "folder"
+                ? root.compactFolderPreferredHeight
+                : root.compactLayout
+                    ? Kirigami.Units.gridUnit * 26
+                    : Kirigami.Units.gridUnit * 34)
         maximumWidth: root.width - Kirigami.Units.largeSpacing * 2
         maximumHeight: root.height - Kirigami.Units.largeSpacing * 2
         panelBackgroundImagePath: root.useWidgetModalProfile
@@ -338,11 +350,9 @@ FocusScope {
                 || root.activeFolderInfo.folderMembers || []
             motionEnabled: root.motionEnabled
             iconScale: root.iconScale
+            maximumColumnCount: root.safeMaximumColumnCount
+            maximumRowCount: root.safeMaximumRowCount
             detailedApplicationFeedback: root.detailedApplicationFeedback
-            applicationHighlightOpacity: root.applicationHighlightOpacity
-            applicationCornerRadiusScale:
-                root.applicationCornerRadiusScale
-            applicationHoverScale: root.applicationHoverScale
 
             onLaunchRequested: function(storageId) {
                 root.launchRequested(storageId)

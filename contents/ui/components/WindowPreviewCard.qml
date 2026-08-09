@@ -35,6 +35,28 @@ Controls.ItemDelegate {
     readonly property bool canClose: !!windowData.closable
     readonly property int actionGroupRadius: Math.max(8, Math.min(16, previewRadius))
     readonly property int actionButtonRadius: Math.max(6, actionGroupRadius - 2)
+    readonly property bool minimizedFallback:
+        KWindowSystem.isPlatformX11 && minimized
+    readonly property bool disabledPreviewFallback:
+        !minimizedFallback && !liveThumbnailEnabled
+    // Translation functions are provided by the plasmoid context.
+    // qmllint disable unqualified
+    readonly property string fallbackStatusText: minimizedFallback
+        ? i18n("Window minimized")
+        : (disabledPreviewFallback
+            ? i18nc("@info Window live preview state", "Disabled")
+            : i18n("Preview unavailable"))
+    // qmllint enable unqualified
+    readonly property int fallbackApplicationIconSize: {
+        const shortSide = Math.min(previewWidth, previewHeight)
+        const minimumSize = Kirigami.Units.iconSizes.huge
+        const maximumSize = Math.round(minimumSize * 1.125)
+        const proportionalSize = Number.isFinite(shortSide) && shortSide > 0
+            ? shortSide * 0.38
+            : minimumSize
+        return Kirigami.Units.iconSizes.roundedIconSize(Math.round(Math.max(
+            minimumSize, Math.min(maximumSize, proportionalSize))))
+    }
 
     implicitHeight: previewHeight + (outerPadding * 2)
     height: implicitHeight
@@ -90,12 +112,16 @@ Controls.ItemDelegate {
                     windowUuid: root.windowUuid
                     winId: root.winId
                     minimized: root.minimized
+                    cornerRadius: root.previewRadius
                 }
             }
 
             Column {
                 id: fallbackColumn
                 anchors.centerIn: parent
+                anchors.verticalCenterOffset: informationPlate.visible
+                    ? -Math.round(informationPlate.height / 2)
+                    : 0
                 width: parent.width - 16
                 spacing: 6
                 z: 1
@@ -103,24 +129,29 @@ Controls.ItemDelegate {
 
                 Kirigami.Icon {
                     anchors.horizontalCenter: parent.horizontalCenter
-                    width: Math.min(48, Math.round(root.previewWidth * 0.24))
+                    width: root.fallbackApplicationIconSize
                     height: width
                     source: String(root.windowData.icon || "window")
                 }
 
-                Controls.Label {
-                    width: parent.width
-                    horizontalAlignment: Text.AlignHCenter
-                    elide: Text.ElideRight
-                    // Translation functions are provided by the plasmoid context.
-                    // qmllint disable unqualified
-                    text: KWindowSystem.isPlatformX11 && root.minimized
-                        ? i18n("Window minimized")
-                        : !root.liveThumbnailEnabled ? i18n("Preview disabled")
-                        : i18n("Preview unavailable")
-                    // qmllint enable unqualified
-                    color: Kirigami.Theme.disabledTextColor
-                    font.pixelSize: 11
+                Row {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    spacing: Kirigami.Units.smallSpacing
+
+                    Kirigami.Icon {
+                        width: Kirigami.Units.iconSizes.small
+                        height: width
+                        visible: root.disabledPreviewFallback
+                        source: "view-hidden"
+                        color: Kirigami.Theme.disabledTextColor
+                        Accessible.ignored: true
+                    }
+
+                    Controls.Label {
+                        text: root.fallbackStatusText
+                        color: Kirigami.Theme.disabledTextColor
+                        font.pixelSize: 11
+                    }
                 }
             }
 
@@ -144,178 +175,134 @@ Controls.ItemDelegate {
                     anchors.rightMargin: 5
                     spacing: 2
 
-                    Controls.ToolButton {
+                    WindowPreviewActionButton {
                         id: presentButton
                         visible: !root.windowData.active
                         enabled: !root.minimized
                         Layout.preferredWidth: 28
                         Layout.preferredHeight: 28
-                        padding: 2
-                        focusPolicy: Qt.StrongFocus
-                        Accessible.name: i18n("Bring window to front")
-                        Controls.ToolTip.visible: hovered || activeFocus
-                        Controls.ToolTip.text: Accessible.name
-                        Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
-                        contentItem: Kirigami.Icon {
-                            source: "go-up"
-                            color: Kirigami.Theme.textColor
-                            implicitWidth: 16
-                            implicitHeight: 16
-                        }
-                        background: Rectangle {
-                            radius: root.actionButtonRadius
-                            color: presentButton.hovered || presentButton.activeFocus
-                                ? Qt.rgba(Kirigami.Theme.highlightColor.r,
-                                    Kirigami.Theme.highlightColor.g,
-                                    Kirigami.Theme.highlightColor.b, 0.24)
-                                : "transparent"
-                            border.width: presentButton.activeFocus ? 1 : 0
-                            border.color: presentButton.activeFocus
-                                ? Kirigami.Theme.textColor
-                                : "transparent"
-                        }
+                        visualRadius: root.actionButtonRadius
+                        text: i18n("Bring window to front")
+                        icon.name: "go-up"
+                        icon.width: 16
+                        icon.height: 16
                         onClicked: root.presentWindowRequested(root.taskRow)
                     }
 
-                    Controls.ToolButton {
+                    WindowPreviewActionButton {
                         id: minimizeButton
                         enabled: root.canMinimize
                         Layout.preferredWidth: 28
                         Layout.preferredHeight: 28
-                        padding: 2
-                        focusPolicy: Qt.StrongFocus
-                        Accessible.name: root.minimized
+                        visualRadius: root.actionButtonRadius
+                        text: root.minimized
                             ? i18n("Restore from minimized state")
                             : i18n("Minimize window")
-                        Controls.ToolTip.visible: hovered || activeFocus
-                        Controls.ToolTip.text: Accessible.name
-                        Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
-                        contentItem: Kirigami.Icon {
-                            source: root.minimized ? "view-restore" : "go-down"
-                            color: Kirigami.Theme.textColor
-                            implicitWidth: 16
-                            implicitHeight: 16
-                        }
-                        background: Rectangle {
-                            radius: root.actionButtonRadius
-                            color: minimizeButton.hovered || minimizeButton.activeFocus
-                                ? Qt.rgba(Kirigami.Theme.highlightColor.r,
-                                    Kirigami.Theme.highlightColor.g,
-                                    Kirigami.Theme.highlightColor.b, 0.24)
-                                : "transparent"
-                            border.width: minimizeButton.activeFocus ? 1 : 0
-                            border.color: minimizeButton.activeFocus
-                                ? Kirigami.Theme.textColor
-                                : "transparent"
-                        }
+                        icon.name: root.minimized ? "view-restore" : "go-down"
+                        icon.width: 16
+                        icon.height: 16
                         onClicked: root.minimizeWindowRequested(root.taskRow)
                     }
 
-                    Controls.ToolButton {
+                    WindowPreviewActionButton {
                         id: maximizeButton
                         enabled: root.canMaximize
                         Layout.preferredWidth: 28
                         Layout.preferredHeight: 28
-                        padding: 2
-                        focusPolicy: Qt.StrongFocus
-                        Accessible.name: root.maximized
+                        visualRadius: root.actionButtonRadius
+                        text: root.maximized
                             ? i18n("Restore window size")
                             : i18n("Maximize window")
-                        Controls.ToolTip.visible: hovered || activeFocus
-                        Controls.ToolTip.text: Accessible.name
-                        Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
-                        contentItem: Kirigami.Icon {
-                            source: root.maximized ? "view-restore" : "view-fullscreen"
-                            color: Kirigami.Theme.textColor
-                            implicitWidth: 16
-                            implicitHeight: 16
-                        }
-                        background: Rectangle {
-                            radius: root.actionButtonRadius
-                            color: maximizeButton.hovered || maximizeButton.activeFocus
-                                ? Qt.rgba(Kirigami.Theme.highlightColor.r,
-                                    Kirigami.Theme.highlightColor.g,
-                                    Kirigami.Theme.highlightColor.b, 0.24)
-                                : "transparent"
-                            border.width: maximizeButton.activeFocus ? 1 : 0
-                            border.color: maximizeButton.activeFocus
-                                ? Kirigami.Theme.textColor
-                                : "transparent"
-                        }
+                        icon.name: root.maximized ? "view-restore" : "view-fullscreen"
+                        icon.width: 16
+                        icon.height: 16
                         onClicked: root.maximizeWindowRequested(root.taskRow)
                     }
 
-                    Controls.ToolButton {
+                    WindowPreviewActionButton {
                         id: closeButton
                         enabled: root.canClose
                         Layout.preferredWidth: 28
                         Layout.preferredHeight: 28
-                        padding: 2
-                        focusPolicy: Qt.StrongFocus
-                        Accessible.name: i18n("Close window")
-                        Controls.ToolTip.visible: hovered || activeFocus
-                        Controls.ToolTip.text: Accessible.name
-                        Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
-                        contentItem: Kirigami.Icon {
-                            source: "window-close"
-                            color: Kirigami.Theme.textColor
-                            implicitWidth: 16
-                            implicitHeight: 16
-                        }
-                        background: Rectangle {
-                            radius: root.actionButtonRadius
-                            color: closeButton.hovered || closeButton.activeFocus
-                                ? Qt.rgba(Kirigami.Theme.negativeTextColor.r,
-                                    Kirigami.Theme.negativeTextColor.g,
-                                    Kirigami.Theme.negativeTextColor.b, 0.24)
-                                : "transparent"
-                            border.width: closeButton.activeFocus ? 1 : 0
-                            border.color: closeButton.activeFocus
-                                ? Kirigami.Theme.textColor
-                                : "transparent"
-                        }
+                        visualRadius: root.actionButtonRadius
+                        destructive: true
+                        text: i18n("Close window")
+                        icon.name: "window-close"
+                        icon.width: 16
+                        icon.height: 16
                         onClicked: root.closeWindowRequested(root.taskRow)
                     }
                 }
             }
 
-            RowLayout {
+            Rectangle {
+                id: informationPlate
                 anchors.left: parent.left
-                anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                anchors.leftMargin: 10
-                anchors.rightMargin: 8
-                anchors.bottomMargin: 8
-                spacing: 8
+                anchors.leftMargin: Kirigami.Units.smallSpacing
+                anchors.bottomMargin: Kirigami.Units.smallSpacing
+                readonly property int horizontalPadding:
+                    Kirigami.Units.smallSpacing
+                readonly property int verticalPadding: Math.max(2,
+                    Math.round(Kirigami.Units.smallSpacing / 2))
+                width: root.infoMode === "full"
+                    ? parent.width - Kirigami.Units.smallSpacing * 2
+                    : informationRow.implicitWidth + horizontalPadding * 2
+                height: informationRow.implicitHeight + verticalPadding * 2
+                radius: Math.min(height / 2, Math.max(
+                    Kirigami.Units.cornerRadius, root.previewRadius))
                 z: 3
                 visible: root.infoMode !== "none"
+                color: Qt.rgba(Kirigami.Theme.backgroundColor.r,
+                    Kirigami.Theme.backgroundColor.g,
+                    Kirigami.Theme.backgroundColor.b, 0.82)
+                border.width: 1
+                border.color: Qt.rgba(Kirigami.Theme.textColor.r,
+                    Kirigami.Theme.textColor.g,
+                    Kirigami.Theme.textColor.b, 0.14)
 
-                Kirigami.Icon {
-                    Layout.preferredWidth: 20
-                    Layout.preferredHeight: 20
-                    source: String(root.windowData.icon || "window")
-                }
+                RowLayout {
+                    id: informationRow
+                    anchors.fill: parent
+                    anchors.leftMargin: informationPlate.horizontalPadding
+                    anchors.rightMargin: informationPlate.horizontalPadding
+                    anchors.topMargin: informationPlate.verticalPadding
+                    anchors.bottomMargin: informationPlate.verticalPadding
+                    spacing: Kirigami.Units.smallSpacing
 
-                ColumnLayout {
-                    Layout.fillWidth: true
-                    spacing: 1
-                    visible: root.infoMode === "full"
-
-                    PlasmaExtras.ShadowedLabel {
-                        Layout.fillWidth: true
-                        text: root.primaryText
-                        renderShadow: root.textShadowsEnabled
-                        font.bold: !!root.windowData.active
-                        elide: Text.ElideRight
+                    Kirigami.Icon {
+                        Layout.preferredWidth: 20
+                        Layout.preferredHeight: 20
+                        source: String(root.windowData.icon || "window")
                     }
 
-                    PlasmaExtras.ShadowedLabel {
+                    ColumnLayout {
                         Layout.fillWidth: true
-                        text: root.secondaryText
-                        renderShadow: root.textShadowsEnabled
-                        elide: Text.ElideRight
-                        opacity: 0.78
-                        font.pixelSize: 11
+                        spacing: 1
+                        visible: root.infoMode === "full"
+
+                        PlasmaExtras.ShadowedLabel {
+                            Layout.fillWidth: true
+                            text: root.primaryText
+                            renderShadow: root.textShadowsEnabled
+                            color: Kirigami.Theme.textColor
+                            font.bold: !!root.windowData.active
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                            maximumLineCount: 1
+                        }
+
+                        PlasmaExtras.ShadowedLabel {
+                            Layout.fillWidth: true
+                            text: root.secondaryText
+                            renderShadow: root.textShadowsEnabled
+                            color: Kirigami.Theme.textColor
+                            elide: Text.ElideRight
+                            wrapMode: Text.NoWrap
+                            maximumLineCount: 1
+                            opacity: 0.78
+                            font.pixelSize: 11
+                        }
                     }
                 }
             }

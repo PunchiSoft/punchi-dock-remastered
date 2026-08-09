@@ -19,9 +19,12 @@ FocusScope {
 
     required property var systemDiscovery
     property var applicationCatalog: []
+    property bool applicationCatalogLoaded: false
     property var applicationLayoutController: null
     property real applicationIconScale: 1.0
     property real favoriteIconScale: 1.0
+    property int folderMaximumColumns: 5
+    property int folderMaximumRows: 5
     property bool backgroundBlurEnabled: true
     property real backgroundOpacity: 0.50
     property bool showDistributionName: true
@@ -37,6 +40,7 @@ FocusScope {
     property string operationMessage: ""
     property bool operationMessageIsError: false
     property bool operationMessageDismissalInProgress: false
+    property int operationSecondsRemaining: 0
     property string searchText: ""
     property int currentApplicationIndex: -1
     property bool pageNavigationActive: false
@@ -46,7 +50,6 @@ FocusScope {
     property bool sessionViewActive: false
     property bool sessionViewRequested: false
     property real modeContentOpacity: 1.0
-    property var applications: []
 
     readonly property bool motionEnabled: Kirigami.Units.longDuration > 0
     readonly property bool modeTransitionActive: modeFadeOutAnimation.running
@@ -66,14 +69,26 @@ FocusScope {
     readonly property real safeApplicationIconScale: {
         const requestedScale = Number(applicationIconScale)
         return Number.isFinite(requestedScale)
-            ? Math.max(0.75, Math.min(2.0, requestedScale))
+            ? Math.max(0.75, Math.min(1.5, requestedScale))
             : 1.0
     }
     readonly property real safeFavoriteIconScale: {
         const requestedScale = Number(favoriteIconScale)
         return Number.isFinite(requestedScale)
-            ? Math.max(0.75, Math.min(1.5, requestedScale))
+            ? Math.max(0.75, Math.min(1.1, requestedScale))
             : 1.0
+    }
+    readonly property int safeFolderMaximumColumns: {
+        const requestedCount = Number(folderMaximumColumns)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(5, Math.round(requestedCount)))
+            : 5
+    }
+    readonly property int safeFolderMaximumRows: {
+        const requestedCount = Number(folderMaximumRows)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(5, Math.round(requestedCount)))
+            : 5
     }
     readonly property var hiddenApplicationLookup: {
         const source = hiddenApplicationIds instanceof Array
@@ -92,8 +107,7 @@ FocusScope {
     }
     readonly property int hiddenApplicationCount: {
         let count = 0
-        const source = applicationCatalog.length > 0
-            ? applicationCatalog : applications
+        const source = applicationCatalog
         const sourceCount = source.length
         for (let index = 0; index < sourceCount; index++) {
             const storageId = String(source[index].storageId
@@ -112,7 +126,7 @@ FocusScope {
     readonly property int pageCapacity: Math.max(1, gridColumns * gridRows)
     readonly property bool organizedListingActive:
         searchText.trim().length === 0
-        && applicationCatalog.length > 0
+        && applicationCatalogLoaded
     readonly property var visibleApplications: {
         const result = []
         const query = searchText.trim().toLocaleLowerCase()
@@ -127,8 +141,7 @@ FocusScope {
             }
             return result
         }
-        const source = applicationCatalog.length > 0
-            ? applicationCatalog : applications
+        const source = applicationCatalog
         const sourceCount = source.length
         for (let index = 0; index < sourceCount; index++) {
             const app = source[index]
@@ -147,8 +160,7 @@ FocusScope {
                 appIcon: String(app.icon || app.appIcon
                     || "application-x-executable"),
                 appStorageId: appStorageId,
-                appCommand: applicationCatalog.length > 0
-                    ? "" : String(app.appCommand || ""),
+                appCommand: "",
                 appHidden: appHidden
             })
         }
@@ -181,6 +193,17 @@ FocusScope {
         Math.min(width * 0.24, Kirigami.Units.gridUnit * 20)))
     readonly property int headerControlSize: Kirigami.Units.gridUnit * 2
     readonly property int operationMessageDuration: 7000
+    readonly property string operationBaseMessage: operationMessage.length > 0
+        ? operationMessage
+        : applicationErrorMessage.length > 0
+            ? i18nc("@info:status", "Application could not be opened: %1",
+                applicationErrorMessage)
+            : ""
+    readonly property string operationCountdownText:
+        operationBaseMessage.length > 0 && operationSecondsRemaining > 0
+            ? i18nc("@info:status %1 is the result and %2 is seconds remaining",
+                "%1 · %2 s", operationBaseMessage, operationSecondsRemaining)
+            : operationBaseMessage
     readonly property int applicationGridHorizontalInset: Math.round(Math.max(0,
         width * 0.15 - Kirigami.Units.gridUnit * 3))
     readonly property int animOpenDuration: Math.round(Kirigami.Units.longDuration * 1.1)
@@ -200,6 +223,82 @@ FocusScope {
         Kirigami.Units.gridUnit * 2.5, 40)
 
     property var dockItemsController: null
+
+    QtObject {
+        id: folderSurface
+
+        readonly property bool active: {
+            const surface = loadedSurface()
+            return Boolean(surface && surface.active)
+        }
+
+        function loadedSurface() {
+            return folderSurfaceLoader.item
+        }
+
+        function ensureLoaded() {
+            folderSurfaceLoader.active = true
+            return folderSurfaceLoader.item
+        }
+
+        function beginCreate(application) {
+            const surface = ensureLoaded()
+            return surface ? surface.beginCreate(application) : false
+        }
+
+        function beginCreateFromStorageIds(storageIds) {
+            const surface = ensureLoaded()
+            return surface
+                ? surface.beginCreateFromStorageIds(storageIds) : false
+        }
+
+        function beginDissolve(folderId) {
+            const surface = ensureLoaded()
+            return surface ? surface.beginDissolve(folderId) : false
+        }
+
+        function beginMove(application) {
+            const surface = ensureLoaded()
+            return surface ? surface.beginMove(application) : false
+        }
+
+        function beginRemove(application, folderId) {
+            const surface = ensureLoaded()
+            return surface
+                ? surface.beginRemove(application, folderId) : false
+        }
+
+        function beginRename(folderId) {
+            const surface = ensureLoaded()
+            return surface ? surface.beginRename(folderId) : false
+        }
+
+        function closeCurrentView() {
+            const surface = loadedSurface()
+            if (surface) {
+                surface.closeCurrentView()
+            }
+        }
+
+        function openFolder(folderId) {
+            const surface = ensureLoaded()
+            return surface ? surface.openFolder(folderId) : false
+        }
+
+        function reset() {
+            const surface = loadedSurface()
+            if (surface) {
+                surface.reset()
+            }
+        }
+
+        function restoreFocus() {
+            const surface = loadedSurface()
+            if (surface) {
+                surface.restoreFocus()
+            }
+        }
+    }
     property var favorites: []
 
     signal closeFinished()
@@ -281,14 +380,17 @@ FocusScope {
             || applicationErrorMessage.length > 0
         operationInlineMessage.visible = !sessionViewActive
             && messageAvailable
-        if (messageAvailable) {
-            operationMessageTimer.restart()
+        operationSecondsRemaining = messageAvailable
+            ? Math.max(1, Math.ceil(operationMessageDuration / 1000)) : 0
+        if (messageAvailable && !operationInlineMessageHover.hovered) {
+            operationMessageTimer.start()
         }
     }
 
     function dismissOperationMessage() {
         operationMessageDismissalInProgress = true
         operationMessageTimer.stop()
+        operationSecondsRemaining = 0
         operationMessage = ""
         applicationErrorMessage = ""
         operationInlineMessage.visible = false
@@ -665,6 +767,22 @@ FocusScope {
         ])
     }
 
+    function beforeNodeIdForInsertion(targetIndex, insertAfter) {
+        let candidateIndex = Number(targetIndex) + (insertAfter ? 1 : 0)
+        while (candidateIndex >= 0
+                && candidateIndex < visibleApplications.length) {
+            const candidate = applicationAt(candidateIndex)
+            const candidateNodeId = String(candidate
+                ? candidate.nodeId || "" : "")
+            if (candidateNodeId.length > 0
+                    && candidateNodeId !== internalDragLayer.nodeId) {
+                return candidateNodeId
+            }
+            candidateIndex += 1
+        }
+        return ""
+    }
+
     function nodeIdForGridDrop(pageIndex, x, y, grid) {
         if (!grid || gridColumns <= 0 || gridRows <= 0) {
             return ""
@@ -903,10 +1021,17 @@ FocusScope {
             return
         }
         if (sessionViewActive) {
-            sessionView.focusInitialAction()
+            const loadedSessionView = sessionViewItem()
+            if (loadedSessionView) {
+                loadedSessionView.focusInitialAction()
+            }
         } else {
             searchField.forceActiveFocus()
         }
+    }
+
+    function sessionViewItem() {
+        return sessionViewLoader.item
     }
 
     function resetSessionTransition() {
@@ -963,14 +1088,21 @@ FocusScope {
         resetSessionTransition()
         menuOpen = true
         searchText = ""
-        applicationsLoading = true
+        applicationsLoading = !applicationCatalogLoaded
         applicationLaunchPending = false
         applicationErrorMessage = ""
         operationMessage = ""
-        applications = []
         currentApplicationIndex = -1
         root.forceActiveFocus()
-        systemDiscovery.requestApplications("All")
+        if (applicationCatalogLoaded) {
+            resetPagination()
+        } else {
+            Qt.callLater(function() {
+                if (root.menuOpen && !root.applicationCatalogLoaded) {
+                    root.systemDiscovery.requestApplicationCatalog()
+                }
+            })
+        }
     }
 
     function forceClose() {
@@ -1009,7 +1141,6 @@ FocusScope {
         applicationLaunchPending = false
         applicationErrorMessage = ""
         operationMessage = ""
-        applications = []
         currentApplicationIndex = -1
     }
 
@@ -1020,6 +1151,20 @@ FocusScope {
     onMenuOpenChanged: {
         if (!menuOpen) {
             cancelInternalLayoutDrag()
+        }
+    }
+    onApplicationCatalogLoadedChanged: {
+        if (applicationCatalogLoaded) {
+            applicationsLoading = false
+            if (menuOpen) {
+                resetPagination()
+            }
+        }
+    }
+    onApplicationCatalogChanged: {
+        if (menuOpen && applicationCatalogLoaded) {
+            applicationsLoading = false
+            resetPagination()
         }
     }
     onOperationMessageChanged: updateOperationMessageTimer()
@@ -1463,23 +1608,6 @@ FocusScope {
         target: root.systemDiscovery
         ignoreUnknownSignals: true
 
-        function onApplicationsReady(applications) {
-            const list = applications || []
-            const resolvedApplications = []
-            for (let index = 0; index < list.length; index++) {
-                const app = list[index]
-                resolvedApplications.push({
-                    appName: String(app.name || ""),
-                    appIcon: String(app.icon || "application-x-executable"),
-                    appStorageId: String(app.storageId || ""),
-                    appCommand: String(app.command || "")
-                })
-            }
-            root.applications = resolvedApplications
-            root.applicationsLoading = false
-            root.resetPagination()
-        }
-
         function onApplicationLaunchFinished(succeeded, message) {
             if (!root.applicationLaunchPending) {
                 return
@@ -1620,7 +1748,7 @@ FocusScope {
             PlasmaComponents.ToolButton {
                 id: closeButton
                 readonly property bool highlightedContent: enabled
-                    && (hovered || down)
+                    && (hovered || down || activeFocus)
                 icon.name: "window-close"
                 icon.color: highlightedContent
                     ? root.Kirigami.Theme.highlightedTextColor
@@ -1628,6 +1756,10 @@ FocusScope {
                 display: PlasmaComponents.AbstractButton.IconOnly
                 text: i18nc("@action:button", "Close")
                 Accessible.name: text
+                background: PunchiMenuActionBackground {
+                    highlighted: closeButton.highlightedContent
+                    circular: true
+                }
                 onClicked: root.forceClose()
             }
         }
@@ -1738,6 +1870,8 @@ FocusScope {
 
             PlasmaComponents.ToolButton {
                 id: hiddenApplicationsButton
+                readonly property bool highlightedContent: enabled
+                    && (hovered || down || activeFocus || checked)
                 Layout.preferredWidth: root.headerControlSize
                 Layout.minimumWidth: Layout.preferredWidth
                 Layout.maximumWidth: Layout.preferredWidth
@@ -1752,6 +1886,9 @@ FocusScope {
                 icon.name: root.revealHiddenApplications
                     ? "view-visible"
                     : "view-hidden"
+                icon.color: highlightedContent
+                    ? root.Kirigami.Theme.highlightedTextColor
+                    : root.Kirigami.Theme.textColor
                 display: PlasmaComponents.AbstractButton.IconOnly
                 text: root.revealHiddenApplications
                     ? i18nc("@action:button", "Hide hidden applications")
@@ -1764,10 +1901,9 @@ FocusScope {
                     : searchField
                 KeyNavigation.tab: configureButton
 
-                background: PunchiMenuSearchBackground {
-                    fieldActiveFocus: hiddenApplicationsButton.activeFocus
-                    fieldHovered: hiddenApplicationsButton.hovered
-                    auxiliaryHovered: hiddenApplicationsButton.checked
+                background: PunchiMenuActionBackground {
+                    highlighted: hiddenApplicationsButton.highlightedContent
+                    circular: true
                 }
 
                 PlasmaCore.ToolTipArea {
@@ -1796,6 +1932,8 @@ FocusScope {
 
             PlasmaComponents.ToolButton {
                 id: configureButton
+                readonly property bool highlightedContent: enabled
+                    && (hovered || down || activeFocus)
                 Layout.preferredWidth: root.headerControlSize
                 Layout.minimumWidth: Layout.preferredWidth
                 Layout.maximumWidth: Layout.preferredWidth
@@ -1803,6 +1941,9 @@ FocusScope {
                 Layout.minimumHeight: Layout.preferredHeight
                 Layout.maximumHeight: Layout.preferredHeight
                 icon.name: "configure"
+                icon.color: highlightedContent
+                    ? root.Kirigami.Theme.highlightedTextColor
+                    : root.Kirigami.Theme.textColor
                 display: PlasmaComponents.AbstractButton.IconOnly
                 text: i18n("Configure PunchiMenu")
                 Accessible.name: text
@@ -1813,9 +1954,9 @@ FocusScope {
                         : searchField
                 KeyNavigation.tab: sessionButton
 
-                background: PunchiMenuSearchBackground {
-                    fieldActiveFocus: configureButton.activeFocus
-                    fieldHovered: configureButton.hovered
+                background: PunchiMenuActionBackground {
+                    highlighted: configureButton.highlightedContent
+                    circular: true
                 }
 
                 PlasmaCore.ToolTipArea {
@@ -1835,6 +1976,8 @@ FocusScope {
 
             PlasmaComponents.ToolButton {
                 id: sessionButton
+                readonly property bool highlightedContent: enabled
+                    && (hovered || down || activeFocus || checked)
                 Layout.preferredWidth: root.headerControlSize
                 Layout.minimumWidth: Layout.preferredWidth
                 Layout.maximumWidth: Layout.preferredWidth
@@ -1844,6 +1987,9 @@ FocusScope {
                 icon.name: root.sessionViewRequested
                     ? "view-grid"
                     : "system-log-out"
+                icon.color: highlightedContent
+                    ? root.Kirigami.Theme.highlightedTextColor
+                    : root.Kirigami.Theme.textColor
                 display: PlasmaComponents.AbstractButton.IconOnly
                 text: root.sessionViewRequested
                     ? i18nc("@action:button", "Show applications")
@@ -1854,13 +2000,17 @@ FocusScope {
                 hoverEnabled: true
                 Accessible.name: text
                 KeyNavigation.backtab: configureButton
+                // The Loader item is a PunchiMenuSessionView at runtime, but
+                // static analysis resolves the generic item as QObject.
+                // qmllint disable incompatible-type
                 KeyNavigation.tab: root.sessionViewActive
-                    ? sessionView : closeButton
+                    && sessionViewLoader.item
+                    ? sessionViewLoader.item : closeButton
+                // qmllint enable incompatible-type
 
-                background: PunchiMenuSearchBackground {
-                    fieldActiveFocus: sessionButton.activeFocus
-                    fieldHovered: sessionButton.hovered
-                    auxiliaryHovered: sessionButton.checked
+                background: PunchiMenuActionBackground {
+                    highlighted: sessionButton.highlightedContent
+                    circular: true
                 }
 
                 PlasmaCore.ToolTipArea {
@@ -1989,11 +2139,17 @@ FocusScope {
                                     internalDragLayer.active
                                     && internalDragLayer.nodeId
                                         === String(modelData.nodeId || "")
-                                readonly property real safeIconSize: Math.max(
-                                    Kirigami.Units.iconSizes.medium,
-                                    Math.min(root.responsiveApplicationIconBase
-                                            * root.safeApplicationIconScale,
-                                        width * 0.55, height * 0.58))
+                                readonly property bool dropGroupingActive:
+                                    nodeDropTarget.containsDrag
+                                    && nodeDropTarget.dropIntent === "group"
+                                readonly property bool dropInsertionActive:
+                                    nodeDropTarget.containsDrag
+                                    && (nodeDropTarget.dropIntent
+                                            === "insertBefore"
+                                        || nodeDropTarget.dropIntent
+                                            === "insertAfter")
+                                readonly property int safeIconSize:
+                                    applicationIconMetrics.effectiveSize
 
                                 width: (applicationsGrid.width
                                     - applicationsGrid.columnSpacing
@@ -2001,6 +2157,21 @@ FocusScope {
                                 height: (applicationsGrid.height
                                     - applicationsGrid.rowSpacing
                                         * (root.gridRows - 1)) / root.gridRows
+
+                                PunchiMenuIconMetrics {
+                                    id: applicationIconMetrics
+                                    requestedScale: root.safeApplicationIconScale
+                                    minimumScale: 0.75
+                                    maximumScale: 1.5
+                                    baseSize: root.responsiveApplicationIconBase
+                                    minimumSize: Kirigami.Units.iconSizes.medium
+                                    availableWidth: Math.max(0,
+                                        appDelegate.width
+                                            - Kirigami.Units.gridUnit)
+                                    availableHeight: Math.max(0,
+                                        appDelegate.height
+                                            - Kirigami.Units.gridUnit * 3)
+                                }
                                 opacity: isDragSource ? 0.34
                                     : isHiddenApplication ? 0.58 : 1.0
                                 Accessible.ignored: isFolder
@@ -2029,10 +2200,10 @@ FocusScope {
                                         .folderPreviewIcons || []
                                     memberCount: Number(appDelegate.modelData
                                         .folderMemberCount || 0)
-                                    selected: appDelegate.isSelected
-                                        || nodeDropTarget.containsDrag
+                                    selected: appDelegate.highlighted
+                                        || appDelegate.dropGroupingActive
                                     motionEnabled: root.motionEnabled
-                                    iconScale: root.safeApplicationIconScale
+                                    requestedIconSize: appDelegate.safeIconSize
                                     onActivated: root.launchApplicationAt(
                                         appDelegate.globalIndex)
                                     onContextRequested: function(sourceItem, x, y) {
@@ -2051,8 +2222,8 @@ FocusScope {
                                     visible: !appDelegate.isFolder
                                     hovered: delegatePointer.containsMouse
                                         && root.applicationHoverAllowed
-                                    selected: appDelegate.isSelected
-                                        || nodeDropTarget.containsDrag
+                                    selected: appDelegate.highlighted
+                                        || appDelegate.dropGroupingActive
                                     pressed: delegatePointer.pressed
                                         && !internalDragLayer.active
                                     motionEnabled: root.motionEnabled
@@ -2097,24 +2268,111 @@ FocusScope {
 
                                 DropArea {
                                     id: nodeDropTarget
+                                    property string dropIntent: "none"
+                                    readonly property real insertionEdgeWidth:
+                                        Math.min(width * 0.25,
+                                            Kirigami.Units.gridUnit * 1.75)
+
+                                    function updateDropIntent(drag) {
+                                        if (!root.isInternalLayoutDrag(drag)
+                                                || internalDragLayer.nodeId
+                                                    === String(appDelegate
+                                                        .modelData.nodeId
+                                                        || "")) {
+                                            dropIntent = "none"
+                                            return false
+                                        }
+                                        const pointerX = Number(drag.x)
+                                        if (internalDragLayer.folder) {
+                                            dropIntent = pointerX < width / 2
+                                                ? "insertBefore"
+                                                : "insertAfter"
+                                        } else if (pointerX
+                                                <= insertionEdgeWidth) {
+                                            dropIntent = "insertBefore"
+                                        } else if (pointerX >= width
+                                                - insertionEdgeWidth) {
+                                            dropIntent = "insertAfter"
+                                        } else {
+                                            dropIntent = "group"
+                                        }
+                                        return true
+                                    }
+
                                     anchors.fill: parent
                                     anchors.margins: Kirigami.Units.smallSpacing
                                     keys: [internalDragLayer.dragKey]
                                     z: 20
 
                                     onEntered: function(drag) {
-                                        drag.accepted = root.isInternalLayoutDrag(drag)
-                                            && internalDragLayer.nodeId
-                                                !== String(appDelegate.modelData.nodeId || "")
+                                        drag.accepted = updateDropIntent(drag)
+                                    }
+                                    onPositionChanged: function(drag) {
+                                        drag.accepted = updateDropIntent(drag)
+                                    }
+                                    onExited: {
+                                        dropIntent = "none"
                                     }
                                     onDropped: function(drop) {
                                         if (!root.isInternalLayoutDrag(drop)) {
                                             drop.accepted = false
+                                            dropIntent = "none"
                                             return
                                         }
-                                        drop.accepted = root.handleDraggedNodeDrop(
-                                            appDelegate.modelData)
+                                        if (dropIntent === "insertBefore"
+                                                || dropIntent
+                                                    === "insertAfter") {
+                                            drop.accepted
+                                                = root.requestDraggedNodeMove(
+                                                    root.beforeNodeIdForInsertion(
+                                                        appDelegate.globalIndex,
+                                                        dropIntent
+                                                            === "insertAfter"))
+                                        } else {
+                                            drop.accepted
+                                                = root.handleDraggedNodeDrop(
+                                                    appDelegate.modelData)
+                                        }
+                                        dropIntent = "none"
                                     }
+                                }
+
+                                Rectangle {
+                                    readonly property bool after:
+                                        nodeDropTarget.dropIntent
+                                            === "insertAfter"
+                                    readonly property int gridColumn:
+                                        appDelegate.index
+                                            % Math.max(1, root.gridColumns)
+                                    readonly property bool atLeadingPageEdge:
+                                        !after && gridColumn === 0
+                                    readonly property bool atTrailingPageEdge:
+                                        after && gridColumn
+                                            === root.gridColumns - 1
+                                    readonly property real centeredX: after
+                                        ? parent.width - width / 2
+                                        : -width / 2
+
+                                    anchors.top: parent.top
+                                    anchors.bottom: parent.bottom
+                                    anchors.topMargin:
+                                        Kirigami.Units.smallSpacing
+                                    anchors.bottomMargin:
+                                        Kirigami.Units.smallSpacing
+                                    x: atLeadingPageEdge ? 0
+                                        : atTrailingPageEdge
+                                            ? parent.width - width
+                                            : centeredX
+                                    width: Kirigami.Units.largeSpacing
+                                    radius: Kirigami.Units.cornerRadius
+                                    color: Qt.alpha(
+                                        Kirigami.Theme.highlightColor, 0.22)
+                                    border.width: 2
+                                    border.color:
+                                        Kirigami.Theme.highlightColor
+                                    visible: appDelegate.dropInsertionActive
+                                    z: 25
+                                    Accessible.ignored: true
                                 }
 
                                 Kirigami.Icon {
@@ -2124,7 +2382,8 @@ FocusScope {
                                     width: Kirigami.Units.iconSizes.small
                                     height: width
                                     visible: nodeDropTarget.containsDrag
-                                    source: internalDragLayer.folder
+                                        && nodeDropTarget.dropIntent !== "none"
+                                    source: appDelegate.dropInsertionActive
                                         ? "transform-move-symbolic"
                                         : appDelegate.isFolder
                                             ? "folder-add-symbolic"
@@ -2359,29 +2618,37 @@ FocusScope {
                 }
             }
 
-            PunchiMenuSessionView {
-                id: sessionView
+            Loader {
+                id: sessionViewLoader
                 anchors.fill: parent
+                active: root.sessionViewRequested || root.sessionViewActive
                 visible: root.sessionViewActive
                 enabled: visible && !root.modeTransitionActive
-                userName: String(currentUser.fullName || currentUser.loginName
-                    || i18nc("@info:user", "User"))
-                userAvatar: currentUser.faceIconUrl
-                canLogout: sessionActions.canLogout
-                canRestart: sessionActions.canReboot
-                canShutdown: sessionActions.canShutdown
+                asynchronous: false
 
-                onLogoutRequested: {
-                    root.forceClose()
-                    sessionActions.requestLogout()
-                }
-                onRestartRequested: {
-                    root.forceClose()
-                    sessionActions.requestReboot()
-                }
-                onShutdownRequested: {
-                    root.forceClose()
-                    sessionActions.requestShutdown()
+                sourceComponent: Component {
+                    PunchiMenuSessionView {
+                        userName: String(currentUser.fullName
+                            || currentUser.loginName
+                            || i18nc("@info:user", "User"))
+                        userAvatar: currentUser.faceIconUrl
+                        canLogout: sessionActions.canLogout
+                        canRestart: sessionActions.canReboot
+                        canShutdown: sessionActions.canShutdown
+
+                        onLogoutRequested: {
+                            root.forceClose()
+                            sessionActions.requestLogout()
+                        }
+                        onRestartRequested: {
+                            root.forceClose()
+                            sessionActions.requestReboot()
+                        }
+                        onShutdownRequested: {
+                            root.forceClose()
+                            sessionActions.requestShutdown()
+                        }
+                    }
                 }
             }
         }
@@ -2566,6 +2833,20 @@ FocusScope {
                             && favoritesView.currentIndex === index
                         readonly property bool selected: keyboardFocused
                             || favoriteMouseArea.containsMouse
+
+                        PunchiMenuIconMetrics {
+                            id: favoriteIconMetrics
+                            requestedScale: root.safeFavoriteIconScale
+                            minimumScale: 0.75
+                            maximumScale: 1.1
+                            baseSize: Kirigami.Units.iconSizes.large
+                            minimumSize: Kirigami.Units.iconSizes.medium
+                            availableWidth: Math.max(0,
+                                favoriteDelegate.width
+                                    - Kirigami.Units.gridUnit)
+                            availableHeight: Math.max(0,
+                                favoriteDelegate.height * 0.58)
+                        }
                         opacity: isHiddenApplication ? 0.58 : 1.0
                         Accessible.role: Accessible.Button
                         Accessible.name: appName
@@ -2576,27 +2857,14 @@ FocusScope {
                         Accessible.focused: keyboardFocused
                         Accessible.onPressAction: root.launchFavoriteAt(index)
 
-                        Rectangle {
-                            anchors.fill: parent
-                            anchors.margins: Kirigami.Units.smallSpacing
-                            radius: Kirigami.Units.cornerRadius * 1.5
-                            color: favoriteDelegate.selected
-                            ? Qt.alpha(Kirigami.Theme.highlightColor, 0.30)
-                                : "transparent"
-                            border.color: favoriteDelegate.selected
-                                ? Kirigami.Theme.highlightColor
-                                : "transparent"
-                            border.width: favoriteDelegate.selected ? 2 : 0
-                            scale: favoriteMouseArea.pressed
-                                ? 0.97 : favoriteDelegate.selected ? 1.018 : 1.0
-
-                            Behavior on scale {
-                                enabled: root.motionEnabled
-                                NumberAnimation {
-                                    duration: favoriteMouseArea.pressed ? 80 : 130
-                                    easing.type: Easing.OutCubic
-                                }
-                            }
+                            PunchiMenuItemHighlight {
+                                anchors.fill: parent
+                                anchors.margins: Kirigami.Units.smallSpacing
+                                hovered: favoriteMouseArea.containsMouse
+                                selected: favoriteDelegate.selected
+                                focused: favoriteDelegate.keyboardFocused
+                                pressed: favoriteMouseArea.pressed
+                                motionEnabled: root.motionEnabled
 
                             ColumnLayout {
                                 anchors.fill: parent
@@ -2605,10 +2873,8 @@ FocusScope {
 
                                 Kirigami.Icon {
                                     Layout.alignment: Qt.AlignHCenter
-                                    Layout.preferredWidth: Math.min(
-                                        Kirigami.Units.iconSizes.large
-                                            * root.safeFavoriteIconScale,
-                                        favoriteDelegate.height * 0.58)
+                                    Layout.preferredWidth:
+                                        favoriteIconMetrics.effectiveSize
                                     Layout.preferredHeight: width
                                     source: favoriteDelegate.appIcon
                                 }
@@ -2770,48 +3036,54 @@ FocusScope {
         motionEnabled: root.motionEnabled
     }
 
-    PunchiMenuFolderSurface {
-        id: folderSurface
+    Loader {
+        id: folderSurfaceLoader
         anchors.fill: parent
         z: 200
-        layoutModel: applicationLayoutModel
-        layoutController: root.applicationLayoutController
-        motionEnabled: root.motionEnabled
-        iconScale: root.safeApplicationIconScale
-        detailedApplicationFeedback: true
-        applicationHighlightOpacity: 0.30
-        applicationCornerRadiusScale: 2.0
-        applicationHoverScale: 1.03
-        returnToFolderAfterMemberRemoval: true
-        allowedExternalFocusItems: [
-            standaloneApplicationContextMenu.contentItem,
-            folderMemberContextMenu.contentItem,
-            folderContextMenu.contentItem,
-            operationInlineMessage
-        ]
+        active: false
+        asynchronous: false
 
-        onLaunchRequested: function(storageId) {
-            const requestedStorageId = String(storageId || "")
-            if (requestedStorageId.length === 0
-                    || root.applicationLaunchPending) {
-                return
+        sourceComponent: Component {
+            PunchiMenuFolderSurface {
+                layoutModel: applicationLayoutModel
+                layoutController: root.applicationLayoutController
+                motionEnabled: root.motionEnabled
+                iconScale: root.safeApplicationIconScale
+                maximumColumnCount: root.safeFolderMaximumColumns
+                maximumRowCount: root.safeFolderMaximumRows
+                detailedApplicationFeedback: true
+                returnToFolderAfterMemberRemoval: true
+                allowedExternalFocusItems: [
+                    standaloneApplicationContextMenu.contentItem,
+                    folderMemberContextMenu.contentItem,
+                    folderContextMenu.contentItem,
+                    operationInlineMessage
+                ]
+
+                onLaunchRequested: function(storageId) {
+                    const requestedStorageId = String(storageId || "")
+                    if (requestedStorageId.length === 0
+                            || root.applicationLaunchPending) {
+                        return
+                    }
+                    root.applicationErrorMessage = ""
+                    root.applicationLaunchPending = true
+                    root.systemDiscovery.launchApplication(requestedStorageId)
+                }
+                onApplicationContextRequested: function(sourceItem, application,
+                        folderId, x, y) {
+                    root.openApplicationContextMenu(sourceItem,
+                        String(application.appStorageId
+                            || application.storageId || ""),
+                        String(application.appName || application.name || ""),
+                        String(application.appIcon || application.icon
+                            || "application-x-executable"),
+                        "", x, y)
+                }
+                onCloseRequested: function(nodeId) {
+                    root.restoreApplicationNodeFocus(nodeId)
+                }
             }
-            root.applicationErrorMessage = ""
-            root.applicationLaunchPending = true
-            root.systemDiscovery.launchApplication(requestedStorageId)
-        }
-        onApplicationContextRequested: function(sourceItem, application,
-                folderId, x, y) {
-            root.openApplicationContextMenu(sourceItem,
-                String(application.appStorageId
-                    || application.storageId || ""),
-                String(application.appName || application.name || ""),
-                String(application.appIcon || application.icon
-                    || "application-x-executable"),
-                "", x, y)
-        }
-        onCloseRequested: function(nodeId) {
-            root.restoreApplicationNodeFocus(nodeId)
         }
     }
 
@@ -2820,17 +3092,17 @@ FocusScope {
 
         y: mainContentContainer.y + gridArea.y
         anchors.horizontalCenter: root.horizontalCenter
-        width: Math.min(gridArea.width, Kirigami.Units.gridUnit * 34)
+        width: Math.min(gridArea.width, Kirigami.Units.gridUnit * 36)
         visible: false
         enabled: visible
         showCloseButton: true
         type: root.operationMessage.length > 0 && !root.operationMessageIsError
             ? Kirigami.MessageType.Positive
             : Kirigami.MessageType.Error
-        text: root.operationMessage.length > 0
-            ? root.operationMessage
-            : i18nc("@info:status", "Application could not be opened: %1",
-                root.applicationErrorMessage)
+        text: root.operationCountdownText
+        Accessible.name: root.operationBaseMessage
+        Accessible.description: i18nc("@info:accessible",
+            "Closes automatically")
         actions: [
             Kirigami.Action {
                 text: i18nc("@action:button", "Undo Folder Change")
@@ -2854,11 +3126,13 @@ FocusScope {
         }
 
         HoverHandler {
+            id: operationInlineMessageHover
             onHoveredChanged: {
                 if (hovered) {
                     operationMessageTimer.stop()
-                } else if (operationInlineMessage.visible) {
-                    operationMessageTimer.restart()
+                } else if (operationInlineMessage.visible
+                        && root.operationSecondsRemaining > 0) {
+                    operationMessageTimer.start()
                 }
             }
         }
@@ -2866,9 +3140,15 @@ FocusScope {
 
     Timer {
         id: operationMessageTimer
-        interval: root.operationMessageDuration
-        repeat: false
-        onTriggered: root.dismissOperationMessage()
+        interval: 1000
+        repeat: true
+        onTriggered: {
+            if (root.operationSecondsRemaining <= 1) {
+                root.dismissOperationMessage()
+            } else {
+                root.operationSecondsRemaining--
+            }
+        }
     }
 }
 // qmllint enable unqualified

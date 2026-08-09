@@ -17,6 +17,8 @@ Item {
 
     property string previewStyle: "card"
     property real cfg_windowPreviewScale: 1.5
+    property alias cfg_windowPreviewBackgroundOpacityPercent: previewBackgroundOpacitySlider.value
+    property string cfg_windowPreviewFrameSize: "thin"
     property string cfg_windowPreviewInfoMode: "full"
     property string mediaControlsMode: "none"
     property alias cfg_windowPreviewTextShadowsEnabled: windowPreviewTextShadowsCheck.checked
@@ -41,6 +43,11 @@ Item {
         { "text": i18nc("@item:inlistbox Window preview information", "Icon and text"), "value": "full" },
         { "text": i18nc("@item:inlistbox Window preview information", "Icon only"), "value": "icon" },
         { "text": i18nc("@item:inlistbox Window preview information", "Hidden"), "value": "none" }
+    ]
+    readonly property var previewFrameSizeOptions: [
+        { "text": i18nc("@item:inlistbox Window preview background frame", "Thin"), "value": "thin" },
+        { "text": i18nc("@item:inlistbox Window preview background frame", "Medium"), "value": "medium" },
+        { "text": i18nc("@item:inlistbox Window preview background frame", "Wide"), "value": "wide" }
     ]
     readonly property var mediaControlsModeOptions: {
         const options = [
@@ -81,6 +88,7 @@ Item {
 
     function syncSelectors() {
         syncComboValue(previewStyleCombo, page.previewStyle)
+        syncComboValue(previewFrameSizeCombo, page.cfg_windowPreviewFrameSize)
         syncComboValue(previewInfoCombo, page.cfg_windowPreviewInfoMode)
         syncComboValue(mediaControlsModeCombo, page.mediaControlsMode)
     }
@@ -92,6 +100,7 @@ Item {
     }
 
     onPreviewStyleChanged: scheduleSelectorSync()
+    onCfg_windowPreviewFrameSizeChanged: scheduleSelectorSync()
     onCfg_windowPreviewInfoModeChanged: scheduleSelectorSync()
     onMediaControlsModeChanged: scheduleSelectorSync()
     Component.onCompleted: scheduleSelectorSync()
@@ -220,6 +229,84 @@ Item {
 
         Controls.Label {
             text: i18n("100 percent uses the recommended base size. Larger previews keep their aspect ratio and remain limited by the available screen space.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+            enabled: page.previewStyle !== "none"
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Background opacity:")
+            enabled: page.previewStyle !== "none"
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: previewBackgroundOpacitySlider
+                from: 50
+                to: 100
+                stepSize: 5
+                snapMode: Controls.Slider.SnapAlways
+                value: 75
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Window preview background opacity")
+                Accessible.description: i18n("Only the popup background changes; thumbnails, window content, controls and text remain fully opaque.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: i18n("%1%", Math.round(previewBackgroundOpacitySlider.value))
+                font.bold: true
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 54
+            }
+        }
+
+        Controls.Label {
+            text: i18n("Only the popup background changes; thumbnails, window content, controls and text remain fully opaque.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+            enabled: page.previewStyle !== "none"
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Background frame:")
+            enabled: page.previewStyle !== "none"
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.ComboBox {
+                id: previewFrameSizeCombo
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                textRole: "text"
+                valueRole: "value"
+                model: page.previewFrameSizeOptions
+                onCountChanged: page.scheduleSelectorSync()
+                Accessible.name: i18n("Window preview background frame")
+                Accessible.description: i18n("Controls the themed space around window previews without changing their size.")
+                onActivated: {
+                    if (page.cfg_windowPreviewFrameSize !== currentValue) {
+                        page.cfg_windowPreviewFrameSize = currentValue
+                    }
+                }
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+        }
+
+        Controls.Label {
+            text: i18n("Controls the themed space around window previews without changing their size.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

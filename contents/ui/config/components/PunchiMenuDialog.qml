@@ -12,6 +12,10 @@ Controls.Dialog {
     property string normalPlacementMode: "anchored"
     property int gridIconScalePercent: 100
     property int favoriteIconScalePercent: 100
+    property int normalFolderMaximumColumns: 3
+    property int normalFolderMaximumRows: 3
+    property int fullScreenFolderMaximumColumns: 5
+    property int fullScreenFolderMaximumRows: 5
     property bool showDistributionName: true
     property int normalWidthPercent: 55
     property int normalHeightPercent: 65
@@ -48,6 +52,10 @@ Controls.Dialog {
     signal normalPlacementModeSelected(string mode)
     signal gridIconScalePercentSelected(int percent)
     signal favoriteIconScalePercentSelected(int percent)
+    signal normalFolderMaximumColumnsSelected(int columns)
+    signal normalFolderMaximumRowsSelected(int rows)
+    signal fullScreenFolderMaximumColumnsSelected(int columns)
+    signal fullScreenFolderMaximumRowsSelected(int rows)
     signal showDistributionNameSelected(bool enabled)
     signal normalSizePercentSelected(int widthPercent, int heightPercent)
 
@@ -71,6 +79,15 @@ Controls.Dialog {
         return 0
     }
 
+    function syncFolderLimitControls() {
+        folderMaximumColumnsSpin.value = root.normalModeSelected
+            ? root.normalFolderMaximumColumns
+            : root.fullScreenFolderMaximumColumns
+        folderMaximumRowsSpin.value = root.normalModeSelected
+            ? root.normalFolderMaximumRows
+            : root.fullScreenFolderMaximumRows
+    }
+
     title: i18n("Configure PunchiMenu")
     modal: true
     standardButtons: Controls.Dialog.Close
@@ -80,6 +97,7 @@ Controls.Dialog {
             root.normalPlacementMode)
         iconScaleSlider.value = root.gridIconScalePercent
         favoriteIconScaleSlider.value = root.favoriteIconScalePercent
+        root.syncFolderLimitControls()
         normalWidthSlider.value = root.normalWidthPercent
         normalHeightSlider.value = root.normalHeightPercent
     }
@@ -122,6 +140,7 @@ Controls.Dialog {
                 }
                 root.menuMode = String(option.value)
                 root.menuModeSelected(root.menuMode)
+                root.syncFolderLimitControls()
             }
         }
 
@@ -156,7 +175,7 @@ Controls.Dialog {
 
                 Layout.fillWidth: true
                 from: 75
-                to: 200
+                to: 150
                 stepSize: 5
                 snapMode: Controls.Slider.SnapAlways
                 value: 100
@@ -179,6 +198,60 @@ Controls.Dialog {
         Controls.Label {
             Layout.fillWidth: true
             Layout.maximumWidth: root.selectorWidth
+            text: i18n("Maximum folder columns:")
+            wrapMode: Text.WordWrap
+        }
+
+        Controls.SpinBox {
+            id: folderMaximumColumnsSpin
+            Layout.preferredWidth: root.selectorWidth
+            Layout.maximumWidth: root.selectorWidth
+            from: 1
+            to: root.normalModeSelected ? 3 : 5
+            value: 3
+            Accessible.name: i18n("Maximum application columns inside folders")
+            Accessible.description: i18n("Sets an upper limit for columns inside folders in the selected menu mode. Available space may use fewer columns.")
+            onValueModified: {
+                if (root.normalModeSelected) {
+                    root.normalFolderMaximumColumns = value
+                    root.normalFolderMaximumColumnsSelected(value)
+                } else {
+                    root.fullScreenFolderMaximumColumns = value
+                    root.fullScreenFolderMaximumColumnsSelected(value)
+                }
+            }
+        }
+
+        Controls.Label {
+            Layout.fillWidth: true
+            Layout.maximumWidth: root.selectorWidth
+            text: i18n("Maximum folder rows:")
+            wrapMode: Text.WordWrap
+        }
+
+        Controls.SpinBox {
+            id: folderMaximumRowsSpin
+            Layout.preferredWidth: root.selectorWidth
+            Layout.maximumWidth: root.selectorWidth
+            from: 1
+            to: root.normalModeSelected ? 3 : 5
+            value: 3
+            Accessible.name: i18n("Maximum application rows inside folders")
+            Accessible.description: i18n("Limits the visible rows inside folders in the selected menu mode. Additional applications remain available by scrolling.")
+            onValueModified: {
+                if (root.normalModeSelected) {
+                    root.normalFolderMaximumRows = value
+                    root.normalFolderMaximumRowsSelected(value)
+                } else {
+                    root.fullScreenFolderMaximumRows = value
+                    root.fullScreenFolderMaximumRowsSelected(value)
+                }
+            }
+        }
+
+        Controls.Label {
+            Layout.fillWidth: true
+            Layout.maximumWidth: root.selectorWidth
             text: i18n("Favorites icon scale:")
             wrapMode: Text.WordWrap
         }
@@ -193,7 +266,7 @@ Controls.Dialog {
 
                 Layout.fillWidth: true
                 from: 75
-                to: 150
+                to: 110
                 stepSize: 5
                 snapMode: Controls.Slider.SnapAlways
                 value: 100

@@ -15,7 +15,7 @@ include(KDECompilerSettings NO_POLICY_SCOPE)
 include(ECMQmlModule)
 include(CTest)
 
-find_package(Qt6 6.6 REQUIRED COMPONENTS Core DBus Gui Qml)
+find_package(Qt6 6.6 REQUIRED COMPONENTS Core DBus Gui Qml Quick)
 find_package(KF6 6.0 REQUIRED COMPONENTS Config CoreAddons GlobalAccel I18n JobWidgets KIO Service WindowSystem)
 find_package(Plasma 6.0 REQUIRED)
 find_package(LibKWorkspace REQUIRED)

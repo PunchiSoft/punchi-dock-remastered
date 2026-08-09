@@ -123,7 +123,7 @@ Item {
             id: contextMenuVisibleRowsSpin
             Kirigami.FormData.label: i18n("Visible actions:")
             from: 3
-            to: 12
+            to: 15
             value: 6
             Layout.preferredWidth: layoutMetrics.selectorWidth
             Accessible.name: i18n("Maximum visible context menu actions")

@@ -51,6 +51,8 @@ target_sources(punchidockintegration PRIVATE
     dropurlpolicy.h
     mediaartworkresolver.cpp
     mediaartworkresolver.h
+    launcherdragcontroller.cpp
+    launcherdragcontroller.h
     mpriscontroller.cpp
     mpriscontroller.h
     mprisplayerselection.cpp
@@ -113,6 +115,7 @@ target_link_libraries(punchidockintegration
         Qt6::DBus
         Qt6::Gui
         Qt6::Qml
+        Qt6::Quick
         KF6::ConfigCore
         KF6::ConfigGui
         KF6::CoreAddons

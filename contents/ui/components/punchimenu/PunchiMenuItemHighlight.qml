@@ -12,14 +12,14 @@ Rectangle {
     property bool circular: false
     property bool motionEnabled: true
 
-    color: selected || focused ? Qt.alpha(Kirigami.Theme.highlightColor, 0.30)
-        : hovered ? Qt.alpha(Kirigami.Theme.textColor, 0.09)
-            : "transparent"
+    color: selected || focused || hovered
+        ? Qt.alpha(Kirigami.Theme.highlightColor, 0.20)
+        : "transparent"
     border.color: focused || selected
         ? Kirigami.Theme.highlightColor
         : "transparent"
-    border.width: focused ? 2 : selected ? 1 : 0
-    radius: circular ? height / 2 : Kirigami.Units.cornerRadius * 1.5
+    border.width: focused || selected ? 2 : 0
+    radius: circular ? height / 2 : Kirigami.Units.cornerRadius * 2
     scale: pressed ? 0.97 : (selected || hovered || focused) ? 1.03 : 1.0
     antialiasing: true
     Accessible.ignored: true

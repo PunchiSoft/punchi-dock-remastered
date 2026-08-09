@@ -108,7 +108,7 @@ PlasmoidItem {
             ? configuredPunchiMenuItem.gridIconScalePercent
             : 100)
         const safePercent = Number.isFinite(requestedPercent)
-            ? Math.max(75, Math.min(200, Math.round(requestedPercent / 5) * 5))
+            ? Math.max(75, Math.min(150, Math.round(requestedPercent / 5) * 5))
             : 100
         return safePercent / 100
     }
@@ -117,9 +117,41 @@ PlasmoidItem {
             ? configuredPunchiMenuItem.favoriteIconScalePercent
             : 100)
         const safePercent = Number.isFinite(requestedPercent)
-            ? Math.max(75, Math.min(150, Math.round(requestedPercent / 5) * 5))
+            ? Math.max(75, Math.min(110, Math.round(requestedPercent / 5) * 5))
             : 100
         return safePercent / 100
+    }
+    readonly property int configuredPunchiMenuNormalFolderMaximumColumns: {
+        const requestedCount = Number(configuredPunchiMenuItem
+            ? configuredPunchiMenuItem.normalFolderMaximumColumns
+            : 3)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(3, Math.round(requestedCount)))
+            : 3
+    }
+    readonly property int configuredPunchiMenuNormalFolderMaximumRows: {
+        const requestedCount = Number(configuredPunchiMenuItem
+            ? configuredPunchiMenuItem.normalFolderMaximumRows
+            : 3)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(3, Math.round(requestedCount)))
+            : 3
+    }
+    readonly property int configuredPunchiMenuFullScreenFolderMaximumColumns: {
+        const requestedCount = Number(configuredPunchiMenuItem
+            ? configuredPunchiMenuItem.fullScreenFolderMaximumColumns
+            : 5)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(5, Math.round(requestedCount)))
+            : 5
+    }
+    readonly property int configuredPunchiMenuFullScreenFolderMaximumRows: {
+        const requestedCount = Number(configuredPunchiMenuItem
+            ? configuredPunchiMenuItem.fullScreenFolderMaximumRows
+            : 5)
+        return Number.isFinite(requestedCount)
+            ? Math.max(1, Math.min(5, Math.round(requestedCount)))
+            : 5
     }
     readonly property bool configuredPunchiMenuShowDistributionName:
         !configuredPunchiMenuItem
@@ -235,6 +267,7 @@ PlasmoidItem {
                 }
             }
             root.punchiMenuApplicationCatalog = catalog
+            root.punchiMenuApplicationCatalogLoaded = true
             punchiMenuLayoutController.applicationStorageIds = storageIds
         }
         onOperationFailed: function(operation, message) {
@@ -244,6 +277,7 @@ PlasmoidItem {
     readonly property var systemDiscoveryService: systemDiscovery
     readonly property var punchiMenuLayoutControllerService: punchiMenuLayoutController
     property var punchiMenuApplicationCatalog: []
+    property bool punchiMenuApplicationCatalogLoaded: false
     Punchi.DockRuntimeService {
         id: runtimeService
         onOperationFailed: function(operation, message) {
@@ -378,7 +412,6 @@ PlasmoidItem {
             root.punchiMenuAnchorItem = anchorItem
         }
         const requestedMode = root.configuredPunchiMenuMode
-        systemDiscovery.requestApplicationCatalog()
         if (punchiMenuDialogInstance
                 && punchiMenuDialogInstance.menuMode !== requestedMode) {
             punchiMenuDialogInstance.closeImmediately()
@@ -477,6 +510,10 @@ PlasmoidItem {
                 height: Screen.height
                 systemDiscovery: root.systemDiscoveryService
                 applicationCatalog: root.punchiMenuApplicationCatalog
+                // qmllint disable unqualified
+                applicationCatalogLoaded:
+                    root.punchiMenuApplicationCatalogLoaded
+                // qmllint enable unqualified
                 applicationLayoutController:
                     root.punchiMenuLayoutControllerService
                 // qmllint disable unqualified
@@ -484,6 +521,10 @@ PlasmoidItem {
                 favorites: punchiMenuFavoritesController.favorites
                 applicationIconScale: root.configuredPunchiMenuGridIconScale
                 favoriteIconScale: root.configuredPunchiMenuFavoriteIconScale
+                folderMaximumColumns:
+                    root.configuredPunchiMenuFullScreenFolderMaximumColumns
+                folderMaximumRows:
+                    root.configuredPunchiMenuFullScreenFolderMaximumRows
                 showDistributionName: root.configuredPunchiMenuShowDistributionName
                 backgroundBlurEnabled: root.configuredPunchiMenuFullScreenBlurEnabled
                 backgroundOpacity: root.configuredPunchiMenuFullScreenBackgroundOpacity
@@ -742,6 +783,10 @@ PlasmoidItem {
                 dockItemsController: root.dockItemsControllerService
                 applicationIconScale: root.configuredPunchiMenuGridIconScale
                 favoriteIconScale: root.configuredPunchiMenuFavoriteIconScale
+                folderMaximumColumns:
+                    root.configuredPunchiMenuNormalFolderMaximumColumns
+                folderMaximumRows:
+                    root.configuredPunchiMenuNormalFolderMaximumRows
                 backgroundOpacity: root.configuredPunchiMenuNormalBackgroundOpacity
                 themeFrameLeftMargin: punchiMenuNormalDialog.themeFrameMargin("left")
                 themeFrameTopMargin: punchiMenuNormalDialog.themeFrameMargin("top")
@@ -1022,7 +1067,7 @@ PlasmoidItem {
             trashContextContentRef: trashContextContent
             notePopupContentRef: notePopupContent
             taskWindowsPopupContentRef: taskWindowsPopupContent
-            taskContextSurfaceStackRef: taskContextSurfaceStack
+            taskPopupSurfaceRef: taskPopupSurface
             taskPopupAnimatedContentRef: taskPopupAnimatedContent
             // These ids belong to the owning full representation.
             // qmllint disable unqualified
@@ -1072,7 +1117,7 @@ PlasmoidItem {
             interval: 1200
             repeat: false
             onTriggered: {
-                trashMenuDialog.visible = false
+                trashMenuDialog.closeSafely()
                 trashContextContent.showMenu()
                 trashIntegration.resetOperationState()
             }
@@ -1279,6 +1324,7 @@ PlasmoidItem {
                 property real lastMouseOffset: 0.0
                 property real hoverZoomProgress: hoveredIndex >= 0 ? 1.0 : 0.0
                 property bool mediaMorphActive: false
+                property bool launcherDropTransitionActive: false
 
                 function beginMediaMorph(transitionDuration) {
                     mediaMorphActive = true
@@ -1453,6 +1499,10 @@ PlasmoidItem {
                         externalDropValidator: function(urls) {
                             return dockItemsController.validateDroppedUrls(urls)
                         }
+                        launcherDropEnabled: true
+                        launcherDropValidator: function(urls) {
+                            return dockItemsController.validateApplicationLauncherDrop(urls)
+                        }
                         externalDropActivationEnabled: taskState.count > 0
                             && !taskState.isActive
                         externalDropActivator: function() {
@@ -1506,6 +1556,10 @@ PlasmoidItem {
                         onExternalUrlsDropped: function(urls, visualParent) {
                             root.handleApplicationUrlsDrop(
                                 modelData, taskState.rows, urls, visualParent)
+                        }
+                        onApplicationLauncherDropped: function(urls, insertionIndex) {
+                            dockItemsController.pinApplicationLauncherAt(
+                                urls, insertionIndex)
                         }
                         onMediaLaunchRequested: {
                             root.launchConfiguredMediaPlayer(modelData, false)
@@ -1636,6 +1690,10 @@ PlasmoidItem {
                         externalDropValidator: function(urls) {
                             return dockItemsController.validateDroppedUrls(urls)
                         }
+                        launcherDropEnabled: true
+                        launcherDropValidator: function(urls) {
+                            return dockItemsController.validateApplicationLauncherDrop(urls)
+                        }
                         externalDropActivationEnabled: taskData.count > 0
                             && !taskData.active
                         externalDropActivator: function() {
@@ -1667,6 +1725,10 @@ PlasmoidItem {
                         onExternalUrlsDropped: function(urls, visualParent) {
                             root.handleApplicationUrlsDrop(
                                 modelData, taskData.rows, urls, visualParent)
+                        }
+                        onApplicationLauncherDropped: function(urls, insertionIndex) {
+                            dockItemsController.pinApplicationLauncherAt(
+                                urls, insertionIndex)
                         }
                         // qmllint enable unqualified
                         onContextMenuRequested: function(visualParent) {
@@ -1751,6 +1813,10 @@ PlasmoidItem {
                     itemName: i18np("%1 more window group", "%1 more window groups",
                         root.overflowTaskRows.length)
                     taskIndicatorCount: root.overflowTaskRows.length
+                    launcherDropEnabled: true
+                    launcherDropValidator: function(urls) {
+                        return dockItemsController.validateApplicationLauncherDrop(urls)
+                    }
 
                     TaskDelegateGeometryPublisher {
                         taskModelController: taskController
@@ -1763,23 +1829,19 @@ PlasmoidItem {
                     onTaskMinimized: function(minimizedItemIndex) {
                         dockItemsController.triggerMinimizeReaction(minimizedItemIndex)
                     }
+                    onApplicationLauncherDropped: function(urls, insertionIndex) {
+                        dockItemsController.pinApplicationLauncherAt(
+                            urls, insertionIndex)
+                    }
                 }
             }
             // qmllint enable unqualified
         }
 
-        // Controlled AppletPopup usage: Plasma anchors the popup outside the panel.
-        PlasmaCore.AppletPopup {
+        GuardedPopupDialog {
             id: folderPopupDialog
-            popupDirection: popupCoordinator.popupDirection
-            margin: dockGeometry.folderPopupMargin
-            floating: !root.inPanel
-            removeBorderStrategy: root.inPanel
-                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
-                : PlasmaCore.AppletPopup.AtScreenEdges
-            visible: false
+            location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: true
-            backgroundHints: PlasmaCore.AppletPopup.StandardBackground
 
             mainItem: PopupAnimatedContent {
                 popupVisible: folderPopupDialog.visible
@@ -1790,59 +1852,68 @@ PlasmoidItem {
                 popupDirection: popupCoordinator.popupDirection
                 // qmllint enable unqualified
 
-                FolderPopup {
-                    id: folderPopupContent
-                    folderItem: popupCoordinator.activeFolderData
-                    layoutMode: ["list", "detailed"].indexOf(popupCoordinator.activeFolderData.layout) >= 0
-                        ? popupCoordinator.activeFolderData.layout
-                        : "grid"
-                    // qmllint disable unqualified
-                    profileIconSize: folderPopupContent.layoutMode === "list"
-                        ? dockConfig.folderListIconSize
-                        : (folderPopupContent.layoutMode === "detailed"
-                            ? dockConfig.folderDetailedIconSize
-                            : dockConfig.folderGridIconSize)
-                    profileColumns: dockConfig.folderGridColumns
-                    profileRows: folderPopupContent.layoutMode === "list"
-                        ? dockConfig.folderListRows
-                        : (folderPopupContent.layoutMode === "detailed"
-                            ? dockConfig.folderDetailedRows
-                            : dockConfig.folderGridRows)
-                    profileShowLabels: folderPopupContent.layoutMode === "list"
-                        ? dockConfig.folderListShowLabels
-                        : (folderPopupContent.layoutMode === "detailed"
-                            ? dockConfig.folderDetailedShowLabels
-                            : dockConfig.folderGridShowLabels)
-                    profileFontFamily: folderPopupContent.layoutMode === "list"
-                        ? dockConfig.folderListFontFamily
-                        : (folderPopupContent.layoutMode === "detailed"
-                            ? dockConfig.folderDetailedFontFamily
-                            : dockConfig.folderGridFontFamily)
-                    profileFontSize: folderPopupContent.layoutMode === "list"
-                        ? dockConfig.folderListFontSize
-                        : (folderPopupContent.layoutMode === "detailed"
-                            ? dockConfig.folderDetailedFontSize
-                            : dockConfig.folderGridFontSize)
-                    profileScale: dockConfig.folderPopupScale
-                    showHeaderLabel: dockConfig.folderPopupShowHeader
-                    textShadowsEnabled: dockConfig.popupTextShadowsEnabled
-                    maximumAvailableWidth: dockGeometry.taskPopupAvailableWidth
+                ContextSurfaceStack {
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
-                    // qmllint enable unqualified
+                    showMedia: false
+                    drawContentBackground: true
+                    backgroundImagePath: "widgets/background"
+                    backgroundOpacity: dockConfig.folderPopupBackgroundOpacity
+                    contentFramePaddingPercent: 2
+                    minimumSurfaceWidth: Kirigami.Units.smallSpacing
+                    minimumSurfaceHeight: Kirigami.Units.smallSpacing
 
-                    onAppLaunched: function(app) {
-                        folderPopupDialog.visible = false
-                        dockItemsController.launchDockItem(app)
-                    }
+                    FolderPopup {
+                        id: folderPopupContent
+                        folderItem: popupCoordinator.activeFolderData
+                        layoutMode: ["list", "detailed"].indexOf(popupCoordinator.activeFolderData.layout) >= 0
+                            ? popupCoordinator.activeFolderData.layout
+                            : "grid"
+                        // qmllint disable unqualified
+                        profileIconSize: folderPopupContent.layoutMode === "list"
+                            ? dockConfig.folderListIconSize
+                            : (folderPopupContent.layoutMode === "detailed"
+                                ? dockConfig.folderDetailedIconSize
+                                : dockConfig.folderGridIconSize)
+                        profileColumns: dockConfig.folderGridColumns
+                        profileRows: folderPopupContent.layoutMode === "list"
+                            ? dockConfig.folderListRows
+                            : (folderPopupContent.layoutMode === "detailed"
+                                ? dockConfig.folderDetailedRows
+                                : dockConfig.folderGridRows)
+                        profileShowLabels: folderPopupContent.layoutMode === "list"
+                            ? dockConfig.folderListShowLabels
+                            : (folderPopupContent.layoutMode === "detailed"
+                                ? dockConfig.folderDetailedShowLabels
+                                : dockConfig.folderGridShowLabels)
+                        profileFontFamily: folderPopupContent.layoutMode === "list"
+                            ? dockConfig.folderListFontFamily
+                            : (folderPopupContent.layoutMode === "detailed"
+                                ? dockConfig.folderDetailedFontFamily
+                                : dockConfig.folderGridFontFamily)
+                        profileFontSize: folderPopupContent.layoutMode === "list"
+                            ? dockConfig.folderListFontSize
+                            : (folderPopupContent.layoutMode === "detailed"
+                                ? dockConfig.folderDetailedFontSize
+                                : dockConfig.folderGridFontSize)
+                        profileScale: dockConfig.folderPopupScale
+                        showHeaderLabel: dockConfig.folderPopupShowHeader
+                        textShadowsEnabled: dockConfig.popupTextShadowsEnabled
+                        maximumAvailableWidth: dockGeometry.taskPopupAvailableWidth
+                        maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
+                        // qmllint enable unqualified
 
-                    onAppContextMenuRequested: function(app) {
-                        popupCoordinator.openAppContextMenu(app,
-                            folderPopupDialog.visualParent, undefined,
-                            "folder", -1)
-                    }
+                        onAppLaunched: function(app) {
+                            folderPopupDialog.closeSafely()
+                            dockItemsController.launchDockItem(app)
+                        }
 
-                    onCloseRequested: {
-                        folderPopupDialog.visible = false
+                        onAppContextMenuRequested: function(app) {
+                            popupCoordinator.openAppContextMenu(app,
+                                folderPopupDialog.visualParent, undefined,
+                                "folder", -1)
+                        }
+
+                        onCloseRequested: folderPopupDialog.closeSafely()
                     }
                 }
             }
@@ -1891,17 +1962,10 @@ PlasmoidItem {
         }
 
         // Trash context menu popup.
-        PlasmaCore.AppletPopup {
+        GuardedPopupDialog {
             id: trashMenuDialog
-            popupDirection: popupCoordinator.popupDirection
-            margin: dockGeometry.popupMargin
-            floating: !root.inPanel
-            removeBorderStrategy: root.inPanel
-                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
-                : PlasmaCore.AppletPopup.AtScreenEdges
-            visible: false
+            location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: !trashContextContent.confirmationVisible
-            backgroundHints: PlasmaCore.AppletPopup.StandardBackground
 
             mainItem: PopupAnimatedContent {
                 popupVisible: trashMenuDialog.visible
@@ -1912,53 +1976,60 @@ PlasmoidItem {
                 popupDirection: popupCoordinator.popupDirection
                 // qmllint enable unqualified
 
-                TrashContextPopup {
-                    id: trashContextContent
-                    // qmllint disable unqualified
-                    operationState: trashIntegration.operationState
-                    progressPercent: trashIntegration.progressPercent
-                    progressDeterminate: trashIntegration.progressDeterminate
-                    processedItems: trashIntegration.processedItems
-                    totalItems: trashIntegration.totalItems
-                    errorMessage: trashIntegration.errorMessage
-                    transitionSpeedPercent: dockConfig.contextMenuTransitionSpeed
-                    menuWidth: dockConfig.contextMenuWidth
-                    menuRowHeight: dockConfig.contextMenuRowHeight
-                    menuIconSize: dockConfig.contextMenuIconSize
-                    menuTextShadowsEnabled: dockConfig.menuTextShadowsEnabled
-                    maximumAvailableWidth: dockGeometry.taskPopupAvailableWidth
+                ContextSurfaceStack {
+                    id: trashSurfaceStack
+                    showMedia: false
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
-                    onOpenTrashRequested: {
-                        trashMenuDialog.visible = false
-                        trashIntegration.openTrash()
-                    }
-                    onEmptyTrashRequested: {
-                        trashIntegration.emptyTrash()
-                    }
-                    onCloseRequested: {
-                        trashSuccessCloseTimer.stop()
-                        trashMenuDialog.visible = false
-                        if (!trashIntegration.emptying) {
-                            trashIntegration.resetOperationState()
-                            trashContextContent.showMenu()
+                    drawContentBackground: true
+                    backgroundImagePath: "widgets/background"
+                    backgroundOpacity:
+                        root.configuredPunchiMenuNormalBackgroundOpacity
+                    contentFramePaddingPercent: 2
+                    minimumSurfaceWidth: Kirigami.Units.smallSpacing
+                    minimumSurfaceHeight: Kirigami.Units.smallSpacing
+
+                    TrashContextPopup {
+                        id: trashContextContent
+                        // qmllint disable unqualified
+                        operationState: trashIntegration.operationState
+                        progressPercent: trashIntegration.progressPercent
+                        progressDeterminate: trashIntegration.progressDeterminate
+                        processedItems: trashIntegration.processedItems
+                        totalItems: trashIntegration.totalItems
+                        errorMessage: trashIntegration.errorMessage
+                        transitionSpeedPercent: dockConfig.contextMenuTransitionSpeed
+                        menuWidth: dockConfig.contextMenuWidth
+                        menuRowHeight: dockConfig.contextMenuRowHeight
+                        menuIconSize: dockConfig.contextMenuIconSize
+                        menuTextShadowsEnabled: dockConfig.menuTextShadowsEnabled
+                        maximumAvailableWidth: dockGeometry.taskPopupAvailableWidth
+                        maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
+                        onOpenTrashRequested: {
+                            trashMenuDialog.closeSafely()
+                            trashIntegration.openTrash()
                         }
+                        onEmptyTrashRequested: {
+                            trashIntegration.emptyTrash()
+                        }
+                        onCloseRequested: {
+                            trashSuccessCloseTimer.stop()
+                            trashMenuDialog.closeSafely()
+                            if (!trashIntegration.emptying) {
+                                trashIntegration.resetOperationState()
+                                trashContextContent.showMenu()
+                            }
+                        }
+                        // qmllint enable unqualified
                     }
-                    // qmllint enable unqualified
                 }
             }
         }
 
-        PlasmaCore.AppletPopup {
+        GuardedPopupDialog {
             id: appActionsDialog
-            popupDirection: popupCoordinator.popupDirection
-            margin: dockGeometry.popupMargin
-            floating: !root.inPanel
-            removeBorderStrategy: root.inPanel
-                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
-                : PlasmaCore.AppletPopup.AtScreenEdges
-            visible: false
+            location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: !popupCoordinator.contextMenuOpening
-            backgroundHints: PlasmaCore.AppletPopup.StandardBackground
+            onOpenFailed: popupCoordinator.contextMenuOpening = false
 
             mainItem: PopupAnimatedContent {
                 popupVisible: appActionsDialog.visible
@@ -1973,6 +2044,13 @@ PlasmoidItem {
                     id: appActionsSurfaceStack
                     showMedia: false
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
+                    drawContentBackground: true
+                    backgroundImagePath: "widgets/background"
+                    backgroundOpacity:
+                        root.configuredPunchiMenuNormalBackgroundOpacity
+                    contentFramePaddingPercent: 2
+                    minimumSurfaceWidth: Kirigami.Units.smallSpacing
+                    minimumSurfaceHeight: Kirigami.Units.smallSpacing
 
                     AppActionsPopup {
                         id: appActionsContent
@@ -1989,28 +2067,21 @@ PlasmoidItem {
                         // qmllint enable unqualified
 
                         onActionTriggered: function(action) {
-                            appActionsDialog.visible = false
+                            appActionsDialog.closeSafely()
                             dockContextActionsController.triggerAction(action)
                         }
                         onCloseRequested: {
-                            appActionsDialog.visible = false
+                            appActionsDialog.closeSafely()
                         }
                     }
                 }
             }
         }
 
-        PlasmaCore.AppletPopup {
+        GuardedPopupDialog {
             id: notePopupDialog
-            popupDirection: popupCoordinator.popupDirection
-            margin: dockGeometry.popupMargin
-            floating: !root.inPanel
-            removeBorderStrategy: root.inPanel
-                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
-                : PlasmaCore.AppletPopup.AtScreenEdges
-            visible: false
+            location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: true
-            backgroundHints: PlasmaCore.AppletPopup.StandardBackground
             onVisibleChanged: {
                 if (!visible && !root.deletingActiveNote
                         && notePopupContent.currentText !== notePopupContent.initialText) {
@@ -2033,54 +2104,112 @@ PlasmoidItem {
                 popupDirection: popupCoordinator.popupDirection
                 // qmllint enable unqualified
 
-                NotePopup {
-                    id: notePopupContent
-                    noteItem: popupCoordinator.activeNoteData
-                    textShadowsEnabled: dockConfig.popupTextShadowsEnabled
-                    // qmllint disable unqualified
-                    onNoteChanged: function(noteText, popupWidth, popupHeight) {
-                        const updatedNote = dockItemsController.updateNoteItem(
-                            popupCoordinator.activeNoteData, noteText, popupWidth,
-                            popupHeight, popupCoordinator.activeNoteIndex)
-                        if (updatedNote) {
-                            popupCoordinator.activeNoteData = updatedNote
-                            notePopupContent.markSaved(noteText)
+                ContextSurfaceStack {
+                    showMedia: false
+                    maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
+                    drawContentBackground: true
+                    backgroundImagePath: "widgets/background"
+                    backgroundOpacity:
+                        root.configuredPunchiMenuNormalBackgroundOpacity
+                    contentFramePaddingPercent: 2
+                    contentFramePaddingScale: 1.5
+                    minimumSurfaceWidth: Kirigami.Units.smallSpacing
+                    minimumSurfaceHeight: Kirigami.Units.smallSpacing
+
+                    NotePopup {
+                        id: notePopupContent
+                        noteItem: popupCoordinator.activeNoteData
+                        textShadowsEnabled: dockConfig.popupTextShadowsEnabled
+                        // qmllint disable unqualified
+                        onNoteChanged: function(noteText, popupWidth, popupHeight) {
+                            const updatedNote = dockItemsController.updateNoteItem(
+                                popupCoordinator.activeNoteData, noteText, popupWidth,
+                                popupHeight, popupCoordinator.activeNoteIndex)
+                            if (updatedNote) {
+                                popupCoordinator.activeNoteData = updatedNote
+                                notePopupContent.markSaved(noteText)
+                            }
                         }
-                    }
-                    // qmllint enable unqualified
-                    onCloseRequested: {
-                        notePopupDialog.visible = false
-                    }
-                    onClearRequested: function(noteText, popupWidth, popupHeight) {
-                        notePopupContent.initialText = noteText
-                        popupCoordinator.activeNoteData = dockItemsController.updateNoteItem(
-                            popupCoordinator.activeNoteData, noteText, popupWidth,
-                            popupHeight, popupCoordinator.activeNoteIndex)
-                    }
-                    onDeleteRequested: {
-                        root.deletingActiveNote = true
-                        notePopupDialog.visible = false
-                        if (dockItemsController.removeNoteItemAtIndex(popupCoordinator.activeNoteIndex)) {
-                            popupCoordinator.activeNoteData = ({})
-                            popupCoordinator.activeNoteIndex = -1
+                        // qmllint enable unqualified
+                        onCloseRequested: notePopupDialog.closeSafely()
+                        onClearRequested: function(noteText, popupWidth, popupHeight) {
+                            notePopupContent.initialText = noteText
+                            popupCoordinator.activeNoteData = dockItemsController.updateNoteItem(
+                                popupCoordinator.activeNoteData, noteText, popupWidth,
+                                popupHeight, popupCoordinator.activeNoteIndex)
                         }
-                        root.deletingActiveNote = false
+                        onDeleteRequested: {
+                            root.deletingActiveNote = true
+                            notePopupDialog.closeSafely()
+                            if (dockItemsController.removeNoteItemAtIndex(popupCoordinator.activeNoteIndex)) {
+                                popupCoordinator.activeNoteData = ({})
+                                popupCoordinator.activeNoteIndex = -1
+                            }
+                            root.deletingActiveNote = false
+                        }
                     }
                 }
             }
         }
 
-        PlasmaCore.AppletPopup {
+        PlasmaCore.Dialog {
             id: taskWindowsDialog
-            popupDirection: popupCoordinator.popupDirection
-            margin: dockGeometry.popupMargin
-            floating: !root.inPanel
-            removeBorderStrategy: root.inPanel
-                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
-                : PlasmaCore.AppletPopup.AtScreenEdges
+
+            readonly property bool isX11Session: KWindowSystem.isPlatformX11
+            property bool preparingToShow: false
+            property int openRequestSerial: 0
+
+            location: dockGeometry.effectivePanelLocation
+            type: PlasmaCore.Dialog.AppletPopup
+            flags: isX11Session
+                ? Qt.Popup | Qt.FramelessWindowHint
+                : Qt.Dialog | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
             visible: false
             hideOnWindowDeactivate: true
-            backgroundHints: PlasmaCore.AppletPopup.StandardBackground
+            backgroundHints: PlasmaCore.Dialog.NoBackground
+
+            // qmllint disable unqualified
+            function finishPreparedOpen(requestSerial, remainingAttempts) {
+                if (requestSerial !== openRequestSerial || !preparingToShow) {
+                    return
+                }
+                const widthReady = Number(taskPopupAnimatedContent.implicitWidth) > 0
+                    && Number(taskPopupAnimatedContent.width) > 0
+                const heightReady = Number(taskPopupAnimatedContent.implicitHeight) > 0
+                    && Number(taskPopupAnimatedContent.height) > 0
+                const surfaceReady = taskPopupSurface.geometryReady
+                if (!surfaceReady || !widthReady || !heightReady) {
+                    if (remainingAttempts > 0) {
+                        Qt.callLater(function() {
+                            taskWindowsDialog.finishPreparedOpen(requestSerial,
+                                remainingAttempts - 1)
+                        })
+                    } else {
+                        preparingToShow = false
+                        popupCoordinator.resetTaskPopupState()
+                    }
+                    return
+                }
+                visible = true
+                preparingToShow = false
+            }
+
+            function openSafely() {
+                openRequestSerial += 1
+                const requestSerial = openRequestSerial
+                preparingToShow = true
+                Qt.callLater(function() {
+                    taskWindowsDialog.finishPreparedOpen(requestSerial, 3)
+                })
+            }
+
+            function closeSafely() {
+                openRequestSerial += 1
+                preparingToShow = false
+                visible = false
+            }
+            // qmllint enable unqualified
+
             onVisibleChanged: {
                 if (!visible) {
                     taskWindowsPopupContent.showPreviews()
@@ -2097,35 +2226,26 @@ PlasmoidItem {
                 animationIntensityPercent: dockConfig.windowPreviewAnimationIntensity
                 popupDirection: popupCoordinator.popupDirection
                 // qmllint enable unqualified
-                onCloseAnimationFinished: taskWindowsDialog.visible = false
+                onCloseAnimationFinished: taskWindowsDialog.closeSafely()
 
-                ContextSurfaceStack {
-                    id: taskContextSurfaceStack
+                TaskPopupSurface {
+                    id: taskPopupSurface
                     visible: taskWindowsDialog.visible
+                        || taskWindowsDialog.preparingToShow
                     enabled: visible
+                    presentationMode: popupCoordinator.activeTaskPopupPresentation
                     mediaController: mprisController
                     taskControllerRef: taskController
                     mediaWindows: popupCoordinator.activeTaskPopupData.windows || []
                     mediaIcon: popupCoordinator.activeTaskPopupData.icon || "emblem-music-symbolic"
-                    mediaControlsMode: dockConfig.mediaControlsMode
-                    showMedia: popupCoordinator.mediaHoverActive
-                    mediaOnly: popupCoordinator.mediaHoverActive
-                        && !taskWindowsPopupContent.mediaActionsComposed
-                    forceCompactMedia: popupCoordinator.mediaHoverActive
-                        && taskWindowsPopupContent.mediaActionsComposed
-                    transitionsEnabled: dockConfig.menuAnimationStyle !== "none"
-                    contentGeometryTransitionsEnabled: taskWindowsDialog.visible
-                        && taskPopupAnimatedContent.openingProgress >= 0.999
-                    surfaceStateFrozen: taskPopupAnimatedContent.closing
-                    transitionSpeedPercent: dockConfig.contextMenuTransitionSpeed
-                    maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
-                    function scheduleReanchor() {
-                        if (taskWindowsDialog.visible) {
-                            Qt.callLater(popupCoordinator.reanchorTaskWindowsPopup)
-                        }
-                    }
-                    onImplicitWidthChanged: scheduleReanchor()
-                    onImplicitHeightChanged: scheduleReanchor()
+                    mediaActionsComposed: taskWindowsPopupContent.mediaActionsComposed
+                    backgroundOpacity: dockConfig.windowPreviewBackgroundOpacity
+                    contentFramePaddingPercent: 2
+                    contentFramePaddingScale: dockConfig.windowPreviewFrameScale
+                    minimumSurfaceWidth: Kirigami.Units.smallSpacing
+                    minimumSurfaceHeight: Kirigami.Units.smallSpacing
+                    maximumSurfaceWidth: dockGeometry.taskPopupAvailableWidth
+                    maximumSurfaceHeight: dockGeometry.taskPopupAvailableHeight
                     onContainsMouseChanged: {
                         popupCoordinator.setTaskPopupHovered(containsMouse)
                     }
@@ -2139,15 +2259,15 @@ PlasmoidItem {
                         applicationId: popupCoordinator.activeTaskPopupData.applicationId || ""
                         windowUuids: popupCoordinator.activeTaskPopupData.windowUuids || []
                         previewStyle: dockConfig.windowPreviewStyle
-                        mediaControlsMode: dockConfig.mediaControlsMode
+                        presentationMode: popupCoordinator.activeTaskPopupPresentation
                         mprisControllerRef: mprisController
                         previewScale: dockConfig.windowPreviewScale
                         previewInfoMode: dockConfig.windowPreviewInfoMode
                         windowPreviewTextShadowsEnabled: dockConfig.windowPreviewTextShadowsEnabled
                         menuTextShadowsEnabled: dockConfig.menuTextShadowsEnabled
                         maxVisibleRows: dockConfig.maxPopupRows
-                        maximumAvailableWidth: dockGeometry.taskPopupAvailableWidth
-                        maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
+                        maximumAvailableWidth: taskPopupSurface.maximumContentWidth
+                        maximumAvailableHeight: taskPopupSurface.maximumContentHeight
                         actionItemName: popupCoordinator.activeAppContextMenuData.name || ""
                         actions: popupCoordinator.activeAppContextMenuData.actions || []
                         // qmllint disable unqualified
@@ -2157,9 +2277,10 @@ PlasmoidItem {
                         actionMenuWidth: dockConfig.contextMenuWidth
                         transitionDirection: dockConfig.contextMenuTransitionDirection
                         // qmllint enable unqualified
-                        previewsEnabled: taskWindowsDialog.visible
-                            && dockConfig.windowPreviewStyle !== "none"
-                            && !popupCoordinator.mediaHoverActive
+                        previewsEnabled: (taskWindowsDialog.visible
+                                || taskWindowsDialog.preparingToShow)
+                            && (popupCoordinator.activeTaskPopupPresentation === "preview"
+                                || popupCoordinator.activeTaskPopupPresentation === "overlay")
                         returnToMedia: popupCoordinator.mediaHoverActive
                         transitionsEnabled: dockConfig.menuAnimationStyle !== "none"
                         // qmllint disable unqualified
@@ -2167,7 +2288,7 @@ PlasmoidItem {
                         // qmllint enable unqualified
 
                         onActivateRequested: function(taskRow) {
-                            taskWindowsDialog.visible = false
+                            taskWindowsDialog.closeSafely()
                             taskController.activateTaskRow(taskRow)
                         }
                         onPresentWindowRequested: function(taskRow) {
@@ -2186,7 +2307,7 @@ PlasmoidItem {
                         }
                         onMediaCloseRequested: popupCoordinator.closeMediaHoverFromKeyboard()
                         onActionTriggered: function(action) {
-                            taskWindowsDialog.visible = false
+                            taskWindowsDialog.closeSafely()
                             dockContextActionsController.triggerAction(action)
                         }
                     }

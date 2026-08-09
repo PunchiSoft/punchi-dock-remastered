@@ -17,7 +17,6 @@ GridLayout {
     property alias itemModeIndex: itemMode.currentIndex
     readonly property string containerLayoutValue: containerLayout.currentValue || "grid"
     property alias containerLayoutIndex: containerLayout.currentIndex
-    property alias containerShowLabelsChecked: folderShowLabels.checked
     property alias spacerSizeValue: spacerSize.value
     property alias separatorStyleControl: separatorOptions.separatorStyleControl
     property alias separatorThicknessControl: separatorOptions.separatorThicknessControl
@@ -41,7 +40,6 @@ GridLayout {
     property string gridText: "Grid"
     property string listText: "List"
     property string detailedText: "Detailed"
-    property string showContainerLabelsText: "Show labels"
     property string noteText: "Note"
     property string separatorText: "Separator"
     property string spacerText: "Spacer"
@@ -139,16 +137,6 @@ GridLayout {
             ]
             onActivated: root.containerLayoutChanged(currentValue)
         }
-    }
-
-    Controls.CheckBox {
-        id: folderShowLabels
-        Layout.columnSpan: 2
-        visible: root.itemModeValue === "container"
-        enabled: root.selectedItemType === "folder"
-        text: root.showContainerLabelsText
-        checked: true
-        onClicked: root.formChanged()
     }
 
     Controls.Label {

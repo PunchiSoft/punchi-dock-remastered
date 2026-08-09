@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Effects as Effects
 import QtQuick.Layouts
+import org.kde.ksvg as KSvg
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
 
@@ -16,6 +17,8 @@ FocusScope {
     property bool compact: false
     property bool squarePresentation: false
     property bool fullCoverPresentation: false
+    property bool drawBackground: true
+    property real backgroundOpacity: 1.0
     property int transitionDuration: Kirigami.Units.longDuration
     property real compactTransitionProgress: compact ? 1 : 0
     readonly property bool available: !!controller && controller.available
@@ -27,7 +30,6 @@ FocusScope {
     readonly property bool fullCoverMode: fullCoverPresentation && !compact
     readonly property bool squareMode: squarePresentation
         && !fullCoverMode
-        && artworkReady
         && !compact
     readonly property bool ambientMode: !squareMode
         && !fullCoverMode
@@ -91,6 +93,43 @@ FocusScope {
     readonly property color overlayBackgroundColor: Kirigami.Theme.backgroundColor
     readonly property color overlayTextColor: Kirigami.Theme.textColor
     readonly property color overlaySecondaryTextColor: Kirigami.Theme.disabledTextColor
+    readonly property real safeBackgroundOpacity: {
+        const requestedOpacity = Number(root.backgroundOpacity)
+        return Number.isFinite(requestedOpacity)
+            ? Math.max(0.5, Math.min(1.0, requestedOpacity))
+            : 1.0
+    }
+    // Loader.item is the concrete KSvg.FrameSvgItem at runtime.
+    // qmllint disable missing-property
+    readonly property bool themedBackgroundInsetsValid: {
+        const backgroundItem = themedBackgroundLoader.item
+        if (!backgroundItem) {
+            return false
+        }
+        const leftInset = Number(backgroundItem["inset"].left)
+        const topInset = Number(backgroundItem["inset"].top)
+        const rightInset = Number(backgroundItem["inset"].right)
+        const bottomInset = Number(backgroundItem["inset"].bottom)
+        return [leftInset, topInset, rightInset, bottomInset,
+            root.width, root.height].every(value => Number.isFinite(value))
+            && leftInset >= 0 && topInset >= 0
+            && rightInset >= 0 && bottomInset >= 0
+            && leftInset + rightInset < root.width
+            && topInset + bottomInset < root.height
+    }
+    readonly property real themedBackgroundInsetLeft:
+        themedBackgroundInsetsValid
+            ? Number(themedBackgroundLoader.item["inset"].left) : 0
+    readonly property real themedBackgroundInsetTop:
+        themedBackgroundInsetsValid
+            ? Number(themedBackgroundLoader.item["inset"].top) : 0
+    readonly property real themedBackgroundInsetRight:
+        themedBackgroundInsetsValid
+            ? Number(themedBackgroundLoader.item["inset"].right) : 0
+    readonly property real themedBackgroundInsetBottom:
+        themedBackgroundInsetsValid
+            ? Number(themedBackgroundLoader.item["inset"].bottom) : 0
+    // qmllint enable missing-property
 
     implicitWidth: 280
     implicitHeight: compact ? compactPreferredHeight : preferredExpandedHeight
@@ -230,12 +269,22 @@ FocusScope {
     onHasProgressChanged: syncDisplayedPosition()
     Component.onCompleted: syncDisplayedPosition()
 
-    Rectangle {
-        anchors.fill: parent
-        radius: root.cornerRadius
-        color: Kirigami.Theme.alternateBackgroundColor
-        border.width: 1
-        border.color: Kirigami.Theme.disabledTextColor
+    Loader {
+        id: themedBackgroundLoader
+        x: -root.themedBackgroundInsetLeft
+        y: -root.themedBackgroundInsetTop
+        width: root.width + root.themedBackgroundInsetLeft
+            + root.themedBackgroundInsetRight
+        height: root.height + root.themedBackgroundInsetTop
+            + root.themedBackgroundInsetBottom
+        active: root.drawBackground
+        sourceComponent: Component {
+            KSvg.FrameSvgItem {
+                imagePath: "widgets/background"
+                opacity: root.safeBackgroundOpacity
+                Accessible.ignored: true
+            }
+        }
     }
 
     ColumnLayout {

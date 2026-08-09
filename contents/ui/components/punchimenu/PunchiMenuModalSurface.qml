@@ -21,6 +21,14 @@ FocusScope {
     property real maximumHeight: height - Kirigami.Units.largeSpacing * 2
     property var allowedExternalFocusItems: []
     readonly property alias contentItem: contentHost
+    readonly property real panelContentHorizontalInset:
+        Math.max(0, Number(background.margins.left))
+        + Math.max(0, Number(background.margins.right))
+        + Kirigami.Units.largeSpacing * 2
+    readonly property real panelContentVerticalInset:
+        Math.max(0, Number(background.margins.top))
+        + Math.max(0, Number(background.margins.bottom))
+        + Kirigami.Units.largeSpacing * 2
 
     signal dismissed()
     signal concealed()

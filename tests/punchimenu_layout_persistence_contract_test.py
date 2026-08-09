@@ -95,19 +95,20 @@ def main() -> None:
         "systemDiscovery.requestApplicationCatalog()",
         "The controller catalog must be requested outside the visible views.",
     )
-    for source, mode in (
-        (normal_source, "Normal"),
-        (fullscreen_source, "Fullscreen"),
-    ):
-        require(
-            source,
-            "systemDiscovery.requestApplications(",
-            f"PunchiMenu {mode} must preserve its existing visible query.",
+    require(
+        normal_source,
+        "systemDiscovery.requestApplications(",
+        "PunchiMenu Normal must preserve its category query.",
+    )
+    if "systemDiscovery.requestApplications(" in fullscreen_source:
+        raise AssertionError(
+            "PunchiMenu Fullscreen must not duplicate the central catalog query."
         )
-        if "function onApplicationCatalogReady(applications)" in source:
-            raise AssertionError(
-                f"PunchiMenu {mode} must not render the controller catalog yet."
-            )
+    require(
+        fullscreen_source,
+        "root.systemDiscovery.requestApplicationCatalog()",
+        "Fullscreen needs a deferred fallback when the central catalog is not loaded.",
+    )
 
 
 if __name__ == "__main__":

@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import org.kde.kirigami as Kirigami
 
@@ -14,7 +16,7 @@ Item {
     property string previewInfoMode: "full"
     property bool windowPreviewTextShadowsEnabled: true
     property var mprisControllerRef: null
-    property string mediaControlsMode: "card"
+    property string presentationMode: "preview"
     property bool menuTextShadowsEnabled: true
     property int maxVisibleRows: 4
     property int maximumAvailableWidth: 752
@@ -35,6 +37,16 @@ Item {
     property real mediaActionsRevealProgress: actionsVisible ? 1 : 0
     readonly property bool previewsAllowed: previewStyle !== "none"
     readonly property bool previewSurfaceVisible: previewsAllowed && previewsEnabled
+    // Loader.item is the concrete WindowPreviewSurface only while previews
+    // are part of the resolved presentation.
+    // qmllint disable missing-property
+    readonly property bool previewRendererLoaded:
+        previewPage.status === Loader.Ready && !!previewPage.item
+    readonly property real previewSurfaceImplicitWidth: previewRendererLoaded
+        ? Number(previewPage.item["implicitWidth"] || 0) : 0
+    readonly property real previewSurfaceImplicitHeight: previewRendererLoaded
+        ? Number(previewPage.item["implicitHeight"] || 0) : 0
+    // qmllint enable missing-property
     readonly property bool containsMouse: popupHover.hovered
     readonly property bool mediaActionsComposed: returnToMedia
         && (actionsVisible || mediaActionsRevealProgress > 0.001)
@@ -94,10 +106,10 @@ Item {
 
     implicitWidth: mediaActionsComposed || actionsVisible
         ? actionsPage.implicitWidth
-        : (previewSurfaceVisible ? previewPage.implicitWidth : 0)
+        : (previewSurfaceVisible ? previewSurfaceImplicitWidth : 0)
     implicitHeight: mediaActionsComposed || actionsVisible
         ? actionsPage.implicitHeight
-        : (previewSurfaceVisible ? previewPage.implicitHeight : 0)
+        : (previewSurfaceVisible ? previewSurfaceImplicitHeight : 0)
     width: implicitWidth
     height: implicitHeight
     clip: true
@@ -144,42 +156,47 @@ Item {
         width: root.width
         height: root.height
 
-        WindowPreviewSurface {
+        Loader {
             id: previewPage
             x: root.previewOffsetX
             y: root.previewOffsetY
             width: root.width
             height: root.height
-            visible: root.previewSurfaceVisible
+            active: root.previewSurfaceVisible
+            visible: active
                 && !root.mediaActionsComposed
                 && (!root.actionsVisible || root.pageTransitionProgress < 0.999)
             enabled: visible
             opacity: root.morphOnlyTransition
                 ? 1 - root.pageTransitionProgress
                 : 1
-            taskControllerRef: root.taskControllerRef
-            taskRevision: root.taskRevision
-            applicationId: root.applicationId
-            windowUuids: root.windowUuids
-            fallbackWindows: root.previewSurfaceVisible ? root.windows : []
-            mprisControllerRef: root.mprisControllerRef
-            mediaControlsMode: root.mediaControlsMode
-            transitionsEnabled: root.transitionsEnabled
-            transitionDuration: root.transitionDuration
-            previewStyle: root.previewStyle
-            previewScale: root.previewScale
-            previewInfoMode: root.previewInfoMode
-            textShadowsEnabled: root.windowPreviewTextShadowsEnabled
-            maxVisibleRows: root.maxVisibleRows
-            maximumAvailableWidth: root.maximumAvailableWidth
-            maximumAvailableHeight: root.maximumAvailableHeight
+            sourceComponent: Component {
+                WindowPreviewSurface {
+                    taskControllerRef: root.taskControllerRef
+                    taskRevision: root.taskRevision
+                    applicationId: root.applicationId
+                    windowUuids: root.windowUuids
+                    fallbackWindows: root.windows
+                    mprisControllerRef: root.mprisControllerRef
+                    mediaOverlayEnabled: root.presentationMode === "overlay"
+                    transitionsEnabled: root.transitionsEnabled
+                    transitionDuration: root.transitionDuration
+                    previewStyle: root.previewStyle
+                    previewScale: root.previewScale
+                    previewInfoMode: root.previewInfoMode
+                    textShadowsEnabled: root.windowPreviewTextShadowsEnabled
+                    maxVisibleRows: root.maxVisibleRows
+                    maximumAvailableWidth: root.maximumAvailableWidth
+                    maximumAvailableHeight: root.maximumAvailableHeight
 
-            onActivateRequested: taskRow => root.activateRequested(taskRow)
-            onPresentWindowRequested: taskRow => root.presentWindowRequested(taskRow)
-            onMinimizeWindowRequested: taskRow => root.minimizeWindowRequested(taskRow)
-            onMaximizeWindowRequested: taskRow => root.maximizeWindowRequested(taskRow)
-            onCloseWindowRequested: taskRow => root.closeWindowRequested(taskRow)
-            onMediaCloseRequested: root.mediaCloseRequested()
+                    onActivateRequested: taskRow => root.activateRequested(taskRow)
+                    onPresentWindowRequested: taskRow => root.presentWindowRequested(taskRow)
+                    onMinimizeWindowRequested: taskRow => root.minimizeWindowRequested(taskRow)
+                    onMaximizeWindowRequested: taskRow => root.maximizeWindowRequested(taskRow)
+                    onCloseWindowRequested: taskRow => root.closeWindowRequested(taskRow)
+                    onMediaCloseRequested: root.mediaCloseRequested()
+                }
+            }
         }
 
         AppActionsPopup {

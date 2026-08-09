@@ -15,7 +15,6 @@ Item {
     property var fallbackWindows: []
     property string previewStyle: "card"
     property var mprisControllerRef: null
-    property string mediaControlsMode: "card"
     property bool transitionsEnabled: true
     property int transitionDuration: Kirigami.Units.longDuration
     property real previewScale: 1.5
@@ -29,7 +28,8 @@ Item {
     readonly property var windows: resolvedWindows
     readonly property bool showLiveThumbnails: previewStyle === "thumbnail"
     readonly property bool containsMouse: popupHover.hovered
-    readonly property bool mediaOverlayRequested: mediaControlsMode === "overlay"
+    property bool mediaOverlayEnabled: false
+    readonly property bool mediaOverlayRequested: mediaOverlayEnabled
         && !!mprisControllerRef
         && mprisControllerRef.available
     readonly property int mediaOverlayGap: Kirigami.Units.smallSpacing
@@ -44,11 +44,16 @@ Item {
     property real mediaOverlayRevealProgress: 0
 
     function requestedWindows() {
+        const fallback = fallbackWindows instanceof Array ? fallbackWindows : []
         if (taskControllerRef
                 && (applicationId.length > 0 || windowUuids.length > 0)) {
-            return taskControllerRef.taskWindowsForIdentity(applicationId, windowUuids)
+            const resolved = taskControllerRef.taskWindowsForIdentity(
+                applicationId, windowUuids)
+            if (resolved instanceof Array && resolved.length > 0) {
+                return resolved
+            }
         }
-        return fallbackWindows instanceof Array ? fallbackWindows : []
+        return fallback
     }
 
     function windowStateKey(sourceWindows) {
@@ -126,6 +131,15 @@ Item {
         previewScale, maximumPreviewScaleByWidth, maximumPreviewScaleByHeight))
     readonly property int previewFrameWidth: Math.round(184 * effectivePreviewScale)
     readonly property int previewFrameHeight: Math.round(previewFrameWidth / 1.6)
+    readonly property int previewRadius: {
+        const shortSide = Math.min(previewFrameWidth, previewFrameHeight)
+        const themeRadius = Math.max(1, Number(Kirigami.Units.cornerRadius))
+        const proportionalRadius = Number.isFinite(shortSide) && shortSide > 0
+            ? shortSide * 0.04
+            : themeRadius
+        return Math.round(Math.max(themeRadius,
+            Math.min(themeRadius * 2, proportionalRadius)))
+    }
     readonly property int horizontalPadding: Kirigami.Units.smallSpacing * 2
     readonly property int verticalPadding: Kirigami.Units.smallSpacing * 2
     readonly property int cardOuterPadding: 2
@@ -229,7 +243,7 @@ Item {
                 infoMode: root.previewInfoMode
                 previewWidth: root.previewFrameWidth
                 previewHeight: root.previewFrameHeight
-                previewRadius: 4
+                previewRadius: root.previewRadius
                 outerPadding: root.cardOuterPadding
                 textShadowsEnabled: root.textShadowsEnabled
 

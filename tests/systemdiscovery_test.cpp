@@ -4,6 +4,7 @@
 #include "desktoplauncherresolver.h"
 
 #include <KOSRelease>
+#include <KSycoca>
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -11,6 +12,7 @@
 #include <QFileInfo>
 #include <QSet>
 #include <QTemporaryDir>
+#include <QUrl>
 #include <QVariantList>
 #include <QVariantMap>
 
@@ -138,6 +140,58 @@ bool validateApplications(const QVariantList &applications, qsizetype maximumCou
 
     return true;
 }
+
+bool validateApplicationLauncherDrops(SystemDiscovery &discovery)
+{
+    QTemporaryDir directory;
+    if (!directory.isValid()) {
+        std::cerr << "Could not create the launcher drop test directory.\n";
+        return false;
+    }
+
+    const QByteArray desktopContents = QByteArrayLiteral(
+        "[Desktop Entry]\n"
+        "Type=Application\n"
+        "Name=Punchi Drop Launcher\n"
+        "Icon=system-run\n"
+        "Exec=/bin/true\n"
+        "TryExec=/bin/true\n");
+    const QString launcherPath = directory.filePath(QStringLiteral("drop.desktop"));
+    const QString launcherLink = directory.filePath(QStringLiteral("drop-link.desktop"));
+    const QString textPath = directory.filePath(QStringLiteral("document.txt"));
+    if (!writeFile(launcherPath, desktopContents, true)
+        || !createSymbolicLink(launcherPath, launcherLink)
+        || !writeFile(textPath, QByteArrayLiteral("not a launcher\n"))) {
+        std::cerr << "Could not create the launcher drop fixtures.\n";
+        return false;
+    }
+
+    const QVariantMap accepted = discovery.validateApplicationLauncherDrop(
+        {QUrl::fromLocalFile(launcherLink)});
+    if (!accepted.value(QStringLiteral("accepted")).toBool()
+        || accepted.value(QStringLiteral("storageId")).toString().isEmpty()
+        || accepted.value(QStringLiteral("launcherUrl")).toUrl().toLocalFile()
+            != QFileInfo(launcherPath).canonicalFilePath()) {
+        std::cerr << "A safe local launcher drop was rejected.\n";
+        return false;
+    }
+
+    const QList<QVariantList> rejectedDrops = {
+        {},
+        {QUrl::fromLocalFile(launcherPath), QUrl::fromLocalFile(launcherPath)},
+        {QUrl(QStringLiteral("https://example.invalid/drop.desktop"))},
+        {QUrl::fromLocalFile(textPath)},
+        {QUrl(QStringLiteral("file:///tmp/drop.desktop?action=run"))},
+    };
+    for (const QVariantList &drop : rejectedDrops) {
+        if (discovery.validateApplicationLauncherDrop(drop)
+                .value(QStringLiteral("accepted")).toBool()) {
+            std::cerr << "An unsafe launcher drop was accepted.\n";
+            return false;
+        }
+    }
+    return true;
+}
 }
 
 int main(int argc, char *argv[])
@@ -160,6 +214,7 @@ int main(int argc, char *argv[])
         passed = false;
     }
     passed = validateFolderDesktopLaunchers() && passed;
+    passed = validateApplicationLauncherDrops(discovery) && passed;
 
     QObject::connect(&discovery, &SystemDiscovery::applicationsReady,
                      [&passed, &applicationResponseCount, &lastApplicationResponse](const QVariantList &applications) {
@@ -202,6 +257,13 @@ int main(int argc, char *argv[])
     discovery.requestApplicationCatalog();
     if (catalogResponseCount != 1 || applicationResponseCount != genericCountBeforeCatalog) {
         qCritical() << "The PunchiMenu catalog request did not use its dedicated signal.";
+        passed = false;
+    }
+
+    KSycoca::self()->databaseChanged();
+    if (catalogResponseCount != 2
+        || applicationResponseCount != genericCountBeforeCatalog) {
+        qCritical() << "A KDE service database change did not refresh the PunchiMenu catalog.";
         passed = false;
     }
 

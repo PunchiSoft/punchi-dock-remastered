@@ -37,6 +37,7 @@ public:
         const QString &launcherUrl = QString()) const;
     Q_INVOKABLE QVariantList applicationActions(const QString &applicationId) const;
     Q_INVOKABLE QVariantMap validateDroppedUrls(const QVariantList &urls) const;
+    Q_INVOKABLE QVariantMap validateApplicationLauncherDrop(const QVariantList &urls) const;
     Q_INVOKABLE void launchApplication(const QString &storageId);
     Q_INVOKABLE QVariantMap createDesktopShortcut(const QString &storageId, const QString &command = QString());
     Q_INVOKABLE bool launchApplicationWithUrls(const QString &applicationId, const QString &command,

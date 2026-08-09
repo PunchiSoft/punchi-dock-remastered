@@ -16,6 +16,7 @@ class MprisController : public QObject
     QML_ELEMENT
     Q_PROPERTY(QString applicationId READ applicationId WRITE setApplicationId NOTIFY applicationIdChanged)
     Q_PROPERTY(QString selectionMode READ selectionMode WRITE setSelectionMode NOTIFY selectionModeChanged)
+    Q_PROPERTY(bool resolving READ resolving NOTIFY resolvingChanged)
     Q_PROPERTY(bool available READ available NOTIFY stateChanged)
     Q_PROPERTY(QString identity READ identity NOTIFY stateChanged)
     Q_PROPERTY(QString track READ track NOTIFY stateChanged)
@@ -43,6 +44,7 @@ public:
     void setApplicationId(const QString &applicationId);
     QString selectionMode() const;
     void setSelectionMode(const QString &selectionMode);
+    bool resolving() const;
     bool available() const;
     QString identity() const;
     QString track() const;
@@ -77,6 +79,7 @@ public:
 Q_SIGNALS:
     void applicationIdChanged();
     void selectionModeChanged();
+    void resolvingChanged();
     void stateChanged();
 
 private Q_SLOTS:
@@ -91,6 +94,7 @@ private:
     void callPlayerMethod(const QString &method);
     void completePendingPlayRequest();
     void scheduleRefresh();
+    void setResolving(bool resolving);
     bool selectionAvailable() const;
 
     QString m_applicationId;
@@ -122,5 +126,6 @@ private:
     QHash<QString, QVariantMap> m_candidates;
     QTimer *m_refreshTimer = nullptr;
     QTimer *m_pendingPlayTimer = nullptr;
+    bool m_resolving = false;
     bool m_playWhenAvailablePending = false;
 };

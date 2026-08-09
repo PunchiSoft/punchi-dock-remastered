@@ -46,6 +46,8 @@ KCM.SimpleKCM {
     property string cfg_floatingDockOrientation: "horizontal"
     property string cfg_windowPreviewStyle: "card"
     property alias cfg_windowPreviewScale: popupAppearancePage.cfg_windowPreviewScale
+    property alias cfg_windowPreviewBackgroundOpacityPercent: popupAppearancePage.cfg_windowPreviewBackgroundOpacityPercent
+    property alias cfg_windowPreviewFrameSize: popupAppearancePage.cfg_windowPreviewFrameSize
     property alias cfg_windowPreviewInfoMode: popupAppearancePage.cfg_windowPreviewInfoMode
     property alias cfg_windowPreviewTextShadowsEnabled: popupAppearancePage.cfg_windowPreviewTextShadowsEnabled
     property string cfg_mediaControlsMode: ""
@@ -82,6 +84,7 @@ KCM.SimpleKCM {
     property alias cfg_folderDetailedFontSize: folderPopupPage.cfg_folderDetailedFontSize
     property alias cfg_folderPopupExtraDistance: folderPopupPage.cfg_folderPopupExtraDistance
     property alias cfg_folderPopupScale: folderPopupPage.cfg_folderPopupScale
+    property alias cfg_folderPopupBackgroundOpacityPercent: folderPopupPage.cfg_folderPopupBackgroundOpacityPercent
     property alias cfg_folderPopupShowHeader: folderPopupPage.cfg_folderPopupShowHeader
     property alias cfg_contextMenuTransitionSpeed: menuAppearancePage.cfg_contextMenuTransitionSpeed
     property alias cfg_contextMenuTransitionDirection: menuAppearancePage.cfg_contextMenuTransitionDirection

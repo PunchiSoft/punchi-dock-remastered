@@ -538,7 +538,7 @@ function normalizedPunchiMenuGridIconScalePercent(value) {
     if (!Number.isFinite(requestedValue)) {
         return 100
     }
-    return Math.max(75, Math.min(200, Math.round(requestedValue / 5) * 5))
+    return Math.max(75, Math.min(150, Math.round(requestedValue / 5) * 5))
 }
 
 function normalizedPunchiMenuFavoriteIconScalePercent(value) {
@@ -546,7 +546,39 @@ function normalizedPunchiMenuFavoriteIconScalePercent(value) {
     if (!Number.isFinite(requestedValue)) {
         return 100
     }
-    return Math.max(75, Math.min(150, Math.round(requestedValue / 5) * 5))
+    return Math.max(75, Math.min(110, Math.round(requestedValue / 5) * 5))
+}
+
+function normalizedPunchiMenuNormalFolderMaximumColumns(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 3
+    }
+    return Math.max(1, Math.min(3, Math.round(requestedValue)))
+}
+
+function normalizedPunchiMenuNormalFolderMaximumRows(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 3
+    }
+    return Math.max(1, Math.min(3, Math.round(requestedValue)))
+}
+
+function normalizedPunchiMenuFullScreenFolderMaximumColumns(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 5
+    }
+    return Math.max(1, Math.min(5, Math.round(requestedValue)))
+}
+
+function normalizedPunchiMenuFullScreenFolderMaximumRows(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 5
+    }
+    return Math.max(1, Math.min(5, Math.round(requestedValue)))
 }
 
 function normalizedPunchiMenuFullScreenBackgroundOpacityPercent(value) {
@@ -647,6 +679,17 @@ function prunePunchiMenu(item) {
         item.gridIconScalePercent)
     item.favoriteIconScalePercent = normalizedPunchiMenuFavoriteIconScalePercent(
         item.favoriteIconScalePercent)
+    item.normalFolderMaximumColumns =
+        normalizedPunchiMenuNormalFolderMaximumColumns(
+            item.normalFolderMaximumColumns)
+    item.normalFolderMaximumRows = normalizedPunchiMenuNormalFolderMaximumRows(
+        item.normalFolderMaximumRows)
+    item.fullScreenFolderMaximumColumns =
+        normalizedPunchiMenuFullScreenFolderMaximumColumns(
+            item.fullScreenFolderMaximumColumns)
+    item.fullScreenFolderMaximumRows =
+        normalizedPunchiMenuFullScreenFolderMaximumRows(
+            item.fullScreenFolderMaximumRows)
     if (item.fullScreenBlurEnabled !== false) {
         delete item.fullScreenBlurEnabled
     } else {
@@ -779,6 +822,10 @@ function newItem(type, defaultTrashEmptySound) {
             "normalPlacementMode": "anchored",
             "gridIconScalePercent": 100,
             "favoriteIconScalePercent": 100,
+            "normalFolderMaximumColumns": 3,
+            "normalFolderMaximumRows": 3,
+            "fullScreenFolderMaximumColumns": 5,
+            "fullScreenFolderMaximumRows": 5,
             "fullScreenBackgroundOpacityPercent": 50,
             "normalBackgroundOpacityPercent": 75,
             "normalWidthPercent": 55,

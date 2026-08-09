@@ -7,6 +7,8 @@ import org.kde.kirigami as Kirigami
 
 Item {
     id: folderRoot
+    Kirigami.Theme.inherit: false
+    Kirigami.Theme.colorSet: Kirigami.Theme.Window
     implicitWidth: layoutMode === "grid"
         ? Math.min(desiredGridWidth + scrollBarGutter, safeMaximumWidth)
         : Math.min(Math.round(280 * effectiveScale), safeMaximumWidth)
@@ -25,7 +27,7 @@ Item {
     property int profileFontSize: layoutMode === "grid" ? 9 : 10
     property real profileScale: 1.0
     property bool showHeaderLabel: true
-    property bool textShadowsEnabled: true
+    property bool textShadowsEnabled: false
     property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
 
@@ -114,6 +116,7 @@ Item {
             Layout.fillWidth: true
             PlasmaExtras.ShadowedLabel {
                 text: folderRoot.folderItem.name || i18n("Folder")
+                color: Kirigami.Theme.textColor
                 renderShadow: folderRoot.textShadowsEnabled
                 font.family: Kirigami.Theme.defaultFont.family
                 font.pointSize: Math.max(8, Math.min(36, Math.round(Kirigami.Theme.defaultFont.pointSize * folderRoot.effectiveScale)))
@@ -194,6 +197,7 @@ Item {
                         visible: folderRoot.showItemLabels
                         PlasmaExtras.ShadowedLabel {
                             text: modelData.name
+                            color: Kirigami.Theme.textColor
                             renderShadow: folderRoot.textShadowsEnabled
                             font.family: folderRoot.effectiveFontFamily
                             font.pointSize: folderRoot.effectiveFontSize
@@ -230,6 +234,7 @@ Item {
                     PlasmaExtras.ShadowedLabel {
                         visible: folderRoot.showItemLabels
                         text: modelData.name
+                        color: Kirigami.Theme.textColor
                         renderShadow: folderRoot.textShadowsEnabled
                         font.family: folderRoot.effectiveFontFamily
                         font.pointSize: folderRoot.effectiveFontSize

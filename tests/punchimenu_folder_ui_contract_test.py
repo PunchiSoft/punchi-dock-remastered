@@ -509,6 +509,14 @@ def assert_bounded_collections(folder_sources: dict[Path, str]) -> None:
         is not None,
         "Folder modal dimensions must be clamped to their maximum bounds.",
     )
+    require(
+        "readonly property real panelContentHorizontalInset" in modal_surface
+        and "readonly property real panelContentVerticalInset" in modal_surface
+        and "background.margins.left" in modal_surface
+        and "background.margins.bottom" in modal_surface,
+        "Folder geometry must consume the effective themed panel insets instead "
+        "of estimating them with fixed spacing.",
+    )
 
 
 def assert_folder_action_contracts(
@@ -835,6 +843,17 @@ def assert_modal_interaction_and_accessibility(
     folder_view = compact(
         folder_sources[PUNCHIMENU_DIRECTORY / "PunchiMenuFolderView.qml"]
     )
+    require(
+        "property int maximumColumnCount: 5" in folder_view
+        and "property int maximumRowCount: 5" in folder_view
+        and "readonly property int geometricColumnCapacity" in folder_view
+        and "Math.min( safeMaximumColumnCount, geometricColumnCapacity)"
+        in folder_view
+        and "readonly property int visibleRowCount" in folder_view
+        and "Math.min( safeMaximumRowCount, rowCount)" in folder_view,
+        "Folder views must limit columns by runtime capacity and visible rows "
+        "without truncating their model.",
+    )
     normal_source = menu_sources["Normal"]
     normal_compact = compact(normal_source)
     normal_backdrop_geometry = compact(
@@ -881,33 +900,24 @@ def assert_modal_interaction_and_accessibility(
     require(
         "id: folderTile" in normal_folder_tile
         and "selected: applicationDelegate.selected "
-        "|| nodeDropTarget.containsDrag" in normal_folder_tile
+        "|| applicationDelegate.dropGroupingActive" in normal_folder_tile
+        and "dropInsertionActive" in normal_compact
         and "onHoveredChanged:" not in normal_folder_tile,
-        "PunchiMenu Normal must route folder hover and drag selection through "
-        "the shared delegate pointer.",
+        "PunchiMenu Normal must route folder hover through the shared pointer "
+        "and reserve full selection for grouping rather than insertion.",
     )
     require(
         "Accessible.onPressAction: launchApplication()" in folder_view,
         "Applications inside folders must expose their launch action.",
     )
     require(
-        "property real applicationHighlightOpacity: 0.30" in folder_view
-        and "property real applicationCornerRadiusScale: 1.0" in folder_view
-        and "property real applicationHoverScale: 1.0" in folder_view
-        and "root.applicationHighlightOpacity" in folder_view
-        and "root.applicationCornerRadiusScale" in folder_view
-        and "root.applicationHoverScale" in folder_view,
-        "Folder application delegates must expose a reusable themed hover profile.",
-    )
-    require(
-        "readonly property bool highlighted: activeFocus "
-        "|| appPointer.containsMouse" in folder_view
-        and "scale: applicationDelegate.highlighted "
-        "? root.applicationHoverScale : 1.0" in folder_view
-        and "Behavior on scale" in folder_view
-        and "Behavior on border.color" in folder_view,
-        "Folder application hover must preserve focus visibility and animate "
-        "the same visual properties as the parent grids.",
+        "PunchiMenuItemHighlight {" in folder_view
+        and "hovered: appPointer.containsMouse" in folder_view
+        and "selected: applicationDelegate.outlined" in folder_view
+        and "focused: applicationDelegate.activeFocus" in folder_view
+        and "pressed: appPointer.pressed" in folder_view,
+        "Folder application delegates must reuse the shared hover, focus, and "
+        "press surface.",
     )
     require(
         "id: applicationLabelFontMetrics" in folder_view
@@ -961,23 +971,15 @@ def assert_modal_interaction_and_accessibility(
         "All PunchiMenu folder and action surfaces must use the shared "
         "widget-themed modal profile.",
     )
-    for mode, expected_profile in {
-        "Normal": (
-            "applicationHighlightOpacity: 0.30",
-            "applicationCornerRadiusScale: 1.5",
-            "applicationHoverScale: 1.018",
-        ),
-        "Fullscreen": (
-            "applicationHighlightOpacity: 0.30",
-            "applicationCornerRadiusScale: 2.0",
-            "applicationHoverScale: 1.03",
-        ),
-    }.items():
+    for mode in ("Normal", "Fullscreen"):
         menu_compact = compact(menu_sources[mode])
         require(
-            all(fragment in menu_compact for fragment in expected_profile),
-            f"PunchiMenu {mode} must pass its main-grid hover profile to "
-            "applications opened inside folders.",
+            menu_compact.count("PunchiMenuItemHighlight {") >= 2
+            and "applicationHighlightOpacity:" not in menu_compact
+            and "applicationCornerRadiusScale:" not in menu_compact
+            and "applicationHoverScale:" not in menu_compact,
+            f"PunchiMenu {mode} must reuse the shared item highlight instead "
+            "of passing a mode-specific folder profile.",
         )
     require(
         "property bool returnToFolderAfterMemberRemoval: false"
@@ -999,6 +1001,20 @@ def assert_modal_interaction_and_accessibility(
         in folder_surface_compact,
         "Folder surfaces must expose bounded content-aware compact geometry.",
     )
+    require(
+        "property int maximumColumnCount: 5" in folder_surface_compact
+        and "property int maximumRowCount: 5" in folder_surface_compact
+        and "safeMaximumColumnCount" in folder_surface_compact
+        and "safeMaximumRowCount" in folder_surface_compact
+        and "automaticCompactFolderColumnCount" in folder_surface_compact
+        and "modalSurface.panelContentHorizontalInset"
+        in folder_surface_compact
+        and "modalSurface.panelContentVerticalInset"
+        in folder_surface_compact
+        and "folderView.preferredContentHeight" in folder_surface_compact,
+        "Folder geometry must clamp rows and columns while deriving its size "
+        "from the real themed content insets.",
+    )
 
     fullscreen_surface = compact(
         qml_blocks(menu_sources["Fullscreen"], "PunchiMenuFolderSurface")[0]
@@ -1008,12 +1024,20 @@ def assert_modal_interaction_and_accessibility(
     )
     require(
         "detailedApplicationFeedback: true" in fullscreen_surface
-        and "returnToFolderAfterMemberRemoval: true" in fullscreen_surface,
+        and "returnToFolderAfterMemberRemoval: true" in fullscreen_surface
+        and "maximumColumnCount: root.safeFolderMaximumColumns"
+        in fullscreen_surface
+        and "maximumRowCount: root.safeFolderMaximumRows"
+        in fullscreen_surface,
         "Fullscreen must opt into detailed folder feedback and context preservation.",
     )
     require(
         "detailedApplicationFeedback: true" in normal_surface
         and "compactLayout: true" in normal_surface
+        and "maximumColumnCount: root.safeFolderMaximumColumns"
+        in normal_surface
+        and "maximumRowCount: root.safeFolderMaximumRows"
+        in normal_surface
         and "returnToFolderAfterMemberRemoval: true" not in normal_surface,
         "PunchiMenu Normal must use compact folder geometry and detailed "
         "feedback without changing its approved member-removal navigation policy.",

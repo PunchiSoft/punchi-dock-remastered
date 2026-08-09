@@ -157,15 +157,11 @@ Item {
                     implicitWidth: 16
                     implicitHeight: 16
                 }
-                background: Rectangle {
-                    radius: 6
-                    color: saveNoteButton.hovered || saveNoteButton.activeFocus
-                        ? Qt.rgba(Kirigami.Theme.highlightColor.r,
-                            Kirigami.Theme.highlightColor.g,
-                            Kirigami.Theme.highlightColor.b, 0.24)
-                        : "transparent"
-                    border.width: saveNoteButton.activeFocus ? 1 : 0
-                    border.color: Kirigami.Theme.textColor
+                background: InteractiveActionBackground {
+                    hovered: saveNoteButton.hovered
+                    focused: saveNoteButton.activeFocus
+                    pressed: saveNoteButton.pressed
+                    visualRadius: 6
                 }
                 onClicked: noteRoot.requestSave()
             }
@@ -187,15 +183,11 @@ Item {
                     implicitWidth: 16
                     implicitHeight: 16
                 }
-                background: Rectangle {
-                    radius: 6
-                    color: clearNoteButton.hovered || clearNoteButton.activeFocus
-                        ? Qt.rgba(Kirigami.Theme.highlightColor.r,
-                            Kirigami.Theme.highlightColor.g,
-                            Kirigami.Theme.highlightColor.b, 0.24)
-                        : "transparent"
-                    border.width: clearNoteButton.activeFocus ? 1 : 0
-                    border.color: Kirigami.Theme.textColor
+                background: InteractiveActionBackground {
+                    hovered: clearNoteButton.hovered
+                    focused: clearNoteButton.activeFocus
+                    pressed: clearNoteButton.pressed
+                    visualRadius: 6
                 }
                 onClicked: {
                     editor.text = ""
@@ -224,15 +216,11 @@ Item {
                     implicitWidth: 16
                     implicitHeight: 16
                 }
-                background: Rectangle {
-                    radius: 6
-                    color: copyNoteButton.hovered || copyNoteButton.activeFocus
-                        ? Qt.rgba(Kirigami.Theme.highlightColor.r,
-                            Kirigami.Theme.highlightColor.g,
-                            Kirigami.Theme.highlightColor.b, 0.24)
-                        : "transparent"
-                    border.width: copyNoteButton.activeFocus ? 1 : 0
-                    border.color: Kirigami.Theme.textColor
+                background: InteractiveActionBackground {
+                    hovered: copyNoteButton.hovered
+                    focused: copyNoteButton.activeFocus
+                    pressed: copyNoteButton.pressed
+                    visualRadius: 6
                 }
                 onClicked: noteRoot.copyNote()
             }
@@ -253,15 +241,12 @@ Item {
                     implicitWidth: 16
                     implicitHeight: 16
                 }
-                background: Rectangle {
-                    radius: 6
-                    color: deleteNoteButton.hovered || deleteNoteButton.activeFocus
-                        ? Qt.rgba(Kirigami.Theme.negativeTextColor.r,
-                            Kirigami.Theme.negativeTextColor.g,
-                            Kirigami.Theme.negativeTextColor.b, 0.24)
-                        : "transparent"
-                    border.width: deleteNoteButton.activeFocus ? 1 : 0
-                    border.color: Kirigami.Theme.textColor
+                background: InteractiveActionBackground {
+                    hovered: deleteNoteButton.hovered
+                    focused: deleteNoteButton.activeFocus
+                    pressed: deleteNoteButton.pressed
+                    destructive: true
+                    visualRadius: 6
                 }
                 onClicked: noteRoot.deleteConfirmationVisible = true
             }
@@ -282,15 +267,12 @@ Item {
                     implicitWidth: 16
                     implicitHeight: 16
                 }
-                background: Rectangle {
-                    radius: 6
-                    color: closeNoteButton.hovered || closeNoteButton.activeFocus
-                        ? Qt.rgba(Kirigami.Theme.negativeTextColor.r,
-                            Kirigami.Theme.negativeTextColor.g,
-                            Kirigami.Theme.negativeTextColor.b, 0.24)
-                        : "transparent"
-                    border.width: closeNoteButton.activeFocus ? 1 : 0
-                    border.color: Kirigami.Theme.textColor
+                background: InteractiveActionBackground {
+                    hovered: closeNoteButton.hovered
+                    focused: closeNoteButton.activeFocus
+                    pressed: closeNoteButton.pressed
+                    destructive: true
+                    visualRadius: 6
                 }
                 onClicked: noteRoot.saveAndClose()
                 Keys.onReturnPressed: noteRoot.saveAndClose()

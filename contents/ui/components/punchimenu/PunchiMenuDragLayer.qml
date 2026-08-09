@@ -17,6 +17,8 @@ Item {
     property point pointerPosition: Qt.point(0, 0)
     property size sourceSize: Qt.size(1, 1)
     property bool motionEnabled: true
+    property bool rejected: false
+    property rect visualBounds: Qt.rect(0, 0, width, height)
 
     readonly property alias dragSource: dragProxy
     readonly property string dragKey: "punchi-internal-layout-node"
@@ -35,13 +37,15 @@ Item {
         sourceSize = Qt.size(Math.max(1, Number(size.width || 1)),
             Math.max(1, Number(size.height || 1)))
         pointerPosition = position
+        rejected = false
         active = true
         return true
     }
 
-    function move(position) {
+    function move(position, rejectedState) {
         if (active) {
             pointerPosition = position
+            rejected = Boolean(rejectedState)
         }
     }
 
@@ -69,6 +73,7 @@ Item {
         storageId = ""
         label = ""
         iconName = "application-x-executable"
+        rejected = false
     }
 
     visible: active
@@ -76,8 +81,19 @@ Item {
     Item {
         id: dragProxy
 
-        x: root.pointerPosition.x - width / 2
-        y: root.pointerPosition.y - height / 2
+        readonly property real desiredX: root.pointerPosition.x - width / 2
+        readonly property real desiredY: root.pointerPosition.y - height / 2
+        readonly property real minimumX: Number(root.visualBounds.x)
+        readonly property real minimumY: Number(root.visualBounds.y)
+        readonly property real maximumX: Math.max(minimumX,
+            minimumX + Number(root.visualBounds.width) - width)
+        readonly property real maximumY: Math.max(minimumY,
+            minimumY + Number(root.visualBounds.height) - height)
+
+        x: root.rejected
+            ? Math.max(minimumX, Math.min(maximumX, desiredX)) : desiredX
+        y: root.rejected
+            ? Math.max(minimumY, Math.min(maximumY, desiredY)) : desiredY
         width: Math.max(Kirigami.Units.gridUnit * 5,
             Math.min(root.sourceSize.width, Kirigami.Units.gridUnit * 8))
         height: Math.max(Kirigami.Units.gridUnit * 5,
@@ -85,7 +101,7 @@ Item {
         opacity: root.active ? 0.94 : 0.0
         scale: root.active && root.motionEnabled ? 1.04 : 1.0
 
-        Drag.active: root.active
+        Drag.active: root.active && !root.rejected
         Drag.source: dragProxy
         Drag.keys: [root.dragKey]
         Drag.supportedActions: Qt.MoveAction
@@ -125,6 +141,19 @@ Item {
                 font: Kirigami.Theme.smallFont
                 Accessible.ignored: true
             }
+        }
+
+        Kirigami.Icon {
+            anchors.top: parent.top
+            anchors.right: parent.right
+            anchors.margins: Kirigami.Units.smallSpacing
+            width: Kirigami.Units.iconSizes.smallMedium
+            height: width
+            source: "dialog-cancel"
+            color: Kirigami.Theme.negativeTextColor
+            visible: root.rejected
+            z: 2
+            Accessible.ignored: true
         }
 
         Behavior on scale {

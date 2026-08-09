@@ -53,10 +53,10 @@
       <default>true</default>
     </entry>
     <entry name="windowPreviewTextShadowsEnabled" type="Bool">
-      <default>true</default>
+      <default>false</default>
     </entry>
     <entry name="popupTextShadowsEnabled" type="Bool">
-      <default>true</default>
+      <default>false</default>
     </entry>
     <entry name="menuTextShadowsEnabled" type="Bool">
       <default>true</default>
@@ -163,6 +163,9 @@
     <entry name="folderPopupScale" type="Double">
       <default>1.0</default>
     </entry>
+    <entry name="folderPopupBackgroundOpacityPercent" type="Int">
+      <default>75</default>
+    </entry>
     <entry name="folderPopupShowHeader" type="Bool">
       <default>true</default>
     </entry>
@@ -265,6 +268,12 @@
     </entry>
     <entry name="windowPreviewScale" type="Double">
       <default>1.5</default>
+    </entry>
+    <entry name="windowPreviewBackgroundOpacityPercent" type="Int">
+      <default>75</default>
+    </entry>
+    <entry name="windowPreviewFrameSize" type="String">
+      <default>thin</default>
     </entry>
     <entry name="windowPreviewInfoMode" type="String">
       <default>full</default>

@@ -28,6 +28,23 @@ QtObject {
     }
     readonly property real windowPreviewScale: Math.max(1.5, Math.min(4.5,
         Number(Plasmoid.configuration.windowPreviewScale || 1.5)))
+    readonly property real windowPreviewBackgroundOpacity: {
+        const requestedPercent = Number(
+            Plasmoid.configuration.windowPreviewBackgroundOpacityPercent)
+        const safePercent = Number.isFinite(requestedPercent)
+            ? Math.max(50, Math.min(100,
+                Math.round(requestedPercent / 5) * 5))
+            : 75
+        return safePercent / 100
+    }
+    readonly property string windowPreviewFrameSize: {
+        const size = String(Plasmoid.configuration.windowPreviewFrameSize || "thin")
+        return size === "medium" || size === "wide" ? size : "thin"
+    }
+    readonly property real windowPreviewFrameScale:
+        windowPreviewFrameSize === "wide"
+            ? 2.0
+            : (windowPreviewFrameSize === "medium" ? 1.5 : 1.0)
     readonly property string windowPreviewInfoMode: {
         const mode = String(Plasmoid.configuration.windowPreviewInfoMode || "full")
         return mode === "icon" || mode === "none" ? mode : "full"
@@ -35,9 +52,9 @@ QtObject {
     readonly property int maxPopupRows: Math.max(1, Math.min(8,
         Number(Plasmoid.configuration.maxPopupRows || 4)))
     readonly property bool windowPreviewTextShadowsEnabled:
-        Plasmoid.configuration.windowPreviewTextShadowsEnabled !== false
+        Plasmoid.configuration.windowPreviewTextShadowsEnabled === true
     readonly property bool popupTextShadowsEnabled:
-        Plasmoid.configuration.popupTextShadowsEnabled !== false
+        Plasmoid.configuration.popupTextShadowsEnabled === true
     readonly property bool menuTextShadowsEnabled:
         Plasmoid.configuration.menuTextShadowsEnabled !== false
 
@@ -79,6 +96,15 @@ QtObject {
         Number(Plasmoid.configuration.folderPopupExtraDistance || 0)))
     readonly property real folderPopupScale: Math.max(0.5, Math.min(3.0,
         Number(Plasmoid.configuration.folderPopupScale || 1.0)))
+    readonly property real folderPopupBackgroundOpacity: {
+        const requestedPercent = Number(
+            Plasmoid.configuration.folderPopupBackgroundOpacityPercent)
+        const safePercent = Number.isFinite(requestedPercent)
+            ? Math.max(50, Math.min(100,
+                Math.round(requestedPercent / 5) * 5))
+            : 75
+        return safePercent / 100
+    }
     readonly property bool folderPopupShowHeader:
         Plasmoid.configuration.folderPopupShowHeader !== false
 
@@ -238,7 +264,7 @@ QtObject {
         return ["fromRight", "fromLeft", "fromTop", "fromBottom", "morphOnly"]
             .indexOf(direction) >= 0 ? direction : "fromRight"
     }
-    readonly property int contextMenuVisibleRows: Math.max(3, Math.min(12,
+    readonly property int contextMenuVisibleRows: Math.max(3, Math.min(15,
         Number(Plasmoid.configuration.contextMenuVisibleRows || 6)))
     readonly property int contextMenuRowHeight: Math.max(32, Math.min(64,
         Number(Plasmoid.configuration.contextMenuRowHeight || 46)))

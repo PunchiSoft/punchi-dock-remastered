@@ -20,23 +20,39 @@ Item {
     property int transitionSpeedPercent: 100
     property real mediaGap: 2
     property real maximumAvailableHeight: 0
+    property bool drawContentBackground: true
+    property string backgroundImagePath: "dialogs/background"
+    property real backgroundOpacity: 1.0
+    property real contentFramePaddingPercent: 0
+    property real contentFramePaddingScale: 1.0
+    property real minimumSurfaceWidth: 0
+    property real minimumSurfaceHeight: 0
+    property bool preserveContentGeometry: false
     property real contentTransferProgress: 1
     readonly property Item contentItem: contentHost.children.length > 0
         ? contentHost.children[0]
         : null
     readonly property real contentImplicitWidth: !mediaOnly && contentItem ? contentItem.implicitWidth : 0
     readonly property real contentImplicitHeight: !mediaOnly && contentItem ? contentItem.implicitHeight : 0
+    readonly property real effectiveMediaGap: mediaOnly ? 0 : mediaGap
     readonly property bool mediaRequested: showMedia
         && !!mediaController
         && mediaController.available
     readonly property bool fullMediaFits: maximumAvailableHeight <= 0
-        || contentImplicitHeight + mediaGap + mediaCard.preferredExpandedHeight <= maximumAvailableHeight
+        || contentImplicitHeight + effectiveMediaGap
+            + mediaCard.preferredExpandedHeight <= maximumAvailableHeight
     readonly property bool compactMediaFits: maximumAvailableHeight <= 0
-        || contentImplicitHeight + mediaGap + mediaCard.compactPreferredHeight <= maximumAvailableHeight
+        || contentImplicitHeight + effectiveMediaGap
+            + mediaCard.compactPreferredHeight <= maximumAvailableHeight
     readonly property bool mediaVisible: mediaRequested && compactMediaFits
     readonly property bool mediaSurfacePresent: mediaVisible || mediaExtent > 0.5
     readonly property bool compactMedia: mediaVisible
         && (forceCompactMedia || !fullMediaFits)
+    readonly property real targetMediaExtent: mediaVisible
+        ? mediaCard.implicitHeight + effectiveMediaGap
+        : 0
+    readonly property bool mediaGeometrySettled:
+        Math.abs(mediaExtent - targetMediaExtent) <= 0.5
     readonly property int transitionDuration: transitionsEnabled && Kirigami.Units.longDuration > 1
         ? Math.round(Kirigami.Units.longDuration * 100
             / Math.max(10, Math.min(200, transitionSpeedPercent)))
@@ -44,17 +60,70 @@ Item {
     readonly property real requestedContentExtent: !mediaOnly && contentItem
         ? contentItem.implicitHeight
         : 0
+    property real lastPositiveContentWidth: Math.max(0, root.minimumSurfaceWidth)
+    property real lastPositiveContentHeight: Math.max(0, root.minimumSurfaceHeight)
+    readonly property real targetContentWidth: root.mediaOnly
+        ? 0
+        : (root.contentImplicitWidth > 0
+            ? root.contentImplicitWidth
+            : (root.preserveContentGeometry ? root.lastPositiveContentWidth : 0))
+    readonly property real targetContentHeight: root.mediaOnly
+        ? 0
+        : (root.requestedContentExtent > 0
+            ? root.requestedContentExtent
+            : (root.preserveContentGeometry ? root.lastPositiveContentHeight : 0))
     property real mediaExtent: 0
-    property real contentWidthExtent: contentImplicitWidth
-    property real contentExtent: requestedContentExtent
+    property real contentWidthExtent: root.targetContentWidth
+    property real contentExtent: root.targetContentHeight
     property real mediaRevealProgress: 0
     readonly property bool containsMouse: surfaceHover.hovered
         || (mediaVisible && mediaCard.activeFocus)
-
+    readonly property real safeBackgroundOpacity: {
+        const requestedOpacity = Number(root.backgroundOpacity)
+        return Number.isFinite(requestedOpacity)
+            ? Math.max(0.5, Math.min(1.0, requestedOpacity))
+            : 1.0
+    }
+    readonly property real surfaceContentWidth: Math.max(
+        Math.max(0, root.minimumSurfaceWidth), root.contentWidthExtent)
+    readonly property real surfaceContentHeight: Math.max(
+        Math.max(0, root.minimumSurfaceHeight), root.contentExtent)
+    readonly property real contentFramePadding: {
+        const requestedPercent = Number(root.contentFramePaddingPercent)
+        if (!root.drawContentBackground || root.mediaOnly
+                || !Number.isFinite(requestedPercent)
+                || requestedPercent <= 0) {
+            return 0
+        }
+        const shortSide = Math.min(root.surfaceContentWidth,
+            root.surfaceContentHeight)
+        if (!Number.isFinite(shortSide) || shortSide <= 0) {
+            return 0
+        }
+        const requestedPadding = shortSide * requestedPercent / 100
+        const basePadding = Math.max(Kirigami.Units.smallSpacing,
+            Math.min(Kirigami.Units.gridUnit / 2, requestedPadding))
+        const requestedScale = Number(root.contentFramePaddingScale)
+        const safeScale = Number.isFinite(requestedScale)
+            ? Math.max(1.0, Math.min(2.0, requestedScale))
+            : 1.0
+        return Math.round(Math.min(Kirigami.Units.gridUnit,
+            basePadding * safeScale))
+    }
     signal mediaCloseRequested()
 
-    implicitWidth: Math.max(contentWidthExtent, mediaSurfacePresent ? 280 : 0)
-    implicitHeight: contentExtent + mediaExtent
+    implicitWidth: Math.max(
+        root.surfaceContentWidth + (root.mediaOnly
+            ? 0
+            : root.contentFramePadding * 2),
+        root.mediaSurfacePresent ? 280 : 0)
+    implicitHeight: root.mediaExtent + (root.mediaOnly
+        ? 0
+        : root.surfaceContentHeight + root.contentFramePadding * 2)
+    readonly property bool presentationGeometryReady:
+        Number.isFinite(root.implicitWidth) && root.implicitWidth > 0
+        && Number.isFinite(root.implicitHeight) && root.implicitHeight > 0
+        && root.mediaGeometrySettled
     width: implicitWidth
     height: implicitHeight
 
@@ -62,12 +131,7 @@ Item {
         if (root.surfaceStateFrozen) {
             return
         }
-        if (!mediaVisible) {
-            mediaExtent = 0
-            return
-        }
-
-        mediaExtent = mediaCard.implicitHeight + mediaGap
+        mediaExtent = root.targetMediaExtent
     }
 
     function updateMediaVisibility() {
@@ -92,6 +156,17 @@ Item {
         return mediaVisible && mediaCard.focusFirstControl()
     }
 
+    function rememberPositiveContentGeometry() {
+        if (Number.isFinite(root.contentImplicitWidth)
+                && root.contentImplicitWidth > 0) {
+            root.lastPositiveContentWidth = root.contentImplicitWidth
+        }
+        if (Number.isFinite(root.requestedContentExtent)
+                && root.requestedContentExtent > 0) {
+            root.lastPositiveContentHeight = root.requestedContentExtent
+        }
+    }
+
     function beginContentTransfer() {
         if (!transitionsEnabled || transitionDuration <= 0) {
             contentTransferProgress = 1
@@ -106,13 +181,18 @@ Item {
     onMediaVisibleChanged: updateMediaVisibility()
     onCompactMediaChanged: updateMediaExtent()
     onMediaOnlyChanged: updateMediaExtent()
+    onContentImplicitWidthChanged: root.rememberPositiveContentGeometry()
+    onRequestedContentExtentChanged: root.rememberPositiveContentGeometry()
     onSurfaceStateFrozenChanged: {
         if (!root.surfaceStateFrozen) {
             root.updateMediaVisibility()
         }
     }
 
-    Component.onCompleted: updateMediaVisibility()
+    Component.onCompleted: {
+        root.rememberPositiveContentGeometry()
+        root.updateMediaVisibility()
+    }
 
     Behavior on mediaExtent {
         NumberAnimation {
@@ -177,7 +257,9 @@ Item {
         squarePresentation: root.mediaOnly
         fullCoverPresentation: root.mediaOnly && root.mediaControlsMode === "fullCard"
         transitionDuration: root.transitionDuration
-        height: Math.max(0, root.mediaExtent - root.mediaGap)
+        height: root.mediaOnly
+            ? Math.max(0, root.mediaExtent)
+            : Math.max(0, root.mediaExtent - root.effectiveMediaGap)
         visible: root.mediaVisible || root.mediaExtent > 0.5
         opacity: root.mediaRevealProgress * (0.72 + (0.28 * root.contentTransferProgress))
         scale: 0.98 + (0.02 * root.mediaRevealProgress)
@@ -195,18 +277,20 @@ Item {
         x: 0
         y: root.mediaExtent
         width: root.width
-        height: root.contentExtent
-        imagePath: "dialogs/background"
-        visible: !root.mediaOnly
-        opacity: 0.72 + (0.28 * root.contentTransferProgress)
+        height: root.surfaceContentHeight + root.contentFramePadding * 2
+        imagePath: root.backgroundImagePath
+        visible: root.drawContentBackground && !root.mediaOnly
+        opacity: root.safeBackgroundOpacity
+            * (0.72 + (0.28 * root.contentTransferProgress))
+        Accessible.ignored: true
     }
 
     Item {
         id: contentHost
-        x: 0
-        y: root.mediaExtent
-        width: root.width
-        height: root.contentExtent
+        x: root.contentFramePadding
+        y: root.mediaExtent + root.contentFramePadding
+        width: Math.max(0, root.width - root.contentFramePadding * 2)
+        height: root.surfaceContentHeight
         visible: !root.mediaOnly
         opacity: 0.72 + (0.28 * root.contentTransferProgress)
         transform: Translate {

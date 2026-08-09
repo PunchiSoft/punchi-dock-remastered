@@ -28,7 +28,6 @@ Controls.Dialog {
     property alias itemModeIndex: itemEditor.itemModeIndex
     readonly property string containerLayoutValue: itemEditor.containerLayoutValue
     property alias containerLayoutIndex: itemEditor.containerLayoutIndex
-    property alias containerShowLabelsChecked: itemEditor.containerShowLabelsChecked
     property alias actionsEnabledChecked: actionEditor.actionsEnabledChecked
     property alias actionPopupLimitRowsChecked: actionEditor.actionPopupLimitRowsChecked
     property alias actionPopupMaxVisibleRowsValue: actionEditor.actionPopupMaxVisibleRowsValue
@@ -59,7 +58,6 @@ Controls.Dialog {
     property string gridText: "Grid"
     property string listText: "List"
     property string detailedText: "Detailed"
-    property string showContainerLabelsText: "Show labels"
     property string noteText: "Note"
     property string separatorText: "Separator"
     property string spacerText: "Spacer"
@@ -143,7 +141,6 @@ Controls.Dialog {
             gridText: root.gridText
             listText: root.listText
             detailedText: root.detailedText
-            showContainerLabelsText: root.showContainerLabelsText
             noteText: root.noteText
             separatorText: root.separatorText
             spacerText: root.spacerText

@@ -260,6 +260,10 @@ Item {
     property bool mediaHoverControlsEnabled: false
     property bool externalDropEnabled: false
     property var externalDropValidator: null
+    property bool launcherDropEnabled: false
+    property var launcherDropValidator: null
+    property bool launcherDropInsertAfter: false
+    property string launcherDropApplicationName: ""
     property bool externalDropActivationEnabled: false
     property int externalDropActivationDelay: 1600
     property var externalDropActivator: null
@@ -356,6 +360,7 @@ Item {
     signal hoverExited(var visualParent)
     signal taskMinimized(int itemIndex)
     signal externalUrlsDropped(var urls, var visualParent)
+    signal applicationLauncherDropped(var urls, int insertionIndex, var visualParent)
     signal mediaLaunchRequested()
     signal mediaPlaybackLaunchRequested()
 
@@ -373,6 +378,31 @@ Item {
             return { "accepted": false, "errorCode": "applicationUnavailable" }
         }
         return dockItemContainer.externalDropValidator(urls || [])
+    }
+
+    function validateLauncherDrop(urls) {
+        if (!dockItemContainer.launcherDropEnabled
+                || typeof dockItemContainer.launcherDropValidator !== "function") {
+            return { "accepted": false, "errorCode": "applicationUnavailable" }
+        }
+        return dockItemContainer.launcherDropValidator(urls || [])
+    }
+
+    function isPunchiLauncherDrag(event) {
+        return dockItemContainer.launcherDropEnabled && event && event.hasUrls
+            && event.formats
+            && event.formats.indexOf("application/x-punchi-launcher") >= 0
+    }
+
+    function updateLauncherDropPosition(x, y) {
+        dockItemContainer.launcherDropInsertAfter = dockItemContainer.verticalPanelMode
+            ? y >= dockItemContainer.height / 2
+            : x >= dockItemContainer.width / 2
+    }
+
+    function launcherInsertionIndex() {
+        return Math.max(0, dockItemContainer.itemIndex
+            + (dockItemContainer.launcherDropInsertAfter ? 1 : 0))
     }
 
     function beginExternalDropActivation() {
@@ -401,6 +431,37 @@ Item {
 
     readonly property bool verticalPanelMode: panelLocation === PlasmaCore.Types.LeftEdge
         || panelLocation === PlasmaCore.Types.RightEdge
+    readonly property bool launcherDropPlaceholderVisible:
+        externalDropState === "launcherAcceptable"
+    readonly property real launcherDropLayoutSpacing: {
+        if (!layoutController) {
+            return Kirigami.Units.smallSpacing
+        }
+        const value = verticalPanelMode
+            ? Number(layoutController.rowSpacing)
+            : Number(layoutController.columnSpacing)
+        return Number.isFinite(value) && value >= 0
+            ? value : Kirigami.Units.smallSpacing
+    }
+    readonly property real launcherDropPlaceholderMainExtent: verticalPanelMode
+        ? Math.max(iconSize + 12, visualAreaHeight + labelAreaHeight)
+        : Math.max(iconSize + 12,
+            showPersistentLabel ? Math.round(iconSize * 1.85) : 0)
+    readonly property real launcherDropReservedExtent:
+        launcherDropPlaceholderMainExtent + launcherDropLayoutSpacing
+
+    Layout.leftMargin: launcherDropPlaceholderVisible
+        && !verticalPanelMode && !launcherDropInsertAfter
+        ? launcherDropReservedExtent : 0
+    Layout.rightMargin: launcherDropPlaceholderVisible
+        && !verticalPanelMode && launcherDropInsertAfter
+        ? launcherDropReservedExtent : 0
+    Layout.topMargin: launcherDropPlaceholderVisible
+        && verticalPanelMode && !launcherDropInsertAfter
+        ? launcherDropReservedExtent : 0
+    Layout.bottomMargin: launcherDropPlaceholderVisible
+        && verticalPanelMode && launcherDropInsertAfter
+        ? launcherDropReservedExtent : 0
 
     // Keep layout container measurements fully static to prevent jitter.
     implicitWidth: verticalPanelMode
@@ -428,7 +489,9 @@ Item {
         enabled: dockItemContainer.positionAnimationReady
             && (dockItemContainer.positionTransitionEnabled
                 || (dockItemContainer.layoutController
-                    && dockItemContainer.layoutController.mediaMorphActive))
+                    && (dockItemContainer.layoutController.mediaMorphActive
+                        || (dockItemContainer.layoutController.launcherDropTransitionActive
+                            && Kirigami.Units.longDuration > 0))))
         NumberAnimation {
             duration: dockItemContainer.dockMotionDuration
             easing.type: Easing.InOutCubic
@@ -439,7 +502,9 @@ Item {
         enabled: dockItemContainer.positionAnimationReady
             && (dockItemContainer.positionTransitionEnabled
                 || (dockItemContainer.layoutController
-                    && dockItemContainer.layoutController.mediaMorphActive))
+                    && (dockItemContainer.layoutController.mediaMorphActive
+                        || (dockItemContainer.layoutController.launcherDropTransitionActive
+                            && Kirigami.Units.longDuration > 0))))
         NumberAnimation {
             duration: dockItemContainer.dockMotionDuration
             easing.type: Easing.InOutCubic
@@ -523,6 +588,7 @@ Item {
         z: 8
         anchors.fill: parent
         visible: dockItemContainer.externalDropState !== "none"
+            && dockItemContainer.externalDropState !== "launcherAcceptable"
         radius: 8
         color: dockItemContainer.externalDropState !== "rejected"
             ? Qt.rgba(Kirigami.Theme.highlightColor.r,
@@ -545,7 +611,9 @@ Item {
             source: dockItemContainer.externalDropState === "rejected"
                 ? "dialog-warning-symbolic"
                 : (dockItemContainer.externalDropState === "activated"
-                    ? "go-up-symbolic" : "document-open-symbolic")
+                    ? "go-up-symbolic"
+                    : (dockItemContainer.externalDropState === "launcherAcceptable"
+                        ? "list-add-symbolic" : "document-open-symbolic"))
         }
 
         Rectangle {
@@ -556,6 +624,50 @@ Item {
             visible: dockItemContainer.externalDropState === "activationPending"
             radius: height / 2
             color: Kirigami.Theme.highlightedTextColor
+        }
+    }
+
+    Rectangle {
+        id: launcherDropPlaceholder
+        z: 9
+        visible: dockItemContainer.launcherDropPlaceholderVisible
+        color: Qt.rgba(Kirigami.Theme.highlightColor.r,
+            Kirigami.Theme.highlightColor.g,
+            Kirigami.Theme.highlightColor.b, 0.22)
+        radius: 8
+        border.width: 2
+        border.color: Kirigami.Theme.highlightColor
+        width: dockItemContainer.verticalPanelMode
+            ? dockItemContainer.width
+            : dockItemContainer.launcherDropPlaceholderMainExtent
+        height: dockItemContainer.verticalPanelMode
+            ? dockItemContainer.launcherDropPlaceholderMainExtent
+            : dockItemContainer.height
+        x: dockItemContainer.verticalPanelMode
+            ? Math.round((dockItemContainer.width - width) / 2)
+            : (dockItemContainer.launcherDropInsertAfter
+                ? dockItemContainer.width
+                    + dockItemContainer.launcherDropLayoutSpacing / 2
+                : -dockItemContainer.launcherDropReservedExtent
+                    + dockItemContainer.launcherDropLayoutSpacing / 2)
+        y: dockItemContainer.verticalPanelMode
+            ? (dockItemContainer.launcherDropInsertAfter
+                ? dockItemContainer.height
+                    + dockItemContainer.launcherDropLayoutSpacing / 2
+                : -dockItemContainer.launcherDropReservedExtent
+                    + dockItemContainer.launcherDropLayoutSpacing / 2)
+            : Math.round((dockItemContainer.height - height) / 2)
+        Accessible.ignored: true
+
+        Kirigami.Icon {
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            anchors.margins: 3
+            width: Math.max(14, dockItemContainer.iconSize * 0.34)
+            height: width
+            source: "list-add-symbolic"
+            color: Kirigami.Theme.highlightColor
+            Accessible.ignored: true
         }
     }
 
@@ -867,6 +979,12 @@ Item {
                 return i18nc("@info:accessible", "Release to open local files with %1",
                     dockItemContainer.localizedItemName)
             }
+            if (dockItemContainer.externalDropState === "launcherAcceptable") {
+                return i18nc("@info:accessible", "Release to insert %1 in the Dock",
+                    dockItemContainer.launcherDropApplicationName.length > 0
+                        ? dockItemContainer.launcherDropApplicationName
+                        : i18n("Application"))
+            }
             if (dockItemContainer.externalDropState === "rejected") {
                 return i18nc("@info:accessible", "This file drop cannot be accepted")
             }
@@ -975,11 +1093,53 @@ Item {
     }
 
     DropArea {
+        id: externalDropArea
         anchors.fill: parent
+        anchors.leftMargin: dockItemContainer.launcherDropPlaceholderVisible
+            && !dockItemContainer.verticalPanelMode
+            && !dockItemContainer.launcherDropInsertAfter
+            ? -dockItemContainer.launcherDropReservedExtent : 0
+        anchors.rightMargin: dockItemContainer.launcherDropPlaceholderVisible
+            && !dockItemContainer.verticalPanelMode
+            && dockItemContainer.launcherDropInsertAfter
+            ? -dockItemContainer.launcherDropReservedExtent : 0
+        anchors.topMargin: dockItemContainer.launcherDropPlaceholderVisible
+            && dockItemContainer.verticalPanelMode
+            && !dockItemContainer.launcherDropInsertAfter
+            ? -dockItemContainer.launcherDropReservedExtent : 0
+        anchors.bottomMargin: dockItemContainer.launcherDropPlaceholderVisible
+            && dockItemContainer.verticalPanelMode
+            && dockItemContainer.launcherDropInsertAfter
+            ? -dockItemContainer.launcherDropReservedExtent : 0
         enabled: dockItemContainer.itemType === "trash"
             || dockItemContainer.externalDropEnabled
+            || dockItemContainer.launcherDropEnabled
 
         onEntered: function(drag) {
+            if (dockItemContainer.isPunchiLauncherDrag(drag)) {
+                const launcherValidation
+                    = dockItemContainer.validateLauncherDrop(drag.urls)
+                drag.accepted = launcherValidation.accepted
+                if (launcherValidation.accepted) {
+                    dockItemContainer.cancelExternalDropActivation()
+                    dockItemContainer.launcherDropApplicationName
+                        = String(launcherValidation.name || "")
+                    const position = externalDropArea.mapToItem(
+                        dockItemContainer, drag.x, drag.y)
+                    dockItemContainer.updateLauncherDropPosition(
+                        position.x, position.y)
+                    dockItemContainer.externalDropState = "launcherAcceptable"
+                    if (dockItemContainer.layoutController) {
+                        dockItemContainer.layoutController.launcherDropTransitionActive = true
+                    }
+                }
+                return
+            }
+            if (dockItemContainer.itemType !== "trash"
+                    && !dockItemContainer.externalDropEnabled) {
+                drag.accepted = false
+                return
+            }
             if (!drag.hasUrls) {
                 drag.accepted = false
                 return
@@ -997,13 +1157,53 @@ Item {
             }
         }
 
+        onPositionChanged: function(drag) {
+            if (dockItemContainer.externalDropState === "launcherAcceptable") {
+                const position = externalDropArea.mapToItem(
+                    dockItemContainer, drag.x, drag.y)
+                dockItemContainer.updateLauncherDropPosition(
+                    position.x, position.y)
+                drag.accepted = true
+            }
+        }
+
         onExited: {
             dockItemContainer.cancelExternalDropActivation()
             dockItemContainer.externalDropState = "none"
+            dockItemContainer.launcherDropApplicationName = ""
+            if (dockItemContainer.layoutController) {
+                dockItemContainer.layoutController.launcherDropTransitionActive = false
+            }
         }
 
         onDropped: function(drop) {
             dockItemContainer.cancelExternalDropActivation()
+            if (dockItemContainer.isPunchiLauncherDrag(drop)) {
+                const launcherValidation
+                    = dockItemContainer.validateLauncherDrop(drop.urls)
+                drop.accepted = launcherValidation.accepted
+                if (launcherValidation.accepted) {
+                    const position = externalDropArea.mapToItem(
+                        dockItemContainer, drop.x, drop.y)
+                    dockItemContainer.updateLauncherDropPosition(
+                        position.x, position.y)
+                    dockItemContainer.applicationLauncherDropped(
+                        drop.urls, dockItemContainer.launcherInsertionIndex(),
+                        dockItemContainer)
+                }
+                dockItemContainer.externalDropState = "none"
+                dockItemContainer.launcherDropApplicationName = ""
+                if (dockItemContainer.layoutController) {
+                    dockItemContainer.layoutController.launcherDropTransitionActive = false
+                }
+                return
+            }
+            if (dockItemContainer.itemType !== "trash"
+                    && !dockItemContainer.externalDropEnabled) {
+                drop.accepted = false
+                dockItemContainer.externalDropState = "none"
+                return
+            }
             if (dockItemContainer.itemType === "trash" && drop.hasUrls) {
                 dockItemContainer.layoutController.trashUrlsDropped(drop.urls)
                 dockItemContainer.externalDropState = "none"

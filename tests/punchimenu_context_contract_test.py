@@ -84,6 +84,22 @@ def main() -> int:
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuDragLayer.qml"
     ).read_text(encoding="utf-8")
+    icon_metrics_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuIconMetrics.qml"
+    ).read_text(encoding="utf-8")
+    folder_tile_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuFolderTile.qml"
+    ).read_text(encoding="utf-8")
+    folder_view_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuFolderView.qml"
+    ).read_text(encoding="utf-8")
+    folder_surface_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuFolderSurface.qml"
+    ).read_text(encoding="utf-8")
     main_source = (PROJECT_ROOT / "contents/ui/main.qml").read_text(encoding="utf-8")
     config_items_source = (
         PROJECT_ROOT / "contents/ui/config/code/configItems.js"
@@ -109,6 +125,10 @@ def main() -> int:
     action_background_source = (
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuActionBackground.qml"
+    ).read_text(encoding="utf-8")
+    item_highlight_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuItemHighlight.qml"
     ).read_text(encoding="utf-8")
     session_view_source = (
         PROJECT_ROOT
@@ -151,6 +171,7 @@ def main() -> int:
     discovery_implementation_source = (
         PROJECT_ROOT / "src/systemdiscovery.cpp"
     ).read_text(encoding="utf-8")
+    agents_source = (PROJECT_ROOT / "AGENTS.md").read_text(encoding="utf-8")
     if "readonly property string appCommand" not in normal_source:
         print("PunchiMenuNormal.qml: favorite appCommand is not exposed", file=sys.stderr)
         passed = False
@@ -161,11 +182,12 @@ def main() -> int:
         print("PunchiMenuOverlay.qml: the retired category carousel is still present", file=sys.stderr)
         passed = False
     icon_scale_contract = (
-        (config_items_source, "Math.max(75, Math.min(200", "persistent normalization"),
-        (main_source, "Math.max(75, Math.min(200", "runtime percentage clamp"),
-        (dialog_source, "to: 200", "configuration slider maximum"),
-        (overlay_source, "Math.max(0.75, Math.min(2.0", "fullscreen scale clamp"),
-        (normal_source, "Math.max(0.75, Math.min(2.0", "Normal scale clamp"),
+        (config_items_source, "Math.max(75, Math.min(150", "persistent normalization"),
+        (main_source, "Math.max(75, Math.min(150", "runtime percentage clamp"),
+        (dialog_source, "to: 150", "legacy configuration slider maximum"),
+        (punchi_menu_config_source, "to: 150", "configuration slider maximum"),
+        (overlay_source, "Math.max(0.75, Math.min(1.5", "fullscreen scale clamp"),
+        (normal_source, "Math.max(0.75, Math.min(1.5", "Normal scale clamp"),
     )
     for source, marker, description in icon_scale_contract:
         if marker not in source:
@@ -174,6 +196,216 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    icon_geometry_contract = (
+        (
+            icon_metrics_source,
+            "readonly property int effectiveSize",
+            "shared effective-size projection",
+        ),
+        (
+            icon_metrics_source,
+            "Math.min(desiredSize, availableSize)",
+            "cell geometry cap",
+        ),
+        (
+            normal_source,
+            "requestedIconSize: applicationDelegate.iconSize",
+            "Normal folder/application size handoff",
+        ),
+        (
+            overlay_source,
+            "requestedIconSize: appDelegate.safeIconSize",
+            "Fullscreen folder/application size handoff",
+        ),
+        (
+            folder_tile_source,
+            "readonly property int previewSize: iconMetrics.effectiveSize",
+            "folder tile geometry cap",
+        ),
+        (
+            folder_view_source,
+            "Kirigami.Units.gridUnit * 7.5",
+            "folder column width independent from icon scale",
+        ),
+    )
+    for source, marker, description in icon_geometry_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu icon geometry: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "property real iconScale" in folder_tile_source:
+        print(
+            "PunchiMenu icon geometry: folder tiles must not receive raw scale",
+            file=sys.stderr,
+        )
+        passed = False
+    if "iconSize + Kirigami.Units.gridUnit" in folder_view_source:
+        print(
+            "PunchiMenu icon geometry: folder columns must not depend on icon size",
+            file=sys.stderr,
+        )
+        passed = False
+    folder_grid_limits_contract = (
+        (
+            config_items_source,
+            "function normalizedPunchiMenuNormalFolderMaximumColumns(value)",
+            "persistent Normal column normalization",
+        ),
+        (
+            config_items_source,
+            "function normalizedPunchiMenuNormalFolderMaximumRows(value)",
+            "persistent Normal row normalization",
+        ),
+        (
+            config_items_source,
+            "function normalizedPunchiMenuFullScreenFolderMaximumColumns(value)",
+            "persistent Fullscreen column normalization",
+        ),
+        (
+            config_items_source,
+            "function normalizedPunchiMenuFullScreenFolderMaximumRows(value)",
+            "persistent Fullscreen row normalization",
+        ),
+        (
+            config_items_source,
+            '"normalFolderMaximumColumns": 3',
+            "Normal column default",
+        ),
+        (
+            config_items_source,
+            '"normalFolderMaximumRows": 3',
+            "Normal row default",
+        ),
+        (
+            config_items_source,
+            '"fullScreenFolderMaximumColumns": 5',
+            "Fullscreen column default",
+        ),
+        (
+            config_items_source,
+            '"fullScreenFolderMaximumRows": 5',
+            "Fullscreen row default",
+        ),
+        (
+            workflow_source,
+            "function setPunchiMenuNormalFolderMaximumColumns(columns)",
+            "configuration workflow",
+        ),
+        (
+            config_page_source,
+            "onNormalFolderMaximumColumnsSelected:",
+            "legacy configuration routing",
+        ),
+        (
+            config_page_source,
+            "function setPunchiMenuNormalFolderMaximumColumns(columns)",
+            "legacy configuration bridge",
+        ),
+        (
+            punchi_menu_config_source,
+            'i18n("Maximum folder columns:")',
+            "dedicated column control",
+        ),
+        (
+            punchi_menu_config_source,
+            'i18n("Maximum folder rows:")',
+            "dedicated row control",
+        ),
+        (
+            main_source,
+            "readonly property int configuredPunchiMenuNormalFolderMaximumColumns",
+            "reactive runtime projection",
+        ),
+        (
+            normal_source,
+            "property int folderMaximumColumns: 3",
+            "Normal column property",
+        ),
+        (
+            normal_source,
+            "property int folderMaximumRows: 3",
+            "Normal row property",
+        ),
+        (
+            overlay_source,
+            "property int folderMaximumColumns: 5",
+            "Fullscreen column property",
+        ),
+        (
+            overlay_source,
+            "property int folderMaximumRows: 5",
+            "Fullscreen row property",
+        ),
+        (
+            normal_source,
+            "maximumColumnCount: root.safeFolderMaximumColumns",
+            "Normal folder-surface handoff",
+        ),
+        (
+            overlay_source,
+            "maximumColumnCount: root.safeFolderMaximumColumns",
+            "Fullscreen folder-surface handoff",
+        ),
+        (
+            folder_surface_source,
+            "automaticCompactFolderColumnCount",
+            "content-aware preferred width",
+        ),
+        (
+            folder_view_source,
+            "geometricColumnCapacity",
+            "available-width capacity",
+        ),
+        (
+            folder_view_source,
+            "visibleRowCount",
+            "bounded visible rows",
+        ),
+        (
+            folder_view_source,
+            "Math.min(\n        safeMaximumColumnCount, geometricColumnCapacity)",
+            "effective safe maximum",
+        ),
+    )
+    for source, marker, description in folder_grid_limits_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu folder grid limits: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    for projection in (
+        "configuredPunchiMenuNormalFolderMaximumColumns",
+        "configuredPunchiMenuNormalFolderMaximumRows",
+        "configuredPunchiMenuFullScreenFolderMaximumColumns",
+        "configuredPunchiMenuFullScreenFolderMaximumRows",
+    ):
+        if main_source.count("root." + projection) != 1:
+            print(
+                f"PunchiMenu folder grid limits: invalid runtime handoff for {projection}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "to: page.normalModeSelected ? 3 : 5" not in punchi_menu_config_source:
+        print(
+            "PunchiMenu folder grid limits: KCM ranges must switch between Normal 1-3 and Fullscreen 1-5",
+            file=sys.stderr,
+        )
+        passed = False
+    if "to: root.normalModeSelected ? 3 : 5" not in dialog_source:
+        print(
+            "PunchiMenu folder grid limits: legacy ranges must switch between Normal 1-3 and Fullscreen 1-5",
+            file=sys.stderr,
+        )
+        passed = False
+    if "## Contrato único de hover y estados interactivos" not in agents_source:
+        print(
+            "AGENTS.md: the canonical hover interaction contract is missing",
+            file=sys.stderr,
+        )
+        passed = False
     distribution_name_contract = (
         (
             discovery_header_source,
@@ -360,7 +592,7 @@ def main() -> int:
         (overlay_source, "PunchiMenuSessionView {", "dedicated session view"),
         (overlay_source, '? "view-grid"', "theme-native return-to-grid icon"),
         (overlay_source, "readonly property int headerControlSize", "shared header control metric"),
-        (overlay_source, "background: PunchiMenuSearchBackground {", "themed header action surface"),
+        (overlay_source, "background: PunchiMenuActionBackground {", "themed header action surface"),
         (overlay_source, "if (!root.sessionViewActive)", "wheel isolation"),
         (session_view_source, "signal logoutRequested()", "logout intent"),
         (session_view_source, "signal restartRequested()", "restart intent"),
@@ -448,6 +680,135 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    item_highlight_contract = (
+        "Qt.alpha(Kirigami.Theme.highlightColor, 0.20)",
+        "border.width: focused || selected ? 2 : 0",
+        "Kirigami.Units.cornerRadius * 2",
+        "scale: pressed ? 0.97",
+        "Behavior on color",
+        "Behavior on scale",
+    )
+    for marker in item_highlight_contract:
+        if marker not in item_highlight_source:
+            print(
+                f"PunchiMenu shared item highlight: missing contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    for source, label, minimum_count in (
+        (normal_source, "Normal", 2),
+        (overlay_source, "Fullscreen", 2),
+        (folder_tile_source, "folder tile", 1),
+        (folder_view_source, "folder contents", 1),
+    ):
+        if source.count("PunchiMenuItemHighlight {") < minimum_count:
+            print(
+                f"PunchiMenu {label}: shared item highlight is not reused",
+                file=sys.stderr,
+            )
+            passed = False
+    if overlay_source.count("selected: appDelegate.highlighted") != 2:
+        print(
+            "PunchiMenu Fullscreen: wheel hover must restore both folder and application borders immediately",
+            file=sys.stderr,
+        )
+        passed = False
+    for source, mode in ((normal_source, "Normal"), (overlay_source, "Fullscreen")):
+        drag_reorder_contract = (
+            'property string dropIntent: "none"',
+            "function updateDropIntent(drag)",
+            'dropIntent === "insertBefore"',
+            'dropIntent = "insertAfter"',
+            'dropIntent = "group"',
+            "function beforeNodeIdForInsertion(targetIndex, insertAfter)",
+        )
+        for marker in drag_reorder_contract:
+            if marker not in source:
+                print(
+                    f"PunchiMenu {mode} DnD: missing shared reorder/group contract: {marker}",
+                    file=sys.stderr,
+                )
+                passed = False
+    fullscreen_edge_indicator_contract = (
+        "readonly property int gridColumn:",
+        "readonly property bool atLeadingPageEdge:",
+        "readonly property bool atTrailingPageEdge:",
+        "x: atLeadingPageEdge ? 0",
+        "? parent.width - width",
+        ": centeredX",
+    )
+    for marker in fullscreen_edge_indicator_contract:
+        if marker not in overlay_source:
+            print(
+                "PunchiMenu Fullscreen DnD: insertion indicator must stay fully "
+                f"inside clipped page edges: missing {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    unstable_scroll_reserve = (
+        "readonly property real verticalScrollBarReserve:\n"
+        "                        verticalScrollRequired"
+    )
+    if unstable_scroll_reserve in normal_source:
+        print(
+            "PunchiMenu Normal: scrollbar reserve still depends on the layout it changes",
+            file=sys.stderr,
+        )
+        passed = False
+    if (
+        "readonly property real verticalScrollBarReserve:\n"
+        "                        Math.max(1, applicationsScrollBar.implicitWidth)"
+    ) not in normal_source:
+        print(
+            "PunchiMenu Normal: stable scrollbar channel is missing",
+            file=sys.stderr,
+        )
+        passed = False
+    if "boundsBehavior: Flickable.StopAtBounds" not in normal_source:
+        print(
+            "PunchiMenu Normal: the application grid must stop at its bounds",
+            file=sys.stderr,
+        )
+        passed = False
+    stable_scrollbar_contract = (
+        "readonly property int stableRowCount: Math.ceil(",
+        "readonly property real stableContentHeight:",
+        "stableRowCount * cellHeight",
+        "stableContentHeight > height + 0.5",
+        "id: applicationsScrollBar",
+        "size: stableSize",
+        "position: stablePosition",
+        "position\n                                    * applicationsGrid.stableContentHeight",
+    )
+    for marker in stable_scrollbar_contract:
+        if marker not in normal_source:
+            print(
+                "PunchiMenu Normal: stable row-based scrollbar contract is missing: "
+                f"{marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "PlasmaComponents.ScrollBar.vertical:" in normal_source:
+        print(
+            "PunchiMenu Normal: the unstable GridView-attached scrollbar returned",
+            file=sys.stderr,
+        )
+        passed = False
+    fullscreen_lazy_surface_contract = (
+        "id: sessionViewLoader",
+        "active: root.sessionViewRequested || root.sessionViewActive",
+        "id: folderSurfaceLoader",
+        "folderSurfaceLoader.active = true",
+        "active: false\n        asynchronous: false",
+    )
+    for marker in fullscreen_lazy_surface_contract:
+        if marker not in overlay_source:
+            print(
+                "PunchiMenu Fullscreen: inactive secondary surfaces must remain "
+                f"lazy: missing {marker}",
+                file=sys.stderr,
+            )
+            passed = False
     if avatar_component_source.count("antialiasing: true") < 3:
         print(
             "PunchiMenu Fullscreen avatar: background, mask and fallback border need antialiasing",
@@ -480,7 +841,9 @@ def main() -> int:
             )
             passed = False
     paged_grid_contract = (
-        'systemDiscovery.requestApplications("All")',
+        "property bool applicationCatalogLoaded: false",
+        "applicationsLoading = !applicationCatalogLoaded",
+        "root.systemDiscovery.requestApplicationCatalog()",
         "snapMode: ListView.SnapOneItem",
         "preferredHighlightEnd: 0",
         "maximumFlickVelocity: 4 * width",
@@ -532,6 +895,30 @@ def main() -> int:
         if marker not in overlay_source:
             print(
                 f"PunchiMenuOverlay.qml: missing paged-grid contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if 'systemDiscovery.requestApplications("All")' in overlay_source:
+        print(
+            "PunchiMenu Fullscreen first open: the central catalog must not be queried twice",
+            file=sys.stderr,
+        )
+        passed = False
+    if main_source.count("systemDiscovery.requestApplicationCatalog()") != 1:
+        print(
+            "PunchiMenu first open: main must preload the catalog once, not on every toggle",
+            file=sys.stderr,
+        )
+        passed = False
+    sycoca_refresh_contract = (
+        "#include <KSycoca>",
+        "KSycoca::self(), &KSycoca::databaseChanged",
+        "requestApplicationCatalog();",
+    )
+    for marker in sycoca_refresh_contract:
+        if marker not in discovery_implementation_source:
+            print(
+                f"PunchiMenu catalog refresh: missing KDE service database contract: {marker}",
                 file=sys.stderr,
             )
             passed = False
@@ -616,15 +1003,21 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
-    if overlay_source.count("background: PunchiMenuSearchBackground {") != 3:
+    if overlay_source.count("PunchiMenuSearchBackground {") != 1:
         print(
-            "PunchiMenu Fullscreen: search and header actions must share one themed surface",
+            "PunchiMenu Fullscreen: only the search field may use the search surface",
             file=sys.stderr,
         )
         passed = False
-    if overlay_source.count("icon.color: highlightedContent") < 1:
+    if overlay_source.count("background: PunchiMenuActionBackground {") != 4:
         print(
-            "PunchiMenu Fullscreen: Close must use the theme highlighted text color",
+            "PunchiMenu Fullscreen: all four header controls need the action surface",
+            file=sys.stderr,
+        )
+        passed = False
+    if overlay_source.count("icon.color: highlightedContent") < 4:
+        print(
+            "PunchiMenu Fullscreen: header icons must use the highlighted text color",
             file=sys.stderr,
         )
         passed = False
@@ -905,7 +1298,7 @@ def main() -> int:
         ),
         (
             config_items_source,
-            "Math.max(75, Math.min(150",
+            "Math.max(75, Math.min(110",
             "safe Favorites scale range",
         ),
         (
@@ -1166,9 +1559,9 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
-    if overlay_source.count("PunchiMenuSearchBackground {") != 4:
+    if overlay_source.count("PunchiMenuSearchBackground {") != 1:
         print(
-            "PunchiMenuOverlay.qml: search and its three header actions must share the pill surface",
+            "PunchiMenuOverlay.qml: search must remain the only pill surface",
             file=sys.stderr,
         )
         passed = False
@@ -1501,13 +1894,20 @@ def main() -> int:
 
     normal_feedback_contract = (
         "readonly property int operationMessageDuration: 7000",
+        "property int operationSecondsRemaining: 0",
+        '"%1 · %2 s"',
         "id: operationMessageTimer",
         "id: operationFeedback",
+        "id: operationFeedbackHover",
         "z: 400",
+        "Kirigami.Units.gridUnit * 36",
         "showCloseButton: true",
         "function dismissOperationMessage()",
         "operationMessageTimer.stop()",
-        "operationMessageTimer.restart()",
+        "operationMessageTimer.start()",
+        "interval: 1000",
+        "repeat: true",
+        "Accessible.name: root.operationBaseMessage",
         "detailedApplicationFeedback: true",
     )
     for marker in normal_feedback_contract:
@@ -1517,6 +1917,12 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    if "operationMessageTimer.restart()" in normal_source:
+        print(
+            "PunchiMenu Normal feedback: hover must resume without resetting time",
+            file=sys.stderr,
+        )
+        passed = False
     if normal_source.count("Kirigami.InlineMessage {") != 1:
         print(
             "PunchiMenu Normal feedback: status message must have one top-level owner",
@@ -1526,12 +1932,19 @@ def main() -> int:
 
     fullscreen_feedback_contract = (
         "readonly property int operationMessageDuration: 7000",
+        "property int operationSecondsRemaining: 0",
+        '"%1 · %2 s"',
         "id: operationMessageTimer",
         "id: operationInlineMessage",
+        "id: operationInlineMessageHover",
+        "width: Math.min(gridArea.width, Kirigami.Units.gridUnit * 36)",
         "showCloseButton: true",
         "function dismissOperationMessage()",
         "operationMessageTimer.stop()",
-        "operationMessageTimer.restart()",
+        "operationMessageTimer.start()",
+        "interval: 1000",
+        "repeat: true",
+        "Accessible.name: root.operationBaseMessage",
     )
     for marker in fullscreen_feedback_contract:
         if marker not in overlay_source:
@@ -1540,6 +1953,12 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    if "operationMessageTimer.restart()" in overlay_source:
+        print(
+            "PunchiMenu Fullscreen feedback: hover must resume without resetting time",
+            file=sys.stderr,
+        )
+        passed = False
 
     dedicated_config_contract = (
         (
@@ -1566,6 +1985,21 @@ def main() -> int:
             punchi_menu_config_source,
             "ConfigItemsJS.prunePunchiMenu(item)",
             "shared item normalization",
+        ),
+        (
+            punchi_menu_config_source,
+            'import "code/items.js" as ItemsJS',
+            "canonical default item source",
+        ),
+        (
+            punchi_menu_config_source,
+            "function effectiveDockItemsJson()",
+            "empty-instance fallback resolver",
+        ),
+        (
+            punchi_menu_config_source,
+            "ItemsJS.defaultJson()",
+            "canonical empty-instance fallback",
         ),
         (
             punchi_menu_config_source,
@@ -1615,6 +2049,13 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    if punchi_menu_config_source.count(
+            "ConfigItemsJS.parseJsonArray(effectiveDockItemsJson())") != 2:
+        print(
+            "ConfigPunchiMenu.qml: loading and editing must share the canonical fallback",
+            file=sys.stderr,
+        )
+        passed = False
     if "Punchi.BlurBehindController" in normal_source or "surfaceOpacity" in normal_source:
         print("PunchiMenuNormal.qml: manual surface blur was not retired", file=sys.stderr)
         passed = False

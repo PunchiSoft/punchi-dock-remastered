@@ -209,6 +209,18 @@ function openPunchiMenuDialog(index) {
     punchiMenuDialog.favoriteIconScalePercent =
         ConfigItemsJS.normalizedPunchiMenuFavoriteIconScalePercent(
             item.favoriteIconScalePercent)
+    punchiMenuDialog.normalFolderMaximumColumns =
+        ConfigItemsJS.normalizedPunchiMenuNormalFolderMaximumColumns(
+            item.normalFolderMaximumColumns)
+    punchiMenuDialog.normalFolderMaximumRows =
+        ConfigItemsJS.normalizedPunchiMenuNormalFolderMaximumRows(
+            item.normalFolderMaximumRows)
+    punchiMenuDialog.fullScreenFolderMaximumColumns =
+        ConfigItemsJS.normalizedPunchiMenuFullScreenFolderMaximumColumns(
+            item.fullScreenFolderMaximumColumns)
+    punchiMenuDialog.fullScreenFolderMaximumRows =
+        ConfigItemsJS.normalizedPunchiMenuFullScreenFolderMaximumRows(
+            item.fullScreenFolderMaximumRows)
     punchiMenuDialog.showDistributionName =
         item.showDistributionName !== false
     punchiMenuDialog.normalWidthPercent =
@@ -305,6 +317,43 @@ function setPunchiMenuFavoriteIconScalePercent(percent) {
     ConfigItemsJS.prunePunchiMenu(item)
     setItems(nextItems)
     punchiMenuDialog.favoriteIconScalePercent = item.favoriteIconScalePercent
+}
+
+function setPunchiMenuFolderLimit(fieldName, value, normalizer) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "punchimenu") {
+        return
+    }
+
+    item[fieldName] = normalizer(value)
+    ConfigItemsJS.prunePunchiMenu(item)
+    setItems(nextItems)
+    punchiMenuDialog[fieldName] = item[fieldName]
+}
+
+function setPunchiMenuNormalFolderMaximumColumns(columns) {
+    setPunchiMenuFolderLimit("normalFolderMaximumColumns", columns,
+        ConfigItemsJS.normalizedPunchiMenuNormalFolderMaximumColumns)
+}
+
+function setPunchiMenuNormalFolderMaximumRows(rows) {
+    setPunchiMenuFolderLimit("normalFolderMaximumRows", rows,
+        ConfigItemsJS.normalizedPunchiMenuNormalFolderMaximumRows)
+}
+
+function setPunchiMenuFullScreenFolderMaximumColumns(columns) {
+    setPunchiMenuFolderLimit("fullScreenFolderMaximumColumns", columns,
+        ConfigItemsJS.normalizedPunchiMenuFullScreenFolderMaximumColumns)
+}
+
+function setPunchiMenuFullScreenFolderMaximumRows(rows) {
+    setPunchiMenuFolderLimit("fullScreenFolderMaximumRows", rows,
+        ConfigItemsJS.normalizedPunchiMenuFullScreenFolderMaximumRows)
 }
 
 function setPunchiMenuShowDistributionName(enabled) {

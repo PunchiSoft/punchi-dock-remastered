@@ -30,6 +30,12 @@ Item {
     readonly property real slideDistance: Kirigami.Units.smallSpacing * 2
         * intensityFactor
     readonly property real initialOpacity: Math.max(0, 1 - (0.72 * intensityFactor))
+    readonly property real safeImplicitWidth: Number.isFinite(root.implicitWidth)
+        ? Math.max(1, root.implicitWidth)
+        : 1
+    readonly property real safeImplicitHeight: Number.isFinite(root.implicitHeight)
+        ? Math.max(1, root.implicitHeight)
+        : 1
 
     signal closeAnimationFinished()
     readonly property real slideX: {
@@ -59,8 +65,11 @@ Item {
 
     implicitWidth: contentItem ? contentItem.implicitWidth : 0
     implicitHeight: contentItem ? contentItem.implicitHeight : 0
-    width: implicitWidth
-    height: implicitHeight
+    // PlasmaQuick::Dialog asserts on a zero-sized mainItem before it can map
+    // the window. Keep the real geometry valid while guarded dialogs wait for
+    // their content's implicit geometry to become ready.
+    width: root.safeImplicitWidth
+    height: root.safeImplicitHeight
     Layout.minimumWidth: implicitWidth
     Layout.maximumWidth: implicitWidth
     Layout.minimumHeight: implicitHeight

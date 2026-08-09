@@ -19,6 +19,7 @@
 #include <KService>
 #include <KServiceAction>
 #include <KShell>
+#include <KSycoca>
 
 #include <QDir>
 #include <QFileInfo>
@@ -427,6 +428,9 @@ QVariantList discoverApplications(const QString &category, qsizetype maximumCoun
 SystemDiscovery::SystemDiscovery(QObject *parent)
     : QObject(parent)
 {
+    connect(KSycoca::self(), &KSycoca::databaseChanged, this, [this]() {
+        requestApplicationCatalog();
+    });
 }
 
 QString SystemDiscovery::distributionName() const
@@ -625,6 +629,41 @@ QVariantMap SystemDiscovery::validateDroppedUrls(const QVariantList &urls) const
         {QStringLiteral("maximumUrlBytes"), DropUrlPolicy::maximumUrlBytes},
         {QStringLiteral("maximumBatchBytes"), DropUrlPolicy::maximumBatchBytes},
     };
+}
+
+QVariantMap SystemDiscovery::validateApplicationLauncherDrop(const QVariantList &urls) const
+{
+    if (urls.size() != 1) {
+        return {
+            {QStringLiteral("accepted"), false},
+            {QStringLiteral("errorCode"), QStringLiteral("launcher-count")},
+        };
+    }
+
+    const QUrl launcherUrl = urls.constFirst().toUrl();
+    if (!launcherUrl.isValid() || !launcherUrl.isLocalFile()
+        || !launcherUrl.host().isEmpty() || launcherUrl.hasQuery() || launcherUrl.hasFragment()) {
+        return {
+            {QStringLiteral("accepted"), false},
+            {QStringLiteral("errorCode"), QStringLiteral("invalid-launcher-url")},
+        };
+    }
+
+    const DesktopLauncherResolver::Resolution launcher
+        = DesktopLauncherResolver::resolveLocalFile(launcherUrl.toLocalFile());
+    if (!launcher || launcher.service->noDisplay()) {
+        return {
+            {QStringLiteral("accepted"), false},
+            {QStringLiteral("errorCode"), QStringLiteral("unsafe-launcher")},
+        };
+    }
+
+    QVariantMap result = serviceMap(launcher.service);
+    result.insert(QStringLiteral("accepted"), true);
+    result.insert(QStringLiteral("errorCode"), QString());
+    result.insert(QStringLiteral("launcherUrl"),
+        QUrl::fromLocalFile(launcher.canonicalPath).toString());
+    return result;
 }
 
 void SystemDiscovery::launchApplication(const QString &storageId)

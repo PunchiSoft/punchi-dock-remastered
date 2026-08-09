@@ -265,9 +265,11 @@ QtObject {
         const itemBottomMargin = Math.max(0, (panelItemHeight - effectiveIconSize) / 2)
         return outerBottomMargin + itemBottomMargin
     }
+    readonly property int taskPopupReservedVerticalExtent:
+        root.inPanel && !root.verticalPanel ? panelPreferredHeight : 0
     readonly property int taskPopupAvailableHeight: Math.max(240,
         Number(root.availableScreenRect.height || 640)
-            - (root.inPanel ? panelPreferredHeight : 0) - 24)
+            - taskPopupReservedVerticalExtent - 24)
     readonly property int taskPopupAvailableWidth: Math.max(280,
         Number(root.availableScreenRect.width || 800) - 48)
 }
