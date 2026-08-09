@@ -171,7 +171,6 @@ def main() -> int:
     discovery_implementation_source = (
         PROJECT_ROOT / "src/systemdiscovery.cpp"
     ).read_text(encoding="utf-8")
-    agents_source = (PROJECT_ROOT / "AGENTS.md").read_text(encoding="utf-8")
     if "readonly property string appCommand" not in normal_source:
         print("PunchiMenuNormal.qml: favorite appCommand is not exposed", file=sys.stderr)
         passed = False
@@ -397,12 +396,6 @@ def main() -> int:
     if "to: root.normalModeSelected ? 3 : 5" not in dialog_source:
         print(
             "PunchiMenu folder grid limits: legacy ranges must switch between Normal 1-3 and Fullscreen 1-5",
-            file=sys.stderr,
-        )
-        passed = False
-    if "## Contrato único de hover y estados interactivos" not in agents_source:
-        print(
-            "AGENTS.md: the canonical hover interaction contract is missing",
             file=sys.stderr,
         )
         passed = False

@@ -312,42 +312,17 @@ FocusScope {
                 || fullCoverVolume.focusControl()
         }
 
-        Image {
-            id: fullCoverSource
+        RoundedImage {
+            id: fullCoverArtwork
             anchors.fill: parent
             source: root.artUrl
-            fillMode: Image.PreserveAspectCrop
-            asynchronous: true
-            cache: true
-            visible: false
-            layer.enabled: true
-        }
-
-        Item {
-            id: fullCoverMask
-            anchors.fill: parent
-            visible: false
-            layer.enabled: true
-
-            Rectangle {
-                anchors.fill: parent
-                radius: root.cornerRadius
-                color: "black"
-            }
-        }
-
-        Effects.MultiEffect {
-            anchors.fill: parent
-            source: fullCoverSource
-            maskEnabled: true
-            maskSource: fullCoverMask
-            visible: fullCoverSource.status === Image.Ready
+            radius: root.cornerRadius
         }
 
         Rectangle {
             anchors.fill: parent
             radius: root.cornerRadius
-            visible: fullCoverSource.status !== Image.Ready
+            visible: !fullCoverArtwork.ready
             color: Kirigami.Theme.backgroundColor
 
             Kirigami.Icon {

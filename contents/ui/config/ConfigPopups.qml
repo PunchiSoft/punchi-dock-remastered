@@ -18,6 +18,7 @@ Item {
     property string previewStyle: "card"
     property real cfg_windowPreviewScale: 1.5
     property alias cfg_windowPreviewBackgroundOpacityPercent: previewBackgroundOpacitySlider.value
+    property alias cfg_mediaCardBackgroundOpacityPercent: mediaCardBackgroundOpacitySlider.value
     property string cfg_windowPreviewFrameSize: "thin"
     property string cfg_windowPreviewInfoMode: "full"
     property string mediaControlsMode: "none"
@@ -194,6 +195,49 @@ Item {
             Layout.maximumWidth: page.contentWidthHint
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Media card opacity:")
+            enabled: page.mediaControlsMode === "card"
+                || page.mediaControlsMode === "fullCard"
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: mediaCardBackgroundOpacitySlider
+                from: 50
+                to: 100
+                stepSize: 5
+                snapMode: Controls.Slider.SnapAlways
+                value: 75
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Media card background opacity")
+                Accessible.description: i18n("Only the media card background changes; artwork, controls and text remain fully opaque.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: i18n("%1%", Math.round(mediaCardBackgroundOpacitySlider.value))
+                font.bold: true
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 54
+            }
+        }
+
+        Controls.Label {
+            text: i18n("Only the media card background changes; artwork, controls and text remain fully opaque.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+            enabled: page.mediaControlsMode === "card"
+                || page.mediaControlsMode === "fullCard"
         }
 
         RowLayout {

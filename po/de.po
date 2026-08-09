@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.0\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-09 11:04-0400\n"
+"POT-Creation-Date: 2026-08-09 15:25-0400\n"
 "PO-Revision-Date: 2026-07-26 04:24-0400\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -97,14 +97,14 @@ msgstr "%1 pt"
 #: contents/ui/config/ConfigMenus.qml:158
 #: contents/ui/config/ConfigMenus.qml:186
 #: contents/ui/config/ConfigMenus.qml:214
-#: contents/ui/config/ConfigPunchiMenu.qml:592
+#: contents/ui/config/ConfigPunchiMenu.qml:600
 msgid "%1 px"
 msgstr "%1 px"
 
-#: contents/ui/config/components/ActionDialog.qml:80
 #: contents/ui/config/ConfigItems.qml:673
 #: contents/ui/config/ItemActionEditor.qml:34
 #: contents/ui/config/ItemActionEditor.qml:100
+#: contents/ui/config/components/ActionDialog.qml:80
 msgid "%1 rows"
 msgstr "%1 Zeilen"
 
@@ -157,23 +157,24 @@ msgctxt "@info:media artist, title and playback time"
 msgid "%1 — %2 — %3"
 msgstr "%1 — %2 — %3"
 
+#: contents/ui/config/ConfigFolderPopups.qml:199
+#: contents/ui/config/ConfigFolderPopups.qml:237
+#: contents/ui/config/ConfigMenus.qml:282
+#: contents/ui/config/ConfigMouse.qml:114
+#: contents/ui/config/ConfigPopups.qml:225
+#: contents/ui/config/ConfigPopups.qml:268
+#: contents/ui/config/ConfigPopups.qml:308
+#: contents/ui/config/ConfigPunchiMenu.qml:342
+#: contents/ui/config/ConfigPunchiMenu.qml:406
+#: contents/ui/config/ConfigPunchiMenu.qml:510
+#: contents/ui/config/ConfigPunchiMenu.qml:655
+#: contents/ui/config/ConfigPunchiMenu.qml:693
 #: contents/ui/config/components/PopupAnimationSettings.qml:90
 #: contents/ui/config/components/PopupAnimationSettings.qml:119
 #: contents/ui/config/components/PunchiMenuDialog.qml:194
 #: contents/ui/config/components/PunchiMenuDialog.qml:295
 #: contents/ui/config/components/PunchiMenuDialog.qml:375
 #: contents/ui/config/components/PunchiMenuDialog.qml:424
-#: contents/ui/config/ConfigFolderPopups.qml:199
-#: contents/ui/config/ConfigFolderPopups.qml:237
-#: contents/ui/config/ConfigMenus.qml:282
-#: contents/ui/config/ConfigMouse.qml:114
-#: contents/ui/config/ConfigPopups.qml:224
-#: contents/ui/config/ConfigPopups.qml:264
-#: contents/ui/config/ConfigPunchiMenu.qml:334
-#: contents/ui/config/ConfigPunchiMenu.qml:398
-#: contents/ui/config/ConfigPunchiMenu.qml:502
-#: contents/ui/config/ConfigPunchiMenu.qml:647
-#: contents/ui/config/ConfigPunchiMenu.qml:685
 #, javascript-format
 msgid "%1%"
 msgstr "%1%"
@@ -204,7 +205,7 @@ msgctxt "@info:accessible"
 msgid "%1. Playing."
 msgstr "%1. Wiedergabe läuft."
 
-#: contents/ui/config/ConfigPopups.qml:231
+#: contents/ui/config/ConfigPopups.qml:275
 msgid ""
 "100 percent uses the recommended base size. Larger previews keep their "
 "aspect ratio and remain limited by the available screen space."
@@ -277,7 +278,7 @@ msgstr "Aktionsname:"
 msgid "Activate window"
 msgstr "Fenster aktivieren"
 
-#: contents/ui/config/ConfigPopups.qml:152
+#: contents/ui/config/ConfigPopups.qml:153
 msgid ""
 "Active applications do not show hover previews or grouped-window popups."
 msgstr ""
@@ -301,7 +302,7 @@ msgctxt "@action:context"
 msgid "Add Separator"
 msgstr "Trennzeichen hinzufügen"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:245
+#: contents/ui/config/ConfigPunchiMenu.qml:253
 msgid "Add a PunchiMenu item from the Items page to configure it here."
 msgstr ""
 "Fügen Sie auf der Seite „Elemente“ ein PunchiMenu-Element hinzu, um es hier "
@@ -347,13 +348,13 @@ msgstr ""
 "Weitere Anwendungen bleiben durch Scrollen verfügbar. Auf schmalen "
 "Bildschirmen reduziert das Popup sicher die Anzahl der Spalten."
 
-#: contents/ui/config/ConfigAspect.qml:761
+#: contents/ui/config/ConfigAspect.qml:762
 msgid "Adds a short decorative reflection below icons in a floating dock."
 msgstr ""
 "Fügt eine kurze dekorative Reflexion unter den Symbolen in einem "
 "schwimmenden Dock hinzu."
 
-#: contents/ui/config/ConfigAspect.qml:760
+#: contents/ui/config/ConfigAspect.qml:761
 msgid ""
 "Adds an adaptive decorative reflection below icons in a horizontal panel."
 msgstr ""
@@ -366,7 +367,7 @@ msgstr ""
 "Fügt einen sicheren Abstand zwischen dem Dock-Element und den Ordner-Popups "
 "hinzu."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:573
+#: contents/ui/config/ConfigPunchiMenu.qml:581
 msgid "Adds space between PunchiMenu Normal and the panel edge."
 msgstr "Fügt Abstand zwischen PunchiMenu Normal und dem Panelrand hinzu."
 
@@ -375,7 +376,7 @@ msgctxt "@info:accessible"
 msgid "Adjust the media player volume"
 msgstr "Passen Sie die Lautstärke des Mediaplayers an"
 
-#: contents/ui/config/ConfigAspect.qml:1062
+#: contents/ui/config/ConfigAspect.qml:1063
 msgid "Adjusts badge visibility between 60 and 100 percent."
 msgstr "Passt die Sichtbarkeit des Abzeichens zwischen 60 und 100 Prozent an."
 
@@ -383,11 +384,11 @@ msgstr "Passt die Sichtbarkeit des Abzeichens zwischen 60 und 100 Prozent an."
 msgid "Adjusts hover zoom between 105 and 200 percent."
 msgstr "Passt den Hover-Zoom zwischen 105 und 200 Prozent an."
 
-#: contents/ui/config/ConfigAspect.qml:786
+#: contents/ui/config/ConfigAspect.qml:787
 msgid "Adjusts how strongly icon reflections appear."
 msgstr "Passt an, wie stark Symbolreflexionen angezeigt werden."
 
-#: contents/ui/config/ConfigAspect.qml:1091
+#: contents/ui/config/ConfigAspect.qml:1092
 msgid "Adjusts the badge scale between 80 and 120 percent of its default size."
 msgstr ""
 "Passt die Skalierung des Abzeichens zwischen 80 und 120 Prozent seiner "
@@ -403,7 +404,7 @@ msgid "Adjusts the folder popup content scale between 50 and 300 percent."
 msgstr ""
 "Passt die Inhaltsskalierung des Ordner-Popups zwischen 50 und 300 Prozent an."
 
-#: contents/ui/config/ConfigAspect.qml:956
+#: contents/ui/config/ConfigAspect.qml:957
 msgid "Adjusts the indicator thickness between 2 and 10 pixels."
 msgstr "Passt die Dicke des Indikators zwischen 2 und 10 Pixeln an."
 
@@ -411,7 +412,7 @@ msgstr "Passt die Dicke des Indikators zwischen 2 und 10 Pixeln an."
 msgid "Adjusts the spacing between dock icons from 0 to 24 pixels."
 msgstr "Passt den Abstand zwischen Dock-Symbolen von 0 bis 24 Pixeln an."
 
-#: contents/ui/config/ConfigPopups.qml:215
+#: contents/ui/config/ConfigPopups.qml:259
 msgid "Adjusts the window preview scale between 100 and 300 percent."
 msgstr ""
 "Passt die Skalierung der Fenstervorschau zwischen 100 und 300 Prozent an."
@@ -431,7 +432,7 @@ msgstr "Alle Anwendungen"
 msgid "All desktops"
 msgstr "Alle Desktops"
 
-#: contents/ui/config/ConfigAspect.qml:394
+#: contents/ui/config/ConfigAspect.qml:395
 #: contents/ui/config/ConfigItems.qml:797
 #: contents/ui/config/SoundFileDialog.qml:9
 msgid "All files"
@@ -475,7 +476,7 @@ msgstr "App-Name:"
 msgid "Appearance"
 msgstr "Aussehen"
 
-#: contents/ui/config/ConfigAspect.qml:159
+#: contents/ui/config/ConfigAspect.qml:160
 msgid "Appearance sections"
 msgstr "Abschnitte zum Erscheinungsbild"
 
@@ -527,8 +528,8 @@ msgctxt "@info:status"
 msgid "Application folder updated."
 msgstr "Anwendungsordner aktualisiert."
 
+#: contents/ui/config/ConfigPunchiMenu.qml:374
 #: contents/ui/config/components/PunchiMenuDialog.qml:164
-#: contents/ui/config/ConfigPunchiMenu.qml:366
 msgid "Application grid icon scale:"
 msgstr "Skalierung der Anwendungssymbole im Raster:"
 
@@ -559,7 +560,7 @@ msgstr ""
 msgid "Applies to folder popup labels and note popup titles."
 msgstr "Gilt für Ordner-Popup-Beschriftungen und Notiz-Popup-Titel."
 
-#: contents/ui/config/ConfigPopups.qml:359
+#: contents/ui/config/ConfigPopups.qml:403
 msgid "Applies to window titles, window details and overflow group labels."
 msgstr ""
 "Gilt für Fenstertitel, Fensterdetails und Überlaufgruppenbezeichnungen."
@@ -569,7 +570,7 @@ msgctxt "@action:button"
 msgid "Apply"
 msgstr "Anwenden"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:552
+#: contents/ui/config/ConfigPunchiMenu.qml:560
 msgid ""
 "Attached keeps the menu next to its dock or panel. Centered uses the "
 "available area of the active screen."
@@ -577,8 +578,8 @@ msgstr ""
 "Angedockt hält das Menü neben seinem Dock oder Panel. Zentriert verwendet "
 "den verfügbaren Bereich des aktiven Bildschirms."
 
+#: contents/ui/config/ConfigPunchiMenu.qml:78
 #: contents/ui/config/components/PunchiMenuDialog.qml:42
-#: contents/ui/config/ConfigPunchiMenu.qml:77
 msgctxt "@option:punchimenu-placement"
 msgid "Attached to dock or panel"
 msgstr "Am Dock oder Panel angedockt"
@@ -588,7 +589,7 @@ msgstr "Am Dock oder Panel angedockt"
 msgid "Audio files"
 msgstr "Audiodateien"
 
-#: contents/ui/config/ConfigAspect.qml:178
+#: contents/ui/config/ConfigAspect.qml:179
 msgid "Audio visualizer"
 msgstr "Audiovisualisierer"
 
@@ -616,14 +617,14 @@ msgstr "Rhythmische Bewegung des Audiovisualisierers"
 msgid "Audio visualizer style"
 msgstr "Audio-Visualizer-Stil"
 
-#: contents/ui/config/components/TimedDialog.qml:91
-#: contents/ui/config/components/TimedDialog.qml:94
-#: contents/ui/config/components/TimedDialog.qml:117
-#: contents/ui/config/components/TimedDialog.qml:120
 #: contents/ui/config/ConfigFolderPopups.qml:134
 #: contents/ui/config/ConfigItems.qml:262
 #: contents/ui/config/ConfigItems.qml:279
 #: contents/ui/config/ConfigItems.qml:283
+#: contents/ui/config/components/TimedDialog.qml:91
+#: contents/ui/config/components/TimedDialog.qml:94
+#: contents/ui/config/components/TimedDialog.qml:117
+#: contents/ui/config/components/TimedDialog.qml:120
 msgid "Automatic"
 msgstr "Automatisch"
 
@@ -650,7 +651,7 @@ msgstr ""
 msgid "Automatically select the active player"
 msgstr "Aktiven Player automatisch auswählen"
 
-#: contents/ui/config/ConfigAspect.qml:725
+#: contents/ui/config/ConfigAspect.qml:726
 msgid "Available when dock item names are shown."
 msgstr "Available when dock item names are shown."
 
@@ -672,57 +673,57 @@ msgstr "Zurück zur Mediensteuerung"
 msgid "Back to window previews"
 msgstr "Zurück zur Fenstervorschau"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:284
+#: contents/ui/config/ConfigPunchiMenu.qml:292
 msgid "Background and legibility"
 msgstr "Hintergrund und Lesbarkeit"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:289
+#: contents/ui/config/ConfigPunchiMenu.qml:297
 msgid "Background blur:"
 msgstr "Hintergrundunschärfe:"
 
-#: contents/ui/config/ConfigPopups.qml:282
+#: contents/ui/config/ConfigPopups.qml:326
 msgid "Background frame:"
 msgstr "Hintergrundrahmen:"
 
 #: contents/ui/config/ConfigFolderPopups.qml:215
-#: contents/ui/config/ConfigPopups.qml:241
-#: contents/ui/config/ConfigPunchiMenu.qml:303
+#: contents/ui/config/ConfigPopups.qml:285
+#: contents/ui/config/ConfigPunchiMenu.qml:311
 msgid "Background opacity:"
 msgstr "Hintergrunddeckkraft:"
 
-#: contents/ui/config/ConfigAspect.qml:535
+#: contents/ui/config/ConfigAspect.qml:536
 msgid "Background:"
 msgstr "Hintergrund:"
 
-#: contents/ui/config/ConfigAspect.qml:1029
+#: contents/ui/config/ConfigAspect.qml:1030
 msgid "Badge color:"
 msgstr "Farbe des Abzeichens:"
 
-#: contents/ui/config/ConfigAspect.qml:1061
+#: contents/ui/config/ConfigAspect.qml:1062
 msgid "Badge opacity"
 msgstr "Deckkraft des Abzeichens"
 
-#: contents/ui/config/ConfigAspect.qml:1049
+#: contents/ui/config/ConfigAspect.qml:1050
 msgid "Badge opacity:"
 msgstr "Deckkraft des Abzeichens:"
 
-#: contents/ui/config/ConfigAspect.qml:1005
+#: contents/ui/config/ConfigAspect.qml:1006
 msgid "Badge position:"
 msgstr "Position des Abzeichens:"
 
-#: contents/ui/config/ConfigAspect.qml:1090
+#: contents/ui/config/ConfigAspect.qml:1091
 msgid "Badge scale"
 msgstr "Skalierung des Abzeichens"
 
-#: contents/ui/config/ConfigAspect.qml:1078
+#: contents/ui/config/ConfigAspect.qml:1079
 msgid "Badge scale:"
 msgstr "Skalierung des Abzeichens:"
 
-#: contents/ui/config/ConfigAspect.qml:982
+#: contents/ui/config/ConfigAspect.qml:983
 msgid "Badge:"
 msgstr "Abzeichen:"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:344
+#: contents/ui/config/ConfigPunchiMenu.qml:352
 msgid ""
 "Blur depends on the KWin Blur desktop effect. If it is disabled, increase "
 "the background opacity to keep the menu readable."
@@ -731,16 +732,16 @@ msgstr ""
 "deaktiviert ist, erhöhen Sie die Hintergrunddeckkraft, damit das Menü lesbar "
 "bleibt."
 
-#: contents/ui/config/ConfigAspect.qml:144
+#: contents/ui/config/ConfigAspect.qml:145
 msgctxt "Indicator position"
 msgid "Bottom"
 msgstr "Unten"
 
-#: contents/ui/config/ConfigAspect.qml:150
+#: contents/ui/config/ConfigAspect.qml:151
 msgid "Bottom left"
 msgstr "Unten links"
 
-#: contents/ui/config/ConfigAspect.qml:151
+#: contents/ui/config/ConfigAspect.qml:152
 msgid "Bottom right"
 msgstr "Unten rechts"
 
@@ -749,8 +750,8 @@ msgstr "Unten rechts"
 msgid "Bottom to top"
 msgstr "Von unten nach oben"
 
-#: contents/ui/config/components/PopupAnimationSettings.qml:20
 #: contents/ui/config/ConfigMouse.qml:36
+#: contents/ui/config/components/PopupAnimationSettings.qml:20
 msgid "Bounce"
 msgstr "Hüpfen"
 
@@ -786,12 +787,12 @@ msgstr "Abbrechen"
 
 #: contents/ui/components/NotePopup.qml:290
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:388
-#: contents/ui/config/ConfigAspect.qml:467
+#: contents/ui/config/ConfigAspect.qml:468
 msgctxt "@action:button"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: contents/ui/config/ConfigPopups.qml:36
+#: contents/ui/config/ConfigPopups.qml:37
 msgid "Cards (recommended)"
 msgstr "Karten (empfohlen)"
 
@@ -799,14 +800,14 @@ msgstr "Karten (empfohlen)"
 msgid "Category:"
 msgstr "Kategorie:"
 
-#: contents/ui/config/ConfigAspect.qml:152
+#: contents/ui/config/ConfigAspect.qml:153
 #: contents/ui/config/ConfigGeneral.qml:65
 #: contents/ui/config/ConfigGeneral.qml:69
 msgid "Center"
 msgstr "Mitte"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:82
 #: contents/ui/config/components/PunchiMenuDialog.qml:46
-#: contents/ui/config/ConfigPunchiMenu.qml:81
 msgctxt "@option:punchimenu-placement"
 msgid "Centered on desktop"
 msgstr "Auf dem Desktop zentriert"
@@ -815,7 +816,7 @@ msgstr "Auf dem Desktop zentriert"
 msgid "Centered wave"
 msgstr "Zentrierte Welle"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:317
+#: contents/ui/config/ConfigPunchiMenu.qml:325
 msgid ""
 "Changes only the menu background opacity; text and icons remain fully opaque."
 msgstr ""
@@ -826,8 +827,8 @@ msgstr ""
 msgid "Changes pending"
 msgstr "Änderungen stehen noch aus"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:489
 #: contents/ui/config/components/PunchiMenuDialog.qml:274
-#: contents/ui/config/ConfigPunchiMenu.qml:481
 msgid ""
 "Changes the icon size in the reserved Favorites section in both menu modes."
 msgstr ""
@@ -850,11 +851,11 @@ msgstr ""
 msgid "Choose Folder"
 msgstr "Wählen Sie Ordner"
 
-#: contents/ui/config/ConfigAspect.qml:368
+#: contents/ui/config/ConfigAspect.qml:369
 msgid "Choose Indicator Color"
 msgstr "Indikatorfarbe"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:714
+#: contents/ui/config/ConfigPunchiMenu.qml:722
 msgctxt "@action:button"
 msgid "Choose PunchiMenu icon"
 msgstr "PunchiMenu-Symbol auswählen"
@@ -863,7 +864,7 @@ msgstr "PunchiMenu-Symbol auswählen"
 msgid "Choose Sound File"
 msgstr "Wählen Sie Sounddatei"
 
-#: contents/ui/config/ConfigAspect.qml:380
+#: contents/ui/config/ConfigAspect.qml:381
 msgid "Choose Window Count Badge Color"
 msgstr "Farbe des Fensteranzahl-Abzeichens auswählen"
 
@@ -871,11 +872,11 @@ msgstr "Farbe des Fensteranzahl-Abzeichens auswählen"
 msgid "Choose a folder first."
 msgstr "Wählen Sie zunächst einen Ordner."
 
-#: contents/ui/config/ConfigAspect.qml:290
+#: contents/ui/config/ConfigAspect.qml:291
 msgid "Choose a local JSON file."
 msgstr "Wählen Sie eine lokale JSON-Datei."
 
-#: contents/ui/config/ConfigAspect.qml:309
+#: contents/ui/config/ConfigAspect.qml:310
 msgid "Choose a local folder containing JSON themes."
 msgstr "Wählen Sie einen lokalen Ordner mit JSON-Designs."
 
@@ -937,16 +938,16 @@ msgstr ""
 "Choose how long the media controls stay expanded after interaction. Zero "
 "keeps them expanded."
 
-#: contents/ui/config/components/TrashDialog.qml:106
-#: contents/ui/config/components/TrashDialog.qml:136
 #: contents/ui/config/ConfigItems.qml:605
 #: contents/ui/config/ConfigItems.qml:660
-#: contents/ui/config/ConfigPunchiMenu.qml:229
+#: contents/ui/config/ConfigPunchiMenu.qml:237
+#: contents/ui/config/components/TrashDialog.qml:106
+#: contents/ui/config/components/TrashDialog.qml:136
 msgid "Choose icon"
 msgstr "Symbol auswählen"
 
-#: contents/ui/config/components/TrashDialog.qml:203
 #: contents/ui/config/ConfigItems.qml:794
+#: contents/ui/config/components/TrashDialog.qml:203
 msgid "Choose sound"
 msgstr "Wählen Sie Ton"
 
@@ -962,14 +963,14 @@ msgstr ""
 "Legt fest, wann Künstler, Titel und Wiedergabezeit im Dock-Element angezeigt "
 "werden."
 
-#: contents/ui/config/ConfigAspect.qml:598
+#: contents/ui/config/ConfigAspect.qml:599
 msgid ""
 "Choose whether to import one JSON theme or all JSON themes from a folder."
 msgstr ""
 "Wählen Sie, ob Sie ein JSON-Design oder alle JSON-Designs aus einem Ordner "
 "importieren möchten."
 
-#: contents/ui/config/ConfigPopups.qml:345
+#: contents/ui/config/ConfigPopups.qml:389
 msgid ""
 "Choose whether window previews show the app icon with window details, only "
 "the icon, or no information overlay."
@@ -1059,7 +1060,8 @@ msgstr[1] "Schließen Sie alle %1-Fenster"
 msgid "Close window"
 msgstr "Fenster schließen"
 
-#: contents/ui/components/MediaControlsCard.qml:833
+#: contents/ui/components/MediaControlsCard.qml:882
+#: contents/ui/components/MprisReplacementCard.qml:582
 msgctxt "@action:button"
 msgid "Close window"
 msgstr "Fenster schließen"
@@ -1206,8 +1208,8 @@ msgstr ""
 "Steuert, wie schnell Dock-Elemente eingeblendet, verschoben und in der Größe "
 "geändert werden. Popup- oder Menüanimationen werden nicht beeinflusst."
 
-#: contents/ui/config/ConfigPopups.qml:295
-#: contents/ui/config/ConfigPopups.qml:309
+#: contents/ui/config/ConfigPopups.qml:339
+#: contents/ui/config/ConfigPopups.qml:353
 msgid ""
 "Controls the themed space around window previews without changing their size."
 msgstr ""
@@ -1280,7 +1282,7 @@ msgstr ""
 "füllen ist nur aktiv, wenn das Plasma-Panel auf „Füllen verfügbar“ "
 "eingestellt ist; ansonsten bleibt Punchi Dock kompakt."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:717
+#: contents/ui/config/ConfigPunchiMenu.qml:725
 msgctxt "@info:accessibility"
 msgid "Current icon: %1"
 msgstr "Aktuelles Symbol: %1"
@@ -1307,8 +1309,8 @@ msgstr "Datumstextskala"
 msgid "Date text scale:"
 msgstr "Datumstextskala:"
 
-#: contents/ui/config/components/TrashDialog.qml:194
 #: contents/ui/config/ConfigFileToolbar.qml:41
+#: contents/ui/config/components/TrashDialog.qml:194
 msgid "Default"
 msgstr "Standard"
 
@@ -1324,12 +1326,12 @@ msgstr "Standard-Medienspieler"
 msgid "Default media player:"
 msgstr "Standard-Medienspieler:"
 
-#: contents/ui/config/ConfigAspect.qml:609
+#: contents/ui/config/ConfigAspect.qml:610
 msgctxt "@action:button"
 msgid "Delete"
 msgstr "Löschen"
 
-#: contents/ui/config/ConfigAspect.qml:455
+#: contents/ui/config/ConfigAspect.qml:456
 msgctxt "@title:window"
 msgid "Delete Installed Theme?"
 msgstr "Installiertes Theme löschen?"
@@ -1340,12 +1342,12 @@ msgctxt "@action:button"
 msgid "Delete Note"
 msgstr "Notiz löschen"
 
-#: contents/ui/config/ConfigAspect.qml:462
+#: contents/ui/config/ConfigAspect.qml:463
 msgctxt "@action:button"
 msgid "Delete Theme"
 msgstr "Thema löschen"
 
-#: contents/ui/config/ConfigAspect.qml:614
+#: contents/ui/config/ConfigAspect.qml:615
 msgid "Delete the selected installed Punchi Dock theme"
 msgstr "Löschen Sie das ausgewählte installierte Punchi Dock-Design"
 
@@ -1355,7 +1357,7 @@ msgstr ""
 "Diese Notiz aus dem Dock löschen? Der Inhalt kann nicht wiederhergestellt "
 "werden."
 
-#: contents/ui/config/ConfigAspect.qml:456
+#: contents/ui/config/ConfigAspect.qml:457
 msgid "Delete “%1” permanently from the Punchi Dock Remastered theme library?"
 msgstr ""
 "„%1“ dauerhaft aus der Punchi Dock Remastered-Themenbibliothek löschen?"
@@ -1396,12 +1398,12 @@ msgctxt "@info Window live preview state"
 msgid "Disabled"
 msgstr "Deaktiviert"
 
-#: contents/ui/config/ConfigPopups.qml:64
+#: contents/ui/config/ConfigPopups.qml:65
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Disabled"
 msgstr "Deaktiviert"
 
-#: contents/ui/config/ConfigAspect.qml:854
+#: contents/ui/config/ConfigAspect.qml:855
 msgid "Disables the active-window indicator entirely."
 msgstr "Deaktiviert die Anzeige des aktiven Fensters vollständig."
 
@@ -1433,7 +1435,7 @@ msgctxt "@title"
 msgid "Dissolve folder"
 msgstr "Ordner auflösen"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:357
+#: contents/ui/config/ConfigPunchiMenu.qml:365
 msgid "Distribution label:"
 msgstr "Distributionsbezeichnung:"
 
@@ -1445,7 +1447,7 @@ msgstr "Bleiben Sie nicht oben"
 msgid "Do you want to empty the trash?"
 msgstr "Möchten Sie den Papierkorb leeren?"
 
-#: contents/ui/config/ConfigAspect.qml:162
+#: contents/ui/config/ConfigAspect.qml:163
 msgid "Dock"
 msgstr "Dock"
 
@@ -1453,7 +1455,7 @@ msgstr "Dock"
 msgid "Dock Items Configuration"
 msgstr "Konfiguration der Dock-Elemente"
 
-#: contents/ui/config/ConfigAspect.qml:503
+#: contents/ui/config/ConfigAspect.qml:504
 msgid "Dock background theme"
 msgstr "Dock-Hintergrundthema"
 
@@ -1473,15 +1475,15 @@ msgstr "Bewegungsgeschwindigkeit des Docks"
 msgid "Dock motion speed:"
 msgstr "Bewegungsgeschwindigkeit des Docks:"
 
-#: contents/ui/config/ConfigAspect.qml:528
+#: contents/ui/config/ConfigAspect.qml:529
 msgid "Dock orientation"
 msgstr "Dockausrichtung"
 
-#: contents/ui/config/ConfigAspect.qml:516
+#: contents/ui/config/ConfigAspect.qml:517
 msgid "Dock orientation:"
 msgstr "Dockausrichtung:"
 
-#: contents/ui/config/ConfigAspect.qml:137
+#: contents/ui/config/ConfigAspect.qml:138
 msgid "Dot"
 msgstr "Punkt"
 
@@ -1604,7 +1606,7 @@ msgstr "Verlassen Sie den Vollbildmodus"
 msgid "Export..."
 msgstr "Exportieren..."
 
-#: contents/ui/config/ConfigAspect.qml:185 contents/ui/main.qml:57
+#: contents/ui/config/ConfigAspect.qml:186 contents/ui/main.qml:57
 msgid "External JSON theme"
 msgstr "Externes JSON-Theme"
 
@@ -1622,8 +1624,8 @@ msgctxt "@title:section"
 msgid "Favorites"
 msgstr "Favoriten"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:475
 #: contents/ui/config/components/PunchiMenuDialog.qml:255
-#: contents/ui/config/ConfigPunchiMenu.qml:467
 msgid "Favorites icon scale:"
 msgstr "Symbolskalierung für Favoriten:"
 
@@ -1667,7 +1669,7 @@ msgstr ""
 "Die Ordnerkonfiguration wurde vorübergehend entfernt, während sie sicher neu "
 "erstellt wird."
 
-#: contents/ui/config/ConfigAspect.qml:334
+#: contents/ui/config/ConfigAspect.qml:335
 msgid ""
 "Folder import finished — added: %1, already installed: %2, rejected: %3, not "
 "processed because of the 256-theme limit: %4."
@@ -1676,14 +1678,14 @@ msgstr ""
 "abgelehnt: %3, nicht verarbeitet aufgrund der Beschränkung auf 256 Themes: "
 "%4."
 
-#: contents/ui/config/ConfigAspect.qml:338
+#: contents/ui/config/ConfigAspect.qml:339
 msgid ""
 "Folder import finished — added: %1, already installed: %2, rejected: %3."
 msgstr ""
 "Ordnerimport abgeschlossen – hinzugefügt: %1, bereits installiert: %2, "
 "abgelehnt: %3."
 
-#: contents/ui/config/ConfigAspect.qml:330
+#: contents/ui/config/ConfigAspect.qml:331
 msgid ""
 "Folder import reached the 256-theme safety limit — added: %1, already "
 "installed: %2, rejected: %3. Additional themes were not processed."
@@ -1742,7 +1744,7 @@ msgstr "Schriftfamilie:"
 msgid "Font size:"
 msgstr "Schriftgröße:"
 
-#: contents/ui/config/ConfigPopups.qml:186
+#: contents/ui/config/ConfigPopups.qml:187
 msgid ""
 "For MPRIS-compatible applications, displays media playback controls below "
 "the window preview list."
@@ -1750,7 +1752,7 @@ msgstr ""
 "Bei MPRIS-kompatiblen Anwendungen werden Steuerelemente für die "
 "Medienwiedergabe unterhalb der Fenstervorschauliste angezeigt."
 
-#: contents/ui/config/ConfigPopups.qml:188
+#: contents/ui/config/ConfigPopups.qml:189
 msgid ""
 "For MPRIS-compatible applications, replaces the window preview with a full "
 "cover background media card."
@@ -1758,7 +1760,7 @@ msgstr ""
 "Ersetzt bei MPRIS-kompatiblen Anwendungen die Fenstervorschau durch eine "
 "vollflächige Hintergrundmedienkarte."
 
-#: contents/ui/config/ConfigPopups.qml:190
+#: contents/ui/config/ConfigPopups.qml:191
 msgid ""
 "For MPRIS-compatible applications, replaces the window preview with artwork, "
 "playback controls, and volume card."
@@ -1854,7 +1856,7 @@ msgstr "Gruppierung und Grenzen"
 msgid "Height:"
 msgstr "Höhe:"
 
-#: contents/ui/config/ConfigPopups.qml:45
+#: contents/ui/config/ConfigPopups.qml:46
 msgctxt "@item:inlistbox Window preview information"
 msgid "Hidden"
 msgstr "Versteckt"
@@ -1887,11 +1889,11 @@ msgctxt "@action:button"
 msgid "Hide hidden applications"
 msgstr "Ausgeblendete Anwendungen verbergen"
 
-#: contents/ui/config/ConfigAspect.qml:807
+#: contents/ui/config/ConfigAspect.qml:808
 msgid "Hide item names to use icon reflections."
 msgstr "Blenden Sie Elementnamen aus, um Symbolreflexionen zu verwenden."
 
-#: contents/ui/config/ConfigAspect.qml:188
+#: contents/ui/config/ConfigAspect.qml:189
 msgid "Horizontal"
 msgstr "Horizontal"
 
@@ -1907,7 +1909,7 @@ msgstr "Horizontale Ausrichtung:"
 msgid "Hover animation:"
 msgstr "Hover-Animation:"
 
-#: contents/ui/config/ConfigAspect.qml:681
+#: contents/ui/config/ConfigAspect.qml:682
 msgid "Hover background:"
 msgstr "Hover-Hintergrund:"
 
@@ -1919,33 +1921,33 @@ msgstr "Hover-Zoom-Skala"
 msgid "Hover zoom scale:"
 msgstr "Hover-Zoom-Skala:"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:706
+#: contents/ui/config/ConfigPunchiMenu.qml:714
 msgid "Icon and keyboard shortcut:"
 msgstr "Symbol und Tastenkürzel:"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:702
+#: contents/ui/config/ConfigPunchiMenu.qml:710
 msgid "Icon and shortcut"
 msgstr "Symbol und Tastenkürzel"
 
-#: contents/ui/config/ConfigPopups.qml:43
+#: contents/ui/config/ConfigPopups.qml:44
 msgctxt "@item:inlistbox Window preview information"
 msgid "Icon and text"
 msgstr "Symbol und Text"
 
-#: contents/ui/config/ConfigPopups.qml:44
+#: contents/ui/config/ConfigPopups.qml:45
 msgctxt "@item:inlistbox Window preview information"
 msgid "Icon only"
 msgstr "Nur Symbol"
 
-#: contents/ui/config/ConfigAspect.qml:748
+#: contents/ui/config/ConfigAspect.qml:749
 msgid "Icon reflections"
 msgstr "Symbolreflexionen"
 
-#: contents/ui/config/ConfigAspect.qml:805
+#: contents/ui/config/ConfigAspect.qml:806
 msgid "Icon reflections are not available in vertical panels."
 msgstr "Symbolreflexionen sind in vertikalen Panels nicht verfügbar."
 
-#: contents/ui/config/ConfigAspect.qml:758
+#: contents/ui/config/ConfigAspect.qml:759
 msgid "Icon reflections are unavailable in vertical panels."
 msgstr "Symbolreflexionen sind in vertikalen Panels nicht verfügbar."
 
@@ -1970,39 +1972,39 @@ msgstr "Symbol:"
 msgid "Import JSON Configuration"
 msgstr "JSON-Konfiguration importieren"
 
-#: contents/ui/config/ConfigAspect.qml:597
+#: contents/ui/config/ConfigAspect.qml:598
 msgid "Import Punchi Dock JSON themes"
 msgstr "Importieren Sie Punchi Dock JSON-Designs"
 
-#: contents/ui/config/ConfigAspect.qml:392
+#: contents/ui/config/ConfigAspect.qml:393
 msgid "Import Punchi Dock Theme"
 msgstr "Importieren Sie das Punchi Dock-Design"
 
-#: contents/ui/config/ConfigAspect.qml:410
+#: contents/ui/config/ConfigAspect.qml:411
 msgid "Import Punchi Dock Theme Folder"
 msgstr "Importieren Sie den Punchi Dock Theme-Ordner"
 
-#: contents/ui/config/ConfigAspect.qml:630
+#: contents/ui/config/ConfigAspect.qml:631
 msgid "Import a JSON theme to add it to your Punchi Dock Remastered library."
 msgstr ""
 "Importieren Sie ein JSON-Design, um es Ihrer Punchi Dock Remastered-"
 "Bibliothek hinzuzufügen."
 
-#: contents/ui/config/ConfigAspect.qml:443
+#: contents/ui/config/ConfigAspect.qml:444
 msgid "Import all Punchi Dock JSON themes from a folder and its subfolders"
 msgstr ""
 "Importieren Sie alle Punchi Dock JSON-Designs aus einem Ordner und seinen "
 "Unterordnern"
 
-#: contents/ui/config/ConfigAspect.qml:430
+#: contents/ui/config/ConfigAspect.qml:431
 msgid "Import file…"
 msgstr "Datei importieren…"
 
-#: contents/ui/config/ConfigAspect.qml:441
+#: contents/ui/config/ConfigAspect.qml:442
 msgid "Import folder…"
 msgstr "Ordner importieren…"
 
-#: contents/ui/config/ConfigAspect.qml:432
+#: contents/ui/config/ConfigAspect.qml:433
 msgid "Import one Punchi Dock JSON theme"
 msgstr "Importieren Sie ein Punchi Dock JSON-Design"
 
@@ -2010,7 +2012,7 @@ msgstr "Importieren Sie ein Punchi Dock JSON-Design"
 msgid "Import..."
 msgstr "Importieren..."
 
-#: contents/ui/config/ConfigAspect.qml:509
+#: contents/ui/config/ConfigAspect.qml:510
 msgid ""
 "Imported themes are stored in the Punchi Dock Remastered user library and "
 "currently apply only to a floating dock. Plasma panels keep their native "
@@ -2020,7 +2022,7 @@ msgstr ""
 "gespeichert und gelten derzeit nur für ein Floating Dock. Plasmabildschirme "
 "behalten ihren ursprünglichen Hintergrund."
 
-#: contents/ui/config/ConfigAspect.qml:595
+#: contents/ui/config/ConfigAspect.qml:596
 msgid "Import…"
 msgstr "Importieren…"
 
@@ -2032,39 +2034,39 @@ msgstr ""
 "Im schwebenden Modus bleiben nur das Spektrum und die Dockelemente sichtbar. "
 "Ein Plasma-Panel behält seinen eigenen Hintergrund."
 
-#: contents/ui/config/ConfigAspect.qml:825
+#: contents/ui/config/ConfigAspect.qml:826
 msgid "Indicator"
 msgstr "Indikator"
 
-#: contents/ui/config/ConfigAspect.qml:900
+#: contents/ui/config/ConfigAspect.qml:901
 msgid "Indicator color:"
 msgstr "Indikatorfarbe:"
 
-#: contents/ui/config/ConfigAspect.qml:920
+#: contents/ui/config/ConfigAspect.qml:921
 msgid "Indicator opacity:"
 msgstr "Deckkraft des Indikators:"
 
-#: contents/ui/config/ConfigAspect.qml:866
+#: contents/ui/config/ConfigAspect.qml:867
 msgid "Indicator position:"
 msgstr "Anzeigeposition:"
 
-#: contents/ui/config/ConfigAspect.qml:829
+#: contents/ui/config/ConfigAspect.qml:830
 msgid "Indicator shape:"
 msgstr "Form des Indikators:"
 
-#: contents/ui/config/ConfigAspect.qml:955
+#: contents/ui/config/ConfigAspect.qml:956
 msgid "Indicator thickness"
 msgstr "Indikatordicke"
 
-#: contents/ui/config/ConfigAspect.qml:945
+#: contents/ui/config/ConfigAspect.qml:946
 msgid "Indicator thickness:"
 msgstr "Indikatordicke:"
 
-#: contents/ui/config/ConfigAspect.qml:581
+#: contents/ui/config/ConfigAspect.qml:582
 msgid "Installed Punchi Dock theme"
 msgstr "Punchi Dock-Design installiert"
 
-#: contents/ui/config/ConfigAspect.qml:560
+#: contents/ui/config/ConfigAspect.qml:561
 msgid "Installed theme:"
 msgstr "Installiertes Theme:"
 
@@ -2085,7 +2087,7 @@ msgstr "Ungültiger JSON: %1"
 msgid "Item height:"
 msgstr "Artikelhöhe:"
 
-#: contents/ui/config/ConfigAspect.qml:676
+#: contents/ui/config/ConfigAspect.qml:677
 msgid "Item highlight"
 msgstr "Artikel-Highlight"
 
@@ -2118,7 +2120,7 @@ msgstr "JSON-Konfiguration"
 msgid "JSON looks valid."
 msgstr "JSON sieht gültig aus."
 
-#: contents/ui/config/ConfigAspect.qml:394
+#: contents/ui/config/ConfigAspect.qml:395
 msgid "JSON theme files"
 msgstr "JSON-Designdateien"
 
@@ -2131,11 +2133,11 @@ msgctxt "@info:accessible"
 msgid "Keep holding to bring %1 to the front"
 msgstr "Weiter gedrückt halten, um %1 in den Vordergrund zu bringen"
 
-#: contents/ui/config/ConfigAspect.qml:706
+#: contents/ui/config/ConfigAspect.qml:707
 msgid "Labels"
 msgstr "Etiketten"
 
-#: contents/ui/config/ConfigAspect.qml:734
+#: contents/ui/config/ConfigAspect.qml:735
 msgid ""
 "Labels use a compact single-line style so the dock can remain readable "
 "without turning every item into a large card."
@@ -2143,7 +2145,7 @@ msgstr ""
 "Etiketten verwenden einen kompakten einzeiligen Stil, sodass das Dock lesbar "
 "bleibt, ohne dass jedes Element zu einer großen Karte wird."
 
-#: contents/ui/config/ConfigAspect.qml:711
+#: contents/ui/config/ConfigAspect.qml:712
 msgid "Labels:"
 msgstr "Etiketten:"
 
@@ -2189,8 +2191,8 @@ msgstr "Beschränken Sie die Menüzeilen"
 msgid "Limit:"
 msgstr "Limit:"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:453
 #: contents/ui/config/components/PunchiMenuDialog.qml:240
-#: contents/ui/config/ConfigPunchiMenu.qml:445
 msgid ""
 "Limits the visible rows inside folders in the selected menu mode. Additional "
 "applications remain available by scrolling."
@@ -2198,19 +2200,19 @@ msgstr ""
 "Begrenzt die sichtbaren Zeilen in Ordnern im ausgewählten Menümodus. Weitere "
 "Anwendungen bleiben durch Scrollen verfügbar."
 
-#: contents/ui/config/ConfigPopups.qml:381
+#: contents/ui/config/ConfigPopups.qml:425
 msgid ""
 "Limits visible popup rows; additional entries remain accessible by scrolling."
 msgstr ""
 "Begrenzt sichtbare Popup-Zeilen; Weitere Einträge bleiben durch Scrollen "
 "zugänglich."
 
-#: contents/ui/config/ConfigAspect.qml:136
+#: contents/ui/config/ConfigAspect.qml:137
 #: contents/ui/config/SeparatorOptions.qml:43
 msgid "Line"
 msgstr "Linie"
 
-#: contents/ui/config/ConfigAspect.qml:855
+#: contents/ui/config/ConfigAspect.qml:856
 msgid ""
 "Line, dot, small ring and rounded square can be placed at the top or bottom "
 "edge of the icon."
@@ -2241,7 +2243,7 @@ msgctxt "@info:status"
 msgid "Loading applications…"
 msgstr "Anwendungen werden geladen…"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:519
+#: contents/ui/config/ConfigPunchiMenu.qml:527
 msgid "Location and spacing"
 msgstr "Position und Abstand"
 
@@ -2251,7 +2253,7 @@ msgctxt "@action:button"
 msgid "Log Out"
 msgstr "Abmelden"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:353
+#: contents/ui/config/ConfigPunchiMenu.qml:361
 msgid ""
 "Low background opacity can make text and icons difficult to read when "
 "desktop blur is unavailable."
@@ -2271,7 +2273,8 @@ msgstr ""
 msgid "Luminous cloud"
 msgstr "Leuchtende Wolke"
 
-#: contents/ui/components/MediaControlsCard.qml:72
+#: contents/ui/components/MediaControlsCard.qml:74
+#: contents/ui/components/MprisReplacementCard.qml:39
 msgid "MPRIS controls"
 msgstr "MPRIS-Kontrollen"
 
@@ -2288,13 +2291,13 @@ msgstr "Maximieren"
 msgid "Maximize window"
 msgstr "Fenster maximieren"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:429
 #: contents/ui/config/components/PunchiMenuDialog.qml:212
-#: contents/ui/config/ConfigPunchiMenu.qml:421
 msgid "Maximum application columns inside folders"
 msgstr "Maximale Anwendungsspalten in Ordnern"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:452
 #: contents/ui/config/components/PunchiMenuDialog.qml:239
-#: contents/ui/config/ConfigPunchiMenu.qml:444
 msgid "Maximum application rows inside folders"
 msgstr "Maximale Anwendungszeilen in Ordnern"
 
@@ -2302,13 +2305,13 @@ msgstr "Maximale Anwendungszeilen in Ordnern"
 msgid "Maximum dynamic groups shown in the dock"
 msgstr "Maximale dynamische Gruppen, die im Dock angezeigt werden"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:421
 #: contents/ui/config/components/PunchiMenuDialog.qml:201
-#: contents/ui/config/ConfigPunchiMenu.qml:413
 msgid "Maximum folder columns:"
 msgstr "Maximale Ordnerspalten:"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:444
 #: contents/ui/config/components/PunchiMenuDialog.qml:228
-#: contents/ui/config/ConfigPunchiMenu.qml:436
 msgid "Maximum folder rows:"
 msgstr "Maximale Ordnerzeilen:"
 
@@ -2328,16 +2331,17 @@ msgstr "Maximal sichtbare Ordner-Popup-Spalten"
 msgid "Maximum visible folder popup rows"
 msgstr "Maximal sichtbare Ordner-Popup-Zeilen"
 
-#: contents/ui/config/ConfigPopups.qml:373
+#: contents/ui/config/ConfigPopups.qml:417
 msgid "Maximum visible popup rows"
 msgstr "Maximal sichtbare Popup-Zeilen"
 
-#: contents/ui/components/MediaControlsCard.qml:813
+#: contents/ui/components/MediaControlsCard.qml:862
+#: contents/ui/components/MprisReplacementCard.qml:562
 msgctxt "@info:accessible"
 msgid "Media application"
 msgstr "Medienanwendung"
 
-#: contents/ui/config/ConfigPopups.qml:191
+#: contents/ui/config/ConfigPopups.qml:192
 msgid ""
 "Media applications behave like standard windows without showing media "
 "controls on hover."
@@ -2345,11 +2349,19 @@ msgstr ""
 "Medienanwendungen verhalten sich wie Standardfenster, ohne dass beim "
 "Schweben Mediensteuerelemente angezeigt werden."
 
+#: contents/ui/config/ConfigPopups.qml:215
+msgid "Media card background opacity"
+msgstr "Hintergrunddeckkraft der Medienkarte"
+
+#: contents/ui/config/ConfigPopups.qml:201
+msgid "Media card opacity:"
+msgstr "Deckkraft der Medienkarte:"
+
 #: contents/ui/config/components/MediaPlayerDialog.qml:273
 msgid "Media controls auto-collapse delay"
 msgstr "Mediensteuerelemente für %1"
 
-#: contents/ui/components/MediaControlsCard.qml:100
+#: contents/ui/components/MediaControlsCard.qml:139
 msgctxt "@info:accessible"
 msgid "Media controls for %1"
 msgstr "Mediensteuerelemente für %1"
@@ -2358,8 +2370,9 @@ msgstr "Mediensteuerelemente für %1"
 msgid "Media item display mode"
 msgstr "Medienspieler"
 
-#: contents/ui/components/MediaControlsCard.qml:67
+#: contents/ui/components/MediaControlsCard.qml:69
 #: contents/ui/components/MediaDockItem.qml:152
+#: contents/ui/components/MprisReplacementCard.qml:34
 msgid "Media playback"
 msgstr "Medienwiedergabe"
 
@@ -2376,7 +2389,7 @@ msgstr "Steuerelemente des Medienspielers"
 msgid "Media player item"
 msgstr "Medienspieler-Element"
 
-#: contents/ui/config/ConfigPopups.qml:161
+#: contents/ui/config/ConfigPopups.qml:162
 msgid "Media players:"
 msgstr "Mediaplayer:"
 
@@ -2385,7 +2398,7 @@ msgctxt "@label:slider"
 msgid "Media volume"
 msgstr "Medienlautstärke"
 
-#: contents/ui/config/ConfigPopups.qml:49
+#: contents/ui/config/ConfigPopups.qml:50
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Medium"
 msgstr "Mittel"
@@ -2405,8 +2418,8 @@ msgstr ""
 "Menüeinträge und Aktionen pro Element bleiben im Abschnitt „Elemente“ "
 "konfiguriert."
 
+#: contents/ui/config/ConfigPunchiMenu.qml:269
 #: contents/ui/config/components/PunchiMenuDialog.qml:111
-#: contents/ui/config/ConfigPunchiMenu.qml:261
 msgid "Menu mode:"
 msgstr "Menümodus:"
 
@@ -2422,7 +2435,7 @@ msgstr "Geschwindigkeit des Menüübergangs:"
 msgid "Menu width:"
 msgstr "Menübreite:"
 
-#: contents/ui/config/ConfigAspect.qml:174
+#: contents/ui/config/ConfigAspect.qml:175
 msgid "Menus"
 msgstr "Menüs"
 
@@ -2444,7 +2457,7 @@ msgstr "Minimieren"
 msgid "Minimize window"
 msgstr "Fenster minimieren"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:256
+#: contents/ui/config/ConfigPunchiMenu.qml:264
 msgid "Mode and appearance"
 msgstr "Modus und Erscheinungsbild"
 
@@ -2487,9 +2500,9 @@ msgctxt "@action:button"
 msgid "Mute media volume"
 msgstr "Medienlautstärke stumm schalten"
 
+#: contents/ui/config/ConfigItems.qml:643
 #: contents/ui/config/components/TimedDialog.qml:46
 #: contents/ui/config/components/TrashDialog.qml:43
-#: contents/ui/config/ConfigItems.qml:643
 msgid "Name:"
 msgstr "Name:"
 
@@ -2534,7 +2547,7 @@ msgctxt "@info:status"
 msgid "No applications were found in this category."
 msgstr "In dieser Kategorie wurden keine Anwendungen gefunden."
 
-#: contents/ui/config/ConfigAspect.qml:580
+#: contents/ui/config/ConfigAspect.qml:581
 msgid "No imported themes"
 msgstr "Keine importierten Themes"
 
@@ -2568,10 +2581,10 @@ msgstr "Es wurde kein Soundplayer oder brauchbarer Sound gefunden."
 msgid "No virtual desktops were found."
 msgstr "Es wurden keine virtuellen Desktops gefunden."
 
-#: contents/ui/config/components/PopupAnimationSettings.qml:23
-#: contents/ui/config/ConfigAspect.qml:140
+#: contents/ui/config/ConfigAspect.qml:141
 #: contents/ui/config/ConfigMouse.qml:26 contents/ui/config/ConfigMouse.qml:33
-#: contents/ui/config/ConfigMouse.qml:40 contents/ui/config/ConfigPopups.qml:38
+#: contents/ui/config/ConfigMouse.qml:40 contents/ui/config/ConfigPopups.qml:39
+#: contents/ui/config/components/PopupAnimationSettings.qml:23
 msgid "None"
 msgstr "Keine"
 
@@ -2585,37 +2598,37 @@ msgctxt "@option:media-display-mode"
 msgid "Normal (recommended)"
 msgstr "Automatisch (empfohlen)"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:674
 #: contents/ui/config/components/PunchiMenuDialog.qml:402
-#: contents/ui/config/ConfigPunchiMenu.qml:666
 msgid "Normal menu height"
 msgstr "Höhe des normalen Menüs"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:660
 #: contents/ui/config/components/PunchiMenuDialog.qml:383
-#: contents/ui/config/ConfigPunchiMenu.qml:652
 msgid "Normal menu height:"
 msgstr "Höhe des normalen Menüs:"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:540
 #: contents/ui/config/components/PunchiMenuDialog.qml:316
-#: contents/ui/config/ConfigPunchiMenu.qml:532
 msgid "Normal menu placement"
 msgstr "Position des normalen Menüs"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:532
 #: contents/ui/config/components/PunchiMenuDialog.qml:303
-#: contents/ui/config/ConfigPunchiMenu.qml:524
 msgid "Normal menu placement:"
 msgstr "Position des normalen Menüs:"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:610
+#: contents/ui/config/ConfigPunchiMenu.qml:618
 msgid "Normal menu size"
 msgstr "Größe des normalen Menüs"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:636
 #: contents/ui/config/components/PunchiMenuDialog.qml:353
-#: contents/ui/config/ConfigPunchiMenu.qml:628
 msgid "Normal menu width"
 msgstr "Breite des normalen Menüs"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:622
 #: contents/ui/config/components/PunchiMenuDialog.qml:334
-#: contents/ui/config/ConfigPunchiMenu.qml:614
 msgid "Normal menu width:"
 msgstr "Breite des normalen Menüs:"
 
@@ -2688,8 +2701,17 @@ msgstr ""
 "Nur der Hintergrund des Ordner-Popups ändert sich; Anwendungen, Symbole, "
 "Bedienelemente und Text bleiben vollständig deckend."
 
-#: contents/ui/config/ConfigPopups.qml:255
-#: contents/ui/config/ConfigPopups.qml:272
+#: contents/ui/config/ConfigPopups.qml:216
+#: contents/ui/config/ConfigPopups.qml:233
+msgid ""
+"Only the media card background changes; artwork, controls and text remain "
+"fully opaque."
+msgstr ""
+"Nur der Hintergrund der Medienkarte ändert sich; Cover, Bedienelemente und "
+"Text bleiben vollständig deckend."
+
+#: contents/ui/config/ConfigPopups.qml:299
+#: contents/ui/config/ConfigPopups.qml:316
 msgid ""
 "Only the popup background changes; thumbnails, window content, controls and "
 "text remain fully opaque."
@@ -2766,7 +2788,7 @@ msgctxt "@action:button"
 msgid "Page %1 of %2"
 msgstr "Seite %1 von %2"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:558
+#: contents/ui/config/ConfigPunchiMenu.qml:566
 msgid "Panel distance:"
 msgstr "Panelabstand:"
 
@@ -2831,7 +2853,7 @@ msgstr "Pixelspektrum"
 msgid "Plasma color"
 msgstr "Plasma-Farbe"
 
-#: contents/ui/config/ConfigAspect.qml:184 contents/ui/main.qml:48
+#: contents/ui/config/ConfigAspect.qml:185 contents/ui/main.qml:48
 msgid "Plasma theme"
 msgstr "Plasma-Thema"
 
@@ -2841,7 +2863,8 @@ msgctxt "@action:button"
 msgid "Play"
 msgstr "Spielen"
 
-#: contents/ui/components/MediaControlsCard.qml:185
+#: contents/ui/components/MediaControlsCard.qml:224
+#: contents/ui/components/MprisReplacementCard.qml:139
 msgctxt "@info:accessible"
 msgid "Playback progress"
 msgstr "Wiedergabefortschritt"
@@ -2850,7 +2873,7 @@ msgstr "Wiedergabefortschritt"
 msgid "Popup distance:"
 msgstr "Popup-Entfernung:"
 
-#: contents/ui/config/ConfigPopups.qml:368
+#: contents/ui/config/ConfigPopups.qml:412
 msgid "Popup rows:"
 msgstr "Popup-Zeilen:"
 
@@ -2863,11 +2886,11 @@ msgstr "Popup-Skala:"
 msgid "Popup text appearance"
 msgstr "Popup-Entfernung:"
 
-#: contents/ui/config/ConfigAspect.qml:170
+#: contents/ui/config/ConfigAspect.qml:171
 msgid "Popups"
 msgstr "Popups"
 
-#: contents/ui/config/ConfigAspect.qml:891
+#: contents/ui/config/ConfigAspect.qml:892
 msgid "Position is not used with the current indicator shape."
 msgstr "Die Position wird mit der aktuellen Indikatorform nicht verwendet."
 
@@ -2888,15 +2911,15 @@ msgstr "Drücken Sie M, um die Mediensteuerung zu öffnen"
 msgid "Preview disabled"
 msgstr "Vorschau deaktiviert"
 
-#: contents/ui/config/ConfigPopups.qml:319
+#: contents/ui/config/ConfigPopups.qml:363
 msgid "Preview information:"
 msgstr "Vorschauinformationen:"
 
-#: contents/ui/config/ConfigPopups.qml:124
+#: contents/ui/config/ConfigPopups.qml:125
 msgid "Preview popup:"
 msgstr "Vorschau-Popup:"
 
-#: contents/ui/config/ConfigPopups.qml:200
+#: contents/ui/config/ConfigPopups.qml:244
 msgid "Preview scale:"
 msgstr "Vorschau-Skalierung:"
 
@@ -2946,16 +2969,16 @@ msgstr "Puls"
 msgid "Punchi Dock Remastered"
 msgstr "Punchi Dock Remastered"
 
-#: contents/ui/config/ConfigAspect.qml:315
+#: contents/ui/config/ConfigAspect.qml:316
 msgid "Punchi Dock could not delete the selected theme."
 msgstr "Punchi Dock konnte das ausgewählte Thema nicht löschen."
 
-#: contents/ui/config/ConfigAspect.qml:307
+#: contents/ui/config/ConfigAspect.qml:308
 msgid "Punchi Dock could not store the imported theme."
 msgstr "Punchi Dock konnte das importierte Theme nicht speichern."
 
 #: contents/config/config.qml:11 contents/ui/config/AddItemPalette.qml:26
-#: contents/ui/config/ConfigPunchiMenu.qml:17
+#: contents/ui/config/ConfigPunchiMenu.qml:18
 msgid "PunchiMenu"
 msgstr "PunchiMenu"
 
@@ -2964,40 +2987,40 @@ msgctxt "@title"
 msgid "PunchiMenu"
 msgstr "PunchiMenu"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:488
 #: contents/ui/config/components/PunchiMenuDialog.qml:273
-#: contents/ui/config/ConfigPunchiMenu.qml:480
 msgid "PunchiMenu Favorites icon scale"
 msgstr "PunchiMenu-Symbolskalierung für Favoriten"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:67
+#: contents/ui/config/ConfigPunchiMenu.qml:68
 msgctxt "@option:punchimenu-mode"
 msgid "PunchiMenu Full screen"
 msgstr "PunchiMenu Vollbild"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:71
+#: contents/ui/config/ConfigPunchiMenu.qml:72
 msgctxt "@option:punchimenu-mode"
 msgid "PunchiMenu Normal"
 msgstr "PunchiMenu Normal"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:387
 #: contents/ui/config/components/PunchiMenuDialog.qml:182
-#: contents/ui/config/ConfigPunchiMenu.qml:379
 msgid "PunchiMenu application icon scale"
 msgstr "Skalierung der Anwendungssymbole in PunchiMenu"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:316
+#: contents/ui/config/ConfigPunchiMenu.qml:324
 msgid "PunchiMenu background opacity"
 msgstr "Hintergrunddeckkraft von PunchiMenu"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:275
 #: contents/ui/config/components/PunchiMenuDialog.qml:123
-#: contents/ui/config/ConfigPunchiMenu.qml:267
 msgid "PunchiMenu display mode"
 msgstr "Anzeigemodus von PunchiMenu"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:739
+#: contents/ui/config/ConfigPunchiMenu.qml:747
 msgid "PunchiMenu keyboard shortcut"
 msgstr "Tastaturkurzbefehl für PunchiMenu"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:572
+#: contents/ui/config/ConfigPunchiMenu.qml:580
 msgid "PunchiMenu panel distance"
 msgstr "Panelabstand von PunchiMenu"
 
@@ -3011,15 +3034,15 @@ msgstr "Kurzer Hinweis"
 msgid "Reactive particles"
 msgstr "Reaktive Partikel"
 
-#: contents/ui/config/ConfigAspect.qml:785
+#: contents/ui/config/ConfigAspect.qml:786
 msgid "Reflection opacity"
 msgstr "Reflexionsopazität"
 
-#: contents/ui/config/ConfigAspect.qml:774
+#: contents/ui/config/ConfigAspect.qml:775
 msgid "Reflection opacity:"
 msgstr "Reflexionsopazität:"
 
-#: contents/ui/config/ConfigAspect.qml:754
+#: contents/ui/config/ConfigAspect.qml:755
 msgid "Reflection:"
 msgstr "Reflexion:"
 
@@ -3105,17 +3128,17 @@ msgctxt "@action:button"
 msgid "Repeat track"
 msgstr "Titel wiederholen"
 
-#: contents/ui/config/ConfigPopups.qml:55
+#: contents/ui/config/ConfigPopups.qml:56
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with full cover media card"
 msgstr "Ersetzen Sie die Vorschau durch eine vollflächige Medienkarte"
 
-#: contents/ui/config/ConfigPopups.qml:54
+#: contents/ui/config/ConfigPopups.qml:55
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with media card"
 msgstr "Ersetzen Sie die Vorschau durch eine Medienkarte"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:293
+#: contents/ui/config/ConfigPunchiMenu.qml:301
 msgid "Requests the desktop blur effect for the selected PunchiMenu mode."
 msgstr ""
 "Fordert den Unschärfeeffekt des Arbeitsbereichs für den ausgewählten "
@@ -3171,7 +3194,7 @@ msgstr "Klingeln"
 msgid "Rounded pill"
 msgstr "Abgerundete Pille"
 
-#: contents/ui/config/ConfigAspect.qml:139
+#: contents/ui/config/ConfigAspect.qml:140
 msgid "Rounded square"
 msgstr "Abgerundetes Quadrat"
 
@@ -3239,7 +3262,7 @@ msgstr ""
 "Wählen Sie „Automatisch“, um den aktiven Player zu steuern, oder wählen Sie "
 "eine installierte Multimedia-Anwendung aus."
 
-#: contents/ui/config/ConfigAspect.qml:579
+#: contents/ui/config/ConfigAspect.qml:580
 msgid "Select a theme"
 msgstr "Wählen Sie ein Thema aus"
 
@@ -3273,8 +3296,8 @@ msgstr ""
 "Trennzeichen helfen dabei, Elemente auf Ihrem Dock zu gruppieren. Form, "
 "Größe und Glanz passen sich automatisch an Ihr Plasma-Thema an."
 
+#: contents/ui/config/ConfigPunchiMenu.qml:430
 #: contents/ui/config/components/PunchiMenuDialog.qml:213
-#: contents/ui/config/ConfigPunchiMenu.qml:422
 msgid ""
 "Sets an upper limit for columns inside folders in the selected menu mode. "
 "Available space may use fewer columns."
@@ -3294,7 +3317,7 @@ msgstr "Form:"
 msgid "Shaped"
 msgstr "Geformt"
 
-#: contents/ui/config/ConfigAspect.qml:682
+#: contents/ui/config/ConfigAspect.qml:683
 msgid "Show a themed background behind items"
 msgstr "Zeigen Sie einen thematischen Hintergrund hinter den Elementen an"
 
@@ -3319,8 +3342,8 @@ msgstr "Kalenderwochennummern anzeigen"
 msgid "Show date information"
 msgstr "Datumsinformationen anzeigen"
 
+#: contents/ui/config/ConfigPunchiMenu.qml:367
 #: contents/ui/config/components/PunchiMenuDialog.qml:153
-#: contents/ui/config/ConfigPunchiMenu.qml:359
 msgid "Show distribution name in full screen"
 msgstr "Distributionsnamen im Vollbildmodus anzeigen"
 
@@ -3346,11 +3369,11 @@ msgctxt "@action:inmenu"
 msgid "Show in listing"
 msgstr "In Liste anzeigen"
 
-#: contents/ui/config/ConfigAspect.qml:712
+#: contents/ui/config/ConfigAspect.qml:713
 msgid "Show item names in the dock"
 msgstr "Elementnamen im Dock anzeigen"
 
-#: contents/ui/config/ConfigPopups.qml:59
+#: contents/ui/config/ConfigPopups.qml:60
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Show media card below window previews"
 msgstr "Medienkarte unterhalb der Fenstervorschau anzeigen"
@@ -3359,7 +3382,7 @@ msgstr "Medienkarte unterhalb der Fenstervorschau anzeigen"
 msgid "Show only windows from the current virtual desktop"
 msgstr "Nur Fenster des aktuellen virtuellen Desktops anzeigen"
 
-#: contents/ui/config/ConfigAspect.qml:755
+#: contents/ui/config/ConfigAspect.qml:756
 msgid "Show reflections below dock items"
 msgstr "Reflexionen unter Dock-Elementen anzeigen"
 
@@ -3372,7 +3395,7 @@ msgstr "Sitzungsaktionen anzeigen"
 msgid "Show shadows on clock and date text"
 msgstr "Zeigen Sie subtile Schatten auf dem Docktext an"
 
-#: contents/ui/config/ConfigAspect.qml:722
+#: contents/ui/config/ConfigAspect.qml:723
 msgid "Show subtle shadows on dock labels"
 msgstr "Zeigen Sie subtile Schatten auf dem Docktext an"
 
@@ -3384,11 +3407,11 @@ msgstr "Zeigen Sie subtile Schatten im Menütext an"
 msgid "Show subtle shadows on popup text"
 msgstr "Zeigen Sie subtile Schatten im Popup-Text an"
 
-#: contents/ui/config/ConfigPopups.qml:357
+#: contents/ui/config/ConfigPopups.qml:401
 msgid "Show subtle shadows on window preview text"
 msgstr "Zeigen Sie subtile Schatten im Fenstervorschautext an"
 
-#: contents/ui/config/ConfigAspect.qml:987
+#: contents/ui/config/ConfigAspect.qml:988
 msgid "Show the number of open windows"
 msgstr "Anzahl der geöffneten Fenster anzeigen"
 
@@ -3408,7 +3431,7 @@ msgstr ""
 "Zeigt Anwendungsnamen in jedem Layout und Befehlsdetails im detaillierten "
 "Layout an."
 
-#: contents/ui/config/ConfigAspect.qml:683
+#: contents/ui/config/ConfigAspect.qml:684
 msgid ""
 "Shows the Plasma highlight background when an item is hovered or its "
 "application is active."
@@ -3443,7 +3466,7 @@ msgstr "Vom Dock rutschen"
 msgid "Slow bounce"
 msgstr "Langsamer Sprung"
 
-#: contents/ui/config/ConfigAspect.qml:138
+#: contents/ui/config/ConfigAspect.qml:139
 msgid "Small ring"
 msgstr "Kleiner Ring"
 
@@ -3513,10 +3536,10 @@ msgstr "Textfarbe:"
 msgid "Text scale:"
 msgstr "Textmaßstab:"
 
-#: contents/ui/config/ConfigAspect.qml:721
+#: contents/ui/config/ConfigAspect.qml:722
 #: contents/ui/config/ConfigFolderPopups.qml:485
 #: contents/ui/config/ConfigMenus.qml:231
-#: contents/ui/config/ConfigPopups.qml:356
+#: contents/ui/config/ConfigPopups.qml:400
 msgid "Text shadows:"
 msgstr "Textschatten:"
 
@@ -3560,7 +3583,7 @@ msgstr ""
 "Die Anwendungsanordnung wurde geändert. Überprüfen Sie sie und versuchen Sie "
 "es erneut."
 
-#: contents/ui/config/ConfigAspect.qml:996
+#: contents/ui/config/ConfigAspect.qml:997
 msgid ""
 "The badge appears from two grouped windows and is hidden when window "
 "grouping is disabled."
@@ -3580,7 +3603,7 @@ msgstr "Das Konfigurationsverzeichnis konnte nicht erstellt werden."
 msgid "The configuration directory is unavailable."
 msgstr "Das Konfigurationsverzeichnis ist nicht verfügbar."
 
-#: contents/ui/config/ConfigAspect.qml:304
+#: contents/ui/config/ConfigAspect.qml:305
 msgid ""
 "The configured external theme is unavailable. The Plasma background will be "
 "used."
@@ -3649,7 +3672,7 @@ msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Die abgelegten Dateien konnten nicht geöffnet werden."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:406
+#: contents/ui/config/ConfigPunchiMenu.qml:414
 msgid "The effective size adapts to the screen and available grid cell space."
 msgstr ""
 "Die effektive Größe passt sich dem Bildschirm und dem verfügbaren Platz in "
@@ -3671,7 +3694,7 @@ msgctxt "@info:status"
 msgid "The last folder change could not be undone."
 msgstr "Die letzte Ordneränderung konnte nicht rückgängig gemacht werden."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:461
+#: contents/ui/config/ConfigPunchiMenu.qml:469
 msgid ""
 "The menu reduces columns when the available width is insufficient and uses "
 "scrolling when content exceeds the selected row limit."
@@ -3680,7 +3703,7 @@ msgstr ""
 "verwendet Scrollen, wenn der Inhalt das ausgewählte Zeilenlimit "
 "überschreitet."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:694
+#: contents/ui/config/ConfigPunchiMenu.qml:702
 msgid ""
 "The percentages adjust the menu size relative to your screen width and "
 "height (from 30% to 90%)."
@@ -3696,7 +3719,7 @@ msgstr ""
 "Die tatsächliche Plattendicke ist in dieser Ansicht nicht verfügbar, daher "
 "wird ein sicherer Fallback-Grenzwert verwendet."
 
-#: contents/ui/config/ConfigAspect.qml:809
+#: contents/ui/config/ConfigAspect.qml:810
 msgid ""
 "The reflection adapts to the available panel thickness and is hidden when "
 "there is not enough space."
@@ -3704,7 +3727,7 @@ msgstr ""
 "Die Spiegelung passt sich der verfügbaren Plattenstärke an und wird "
 "ausgeblendet, wenn nicht genügend Platz vorhanden ist."
 
-#: contents/ui/config/ConfigAspect.qml:810
+#: contents/ui/config/ConfigAspect.qml:811
 msgid ""
 "The reflection is decorative and does not change the size or interaction "
 "area of dock items."
@@ -3721,7 +3744,7 @@ msgstr "Die angeforderte Anwendungsaktion konnte nicht abgeschlossen werden."
 msgid "The root value must be a JSON array."
 msgstr "Der Stammwert muss ein JSON-Array sein."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:510
+#: contents/ui/config/ConfigPunchiMenu.qml:518
 msgid ""
 "The safe range applies to the reserved Favorites section in both menu modes."
 msgstr ""
@@ -3734,41 +3757,41 @@ msgstr ""
 "Der ausgewählte Desktop existiert nicht mehr. Wählen Sie einen anderen "
 "Desktop."
 
-#: contents/ui/config/ConfigAspect.qml:298
+#: contents/ui/config/ConfigAspect.qml:299
 msgid "The selected file does not contain valid JSON."
 msgstr "Die ausgewählte Datei enthält kein gültiges JSON."
 
-#: contents/ui/config/ConfigAspect.qml:317
+#: contents/ui/config/ConfigAspect.qml:318
 msgid "The selected file is not a supported Punchi Dock theme."
 msgstr "Die ausgewählte Datei ist kein unterstütztes Punchi Dock-Design."
 
-#: contents/ui/config/ConfigAspect.qml:326
+#: contents/ui/config/ConfigAspect.qml:327
 msgid "The selected folder and its subfolders do not contain JSON theme files."
 msgstr ""
 "Der ausgewählte Ordner und seine Unterordner enthalten keine JSON-"
 "Designdateien."
 
-#: contents/ui/config/ConfigAspect.qml:313
+#: contents/ui/config/ConfigAspect.qml:314
 msgid "The selected installed theme has an invalid identifier."
 msgstr "Das ausgewählte installierte Design hat eine ungültige Kennung."
 
-#: contents/ui/config/ConfigAspect.qml:292
+#: contents/ui/config/ConfigAspect.qml:293
 msgid "The selected theme file could not be read."
 msgstr "Die ausgewählte Theme-Datei konnte nicht gelesen werden."
 
-#: contents/ui/config/ConfigAspect.qml:294
+#: contents/ui/config/ConfigAspect.qml:295
 msgid "The selected theme file is empty."
 msgstr "Die ausgewählte Theme-Datei ist leer."
 
-#: contents/ui/config/ConfigAspect.qml:311
+#: contents/ui/config/ConfigAspect.qml:312
 msgid "The selected theme folder could not be read."
 msgstr "Der ausgewählte Theme-Ordner konnte nicht gelesen werden."
 
-#: contents/ui/config/ConfigAspect.qml:296
+#: contents/ui/config/ConfigAspect.qml:297
 msgid "The selected theme is larger than the 64 KiB limit."
 msgstr "Das ausgewählte Theme ist größer als die 64-KiB-Grenze."
 
-#: contents/ui/config/ConfigAspect.qml:300
+#: contents/ui/config/ConfigAspect.qml:301
 msgid "The selected theme uses an unsupported schema version."
 msgstr ""
 "Das ausgewählte Design verwendet eine nicht unterstützte Schemaversion."
@@ -3785,7 +3808,7 @@ msgstr "Das Spektrum wird über den Dock-Hintergrund im Plasma-Stil gezeichnet."
 msgid "The trash could not be emptied."
 msgstr "Der Papierkorb konnte nicht geleert werden."
 
-#: contents/ui/config/ConfigAspect.qml:262
+#: contents/ui/config/ConfigAspect.qml:263
 msgid "Theme “%1” was deleted."
 msgstr "Theme „%1“ wurde gelöscht."
 
@@ -3798,7 +3821,7 @@ msgstr "Für diese Anwendung sind keine Ordner verfügbar."
 msgid "Thickness:"
 msgstr "Dicke:"
 
-#: contents/ui/config/ConfigPopups.qml:48
+#: contents/ui/config/ConfigPopups.qml:49
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Thin"
 msgstr "Dünn"
@@ -3819,7 +3842,7 @@ msgctxt "@info:status"
 msgid "This application could not be resolved safely."
 msgstr "Diese Anwendung konnte nicht sicher aufgelöst werden."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:601
+#: contents/ui/config/ConfigPunchiMenu.qml:609
 msgid "This distance is added after the panel thickness detected by Plasma."
 msgstr ""
 "Dieser Abstand wird nach der von Plasma erkannten Paneldicke hinzugefügt."
@@ -3857,7 +3880,7 @@ msgstr ""
 msgid "This setting applies only to this media item."
 msgstr "This setting applies only to this media item."
 
-#: contents/ui/config/ConfigAspect.qml:302
+#: contents/ui/config/ConfigAspect.qml:303
 msgid ""
 "This version of Punchi Dock does not support the renderer requested by the "
 "theme."
@@ -3885,16 +3908,16 @@ msgstr "Zeittextskala:"
 msgid "Title header:"
 msgstr "Titelüberschrift:"
 
-#: contents/ui/config/ConfigAspect.qml:145
+#: contents/ui/config/ConfigAspect.qml:146
 msgctxt "Indicator position"
 msgid "Top"
 msgstr "Oben"
 
-#: contents/ui/config/ConfigAspect.qml:148
+#: contents/ui/config/ConfigAspect.qml:149
 msgid "Top left"
 msgstr "Oben links"
 
-#: contents/ui/config/ConfigAspect.qml:149
+#: contents/ui/config/ConfigAspect.qml:150
 msgid "Top right"
 msgstr "Oben rechts"
 
@@ -3952,7 +3975,7 @@ msgstr "Vom Dock lösen"
 msgid "Use Plasma theme colors"
 msgstr "Verwenden Sie Plasma-Designfarben"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:290
+#: contents/ui/config/ConfigPunchiMenu.qml:298
 msgid "Use background blur when available"
 msgstr "Hintergrundunschärfe verwenden, wenn verfügbar"
 
@@ -3974,7 +3997,7 @@ msgstr "Dienstprogramme"
 msgid "Validate"
 msgstr "Validieren"
 
-#: contents/ui/config/ConfigAspect.qml:189
+#: contents/ui/config/ConfigAspect.qml:190
 msgid "Vertical"
 msgstr "Vertikal"
 
@@ -4058,7 +4081,7 @@ msgstr ""
 "während Schieberegler, Schaltflächen und Selektoren einen interaktiven "
 "Zeiger verwenden."
 
-#: contents/ui/config/ConfigPopups.qml:50
+#: contents/ui/config/ConfigPopups.qml:51
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Wide"
 msgstr "Breit"
@@ -4076,11 +4099,11 @@ msgstr "Fenster"
 msgid "Window behavior:"
 msgstr "Fensterverhalten:"
 
-#: contents/ui/config/ConfigAspect.qml:978
+#: contents/ui/config/ConfigAspect.qml:979
 msgid "Window count badge"
 msgstr "Abzeichen für Fensteranzahl"
 
-#: contents/ui/config/ConfigAspect.qml:691
+#: contents/ui/config/ConfigAspect.qml:692
 msgid "Window indicators remain visible when the item background is hidden."
 msgstr ""
 "Fensterindikatoren bleiben sichtbar, wenn der Elementhintergrund "
@@ -4100,33 +4123,33 @@ msgstr "Fenster minimiert"
 msgid "Window preview"
 msgstr "Fenstervorschau"
 
-#: contents/ui/config/ConfigPopups.qml:397
+#: contents/ui/config/ConfigPopups.qml:441
 msgid "Window preview animation"
 msgstr "Fenstervorschau-Animation"
 
-#: contents/ui/config/ConfigPopups.qml:294
+#: contents/ui/config/ConfigPopups.qml:338
 msgid "Window preview background frame"
 msgstr "Hintergrundrahmen der Fenstervorschau"
 
-#: contents/ui/config/ConfigPopups.qml:254
+#: contents/ui/config/ConfigPopups.qml:298
 msgid "Window preview background opacity"
 msgstr "Hintergrunddeckkraft der Fenstervorschau"
 
-#: contents/ui/config/ConfigPopups.qml:331
+#: contents/ui/config/ConfigPopups.qml:375
 msgid "Window preview information"
 msgstr "Informationen zur Fenstervorschau"
 
-#: contents/ui/config/ConfigPopups.qml:214
+#: contents/ui/config/ConfigPopups.qml:258
 msgid "Window preview scale"
 msgstr "Fenstervorschau-Skalierung"
 
-#: contents/ui/config/ConfigAspect.qml:166
-#: contents/ui/config/ConfigPopups.qml:37
-#: contents/ui/config/ConfigPopups.qml:120
+#: contents/ui/config/ConfigAspect.qml:167
+#: contents/ui/config/ConfigPopups.qml:38
+#: contents/ui/config/ConfigPopups.qml:121
 msgid "Window previews"
 msgstr "Fenstervorschauen"
 
-#: contents/ui/config/ConfigPopups.qml:151
+#: contents/ui/config/ConfigPopups.qml:152
 msgid ""
 "Window selectors and hover previews use cards with the app icon and no live "
 "window content."
@@ -4134,7 +4157,7 @@ msgstr ""
 "Fensterauswahlen und Hover-Vorschauen verwenden Karten mit dem App-Symbol "
 "und keinen Live-Fensterinhalt."
 
-#: contents/ui/config/ConfigPopups.qml:149
+#: contents/ui/config/ConfigPopups.qml:150
 msgid ""
 "Window selectors and hover previews use live thumbnails when the compositor "
 "can provide them."
@@ -4159,9 +4182,9 @@ msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Sie können bis zu %1 lokale Dateien gleichzeitig öffnen."
 
-#: contents/ui/config/components/ActionDialog.qml:79
 #: contents/ui/config/ConfigItems.qml:672
 #: contents/ui/config/ItemActionEditor.qml:33
+#: contents/ui/config/components/ActionDialog.qml:79
 msgid "rows"
 msgstr "Reihen"
 

@@ -272,6 +272,9 @@
     <entry name="windowPreviewBackgroundOpacityPercent" type="Int">
       <default>75</default>
     </entry>
+    <entry name="mediaCardBackgroundOpacityPercent" type="Int">
+      <default>75</default>
+    </entry>
     <entry name="windowPreviewFrameSize" type="String">
       <default>thin</default>
     </entry>

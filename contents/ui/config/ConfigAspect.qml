@@ -47,6 +47,7 @@ KCM.SimpleKCM {
     property string cfg_windowPreviewStyle: "card"
     property alias cfg_windowPreviewScale: popupAppearancePage.cfg_windowPreviewScale
     property alias cfg_windowPreviewBackgroundOpacityPercent: popupAppearancePage.cfg_windowPreviewBackgroundOpacityPercent
+    property alias cfg_mediaCardBackgroundOpacityPercent: popupAppearancePage.cfg_mediaCardBackgroundOpacityPercent
     property alias cfg_windowPreviewFrameSize: popupAppearancePage.cfg_windowPreviewFrameSize
     property alias cfg_windowPreviewInfoMode: popupAppearancePage.cfg_windowPreviewInfoMode
     property alias cfg_windowPreviewTextShadowsEnabled: popupAppearancePage.cfg_windowPreviewTextShadowsEnabled

@@ -276,6 +276,9 @@ def main() -> int:
             '<entry name="windowPreviewBackgroundOpacityPercent" type="Int">',
             "KConfig must persist a dedicated window preview opacity")
     require(config_schema,
+            '<entry name="mediaCardBackgroundOpacityPercent" type="Int">\n      <default>75</default>',
+            "KConfig must persist an independent media card opacity")
+    require(config_schema,
             '<entry name="windowPreviewFrameSize" type="String">\n      <default>thin</default>',
             "KConfig must persist the thin window preview frame by default")
     require(config_schema,
@@ -284,6 +287,11 @@ def main() -> int:
     require(config_popups,
             "property alias cfg_windowPreviewBackgroundOpacityPercent:",
             "The popup configuration page must own the opacity value")
+    require(config_popups,
+            "property alias cfg_mediaCardBackgroundOpacityPercent:",
+            "The popup configuration page must own the media opacity value")
+    require(config_popups, 'i18n("Media card opacity:")',
+            "The popup configuration page must expose the media opacity control")
     require(config_popups, "from: 50",
             "The preview opacity slider must retain its safe lower bound")
     require(config_popups, "to: 100",
@@ -297,11 +305,17 @@ def main() -> int:
             "property alias cfg_windowPreviewBackgroundOpacityPercent:",
             "The Appearance KCM must expose the popup page opacity")
     require(config_aspect,
+            "property alias cfg_mediaCardBackgroundOpacityPercent:",
+            "The Appearance KCM must expose the media card opacity")
+    require(config_aspect,
             "property alias cfg_windowPreviewFrameSize:",
             "The Appearance KCM must expose the popup frame size")
     require(dock_configuration,
             "readonly property real windowPreviewBackgroundOpacity:",
             "Runtime configuration must sanitize the preview opacity")
+    require(dock_configuration,
+            "readonly property real mediaCardBackgroundOpacity:",
+            "Runtime configuration must sanitize the media card opacity")
     require(dock_configuration,
             "readonly property string windowPreviewFrameSize:",
             "Runtime configuration must sanitize the preview frame size")
@@ -349,8 +363,12 @@ def main() -> int:
          "The task popup must use its dedicated single-owner surface"),
         ("presentationMode: popupCoordinator.activeTaskPopupPresentation",
          "The visual surface must consume the coordinator's single decision"),
-        ("backgroundOpacity: dockConfig.windowPreviewBackgroundOpacity",
-         "The popup must use its dedicated reactive opacity"),
+        ("backgroundOpacity: taskPopupSurface.replacementMediaPresentation",
+         "The popup must select opacity from its active presentation"),
+        ("? dockConfig.mediaCardBackgroundOpacity",
+         "Replacement media cards must use their dedicated reactive opacity"),
+        (": dockConfig.windowPreviewBackgroundOpacity",
+         "Previews and overlays must retain preview opacity"),
         ("contentFramePaddingPercent: 2",
          "The thumbnail frame padding must remain at two percent"),
         ("contentFramePaddingScale: dockConfig.windowPreviewFrameScale",

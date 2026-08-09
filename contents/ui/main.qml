@@ -2239,7 +2239,11 @@ PlasmoidItem {
                     mediaWindows: popupCoordinator.activeTaskPopupData.windows || []
                     mediaIcon: popupCoordinator.activeTaskPopupData.icon || "emblem-music-symbolic"
                     mediaActionsComposed: taskWindowsPopupContent.mediaActionsComposed
-                    backgroundOpacity: dockConfig.windowPreviewBackgroundOpacity
+                    // qmllint disable unqualified
+                    backgroundOpacity: taskPopupSurface.replacementMediaPresentation
+                        ? dockConfig.mediaCardBackgroundOpacity
+                        : dockConfig.windowPreviewBackgroundOpacity
+                    // qmllint enable unqualified
                     contentFramePaddingPercent: 2
                     contentFramePaddingScale: dockConfig.windowPreviewFrameScale
                     minimumSurfaceWidth: Kirigami.Units.smallSpacing

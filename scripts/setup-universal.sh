@@ -25,7 +25,7 @@ Posteriormente reinicia la sesión de Plasma Shell para aplicar los cambios de i
 
 Ejemplos:
   $0                                                      # Busca e instala el paquete universal en dist/
-  $0 dist/punchi-dock-remastered-0.9.2-universal.plasmoid # Especifica un paquete .plasmoid directo
+  $0 dist/punchi-dock-remastered-0.9.7-universal.plasmoid # Especifica un paquete .plasmoid directo
 EOF
 }
 

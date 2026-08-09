@@ -65,7 +65,7 @@ scripts/setup.sh --dry-run
 scripts/setup.sh --help
 
 # Instalar directamente un paquete .plasmoid ya construido sin volver a compilar
-scripts/setup.sh dist/punchi-dock-remastered-0.9.5-universal.plasmoid
+scripts/setup.sh dist/punchi-dock-remastered-0.9.7-fedora44-x86_64.plasmoid
 ```
 
 ---

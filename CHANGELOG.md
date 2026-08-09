@@ -1,3 +1,60 @@
+## [0.9.7] - 2026-08-09
+
+### Agregado
+
+- Arrastre interno de aplicaciones, favoritos y carpetas en PunchiMenu Normal
+  y Pantalla completa, con destinos explícitos y persistencia transaccional.
+- Control independiente de opacidad para el fondo de las tarjetas multimedia
+  MPRIS, aplicado reactivamente sin reiniciar `plasmashell`.
+- Componente `RoundedImage` con shader empaquetado para recortar las carátulas
+  completas respetando el radio de la superficie.
+
+### Cambiado
+
+- Las superficies de PunchiMenu, menús contextuales, carpetas y tarjetas MPRIS
+  usan perfiles temáticos más coherentes con Plasma y conservan su semántica
+  de hover, foco, presión y selección.
+- Los modos MPRIS `card` y `fullCard` comparten una ruta exclusiva de estado y
+  geometría; `overlay` continúa como tarjeta compacta bajo las miniaturas.
+- El enrutado entre miniaturas, controles multimedia y cambios rápidos de ítem
+  prepara la geometría antes de mostrar el diálogo y mantiene transiciones
+  interrumpibles.
+
+### Corregido
+
+- Los popups ya no intentan abrir diálogos con geometría vacía durante la
+  preparación, condición que podía reiniciar `plasmashell` bajo Wayland.
+- Las aplicaciones fijadas conservan sus miniaturas válidas cuando una segunda
+  consulta estricta por identidad no devuelve ventanas.
+- Las tarjetas multimedia aparecen correctamente al desactivar las vistas
+  previas de ventana y sustituyen la miniatura según el modo seleccionado.
+- Los controles MPRIS respetan una zona interior segura y las carátulas de
+  `fullCard` ya no sobresalen visualmente por las esquinas.
+- Los flujos de arrastre y los menús emergentes mantienen su destino durante
+  retargeting, desplazamiento y cambios rápidos de superficie.
+
+### Validación
+
+- Contratos dirigidos de shader, miniaturas, superficies y coordinación
+  correctos.
+- Fedora 44 `x86_64`, Plasma 6.7.4 y Qt 6.11.1: build Release correcto y CTest
+  completo con 30 de 30 pruebas aprobadas.
+- `qmllint`: 706 advertencias conocidas dentro del baseline Fedora, sin errores
+  ni aumento de categorías protegidas.
+- Catálogos alemán, español y portugués brasileño: 840 mensajes traducidos por
+  idioma, sin entradas vacías o difusas y con validación de formato correcta.
+- El usuario validó en Plasma real la recuperación de `card` y `fullCard`, la
+  mejora de reacción y el recorte redondeado de la carátula completa.
+- Paquete Fedora final:
+  `punchi-dock-remastered-0.9.7-fedora44-x86_64.plasmoid`, 720243 bytes y
+  SHA-256
+  `ea271fb0030e8b2f033e73fa1517023528ca9d20d208ee7c5e3c5435dd45aec2`.
+- El paquete contiene 147 entradas, metadata 0.9.7, módulos nativos stripped,
+  tres proxies ELF reales con `DT_SONAME` y los catálogos MO esperados; no
+  contiene symlinks ni archivos de desarrollo.
+- El artefacto universal permanece pendiente de compilación oficial en Debian
+  13 y no forma parte de esta publicación Fedora.
+
 ## [0.9.6] - 2026-08-07
 
 ### Agregado

@@ -168,6 +168,11 @@ add_test(
 )
 
 add_test(
+    NAME rounded_image_shader_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/rounded_image_shader_contract_test.py
+)
+
+add_test(
     NAME kubuntu_version_detection_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/kubuntu_version_detection_test.py
 )

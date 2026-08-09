@@ -109,6 +109,32 @@ qt_add_resources(punchidockintegration "punchimenu_avatar_shader"
     FILES "${PUNCHI_AVATAR_SHADER_BINARY}"
 )
 
+set(PUNCHI_ROUNDED_IMAGE_SHADER_SOURCE
+    "${CMAKE_CURRENT_SOURCE_DIR}/shaders/RoundedImage.frag"
+)
+set(PUNCHI_ROUNDED_IMAGE_SHADER_BINARY
+    "${CMAKE_CURRENT_BINARY_DIR}/RoundedImage.frag.qsb"
+)
+add_custom_command(
+    OUTPUT "${PUNCHI_ROUNDED_IMAGE_SHADER_BINARY}"
+    COMMAND "${PUNCHI_QSB_EXECUTABLE}"
+        --qt6
+        --qsbversion 65
+        -o "${PUNCHI_ROUNDED_IMAGE_SHADER_BINARY}"
+        "${PUNCHI_ROUNDED_IMAGE_SHADER_SOURCE}"
+    DEPENDS "${PUNCHI_ROUNDED_IMAGE_SHADER_SOURCE}"
+    COMMENT "Baking rounded image shader"
+    VERBATIM
+)
+set_source_files_properties("${PUNCHI_ROUNDED_IMAGE_SHADER_BINARY}" PROPERTIES
+    GENERATED TRUE
+    QT_RESOURCE_ALIAS "RoundedImage.frag.qsb"
+)
+qt_add_resources(punchidockintegration "rounded_image_shader"
+    PREFIX "/qt/qml/org/punchi/dock/shaders"
+    FILES "${PUNCHI_ROUNDED_IMAGE_SHADER_BINARY}"
+)
+
 target_link_libraries(punchidockintegration
     PRIVATE
         Qt6::Core

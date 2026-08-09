@@ -37,6 +37,15 @@ QtObject {
             : 75
         return safePercent / 100
     }
+    readonly property real mediaCardBackgroundOpacity: {
+        const requestedPercent = Number(
+            Plasmoid.configuration.mediaCardBackgroundOpacityPercent)
+        const safePercent = Number.isFinite(requestedPercent)
+            ? Math.max(50, Math.min(100,
+                Math.round(requestedPercent / 5) * 5))
+            : 75
+        return safePercent / 100
+    }
     readonly property string windowPreviewFrameSize: {
         const size = String(Plasmoid.configuration.windowPreviewFrameSize || "thin")
         return size === "medium" || size === "wide" ? size : "thin"
