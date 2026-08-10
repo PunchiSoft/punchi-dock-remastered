@@ -29,6 +29,8 @@
 #include <QStandardPaths>
 #include <QUrl>
 
+#include <memory>
+
 namespace
 {
 constexpr auto TranslationDomain = "plasma_applet_org.kde.plasma.punchi-dock-remastered";
@@ -455,7 +457,7 @@ void SystemDiscovery::requestFolderEntries(const QString &path)
     }
 
     auto *job = KIO::listDir(url, KIO::HideProgressInfo);
-    auto *entries = new QVariantList;
+    auto entries = std::make_shared<QVariantList>();
     entries->reserve(maximumFolderResults);
 
     connect(job, &KIO::ListJob::entries, this, [entries, url](KIO::Job *, const KIO::UDSEntryList &batch) {
@@ -525,7 +527,6 @@ void SystemDiscovery::requestFolderEntries(const QString &path)
         } else {
             Q_EMIT folderEntriesReady(*entries);
         }
-        delete entries;
     });
 }
 

@@ -8,16 +8,19 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
 #include <QSet>
 #include <QTemporaryDir>
+#include <QTimer>
 #include <QUrl>
 #include <QVariantList>
 #include <QVariantMap>
 
 #include <cstdlib>
 #include <iostream>
+#include <memory>
 #include <unistd.h>
 
 namespace
@@ -192,6 +195,30 @@ bool validateApplicationLauncherDrops(SystemDiscovery &discovery)
     }
     return true;
 }
+
+bool validateInterruptedFolderRequests()
+{
+    QTemporaryDir directory;
+    if (!directory.isValid()
+        || !writeFile(directory.filePath(QStringLiteral("entry.txt")),
+                      QByteArrayLiteral("folder entry\n"))) {
+        std::cerr << "Could not create the interrupted folder request fixture.\n";
+        return false;
+    }
+
+    // Leak-checking tools exercise the ownership path where the signal context
+    // disappears before the asynchronous KIO job emits its result.
+    constexpr int requestCount = 128;
+    for (int request = 0; request < requestCount; ++request) {
+        auto discovery = std::make_unique<SystemDiscovery>();
+        discovery->requestFolderEntries(directory.path());
+    }
+
+    QEventLoop settleLoop;
+    QTimer::singleShot(500, &settleLoop, &QEventLoop::quit);
+    settleLoop.exec();
+    return true;
+}
 }
 
 int main(int argc, char *argv[])
@@ -215,6 +242,7 @@ int main(int argc, char *argv[])
     }
     passed = validateFolderDesktopLaunchers() && passed;
     passed = validateApplicationLauncherDrops(discovery) && passed;
+    passed = validateInterruptedFolderRequests() && passed;
 
     QObject::connect(&discovery, &SystemDiscovery::applicationsReady,
                      [&passed, &applicationResponseCount, &lastApplicationResponse](const QVariantList &applications) {
