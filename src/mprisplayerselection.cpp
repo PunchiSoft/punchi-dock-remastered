@@ -31,6 +31,7 @@ QStringList meaningfulIdentityTokens(QString value)
         QStringLiteral("com"),
         QStringLiteral("dev"),
         QStringLiteral("io"),
+        QStringLiteral("kde"),
         QStringLiteral("net"),
         QStringLiteral("org"),
     };

@@ -48,6 +48,20 @@ int main()
         QStringLiteral("Stopped"),
         true,
     };
+    const Candidate elisa{
+        QStringLiteral("org.mpris.MediaPlayer2.elisa"),
+        QStringLiteral("org.kde.elisa"),
+        QStringLiteral("Elisa"),
+        QStringLiteral("Stopped"),
+        true,
+    };
+    const Candidate dragonPlayer{
+        QStringLiteral("org.mpris.MediaPlayer2.org.kde.dragonplayer"),
+        QStringLiteral("org.kde.dragonplayer"),
+        QStringLiteral("Dragon Player"),
+        QStringLiteral("Stopped"),
+        true,
+    };
 
     bool passed = true;
     passed &= expectService("playing player wins automatic selection",
@@ -97,6 +111,34 @@ int main()
                             QStringLiteral("org.kde.konsole"),
                             QString(),
                             QString());
+    passed &= expectService("shared KDE namespace does not match another application",
+                            {elisa, dragonPlayer},
+                            MprisPlayerSelection::Mode::Application,
+                            QStringLiteral("org.kde.kate"),
+                            elisa.service,
+                            QString());
+    passed &= expectService("full KDE desktop identity selects its own player",
+                            {elisa, dragonPlayer},
+                            MprisPlayerSelection::Mode::Application,
+                            QStringLiteral("org.kde.elisa.desktop"),
+                            QString(),
+                            elisa.service);
+    passed &= expectService("short KDE identity selects its own player",
+                            {elisa, dragonPlayer},
+                            MprisPlayerSelection::Mode::Application,
+                            QStringLiteral("dragonplayer"),
+                            QString(),
+                            dragonPlayer.service);
+    passed &= expectService("KDE player identity remains a valid fallback",
+                            {Candidate{elisa.service,
+                                       QString(),
+                                       QStringLiteral("Elisa"),
+                                       QStringLiteral("Stopped"),
+                                       true}},
+                            MprisPlayerSelection::Mode::Application,
+                            QStringLiteral("org.kde.elisa"),
+                            QString(),
+                            elisa.service);
     passed &= expectService("empty automatic candidate list has no player",
                             {},
                             MprisPlayerSelection::Mode::ActivePlayer,
