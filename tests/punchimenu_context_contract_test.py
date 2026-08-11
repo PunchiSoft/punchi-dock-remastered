@@ -738,6 +738,24 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    normal_leading_edge_indicator_contract = (
+        "readonly property int gridColumn:",
+        "applicationDelegate.index",
+        "% Math.max(1, root.columnCount)",
+        "readonly property bool atLeadingGridEdge:",
+        "!after && gridColumn === 0",
+        "x: atLeadingGridEdge ? 0",
+        ": after ? parent.width - width / 2",
+        ": -width / 2",
+    )
+    for marker in normal_leading_edge_indicator_contract:
+        if marker not in normal_source:
+            print(
+                "PunchiMenu Normal DnD: insertBefore indicator must stay fully "
+                f"inside the clipped leading edge: missing {marker}",
+                file=sys.stderr,
+            )
+            passed = False
     unstable_scroll_reserve = (
         "readonly property real verticalScrollBarReserve:\n"
         "                        verticalScrollRequired"

@@ -2423,12 +2423,19 @@ FocusScope {
                         Rectangle {
                             readonly property bool after:
                                 nodeDropTarget.dropIntent === "insertAfter"
+                            readonly property int gridColumn:
+                                applicationDelegate.index
+                                    % Math.max(1, root.columnCount)
+                            readonly property bool atLeadingGridEdge:
+                                !after && gridColumn === 0
 
                             anchors.top: parent.top
                             anchors.bottom: parent.bottom
                             anchors.topMargin: Kirigami.Units.smallSpacing
                             anchors.bottomMargin: Kirigami.Units.smallSpacing
-                            x: after ? parent.width - width / 2 : -width / 2
+                            x: atLeadingGridEdge ? 0
+                                : after ? parent.width - width / 2
+                                : -width / 2
                             width: Kirigami.Units.largeSpacing
                             radius: Kirigami.Units.cornerRadius
                             color: Qt.alpha(Kirigami.Theme.highlightColor, 0.22)
