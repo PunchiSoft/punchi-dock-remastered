@@ -28,6 +28,8 @@ FocusScope {
     property bool backgroundBlurEnabled: true
     property real backgroundOpacity: 0.50
     property bool showDistributionName: true
+    property bool showPageNavigationArrows: true
+    property string closeButtonPosition: "right"
     property var hiddenApplicationIds: []
     property bool revealHiddenApplications: false
     property bool menuOpen: false
@@ -39,6 +41,7 @@ FocusScope {
     property string applicationErrorMessage: ""
     property string operationMessage: ""
     property bool operationMessageIsError: false
+    property string settingsErrorMessage: ""
     property bool operationMessageDismissalInProgress: false
     property int operationSecondsRemaining: 0
     property string searchText: ""
@@ -47,11 +50,21 @@ FocusScope {
     property int pendingPageStep: 0
     property real wheelPageAccumulator: 0
     property bool wheelGestureCommitted: false
-    property bool sessionViewActive: false
-    property bool sessionViewRequested: false
+    property string contentViewActive: "applications"
+    property string contentViewRequested: "applications"
     property real modeContentOpacity: 1.0
 
     readonly property bool motionEnabled: Kirigami.Units.longDuration > 0
+    readonly property bool applicationViewActive:
+        contentViewActive === "applications"
+    readonly property bool sessionViewActive: contentViewActive === "session"
+    readonly property bool sessionViewRequested:
+        contentViewRequested === "session"
+    readonly property bool settingsViewActive: contentViewActive === "settings"
+    readonly property bool settingsViewRequested:
+        contentViewRequested === "settings"
+    readonly property bool closeButtonOnLeft: closeButtonPosition === "left"
+    readonly property int closeButtonCornerMargin: Kirigami.Units.gridUnit
     readonly property bool modeTransitionActive: modeFadeOutAnimation.running
         || modeFadeInAnimation.running
     readonly property string distributionName: systemDiscovery
@@ -169,13 +182,13 @@ FocusScope {
     readonly property int pageCount: visibleApplications.length > 0
         ? Math.ceil(visibleApplications.length / pageCapacity)
         : 0
-    readonly property bool favoritesSectionVisible: !sessionViewActive
+    readonly property bool favoritesSectionVisible: applicationViewActive
         && favorites.length > 0
         && searchText.trim().length === 0
     readonly property bool pageTransitionActive: pageCount > 0
         && (pagesView.moving || Math.abs(pagesView.contentX
             - pagesView.currentIndex * Math.max(1, pagesView.width)) > 0.5)
-    readonly property bool applicationHoverAllowed: !sessionViewActive
+    readonly property bool applicationHoverAllowed: applicationViewActive
         && !modeTransitionActive
         && !pageTransitionActive
         && !applicationLaunchPending
@@ -308,6 +321,7 @@ FocusScope {
     signal addToDesktopRequested(string storageId, string appCommand)
     signal setApplicationHiddenRequested(string storageId, bool hidden)
     signal configureRequested()
+    signal settingChangeRequested(string fieldName, var value)
 
     Punchi.BlurBehindController {
         id: nativeBlurController
@@ -378,7 +392,7 @@ FocusScope {
         operationMessageTimer.stop()
         const messageAvailable = operationMessage.length > 0
             || applicationErrorMessage.length > 0
-        operationInlineMessage.visible = !sessionViewActive
+        operationInlineMessage.visible = applicationViewActive
             && messageAvailable
         operationSecondsRemaining = messageAvailable
             ? Math.max(1, Math.ceil(operationMessageDuration / 1000)) : 0
@@ -626,7 +640,7 @@ FocusScope {
 
     function beginInternalLayoutDrag(application, sourceItem, x, y) {
         if (!organizedListingActive || folderSurface.active
-                || sessionViewActive || applicationLaunchPending
+                || !applicationViewActive || applicationLaunchPending
                 || !applicationLayoutController
                 || applicationLayoutController.transactionPending) {
             return false
@@ -851,6 +865,19 @@ FocusScope {
         ensureSelectionOnPage(safePage)
     }
 
+    function alignCurrentPage() {
+        if (pageCount <= 0 || pagesView.count <= 0) {
+            return
+        }
+        const safePage = Math.max(0, Math.min(pageCount - 1,
+            pagesView.currentIndex))
+        pagesView.positionViewAtIndex(safePage, ListView.Beginning)
+    }
+
+    onShowPageNavigationArrowsChanged: Qt.callLater(function() {
+        root.alignCurrentPage()
+    })
+
     function applyPageStep(step) {
         goToPage(pagesView.currentIndex + (step < 0 ? -1 : 1))
     }
@@ -1004,11 +1031,17 @@ FocusScope {
         }
     }
 
-    function commitSessionViewState(active) {
-        sessionViewActive = Boolean(active)
+    function normalizedContentView(viewName) {
+        const requestedView = String(viewName || "applications")
+        return requestedView === "session" || requestedView === "settings"
+            ? requestedView : "applications"
+    }
+
+    function commitContentViewState(viewName) {
+        contentViewActive = normalizedContentView(viewName)
         resetPageNavigation()
         resetWheelGesture()
-        if (sessionViewActive) {
+        if (!applicationViewActive) {
             searchText = ""
             currentApplicationIndex = -1
         } else {
@@ -1025,6 +1058,11 @@ FocusScope {
             if (loadedSessionView) {
                 loadedSessionView.focusInitialAction()
             }
+        } else if (settingsViewActive) {
+            const loadedSettingsView = settingsViewItem()
+            if (loadedSettingsView) {
+                loadedSettingsView.focusInitialAction()
+            }
         } else {
             searchField.forceActiveFocus()
         }
@@ -1034,39 +1072,42 @@ FocusScope {
         return sessionViewLoader.item
     }
 
-    function resetSessionTransition() {
+    function settingsViewItem() {
+        return settingsViewLoader.item
+    }
+
+    function resetContentTransition() {
         modeFadeOutAnimation.stop()
         modeFadeInAnimation.stop()
         modeContentOpacity = 1.0
-        sessionViewRequested = false
-        sessionViewActive = false
+        contentViewRequested = "applications"
+        contentViewActive = "applications"
     }
 
-    function setSessionViewActive(active) {
+    function setContentView(viewName) {
         cancelInternalLayoutDrag()
-        const requestedState = Boolean(active)
-        if (sessionViewRequested === requestedState
-                && (sessionViewActive === requestedState
+        const requestedView = normalizedContentView(viewName)
+        if (contentViewRequested === requestedView
+                && (contentViewActive === requestedView
                     || modeTransitionActive)) {
             return
         }
 
-        sessionViewRequested = requestedState
+        contentViewRequested = requestedView
         resetPageNavigation()
         resetWheelGesture()
-        sessionButton.forceActiveFocus()
 
         modeFadeOutAnimation.stop()
         modeFadeInAnimation.stop()
 
         if (!motionEnabled) {
             modeContentOpacity = 1.0
-            commitSessionViewState(requestedState)
+            commitContentViewState(requestedView)
             Qt.callLater(focusCurrentMode)
             return
         }
 
-        if (sessionViewActive === requestedState) {
+        if (contentViewActive === requestedView) {
             if (modeContentOpacity < 0.999) {
                 modeFadeInAnimation.start()
             } else {
@@ -1078,6 +1119,18 @@ FocusScope {
         modeFadeOutAnimation.start()
     }
 
+    function setSessionViewActive(active) {
+        setContentView(active ? "session" : "applications")
+    }
+
+    function setSettingsViewActive(active) {
+        setContentView(active ? "settings" : "applications")
+    }
+
+    function showSettingsPersistenceError() {
+        settingsErrorMessage = i18nc("@info", "Changes could not be saved.")
+    }
+
     function openOverlay() {
         closeTimer.stop()
         cancelInternalLayoutDrag()
@@ -1085,13 +1138,14 @@ FocusScope {
         resetPageNavigation()
         resetWheelGesture()
         revealHiddenApplications = false
-        resetSessionTransition()
+        resetContentTransition()
         menuOpen = true
         searchText = ""
         applicationsLoading = !applicationCatalogLoaded
         applicationLaunchPending = false
         applicationErrorMessage = ""
         operationMessage = ""
+        settingsErrorMessage = ""
         currentApplicationIndex = -1
         root.forceActiveFocus()
         if (applicationCatalogLoaded) {
@@ -1117,7 +1171,7 @@ FocusScope {
         revealHiddenApplications = false
         modeFadeOutAnimation.stop()
         modeFadeInAnimation.stop()
-        sessionViewRequested = sessionViewActive
+        contentViewRequested = contentViewActive
         menuOpen = false
         applicationsLoading = false
         applicationLaunchPending = false
@@ -1134,13 +1188,14 @@ FocusScope {
         resetPageNavigation()
         resetWheelGesture()
         revealHiddenApplications = false
-        resetSessionTransition()
+        resetContentTransition()
         menuOpen = false
         searchText = ""
         applicationsLoading = false
         applicationLaunchPending = false
         applicationErrorMessage = ""
         operationMessage = ""
+        settingsErrorMessage = ""
         currentApplicationIndex = -1
     }
 
@@ -1216,9 +1271,10 @@ FocusScope {
             }
             return
         }
-        if (root.sessionViewRequested || root.sessionViewActive) {
+        if (root.contentViewRequested !== "applications"
+                || !root.applicationViewActive) {
             if (event.key === Qt.Key_Escape || event.key === Qt.Key_Back) {
-                root.setSessionViewActive(false)
+                root.setContentView("applications")
                 event.accepted = true
             }
             return
@@ -1268,8 +1324,9 @@ FocusScope {
         onActivated: {
             if (folderSurface.active) {
                 folderSurface.closeCurrentView()
-            } else if (root.sessionViewRequested || root.sessionViewActive) {
-                root.setSessionViewActive(false)
+            } else if (root.contentViewRequested !== "applications"
+                    || !root.applicationViewActive) {
+                root.setContentView("applications")
             } else {
                 root.forceClose()
             }
@@ -1538,7 +1595,7 @@ FocusScope {
         duration: root.modeFadeOutDuration
         easing.type: Easing.InCubic
         onFinished: {
-            root.commitSessionViewState(root.sessionViewRequested)
+            root.commitContentViewState(root.contentViewRequested)
             modeFadeInAnimation.start()
         }
     }
@@ -1646,6 +1703,44 @@ FocusScope {
         }
     }
 
+    PlasmaComponents.ToolButton {
+        id: closeButton
+
+        z: 2
+        x: root.closeButtonOnLeft
+            ? root.closeButtonCornerMargin
+            : Math.max(root.closeButtonCornerMargin,
+                parent.width - width - root.closeButtonCornerMargin)
+        y: root.closeButtonCornerMargin
+        enabled: root.menuOpen
+        opacity: root.menuOpen ? 1.0 : 0.0
+
+        readonly property bool highlightedContent: enabled
+            && (hovered || down || activeFocus)
+
+        icon.name: "window-close"
+        icon.color: highlightedContent
+            ? root.Kirigami.Theme.highlightedTextColor
+            : root.Kirigami.Theme.textColor
+        display: PlasmaComponents.AbstractButton.IconOnly
+        text: i18nc("@action:button", "Close")
+        Accessible.name: text
+        background: PunchiMenuActionBackground {
+            highlighted: closeButton.highlightedContent
+            circular: true
+        }
+        onClicked: root.forceClose()
+
+        Behavior on opacity {
+            enabled: root.motionEnabled
+            NumberAnimation {
+                duration: root.menuOpen
+                    ? root.animOpenDuration : root.animCloseDuration
+                easing.type: root.menuOpen ? Easing.OutCubic : Easing.InCubic
+            }
+        }
+    }
+
     ColumnLayout {
         id: mainContentContainer
         anchors.fill: parent
@@ -1679,18 +1774,12 @@ FocusScope {
             spacing: Kirigami.Units.mediumSpacing
 
             Item {
-                Layout.preferredWidth: closeButton.implicitWidth
-                Layout.preferredHeight: 1
-            }
-
-            Item {
                 id: distributionTitleContainer
 
                 Layout.fillWidth: true
-                Layout.preferredHeight: visible
-                    ? distributionHeading.implicitHeight : 0
-                visible: root.showDistributionName
-                    && root.distributionName.length > 0
+                Layout.preferredHeight: distributionHeading.implicitHeight
+                visible: root.distributionName.length > 0
+                opacity: root.showDistributionName ? 1.0 : 0.0
 
                 readonly property int logoSize: Math.max(1, Math.min(
                     Kirigami.Units.iconSizes.small,
@@ -1741,27 +1830,19 @@ FocusScope {
                             ? Text.AlignLeft
                             : Text.AlignHCenter
                         elide: Text.ElideRight
+                        Accessible.ignored: !root.showDistributionName
+                    }
+                }
+
+                Behavior on opacity {
+                    enabled: root.motionEnabled
+                    NumberAnimation {
+                        duration: Kirigami.Units.shortDuration
+                        easing.type: Easing.OutCubic
                     }
                 }
             }
 
-            PlasmaComponents.ToolButton {
-                id: closeButton
-                readonly property bool highlightedContent: enabled
-                    && (hovered || down || activeFocus)
-                icon.name: "window-close"
-                icon.color: highlightedContent
-                    ? root.Kirigami.Theme.highlightedTextColor
-                    : root.Kirigami.Theme.textColor
-                display: PlasmaComponents.AbstractButton.IconOnly
-                text: i18nc("@action:button", "Close")
-                Accessible.name: text
-                background: PunchiMenuActionBackground {
-                    highlighted: closeButton.highlightedContent
-                    circular: true
-                }
-                onClicked: root.forceClose()
-            }
         }
 
         RowLayout {
@@ -1778,8 +1859,10 @@ FocusScope {
                 Layout.minimumHeight: Layout.preferredHeight
                 Layout.maximumHeight: Layout.preferredHeight
                 visible: true
-                enabled: !root.sessionViewActive && !root.modeTransitionActive
-                opacity: root.sessionViewActive ? 0.0 : root.modeContentOpacity
+                enabled: root.applicationViewActive
+                    && !root.modeTransitionActive
+                opacity: root.applicationViewActive
+                    ? root.modeContentOpacity : 0.0
 
                 PunchiMenuSearchBackground {
                     anchors.fill: parent
@@ -1879,10 +1962,11 @@ FocusScope {
                 Layout.minimumHeight: Layout.preferredHeight
                 Layout.maximumHeight: Layout.preferredHeight
                 visible: root.hiddenApplicationCount > 0
-                enabled: !root.sessionViewActive
+                enabled: root.applicationViewActive
                     && root.menuOpen && !root.modeTransitionActive
                     && !root.applicationLaunchPending
-                opacity: root.sessionViewActive ? 0.0 : root.modeContentOpacity
+                opacity: root.applicationViewActive
+                    ? root.modeContentOpacity : 0.0
                 icon.name: root.revealHiddenApplications
                     ? "view-visible"
                     : "view-hidden"
@@ -1933,19 +2017,24 @@ FocusScope {
             PlasmaComponents.ToolButton {
                 id: configureButton
                 readonly property bool highlightedContent: enabled
-                    && (hovered || down || activeFocus)
+                    && (hovered || down || activeFocus || checked)
                 Layout.preferredWidth: root.headerControlSize
                 Layout.minimumWidth: Layout.preferredWidth
                 Layout.maximumWidth: Layout.preferredWidth
                 Layout.preferredHeight: root.headerControlSize
                 Layout.minimumHeight: Layout.preferredHeight
                 Layout.maximumHeight: Layout.preferredHeight
-                icon.name: "configure"
+                icon.name: root.settingsViewRequested
+                    ? "view-grid" : "configure"
                 icon.color: highlightedContent
                     ? root.Kirigami.Theme.highlightedTextColor
                     : root.Kirigami.Theme.textColor
                 display: PlasmaComponents.AbstractButton.IconOnly
-                text: i18n("Configure PunchiMenu")
+                text: root.settingsViewRequested
+                    ? i18nc("@action:button", "Show applications")
+                    : i18n("Configure PunchiMenu")
+                checkable: true
+                checked: root.settingsViewRequested
                 Accessible.name: text
                 KeyNavigation.backtab: hiddenApplicationsButton.visible
                     ? hiddenApplicationsButton
@@ -1971,25 +2060,23 @@ FocusScope {
                     cursorShape: Qt.PointingHandCursor
                 }
 
-                onClicked: root.configureRequested()
+                onClicked: root.setSettingsViewActive(
+                    !root.settingsViewRequested)
             }
 
             PlasmaComponents.ToolButton {
                 id: sessionButton
                 readonly property bool highlightedContent: enabled
                     && (hovered || down || activeFocus || checked)
+                readonly property color foregroundColor: highlightedContent
+                    ? root.Kirigami.Theme.highlightedTextColor
+                    : root.Kirigami.Theme.textColor
                 Layout.preferredWidth: root.headerControlSize
                 Layout.minimumWidth: Layout.preferredWidth
                 Layout.maximumWidth: Layout.preferredWidth
                 Layout.preferredHeight: root.headerControlSize
                 Layout.minimumHeight: Layout.preferredHeight
                 Layout.maximumHeight: Layout.preferredHeight
-                icon.name: root.sessionViewRequested
-                    ? "view-grid"
-                    : "system-log-out"
-                icon.color: highlightedContent
-                    ? root.Kirigami.Theme.highlightedTextColor
-                    : root.Kirigami.Theme.textColor
                 display: PlasmaComponents.AbstractButton.IconOnly
                 text: root.sessionViewRequested
                     ? i18nc("@action:button", "Show applications")
@@ -2001,12 +2088,40 @@ FocusScope {
                 Accessible.name: text
                 KeyNavigation.backtab: configureButton
                 // The Loader item is a PunchiMenuSessionView at runtime, but
-                // static analysis resolves the generic item as QObject.
+                // static analysis resolves Loader items as QObject.
                 // qmllint disable incompatible-type
-                KeyNavigation.tab: root.sessionViewActive
+                KeyNavigation.tab: root.settingsViewActive
+                    && settingsViewLoader.item
+                    ? settingsViewLoader.item
+                    : root.sessionViewActive
                     && sessionViewLoader.item
                     ? sessionViewLoader.item : closeButton
                 // qmllint enable incompatible-type
+
+                contentItem: Item {
+                    implicitWidth: root.headerControlSize
+                    implicitHeight: root.headerControlSize
+
+                    Kirigami.Icon {
+                        anchors.centerIn: parent
+                        width: Kirigami.Units.iconSizes.smallMedium
+                        height: width
+                        source: "user-identity"
+                        color: sessionButton.foregroundColor
+                        visible: !root.sessionViewRequested
+                        Accessible.ignored: true
+                    }
+
+                    Kirigami.Icon {
+                        anchors.centerIn: parent
+                        width: Kirigami.Units.iconSizes.smallMedium
+                        height: width
+                        source: "view-grid"
+                        color: sessionButton.foregroundColor
+                        visible: root.sessionViewRequested
+                        Accessible.ignored: true
+                    }
+                }
 
                 background: PunchiMenuActionBackground {
                     highlighted: sessionButton.highlightedContent
@@ -2032,7 +2147,8 @@ FocusScope {
                         sessionToolTip.hideImmediately()
                     }
                 }
-                onClicked: root.setSessionViewActive(!root.sessionViewRequested)
+                onClicked: root.setSessionViewActive(
+                    !root.sessionViewRequested)
             }
         }
 
@@ -2060,10 +2176,10 @@ FocusScope {
                 highlightMoveDuration: root.motionEnabled ? Kirigami.Units.longDuration : 0
                 maximumFlickVelocity: 4 * width
                 cacheBuffer: Math.max(0, width)
-                enabled: !root.sessionViewActive
+                enabled: root.applicationViewActive
                     && !root.modeTransitionActive
                     && !root.applicationLaunchPending
-                visible: !root.sessionViewActive
+                visible: root.applicationViewActive
 
                 onMovementStarted: root.resetPageNavigation()
                 onMovementEnded: {
@@ -2482,7 +2598,7 @@ FocusScope {
                         wheel.accepted = true
                         return
                     }
-                    if (!root.sessionViewActive) {
+                    if (root.applicationViewActive) {
                         root.handlePageWheel(wheel)
                     }
                 }
@@ -2497,15 +2613,20 @@ FocusScope {
                 width: Math.max(implicitWidth, Kirigami.Units.gridUnit * 2.5)
                 height: width
                 z: 30
-                visible: !root.sessionViewActive && root.pageCount > 1
-                enabled: pagesView.currentIndex > 0 && !root.applicationLaunchPending
+                visible: root.applicationViewActive && root.pageCount > 1
+                enabled: root.showPageNavigationArrows
+                    && pagesView.currentIndex > 0 && !root.applicationLaunchPending
                     && !internalDragLayer.active
-                opacity: enabled ? (hovered || activeFocus ? 1.0 : 0.62) : 0.20
-                focusPolicy: Qt.StrongFocus
+                opacity: !root.showPageNavigationArrows
+                    ? 0.0 : enabled
+                        ? (hovered || activeFocus ? 1.0 : 0.62) : 0.20
+                focusPolicy: root.showPageNavigationArrows
+                    ? Qt.StrongFocus : Qt.NoFocus
                 icon.name: "go-previous-symbolic"
                 display: PlasmaComponents.AbstractButton.IconOnly
                 text: i18nc("@action:button", "Previous page")
                 Accessible.name: text
+                Accessible.ignored: !root.showPageNavigationArrows
                 KeyNavigation.right: nextPageButton
 
                 PlasmaCore.ToolTipArea {
@@ -2542,16 +2663,21 @@ FocusScope {
                 width: Math.max(implicitWidth, Kirigami.Units.gridUnit * 2.5)
                 height: width
                 z: 30
-                visible: !root.sessionViewActive && root.pageCount > 1
-                enabled: pagesView.currentIndex < root.pageCount - 1
+                visible: root.applicationViewActive && root.pageCount > 1
+                enabled: root.showPageNavigationArrows
+                    && pagesView.currentIndex < root.pageCount - 1
                     && !root.applicationLaunchPending
                     && !internalDragLayer.active
-                opacity: enabled ? (hovered || activeFocus ? 1.0 : 0.62) : 0.20
-                focusPolicy: Qt.StrongFocus
+                opacity: !root.showPageNavigationArrows
+                    ? 0.0 : enabled
+                        ? (hovered || activeFocus ? 1.0 : 0.62) : 0.20
+                focusPolicy: root.showPageNavigationArrows
+                    ? Qt.StrongFocus : Qt.NoFocus
                 icon.name: "go-next-symbolic"
                 display: PlasmaComponents.AbstractButton.IconOnly
                 text: i18nc("@action:button", "Next page")
                 Accessible.name: text
+                Accessible.ignored: !root.showPageNavigationArrows
                 KeyNavigation.left: previousPageButton
 
                 PlasmaCore.ToolTipArea {
@@ -2584,7 +2710,7 @@ FocusScope {
                 width: Math.min(parent.width - Kirigami.Units.largeSpacing * 2,
                     Kirigami.Units.gridUnit * 30)
                 spacing: Kirigami.Units.largeSpacing
-                visible: !root.sessionViewActive && (root.applicationsLoading
+                visible: root.applicationViewActive && (root.applicationsLoading
                     || (!root.applicationsLoading && root.visibleApplications.length === 0)
                     )
                 z: 20
@@ -2615,6 +2741,39 @@ FocusScope {
                     wrapMode: Text.WordWrap
                     Accessible.role: Accessible.StaticText
                     Accessible.name: text
+                }
+            }
+
+            Loader {
+                id: settingsViewLoader
+                anchors.fill: parent
+                active: root.settingsViewRequested || root.settingsViewActive
+                visible: root.settingsViewActive
+                enabled: visible && !root.modeTransitionActive
+                asynchronous: false
+
+                sourceComponent: Component {
+                    PunchiMenuSettingsView {
+                        backgroundBlurEnabled: root.backgroundBlurEnabled
+                        backgroundOpacityPercent: Math.round(
+                            root.safeBackgroundOpacity * 100)
+                        showDistributionName: root.showDistributionName
+                        showPageNavigationArrows:
+                            root.showPageNavigationArrows
+                        closeButtonPosition: root.closeButtonPosition
+                        applicationIconScalePercent: Math.round(
+                            root.safeApplicationIconScale * 100)
+                        folderMaximumColumns: root.safeFolderMaximumColumns
+                        folderMaximumRows: root.safeFolderMaximumRows
+                        errorMessage: root.settingsErrorMessage
+
+                        onSettingChanged: function(fieldName, value) {
+                            root.settingsErrorMessage = ""
+                            root.settingChangeRequested(fieldName, value)
+                        }
+                        onAdvancedConfigurationRequested:
+                            root.configureRequested()
+                    }
                 }
             }
 
@@ -2990,7 +3149,7 @@ FocusScope {
             id: pageIndicator
             Layout.alignment: Qt.AlignHCenter
             spacing: Math.max(1, Math.round(root.pageIndicatorDotDiameter * 0.5))
-            visible: !root.sessionViewActive && root.pageCount > 1
+            visible: root.applicationViewActive && root.pageCount > 1
             enabled: !root.modeTransitionActive
             opacity: root.modeContentOpacity
             Accessible.role: Accessible.Grouping
@@ -3118,7 +3277,7 @@ FocusScope {
 
         onVisibleChanged: {
             if (!visible && !root.operationMessageDismissalInProgress
-                    && !root.sessionViewActive
+                    && root.applicationViewActive
                     && (root.operationMessage.length > 0
                         || root.applicationErrorMessage.length > 0)) {
                 root.dismissOperationMessage()

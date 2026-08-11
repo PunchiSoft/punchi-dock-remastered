@@ -156,6 +156,14 @@ PlasmoidItem {
     readonly property bool configuredPunchiMenuShowDistributionName:
         !configuredPunchiMenuItem
         || configuredPunchiMenuItem.showDistributionName !== false
+    readonly property bool configuredPunchiMenuShowPageNavigationArrows:
+        !configuredPunchiMenuItem
+        || configuredPunchiMenuItem.showPageNavigationArrows !== false
+    readonly property string configuredPunchiMenuFullScreenCloseButtonPosition:
+        configuredPunchiMenuItem
+            && configuredPunchiMenuItem.fullScreenCloseButtonPosition === "left"
+        ? "left"
+        : "right"
     readonly property bool configuredPunchiMenuFullScreenBlurEnabled:
         !configuredPunchiMenuItem
         || configuredPunchiMenuItem.fullScreenBlurEnabled !== false
@@ -526,6 +534,10 @@ PlasmoidItem {
                 folderMaximumRows:
                     root.configuredPunchiMenuFullScreenFolderMaximumRows
                 showDistributionName: root.configuredPunchiMenuShowDistributionName
+                showPageNavigationArrows:
+                    root.configuredPunchiMenuShowPageNavigationArrows
+                closeButtonPosition:
+                    root.configuredPunchiMenuFullScreenCloseButtonPosition
                 backgroundBlurEnabled: root.configuredPunchiMenuFullScreenBlurEnabled
                 backgroundOpacity: root.configuredPunchiMenuFullScreenBackgroundOpacity
                 hiddenApplicationIds: root.configuredPunchiMenuHiddenApplicationIds
@@ -549,7 +561,13 @@ PlasmoidItem {
                             storageId, hidden)) {
                         punchiMenuOverlay.showOperationResult(
                             root.dockItemsControllerService.operationResult(
-                                false, "persist-failed", ""))
+                            false, "persist-failed", ""))
+                    }
+                }
+                onSettingChangeRequested: function(fieldName, value) {
+                    if (!root.dockItemsControllerService.setPunchiMenuValue(
+                            fieldName, value)) {
+                        punchiMenuOverlay.showSettingsPersistenceError()
                     }
                 }
                 onConfigureRequested: {

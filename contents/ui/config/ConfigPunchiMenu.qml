@@ -39,6 +39,8 @@ KCM.SimpleKCM {
     property int fullScreenFolderMaximumColumns: 5
     property int fullScreenFolderMaximumRows: 5
     property bool showDistributionName: true
+    property bool showPageNavigationArrows: true
+    property string fullScreenCloseButtonPosition: "right"
     property bool fullScreenBlurEnabled: true
     property int fullScreenBackgroundOpacityPercent: 50
     property bool normalBlurEnabled: true
@@ -81,6 +83,16 @@ KCM.SimpleKCM {
         {
             "text": i18nc("@option:punchimenu-placement", "Centered on desktop"),
             "value": "centered"
+        }
+    ]
+    readonly property var fullScreenCloseButtonPositionOptions: [
+        {
+            "text": i18nc("@option:close-button-position", "Right"),
+            "value": "right"
+        },
+        {
+            "text": i18nc("@option:close-button-position", "Left"),
+            "value": "left"
         }
     ]
 
@@ -133,6 +145,10 @@ KCM.SimpleKCM {
             ConfigItemsJS.normalizedPunchiMenuFullScreenFolderMaximumRows(
                 item.fullScreenFolderMaximumRows)
         showDistributionName = item.showDistributionName !== false
+        showPageNavigationArrows = item.showPageNavigationArrows !== false
+        fullScreenCloseButtonPosition =
+            ConfigItemsJS.normalizedPunchiMenuFullScreenCloseButtonPosition(
+                item.fullScreenCloseButtonPosition)
         fullScreenBlurEnabled = item.fullScreenBlurEnabled !== false
         fullScreenBackgroundOpacityPercent =
             ConfigItemsJS.normalizedPunchiMenuFullScreenBackgroundOpacityPercent(
@@ -368,6 +384,44 @@ KCM.SimpleKCM {
                 checked: page.showDistributionName
                 onClicked: page.setPunchiMenuValue(
                     "showDistributionName", checked)
+            }
+
+            Controls.Switch {
+                Kirigami.FormData.label: i18n("Page navigation:")
+                visible: !page.normalModeSelected
+                text: i18n("Show page navigation arrows")
+                checked: page.showPageNavigationArrows
+                Accessible.name: text
+                onClicked: page.setPunchiMenuValue(
+                    "showPageNavigationArrows", checked)
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "button"
+                }
+            }
+
+            Controls.ComboBox {
+                Kirigami.FormData.label: i18n("Close button:")
+                Layout.preferredWidth: page.selectorWidthHint
+                Layout.maximumWidth: page.selectorWidthHint
+                visible: !page.normalModeSelected
+                model: page.fullScreenCloseButtonPositionOptions
+                textRole: "text"
+                valueRole: "value"
+                currentIndex: page.optionIndex(
+                    page.fullScreenCloseButtonPositionOptions,
+                    page.fullScreenCloseButtonPosition)
+                Accessible.name: i18n("Close button position")
+                onActivated: function(index) {
+                    page.setPunchiMenuValue("fullScreenCloseButtonPosition",
+                        page.fullScreenCloseButtonPositionOptions[index].value)
+                }
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "button"
+                }
             }
 
             RowLayout {

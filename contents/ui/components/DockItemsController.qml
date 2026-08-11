@@ -1,6 +1,7 @@
 import QtQuick
 import org.kde.plasma.plasmoid
 import "../../code/logic.js" as Logic
+import "../config/code/configItems.js" as ConfigItemsJS
 
 Item {
     id: root
@@ -286,6 +287,53 @@ Item {
             }
         }
         return -1
+    }
+
+    function setPunchiMenuValue(fieldName, value) {
+        const allowedFields = {
+            "fullScreenBlurEnabled": true,
+            "fullScreenBackgroundOpacityPercent": true,
+            "showDistributionName": true,
+            "showPageNavigationArrows": true,
+            "fullScreenCloseButtonPosition": true,
+            "gridIconScalePercent": true,
+            "fullScreenFolderMaximumColumns": true,
+            "fullScreenFolderMaximumRows": true
+        }
+        const normalizedFieldName = String(fieldName || "")
+        if (allowedFields[normalizedFieldName] !== true) {
+            return false
+        }
+
+        const itemIndex = root.punchiMenuItemIndex(root.dockItems)
+        if (itemIndex < 0) {
+            return false
+        }
+        const nextItem = root.clonedJsonObject(root.dockItems[itemIndex])
+        if (nextItem === null) {
+            return false
+        }
+        nextItem[normalizedFieldName] = value
+        ConfigItemsJS.prunePunchiMenu(nextItem)
+
+        const currentText = root.canonicalJsonText(root.dockItems[itemIndex])
+        const nextText = root.canonicalJsonText(nextItem)
+        if (nextText.length === 0) {
+            return false
+        }
+        if (currentText === nextText) {
+            return true
+        }
+
+        const previousItems = root.dockItems
+        const nextItems = root.dockItems.slice()
+        nextItems[itemIndex] = nextItem
+        root.dockItems = nextItems
+        if (!root.syncDockItemsConfiguration()) {
+            root.dockItems = previousItems
+            return false
+        }
+        return true
     }
 
     function punchiMenuApplicationLayout() {

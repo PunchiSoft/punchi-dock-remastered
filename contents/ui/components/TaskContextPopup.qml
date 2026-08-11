@@ -17,7 +17,7 @@ Item {
     property bool windowPreviewTextShadowsEnabled: true
     property var mprisControllerRef: null
     property string presentationMode: "preview"
-    property bool menuTextShadowsEnabled: true
+    property bool menuTextShadowsEnabled: false
     property int maxVisibleRows: 4
     property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640

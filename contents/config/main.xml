@@ -59,7 +59,7 @@
       <default>false</default>
     </entry>
     <entry name="menuTextShadowsEnabled" type="Bool">
-      <default>true</default>
+      <default>false</default>
     </entry>
     <entry name="showItemHoverBackground" type="Bool">
       <default>true</default>

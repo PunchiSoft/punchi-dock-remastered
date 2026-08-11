@@ -65,7 +65,7 @@ QtObject {
     readonly property bool popupTextShadowsEnabled:
         Plasmoid.configuration.popupTextShadowsEnabled === true
     readonly property bool menuTextShadowsEnabled:
-        Plasmoid.configuration.menuTextShadowsEnabled !== false
+        Plasmoid.configuration.menuTextShadowsEnabled === true
 
     readonly property int folderGridIconSize: Math.max(24, Math.min(64,
         Number(Plasmoid.configuration.folderGridIconSize || 36)))

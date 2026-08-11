@@ -629,6 +629,12 @@ function normalizedPunchiMenuMode(value) {
         : "fullScreen"
 }
 
+function normalizedPunchiMenuFullScreenCloseButtonPosition(value) {
+    return String(value || "right") === "left"
+        ? "left"
+        : "right"
+}
+
 function normalizedPunchiMenuNormalPlacementMode(value) {
     return String(value || "anchored") === "centered"
         ? "centered"
@@ -710,6 +716,17 @@ function prunePunchiMenu(item) {
         delete item.showDistributionName
     } else {
         item.showDistributionName = false
+    }
+    if (item.showPageNavigationArrows !== false) {
+        delete item.showPageNavigationArrows
+    } else {
+        item.showPageNavigationArrows = false
+    }
+    item.fullScreenCloseButtonPosition =
+        normalizedPunchiMenuFullScreenCloseButtonPosition(
+            item.fullScreenCloseButtonPosition)
+    if (item.fullScreenCloseButtonPosition === "right") {
+        delete item.fullScreenCloseButtonPosition
     }
     item.hiddenApplicationIds = normalizedPunchiMenuHiddenApplicationIds(
         item.hiddenApplicationIds)

@@ -11,6 +11,11 @@ Item {
     id: appActionsRoot
     objectName: "appActionsRoot"
 
+    // This content is rendered over a widgets/background popup surface. Keep
+    // its palette independent from the panel so text follows the popup theme.
+    Kirigami.Theme.inherit: false
+    Kirigami.Theme.colorSet: Kirigami.Theme.Window
+
     property string itemName: ""
     property var actions: []
     property int maxVisibleRows: 6
@@ -21,7 +26,7 @@ Item {
     property int maximumAvailableHeight: 640
     property bool embedded: false
     property bool returnToMedia: false
-    property bool textShadowsEnabled: true
+    property bool textShadowsEnabled: false
     readonly property int effectiveRowHeight: Math.max(32, Math.min(64,
         Number(rowHeight || 46)))
     readonly property int effectiveIconSize: Math.max(16, Math.min(40,
@@ -57,6 +62,7 @@ Item {
             PlasmaExtras.ShadowedLabel {
                 Layout.fillWidth: true
                 text: appActionsRoot.itemName.length > 0 ? appActionsRoot.itemName : i18n("Application") // qmllint disable unqualified
+                color: Kirigami.Theme.textColor
                 renderShadow: appActionsRoot.textShadowsEnabled
                 font.family: Kirigami.Theme.defaultFont.family
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize
@@ -160,6 +166,7 @@ Item {
                         PlasmaExtras.ShadowedLabel {
                             Layout.fillWidth: true
                             text: actionDelegate.actionText
+                            color: Kirigami.Theme.textColor
                             renderShadow: appActionsRoot.textShadowsEnabled
                             font.family: Kirigami.Theme.defaultFont.family
                             font.pointSize: Kirigami.Theme.defaultFont.pointSize
@@ -172,6 +179,7 @@ Item {
                                 actionDelegate.width * 0.34)
                             visible: actionDelegate.detailText.length > 0
                             text: actionDelegate.detailText
+                            color: Kirigami.Theme.textColor
                             renderShadow: appActionsRoot.textShadowsEnabled
                             font.family: Kirigami.Theme.defaultFont.family
                             font.pointSize: Math.max(8,

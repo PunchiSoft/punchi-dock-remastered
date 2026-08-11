@@ -134,6 +134,10 @@ def main() -> int:
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuSessionView.qml"
     ).read_text(encoding="utf-8")
+    settings_view_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuSettingsView.qml"
+    ).read_text(encoding="utf-8")
     avatar_component_source = (
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuUserAvatar.qml"
@@ -183,7 +187,7 @@ def main() -> int:
     icon_scale_contract = (
         (config_items_source, "Math.max(75, Math.min(150", "persistent normalization"),
         (main_source, "Math.max(75, Math.min(150", "runtime percentage clamp"),
-        (dialog_source, "to: 150", "legacy configuration slider maximum"),
+        (settings_view_source, "to: 150", "internal settings slider maximum"),
         (punchi_menu_config_source, "to: 150", "configuration slider maximum"),
         (overlay_source, "Math.max(0.75, Math.min(1.5", "fullscreen scale clamp"),
         (normal_source, "Math.max(0.75, Math.min(1.5", "Normal scale clamp"),
@@ -288,21 +292,6 @@ def main() -> int:
             "Fullscreen row default",
         ),
         (
-            workflow_source,
-            "function setPunchiMenuNormalFolderMaximumColumns(columns)",
-            "configuration workflow",
-        ),
-        (
-            config_page_source,
-            "onNormalFolderMaximumColumnsSelected:",
-            "legacy configuration routing",
-        ),
-        (
-            config_page_source,
-            "function setPunchiMenuNormalFolderMaximumColumns(columns)",
-            "legacy configuration bridge",
-        ),
-        (
             punchi_menu_config_source,
             'i18n("Maximum folder columns:")',
             "dedicated column control",
@@ -393,12 +382,6 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
-    if "to: root.normalModeSelected ? 3 : 5" not in dialog_source:
-        print(
-            "PunchiMenu folder grid limits: legacy ranges must switch between Normal 1-3 and Fullscreen 1-5",
-            file=sys.stderr,
-        )
-        passed = False
     distribution_name_contract = (
         (
             discovery_header_source,
@@ -413,9 +396,8 @@ def main() -> int:
         (discovery_implementation_source, "KOSRelease", "KDE OS release API"),
         (discovery_implementation_source, "osRelease.logo().trimmed()", "OS logo source"),
         (config_items_source, "item.showDistributionName !== false", "default-on persistence"),
-        (workflow_source, "function setPunchiMenuShowDistributionName(enabled)", "configuration workflow"),
-        (config_page_source, "onShowDistributionNameSelected:", "configuration signal routing"),
-        (dialog_source, 'i18n("Show distribution name in full screen")', "translated option"),
+        (settings_view_source, '"showDistributionName", checked', "internal settings routing"),
+        (settings_view_source, 'i18n("Show distribution name in full screen")', "translated internal option"),
         (main_source, "readonly property bool configuredPunchiMenuShowDistributionName", "reactive runtime setting"),
         (overlay_source, "property bool showDistributionName: true", "fullscreen display option"),
         (overlay_source, "String(systemDiscovery.distributionName", "distribution label source"),
@@ -440,10 +422,36 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
-    if ("visible: root.showDistributionName" not in overlay_source
-            or "Layout.preferredHeight: visible" not in overlay_source):
+    distribution_reserve_contract = (
+        "Layout.preferredHeight: distributionHeading.implicitHeight",
+        "visible: root.distributionName.length > 0",
+        "opacity: root.showDistributionName ? 1.0 : 0.0",
+        "Accessible.ignored: !root.showDistributionName",
+    )
+    for marker in distribution_reserve_contract:
+        if marker not in overlay_source:
+            print(
+                "PunchiMenu distribution label: missing stable hidden-state "
+                f"geometry: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    distribution_container_start = overlay_source.find(
+        "id: distributionTitleContainer")
+    distribution_container_end = overlay_source.find(
+        "readonly property int logoSize", distribution_container_start)
+    distribution_container_header = overlay_source[
+        distribution_container_start:distribution_container_end
+    ]
+    if (distribution_container_start < 0
+            or distribution_container_end < 0
+            or "visible: root.showDistributionName"
+                in distribution_container_header
+            or "Layout.preferredHeight: visible"
+                in distribution_container_header):
         print(
-            "PunchiMenu distribution label: hidden state still reserves title space",
+            "PunchiMenu distribution label: the display setting still "
+            "collapses the reserved title row",
             file=sys.stderr,
         )
         passed = False
@@ -461,11 +469,236 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
+    page_navigation_arrows_contract = (
+        (
+            config_items_source,
+            "item.showPageNavigationArrows !== false",
+            "default-on persistence",
+        ),
+        (
+            settings_view_source,
+            '"showPageNavigationArrows", checked',
+            "internal settings routing",
+        ),
+        (
+            settings_view_source,
+            'i18n("Show page navigation arrows")',
+            "translated internal option",
+        ),
+        (
+            punchi_menu_config_source,
+            "property bool showPageNavigationArrows: true",
+            "dedicated configuration state",
+        ),
+        (
+            punchi_menu_config_source,
+            'i18n("Show page navigation arrows")',
+            "translated dedicated option",
+        ),
+        (
+            main_source,
+            "readonly property bool configuredPunchiMenuShowPageNavigationArrows:",
+            "reactive runtime setting",
+        ),
+        (
+            overlay_source,
+            "property bool showPageNavigationArrows: true",
+            "fullscreen display option",
+        ),
+    )
+    for source, marker, description in page_navigation_arrows_contract:
+        if marker not in source:
+            print(
+                "PunchiMenu Fullscreen page arrows: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if len(re.findall(
+        r"showPageNavigationArrows:\s*"
+        r"root\.configuredPunchiMenuShowPageNavigationArrows",
+        main_source,
+    )) != 1:
+        print(
+            "main.qml: page-arrow setting must be bound only to Fullscreen",
+            file=sys.stderr,
+        )
+        passed = False
+    if "visible: root.showPageNavigationArrows" in overlay_source:
+        print(
+            "PunchiMenu Fullscreen page arrows: the display setting must not "
+            "remove the button geometry",
+            file=sys.stderr,
+        )
+        passed = False
+    visual_only_arrow_contract = (
+        (
+            "enabled: root.showPageNavigationArrows",
+            2,
+            "disabled hidden interaction",
+        ),
+        (
+            "opacity: !root.showPageNavigationArrows",
+            2,
+            "opacity-only hiding",
+        ),
+        (
+            "focusPolicy: root.showPageNavigationArrows",
+            2,
+            "hidden focus exclusion",
+        ),
+        (
+            "Accessible.ignored: !root.showPageNavigationArrows",
+            2,
+            "hidden accessibility exclusion",
+        ),
+        (
+            "anchors.leftMargin: root.applicationGridHorizontalInset",
+            1,
+            "stable left grid inset",
+        ),
+        (
+            "anchors.rightMargin: root.applicationGridHorizontalInset",
+            1,
+            "stable right grid inset",
+        ),
+        (
+            "function alignCurrentPage()",
+            1,
+            "page alignment helper",
+        ),
+        (
+            "pagesView.positionViewAtIndex(safePage, ListView.Beginning)",
+            1,
+            "page-boundary restoration",
+        ),
+        (
+            "onShowPageNavigationArrowsChanged: Qt.callLater(function()",
+            1,
+            "reactive page realignment",
+        ),
+    )
+    for marker, expected_count, description in visual_only_arrow_contract:
+        if overlay_source.count(marker) != expected_count:
+            print(
+                "PunchiMenu Fullscreen page arrows: expected "
+                f"{expected_count} occurrence(s) of {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    for button_id in ("previousPageButton", "nextPageButton"):
+        button_start = overlay_source.find(f"id: {button_id}")
+        button_contract = overlay_source[button_start:button_start + 1800]
+        if button_start < 0 or (
+            "visible: root.applicationViewActive && root.pageCount > 1"
+            not in button_contract
+        ):
+            print(
+                "PunchiMenu Fullscreen page arrows: button geometry must "
+                f"remain stable while hidden: {button_id}",
+                file=sys.stderr,
+            )
+            passed = False
+    if normal_source.count("showPageNavigationArrows") != 0:
+        print(
+            "PunchiMenuNormal.qml: fullscreen page-arrow setting leaked into "
+            "Normal mode",
+            file=sys.stderr,
+        )
+        passed = False
+    close_button_position_contract = (
+        (
+            config_items_source,
+            "function normalizedPunchiMenuFullScreenCloseButtonPosition(value)",
+            "persistence normalizer",
+        ),
+        (
+            config_items_source,
+            'if (item.fullScreenCloseButtonPosition === "right")',
+            "default-value pruning",
+        ),
+        (
+            settings_view_source,
+            '"fullScreenCloseButtonPosition", option.value',
+            "internal settings routing",
+        ),
+        (
+            punchi_menu_config_source,
+            "property string fullScreenCloseButtonPosition: \"right\"",
+            "dedicated configuration state",
+        ),
+        (
+            punchi_menu_config_source,
+            'i18n("Close button:")',
+            "translated dedicated option",
+        ),
+        (
+            main_source,
+            "readonly property string configuredPunchiMenuFullScreenCloseButtonPosition:",
+            "reactive runtime setting",
+        ),
+        (
+            overlay_source,
+            "property string closeButtonPosition: \"right\"",
+            "fullscreen display option",
+        ),
+        (
+            overlay_source,
+            "readonly property int closeButtonCornerMargin: Kirigami.Units.gridUnit",
+            "shared corner metric",
+        ),
+    )
+    for source, marker, description in close_button_position_contract:
+        if marker not in source:
+            print(
+                "PunchiMenu Fullscreen close button: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if len(re.findall(
+        r"closeButtonPosition:\s*"
+        r"root\.configuredPunchiMenuFullScreenCloseButtonPosition",
+        main_source,
+    )) != 1:
+        print(
+            "main.qml: close-button position must be bound only to Fullscreen",
+            file=sys.stderr,
+        )
+        passed = False
+    close_button_equal_margin_contract = (
+        "x: root.closeButtonOnLeft",
+        "? root.closeButtonCornerMargin",
+        "parent.width - width - root.closeButtonCornerMargin",
+        "y: root.closeButtonCornerMargin",
+    )
+    for marker in close_button_equal_margin_contract:
+        if overlay_source.count(marker) != 1:
+            print(
+                "PunchiMenu Fullscreen close button: X and Y must use the "
+                f"same corner metric: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if ("anchors.left: root.closeButtonOnLeft" in overlay_source
+            or "anchors.right: root.closeButtonOnLeft" in overlay_source):
+        print(
+            "PunchiMenu Fullscreen close button: conditional horizontal "
+            "anchors can stretch the control during hot updates",
+            file=sys.stderr,
+        )
+        passed = False
+    if normal_source.count("fullScreenCloseButtonPosition") != 0:
+        print(
+            "PunchiMenuNormal.qml: fullscreen close-button setting leaked "
+            "into Normal mode",
+            file=sys.stderr,
+        )
+        passed = False
     legacy_dialog_basic_contract = (
-        "Controls.Switch {",
-        'i18n("Show distribution name in full screen")',
-        'i18n("Application grid icon scale:")',
-        'i18n("Favorites icon scale:")',
+        'i18n("Menu mode:")',
+        "Controls.ComboBox {",
+        "signal menuModeSelected(string mode)",
     )
     for marker in legacy_dialog_basic_contract:
         if marker not in dialog_source:
@@ -474,13 +707,19 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
-    if "visible: !root.normalModeSelected" not in dialog_source:
-        print(
-            "PunchiMenuDialog.qml: fullscreen distribution option remains visible in Normal mode",
-            file=sys.stderr,
-        )
-        passed = False
     legacy_dialog_forbidden_markers = (
+        "Controls.Switch {",
+        "Controls.Slider {",
+        "Controls.SpinBox {",
+        "normalPlacementModeSelected",
+        "gridIconScalePercentSelected",
+        "favoriteIconScalePercentSelected",
+        "normalFolderMaximumColumnsSelected",
+        "fullScreenFolderMaximumColumnsSelected",
+        "showDistributionNameSelected",
+        "showPageNavigationArrowsSelected",
+        "fullScreenCloseButtonPositionSelected",
+        "normalSizePercentSelected",
         "KQuickControls.KeySequenceItem",
         "signal shortcutSelected",
         "signal iconPickerRequested",
@@ -501,6 +740,17 @@ def main() -> int:
             )
             passed = False
     legacy_dialog_consumer_forbidden_markers = (
+        "onNormalPlacementModeSelected:",
+        "onGridIconScalePercentSelected:",
+        "onFavoriteIconScalePercentSelected:",
+        "onNormalFolderMaximumColumnsSelected:",
+        "onNormalFolderMaximumRowsSelected:",
+        "onFullScreenFolderMaximumColumnsSelected:",
+        "onFullScreenFolderMaximumRowsSelected:",
+        "onShowDistributionNameSelected:",
+        "onShowPageNavigationArrowsSelected:",
+        "onFullScreenCloseButtonPositionSelected:",
+        "onNormalSizePercentSelected:",
         "shortcut: page.cfg_punchiMenuShortcut",
         'onIconPickerRequested: page.openIconPicker("punchimenu")',
         "onShortcutSelected:",
@@ -579,14 +829,18 @@ def main() -> int:
             )
             passed = False
     session_view_contract = (
-        (overlay_source, "property bool sessionViewActive: false", "explicit view state"),
+        (overlay_source, 'property string contentViewActive: "applications"', "explicit content view state"),
+        (overlay_source, 'readonly property bool sessionViewActive: contentViewActive === "session"', "derived session state"),
         (overlay_source, "KCoreAddons.KUser {", "local user identity source"),
         (overlay_source, "Punchi.SessionActionsController {", "native session controller"),
         (overlay_source, "PunchiMenuSessionView {", "dedicated session view"),
-        (overlay_source, '? "view-grid"', "theme-native return-to-grid icon"),
+        (overlay_source, 'source: "view-grid"', "theme-native return-to-grid icon"),
+        (overlay_source, 'source: "user-identity"', "generic user icon"),
+        (overlay_source, "visible: !root.sessionViewRequested", "user-icon closed state"),
+        (overlay_source, "visible: root.sessionViewRequested", "grid active state"),
         (overlay_source, "readonly property int headerControlSize", "shared header control metric"),
         (overlay_source, "background: PunchiMenuActionBackground {", "themed header action surface"),
-        (overlay_source, "if (!root.sessionViewActive)", "wheel isolation"),
+        (overlay_source, "if (root.applicationViewActive)", "wheel isolation"),
         (session_view_source, "signal logoutRequested()", "logout intent"),
         (session_view_source, "signal restartRequested()", "restart intent"),
         (session_view_source, "signal shutdownRequested()", "shutdown intent"),
@@ -833,15 +1087,16 @@ def main() -> int:
         )
         passed = False
     session_transition_contract = (
-        "property bool sessionViewRequested: false",
+        'property string contentViewRequested: "applications"',
         "property real modeContentOpacity: 1.0",
         "readonly property bool modeTransitionActive",
-        "function commitSessionViewState(active)",
+        "function commitContentViewState(viewName)",
+        "function setContentView(viewName)",
         "id: modeFadeOutAnimation",
         "easing.type: Easing.InCubic",
         "id: modeFadeInAnimation",
         "easing.type: Easing.OutCubic",
-        "root.commitSessionViewState(root.sessionViewRequested)",
+        "root.commitContentViewState(root.contentViewRequested)",
         "enabled: !root.modeTransitionActive",
     )
     for marker in session_transition_contract:
@@ -851,6 +1106,106 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    internal_settings_contract = (
+        (
+            overlay_source,
+            'readonly property bool settingsViewActive: contentViewActive === "settings"',
+            "derived settings state",
+        ),
+        (
+            overlay_source,
+            "function setSettingsViewActive(active)",
+            "settings transition entry point",
+        ),
+        (
+            overlay_source,
+            "PunchiMenuSettingsView {",
+            "dedicated settings view",
+        ),
+        (
+            overlay_source,
+            "root.settingChangeRequested(fieldName, value)",
+            "view-to-controller intent",
+        ),
+        (
+            overlay_source,
+            "onAdvancedConfigurationRequested:",
+            "advanced KCM fallback",
+        ),
+        (
+            main_source,
+            "onSettingChangeRequested: function(fieldName, value)",
+            "runtime persistence routing",
+        ),
+        (
+            dock_items_controller_source,
+            'import "../config/code/configItems.js" as ConfigItemsJS',
+            "shared normalizer import",
+        ),
+        (
+            dock_items_controller_source,
+            "function setPunchiMenuValue(fieldName, value)",
+            "whitelisted persistence entry point",
+        ),
+        (
+            dock_items_controller_source,
+            "ConfigItemsJS.prunePunchiMenu(nextItem)",
+            "canonical settings normalization",
+        ),
+        (
+            settings_view_source,
+            "Controls.ScrollView {",
+            "scrollable settings content",
+        ),
+        (
+            settings_view_source,
+            'i18nc("@title", "PunchiMenu Settings")',
+            "translated title",
+        ),
+        (
+            settings_view_source,
+            "function focusInitialAction()",
+            "predictable keyboard focus",
+        ),
+        (
+            settings_view_source,
+            'i18nc("@action:button", "Open Advanced Settings…")',
+            "advanced settings action",
+        ),
+    )
+    for source, marker, description in internal_settings_contract:
+        if marker not in source:
+            print(
+                "PunchiMenu Fullscreen internal settings: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    allowed_internal_settings = (
+        "fullScreenBlurEnabled",
+        "fullScreenBackgroundOpacityPercent",
+        "showDistributionName",
+        "showPageNavigationArrows",
+        "fullScreenCloseButtonPosition",
+        "gridIconScalePercent",
+        "fullScreenFolderMaximumColumns",
+        "fullScreenFolderMaximumRows",
+    )
+    for field_name in allowed_internal_settings:
+        if dock_items_controller_source.count(f'"{field_name}": true') != 1:
+            print(
+                "PunchiMenu Fullscreen internal settings: persistence "
+                f"whitelist is incomplete for {field_name}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "onClicked: root.configureRequested()" in overlay_source:
+        print(
+            "PunchiMenu Fullscreen internal settings: the header gear still "
+            "bypasses the internal view",
+            file=sys.stderr,
+        )
+        passed = False
     paged_grid_contract = (
         "property bool applicationCatalogLoaded: false",
         "applicationsLoading = !applicationCatalogLoaded",
@@ -869,7 +1224,7 @@ def main() -> int:
         "readonly property int applicationGridHorizontalInset",
         "id: searchContainer",
         "PlasmaComponents.TextField {",
-        'icon.name: "configure"',
+        '? "view-grid" : "configure"',
         "PlasmaCore.ToolTipArea {",
         "mainText: configureButton.text",
         "mainText: previousPageButton.text",
@@ -1026,9 +1381,30 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
-    if overlay_source.count("icon.color: highlightedContent") < 4:
+    if overlay_source.count("icon.color: highlightedContent") < 3:
         print(
-            "PunchiMenu Fullscreen: header icons must use the highlighted text color",
+            "PunchiMenu Fullscreen: standard header icons must use the highlighted text color",
+            file=sys.stderr,
+        )
+        passed = False
+    if "readonly property color foregroundColor: highlightedContent" not in overlay_source:
+        print(
+            "PunchiMenu Fullscreen: the avatar/grid toggle must follow the "
+            "highlighted text color",
+            file=sys.stderr,
+        )
+        passed = False
+    if '"system-log-out"' in overlay_source:
+        print(
+            "PunchiMenu Fullscreen: the ambiguous logout glyph remains on "
+            "the session-view toggle",
+            file=sys.stderr,
+        )
+        passed = False
+    if "source: currentUser.faceIconUrl" in overlay_source:
+        print(
+            "PunchiMenu Fullscreen: the header toggle still consumes the "
+            "personal avatar image",
             file=sys.stderr,
         )
         passed = False
@@ -1316,16 +1692,6 @@ def main() -> int:
             punchi_menu_config_source,
             'i18n("Favorites icon scale:")',
             "dedicated Favorites scale control",
-        ),
-        (
-            dialog_source,
-            "signal favoriteIconScalePercentSelected(int percent)",
-            "legacy editor Favorites scale signal",
-        ),
-        (
-            workflow_source,
-            "function setPunchiMenuFavoriteIconScalePercent(percent)",
-            "legacy editor Favorites scale persistence",
         ),
         (
             main_source,
@@ -1751,19 +2117,9 @@ def main() -> int:
             "persistent placement normalization",
         ),
         (
-            workflow_source,
-            "function setPunchiMenuNormalPlacementMode(mode)",
-            "configuration workflow",
-        ),
-        (
-            config_page_source,
-            "onNormalPlacementModeSelected:",
-            "configuration signal routing",
-        ),
-        (
-            dialog_source,
+            punchi_menu_config_source,
             'i18n("Normal menu placement:")',
-            "translated setting label",
+            "dedicated translated setting label",
         ),
         (
             main_source,

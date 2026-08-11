@@ -8,6 +8,11 @@ import org.kde.kirigami as Kirigami
 Item {
     id: root
 
+    // The trash workflow is rendered over a widgets/background popup surface.
+    // Keep its complete menu and confirmation flow on the Window palette.
+    Kirigami.Theme.inherit: false
+    Kirigami.Theme.colorSet: Kirigami.Theme.Window
+
     property string operationState: "idle"
     property int progressPercent: -1
     property bool progressDeterminate: false
@@ -20,7 +25,7 @@ Item {
     property int menuIconSize: 26
     property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
-    property bool menuTextShadowsEnabled: true
+    property bool menuTextShadowsEnabled: false
     property bool confirmationVisible: false
     property real pageTransitionProgress: confirmationVisible ? 1 : 0
     property real surfaceWidth: targetSurfaceWidth

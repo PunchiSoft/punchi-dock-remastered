@@ -9,7 +9,7 @@ Item {
 
     property int rowHeight: 46
     property int iconSize: 26
-    property bool textShadowsEnabled: true
+    property bool textShadowsEnabled: false
     readonly property int effectiveRowHeight: Math.max(32, Math.min(64,
         Number(rowHeight || 46)))
     readonly property int effectiveIconSize: Math.max(16, Math.min(40,
@@ -59,6 +59,7 @@ Item {
                 PlasmaExtras.ShadowedLabel {
                     Layout.fillWidth: true
                     text: openOption.text
+                    color: Kirigami.Theme.textColor
                     renderShadow: root.textShadowsEnabled
                     font.family: Kirigami.Theme.defaultFont.family
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
@@ -93,6 +94,7 @@ Item {
                 PlasmaExtras.ShadowedLabel {
                     Layout.fillWidth: true
                     text: emptyOption.text
+                    color: Kirigami.Theme.textColor
                     renderShadow: root.textShadowsEnabled
                     font.family: Kirigami.Theme.defaultFont.family
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize

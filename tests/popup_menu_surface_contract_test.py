@@ -89,6 +89,12 @@ def main() -> int:
     app_actions_popup = (
         PROJECT_ROOT / "contents/ui/components/AppActionsPopup.qml"
     ).read_text()
+    trash_context_popup = (
+        PROJECT_ROOT / "contents/ui/components/TrashContextPopup.qml"
+    ).read_text()
+    trash_menu_popup = (
+        PROJECT_ROOT / "contents/ui/components/TrashMenuPopup.qml"
+    ).read_text()
     task_overflow_popup = (
         PROJECT_ROOT / "contents/ui/components/TaskOverflowPopup.qml"
     ).read_text()
@@ -191,6 +197,31 @@ def main() -> int:
             "Folder actions must close through the guarded popup path")
     require(trash_menu, "TrashContextPopup {",
             "The trash state machine must remain inside the shared surface")
+    for fragment, message in (
+        ("Kirigami.Theme.inherit: false",
+         "Trash content must not inherit the panel color set"),
+        ("Kirigami.Theme.colorSet: Kirigami.Theme.Window",
+         "Trash content must use the Window palette"),
+    ):
+        require(trash_context_popup, fragment, message)
+    require(
+        trash_menu_popup,
+        "property bool textShadowsEnabled: false",
+        "Trash action text shadows must remain disabled by default",
+    )
+    trash_action_labels = qml_object_bodies(
+        trash_menu_popup, "PlasmaExtras.ShadowedLabel"
+    )
+    if len(trash_action_labels) != 2:
+        raise AssertionError(
+            "Trash actions must retain exactly two themed shadow labels"
+        )
+    for label in trash_action_labels:
+        require(
+            label,
+            "color: Kirigami.Theme.textColor",
+            "Every trash action label must follow the popup theme",
+        )
     require(app_actions, "AppActionsPopup {",
             "Application actions must remain inside the shared surface")
     require(note_popup, "NotePopup {",
@@ -314,6 +345,29 @@ def main() -> int:
     ):
         require(app_actions_popup, fragment, message)
 
+    for fragment, message in (
+        ("Kirigami.Theme.inherit: false",
+         "Application actions must not inherit the panel color set"),
+        ("Kirigami.Theme.colorSet: Kirigami.Theme.Window",
+         "Application actions must use the Window palette"),
+        ("property bool textShadowsEnabled: false",
+         "Application action text shadows must remain disabled by default"),
+    ):
+        require(app_actions_popup, fragment, message)
+    app_action_labels = qml_object_bodies(
+        app_actions_popup, "PlasmaExtras.ShadowedLabel"
+    )
+    if len(app_action_labels) != 3:
+        raise AssertionError(
+            "Application actions must retain exactly three themed shadow labels"
+        )
+    for label in app_action_labels:
+        require(
+            label,
+            "color: Kirigami.Theme.textColor",
+            "Every application action label must follow the popup theme",
+        )
+
     require(config_menus, "to: 15",
             "The menu KCM must allow up to fifteen visible actions")
     require(dock_configuration, "Math.max(3, Math.min(15,",
@@ -389,6 +443,17 @@ def main() -> int:
         dock_configuration,
         "Plasmoid.configuration.popupTextShadowsEnabled === true",
         "Runtime popup text shadows must remain opt-in",
+    )
+    require(
+        config_schema,
+        '<entry name="menuTextShadowsEnabled" type="Bool">\n'
+        "      <default>false</default>",
+        "Menu text shadows must remain disabled in new configurations",
+    )
+    require(
+        dock_configuration,
+        "Plasmoid.configuration.menuTextShadowsEnabled === true",
+        "Runtime menu text shadows must remain opt-in",
     )
 
     print("Popup menu surface contracts are consistent")

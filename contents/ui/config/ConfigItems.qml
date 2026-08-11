@@ -469,25 +469,7 @@ KCM.SimpleKCM {
 
     function setPunchiMenuMode(mode) { WorkflowHelper.setPunchiMenuMode(mode) }
 
-    function setPunchiMenuNormalPlacementMode(mode) { WorkflowHelper.setPunchiMenuNormalPlacementMode(mode) }
-
     function setPunchiMenuIcon(iconName) { WorkflowHelper.setPunchiMenuIcon(iconName) }
-
-    function setPunchiMenuGridIconScalePercent(percent) { WorkflowHelper.setPunchiMenuGridIconScalePercent(percent) }
-
-    function setPunchiMenuFavoriteIconScalePercent(percent) { WorkflowHelper.setPunchiMenuFavoriteIconScalePercent(percent) }
-
-    function setPunchiMenuNormalFolderMaximumColumns(columns) { WorkflowHelper.setPunchiMenuNormalFolderMaximumColumns(columns) }
-
-    function setPunchiMenuNormalFolderMaximumRows(rows) { WorkflowHelper.setPunchiMenuNormalFolderMaximumRows(rows) }
-
-    function setPunchiMenuFullScreenFolderMaximumColumns(columns) { WorkflowHelper.setPunchiMenuFullScreenFolderMaximumColumns(columns) }
-
-    function setPunchiMenuFullScreenFolderMaximumRows(rows) { WorkflowHelper.setPunchiMenuFullScreenFolderMaximumRows(rows) }
-
-    function setPunchiMenuShowDistributionName(enabled) { WorkflowHelper.setPunchiMenuShowDistributionName(enabled) }
-
-    function setPunchiMenuNormalSizePercent(widthPercent, heightPercent) { WorkflowHelper.setPunchiMenuNormalSizePercent(widthPercent, heightPercent) }
 
     function setMediaDefaultPlayer(application) { WorkflowHelper.setMediaDefaultPlayer(application) }
 
@@ -754,33 +736,6 @@ KCM.SimpleKCM {
         selectorWidth: layoutMetrics.selectorWidth
         onMenuModeSelected: function(mode) {
             page.setPunchiMenuMode(mode)
-        }
-        onNormalPlacementModeSelected: function(mode) {
-            page.setPunchiMenuNormalPlacementMode(mode)
-        }
-        onGridIconScalePercentSelected: function(percent) {
-            page.setPunchiMenuGridIconScalePercent(percent)
-        }
-        onFavoriteIconScalePercentSelected: function(percent) {
-            page.setPunchiMenuFavoriteIconScalePercent(percent)
-        }
-        onNormalFolderMaximumColumnsSelected: function(columns) {
-            page.setPunchiMenuNormalFolderMaximumColumns(columns)
-        }
-        onNormalFolderMaximumRowsSelected: function(rows) {
-            page.setPunchiMenuNormalFolderMaximumRows(rows)
-        }
-        onFullScreenFolderMaximumColumnsSelected: function(columns) {
-            page.setPunchiMenuFullScreenFolderMaximumColumns(columns)
-        }
-        onFullScreenFolderMaximumRowsSelected: function(rows) {
-            page.setPunchiMenuFullScreenFolderMaximumRows(rows)
-        }
-        onShowDistributionNameSelected: function(enabled) {
-            page.setPunchiMenuShowDistributionName(enabled)
-        }
-        onNormalSizePercentSelected: function(widthPercent, heightPercent) {
-            page.setPunchiMenuNormalSizePercent(widthPercent, heightPercent)
         }
     }
 
