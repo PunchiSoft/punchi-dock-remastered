@@ -24,7 +24,7 @@
       <default>8</default>
     </entry>
     <entry name="hoverScale" type="Double">
-      <default>1.35</default>
+      <default>1.65</default>
     </entry>
     <entry name="virtualDesktopMode" type="String">
       <default>all</default>
@@ -196,7 +196,7 @@
   </group>
   <group name="Mouse">
     <entry name="hoverAnimation" type="String">
-      <default>axisZoom</default>
+      <default>wave</default>
     </entry>
     <entry name="clickEffect" type="String">
       <default>none</default>

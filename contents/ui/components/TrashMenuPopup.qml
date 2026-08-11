@@ -40,11 +40,11 @@ Item {
             id: openOption
             Layout.fillWidth: true
             Layout.preferredHeight: root.effectiveRowHeight
-            text: i18n("Open trash")
+            text: i18n("Open trash") // qmllint disable unqualified
             icon.name: "folder-open"
             icon.width: root.effectiveIconSize
             icon.height: root.effectiveIconSize
-            Accessible.description: i18n("Open the trash folder in the file manager")
+            Accessible.description: i18n("Open the trash folder in the file manager") // qmllint disable unqualified
             onClicked: root.openTrashClicked()
 
             contentItem: RowLayout {
@@ -72,12 +72,12 @@ Item {
             id: emptyOption
             Layout.fillWidth: true
             Layout.preferredHeight: root.effectiveRowHeight
-            text: i18n("Empty trash")
+            text: i18n("Empty trash") // qmllint disable unqualified
             icon.name: "trash-empty"
             icon.width: root.effectiveIconSize
             icon.height: root.effectiveIconSize
             icon.color: Kirigami.Theme.negativeTextColor
-            Accessible.description: i18n("Permanently remove all items from the trash")
+            Accessible.description: i18n("Permanently remove all items from the trash") // qmllint disable unqualified
             onClicked: root.emptyTrashClicked()
 
             contentItem: RowLayout {

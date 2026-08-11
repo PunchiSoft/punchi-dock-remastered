@@ -175,8 +175,11 @@ QtObject {
         const safePercent = Number.isFinite(configuredPercent) ? configuredPercent : 100
         return Math.max(80, Math.min(120, safePercent)) / 100.0
     }
-    readonly property real dockIndicatorOpacity: Math.max(0.0, Math.min(1.0,
-        Number(Plasmoid.configuration.indicatorOpacity || 100) / 100.0))
+    readonly property real dockIndicatorOpacity: {
+        const configuredPercent = Number(Plasmoid.configuration.indicatorOpacity)
+        const safePercent = Number.isFinite(configuredPercent) ? configuredPercent : 100
+        return Math.max(0, Math.min(100, safePercent)) / 100.0
+    }
     readonly property int dockIndicatorThickness: Math.max(2,
         Number(Plasmoid.configuration.indicatorThickness || 4))
 
@@ -225,11 +228,17 @@ QtObject {
         return ["left", "right"].indexOf(configuredFlow) >= 0 ? configuredFlow : "none"
     }
 
-    readonly property real configuredHoverScale: Math.max(1.05,
-        Number(Plasmoid.configuration.hoverScale || 1.05))
-    readonly property real panelHoverScale: root.inPanel
-        ? Math.min(configuredHoverScale, 1.18)
-        : configuredHoverScale
+    readonly property real configuredHoverScale: Math.max(1.0,
+        Number(Plasmoid.configuration.hoverScale || 1.65))
+    readonly property real panelHoverScale: configuredHoverScale
+    readonly property string dockHoverAnimation: {
+        const configuredMode = String(Plasmoid.configuration.hoverAnimation || "wave")
+        if (configuredMode === "paragraph") {
+            return "selectionPulse"
+        }
+        const supportedModes = ["none", "wave", "single", "axisZoom", "selectionPulse"]
+        return supportedModes.indexOf(configuredMode) >= 0 ? configuredMode : "wave"
+    }
 
     readonly property string popupAnimationStyle: {
         const configuredStyle = String(Plasmoid.configuration.popupAnimation || "scale")

@@ -24,6 +24,23 @@ TestCase {
         property bool containsMouse: true
     }
 
+    Item {
+        id: dynamicOwner
+
+        width: 48
+        height: 48
+        property bool containsMouse: true
+        property Item taskPopupAnchorItem: dynamicVisualAnchor
+
+        Item {
+            id: dynamicVisualAnchor
+
+            x: 12
+            width: 48
+            height: 48
+        }
+    }
+
     QtObject {
         id: fakeTaskController
 
@@ -188,6 +205,7 @@ TestCase {
         fakeMprisController.applicationId = ""
         firstAnchor.containsMouse = true
         secondAnchor.containsMouse = true
+        dynamicOwner.containsMouse = true
         coordinator.mediaHoverMode = "card"
         coordinator.windowPreviewsEnabled = false
     }
@@ -218,6 +236,35 @@ TestCase {
         coordinator.resetTaskPopupState()
         fakeDialog.visible = false
         wait(0)
+    }
+
+    function test_dynamicTaskUsesVisualAnchorAndKeepsLogicalOwner() {
+        fakeMprisController.available = true
+        coordinator.scheduleTaskWindowsPopup("Firefox", [1], dynamicOwner,
+            false, false)
+
+        tryCompare(fakeDialog, "openCount", 1, 600)
+        compare(fakeDialog.visualParent, dynamicVisualAnchor)
+        compare(coordinator.taskPopupVisualParent, dynamicOwner)
+    }
+
+    function test_dynamicTaskHorizontalPositionUsesVisualAnchor() {
+        coordinator.taskPopupVisualParent = dynamicOwner
+        const popupWidth = 120
+        const available = Qt.rect(-1000, 0, 2000, 800)
+        const center = dynamicVisualAnchor.mapToGlobal(Qt.point(
+            dynamicVisualAnchor.width / 2,
+            dynamicVisualAnchor.height / 2))
+        const expectedX = Math.round(center.x - (popupWidth / 2))
+
+        compare(coordinator.taskPopupHorizontalX(popupWidth, available),
+            expectedX)
+    }
+
+    function test_dynamicTaskHorizontalPositionClampsToAvailableGeometry() {
+        coordinator.taskPopupVisualParent = dynamicOwner
+        compare(coordinator.taskPopupHorizontalX(120,
+            Qt.rect(500, 0, 100, 800)), 500)
     }
 
     function test_noneCardLateFirstResolutionOpens() {

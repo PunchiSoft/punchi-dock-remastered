@@ -29,6 +29,15 @@ def qml_object_bodies(source: str, declaration: str) -> list[str]:
     return bodies
 
 
+def qml_object_body_by_id(
+    source: str, declaration: str, object_id: str
+) -> str:
+    for body in qml_object_bodies(source, declaration):
+        if re.search(rf"\bid:\s*{re.escape(object_id)}\b", body):
+            return body
+    raise AssertionError(f"Unable to isolate {object_id}")
+
+
 def popup_body(main_qml: str, popup_id: str, next_popup_id: str) -> str:
     match = re.search(
         rf"GuardedPopupDialog\s*\{{\s*id:\s*{popup_id}\b"
@@ -80,6 +89,9 @@ def main() -> int:
     app_actions_popup = (
         PROJECT_ROOT / "contents/ui/components/AppActionsPopup.qml"
     ).read_text()
+    task_overflow_popup = (
+        PROJECT_ROOT / "contents/ui/components/TaskOverflowPopup.qml"
+    ).read_text()
     dock_configuration = (
         PROJECT_ROOT / "contents/ui/components/DockConfigurationState.qml"
     ).read_text()
@@ -115,6 +127,9 @@ def main() -> int:
     trash_menu = popup_body(main_qml, "trashMenuDialog", "appActionsDialog")
     app_actions = popup_body(main_qml, "appActionsDialog", "notePopupDialog")
     note_popup = popup_body(main_qml, "notePopupDialog", "taskWindowsDialog")
+    overflow_popup = qml_object_body_by_id(
+        main_qml, "GuardedPopupDialog", "taskOverflowDialog"
+    )
 
     assert_widget_surface(
         folder_popup,
@@ -124,6 +139,7 @@ def main() -> int:
     assert_widget_surface(trash_menu, "Trash menu")
     assert_widget_surface(app_actions, "Application actions menu")
     assert_widget_surface(note_popup, "Note popup")
+    assert_widget_surface(overflow_popup, "Task overflow popup")
     for fragment, message in (
         ("type: PlasmaCore.Dialog.AppletPopup",
          "Guarded menus must retain the applet-popup window role"),
@@ -156,6 +172,21 @@ def main() -> int:
         require(animated_content, fragment, message)
     require(folder_popup, "FolderPopup {",
             "Folder profiles must remain inside the shared surface")
+    for fragment, message in (
+        ('import "punchimenu" as PunchiMenuComponents',
+         "Folder popup launchers must import the canonical highlight"),
+        ("PunchiMenuComponents.PunchiMenuItemHighlight {",
+         "Folder popup launchers must reuse the canonical highlight"),
+        ("hovered: itemMouse.containsMouse",
+         "Folder popup hover must follow pointer presence"),
+        ("focused: itemMouse.activeFocus",
+         "Folder popup focus must remain independent from hover"),
+        ("pressed: itemMouse.pressed",
+         "Folder popup press feedback must remain interruptible"),
+        ("motionEnabled: Kirigami.Units.longDuration > 0",
+         "Folder popup motion must follow the reduced-motion preference"),
+    ):
+        require(folder_popup_component, fragment, message)
     require(folder_popup, "folderPopupDialog.closeSafely()",
             "Folder actions must close through the guarded popup path")
     require(trash_menu, "TrashContextPopup {",
@@ -168,6 +199,86 @@ def main() -> int:
             "Note popup must retain its medium visual frame")
     require(note_popup, "notePopupDialog.closeSafely()",
             "Note actions must close through the guarded popup path")
+    require(overflow_popup, "TaskOverflowPopup {",
+            "Task overflow content must remain inside the shared surface")
+    for fragment, message in (
+        ("Kirigami.Theme.inherit: false",
+         "Task overflow content must not inherit the panel color set"),
+        ("Kirigami.Theme.colorSet: Kirigami.Theme.Window",
+         "Task overflow content must use the Window palette"),
+    ):
+        require(task_overflow_popup, fragment, message)
+    overflow_labels = qml_object_bodies(
+        task_overflow_popup, "PlasmaExtras.ShadowedLabel"
+    )
+    if len(overflow_labels) != 3:
+        raise AssertionError(
+            "Task overflow must retain exactly three themed shadow labels"
+        )
+    for label in overflow_labels:
+        require(
+            label,
+            "color: Kirigami.Theme.textColor",
+            "Every task overflow label must follow the selected Plasma theme",
+        )
+    require(overflow_popup, "taskControllerRef: taskController",
+            "Task overflow controls must resolve official window capabilities")
+    require(overflow_popup, "taskOverflowDialog.closeSafely()",
+            "Task overflow actions must close through the guarded popup path")
+    for forbidden in (
+        "previewBlurController",
+        "Punchi.BlurBehindController",
+        "backgroundHints: PlasmaCore.AppletPopup.StandardBackground",
+    ):
+        if forbidden in overflow_popup:
+            raise AssertionError(
+                f"Task overflow popup must not retain blur or a competing surface: {forbidden}"
+            )
+    for fragment, message in (
+        ("signal minimizeWindowRequested(int taskRow)",
+         "Task overflow must expose direct minimize intent"),
+        ("signal maximizeWindowRequested(int taskRow)",
+         "Task overflow must expose direct maximize intent"),
+        ("signal closeWindowRequested(int taskRow)",
+         "Task overflow must expose direct close intent"),
+        ("WindowPreviewActionButton {",
+         "Task overflow controls must reuse the shared window action primitive"),
+        ("visible: entryDelegate.hasSingleWindow",
+         "Direct controls must remain scoped to unambiguous single-window rows"),
+        ("destructive: true",
+         "The direct close control must communicate destructive intent"),
+        ("id: overflowScroll",
+         "Task overflow must expose a bounded viewport"),
+        ("clip: true",
+         "Task overflow hover rendering must remain inside its viewport"),
+        ("width: overflowScroll.availableWidth",
+         "Task overflow rows must exclude the scroll bar from their width"),
+        ("boundsBehavior: Flickable.StopAtBounds",
+         "Task overflow content must not overshoot the popup bounds"),
+        ("readonly property int visibleListHeight:",
+         "Task overflow must calculate the complete visible list extent"),
+        ("Math.max(0, visibleRows - 1) * rowSpacing",
+         "Task overflow height must reserve spacing between visible rows"),
+        ("+ contentMargin * 2 + contentSpacing + visibleListHeight",
+         "Task overflow height must retain both margins and the header gap"),
+        ("readonly property int listBottomReserve: Kirigami.Units.smallSpacing",
+         "Task overflow must reserve theme-scaled space below its last row"),
+        ("+ listBottomReserve)",
+         "Task overflow sizing must include the dedicated lower reserve"),
+        ("Layout.bottomMargin: root.listBottomReserve",
+         "Task overflow viewport must expose the dedicated lower reserve"),
+        ("readonly property int headerTopReserve: listBottomReserve",
+         "Task overflow must keep its additional vertical reserves symmetric"),
+        ("+ headerTopReserve + listBottomReserve)",
+         "Task overflow sizing must include both vertical edge reserves"),
+        ("Layout.topMargin: root.headerTopReserve",
+         "Task overflow header must expose the dedicated upper reserve"),
+        ("anchors.margins: root.contentMargin",
+         "Task overflow layout must consume the same margin used by sizing"),
+        ("spacing: root.contentSpacing",
+         "Task overflow layout must consume the same header gap used by sizing"),
+    ):
+        require(task_overflow_popup, fragment, message)
     for fragment, message in (
         ("function showPopupDialog(dialog)",
          "PopupCoordinator must centralize guarded menu opening"),
@@ -183,6 +294,8 @@ def main() -> int:
             "Note popup opening must use the guarded popup path")
     require(popup_coordinator, "root.showPopupDialog(folderPopupDialogRef)",
             "Folder popup opening must use the guarded popup path")
+    require(popup_coordinator, "root.showPopupDialog(taskOverflowDialogRef)",
+            "Task overflow opening must use the guarded popup path")
 
     if "PlasmaCore.AppletPopup.NoBackground" in main_qml:
         raise AssertionError(

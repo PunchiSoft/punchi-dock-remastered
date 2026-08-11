@@ -158,6 +158,16 @@ add_test(
 )
 
 add_test(
+    NAME dock_wave_panel_geometry_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dock_wave_panel_geometry_contract_test.py
+)
+
+add_test(
+    NAME dock_overflow_geometry_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dock_overflow_geometry_contract_test.py
+)
+
+add_test(
     NAME window_thumbnail_contract_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/window_thumbnail_contract_test.py
 )
@@ -175,6 +185,21 @@ add_test(
 add_test(
     NAME kubuntu_version_detection_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/kubuntu_version_detection_test.py
+)
+
+add_test(
+    NAME qmllint_debt_inventory_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qmllint_debt_inventory_test.py
+)
+
+add_test(
+    NAME qmllint_i18n_candidates_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qmllint_i18n_candidates_test.py
+)
+
+add_test(
+    NAME qmllint_debt_cycle_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/qmllint_debt_cycle_test.py
 )
 
 add_test(
@@ -218,6 +243,22 @@ target_include_directories(systemdiscovery_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(systemdiscovery_test PRIVATE Qt6::Core Qt6::Qml KF6::ConfigCore KF6::Service KF6::KIOCore KF6::KIOGui KF6::JobWidgets KF6::I18n)
 add_test(NAME systemdiscovery_test COMMAND systemdiscovery_test)
 
+add_executable(trashintegration_test
+    ${CMAKE_SOURCE_DIR}/src/trashintegration.cpp
+    ${CMAKE_SOURCE_DIR}/src/dropurlpolicy.cpp
+    trashintegration_test.cpp
+)
+target_include_directories(trashintegration_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(trashintegration_test PRIVATE
+    Qt6::Core
+    Qt6::Qml
+    KF6::JobWidgets
+    KF6::KIOCore
+    KF6::KIOGui
+)
+add_test(NAME trashintegration_test COMMAND trashintegration_test)
+set_tests_properties(trashintegration_test PROPERTIES SKIP_RETURN_CODE 77)
+
 if(TARGET Qt6::qmltestrunner)
     set(POPUP_COORDINATOR_QML_TEST_RUNNER $<TARGET_FILE:Qt6::qmltestrunner>)
 else()
@@ -242,5 +283,14 @@ add_test(
         -input ${CMAKE_CURRENT_SOURCE_DIR}/task_popup_surface_test.qml
 )
 set_tests_properties(task_popup_surface_test PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+)
+
+add_test(
+    NAME app_actions_popup_runtime_test
+    COMMAND ${POPUP_COORDINATOR_QML_TEST_RUNNER}
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/app_actions_popup_runtime_test.qml
+)
+set_tests_properties(app_actions_popup_runtime_test PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
 )

@@ -76,8 +76,8 @@ Controls.Dialog {
     property string containerApplicationsText: "Container applications"
     property string enableRightClickMenuText: "Enable right-click menu"
     property string limitContextMenuRowsText: "Limit menu rows"
-    property string rowsText: i18n("rows")
-    property string rowsValueText: i18n("%1 rows")
+    property string rowsText: i18n("rows") // qmllint disable unqualified
+    property string rowsValueText: i18n("%1 rows") // qmllint disable unqualified
     property string actionNameLabel: "Action name:"
     property string actionIconLabel: "Action icon:"
     property string actionCommandLabel: "Action command:"

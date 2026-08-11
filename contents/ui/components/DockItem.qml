@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.extras as PlasmaExtras
+import "punchimenu" as PunchiMenuComponents
 
 Item {
     id: dockItemContainer
@@ -20,9 +21,8 @@ Item {
     property real separatorOpacitySetting: 0.34
     property bool separatorGlowSetting: false
 
-    readonly property string effectiveIndicatorPosition: {
-        return indicatorPosition === "top" ? "top" : "bottom"
-    }
+    readonly property string effectiveIndicatorPosition:
+        indicatorPosition === "top" ? "top" : "bottom"
 
     readonly property string localizedItemName: {
         if (itemType === "trash" && itemName === "Trash") {
@@ -47,10 +47,10 @@ Item {
     property real hoverZoomProgress: 0.0
     property int lastHoveredIndex: -1
     property real lastMouseOffset: 0.0
-
+    property real selectionPulseScale: 1.0
     // Wave geometry follows the original project while preserving smooth transitions.
-    property real hoverScaleSetting: 1.35
-    property string hoverAnimationMode: "axisZoom"
+    property real hoverScaleSetting: 1.65
+    property string hoverAnimationMode: "wave"
     property string clickEffect: "none"
     property string windowMinimizeEffect: "none"
     property int taskMinimizedCount: 0
@@ -65,6 +65,7 @@ Item {
     property real iconReflectionAvailableExtent: -1
     property bool animateEntry: false
     property bool positionTransitionEnabled: false
+    property bool taskPopupTracksVisualArea: false
     property real entryOpacity: 1.0
     property real entryScale: 1.0
     property bool positionAnimationReady: false
@@ -100,6 +101,10 @@ Item {
             : 100))
     readonly property int dockMotionDuration: Math.round(
         Kirigami.Units.longDuration * 100 / resolvedDockMotionSpeedPercent)
+    readonly property int selectionPulseDuration: Math.max(1,
+        Math.round(dockMotionDuration * 2.25))
+    readonly property real selectionPulsePeakScale:
+        Math.max(1.0, hoverScaleSetting)
     readonly property int resolvedMediaAutoCollapseDelaySeconds: Math.max(0,
         Math.min(30, Number.isFinite(mediaAutoCollapseDelaySeconds)
             ? Math.round(mediaAutoCollapseDelaySeconds)
@@ -121,6 +126,40 @@ Item {
     }
     property real highQualityIconScale: highQualityIconSize > 0 ? iconSize / highQualityIconSize : 1
     readonly property real hoverScaleDelta: Math.max(0.0001, hoverScaleSetting - 1.0)
+    readonly property real waveSharedScaleDelta: Math.min(0.50,
+        Math.max(0.0, hoverScaleSetting - 1.0))
+    readonly property real wavePrimaryScaleDelta: Math.max(0.0,
+        hoverScaleSetting - 1.0 - waveSharedScaleDelta)
+    readonly property real waveLayoutSpacing: {
+        if (!layoutController) {
+            return Kirigami.Units.smallSpacing
+        }
+        const value = verticalPanelMode
+            ? Number(layoutController.rowSpacing)
+            : Number(layoutController.columnSpacing)
+        return Number.isFinite(value) && value >= 0
+            ? value : Kirigami.Units.smallSpacing
+    }
+    readonly property real waveCanonicalItemExtent: verticalPanelMode
+        ? iconSize + 12 + (showPersistentLabel ? labelFontSize + 12 : 0)
+        : Math.max(iconSize + 12,
+            showPersistentLabel ? Math.round(iconSize * 1.85) : 0)
+    readonly property real waveItemPitch: Math.max(1,
+        (structuralWaveItem
+            ? waveCanonicalItemExtent
+            : (verticalPanelMode ? height : width)) + waveLayoutSpacing)
+    readonly property point waveMappedCenter: {
+        // Mapping also depends on the delegate position inside its layout.
+        dockItemContainer.x
+        dockItemContainer.y
+        return layoutController
+            ? mapToItem(layoutController, width / 2, height / 2)
+            : Qt.point(0, 0)
+    }
+    readonly property real waveItemCenter: verticalPanelMode
+        ? waveMappedCenter.y : waveMappedCenter.x
+    readonly property real waveInfluenceRadius: Math.max(iconSize * 3.0,
+        waveItemPitch * 2.75)
     readonly property real iconReflectionMaximumVisibleRatio: 0.26
     readonly property real iconReflectionDisplaySize: iconSize * waveScale
     readonly property real iconReflectionContainerScale:
@@ -157,12 +196,17 @@ Item {
     }
     property real clickAnimationScale: 1.0
     property real waveScale: {
-        if (itemType === "calendar" || itemType === "media") {
+        if (itemType === "calendar" || itemType === "media"
+                || structuralWaveItem) {
             return 1.0
         }
 
         if (hoverAnimationMode === "none") {
             return 1.0
+        }
+
+        if (hoverAnimationMode === "selectionPulse") {
+            return selectionPulseScale
         }
 
         var activeIndex = hoveredIndex >= 0 ? hoveredIndex : lastHoveredIndex
@@ -188,20 +232,12 @@ Item {
                 : 1.0
         }
 
-        if (hoverAnimationMode === "paragraph") {
-            var indexDistance = Math.abs(itemIndex - activeIndex)
-            var paragraphInfluences = [1.0, 0.62, 0.28]
-            if (indexDistance >= paragraphInfluences.length) {
-                return 1.0
-            }
-            return 1.0 + (hoverScaleSetting - 1.0) * paragraphInfluences[indexDistance] * hoverZoomProgress
-        }
-        
         if (!Number.isFinite(pointerPosition) || pointerPosition < 0) {
             return 1.0
         }
 
-        var radius = Math.max(iconSize * 2.25, (iconSize + 20) * 1.85)
+        // Keep the original cosine wave, extending its reach by one item.
+        var radius = waveInfluenceRadius
         var itemCenterPoint = dockItemContainer.mapToItem(
             dockItemContainer.layoutController,
             dockItemContainer.width / 2,
@@ -209,11 +245,98 @@ Item {
         var itemCenter = verticalPanelMode ? itemCenterPoint.y : itemCenterPoint.x
         var distance = Math.abs(itemCenter - pointerPosition)
         if (distance >= radius) return 1.0
-        
+
         // Organic smooth cosine wave curve (0.5 * (1 + cos(pi * d / r)))
         var normalizedDistance = distance / radius
         var influence = 0.5 * (1.0 + Math.cos(Math.PI * normalizedDistance))
-        return 1.0 + (hoverScaleSetting - 1.0) * influence * hoverZoomProgress
+        var scale = 1.0 + waveSharedScaleDelta
+            * influence * hoverZoomProgress
+
+        // Values above 150% reinforce only the item directly under the
+        // pointer. The compact cosine reaches zero at half a cell, so the
+        // extra peak transfers continuously without enlarging neighbours.
+        const primaryRadius = waveItemPitch * 0.5
+        if (wavePrimaryScaleDelta > 0.0 && distance < primaryRadius) {
+            const primaryDistance = distance / primaryRadius
+            const primaryInfluence = 0.5
+                * (1.0 + Math.cos(Math.PI * primaryDistance))
+            scale += wavePrimaryScaleDelta
+                * primaryInfluence * hoverZoomProgress
+        }
+        return scale
+    }
+
+    readonly property real waveMainAxisShift: {
+        if (hoverAnimationMode !== "wave" || hoverZoomProgress <= 0.0
+                || !layoutController) {
+            return 0.0
+        }
+
+        if (Kirigami.Units.longDuration === 0) {
+            return 0.0
+        }
+
+        const pointerPosition = hoveredIndex >= 0
+            ? Number(layoutController.pointerPrimaryAxis)
+            : Number(layoutController.lastPointerPrimaryAxis)
+        if (!Number.isFinite(pointerPosition) || pointerPosition < 0) {
+            return 0.0
+        }
+
+        const signedDistance = waveItemCenter - pointerPosition
+        const distance = Math.abs(signedDistance)
+        if (distance < 0.001) {
+            return 0.0
+        }
+
+        const normalizedDistance = Math.min(1.0,
+            distance / waveInfluenceRadius)
+        const integratedInfluence = waveInfluenceRadius
+            * (0.5 * normalizedDistance
+                + Math.sin(Math.PI * normalizedDistance) / (2.0 * Math.PI))
+        const maximumExpansion = iconSize
+            * waveSharedScaleDelta * hoverZoomProgress
+        const shift = maximumExpansion * integratedInfluence / waveItemPitch
+        const directionalShift = signedDistance < 0.0 ? -shift : shift
+        return directionalShift
+    }
+
+    function updateWavePointer(localX, localY) {
+        if (!layoutController || !Number.isFinite(Number(localX))
+                || !Number.isFinite(Number(localY))) {
+            return
+        }
+        const point = mapToItem(layoutController, Number(localX), Number(localY))
+        const position = verticalPanelMode ? point.y : point.x
+        layoutController.pointerPrimaryAxis = position
+        layoutController.lastPointerPrimaryAxis = position
+    }
+
+    function shouldKeepWaveActiveAcrossLayoutGap() {
+        if (hoverAnimationMode !== "wave" || !layoutController) {
+            return false
+        }
+        try {
+            return !!layoutController.wavePointerInsideLayout
+        } catch (error) {
+            return false
+        }
+    }
+
+    function restartSelectionPulse() {
+        selectionPulseAnimation.stop()
+        selectionPulseScale = 1.0
+        if (hoverAnimationMode !== "selectionPulse"
+                || selectionPulsePeakScale <= 1.0
+                || Kirigami.Units.longDuration === 0) {
+            return
+        }
+        selectionPulseAnimation.start()
+    }
+
+    function resetSelectionPulse() {
+        selectionPulseAnimation.stop()
+        selectionPulseScale = 1.0
     }
 
     property bool inPanel: false
@@ -221,9 +344,19 @@ Item {
     readonly property int tooltipLocation: {
         return panelLocation
     }
-    readonly property real hoverTravel: (waveScale <= 1.0 || hoverAnimationMode === "axisZoom")
-        ? 0.0
-        : Math.round(iconSize * 0.32 * ((waveScale - 1.0) / hoverScaleDelta))
+    readonly property real hoverTravel: {
+        if (waveScale <= 1.0 || hoverAnimationMode === "axisZoom"
+                || hoverAnimationMode === "selectionPulse") {
+            return 0.0
+        }
+        if (hoverAnimationMode === "wave") {
+            // Scaling is centered, so offset by exactly half of the growth to
+            // keep the icon attached to the dock edge on either orientation.
+            return iconSize * 0.5 * (waveScale - 1.0)
+        }
+        return Math.round(iconSize * 0.32
+            * ((waveScale - 1.0) / hoverScaleDelta))
+    }
     readonly property real hoverOffsetX: {
         if (!verticalPanelMode || hoverTravel <= 0.0) {
             return 0.0
@@ -276,6 +409,8 @@ Item {
     readonly property bool separatorItem: itemType === "separator"
     readonly property bool spacerItem: itemType === "spacer"
     readonly property bool mediaItem: itemType === "media"
+    readonly property bool overflowItem: itemType === "overflow"
+    readonly property bool structuralWaveItem: separatorItem || spacerItem
     readonly property bool activeTaskItem: itemType === "app" && (taskIsActive || taskIndicatorCount > 0)
     readonly property bool supportsPopupSurface: supportsContextMenu
         || itemType === "app"
@@ -431,6 +566,8 @@ Item {
 
     readonly property bool verticalPanelMode: panelLocation === PlasmaCore.Types.LeftEdge
         || panelLocation === PlasmaCore.Types.RightEdge
+    readonly property Item taskPopupAnchorItem: taskPopupTracksVisualArea
+        ? visualArea : null
     readonly property bool launcherDropPlaceholderVisible:
         externalDropState === "launcherAcceptable"
     readonly property real launcherDropLayoutSpacing: {
@@ -565,22 +702,39 @@ Item {
         }
     }
 
-    Rectangle {
+    Item {
         id: hoverBackground
         anchors.fill: parent
+        readonly property bool pointerHighlighted: mouseArea.containsMouse
+            || (dockItemContainer.hoverAnimationMode === "wave"
+                && dockItemContainer.hoveredIndex
+                    === dockItemContainer.itemIndex)
         visible: dockItemContainer.showItemHoverBackground
             && !dockItemContainer.separatorItem
             && !dockItemContainer.spacerItem
             && !dockItemContainer.mediaItem
             && dockItemContainer.itemType !== "calendar"
-        radius: 8
-        color: Kirigami.Theme.highlightColor
-        opacity: mouseArea.containsMouse || dockItemContainer.taskIsActive
-            ? 0.2
-            : 0.0
-        Behavior on opacity {
-            enabled: hoverBackground.visible
-            NumberAnimation { duration: 150 }
+        transformOrigin: Item.Center
+        scale: dockItemContainer.waveScale
+        transform: Translate {
+            x: dockItemContainer.hoverOffsetX
+                + (dockItemContainer.hoverAnimationMode === "wave"
+                    && !dockItemContainer.verticalPanelMode
+                    ? dockItemContainer.waveMainAxisShift : 0.0)
+            y: dockItemContainer.hoverOffsetY
+                + (dockItemContainer.hoverAnimationMode === "wave"
+                    && dockItemContainer.verticalPanelMode
+                    ? dockItemContainer.waveMainAxisShift : 0.0)
+        }
+
+        PunchiMenuComponents.PunchiMenuItemHighlight {
+            anchors.fill: parent
+            anchors.margins: Kirigami.Units.smallSpacing
+            hovered: hoverBackground.pointerHighlighted
+            selected: hoverBackground.pointerHighlighted
+            focused: mouseArea.activeFocus
+            pressed: mouseArea.pressed
+            motionEnabled: Kirigami.Units.longDuration > 0
         }
     }
 
@@ -702,7 +856,11 @@ Item {
         scale: dockItemContainer.clickAnimationScale * dockItemContainer.entryScale
         transform: Translate {
             x: minimizeItemReaction.horizontalOffset
+                + (dockItemContainer.verticalPanelMode
+                    ? 0.0 : dockItemContainer.waveMainAxisShift)
             y: minimizeItemReaction.verticalOffset
+                + (dockItemContainer.verticalPanelMode
+                    ? dockItemContainer.waveMainAxisShift : 0.0)
         }
 
         IconReflection {
@@ -728,6 +886,41 @@ Item {
                 + dockItemContainer.hoverOffsetY - sourceOverlap
         }
 
+        Item {
+            id: overflowTile
+            z: 1
+            anchors.centerIn: parent
+            width: dockItemContainer.iconSize
+            height: width
+            visible: dockItemContainer.overflowItem
+            transformOrigin: Item.Center
+            scale: dockItemContainer.waveScale
+            transform: Translate {
+                x: dockItemContainer.hoverOffsetX
+                y: dockItemContainer.hoverOffsetY
+            }
+            Accessible.ignored: true
+
+            Rectangle {
+                id: overflowTileBackground
+                anchors.fill: parent
+                radius: Kirigami.Units.cornerRadius * 1.5
+                color: Kirigami.Theme.highlightColor
+                opacity: mouseArea.containsMouse || mouseArea.activeFocus
+                    ? 1.0 : 0.82
+                Accessible.ignored: true
+            }
+
+            Kirigami.Icon {
+                anchors.centerIn: parent
+                width: Math.max(16, dockItemContainer.iconSize * 0.48)
+                height: width
+                source: dockItemContainer.iconName
+                color: Kirigami.Theme.highlightedTextColor
+                Accessible.ignored: true
+            }
+        }
+
         Kirigami.Icon {
             id: itemIcon
             z: 1
@@ -736,6 +929,7 @@ Item {
             height: highQualityIconSize
             source: iconName
             visible: itemType !== "calendar" && !separatorItem && !spacerItem
+                && !dockItemContainer.overflowItem
                 && !dockItemContainer.mediaItem
 
             scale: highQualityIconScale * waveScale
@@ -791,7 +985,9 @@ Item {
 
         TaskIndicator {
             z: 2
-            anchors.fill: parent
+            anchors.centerIn: parent
+            width: dockItemContainer.iconSize
+            height: dockItemContainer.iconSize
             visible: itemType === "app"
                 && taskIndicatorCount > 0
             count: taskIndicatorCount
@@ -805,6 +1001,12 @@ Item {
             thickness: indicatorThickness
             indicatorOpacity: dockItemContainer.indicatorOpacity
             iconSize: iconSize
+            transformOrigin: Item.Center
+            scale: dockItemContainer.waveScale
+            transform: Translate {
+                x: dockItemContainer.hoverOffsetX
+                y: dockItemContainer.hoverOffsetY
+            }
         }
 
         WindowCountBadge {
@@ -890,6 +1092,41 @@ Item {
         renderShadow: dockItemContainer.textShadowsEnabled
         font.pixelSize: labelFontSize
         opacity: mouseArea.containsMouse || taskIsActive ? 1.0 : 0.88
+        transform: Translate {
+            x: dockItemContainer.verticalPanelMode
+                ? 0.0 : dockItemContainer.waveMainAxisShift
+            y: dockItemContainer.verticalPanelMode
+                ? dockItemContainer.waveMainAxisShift : 0.0
+        }
+    }
+
+    SequentialAnimation {
+        id: selectionPulseAnimation
+        running: false
+
+        NumberAnimation {
+            target: dockItemContainer
+            property: "selectionPulseScale"
+            to: dockItemContainer.selectionPulsePeakScale
+            duration: Math.round(dockItemContainer.selectionPulseDuration * 0.45)
+            easing.type: Easing.OutCubic
+        }
+
+        NumberAnimation {
+            target: dockItemContainer
+            property: "selectionPulseScale"
+            to: 0.97
+            duration: Math.round(dockItemContainer.selectionPulseDuration * 0.25)
+            easing.type: Easing.InOutCubic
+        }
+
+        NumberAnimation {
+            target: dockItemContainer
+            property: "selectionPulseScale"
+            to: 1.0
+            duration: Math.round(dockItemContainer.selectionPulseDuration * 0.30)
+            easing.type: Easing.OutCubic
+        }
     }
 
     SequentialAnimation {
@@ -1019,22 +1256,20 @@ Item {
                 return
             }
             if (containsMouse) {
+                dockItemContainer.restartSelectionPulse()
                 dockItemContainer.layoutController.hoveredIndex = itemIndex
-                const centerPoint = dockItemContainer.mapToItem(
-                    dockItemContainer.layoutController,
-                    dockItemContainer.width / 2,
-                    dockItemContainer.height / 2)
-                const center = dockItemContainer.verticalPanelMode
-                    ? centerPoint.y
-                    : centerPoint.x
-                dockItemContainer.layoutController.pointerPrimaryAxis = center
-                dockItemContainer.layoutController.lastPointerPrimaryAxis = center
+                dockItemContainer.updateWavePointer(
+                    mouseArea.mouseX, mouseArea.mouseY)
                 dockItemContainer.hoverEntered(dockItemContainer)
             } else if (dockItemContainer.layoutController.hoveredIndex === itemIndex) {
-                dockItemContainer.layoutController.hoveredIndex = -1
-                dockItemContainer.layoutController.mouseOffset = 0.0
+                dockItemContainer.resetSelectionPulse()
+                if (!dockItemContainer.shouldKeepWaveActiveAcrossLayoutGap()) {
+                    dockItemContainer.layoutController.hoveredIndex = -1
+                    dockItemContainer.layoutController.mouseOffset = 0.0
+                }
                 dockItemContainer.hoverExited(dockItemContainer)
             } else {
+                dockItemContainer.resetSelectionPulse()
                 dockItemContainer.hoverExited(dockItemContainer)
             }
         }
@@ -1044,11 +1279,7 @@ Item {
                 return
             }
             if (containsMouse) {
-                const point = dockItemContainer.mapToItem(
-                    dockItemContainer.layoutController, mouse.x, mouse.y)
-                const position = dockItemContainer.verticalPanelMode ? point.y : point.x
-                dockItemContainer.layoutController.pointerPrimaryAxis = position
-                dockItemContainer.layoutController.lastPointerPrimaryAxis = position
+                dockItemContainer.updateWavePointer(mouse.x, mouse.y)
             }
         }
 

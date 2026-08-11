@@ -45,14 +45,14 @@ ColumnLayout {
 
         Controls.Button {
             HoverHandler { cursorShape: Qt.PointingHandCursor }
-            text: i18n("Validate")
+            text: i18n("Validate") // qmllint disable unqualified
             icon.name: "dialog-ok-apply-symbolic"
             onClicked: controller.validateJson()
         }
 
         Controls.Button {
             HoverHandler { cursorShape: Qt.PointingHandCursor }
-            text: i18n("Format")
+            text: i18n("Format") // qmllint disable unqualified
             icon.name: "format-indent-more-symbolic"
             onClicked: {
                 if (controller.validateJson()) {

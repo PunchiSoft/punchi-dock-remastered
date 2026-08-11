@@ -4,51 +4,68 @@
 
 #include "dropurlpolicy.h"
 
-#include <KDirWatch>
+#include <KCoreDirLister>
+#include <KFileItem>
 #include <KIO/CopyJob>
 #include <KIO/EmptyTrashJob>
 #include <KIO/OpenUrlJob>
 #include <KNotificationJobUiDelegate>
 
-#include <QDir>
-#include <QFileInfoList>
-#include <QStandardPaths>
+#include <QMetaObject>
 #include <QUrl>
 
 #include <algorithm>
 #include <limits>
+#include <utility>
 
 namespace
 {
-QString trashFilesPath()
+QUrl trashUrl()
 {
-    const QString dataHome = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
-    return QDir(dataHome).filePath(QStringLiteral("Trash/files"));
-}
-
-QString trashInfoPath()
-{
-    const QString dataHome = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
-    return QDir(dataHome).filePath(QStringLiteral("Trash/info"));
+    return QUrl(QStringLiteral("trash:/"));
 }
 }
 
 TrashIntegration::TrashIntegration(QObject *parent)
     : QObject(parent)
-    , m_watch(new KDirWatch(this))
+    , m_trashLister(new KCoreDirLister(this))
 {
-    watchPaths();
+    m_trashLister->setAutoErrorHandlingEnabled(false);
+    m_trashLister->setAutoUpdate(true);
 
-    connect(m_watch, &KDirWatch::dirty, this, [this](const QString &) {
-        refresh();
+    connect(m_trashLister, &KCoreDirLister::clear, this, [this]() {
+        m_pendingTrashItems.clear();
+        m_rebuildingTrashItems = true;
     });
-    connect(m_watch, &KDirWatch::created, this, [this](const QString &) {
-        watchPaths();
-        refresh();
+    connect(m_trashLister, &KCoreDirLister::itemsAdded, this,
+            [this](const QUrl &, const KFileItemList &items) {
+        QSet<QUrl> &listedItems = m_rebuildingTrashItems
+            ? m_pendingTrashItems : m_listedTrashItems;
+        for (const KFileItem &item : items) {
+            listedItems.insert(item.url());
+        }
+        if (!m_rebuildingTrashItems) {
+            setHasItems(!m_listedTrashItems.isEmpty());
+        }
     });
-    connect(m_watch, &KDirWatch::deleted, this, [this](const QString &) {
-        watchPaths();
-        refresh();
+    connect(m_trashLister, &KCoreDirLister::itemsDeleted, this,
+            [this](const KFileItemList &items) {
+        QSet<QUrl> &listedItems = m_rebuildingTrashItems
+            ? m_pendingTrashItems : m_listedTrashItems;
+        for (const KFileItem &item : items) {
+            listedItems.remove(item.url());
+        }
+        if (!m_rebuildingTrashItems) {
+            setHasItems(!m_listedTrashItems.isEmpty());
+        }
+    });
+    connect(m_trashLister, &KCoreDirLister::completed,
+            this, &TrashIntegration::finishTrashListing);
+    connect(m_trashLister, &KCoreDirLister::canceled,
+            this, &TrashIntegration::cancelTrashListing);
+    connect(m_trashLister, &KCoreDirLister::jobError, this,
+            [this](KIO::Job *) {
+        cancelTrashListing();
     });
 
     refresh();
@@ -98,14 +115,25 @@ QString TrashIntegration::errorMessage() const
 
 void TrashIntegration::refresh()
 {
-    const QDir dir(trashFilesPath());
-    const QFileInfoList entries = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::AllEntries | QDir::Hidden | QDir::System);
-    setHasItems(!entries.isEmpty());
+    if (!m_trashLister) {
+        return;
+    }
+
+    const QUrl url = trashUrl();
+    if (m_trashLister->url() != url) {
+        m_trashLister->openUrl(url);
+        return;
+    }
+    if (!m_trashLister->isFinished()) {
+        m_refreshPending = true;
+        return;
+    }
+    m_trashLister->updateDirectory(url);
 }
 
 void TrashIntegration::openTrash()
 {
-    auto *job = new KIO::OpenUrlJob(QUrl(QStringLiteral("trash:/")), QString(), this);
+    auto *job = new KIO::OpenUrlJob(trashUrl(), QString(), this);
     job->setUiDelegate(nullptr);
     connect(job, &KJob::result, this, [this, job]() {
         if (job->error()) {
@@ -257,15 +285,31 @@ void TrashIntegration::syncProgress(KJob *job)
     Q_EMIT progressChanged();
 }
 
-void TrashIntegration::watchPaths()
+void TrashIntegration::finishTrashListing()
 {
-    const QString filesPath = trashFilesPath();
-    const QString infoPath = trashInfoPath();
+    if (m_rebuildingTrashItems) {
+        m_listedTrashItems = std::move(m_pendingTrashItems);
+        m_pendingTrashItems.clear();
+        m_rebuildingTrashItems = false;
+    }
+    setHasItems(!m_listedTrashItems.isEmpty());
+    schedulePendingRefresh();
+}
 
-    if (!m_watch->contains(filesPath)) {
-        m_watch->addDir(filesPath, KDirWatch::WatchFiles);
+void TrashIntegration::cancelTrashListing()
+{
+    if (m_rebuildingTrashItems) {
+        m_pendingTrashItems.clear();
+        m_rebuildingTrashItems = false;
     }
-    if (!m_watch->contains(infoPath)) {
-        m_watch->addDir(infoPath, KDirWatch::WatchFiles);
+    schedulePendingRefresh();
+}
+
+void TrashIntegration::schedulePendingRefresh()
+{
+    if (!std::exchange(m_refreshPending, false)) {
+        return;
     }
+    QMetaObject::invokeMethod(this, &TrashIntegration::refresh,
+                              Qt::QueuedConnection);
 }

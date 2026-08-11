@@ -18,9 +18,8 @@ Item {
     readonly property color resolvedColor: demandsAttention
         ? Kirigami.Theme.negativeTextColor
         : (customColor.a > 0 ? customColor : Kirigami.Theme.highlightColor)
-    readonly property real stateOpacity: active || demandsAttention ? 1.0 : 0.5
     readonly property real resolvedOpacity: Math.max(0.0,
-        Math.min(1.0, indicatorOpacity)) * stateOpacity
+        Math.min(1.0, indicatorOpacity))
     readonly property real sizeHint: Math.max(2, thickness)
     readonly property real lineWidth: Math.max(0,
         Math.min(root.width - 12, Math.max(sizeHint * 2.5, 8 + Math.min(count, 3) * 5)))

@@ -1132,10 +1132,9 @@ PlasmoidItem {
             // qmllint disable unqualified
             implicitWidth: root.inPanel
                 ? dockGeometry.panelPreferredWidth
-                : dockLayout.implicitWidth + dockLayout.trailingOverflowExtent
-                    + dockGeometry.floatingExtraWidth
+                : dockLayout.implicitWidth + dockGeometry.floatingExtraWidth
             implicitHeight: root.inPanel ? dockGeometry.panelPreferredHeight : dockLayout.implicitHeight
-                + dockLayout.trailingOverflowExtent + dockGeometry.floatingExtraHeight
+                + dockGeometry.floatingExtraHeight
             width: root.inPanel ? parent.width : implicitWidth
             height: root.inPanel ? parent.height : implicitHeight
 
@@ -1145,8 +1144,27 @@ PlasmoidItem {
             onWidthChanged: dockGeometry.updateFloatingScreenEdge(dockWrapper)
             onHeightChanged: dockGeometry.updateFloatingScreenEdge(dockWrapper)
 
+            readonly property real dynamicTaskCapacityLength: {
+                if (!root.inPanel) {
+                    return -1
+                }
+
+                const isVertical = dockGeometry.verticalPanel
+                if (dockGeometry.panelFillLengthEnabled) {
+                    return isVertical ? height : width
+                }
+
+                // Fit-content geometry must not feed the dock's own assigned
+                // length back into its capacity. The available screen axis is
+                // independent from the preferred size produced by this dock.
+                const availableLength = isVertical
+                    ? Number(root.availableScreenRect.height || 0)
+                    : Number(root.availableScreenRect.width || 0)
+                return Number.isFinite(availableLength) && availableLength > 0
+                    ? availableLength : -1
+            }
             readonly property int dynamicTaskSlotCapacity: {
-                if (!dockGeometry.panelFillLengthEnabled) {
+                if (dynamicTaskCapacityLength < 0) {
                     return -1
                 }
 
@@ -1155,7 +1173,7 @@ PlasmoidItem {
                     ? (dockGeometry.dockBackgroundVerticalPadding * 2)
                     : (dockGeometry.dockBackgroundHorizontalPadding * 2)
                 const innerLength = Math.max(0,
-                    (isVertical ? height : width) - totalPadding)
+                    dynamicTaskCapacityLength - totalPadding)
                 const boundarySpacing = dockItemsController.dockItems.length > 0
                     && taskController.totalDynamicGroups > 0
                     ? dockGeometry.dockSpacing
@@ -1276,25 +1294,23 @@ PlasmoidItem {
                 rows: dockGeometry.verticalPanel ? -1 : 1
                 rowSpacing: dockGeometry.dockSpacing
                 columnSpacing: dockGeometry.dockSpacing
-                // The layout is part of fullRepresentation and resolves its
-                // trailing sibling through the owning representation.
-                // qmllint disable unqualified
-                readonly property real trailingOverflowExtent: overflowLayoutAnchor.visible
-                    ? dockGeometry.dockSpacing + (dockGeometry.verticalPanel ? overflowLayoutAnchor.height : overflowLayoutAnchor.width)
-                    : 0
-                // qmllint enable unqualified
                 x: {
                     if (!root.inPanel) {
-                        return Math.round((parent.width - width - trailingOverflowExtent) / 2)
+                        return Math.round((parent.width - width) / 2)
                     }
                     if (dockGeometry.verticalPanel) {
+                        // Plasma already recenters the containment while an
+                        // adaptive panel moves between floating and attached.
+                        // Preserve a centered overflow when Wave needs more
+                        // width than the lateral panel can allocate.
                         return Math.round((parent.width - width) / 2)
                     }
                     if (dockGeometry.configuredPanelAlignmentMode === "center") {
-                        return Math.round((parent.width - width - trailingOverflowExtent) / 2)
+                        return Math.round((parent.width - width) / 2)
                     }
                     if (dockGeometry.configuredPanelAlignmentMode === "end") {
-                        return parent.width - width - trailingOverflowExtent - dockGeometry.dockBackgroundHorizontalPadding
+                        return parent.width - width
+                            - dockGeometry.dockBackgroundHorizontalPadding
                     }
                     return dockGeometry.dockBackgroundHorizontalPadding
                 }
@@ -1309,7 +1325,8 @@ PlasmoidItem {
                         return Math.round((parent.height - height) / 2)
                     }
                     if (dockGeometry.configuredPanelAlignmentMode === "end") {
-                        return parent.height - height - dockGeometry.dockBackgroundVerticalPadding
+                        return parent.height - height
+                            - dockGeometry.dockBackgroundVerticalPadding
                     }
                     return dockGeometry.dockBackgroundVerticalPadding
                 }
@@ -1318,6 +1335,8 @@ PlasmoidItem {
                 property real mouseOffset: 0.0
                 property real pointerPrimaryAxis: -1
                 property real lastPointerPrimaryAxis: -1
+                readonly property bool wavePointerInsideLayout:
+                    dockWaveHover.hovered
 
                 // State used for smooth transitions when entering or leaving the dock.
                 property int lastHoveredIndex: -1
@@ -1325,6 +1344,38 @@ PlasmoidItem {
                 property real hoverZoomProgress: hoveredIndex >= 0 ? 1.0 : 0.0
                 property bool mediaMorphActive: false
                 property bool launcherDropTransitionActive: false
+
+                HoverHandler {
+                    id: dockWaveHover
+                    // qmllint disable unqualified
+                    enabled:
+                        dockConfig.dockHoverAnimation === "wave"
+                    // qmllint enable unqualified
+                    readonly property point trackedPosition: point.position
+
+                    function updateWavePointer() {
+                        if (!hovered) {
+                            return
+                        }
+                        const position = dockLayout.flow === GridLayout.TopToBottom
+                            ? trackedPosition.y : trackedPosition.x
+                        if (!Number.isFinite(position)) {
+                            return
+                        }
+                        dockLayout.pointerPrimaryAxis = position
+                        dockLayout.lastPointerPrimaryAxis = position
+                    }
+
+                    onTrackedPositionChanged: updateWavePointer()
+                    onHoveredChanged: {
+                        if (hovered) {
+                            updateWavePointer()
+                            return
+                        }
+                        dockLayout.hoveredIndex = -1
+                        dockLayout.mouseOffset = 0.0
+                    }
+                }
 
                 function beginMediaMorph(transitionDuration) {
                     mediaMorphActive = true
@@ -1403,13 +1454,11 @@ PlasmoidItem {
                                 ? 3 : modelData.mediaAutoCollapseDelaySeconds)
                             : 3
                         dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
-                        // qmllint enable unqualified
                         mediaMotionEnabled: dockConfig.menuAnimationStyle !== "none"
-                            && String(Plasmoid.configuration.hoverAnimation || "axisZoom") !== "none"
+                            && dockConfig.dockHoverAnimation !== "none"
                         hoverScaleSetting: dockConfig.panelHoverScale
-                        hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "axisZoom"
+                        hoverAnimationMode: dockConfig.dockHoverAnimation
                         clickEffect: dockConfig.dockClickEffect
-                        // qmllint disable unqualified
                         windowMinimizeEffect: dockConfig.dockWindowMinimizeEffect
                         taskMinimizedCount: taskState.minimizedCount
                         minimizeReactionRevision: dockItemsController.minimizeReactionRevision
@@ -1617,7 +1666,9 @@ PlasmoidItem {
                         panelLocation: dockGeometry.effectivePanelLocation
                         iconSize: dockGeometry.effectiveIconSize
                         hoverScaleSetting: dockConfig.panelHoverScale
-                        hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "axisZoom"
+                        // qmllint disable unqualified
+                        hoverAnimationMode: dockConfig.dockHoverAnimation
+                        // qmllint enable unqualified
                         dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                         clickEffect: dockConfig.dockClickEffect
                         // qmllint disable unqualified
@@ -1632,6 +1683,7 @@ PlasmoidItem {
                         // qmllint enable unqualified
                         // qmllint disable unqualified
                         positionTransitionEnabled: dockItemsController.itemTransitionActive
+                        taskPopupTracksVisualArea: true
                         animateEntry: {
                             const appIds = modelData.appIds instanceof Array
                                 ? modelData.appIds
@@ -1753,43 +1805,26 @@ PlasmoidItem {
                     }
                 }
 
-            }
-
-            // The overflow anchor belongs to fullRepresentation and
-            // intentionally references its owning PlasmoidItem and dock row.
-            // qmllint disable unqualified
-            Item {
-                id: overflowLayoutAnchor
-                visible: root.overflowTaskRows.length > 0
-                width: taskOverflowDockItem.implicitWidth
-                height: taskOverflowDockItem.implicitHeight
-                x: dockGeometry.verticalPanel
-                    ? Math.round((parent.width - width) / 2)
-                    : (dockGeometry.panelFillLengthEnabled
-                        ? parent.width - dockGeometry.dockBackgroundHorizontalPadding - width
-                        : dockLayout.x + dockLayout.width + dockGeometry.dockSpacing)
-                y: dockGeometry.verticalPanel
-                    ? (dockGeometry.panelFillLengthEnabled
-                        ? parent.height - dockGeometry.dockBackgroundVerticalPadding - height
-                        : dockLayout.y + dockLayout.height + dockGeometry.dockSpacing)
-                    : dockLayout.y
-
-                // DockItem coordinates its wave hover state through its parent.
-                property alias hoveredIndex: dockLayout.hoveredIndex
-                property alias mouseOffset: dockLayout.mouseOffset
-
+                // Overflow is a synthetic terminal entry. It participates in
+                // the same layout as regular dock items but never enters the
+                // persistent or reorderable dock-items model.
+                // qmllint disable unqualified
                 DockItem {
                     id: taskOverflowDockItem
+                    visible: root.overflowTaskRows.length > 0
                     layoutController: dockLayout
-                    width: implicitWidth
-                    height: implicitHeight
-                    itemIndex: dockItemsController.dockItems.length + root.visibleTaskRows.length
+                    Layout.preferredWidth: root.inPanel
+                        ? dockGeometry.panelItemWidth : implicitWidth
+                    Layout.preferredHeight: root.inPanel
+                        ? dockGeometry.panelItemHeight : implicitHeight
+                    itemIndex: dockItemsController.dockItems.length
+                        + root.visibleTaskRows.length
                     hoveredIndex: dockLayout.hoveredIndex
                     inPanel: root.inPanel
                     panelLocation: dockGeometry.effectivePanelLocation
                     iconSize: dockGeometry.effectiveIconSize
                     hoverScaleSetting: dockConfig.panelHoverScale
-                    hoverAnimationMode: Plasmoid.configuration.hoverAnimation || "axisZoom"
+                    hoverAnimationMode: dockConfig.dockHoverAnimation
                     dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                     clickEffect: dockConfig.dockClickEffect
                     windowMinimizeEffect: dockConfig.dockWindowMinimizeEffect
@@ -1801,15 +1836,13 @@ PlasmoidItem {
                     minimizeReactionRevision: dockItemsController.minimizeReactionRevision
                     minimizeReactionTargetIndex: dockItemsController.minimizeReactionTargetIndex
                     showItemHoverBackground: dockConfig.dockShowItemHoverBackground
-                    iconReflectionEnabled: dockConfig.dockIconReflectionsEnabled
-                    iconReflectionOpacity: dockConfig.dockIconReflectionOpacity
-                    iconReflectionAvailableExtent: dockGeometry.panelReflectionAvailableExtent
+                    iconReflectionEnabled: false
                     positionTransitionEnabled: dockItemsController.itemTransitionActive
                     hoverZoomProgress: dockLayout.hoverZoomProgress
                     lastHoveredIndex: dockLayout.lastHoveredIndex
                     lastMouseOffset: dockLayout.lastMouseOffset
                     itemType: "overflow"
-                    iconName: "view-more-symbolic"
+                    iconName: "view-grid"
                     itemName: i18np("%1 more window group", "%1 more window groups",
                         root.overflowTaskRows.length)
                     taskIndicatorCount: root.overflowTaskRows.length
@@ -1834,8 +1867,9 @@ PlasmoidItem {
                             urls, insertionIndex)
                     }
                 }
+                // qmllint enable unqualified
+
             }
-            // qmllint enable unqualified
         }
 
         GuardedPopupDialog {
@@ -2169,6 +2203,25 @@ PlasmoidItem {
             backgroundHints: PlasmaCore.Dialog.NoBackground
 
             // qmllint disable unqualified
+            function compactDynamicHorizontalAnchorEnabled() {
+                return root.inPanel
+                    && dockGeometry.horizontalPanel
+                    && !dockGeometry.panelFillLengthEnabled
+                    && popupCoordinator.taskPopupVisualParent
+                    && popupCoordinator.taskPopupVisualParent.taskPopupTracksVisualArea
+            }
+
+            function applyCompactDynamicHorizontalAnchor() {
+                if (!compactDynamicHorizontalAnchorEnabled()) {
+                    return
+                }
+                const targetX = popupCoordinator.taskPopupHorizontalX(
+                    width, root.availableScreenRect)
+                if (Number.isFinite(targetX)) {
+                    x = targetX
+                }
+            }
+
             function finishPreparedOpen(requestSerial, remainingAttempts) {
                 if (requestSerial !== openRequestSerial || !preparingToShow) {
                     return
@@ -2191,6 +2244,7 @@ PlasmoidItem {
                     return
                 }
                 visible = true
+                applyCompactDynamicHorizontalAnchor()
                 preparingToShow = false
             }
 
@@ -2319,17 +2373,10 @@ PlasmoidItem {
             }
         }
 
-        PlasmaCore.AppletPopup {
+        GuardedPopupDialog {
             id: taskOverflowDialog
-            popupDirection: popupCoordinator.popupDirection
-            margin: dockGeometry.popupMargin
-            floating: !root.inPanel
-            removeBorderStrategy: root.inPanel
-                ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
-                : PlasmaCore.AppletPopup.AtScreenEdges
-            visible: false
+            location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: true
-            backgroundHints: PlasmaCore.AppletPopup.StandardBackground
 
             mainItem: PopupAnimatedContent {
                 popupVisible: taskOverflowDialog.visible
@@ -2340,20 +2387,49 @@ PlasmoidItem {
                 popupDirection: popupCoordinator.popupDirection
                 // qmllint enable unqualified
 
-                TaskOverflowPopup {
-                    entries: root.overflowTaskRows
-                    maxVisibleRows: dockConfig.maxPopupRows
-                    textShadowsEnabled: dockConfig.windowPreviewTextShadowsEnabled
+                ContextSurfaceStack {
+                    showMedia: false
+                    maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
+                    drawContentBackground: true
+                    backgroundImagePath: "widgets/background"
+                    backgroundOpacity:
+                        root.configuredPunchiMenuNormalBackgroundOpacity
+                    contentFramePaddingPercent: 2
+                    minimumSurfaceWidth: Kirigami.Units.smallSpacing
+                    minimumSurfaceHeight: Kirigami.Units.smallSpacing
 
-                    onEntryActivated: function(entry) {
-                        taskOverflowDialog.visible = false
-                        if (entry.count > 1) {
-                            popupCoordinator.openTaskWindowsPopup(entry.name, entry.rows, taskOverflowDockItem)
-                        } else if (entry.firstRow >= 0) {
-                            taskController.activateTaskRow(entry.firstRow)
+                    TaskOverflowPopup {
+                        id: taskOverflowPopupContent
+                        entries: root.overflowTaskRows
+                        taskControllerRef: taskController
+                        maxVisibleRows: dockConfig.maxPopupRows
+                        textShadowsEnabled:
+                            dockConfig.windowPreviewTextShadowsEnabled
+
+                        onEntryActivated: function(entry) {
+                            taskOverflowDialog.closeSafely()
+                            if (entry.count > 1) {
+                                popupCoordinator.openTaskWindowsPopup(entry.name,
+                                    entry.rows, taskOverflowDockItem)
+                            } else if (entry.firstRow >= 0) {
+                                taskOverflowPopupContent.taskControllerRef
+                                    .activateTaskRow(entry.firstRow)
+                            }
                         }
+                        onMinimizeWindowRequested: function(taskRow) {
+                            taskOverflowPopupContent.taskControllerRef
+                                .minimizeTaskRow(taskRow)
+                        }
+                        onMaximizeWindowRequested: function(taskRow) {
+                            taskOverflowPopupContent.taskControllerRef
+                                .toggleMaximizedTaskRow(taskRow)
+                        }
+                        onCloseWindowRequested: function(taskRow) {
+                            taskOverflowPopupContent.taskControllerRef
+                                .closeTaskRow(taskRow)
+                        }
+                        onCloseRequested: taskOverflowDialog.closeSafely()
                     }
-                    onCloseRequested: taskOverflowDialog.visible = false
                 }
             }
         }

@@ -20,10 +20,10 @@ Controls.ItemDelegate {
     property int previewRadius: 4
     property int outerPadding: 2
     readonly property int taskRow: Number(windowData.row)
-    readonly property string primaryText: windowData.title || windowData.name || i18n("Window")
+    readonly property string primaryText: windowData.title || windowData.name || i18n("Window") // qmllint disable unqualified
     readonly property string secondaryText: windowData.active
-        ? i18n("Active window")
-        : (windowData.subtitle || windowData.name || i18n("Window preview"))
+        ? i18n("Active window") // qmllint disable unqualified
+        : (windowData.subtitle || windowData.name || i18n("Window preview")) // qmllint disable unqualified
     readonly property string windowUuid: String(windowData.windowUuid || "")
     readonly property var winId: windowData.winId !== undefined && windowData.winId !== null
         ? windowData.winId
@@ -63,7 +63,7 @@ Controls.ItemDelegate {
     padding: 0
     highlighted: !!windowData.active
     Accessible.name: primaryText
-    Accessible.description: windowData.active ? i18n("Active window") : i18n("Activate window")
+    Accessible.description: windowData.active ? i18n("Active window") : i18n("Activate window") // qmllint disable unqualified
 
     signal activateRequested(int taskRow)
     signal presentWindowRequested(int taskRow)
@@ -182,7 +182,7 @@ Controls.ItemDelegate {
                         Layout.preferredWidth: 28
                         Layout.preferredHeight: 28
                         visualRadius: root.actionButtonRadius
-                        text: i18n("Bring window to front")
+                        text: i18n("Bring window to front") // qmllint disable unqualified
                         icon.name: "go-up"
                         icon.width: 16
                         icon.height: 16
@@ -196,8 +196,8 @@ Controls.ItemDelegate {
                         Layout.preferredHeight: 28
                         visualRadius: root.actionButtonRadius
                         text: root.minimized
-                            ? i18n("Restore from minimized state")
-                            : i18n("Minimize window")
+                            ? i18n("Restore from minimized state") // qmllint disable unqualified
+                            : i18n("Minimize window") // qmllint disable unqualified
                         icon.name: root.minimized ? "view-restore" : "go-down"
                         icon.width: 16
                         icon.height: 16
@@ -211,8 +211,8 @@ Controls.ItemDelegate {
                         Layout.preferredHeight: 28
                         visualRadius: root.actionButtonRadius
                         text: root.maximized
-                            ? i18n("Restore window size")
-                            : i18n("Maximize window")
+                            ? i18n("Restore window size") // qmllint disable unqualified
+                            : i18n("Maximize window") // qmllint disable unqualified
                         icon.name: root.maximized ? "view-restore" : "view-fullscreen"
                         icon.width: 16
                         icon.height: 16
@@ -226,7 +226,7 @@ Controls.ItemDelegate {
                         Layout.preferredHeight: 28
                         visualRadius: root.actionButtonRadius
                         destructive: true
-                        text: i18n("Close window")
+                        text: i18n("Close window") // qmllint disable unqualified
                         icon.name: "window-close"
                         icon.width: 16
                         icon.height: 16

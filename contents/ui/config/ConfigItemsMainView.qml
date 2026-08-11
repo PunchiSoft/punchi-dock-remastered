@@ -53,7 +53,7 @@ ColumnLayout {
 
                 Controls.Label {
                     Layout.fillWidth: true
-                    text: i18n("Items to add")
+                    text: i18n("Items to add") // qmllint disable unqualified
                     opacity: 0.88
                     horizontalAlignment: Text.AlignHCenter
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize
@@ -80,7 +80,7 @@ ColumnLayout {
 
                 Controls.Label {
                     Layout.fillWidth: true
-                    text: i18n("Items in Dock")
+                    text: i18n("Items in Dock") // qmllint disable unqualified
                     opacity: 0.88
                     horizontalAlignment: Text.AlignHCenter
                     font.pointSize: Kirigami.Theme.defaultFont.pointSize

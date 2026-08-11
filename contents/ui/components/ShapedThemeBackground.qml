@@ -6,6 +6,12 @@ Item {
 
     property var theme: ({})
 
+    // Resolve the shadow, fill, and border through one shared multisampled
+    // surface so every shaped-theme edge receives the same antialiasing pass.
+    layer.enabled: visible
+    layer.samples: 8
+    layer.smooth: true
+
     readonly property var surface: theme.surface || ({})
     readonly property var gradientData: surface.gradient || ({})
     readonly property var gradientStops: gradientData.stops || []

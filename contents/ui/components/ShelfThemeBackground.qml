@@ -6,6 +6,12 @@ Item {
 
     property var theme: ({})
 
+    // Resolve every 2.5D plane, bevel, rim, and shadow through one shared
+    // multisampled surface so diagonal joins use a consistent edge profile.
+    layer.enabled: visible
+    layer.samples: 8
+    layer.smooth: true
+
     readonly property var surface: theme.surface || ({})
     readonly property var surfaceGradient: surface.gradient || ({})
     readonly property var surfaceGradientStops: surfaceGradient.stops || []
@@ -332,7 +338,6 @@ Item {
         radius: Math.min(height / 2, root.rimGlowSize)
         color: "transparent"
         opacity: root.rimOpacity
-        antialiasing: true
 
         gradient: Gradient {
             orientation: Gradient.Vertical
@@ -374,7 +379,6 @@ Item {
         radius: height / 2
         color: root.rimData.color || "transparent"
         opacity: root.rimOpacity
-        antialiasing: true
     }
 
     Rectangle {

@@ -19,7 +19,7 @@ ColumnLayout {
         Layout.fillWidth: true
         type: Kirigami.MessageType.Information
         visible: true
-        text: i18n("Separators help group items on your dock. Shape, size, and glow adapt automatically to your Plasma theme.")
+        text: i18n("Separators help group items on your dock. Shape, size, and glow adapt automatically to your Plasma theme.") // qmllint disable unqualified
     }
 
     // qmllint disable unqualified

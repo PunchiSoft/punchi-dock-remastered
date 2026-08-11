@@ -250,6 +250,41 @@ Item {
         return visualParent || dockFallbackAnchor
     }
 
+    function taskPopupAnchor(visualParent) {
+        if (visualParent && visualParent.taskPopupAnchorItem) {
+            return visualParent.taskPopupAnchorItem
+        }
+        return popupAnchor(visualParent)
+    }
+
+    function taskPopupHorizontalX(popupWidth, availableGeometry) {
+        const anchor = taskPopupAnchor(root.taskPopupVisualParent)
+        const width = Number(popupWidth)
+        const bounds = availableGeometry || Qt.rect(0, 0, 0, 0)
+        const boundsX = Number(bounds.x)
+        const boundsWidth = Number(bounds.width)
+        if (!anchor || typeof anchor.mapToGlobal !== "function"
+                || !Number.isFinite(width) || width <= 0
+                || !Number.isFinite(boundsX)
+                || !Number.isFinite(boundsWidth) || boundsWidth <= 0) {
+            return Number.NaN
+        }
+
+        try {
+            const anchorWidth = Math.max(0, Number(anchor.width || 0))
+            const anchorHeight = Math.max(0, Number(anchor.height || 0))
+            const center = anchor.mapToGlobal(Qt.point(
+                anchorWidth / 2, anchorHeight / 2))
+            const desiredX = Math.round(Number(center.x) - (width / 2))
+            const maximumX = Math.max(boundsX,
+                boundsX + boundsWidth - width)
+            return Math.round(Math.max(boundsX,
+                Math.min(maximumX, desiredX)))
+        } catch (error) {
+            return Number.NaN
+        }
+    }
+
     function popupDirectionForAnchor(anchor) {
         if (inPanel || !anchor) {
             return panelPopupDirection
@@ -493,7 +528,8 @@ Item {
             }),
             "windows": popupWindows
         }
-        taskWindowsDialogRef.visualParent = preparePopupAnchor(visualParent)
+        taskWindowsDialogRef.visualParent = preparePopupAnchor(
+            taskPopupAnchor(visualParent))
         taskPopupVisualParent = visualParent
         pendingTaskPopupRequestValid = false
         showTaskWindowsDialog()
@@ -542,7 +578,7 @@ Item {
         }
         closeAllPopups(taskOverflowDialogRef)
         taskOverflowDialogRef.visualParent = preparePopupAnchor(visualParent)
-        taskOverflowDialogRef.visible = true
+        root.showPopupDialog(taskOverflowDialogRef)
     }
 
     function scheduleTaskWindowsPopup(appName, rows, visualParent, keyboardInvoked, previewFallback) {
@@ -581,7 +617,8 @@ Item {
         taskPopupCloseTimer.stop()
         if (pendingTaskPopupRows.length > 0 && taskPopupVisualParent) {
             if (taskWindowsDialogRef && taskWindowsDialogRef.visible
-                    && taskWindowsDialogRef.visualParent !== popupAnchor(taskPopupVisualParent)) {
+                    && taskWindowsDialogRef.visualParent
+                        !== taskPopupAnchor(taskPopupVisualParent)) {
                 openTaskWindowsPopup(pendingTaskPopupAppName, pendingTaskPopupRows,
                     taskPopupVisualParent, pendingTaskPopupKeyboardInvoked,
                     pendingTaskPopupPreviewFallback)

@@ -328,7 +328,7 @@ def main() -> int:
 
     task_dialog_match = re.search(
         r"PlasmaCore\.Dialog\s*\{\s*id:\s*taskWindowsDialog\b"
-        r"(?P<body>.*?)\n\s*PlasmaCore\.AppletPopup\s*\{\s*"
+        r"(?P<body>.*?)\n\s*GuardedPopupDialog\s*\{\s*"
         r"id:\s*taskOverflowDialog\b",
         main_qml,
         re.DOTALL,
@@ -383,6 +383,41 @@ def main() -> int:
          "Embedded actions must reserve compact media and frame height"),
         ("|| taskWindowsDialog.preparingToShow",
          "Preview content must be measurable before the window is visible"),
+    ):
+        require(task_dialog, fragment, message)
+
+    require(
+        main_qml,
+        "taskPopupTracksVisualArea: true",
+        "Dynamic task previews must follow the transformed icon geometry",
+    )
+    for fragment, message in (
+        ("function taskPopupAnchor(visualParent)",
+         "PopupCoordinator must resolve a dedicated visual task anchor"),
+        ("visualParent.taskPopupAnchorItem",
+         "The visual task anchor must remain optional"),
+        ("taskPopupAnchor(visualParent)",
+         "Task popup opening must use the resolved visual anchor"),
+        ("function taskPopupHorizontalX(popupWidth, availableGeometry)",
+         "Compact dynamic previews must expose a one-shot horizontal position"),
+        ("anchor.mapToGlobal(Qt.point(",
+         "The compact correction must use the dynamic icon's global center"),
+    ):
+        require(popup_coordinator, fragment, message)
+
+    for fragment, message in (
+        ("function compactDynamicHorizontalAnchorEnabled()",
+         "The task dialog must classify compact dynamic anchoring explicitly"),
+        ("&& dockGeometry.horizontalPanel",
+         "The one-shot correction must remain horizontal-only"),
+        ("&& !dockGeometry.panelFillLengthEnabled",
+         "Fill-length panels must preserve Plasma's native positioning"),
+        ("popupCoordinator.taskPopupVisualParent.taskPopupTracksVisualArea",
+         "Only dynamic task owners may request the compact correction"),
+        ("function applyCompactDynamicHorizontalAnchor()",
+         "The task dialog must apply the correction once while opening"),
+        ("visible = true\n                applyCompactDynamicHorizontalAnchor()",
+         "The corrected X must be applied after Plasma's native placement and before the first frame"),
     ):
         require(task_dialog, fragment, message)
 

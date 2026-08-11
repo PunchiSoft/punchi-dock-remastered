@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.extras as PlasmaExtras
 import org.kde.kirigami as Kirigami
+import "punchimenu" as PunchiMenuComponents
 
 Item {
     id: folderRoot
@@ -115,7 +116,7 @@ Item {
             visible: folderRoot.showHeaderLabel
             Layout.fillWidth: true
             PlasmaExtras.ShadowedLabel {
-                text: folderRoot.folderItem.name || i18n("Folder")
+                text: folderRoot.folderItem.name || i18n("Folder") // qmllint disable unqualified
                 color: Kirigami.Theme.textColor
                 renderShadow: folderRoot.textShadowsEnabled
                 font.family: Kirigami.Theme.defaultFont.family
@@ -135,7 +136,7 @@ Item {
                     anchors.fill: parent; hoverEnabled: true
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
-                    Accessible.name: i18n("Close")
+                    Accessible.name: i18n("Close") // qmllint disable unqualified
                     onClicked: folderRoot.closeRequested()
                     Keys.onReturnPressed: folderRoot.closeRequested()
                     Keys.onSpacePressed: folderRoot.closeRequested()
@@ -168,15 +169,14 @@ Item {
                 width: gridView.cellWidth
                 height: gridView.cellHeight
 
-                // Interactive background.
-                Rectangle {
+                // Shared launcher highlight used across Punchi Dock.
+                PunchiMenuComponents.PunchiMenuItemHighlight {
                     anchors.fill: parent
-                    anchors.margins: 2
-                    radius: 8
-                    color: itemMouse.containsMouse || itemMouse.activeFocus ? Kirigami.Theme.highlightColor : "transparent"
-                    opacity: itemMouse.containsMouse || itemMouse.activeFocus ? 0.2 : 1
-                    border.width: itemMouse.activeFocus ? 1 : 0
-                    border.color: Kirigami.Theme.highlightColor
+                    anchors.margins: Kirigami.Units.smallSpacing
+                    hovered: itemMouse.containsMouse
+                    focused: itemMouse.activeFocus
+                    pressed: itemMouse.pressed
+                    motionEnabled: Kirigami.Units.longDuration > 0
                 }
 
                 // List and detail modes place the icon before the label.
@@ -252,7 +252,8 @@ Item {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
-                    Accessible.name: modelData.name || i18n("Application")
+                    Accessible.name: modelData.name
+                        || i18n("Application") // qmllint disable unqualified
                     // The delegate model and owning popup are provided by the
                     // GridView context and resolve correctly at runtime.
                     // qmllint disable unqualified

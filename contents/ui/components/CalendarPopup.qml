@@ -231,7 +231,7 @@ Item {
                         anchors.fill: parent; hoverEnabled: true
                         activeFocusOnTab: true
                         Accessible.role: Accessible.Button
-                        Accessible.name: i18n("Previous month")
+                        Accessible.name: i18n("Previous month") // qmllint disable unqualified
                         onClicked: prevMonth()
                         Keys.onReturnPressed: prevMonth()
                         Keys.onSpacePressed: prevMonth()
@@ -258,7 +258,7 @@ Item {
                         anchors.fill: parent; hoverEnabled: true
                         activeFocusOnTab: true
                         Accessible.role: Accessible.Button
-                        Accessible.name: i18n("Go to today")
+                        Accessible.name: i18n("Go to today") // qmllint disable unqualified
                         onClicked: goToToday()
                         Keys.onReturnPressed: goToToday()
                         Keys.onSpacePressed: goToToday()
@@ -285,7 +285,7 @@ Item {
                         anchors.fill: parent; hoverEnabled: true
                         activeFocusOnTab: true
                         Accessible.role: Accessible.Button
-                        Accessible.name: i18n("Next month")
+                        Accessible.name: i18n("Next month") // qmllint disable unqualified
                         onClicked: nextMonth()
                         Keys.onReturnPressed: nextMonth()
                         Keys.onSpacePressed: nextMonth()
@@ -322,7 +322,7 @@ Item {
                         anchors.fill: parent; hoverEnabled: true
                         activeFocusOnTab: true
                         Accessible.role: Accessible.Button
-                        Accessible.name: i18n("Close")
+                        Accessible.name: i18n("Close") // qmllint disable unqualified
                         onClicked: calendarRoot.closeRequested()
                         Keys.onReturnPressed: calendarRoot.closeRequested()
                         Keys.onSpacePressed: calendarRoot.closeRequested()
@@ -355,7 +355,7 @@ Item {
 
                 PlasmaComponents.Label {
                     anchors.centerIn: parent
-                    text: i18nc("@title:column calendar week number", "#")
+                    text: i18nc("@title:column calendar week number", "#") // qmllint disable unqualified
                     font.family: Kirigami.Theme.smallFont.family
                     font.pixelSize: Math.max(9, Math.round(11 * calendarRoot.effectivePopupScale))
                     font.weight: Font.Bold

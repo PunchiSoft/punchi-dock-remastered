@@ -94,7 +94,7 @@ Controls.Frame {
 
             Controls.Button {
                 HoverHandler { cursorShape: Qt.PointingHandCursor }
-                text: i18n("Configure")
+                text: i18n("Configure") // qmllint disable unqualified
                 icon.name: "configure-symbolic"
                 display: Controls.AbstractButton.TextBesideIcon
                 enabled: controller.canConfigureSelectedItem()

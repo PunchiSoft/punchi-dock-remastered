@@ -15,6 +15,15 @@ def main() -> int:
     rounded_image = (
         PROJECT_ROOT / "contents/ui/components/RoundedImage.qml"
     ).read_text()
+    shaped_theme = (
+        PROJECT_ROOT / "contents/ui/components/ShapedThemeBackground.qml"
+    ).read_text()
+    flat_theme = (
+        PROJECT_ROOT / "contents/ui/components/FlatThemeBackground.qml"
+    ).read_text()
+    shelf_theme = (
+        PROJECT_ROOT / "contents/ui/components/ShelfThemeBackground.qml"
+    ).read_text()
     replacement_card = (
         PROJECT_ROOT / "contents/ui/components/MprisReplacementCard.qml"
     ).read_text()
@@ -38,6 +47,40 @@ def main() -> int:
         ("antialiasing: true", "The software mask edge must be antialiased"),
     ):
         require(rounded_image, fragment, message)
+
+    for fragment, message in (
+        ("layer.enabled: visible",
+         "Shaped JSON themes must allocate their render layer only while visible"),
+        ("layer.samples: 8",
+         "Shaped JSON themes must use bounded multisample antialiasing"),
+        ("layer.smooth: true",
+         "Shaped JSON themes must retain smooth layer sampling"),
+    ):
+        require(shaped_theme, fragment, message)
+    if shaped_theme.count("layer.enabled: false") != 2:
+        raise AssertionError(
+            "Shaped JSON theme child shapes must not create nested layers"
+        )
+
+    for name, source in (("Flat", flat_theme), ("Shelf", shelf_theme)):
+        for fragment, purpose in (
+            ("layer.enabled: visible", "allocate only while visible"),
+            ("layer.samples: 8", "use bounded multisample antialiasing"),
+            ("layer.smooth: true", "retain smooth layer sampling"),
+        ):
+            require(
+                source,
+                fragment,
+                f"{name} JSON themes must {purpose}",
+            )
+        if "antialiasing: true" in source:
+            raise AssertionError(
+                f"{name} JSON themes must not mix local geometry AA with MSAA"
+            )
+    if shelf_theme.count("layer.enabled: false") != 6:
+        raise AssertionError(
+            "Shelf JSON theme child shapes must not create nested layers"
+        )
 
     for fragment, message in (
         ("RoundedImage {", "fullCard must consume the rounded image primitive"),
@@ -79,7 +122,7 @@ def main() -> int:
     ):
         require(native_build, fragment, message)
 
-    print("Rounded image shader contracts are consistent")
+    print("Rendering antialiasing contracts are consistent")
     return 0
 
 

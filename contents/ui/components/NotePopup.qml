@@ -82,7 +82,7 @@ Item {
             editor.cursorPosition = cursorPosition
         }
 
-        transientStatus = i18n("Copied")
+        transientStatus = i18n("Copied") // qmllint disable unqualified
         maximumLengthWarning = false
         statusResetTimer.restart()
     }
@@ -97,7 +97,7 @@ Item {
         editor.text = editor.text.slice(0, effectiveMaximumLength)
         editor.cursorPosition = Math.min(previousCursor, editor.text.length)
         enforcingLength = false
-        transientStatus = i18n("Maximum length reached")
+        transientStatus = i18n("Maximum length reached") // qmllint disable unqualified
         maximumLengthWarning = true
         statusResetTimer.restart()
     }
@@ -131,7 +131,7 @@ Item {
             }
 
             PlasmaExtras.ShadowedLabel {
-                text: noteRoot.noteItem && noteRoot.noteItem.name ? noteRoot.noteItem.name : i18n("Note")
+                text: noteRoot.noteItem && noteRoot.noteItem.name ? noteRoot.noteItem.name : i18n("Note") // qmllint disable unqualified
                 renderShadow: noteRoot.textShadowsEnabled
                 font.family: Kirigami.Theme.defaultFont.family
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize
@@ -173,7 +173,7 @@ Item {
                 Layout.preferredHeight: 28
                 padding: 2
                 focusPolicy: Qt.StrongFocus
-                Accessible.name: i18n("Clear")
+                Accessible.name: i18n("Clear") // qmllint disable unqualified
                 Controls.ToolTip.visible: hovered || activeFocus
                 Controls.ToolTip.text: Accessible.name
                 Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
@@ -192,7 +192,7 @@ Item {
                 onClicked: {
                     editor.text = ""
                     noteRoot.initialText = editor.text
-                    noteRoot.transientStatus = i18n("Cleared")
+                    noteRoot.transientStatus = i18n("Cleared") // qmllint disable unqualified
                     noteRoot.maximumLengthWarning = false
                     statusResetTimer.restart()
                     noteRoot.clearRequested("", noteRoot.activeWidth, noteRoot.activeHeight)
@@ -206,7 +206,7 @@ Item {
                 padding: 2
                 focusPolicy: Qt.StrongFocus
                 enabled: editor.text.length > 0
-                Accessible.name: i18n("Copy note")
+                Accessible.name: i18n("Copy note") // qmllint disable unqualified
                 Controls.ToolTip.visible: hovered || activeFocus
                 Controls.ToolTip.text: Accessible.name
                 Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
@@ -231,7 +231,7 @@ Item {
                 Layout.preferredHeight: 28
                 padding: 2
                 focusPolicy: Qt.StrongFocus
-                Accessible.name: i18nc("@action:button", "Delete Note")
+                Accessible.name: i18nc("@action:button", "Delete Note") // qmllint disable unqualified
                 Controls.ToolTip.visible: hovered || activeFocus
                 Controls.ToolTip.text: Accessible.name
                 Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
@@ -257,7 +257,7 @@ Item {
                 Layout.preferredHeight: 28
                 padding: 2
                 focusPolicy: Qt.StrongFocus
-                Accessible.name: i18n("Close")
+                Accessible.name: i18n("Close") // qmllint disable unqualified
                 Controls.ToolTip.visible: hovered || activeFocus
                 Controls.ToolTip.text: Accessible.name
                 Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
@@ -284,10 +284,10 @@ Item {
             visible: noteRoot.deleteConfirmationVisible
             Layout.fillWidth: true
             type: Kirigami.MessageType.Warning
-            text: i18n("Delete this note from the dock? Its contents cannot be recovered.")
+            text: i18n("Delete this note from the dock? Its contents cannot be recovered.") // qmllint disable unqualified
             actions: [
                 Kirigami.Action {
-                    text: i18nc("@action:button", "Cancel")
+                    text: i18nc("@action:button", "Cancel") // qmllint disable unqualified
                     icon.name: "dialog-cancel"
                     onTriggered: {
                         noteRoot.deleteConfirmationVisible = false
@@ -295,7 +295,7 @@ Item {
                     }
                 },
                 Kirigami.Action {
-                    text: i18nc("@action:button", "Delete Note")
+                    text: i18nc("@action:button", "Delete Note") // qmllint disable unqualified
                     icon.name: "edit-delete"
                     onTriggered: noteRoot.deleteRequested()
                 }
@@ -314,11 +314,11 @@ Item {
                 Layout.fillHeight: true
                 textFormat: TextEdit.PlainText
                 wrapMode: TextEdit.Wrap
-                placeholderText: i18n("Write a quick note")
+                placeholderText: i18n("Write a quick note") // qmllint disable unqualified
                 color: Kirigami.Theme.textColor
                 selectByMouse: true
                 activeFocusOnTab: true
-                Accessible.name: i18n("Note content")
+                Accessible.name: i18n("Note content") // qmllint disable unqualified
 
                 onTextChanged: noteRoot.enforceMaximumLength()
                 Keys.onPressed: function(event) {
@@ -347,7 +347,7 @@ Item {
                 Layout.fillWidth: true
                 text: noteRoot.transientStatus.length > 0
                     ? noteRoot.transientStatus
-                    : (noteRoot.hasPendingChanges ? i18n("Changes pending") : i18n("Saved"))
+                    : (noteRoot.hasPendingChanges ? i18n("Changes pending") : i18n("Saved")) // qmllint disable unqualified
                 color: noteRoot.maximumLengthWarning
                     ? Kirigami.Theme.negativeTextColor
                     : Kirigami.Theme.disabledTextColor
@@ -358,13 +358,13 @@ Item {
             }
 
             Controls.Label {
-                text: i18n("%1 / %2", editor.text.length, noteRoot.maximumNoteLength)
+                text: i18n("%1 / %2", editor.text.length, noteRoot.maximumNoteLength) // qmllint disable unqualified
                 color: editor.text.length >= noteRoot.maximumNoteLength
                     ? Kirigami.Theme.neutralTextColor
                     : Kirigami.Theme.disabledTextColor
                 font.family: Kirigami.Theme.smallFont.family
                 font.pointSize: Kirigami.Theme.smallFont.pointSize
-                Accessible.name: i18n("%1 of %2 characters", editor.text.length, noteRoot.maximumNoteLength)
+                Accessible.name: i18n("%1 of %2 characters", editor.text.length, noteRoot.maximumNoteLength) // qmllint disable unqualified
             }
         }
     }

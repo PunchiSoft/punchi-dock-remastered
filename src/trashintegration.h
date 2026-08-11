@@ -4,11 +4,13 @@
 
 #include <QObject>
 #include <QPointer>
+#include <QSet>
 #include <QString>
+#include <QUrl>
 #include <QVariantList>
 #include <qqmlregistration.h>
 
-class KDirWatch;
+class KCoreDirLister;
 class KJob;
 
 class TrashIntegration : public QObject
@@ -55,7 +57,9 @@ private:
     void setOperationState(const QString &state, const QString &errorMessage = {});
     void resetProgress();
     void syncProgress(KJob *job);
-    void watchPaths();
+    void finishTrashListing();
+    void cancelTrashListing();
+    void schedulePendingRefresh();
 
     bool m_hasItems = false;
     QString m_operationState = QStringLiteral("idle");
@@ -65,5 +69,9 @@ private:
     int m_totalItems = 0;
     bool m_progressDeterminate = false;
     QPointer<KJob> m_emptyTrashJob;
-    KDirWatch *m_watch = nullptr;
+    KCoreDirLister *m_trashLister = nullptr;
+    QSet<QUrl> m_listedTrashItems;
+    QSet<QUrl> m_pendingTrashItems;
+    bool m_rebuildingTrashItems = false;
+    bool m_refreshPending = false;
 };

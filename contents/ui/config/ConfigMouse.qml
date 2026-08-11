@@ -3,6 +3,8 @@ import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
+import org.kde.plasma.core as PlasmaCore
+import org.kde.plasma.plasmoid
 import "components"
 
 KCM.SimpleKCM {
@@ -14,7 +16,8 @@ KCM.SimpleKCM {
         availableWidth: page.width
     }
 
-    property string cfg_hoverAnimation: "axisZoom"
+    property string cfg_hoverAnimation: "wave"
+    property alias cfg_hoverScale: hoverScaleSlider.value
     property string cfg_clickEffect: "none"
     property string cfg_windowMinimizeEffect: "none"
     property alias cfg_dockMotionSpeedPercent: dockMotionSpeedSlider.value
@@ -22,12 +25,21 @@ KCM.SimpleKCM {
     property alias cfg_enableAppDragAndDrop: enableAppDragAndDropCheck.checked
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
+    readonly property bool inPanel:
+        Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+        || Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    readonly property int hoverEnlargementPercent:
+        Math.round((hoverScaleSlider.value - 1.0) * 100)
+    readonly property bool hoverEnlargementDisabled:
+        hoverEnlargementPercent <= 0
+    readonly property bool hoverEnlargementMayBeClipped:
+        inPanel && hoverEnlargementPercent >= 100
     readonly property var hoverAnimationOptions: [
         { "text": i18n("None"), "value": "none" },
         { "text": i18n("Wave"), "value": "wave" },
         { "text": i18n("Single"), "value": "single" },
         { "text": i18n("Axis zoom"), "value": "axisZoom" },
-        { "text": i18n("Paragraph"), "value": "paragraph" }
+        { "text": i18n("Pulse"), "value": "selectionPulse" }
     ]
     readonly property var clickEffectOptions: [
         { "text": i18n("None"), "value": "none" },
@@ -55,6 +67,10 @@ KCM.SimpleKCM {
     }
 
     function syncMouseSelectors() {
+        if (page.cfg_hoverAnimation === "paragraph") {
+            page.cfg_hoverAnimation = "selectionPulse"
+            return
+        }
         syncComboValue(hoverAnimationCombo, page.cfg_hoverAnimation)
         syncComboValue(clickEffectCombo, page.cfg_clickEffect)
         syncComboValue(windowMinimizeEffectCombo, page.cfg_windowMinimizeEffect)
@@ -87,6 +103,53 @@ KCM.SimpleKCM {
                     cursorEnabled: page.cfg_globalMouseCursor
                 }
             }
+        }
+
+        RowLayout {
+            // Plasma injects i18n through KLocalizedContext at runtime.
+            // qmllint disable unqualified
+            Kirigami.FormData.label: i18n("Hover enlargement:")
+            // qmllint enable unqualified
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: hoverScaleSlider
+                from: 1.0
+                to: 2.0
+                stepSize: 0.05
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 60
+                // qmllint disable unqualified
+                Accessible.name: i18n("Hover enlargement")
+                Accessible.description: i18n("Adjusts additional hover enlargement between 0 and 100 percent.")
+                // qmllint enable unqualified
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.cfg_globalMouseCursor
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                // qmllint disable unqualified
+                text: i18n("%1%", page.hoverEnlargementPercent)
+                // qmllint enable unqualified
+                font.bold: true
+                Layout.preferredWidth: 50
+            }
+        }
+
+        Kirigami.InlineMessage {
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            visible: page.hoverEnlargementDisabled
+                || page.hoverEnlargementMayBeClipped
+            type: Kirigami.MessageType.Warning
+            // qmllint disable unqualified
+            text: page.hoverEnlargementDisabled
+                ? i18n("At 0%, the hover enlargement animation is disabled.")
+                : i18n("At 100%, hover enlargement may be clipped by the space and margins available in the Plasma panel. Floating mode is not affected.")
+            // qmllint enable unqualified
         }
 
         RowLayout {

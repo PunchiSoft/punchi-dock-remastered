@@ -21,7 +21,6 @@ KCM.SimpleKCM {
     // Variables prefixed with "cfg_" map automatically to KConfig (main.xml).
     property alias cfg_iconSize: iconSizeSlider.value
     property alias cfg_iconSpacing: iconSpacingSlider.value
-    property alias cfg_hoverScale: hoverScaleSlider.value
     property string cfg_virtualDesktopMode: "all"
     property string cfg_targetVirtualDesktop: ""
     property string cfg_panelLengthMode: "content"
@@ -246,36 +245,6 @@ KCM.SimpleKCM {
                 text: page.detectedPanelThickness > 0
                     ? i18n("Estimated panel-safe maximum: %1 px", page.safePanelIconSizeMax)
                     : i18n("The real panel thickness is not available in this view, so a safe fallback limit is being used.")
-            }
-
-            // Wave zoom scale control.
-            RowLayout {
-                Kirigami.FormData.label: i18n("Hover zoom scale:")
-                Layout.maximumWidth: page.contentWidthHint
-
-                Controls.Slider {
-                    id: hoverScaleSlider
-                    from: 1.05
-                    to: 2.0
-                    stepSize: 0.05
-                    Layout.fillWidth: true
-                    Layout.preferredWidth: page.contentWidthHint - 60
-                    // qmllint disable unqualified
-                    Accessible.name: i18n("Hover zoom scale")
-                    Accessible.description: i18n("Adjusts hover zoom between 105 and 200 percent.")
-                    // qmllint enable unqualified
-
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                        role: "slider"
-                    }
-                }
-
-                Controls.Label {
-                    text: Math.round(hoverScaleSlider.value * 100) + "%"
-                    font.bold: true
-                    Layout.preferredWidth: 50
-                }
             }
 
             // Virtual desktop visibility control.

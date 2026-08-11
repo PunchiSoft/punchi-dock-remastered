@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
@@ -7,6 +9,7 @@ import org.kde.kirigami as Kirigami
 
 Item {
     id: appActionsRoot
+    objectName: "appActionsRoot"
 
     property string itemName: ""
     property var actions: []
@@ -53,7 +56,7 @@ Item {
 
             PlasmaExtras.ShadowedLabel {
                 Layout.fillWidth: true
-                text: appActionsRoot.itemName.length > 0 ? appActionsRoot.itemName : i18n("Application")
+                text: appActionsRoot.itemName.length > 0 ? appActionsRoot.itemName : i18n("Application") // qmllint disable unqualified
                 renderShadow: appActionsRoot.textShadowsEnabled
                 font.family: Kirigami.Theme.defaultFont.family
                 font.pointSize: Kirigami.Theme.defaultFont.pointSize
@@ -84,9 +87,9 @@ Item {
                     Accessible.role: Accessible.Button
                     Accessible.name: appActionsRoot.embedded
                         ? (appActionsRoot.returnToMedia
-                            ? i18n("Back to media controls")
-                            : i18n("Back to window previews"))
-                        : i18n("Close")
+                            ? i18n("Back to media controls") // qmllint disable unqualified
+                            : i18n("Back to window previews")) // qmllint disable unqualified
+                        : i18n("Close") // qmllint disable unqualified
                     onClicked: appActionsRoot.closeRequested()
                 }
             }
@@ -106,6 +109,7 @@ Item {
 
             ListView {
                 id: actionList
+                objectName: "appActionsActionList"
                 model: appActionsRoot.actions || []
                 implicitWidth: actionScroll.availableWidth
                 width: actionScroll.availableWidth
@@ -114,10 +118,11 @@ Item {
 
                 delegate: Controls.ItemDelegate {
                     id: actionDelegate
+                    objectName: "appActionsActionDelegate"
                     required property var modelData
                     readonly property string actionText: modelData && modelData.name
                         ? modelData.name
-                        : i18n("Custom action")
+                        : i18n("Custom action") // qmllint disable unqualified
                     readonly property string detailText: modelData && modelData.detail
                         ? String(modelData.detail)
                         : ""

@@ -4,7 +4,7 @@ import QtQuick.Dialogs
 FolderDialog {
     id: root
 
-    property string titleText: i18n("Choose Folder")
+    property string titleText: i18n("Choose Folder") // qmllint disable unqualified
     
     title: titleText
 

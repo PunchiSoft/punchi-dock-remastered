@@ -7,6 +7,12 @@ Item {
     property var theme: ({})
     property bool dockVertical: false
 
+    // Resolve the complete JSON theme through the same bounded multisample
+    // profile used by the other custom renderers.
+    layer.enabled: visible
+    layer.samples: 8
+    layer.smooth: true
+
     readonly property var surface: theme && theme.surface ? theme.surface : ({})
     readonly property var gradientData: surface.gradient ? surface.gradient : ({})
     readonly property var gradientStops: gradientData.stops ? gradientData.stops : []
@@ -56,7 +62,6 @@ Item {
             visible: !root.paletteFlowEnabled
             color: root.surfaceColor
             radius: root.surfaceRadius
-            antialiasing: true
             border.width: Number(root.borderData.width || 0)
             border.color: root.borderData.color || "transparent"
 
