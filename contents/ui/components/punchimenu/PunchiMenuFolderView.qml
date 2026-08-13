@@ -17,6 +17,8 @@ FocusScope {
     property real iconScale: 1.0
     property int maximumColumnCount: 5
     property int maximumRowCount: 5
+    property bool showApplicationLabels: true
+    property string hoverAnimation: "pulse"
     property bool detailedApplicationFeedback: false
 
     readonly property real effectiveIconScale: Math.max(0.75,
@@ -290,6 +292,7 @@ FocusScope {
                     }
 
                     PunchiMenuItemHighlight {
+                        id: itemHighlight
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing
                         hovered: appPointer.containsMouse
@@ -297,11 +300,22 @@ FocusScope {
                         focused: applicationDelegate.activeFocus
                         pressed: appPointer.pressed
                         motionEnabled: root.motionEnabled
+                        animationMode: root.hoverAnimation
+                        transformSelf: false
                     }
+
+                    scale: root.motionEnabled && appPointer.pressed
+                        && root.hoverAnimation !== "none"
+                        ? 0.97 : itemHighlight.visualScale
 
                     ColumnLayout {
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing * 2
+                        anchors.topMargin: root.showApplicationLabels
+                            ? Kirigami.Units.smallSpacing * 2
+                            : Math.max(Kirigami.Units.smallSpacing * 2,
+                                (parent.height - root.iconSize) / 2)
+                        anchors.bottomMargin: anchors.topMargin
                         spacing: Kirigami.Units.smallSpacing
 
                         Kirigami.Icon {
@@ -314,7 +328,9 @@ FocusScope {
                         }
 
                         PlasmaComponents.Label {
+                            id: applicationLabel
                             Layout.fillWidth: true
+                            visible: root.showApplicationLabels
                             text: root.applicationName(
                                 applicationDelegate.modelData)
                             textFormat: Text.PlainText
@@ -325,6 +341,14 @@ FocusScope {
                             font: applicationLabelFontMetrics.font
                             Accessible.ignored: true
                         }
+                    }
+
+                    PlasmaCore.ToolTipArea {
+                        anchors.fill: parent
+                        active: !root.showApplicationLabels
+                            || applicationLabel.truncated
+                        mainText: root.applicationName(
+                            applicationDelegate.modelData)
                     }
 
                     Kirigami.Icon {

@@ -629,6 +629,14 @@ function normalizedPunchiMenuMode(value) {
         : "fullScreen"
 }
 
+function normalizedPunchiMenuHoverAnimation(value) {
+    var availableAnimations = ["none", "individual", "pulse", "bounce"]
+    var requestedAnimation = String(value || "pulse")
+    return availableAnimations.indexOf(requestedAnimation) >= 0
+        ? requestedAnimation
+        : "pulse"
+}
+
 function normalizedPunchiMenuFullScreenCloseButtonPosition(value) {
     return String(value || "right") === "left"
         ? "left"
@@ -679,6 +687,16 @@ function prunePunchiMenu(item) {
     item.name = "PunchiMenu"
     item.icon = normalizedPunchiMenuIcon(item.icon)
     item.menuMode = normalizedPunchiMenuMode(item.menuMode)
+    item.hoverAnimation = normalizedPunchiMenuHoverAnimation(
+        item.hoverAnimation)
+    if (item.hoverAnimation === "pulse") {
+        delete item.hoverAnimation
+    }
+    if (item.showApplicationLabels !== false) {
+        delete item.showApplicationLabels
+    } else {
+        item.showApplicationLabels = false
+    }
     if (item.sortApplicationsAlphabetically === true) {
         item.sortApplicationsAlphabetically = true
     } else {

@@ -138,6 +138,10 @@ def main() -> int:
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuSettingsView.qml"
     ).read_text(encoding="utf-8")
+    settings_combo_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuComboBox.qml"
+    ).read_text(encoding="utf-8")
     avatar_component_source = (
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuUserAvatar.qml"
@@ -188,7 +192,6 @@ def main() -> int:
         (config_items_source, "Math.max(75, Math.min(150", "persistent normalization"),
         (main_source, "Math.max(75, Math.min(150", "runtime percentage clamp"),
         (settings_view_source, "to: 150", "internal settings slider maximum"),
-        (punchi_menu_config_source, "to: 150", "configuration slider maximum"),
         (overlay_source, "Math.max(0.75, Math.min(1.5", "fullscreen scale clamp"),
         (normal_source, "Math.max(0.75, Math.min(1.5", "Normal scale clamp"),
     )
@@ -292,14 +295,14 @@ def main() -> int:
             "Fullscreen row default",
         ),
         (
-            punchi_menu_config_source,
-            'i18n("Maximum folder columns:")',
-            "dedicated column control",
+            settings_view_source,
+            '"Maximum folder columns:")',
+            "embedded column control",
         ),
         (
-            punchi_menu_config_source,
-            'i18n("Maximum folder rows:")',
-            "dedicated row control",
+            settings_view_source,
+            '"Maximum folder rows:")',
+            "embedded row control",
         ),
         (
             main_source,
@@ -376,9 +379,9 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
-    if "to: page.normalModeSelected ? 3 : 5" not in punchi_menu_config_source:
+    if "readonly property int folderMaximumLimit: normalMode ? 3 : 5" not in settings_view_source:
         print(
-            "PunchiMenu folder grid limits: KCM ranges must switch between Normal 1-3 and Fullscreen 1-5",
+            "PunchiMenu folder grid limits: embedded ranges must switch between Normal 1-3 and Fullscreen 1-5",
             file=sys.stderr,
         )
         passed = False
@@ -484,16 +487,6 @@ def main() -> int:
             settings_view_source,
             'i18n("Show page navigation arrows")',
             "translated internal option",
-        ),
-        (
-            punchi_menu_config_source,
-            "property bool showPageNavigationArrows: true",
-            "dedicated configuration state",
-        ),
-        (
-            punchi_menu_config_source,
-            'i18n("Show page navigation arrows")',
-            "translated dedicated option",
         ),
         (
             main_source,
@@ -621,16 +614,6 @@ def main() -> int:
             settings_view_source,
             '"fullScreenCloseButtonPosition", option.value',
             "internal settings routing",
-        ),
-        (
-            punchi_menu_config_source,
-            "property string fullScreenCloseButtonPosition: \"right\"",
-            "dedicated configuration state",
-        ),
-        (
-            punchi_menu_config_source,
-            'i18n("Close button:")',
-            "translated dedicated option",
         ),
         (
             main_source,
@@ -786,10 +769,8 @@ def main() -> int:
     advanced_configuration_contract = (
         "KQuickControls.KeySequenceItem",
         'i18nc("@action:button", "Choose PunchiMenu icon")',
-        'i18n("The effective size adapts to the screen and available grid cell space.")',
-        'i18n("The safe range applies to the reserved Favorites section in both menu modes.")',
-        'i18n("Attached keeps the menu next to its dock or panel. Centered uses the available area of the active screen.")',
-        'i18n("The percentages adjust the menu size relative to your screen width and height (from 30% to 90%).")',
+        'i18n("Menu mode:")',
+        'i18n("Icon and keyboard shortcut:")',
     )
     for marker in advanced_configuration_contract:
         if marker not in punchi_menu_config_source:
@@ -798,12 +779,26 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
-    if punchi_menu_config_source.count("Controls.Switch {") < 2:
-        print(
-            "ConfigPunchiMenu.qml: distribution label must use a switch like the basic editor",
-            file=sys.stderr,
-        )
-        passed = False
+    retired_kcm_controls = (
+        'i18n("Background and legibility")',
+        'i18n("Use background blur when available")',
+        'i18n("Show application names")',
+        'i18n("Sort applications alphabetically")',
+        'i18n("Application grid icon scale:")',
+        'i18n("Favorites icon scale:")',
+        'i18n("Maximum folder columns:")',
+        'i18n("Normal menu placement:")',
+        'i18n("Show page navigation arrows")',
+        'i18n("Close button:")',
+    )
+    for marker in retired_kcm_controls:
+        if marker in punchi_menu_config_source:
+            print(
+                "ConfigPunchiMenu.qml: migrated embedded setting remains in KCM: "
+                f"{marker}",
+                file=sys.stderr,
+            )
+            passed = False
     advanced_configuration_layout_contract = (
         'i18n("Icon and keyboard shortcut:")',
         "display: Controls.AbstractButton.IconOnly",
@@ -946,9 +941,10 @@ def main() -> int:
         "Qt.alpha(Kirigami.Theme.highlightColor, 0.20)",
         "border.width: focused || selected ? 2 : 0",
         "Kirigami.Units.cornerRadius * 2",
-        "scale: pressed ? 0.97",
+        "? 0.97 : visualScale",
         "Behavior on color",
-        "Behavior on scale",
+        "id: pulseAnimation",
+        "id: bounceAnimation",
     )
     for marker in item_highlight_contract:
         if marker not in item_highlight_source:
@@ -1184,8 +1180,8 @@ def main() -> int:
         ),
         (
             settings_view_source,
-            'i18nc("@action:button", "Open Advanced Settings…")',
-            "advanced settings action",
+            '"Open mode, icon, and shortcut settings…")',
+            "remaining settings action",
         ),
     )
     for source, marker, description in internal_settings_contract:
@@ -1197,13 +1193,23 @@ def main() -> int:
             )
             passed = False
     allowed_internal_settings = (
+        "normalBlurEnabled",
+        "normalBackgroundOpacityPercent",
         "fullScreenBlurEnabled",
         "fullScreenBackgroundOpacityPercent",
         "showDistributionName",
         "showPageNavigationArrows",
+        "showApplicationLabels",
         "sortApplicationsAlphabetically",
         "fullScreenCloseButtonPosition",
         "gridIconScalePercent",
+        "favoriteIconScalePercent",
+        "normalPlacementMode",
+        "normalPanelGap",
+        "normalWidthPercent",
+        "normalHeightPercent",
+        "normalFolderMaximumColumns",
+        "normalFolderMaximumRows",
         "fullScreenFolderMaximumColumns",
         "fullScreenFolderMaximumRows",
     )
@@ -1215,6 +1221,68 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    normal_internal_settings_contract = (
+        "property bool settingsViewActive: false",
+        "function setSettingsViewActive(active)",
+        "id: configureButton",
+        'icon.name: root.settingsViewActive ? "view-grid" : "configure"',
+        "id: settingsViewLoader",
+        'menuMode: "normal"',
+        "root.settingChangeRequested(fieldName, value)",
+        "onAdvancedConfigurationRequested:",
+    )
+    for marker in normal_internal_settings_contract:
+        if marker not in normal_source:
+            print(
+                "PunchiMenu Normal internal settings: missing "
+                f"embedded-view contract marker: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    mode_specific_settings_contract = (
+        'property string menuMode: "fullScreen"',
+        'normalMode\n        ? "normalBlurEnabled"',
+        'normalMode\n        ? "normalBackgroundOpacityPercent"',
+        'normalMode\n        ? "normalFolderMaximumColumns"',
+        'normalMode\n        ? "normalFolderMaximumRows"',
+        'visible: root.normalMode',
+        'visible: root.anchoredNormalMode',
+        '"normalPlacementMode", option.value',
+        '"normalPanelGap", Math.round(value)',
+        '"normalWidthPercent",',
+        '"normalHeightPercent",',
+    )
+    for marker in mode_specific_settings_contract:
+        if marker not in settings_view_source:
+            print(
+                "PunchiMenu settings view: missing mode-specific routing: "
+                f"{marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    embedded_combo_popup_contract = (
+        (settings_view_source, "PunchiMenuComboBox {",
+            "shared embedded selector"),
+        (settings_combo_source, "root.mapToItem(popupParentItem, 0, root.height)",
+            "popup origin mapped to its actual parent"),
+        (settings_combo_source, "const visibleNow = root.popup.visible",
+            "position refresh when the popup opens"),
+    )
+    for source, marker, description in embedded_combo_popup_contract:
+        if marker not in source:
+            print(
+                "PunchiMenu embedded ComboBox: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if settings_view_source.count("PunchiMenuComboBox {") != 3:
+        print(
+            "PunchiMenu settings view: every embedded selector must use the "
+            "mapped popup component",
+            file=sys.stderr,
+        )
+        passed = False
     if "onClicked: root.configureRequested()" in overlay_source:
         print(
             "PunchiMenu Fullscreen internal settings: the header gear still "
@@ -1378,21 +1446,12 @@ def main() -> int:
         (settings_view_source,
             'i18n("Sort applications alphabetically")',
             "internal settings switch"),
-        (punchi_menu_config_source,
-            'i18n("Sort applications alphabetically")',
-            "advanced settings switch"),
         (settings_view_source,
             "visible: root.sortApplicationsAlphabetically",
             "conditional internal information message"),
-        (punchi_menu_config_source,
-            "visible: page.sortApplicationsAlphabetically",
-            "conditional advanced information message"),
         (settings_view_source,
             'i18n("Alphabetical sorting is active. Application positions cannot be changed manually, but drag and drop remains available.")',
             "internal sorting consequence"),
-        (punchi_menu_config_source,
-            'i18n("Alphabetical sorting is active. Application positions cannot be changed manually, but drag and drop remains available.")',
-            "advanced sorting consequence"),
         (normal_source,
             "alphabeticalSortingEnabled: root.sortApplicationsAlphabetically",
             "Normal model projection"),
@@ -1424,6 +1483,104 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    application_labels_contract = (
+        (config_items_source,
+            "item.showApplicationLabels !== false",
+            "default-on canonical normalization"),
+        (main_source,
+            "configuredPunchiMenuShowApplicationLabels",
+            "reactive runtime projection"),
+        (settings_view_source,
+            'i18n("Show application names")',
+            "internal settings switch"),
+        (normal_source,
+            "visible: root.showApplicationLabels",
+            "Normal application and favorite labels"),
+        (overlay_source,
+            "visible: root.showApplicationLabels",
+            "Fullscreen application and favorite labels"),
+        (folder_view_source,
+            "visible: root.showApplicationLabels",
+            "folder member labels"),
+        (normal_source,
+            "active: !root.showApplicationLabels",
+            "Normal fallback tooltips"),
+        (overlay_source,
+            "active: !root.showApplicationLabels",
+            "Fullscreen fallback tooltips"),
+        (folder_view_source,
+            "active: !root.showApplicationLabels",
+            "folder fallback tooltips"),
+        (drag_layer_source,
+            "visible: root.folder || root.showApplicationLabels",
+            "application-only drag labels"),
+        (folder_tile_source,
+            "text: root.effectiveLabel",
+            "persistent folder labels"),
+    )
+    for source, marker, description in application_labels_contract:
+        if marker not in source:
+            print(
+                "PunchiMenu application labels: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    hover_animation_contract = (
+        (config_items_source,
+            '["none", "individual", "pulse", "bounce"]',
+            "canonical animation values"),
+        (config_items_source,
+            'String(value || "pulse")',
+            "Pulse default"),
+        (main_source,
+            "configuredPunchiMenuHoverAnimation",
+            "reactive runtime projection"),
+        (settings_view_source,
+            'i18n("PunchiMenu hover animation")',
+            "internal animation selector"),
+        (dock_items_controller_source,
+            '"hoverAnimation": true',
+            "internal persistence permission"),
+        (normal_source,
+            "animationMode: root.hoverAnimation",
+            "Normal delegates"),
+        (overlay_source,
+            "animationMode: root.hoverAnimation",
+            "Fullscreen delegates"),
+        (folder_view_source,
+            "? 0.97 : itemHighlight.visualScale",
+            "folder member full-item transform"),
+        (folder_tile_source,
+            "? 0.97 : itemHighlight.visualScale",
+            "folder full-item transform"),
+    )
+    for source, marker, description in hover_animation_contract:
+        if marker not in source:
+            print(
+                "PunchiMenu hover animation: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    highlight_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuItemHighlight.qml"
+    ).read_text(encoding="utf-8")
+    for marker, description in (
+        ("id: pulseAnimation", "one-shot Pulse profile"),
+        ("id: bounceAnimation", "one-shot Bounce profile"),
+        ("id: individualAnimation", "sustained Individual profile"),
+        ('animationMode === "none"', "None profile"),
+        ("property: \"motionScale\"", "shared full-item scale"),
+    ):
+        if marker not in highlight_source:
+            print(
+                "PunchiMenu hover animation primitive: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
     desktop_effects_settings_contract = (
         (settings_view_source,
             'import org.kde.kcmutils as KCM',
@@ -1436,28 +1593,13 @@ def main() -> int:
             'KCM.KCMLauncher.openSystemSettings(\n'
             '                            "kcm_kwin_effects")',
             "internal desktop-effects launcher"),
-        (punchi_menu_config_source,
-            'KConfig.KAuthorized.authorizeControlModule(\n'
-            '                    "kcm_kwin_effects")',
-            "advanced authorization check"),
-        (punchi_menu_config_source,
-            'KCM.KCMLauncher.openSystemSettings(\n'
-            '                    "kcm_kwin_effects")',
-            "advanced desktop-effects launcher"),
         (settings_view_source,
             "text: root.backgroundBlurEnabled\n"
             "                            ? i18n(\"The background will use KWin blur when available.",
             "internal reactive blur explanation"),
-        (punchi_menu_config_source,
-            "text: page.selectedBlurEnabled\n"
-            "                    ? i18n(\"The background will use KWin blur when available.",
-            "advanced reactive blur explanation"),
         (settings_view_source,
             'i18n("Without blur, the background depends on the Plasma theme and the selected opacity.")',
             "internal disabled-blur explanation"),
-        (punchi_menu_config_source,
-            'i18n("Without blur, the background depends on the Plasma theme and the selected opacity.")',
-            "advanced disabled-blur explanation"),
     )
     for source, marker, description in desktop_effects_settings_contract:
         if marker not in source:
@@ -1474,13 +1616,6 @@ def main() -> int:
             "text: root.backgroundBlurEnabled",
             "id: backgroundOpacitySlider",
             "internal settings",
-        ),
-        (
-            punchi_menu_config_source,
-            "id: backgroundBlurSwitch",
-            "text: page.selectedBlurEnabled",
-            "id: backgroundOpacitySlider",
-            "advanced settings",
         ),
     )
     for source, switch_marker, message_marker, opacity_marker, description in (
@@ -1832,9 +1967,9 @@ def main() -> int:
             "safe Favorites scale range",
         ),
         (
-            punchi_menu_config_source,
-            'i18n("Favorites icon scale:")',
-            "dedicated Favorites scale control",
+            settings_view_source,
+            '"Favorites icon scale:")',
+            "embedded Favorites scale control",
         ),
         (
             main_source,
@@ -1875,26 +2010,6 @@ def main() -> int:
             config_items_source,
             "Math.max(50, Math.min(100",
             "safe opacity percentage range",
-        ),
-        (
-            punchi_menu_config_source,
-            "Controls.Switch {",
-            "native blur switch",
-        ),
-        (
-            punchi_menu_config_source,
-            'i18n("Use background blur when available")',
-            "translated blur option",
-        ),
-        (
-            punchi_menu_config_source,
-            'i18n("Background opacity:")',
-            "translated opacity control",
-        ),
-        (
-            punchi_menu_config_source,
-            "visible: page.selectedBackgroundOpacityPercent < 70",
-            "low-opacity warning threshold",
         ),
         (
             main_source,
@@ -2260,9 +2375,9 @@ def main() -> int:
             "persistent placement normalization",
         ),
         (
-            punchi_menu_config_source,
-            'i18n("Normal menu placement:")',
-            "dedicated translated setting label",
+            settings_view_source,
+            '"Normal menu placement:")',
+            "embedded translated setting label",
         ),
         (
             main_source,
@@ -2512,9 +2627,9 @@ def main() -> int:
             "canonical empty-instance fallback",
         ),
         (
-            punchi_menu_config_source,
+            settings_view_source,
             '"normalPanelGap", Math.round(value)',
-            "panel distance control",
+            "embedded panel distance control",
         ),
         (
             config_items_source,

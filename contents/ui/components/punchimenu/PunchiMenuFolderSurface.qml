@@ -10,6 +10,8 @@ FocusScope {
     property real iconScale: 1.0
     property int maximumColumnCount: 5
     property int maximumRowCount: 5
+    property bool showApplicationLabels: true
+    property string hoverAnimation: "pulse"
     property var allowedExternalFocusItems: []
     property bool detailedApplicationFeedback: false
     property bool returnToFolderAfterMemberRemoval: false
@@ -352,6 +354,8 @@ FocusScope {
             iconScale: root.iconScale
             maximumColumnCount: root.safeMaximumColumnCount
             maximumRowCount: root.safeMaximumRowCount
+            showApplicationLabels: root.showApplicationLabels
+            hoverAnimation: root.hoverAnimation
             detailedApplicationFeedback: root.detailedApplicationFeedback
 
             onLaunchRequested: function(storageId) {

@@ -8,6 +8,7 @@ import org.kde.kwindowsystem
 import "org/punchi/dock" as Punchi
 import "components"
 import "components/punchimenu"
+import "config/code/configItems.js" as ConfigItemsJS
 
 PlasmoidItem {
     id: root
@@ -159,6 +160,13 @@ PlasmoidItem {
     readonly property bool configuredPunchiMenuShowPageNavigationArrows:
         !configuredPunchiMenuItem
         || configuredPunchiMenuItem.showPageNavigationArrows !== false
+    readonly property bool configuredPunchiMenuShowApplicationLabels:
+        !configuredPunchiMenuItem
+        || configuredPunchiMenuItem.showApplicationLabels !== false
+    readonly property string configuredPunchiMenuHoverAnimation:
+        ConfigItemsJS.normalizedPunchiMenuHoverAnimation(
+            configuredPunchiMenuItem
+                ? configuredPunchiMenuItem.hoverAnimation : "pulse")
     readonly property bool configuredPunchiMenuSortApplicationsAlphabetically:
         !!configuredPunchiMenuItem
         && configuredPunchiMenuItem.sortApplicationsAlphabetically === true
@@ -539,6 +547,9 @@ PlasmoidItem {
                 showDistributionName: root.configuredPunchiMenuShowDistributionName
                 showPageNavigationArrows:
                     root.configuredPunchiMenuShowPageNavigationArrows
+                showApplicationLabels:
+                    root.configuredPunchiMenuShowApplicationLabels
+                hoverAnimation: root.configuredPunchiMenuHoverAnimation
                 sortApplicationsAlphabetically:
                     root.configuredPunchiMenuSortApplicationsAlphabetically
                 closeButtonPosition:
@@ -810,9 +821,19 @@ PlasmoidItem {
                     root.configuredPunchiMenuNormalFolderMaximumColumns
                 folderMaximumRows:
                     root.configuredPunchiMenuNormalFolderMaximumRows
+                showApplicationLabels:
+                    root.configuredPunchiMenuShowApplicationLabels
+                hoverAnimation: root.configuredPunchiMenuHoverAnimation
                 sortApplicationsAlphabetically:
                     root.configuredPunchiMenuSortApplicationsAlphabetically
+                backgroundBlurEnabled:
+                    root.configuredPunchiMenuNormalBlurEnabled
                 backgroundOpacity: root.configuredPunchiMenuNormalBackgroundOpacity
+                normalPlacementMode:
+                    root.configuredPunchiMenuNormalPlacementMode
+                normalPanelGap: root.configuredPunchiMenuNormalPanelGap
+                normalWidthPercent: root.configuredPunchiMenuNormalWidthPercent
+                normalHeightPercent: root.configuredPunchiMenuNormalHeightPercent
                 themeFrameLeftMargin: punchiMenuNormalDialog.themeFrameMargin("left")
                 themeFrameTopMargin: punchiMenuNormalDialog.themeFrameMargin("top")
                 themeFrameRightMargin: punchiMenuNormalDialog.themeFrameMargin("right")
@@ -842,6 +863,19 @@ PlasmoidItem {
                             root.dockItemsControllerService.operationResult(
                                 false, "persist-failed", ""))
                     }
+                }
+                onSettingChangeRequested: function(fieldName, value) {
+                    if (!root.dockItemsControllerService.setPunchiMenuValue(
+                            fieldName, value)) {
+                        punchiMenuNormal.showSettingsPersistenceError()
+                    }
+                }
+                onConfigureRequested: {
+                    const itemIndex = root.configuredPunchiMenuItemIndex
+                    punchiMenuNormalDialog.closeImmediately()
+                    Qt.callLater(function() {
+                        root.openDockItemEditor(itemIndex)
+                    })
                 }
                 onCloseFinished: punchiMenuNormalDialog.closeImmediately()
             }

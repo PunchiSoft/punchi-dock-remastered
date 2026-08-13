@@ -14,6 +14,7 @@ FocusScope {
     property int memberCount: 0
     property bool selected: false
     property bool motionEnabled: true
+    property string hoverAnimation: "pulse"
     property real requestedIconSize: Kirigami.Units.iconSizes.huge
     readonly property alias hovered: pointer.containsMouse
 
@@ -34,8 +35,9 @@ FocusScope {
         requestedIconSize + Kirigami.Units.largeSpacing * 2)
     implicitHeight: requestedIconSize + Kirigami.Units.gridUnit * 2.8
     activeFocusOnTab: true
-    scale: pointer.pressed ? 0.97
-        : pointer.containsMouse || activeFocus ? 1.015 : 1.0
+    scale: root.motionEnabled && pointer.pressed
+        && root.hoverAnimation !== "none"
+        ? 0.97 : itemHighlight.visualScale
 
     Accessible.role: Accessible.Button
     Accessible.name: i18nc("@info:accessible", "%1, %2",
@@ -59,12 +61,15 @@ FocusScope {
     }
 
     PunchiMenuItemHighlight {
+        id: itemHighlight
         anchors.fill: parent
         hovered: pointer.containsMouse
         selected: root.selected
         focused: root.activeFocus
         pressed: pointer.pressed
         motionEnabled: root.motionEnabled
+        animationMode: root.hoverAnimation
+        transformSelf: false
     }
 
     ColumnLayout {
@@ -161,13 +166,5 @@ FocusScope {
         }
     }
 
-    Behavior on scale {
-        enabled: root.motionEnabled
-        NumberAnimation {
-            duration: Math.max(90,
-                Math.min(140, Kirigami.Units.shortDuration))
-            easing.type: Easing.OutCubic
-        }
-    }
 }
 // qmllint enable unqualified

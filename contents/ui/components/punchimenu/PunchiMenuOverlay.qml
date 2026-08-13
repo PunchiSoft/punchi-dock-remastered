@@ -29,6 +29,8 @@ FocusScope {
     property real backgroundOpacity: 0.50
     property bool showDistributionName: true
     property bool showPageNavigationArrows: true
+    property bool showApplicationLabels: true
+    property string hoverAnimation: "pulse"
     property bool sortApplicationsAlphabetically: false
     property string closeButtonPosition: "right"
     property var hiddenApplicationIds: []
@@ -2332,6 +2334,7 @@ FocusScope {
                                         || appDelegate.dropGroupingActive
                                     motionEnabled: root.motionEnabled
                                     requestedIconSize: appDelegate.safeIconSize
+                                    hoverAnimation: root.hoverAnimation
                                     onActivated: root.launchApplicationAt(
                                         appDelegate.globalIndex)
                                     onContextRequested: function(sourceItem, x, y) {
@@ -2355,6 +2358,7 @@ FocusScope {
                                     pressed: delegatePointer.pressed
                                         && !internalDragLayer.active
                                     motionEnabled: root.motionEnabled
+                                    animationMode: root.hoverAnimation
 
                                     ColumnLayout {
                                         anchors.centerIn: parent
@@ -2370,7 +2374,9 @@ FocusScope {
                                         }
 
                                         PlasmaComponents.Label {
+                                            id: applicationLabel
                                             Layout.fillWidth: true
+                                            visible: root.showApplicationLabels
                                             text: String(appDelegate.modelData.appName || "")
                                             textFormat: Text.PlainText
                                             horizontalAlignment: Text.AlignHCenter
@@ -2379,6 +2385,14 @@ FocusScope {
                                             elide: Text.ElideRight
                                             font: Kirigami.Theme.smallFont
                                         }
+                                    }
+
+                                    PlasmaCore.ToolTipArea {
+                                        anchors.fill: parent
+                                        active: !root.showApplicationLabels
+                                            || applicationLabel.truncated
+                                        mainText: String(appDelegate.modelData
+                                            .appName || "")
                                     }
 
                                     Kirigami.Icon {
@@ -2771,17 +2785,22 @@ FocusScope {
 
                 sourceComponent: Component {
                     PunchiMenuSettingsView {
+                        menuMode: "fullScreen"
                         backgroundBlurEnabled: root.backgroundBlurEnabled
                         backgroundOpacityPercent: Math.round(
                             root.safeBackgroundOpacity * 100)
                         showDistributionName: root.showDistributionName
                         showPageNavigationArrows:
                             root.showPageNavigationArrows
+                        showApplicationLabels: root.showApplicationLabels
+                        hoverAnimation: root.hoverAnimation
                         sortApplicationsAlphabetically:
                             root.sortApplicationsAlphabetically
                         closeButtonPosition: root.closeButtonPosition
                         applicationIconScalePercent: Math.round(
                             root.safeApplicationIconScale * 100)
+                        favoriteIconScalePercent: Math.round(
+                            root.safeFavoriteIconScale * 100)
                         folderMaximumColumns: root.safeFolderMaximumColumns
                         folderMaximumRows: root.safeFolderMaximumRows
                         errorMessage: root.settingsErrorMessage
@@ -3043,10 +3062,17 @@ FocusScope {
                                 focused: favoriteDelegate.keyboardFocused
                                 pressed: favoriteMouseArea.pressed
                                 motionEnabled: root.motionEnabled
+                                animationMode: root.hoverAnimation
 
                             ColumnLayout {
                                 anchors.fill: parent
                                 anchors.margins: Kirigami.Units.smallSpacing
+                                anchors.topMargin: root.showApplicationLabels
+                                    ? Kirigami.Units.smallSpacing
+                                    : Math.max(Kirigami.Units.smallSpacing,
+                                        (parent.height - favoriteIconMetrics
+                                            .effectiveSize) / 2)
+                                anchors.bottomMargin: anchors.topMargin
                                 spacing: Kirigami.Units.smallSpacing
 
                                 Kirigami.Icon {
@@ -3060,6 +3086,7 @@ FocusScope {
                                 PlasmaComponents.Label {
                                     id: favoriteLabel
                                     Layout.fillWidth: true
+                                    visible: root.showApplicationLabels
                                     text: favoriteDelegate.appName
                                     horizontalAlignment: Text.AlignHCenter
                                     maximumLineCount: 1
@@ -3081,7 +3108,8 @@ FocusScope {
 
                             PlasmaCore.ToolTipArea {
                                 anchors.fill: parent
-                                active: favoriteLabel.truncated
+                                active: !root.showApplicationLabels
+                                    || favoriteLabel.truncated
                                 mainText: favoriteDelegate.appName
 
                                 MouseArea {
@@ -3211,6 +3239,7 @@ FocusScope {
         id: internalDragLayer
         anchors.fill: parent
         z: 230
+        showApplicationLabels: root.showApplicationLabels
         motionEnabled: root.motionEnabled
     }
 
@@ -3229,6 +3258,8 @@ FocusScope {
                 iconScale: root.safeApplicationIconScale
                 maximumColumnCount: root.safeFolderMaximumColumns
                 maximumRowCount: root.safeFolderMaximumRows
+                showApplicationLabels: root.showApplicationLabels
+                hoverAnimation: root.hoverAnimation
                 detailedApplicationFeedback: true
                 returnToFolderAfterMemberRemoval: true
                 allowedExternalFocusItems: [

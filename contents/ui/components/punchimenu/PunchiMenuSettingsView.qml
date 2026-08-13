@@ -11,21 +11,44 @@ import org.kde.plasma.components as PlasmaComponents
 FocusScope {
     id: root
 
+    property string menuMode: "fullScreen"
     required property bool backgroundBlurEnabled
     required property int backgroundOpacityPercent
-    required property bool showDistributionName
-    required property bool showPageNavigationArrows
+    property bool showDistributionName: false
+    property bool showPageNavigationArrows: false
+    required property bool showApplicationLabels
+    required property string hoverAnimation
     required property bool sortApplicationsAlphabetically
-    required property string closeButtonPosition
+    property string closeButtonPosition: "right"
     required property int applicationIconScalePercent
+    required property int favoriteIconScalePercent
     required property int folderMaximumColumns
     required property int folderMaximumRows
+    property string normalPlacementMode: "anchored"
+    property int normalPanelGap: 8
+    property int normalWidthPercent: 55
+    property int normalHeightPercent: 65
     property string errorMessage: ""
 
     signal settingChanged(string fieldName, var value)
     signal advancedConfigurationRequested()
 
     readonly property int contentMaximumWidth: Kirigami.Units.gridUnit * 40
+    readonly property bool normalMode: menuMode === "normal"
+    readonly property string blurSettingName: normalMode
+        ? "normalBlurEnabled" : "fullScreenBlurEnabled"
+    readonly property string opacitySettingName: normalMode
+        ? "normalBackgroundOpacityPercent"
+        : "fullScreenBackgroundOpacityPercent"
+    readonly property string folderColumnsSettingName: normalMode
+        ? "normalFolderMaximumColumns"
+        : "fullScreenFolderMaximumColumns"
+    readonly property string folderRowsSettingName: normalMode
+        ? "normalFolderMaximumRows"
+        : "fullScreenFolderMaximumRows"
+    readonly property int folderMaximumLimit: normalMode ? 3 : 5
+    readonly property bool anchoredNormalMode: normalMode
+        && normalPlacementMode === "anchored"
     readonly property var closeButtonPositionOptions: [
         {
             "text": i18nc("@option:close-button-position", "Right"),
@@ -36,9 +59,40 @@ FocusScope {
             "value": "left"
         }
     ]
+    readonly property var hoverAnimationOptions: [
+        { "text": i18n("None"), "value": "none" },
+        { "text": i18n("Individual"), "value": "individual" },
+        { "text": i18n("Pulse"), "value": "pulse" },
+        { "text": i18n("Bounce"), "value": "bounce" }
+    ]
+    readonly property var normalPlacementOptions: [
+        {
+            "text": i18nc("@option:punchimenu-placement",
+                "Attached to dock or panel"),
+            "value": "anchored"
+        },
+        {
+            "text": i18nc("@option:punchimenu-placement",
+                "Centered on desktop"),
+            "value": "centered"
+        }
+    ]
 
     function closeButtonPositionIndex() {
         return root.closeButtonPosition === "left" ? 1 : 0
+    }
+
+    function hoverAnimationIndex() {
+        for (let index = 0; index < hoverAnimationOptions.length; ++index) {
+            if (hoverAnimationOptions[index].value === root.hoverAnimation) {
+                return index
+            }
+        }
+        return 2
+    }
+
+    function normalPlacementIndex() {
+        return root.normalPlacementMode === "centered" ? 1 : 0
     }
 
     function focusInitialAction() {
@@ -106,8 +160,8 @@ FocusScope {
                         checked: root.backgroundBlurEnabled
                         Accessible.name: text
                         Accessible.description: i18n("Requests the desktop blur effect for the selected PunchiMenu mode.")
-                        onToggled: root.settingChanged(
-                            "fullScreenBlurEnabled", checked)
+                        onToggled: root.settingChanged(root.blurSettingName,
+                            checked)
                     }
 
                     Kirigami.InlineMessage {
@@ -135,12 +189,12 @@ FocusScope {
                             Accessible.name: i18n("PunchiMenu background opacity")
                             Accessible.description: i18n("Changes only the menu background opacity; text and icons remain fully opaque.")
                             onMoved: root.settingChanged(
-                                "fullScreenBackgroundOpacityPercent",
+                                root.opacitySettingName,
                                 Math.round(value / stepSize) * stepSize)
                             onValueChanged: {
                                 if (activeFocus && !pressed) {
                                     root.settingChanged(
-                                        "fullScreenBackgroundOpacityPercent",
+                                        root.opacitySettingName,
                                         Math.round(value / stepSize) * stepSize)
                                 }
                             }
@@ -175,8 +229,39 @@ FocusScope {
                     Kirigami.Heading {
                         Kirigami.FormData.isSection: true
                         level: 2
-                        text: i18nc("@option:punchimenu-mode",
-                            "PunchiMenu Full screen")
+                        text: root.normalMode
+                            ? i18nc("@option:punchimenu-mode",
+                                "PunchiMenu Normal")
+                            : i18nc("@option:punchimenu-mode",
+                                "PunchiMenu Full screen")
+                    }
+
+                    Controls.Switch {
+                        Kirigami.FormData.label: i18n("Application labels:")
+                        text: i18n("Show application names")
+                        checked: root.showApplicationLabels
+                        Accessible.name: text
+                        Accessible.description: i18n("Shows application names below their icons in the application grid and Favorites.")
+                        onToggled: root.settingChanged(
+                            "showApplicationLabels", checked)
+                    }
+
+                    PunchiMenuComboBox {
+                        Kirigami.FormData.label: i18n("Hover animation:")
+                        Layout.preferredWidth: Kirigami.Units.gridUnit * 12
+                        model: root.hoverAnimationOptions
+                        textRole: "text"
+                        valueRole: "value"
+                        currentIndex: root.hoverAnimationIndex()
+                        Accessible.name: i18n("PunchiMenu hover animation")
+                        Accessible.description: i18n("Animates the complete application item, including its background, icon, and name.")
+                        onActivated: function(index) {
+                            const option = root.hoverAnimationOptions[index]
+                            if (option) {
+                                root.settingChanged(
+                                    "hoverAnimation", option.value)
+                            }
+                        }
                     }
 
                     Controls.Switch {
@@ -199,6 +284,7 @@ FocusScope {
                     }
 
                     Controls.Switch {
+                        visible: !root.normalMode
                         Kirigami.FormData.label: i18n("Distribution label:")
                         text: i18n("Show distribution name in full screen")
                         checked: root.showDistributionName
@@ -208,6 +294,7 @@ FocusScope {
                     }
 
                     Controls.Switch {
+                        visible: !root.normalMode
                         Kirigami.FormData.label: i18n("Page navigation:")
                         text: i18n("Show page navigation arrows")
                         checked: root.showPageNavigationArrows
@@ -216,7 +303,8 @@ FocusScope {
                             "showPageNavigationArrows", checked)
                     }
 
-                    Controls.ComboBox {
+                    PunchiMenuComboBox {
+                        visible: !root.normalMode
                         Kirigami.FormData.label: i18n("Close button:")
                         Layout.preferredWidth: Kirigami.Units.gridUnit * 12
                         model: root.closeButtonPositionOptions
@@ -266,28 +354,186 @@ FocusScope {
                         }
                     }
 
+                    RowLayout {
+                        Kirigami.FormData.label: i18n(
+                            "Favorites icon scale:")
+
+                        Controls.Slider {
+                            id: favoriteIconScaleSlider
+                            Layout.fillWidth: true
+                            from: 75
+                            to: 110
+                            stepSize: 5
+                            snapMode: Controls.Slider.SnapAlways
+                            value: root.favoriteIconScalePercent
+                            Accessible.name: i18n(
+                                "PunchiMenu Favorites icon scale")
+                            Accessible.description: i18n("Changes the icon size in the reserved Favorites section in both menu modes.")
+                            onMoved: root.settingChanged(
+                                "favoriteIconScalePercent",
+                                Math.round(value / stepSize) * stepSize)
+                            onValueChanged: {
+                                if (activeFocus && !pressed) {
+                                    root.settingChanged(
+                                        "favoriteIconScalePercent",
+                                        Math.round(value / stepSize) * stepSize)
+                                }
+                            }
+                        }
+
+                        PlasmaComponents.Label {
+                            Layout.preferredWidth: Kirigami.Units.gridUnit * 3
+                            horizontalAlignment: Text.AlignRight
+                            text: i18n("%1%", Math.round(
+                                favoriteIconScaleSlider.value))
+                        }
+                    }
+
                     Controls.SpinBox {
                         Kirigami.FormData.label: i18n(
                             "Maximum folder columns:")
                         from: 1
-                        to: 5
+                        to: root.folderMaximumLimit
                         value: root.folderMaximumColumns
                         Accessible.name: i18n(
                             "Maximum application columns inside folders")
                         onValueModified: root.settingChanged(
-                            "fullScreenFolderMaximumColumns", value)
+                            root.folderColumnsSettingName, value)
                     }
 
                     Controls.SpinBox {
                         Kirigami.FormData.label: i18n(
                             "Maximum folder rows:")
                         from: 1
-                        to: 5
+                        to: root.folderMaximumLimit
                         value: root.folderMaximumRows
                         Accessible.name: i18n(
                             "Maximum application rows inside folders")
                         onValueModified: root.settingChanged(
-                            "fullScreenFolderMaximumRows", value)
+                            root.folderRowsSettingName, value)
+                    }
+
+                    Kirigami.Heading {
+                        Kirigami.FormData.isSection: true
+                        visible: root.normalMode
+                        level: 2
+                        text: i18n("Location and size")
+                    }
+
+                    PunchiMenuComboBox {
+                        Kirigami.FormData.label: i18n(
+                            "Normal menu placement:")
+                        visible: root.normalMode
+                        Layout.preferredWidth: Kirigami.Units.gridUnit * 12
+                        model: root.normalPlacementOptions
+                        textRole: "text"
+                        valueRole: "value"
+                        currentIndex: root.normalPlacementIndex()
+                        Accessible.name: i18n("Normal menu placement")
+                        Accessible.description: i18n("Attached keeps the menu next to its dock or panel. Centered uses the available area of the active screen.")
+                        onActivated: function(index) {
+                            const option = root.normalPlacementOptions[index]
+                            if (option) {
+                                root.settingChanged(
+                                    "normalPlacementMode", option.value)
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        visible: root.anchoredNormalMode
+                        Kirigami.FormData.label: i18n("Panel distance:")
+
+                        Controls.Slider {
+                            id: normalPanelGapSlider
+                            Layout.fillWidth: true
+                            from: 0
+                            to: 32
+                            stepSize: 1
+                            snapMode: Controls.Slider.SnapAlways
+                            value: root.normalPanelGap
+                            Accessible.name: i18n("PunchiMenu panel distance")
+                            Accessible.description: i18n("Adds space between PunchiMenu Normal and the panel edge.")
+                            onMoved: root.settingChanged(
+                                "normalPanelGap", Math.round(value))
+                            onValueChanged: {
+                                if (activeFocus && !pressed) {
+                                    root.settingChanged(
+                                        "normalPanelGap", Math.round(value))
+                                }
+                            }
+                        }
+
+                        PlasmaComponents.Label {
+                            Layout.preferredWidth: Kirigami.Units.gridUnit * 3
+                            horizontalAlignment: Text.AlignRight
+                            text: i18n("%1 px", Math.round(
+                                normalPanelGapSlider.value))
+                        }
+                    }
+
+                    RowLayout {
+                        visible: root.normalMode
+                        Kirigami.FormData.label: i18n("Normal menu width:")
+
+                        Controls.Slider {
+                            id: normalWidthSlider
+                            Layout.fillWidth: true
+                            from: 30
+                            to: 90
+                            stepSize: 5
+                            snapMode: Controls.Slider.SnapAlways
+                            value: root.normalWidthPercent
+                            Accessible.name: i18n("Normal menu width")
+                            onMoved: root.settingChanged(
+                                "normalWidthPercent",
+                                Math.round(value / stepSize) * stepSize)
+                            onValueChanged: {
+                                if (activeFocus && !pressed) {
+                                    root.settingChanged("normalWidthPercent",
+                                        Math.round(value / stepSize) * stepSize)
+                                }
+                            }
+                        }
+
+                        PlasmaComponents.Label {
+                            Layout.preferredWidth: Kirigami.Units.gridUnit * 3
+                            horizontalAlignment: Text.AlignRight
+                            text: i18n("%1%", Math.round(
+                                normalWidthSlider.value))
+                        }
+                    }
+
+                    RowLayout {
+                        visible: root.normalMode
+                        Kirigami.FormData.label: i18n("Normal menu height:")
+
+                        Controls.Slider {
+                            id: normalHeightSlider
+                            Layout.fillWidth: true
+                            from: 30
+                            to: 90
+                            stepSize: 5
+                            snapMode: Controls.Slider.SnapAlways
+                            value: root.normalHeightPercent
+                            Accessible.name: i18n("Normal menu height")
+                            onMoved: root.settingChanged(
+                                "normalHeightPercent",
+                                Math.round(value / stepSize) * stepSize)
+                            onValueChanged: {
+                                if (activeFocus && !pressed) {
+                                    root.settingChanged("normalHeightPercent",
+                                        Math.round(value / stepSize) * stepSize)
+                                }
+                            }
+                        }
+
+                        PlasmaComponents.Label {
+                            Layout.preferredWidth: Kirigami.Units.gridUnit * 3
+                            horizontalAlignment: Text.AlignRight
+                            text: i18n("%1%", Math.round(
+                                normalHeightSlider.value))
+                        }
                     }
                 }
 
@@ -295,7 +541,8 @@ FocusScope {
                     id: advancedConfigurationButton
                     Layout.alignment: Qt.AlignRight
                     icon.name: "configure"
-                    text: i18nc("@action:button", "Open Advanced Settings…")
+                    text: i18nc("@action:button",
+                        "Open mode, icon, and shortcut settings…")
                     Accessible.name: text
                     onClicked: root.advancedConfigurationRequested()
                 }

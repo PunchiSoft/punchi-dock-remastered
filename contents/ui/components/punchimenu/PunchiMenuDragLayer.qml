@@ -16,6 +16,7 @@ Item {
     property string iconName: "application-x-executable"
     property point pointerPosition: Qt.point(0, 0)
     property size sourceSize: Qt.size(1, 1)
+    property bool showApplicationLabels: true
     property bool motionEnabled: true
     property bool rejected: false
     property rect visualBounds: Qt.rect(0, 0, width, height)
@@ -119,6 +120,11 @@ Item {
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: Kirigami.Units.smallSpacing
+            anchors.topMargin: root.folder || root.showApplicationLabels
+                ? Kirigami.Units.smallSpacing
+                : Math.max(Kirigami.Units.smallSpacing,
+                    (parent.height - Kirigami.Units.iconSizes.large) / 2)
+            anchors.bottomMargin: anchors.topMargin
             spacing: Kirigami.Units.smallSpacing
 
             Kirigami.Icon {
@@ -132,6 +138,7 @@ Item {
 
             PlasmaComponents.Label {
                 Layout.fillWidth: true
+                visible: root.folder || root.showApplicationLabels
                 text: root.label
                 textFormat: Text.PlainText
                 horizontalAlignment: Text.AlignHCenter

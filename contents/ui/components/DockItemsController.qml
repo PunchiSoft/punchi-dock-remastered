@@ -291,13 +291,24 @@ Item {
 
     function setPunchiMenuValue(fieldName, value) {
         const allowedFields = {
+            "normalBlurEnabled": true,
+            "normalBackgroundOpacityPercent": true,
             "fullScreenBlurEnabled": true,
             "fullScreenBackgroundOpacityPercent": true,
             "showDistributionName": true,
             "showPageNavigationArrows": true,
+            "showApplicationLabels": true,
+            "hoverAnimation": true,
             "sortApplicationsAlphabetically": true,
             "fullScreenCloseButtonPosition": true,
             "gridIconScalePercent": true,
+            "favoriteIconScalePercent": true,
+            "normalFolderMaximumColumns": true,
+            "normalFolderMaximumRows": true,
+            "normalPlacementMode": true,
+            "normalPanelGap": true,
+            "normalWidthPercent": true,
+            "normalHeightPercent": true,
             "fullScreenFolderMaximumColumns": true,
             "fullScreenFolderMaximumRows": true
         }

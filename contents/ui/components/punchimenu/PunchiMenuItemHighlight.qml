@@ -11,6 +11,37 @@ Rectangle {
     property bool pressed: false
     property bool circular: false
     property bool motionEnabled: true
+    property string animationMode: "pulse"
+    property bool transformSelf: true
+    property real motionScale: 1.0
+
+    readonly property real visualScale: motionEnabled ? motionScale : 1.0
+
+    function stopScaleAnimations() {
+        individualAnimation.stop()
+        settleAnimation.stop()
+        pulseAnimation.stop()
+        bounceAnimation.stop()
+    }
+
+    function updateHoverAnimation() {
+        stopScaleAnimations()
+        if (!motionEnabled || animationMode === "none") {
+            motionScale = 1.0
+            return
+        }
+        if (!hovered) {
+            settleAnimation.restart()
+            return
+        }
+        if (animationMode === "individual") {
+            individualAnimation.restart()
+        } else if (animationMode === "bounce") {
+            bounceAnimation.restart()
+        } else {
+            pulseAnimation.restart()
+        }
+    }
 
     color: selected || focused || hovered
         ? Qt.alpha(Kirigami.Theme.highlightColor, 0.20)
@@ -20,9 +51,16 @@ Rectangle {
         : "transparent"
     border.width: focused || selected ? 2 : 0
     radius: circular ? height / 2 : Kirigami.Units.cornerRadius * 2
-    scale: pressed ? 0.97 : (selected || hovered || focused) ? 1.03 : 1.0
+    scale: transformSelf
+        ? (motionEnabled && pressed && animationMode !== "none"
+            ? 0.97 : visualScale)
+        : 1.0
     antialiasing: true
     Accessible.ignored: true
+
+    onHoveredChanged: updateHoverAnimation()
+    onAnimationModeChanged: updateHoverAnimation()
+    onMotionEnabledChanged: updateHoverAnimation()
 
     Behavior on color {
         enabled: root.motionEnabled
@@ -32,10 +70,76 @@ Rectangle {
         }
     }
 
-    Behavior on scale {
-        enabled: root.motionEnabled
+    NumberAnimation {
+        id: individualAnimation
+        target: root
+        property: "motionScale"
+        to: 1.03
+        duration: 130
+        easing.type: Easing.OutCubic
+    }
+
+    NumberAnimation {
+        id: settleAnimation
+        target: root
+        property: "motionScale"
+        to: 1.0
+        duration: 100
+        easing.type: Easing.OutCubic
+    }
+
+    SequentialAnimation {
+        id: pulseAnimation
+
         NumberAnimation {
-            duration: root.pressed ? 80 : 130
+            target: root
+            property: "motionScale"
+            to: 1.03
+            duration: 95
+            easing.type: Easing.OutCubic
+        }
+
+        NumberAnimation {
+            target: root
+            property: "motionScale"
+            to: 1.0
+            duration: 125
+            easing.type: Easing.InOutCubic
+        }
+    }
+
+    SequentialAnimation {
+        id: bounceAnimation
+
+        NumberAnimation {
+            target: root
+            property: "motionScale"
+            to: 1.03
+            duration: 80
+            easing.type: Easing.OutCubic
+        }
+
+        NumberAnimation {
+            target: root
+            property: "motionScale"
+            to: 0.985
+            duration: 70
+            easing.type: Easing.InOutCubic
+        }
+
+        NumberAnimation {
+            target: root
+            property: "motionScale"
+            to: 1.012
+            duration: 65
+            easing.type: Easing.OutCubic
+        }
+
+        NumberAnimation {
+            target: root
+            property: "motionScale"
+            to: 1.0
+            duration: 80
             easing.type: Easing.OutCubic
         }
     }

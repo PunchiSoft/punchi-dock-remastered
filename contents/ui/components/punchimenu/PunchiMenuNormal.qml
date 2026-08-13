@@ -20,8 +20,15 @@ FocusScope {
     property real favoriteIconScale: 1.0
     property int folderMaximumColumns: 3
     property int folderMaximumRows: 3
+    property bool showApplicationLabels: true
+    property string hoverAnimation: "pulse"
     property bool sortApplicationsAlphabetically: false
+    property bool backgroundBlurEnabled: true
     property real backgroundOpacity: 0.75
+    property string normalPlacementMode: "anchored"
+    property int normalPanelGap: 8
+    property int normalWidthPercent: 55
+    property int normalHeightPercent: 65
     property real themeFrameLeftMargin: 0
     property real themeFrameTopMargin: 0
     property real themeFrameRightMargin: 0
@@ -94,6 +101,8 @@ FocusScope {
     property string externalDragSourceNodeId: ""
     property int dragScrollDirection: 0
     property string applicationErrorMessage: ""
+    property string settingsErrorMessage: ""
+    property bool settingsViewActive: false
     property string operationMessage: ""
     property bool operationMessageIsError: false
     property bool operationMessageDismissalInProgress: false
@@ -208,7 +217,8 @@ FocusScope {
         }
         return count
     }
-    readonly property bool favoritesSectionVisible: favorites.length > 0
+    readonly property bool favoritesSectionVisible: !settingsViewActive
+        && favorites.length > 0
         && searchField.text.length === 0
         && height >= Kirigami.Units.gridUnit * 24
     readonly property bool organizedListingActive:
@@ -233,6 +243,8 @@ FocusScope {
     signal pinToDockRequested(string storageId, string appName, string appIcon, string appCommand)
     signal addToDesktopRequested(string storageId, string appCommand)
     signal setApplicationHiddenRequested(string storageId, bool hidden)
+    signal settingChangeRequested(string fieldName, var value)
+    signal configureRequested()
 
     function showOperationResult(result) {
         operationMessage = result && result.message ? String(result.message) : ""
@@ -1238,6 +1250,8 @@ FocusScope {
         applicationErrorMessage = ""
         operationMessage = ""
         applicationLaunchPending = false
+        settingsErrorMessage = ""
+        settingsViewActive = false
         activeCategoryKey = "All"
         activeCategoryTitle = i18nc("@title:category", "All Applications")
         categoriesView.currentIndex = categoryIndexForKey(activeCategoryKey)
@@ -1261,6 +1275,7 @@ FocusScope {
         menuOpen = false
         revealHiddenApplications = false
         applicationLaunchPending = false
+        settingsViewActive = false
         closeTimer.restart()
     }
 
@@ -1279,6 +1294,8 @@ FocusScope {
         applicationLaunchPending = false
         applicationErrorMessage = ""
         operationMessage = ""
+        settingsErrorMessage = ""
+        settingsViewActive = false
         pendingCategoryKey = ""
         suppressSearchChange = true
         searchField.clear()
@@ -1296,10 +1313,55 @@ FocusScope {
             closeApplicationContextMenu(true)
         } else if (folderSurface.active) {
             folderSurface.closeCurrentView()
+        } else if (settingsViewActive) {
+            setSettingsViewActive(false)
         } else {
             root.forceClose()
         }
         event.accepted = true
+    }
+
+    function setSettingsViewActive(active) {
+        const requestedState = active === true
+        if (settingsViewActive === requestedState) {
+            return
+        }
+        cancelInternalLayoutDrag()
+        closeApplicationContextMenu(false)
+        folderSurface.reset()
+        settingsErrorMessage = ""
+        settingsViewActive = requestedState
+        if (requestedState) {
+            Qt.callLater(function() {
+                const loadedView = settingsViewLoader.item
+                if (loadedView) {
+                    loadedView.focusInitialAction()
+                }
+            })
+        } else {
+            Qt.callLater(function() {
+                searchField.forceActiveFocus()
+            })
+        }
+    }
+
+    function focusPrimaryContent() {
+        if (settingsViewActive) {
+            const loadedView = settingsViewLoader.item
+            if (loadedView) {
+                loadedView.focusInitialAction()
+            }
+            return
+        }
+        if (categoriesView.count > 0) {
+            categoriesView.forceActiveFocus()
+        } else {
+            focusApplicationsGrid()
+        }
+    }
+
+    function showSettingsPersistenceError() {
+        settingsErrorMessage = i18nc("@info", "Changes could not be saved.")
     }
 
     onHiddenApplicationIdsChanged: {
@@ -1540,17 +1602,14 @@ FocusScope {
                 Kirigami.SearchField {
                     id: searchField
                     Layout.fillWidth: true
+                    enabled: root.menuOpen && !root.settingsViewActive
                     placeholderText: i18nc("@placeholder", "Search applications…")
                     Accessible.name: i18nc("@label", "Search applications")
                     background: PunchiMenuSearchBackground {
                         fieldActiveFocus: searchField.activeFocus
                         fieldHovered: searchField.hovered
                     }
-                    KeyNavigation.tab: hiddenApplicationsButton.visible
-                        ? hiddenApplicationsButton
-                        : (btnLogOut.enabled ? btnLogOut
-                            : (btnReboot.enabled ? btnReboot
-                                : (btnShutdown.enabled ? btnShutdown : btnClose)))
+                    KeyNavigation.tab: configureButton
                     onTextChanged: {
                         if (!root.suppressSearchChange) {
                             root.cancelInternalLayoutDrag()
@@ -1566,6 +1625,71 @@ FocusScope {
                 }
 
                 PlasmaComponents.ToolButton {
+                    id: configureButton
+                    readonly property bool highlightedContent: enabled
+                        && (configureHover.hovered || hovered || down
+                            || activeFocus || checked)
+                    Layout.preferredWidth: root.headerControlSize
+                    Layout.minimumWidth: Layout.preferredWidth
+                    Layout.maximumWidth: Layout.preferredWidth
+                    Layout.preferredHeight: root.headerControlSize
+                    Layout.minimumHeight: Layout.preferredHeight
+                    Layout.maximumHeight: Layout.preferredHeight
+                    enabled: root.menuOpen && !root.applicationLaunchPending
+                    icon.name: root.settingsViewActive ? "view-grid" : "configure"
+                    icon.color: highlightedContent
+                        ? root.Kirigami.Theme.highlightedTextColor
+                        : root.Kirigami.Theme.textColor
+                    display: PlasmaComponents.AbstractButton.IconOnly
+                    text: root.settingsViewActive
+                        ? i18nc("@action:button", "Show applications")
+                        : i18n("Configure PunchiMenu")
+                    checkable: true
+                    checked: root.settingsViewActive
+                    Accessible.name: text
+                    KeyNavigation.backtab: searchField
+                    KeyNavigation.tab: hiddenApplicationsButton.visible
+                            && !root.settingsViewActive
+                        ? hiddenApplicationsButton
+                        : (btnLogOut.enabled ? btnLogOut
+                            : (btnReboot.enabled ? btnReboot
+                                : (btnShutdown.enabled ? btnShutdown : btnClose)))
+
+                    background: PunchiMenuActionBackground {
+                        highlighted: configureButton.highlightedContent
+                        circular: true
+                    }
+
+                    PlasmaCore.ToolTipArea {
+                        id: configureToolTip
+                        anchors.fill: parent
+                        active: configureButton.enabled
+                        mainText: configureButton.text
+                    }
+
+                    onActiveFocusChanged: {
+                        if (activeFocus) {
+                            configureToolTip.showToolTip()
+                        } else if (!configureToolTip.containsMouse) {
+                            configureToolTip.hideImmediately()
+                        }
+                    }
+                    onClicked: root.setSettingsViewActive(
+                        !root.settingsViewActive)
+
+                    Keys.onDownPressed: function(event) {
+                        root.focusPrimaryContent()
+                        event.accepted = true
+                    }
+
+                    HoverHandler {
+                        id: configureHover
+                        enabled: configureButton.enabled
+                        cursorShape: Qt.PointingHandCursor
+                    }
+                }
+
+                PlasmaComponents.ToolButton {
                     id: hiddenApplicationsButton
                     readonly property bool highlightedContent: enabled
                         && (hiddenApplicationsHover.hovered || hovered || down
@@ -1577,7 +1701,8 @@ FocusScope {
                     Layout.minimumHeight: Layout.preferredHeight
                     Layout.maximumHeight: Layout.preferredHeight
                     visible: root.hiddenApplicationCount > 0
-                    enabled: root.menuOpen && !root.applicationLaunchPending
+                    enabled: root.menuOpen && !root.settingsViewActive
+                        && !root.applicationLaunchPending
                     icon.name: root.revealHiddenApplications
                         ? "view-visible-symbolic"
                         : "view-hidden-symbolic"
@@ -1591,7 +1716,7 @@ FocusScope {
                     checkable: true
                     checked: root.revealHiddenApplications
                     Accessible.name: text
-                    KeyNavigation.backtab: searchField
+                    KeyNavigation.backtab: configureButton
                     KeyNavigation.tab: btnLogOut.enabled ? btnLogOut
                         : (btnReboot.enabled ? btnReboot
                             : (btnShutdown.enabled ? btnShutdown : btnClose))
@@ -1650,10 +1775,12 @@ FocusScope {
                     Accessible.name: text
                     enabled: sessionActions.canLogout
                     KeyNavigation.backtab: hiddenApplicationsButton.visible
-                        ? hiddenApplicationsButton : searchField
-                    KeyNavigation.tab: categoriesView
+                        ? hiddenApplicationsButton : configureButton
+                    KeyNavigation.tab: root.settingsViewActive
+                        ? configureButton : categoriesView
                     KeyNavigation.right: btnReboot.enabled ? btnReboot : (btnShutdown.enabled ? btnShutdown : btnClose)
-                    KeyNavigation.down: categoriesView
+                    KeyNavigation.down: root.settingsViewActive
+                        ? configureButton : categoriesView
 
                     background: PunchiMenuActionBackground {
                         highlighted: btnLogOut.highlightedContent
@@ -1705,11 +1832,14 @@ FocusScope {
                     text: i18nc("@action:button", "Restart")
                     Accessible.name: text
                     enabled: sessionActions.canReboot
-                    KeyNavigation.backtab: searchField
-                    KeyNavigation.tab: categoriesView
+                    KeyNavigation.backtab: btnLogOut.enabled
+                        ? btnLogOut : configureButton
+                    KeyNavigation.tab: root.settingsViewActive
+                        ? configureButton : categoriesView
                     KeyNavigation.left: btnLogOut.enabled ? btnLogOut : null
                     KeyNavigation.right: btnShutdown.enabled ? btnShutdown : btnClose
-                    KeyNavigation.down: categoriesView
+                    KeyNavigation.down: root.settingsViewActive
+                        ? configureButton : categoriesView
 
                     background: PunchiMenuActionBackground {
                         highlighted: btnReboot.highlightedContent
@@ -1761,11 +1891,15 @@ FocusScope {
                     text: i18nc("@action:button", "Shut Down")
                     Accessible.name: text
                     enabled: sessionActions.canShutdown
-                    KeyNavigation.backtab: searchField
-                    KeyNavigation.tab: categoriesView
+                    KeyNavigation.backtab: btnReboot.enabled
+                        ? btnReboot : (btnLogOut.enabled
+                            ? btnLogOut : configureButton)
+                    KeyNavigation.tab: root.settingsViewActive
+                        ? configureButton : categoriesView
                     KeyNavigation.left: btnReboot.enabled ? btnReboot : (btnLogOut.enabled ? btnLogOut : null)
                     KeyNavigation.right: btnClose
-                    KeyNavigation.down: categoriesView
+                    KeyNavigation.down: root.settingsViewActive
+                        ? configureButton : categoriesView
 
                     background: PunchiMenuActionBackground {
                         highlighted: btnShutdown.highlightedContent
@@ -1816,10 +1950,15 @@ FocusScope {
                     display: PlasmaComponents.AbstractButton.IconOnly
                     text: i18nc("@action:button", "Close")
                     Accessible.name: text
-                    KeyNavigation.backtab: searchField
-                    KeyNavigation.tab: categoriesView
+                    KeyNavigation.backtab: btnShutdown.enabled
+                        ? btnShutdown : (btnReboot.enabled
+                            ? btnReboot : (btnLogOut.enabled
+                                ? btnLogOut : configureButton))
+                    KeyNavigation.tab: root.settingsViewActive
+                        ? configureButton : categoriesView
                     KeyNavigation.left: btnShutdown.enabled ? btnShutdown : (btnReboot.enabled ? btnReboot : (btnLogOut.enabled ? btnLogOut : null))
-                    KeyNavigation.down: categoriesView
+                    KeyNavigation.down: root.settingsViewActive
+                        ? configureButton : categoriesView
 
                     background: PunchiMenuActionBackground {
                         highlighted: btnClose.highlightedContent
@@ -1857,6 +1996,7 @@ FocusScope {
             Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: Kirigami.Units.gridUnit * 2.65
+                visible: !root.settingsViewActive
 
                 RowLayout {
                     anchors.fill: parent
@@ -2080,12 +2220,14 @@ FocusScope {
 
             Kirigami.Separator {
                 Layout.fillWidth: true
+                visible: !root.settingsViewActive
                 Accessible.ignored: true
             }
 
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                visible: !root.settingsViewActive
 
                 DropArea {
                     id: applicationsDropArea
@@ -2299,6 +2441,7 @@ FocusScope {
                                 || applicationDelegate.dropGroupingActive
                             motionEnabled: root.motionEnabled
                             requestedIconSize: applicationDelegate.iconSize
+                            hoverAnimation: root.hoverAnimation
                             onActivated: applicationDelegate.launchApp()
                             onContextRequested: function(sourceItem, x, y) {
                                 applicationsGrid.currentIndex
@@ -2321,10 +2464,17 @@ FocusScope {
                             pressed: delegatePointer.pressed
                                 && !internalDragLayer.active
                             motionEnabled: root.motionEnabled
+                            animationMode: root.hoverAnimation
 
                             ColumnLayout {
                                 anchors.fill: parent
                                 anchors.margins: Kirigami.Units.smallSpacing
+                                anchors.topMargin: root.showApplicationLabels
+                                    ? Kirigami.Units.smallSpacing
+                                    : Math.max(Kirigami.Units.smallSpacing,
+                                        (parent.height
+                                            - applicationDelegate.iconSize) / 2)
+                                anchors.bottomMargin: anchors.topMargin
                                 spacing: Kirigami.Units.smallSpacing
 
                                 Kirigami.Icon {
@@ -2337,6 +2487,7 @@ FocusScope {
                                 PlasmaComponents.Label {
                                     id: applicationLabel
                                     Layout.fillWidth: true
+                                    visible: root.showApplicationLabels
                                     text: applicationDelegate.appName
                                     textFormat: Text.PlainText
                                     horizontalAlignment: Text.AlignHCenter
@@ -2359,7 +2510,8 @@ FocusScope {
 
                             PlasmaCore.ToolTipArea {
                                 anchors.fill: parent
-                                active: applicationLabel.truncated
+                                active: !root.showApplicationLabels
+                                    || applicationLabel.truncated
                                 mainText: applicationDelegate.appName
                             }
                         }
@@ -2884,10 +3036,17 @@ FocusScope {
                                 focused: favoriteDelegate.keyboardFocused
                                 pressed: favoriteMouseArea.pressed
                                 motionEnabled: root.motionEnabled
+                                animationMode: root.hoverAnimation
 
                                 ColumnLayout {
                                     anchors.fill: parent
                                     anchors.margins: Kirigami.Units.smallSpacing
+                                    anchors.topMargin: root.showApplicationLabels
+                                        ? Kirigami.Units.smallSpacing
+                                        : Math.max(Kirigami.Units.smallSpacing,
+                                            (parent.height - favoriteIconMetrics
+                                                .effectiveSize) / 2)
+                                    anchors.bottomMargin: anchors.topMargin
                                     spacing: Kirigami.Units.smallSpacing
 
                                     Kirigami.Icon {
@@ -2901,6 +3060,7 @@ FocusScope {
                                     PlasmaComponents.Label {
                                         id: favoriteLabel
                                         Layout.fillWidth: true
+                                        visible: root.showApplicationLabels
                                         text: favoriteDelegate.appName
                                         horizontalAlignment: Text.AlignHCenter
                                         maximumLineCount: 1
@@ -2921,7 +3081,8 @@ FocusScope {
 
                                 PlasmaCore.ToolTipArea {
                                     anchors.fill: parent
-                                    active: favoriteLabel.truncated
+                                    active: !root.showApplicationLabels
+                                        || favoriteLabel.truncated
                                     mainText: favoriteDelegate.appName
 
                                     MouseArea {
@@ -3014,6 +3175,47 @@ FocusScope {
                     onFinished: root.updateFavoritesEdgeScroll()
                 }
             }
+
+            Loader {
+                id: settingsViewLoader
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                active: root.settingsViewActive
+                visible: root.settingsViewActive
+                enabled: visible
+                asynchronous: false
+
+                sourceComponent: Component {
+                    PunchiMenuSettingsView {
+                        menuMode: "normal"
+                        backgroundBlurEnabled: root.backgroundBlurEnabled
+                        backgroundOpacityPercent: Math.round(
+                            root.safeBackgroundOpacity * 100)
+                        showApplicationLabels: root.showApplicationLabels
+                        hoverAnimation: root.hoverAnimation
+                        sortApplicationsAlphabetically:
+                            root.sortApplicationsAlphabetically
+                        applicationIconScalePercent: Math.round(
+                            root.safeApplicationIconScale * 100)
+                        favoriteIconScalePercent: Math.round(
+                            root.safeFavoriteIconScale * 100)
+                        folderMaximumColumns: root.safeFolderMaximumColumns
+                        folderMaximumRows: root.safeFolderMaximumRows
+                        normalPlacementMode: root.normalPlacementMode
+                        normalPanelGap: root.normalPanelGap
+                        normalWidthPercent: root.normalWidthPercent
+                        normalHeightPercent: root.normalHeightPercent
+                        errorMessage: root.settingsErrorMessage
+
+                        onSettingChanged: function(fieldName, value) {
+                            root.settingsErrorMessage = ""
+                            root.settingChangeRequested(fieldName, value)
+                        }
+                        onAdvancedConfigurationRequested:
+                            root.configureRequested()
+                    }
+                }
+            }
         }
     }
 
@@ -3021,6 +3223,7 @@ FocusScope {
         id: internalDragLayer
         anchors.fill: parent
         z: 230
+        showApplicationLabels: root.showApplicationLabels
         motionEnabled: root.motionEnabled
         visualBounds: root.folderDialogBackdropGeometry
     }
@@ -3052,6 +3255,8 @@ FocusScope {
         iconScale: root.safeApplicationIconScale
         maximumColumnCount: root.safeFolderMaximumColumns
         maximumRowCount: root.safeFolderMaximumRows
+        showApplicationLabels: root.showApplicationLabels
+        hoverAnimation: root.hoverAnimation
         detailedApplicationFeedback: true
         backdropGeometry: root.folderDialogBackdropGeometry
         backdropRadius: root.normalBackgroundBlurRadius
