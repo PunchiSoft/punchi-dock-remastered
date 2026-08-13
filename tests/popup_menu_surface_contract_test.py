@@ -178,6 +178,12 @@ def main() -> int:
         require(animated_content, fragment, message)
     require(folder_popup, "FolderPopup {",
             "Folder profiles must remain inside the shared surface")
+    require(
+        folder_popup,
+        "contentGeometryTransitionsEnabled: false",
+        "Folder profiles must expose their final width before Plasma positions "
+        "the popup",
+    )
     for fragment, message in (
         ('import "punchimenu" as PunchiMenuComponents',
          "Folder popup launchers must import the canonical highlight"),

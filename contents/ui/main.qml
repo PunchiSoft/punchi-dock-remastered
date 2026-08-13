@@ -159,6 +159,9 @@ PlasmoidItem {
     readonly property bool configuredPunchiMenuShowPageNavigationArrows:
         !configuredPunchiMenuItem
         || configuredPunchiMenuItem.showPageNavigationArrows !== false
+    readonly property bool configuredPunchiMenuSortApplicationsAlphabetically:
+        !!configuredPunchiMenuItem
+        && configuredPunchiMenuItem.sortApplicationsAlphabetically === true
     readonly property string configuredPunchiMenuFullScreenCloseButtonPosition:
         configuredPunchiMenuItem
             && configuredPunchiMenuItem.fullScreenCloseButtonPosition === "left"
@@ -536,6 +539,8 @@ PlasmoidItem {
                 showDistributionName: root.configuredPunchiMenuShowDistributionName
                 showPageNavigationArrows:
                     root.configuredPunchiMenuShowPageNavigationArrows
+                sortApplicationsAlphabetically:
+                    root.configuredPunchiMenuSortApplicationsAlphabetically
                 closeButtonPosition:
                     root.configuredPunchiMenuFullScreenCloseButtonPosition
                 backgroundBlurEnabled: root.configuredPunchiMenuFullScreenBlurEnabled
@@ -805,6 +810,8 @@ PlasmoidItem {
                     root.configuredPunchiMenuNormalFolderMaximumColumns
                 folderMaximumRows:
                     root.configuredPunchiMenuNormalFolderMaximumRows
+                sortApplicationsAlphabetically:
+                    root.configuredPunchiMenuSortApplicationsAlphabetically
                 backgroundOpacity: root.configuredPunchiMenuNormalBackgroundOpacity
                 themeFrameLeftMargin: punchiMenuNormalDialog.themeFrameMargin("left")
                 themeFrameTopMargin: punchiMenuNormalDialog.themeFrameMargin("top")
@@ -1907,6 +1914,10 @@ PlasmoidItem {
                 ContextSurfaceStack {
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
                     showMedia: false
+                    // Folder profiles use different widths. Resolve the final
+                    // geometry before mapping the dialog so Plasma can center
+                    // it against visualParent without an intermediate width.
+                    contentGeometryTransitionsEnabled: false
                     drawContentBackground: true
                     backgroundImagePath: "widgets/background"
                     backgroundOpacity: dockConfig.folderPopupBackgroundOpacity

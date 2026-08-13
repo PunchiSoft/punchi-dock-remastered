@@ -16,6 +16,7 @@ class PunchiMenuLayoutModel : public QAbstractListModel
     Q_PROPERTY(QVariantMap layoutDocument READ layoutDocument WRITE setLayoutDocument NOTIFY layoutDocumentChanged)
     Q_PROPERTY(QStringList hiddenApplicationIds READ hiddenApplicationIds WRITE setHiddenApplicationIds NOTIFY hiddenApplicationIdsChanged)
     Q_PROPERTY(bool revealHiddenApplications READ revealHiddenApplications WRITE setRevealHiddenApplications NOTIFY revealHiddenApplicationsChanged)
+    Q_PROPERTY(bool alphabeticalSortingEnabled READ alphabeticalSortingEnabled WRITE setAlphabeticalSortingEnabled NOTIFY alphabeticalSortingEnabledChanged)
     Q_PROPERTY(QVariantMap effectiveLayoutDocument READ effectiveLayoutDocument NOTIFY nodesChanged)
     Q_PROPERTY(QVariantList nodes READ nodes NOTIFY nodesChanged)
     Q_PROPERTY(int folderChoiceCount READ folderChoiceCount NOTIFY nodesChanged)
@@ -57,6 +58,9 @@ public:
     [[nodiscard]] bool revealHiddenApplications() const;
     void setRevealHiddenApplications(bool reveal);
 
+    [[nodiscard]] bool alphabeticalSortingEnabled() const;
+    void setAlphabeticalSortingEnabled(bool enabled);
+
     [[nodiscard]] QVariantMap effectiveLayoutDocument() const;
     [[nodiscard]] QVariantList nodes() const;
     [[nodiscard]] int folderChoiceCount() const;
@@ -74,6 +78,7 @@ Q_SIGNALS:
     void layoutDocumentChanged();
     void hiddenApplicationIdsChanged();
     void revealHiddenApplicationsChanged();
+    void alphabeticalSortingEnabledChanged();
     void nodesChanged();
     void lastErrorCodeChanged();
     void validationFailed(const QString &errorCode);
@@ -89,6 +94,7 @@ private:
     QVariantMap m_layoutDocument;
     QStringList m_hiddenApplicationIds;
     bool m_revealHiddenApplications = false;
+    bool m_alphabeticalSortingEnabled = false;
     QVariantMap m_effectiveLayoutDocument;
     QVariantList m_nodes;
     QString m_lastErrorCode;

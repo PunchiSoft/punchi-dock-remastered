@@ -4,6 +4,7 @@
 
 #include "punchimenulayoutdocument.h"
 
+#include <QCollator>
 #include <QMetaType>
 #include <QSet>
 
@@ -95,6 +96,15 @@ QVariantMap applicationRow(const QVariantMap &application)
     row.insert(QStringLiteral("appHidden"),
         application.value(QStringLiteral("hidden"), false));
     return row;
+}
+
+QString nodeDisplayLabel(const QVariantMap &node)
+{
+    return node.value(node.value(QStringLiteral("nodeType")).toString()
+                == QLatin1String(folderNodeType)
+            ? QStringLiteral("folderLabel")
+            : QStringLiteral("appName"))
+        .toString();
 }
 }
 
@@ -260,6 +270,22 @@ void PunchiMenuLayoutModel::setRevealHiddenApplications(bool reveal)
     m_revealHiddenApplications = reveal;
     rebuildNodes();
     Q_EMIT revealHiddenApplicationsChanged();
+}
+
+bool PunchiMenuLayoutModel::alphabeticalSortingEnabled() const
+{
+    return m_alphabeticalSortingEnabled;
+}
+
+void PunchiMenuLayoutModel::setAlphabeticalSortingEnabled(bool enabled)
+{
+    if (m_alphabeticalSortingEnabled == enabled) {
+        return;
+    }
+
+    m_alphabeticalSortingEnabled = enabled;
+    rebuildNodes();
+    Q_EMIT alphabeticalSortingEnabledChanged();
 }
 
 QVariantMap PunchiMenuLayoutModel::effectiveLayoutDocument() const
@@ -626,6 +652,25 @@ void PunchiMenuLayoutModel::rebuildNodes()
             {QStringLiteral("folderMemberCount"), resolvedMembers.size()},
             {QStringLiteral("folderPreviewIcons"), previewIcons},
         });
+    }
+
+    if (m_alphabeticalSortingEnabled) {
+        QCollator collator;
+        collator.setCaseSensitivity(Qt::CaseInsensitive);
+        collator.setNumericMode(true);
+        std::stable_sort(rebuiltNodes.begin(), rebuiltNodes.end(),
+            [&collator](const QVariant &leftValue,
+                const QVariant &rightValue) {
+                const QVariantMap left = leftValue.toMap();
+                const QVariantMap right = rightValue.toMap();
+                const int labelOrder = collator.compare(
+                    nodeDisplayLabel(left), nodeDisplayLabel(right));
+                if (labelOrder != 0) {
+                    return labelOrder < 0;
+                }
+                return left.value(QStringLiteral("nodeId")).toString()
+                    < right.value(QStringLiteral("nodeId")).toString();
+            });
     }
 
     beginResetModel();

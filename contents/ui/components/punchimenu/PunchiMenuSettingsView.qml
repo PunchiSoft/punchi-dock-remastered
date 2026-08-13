@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
+import org.kde.config as KConfig
+import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.components as PlasmaComponents
 
@@ -13,6 +15,7 @@ FocusScope {
     required property int backgroundOpacityPercent
     required property bool showDistributionName
     required property bool showPageNavigationArrows
+    required property bool sortApplicationsAlphabetically
     required property string closeButtonPosition
     required property int applicationIconScalePercent
     required property int folderMaximumColumns
@@ -107,6 +110,17 @@ FocusScope {
                             "fullScreenBlurEnabled", checked)
                     }
 
+                    Kirigami.InlineMessage {
+                        Kirigami.FormData.isSection: true
+                        Layout.fillWidth: true
+                        visible: true
+                        type: Kirigami.MessageType.Information
+                        text: root.backgroundBlurEnabled
+                            ? i18n("The background will use KWin blur when available. The selected opacity controls how much content behind the menu remains visible.")
+                            : i18n("Without blur, the background depends on the Plasma theme and the selected opacity.")
+                        Accessible.name: text
+                    }
+
                     RowLayout {
                         Kirigami.FormData.label: i18n("Background opacity:")
 
@@ -140,11 +154,48 @@ FocusScope {
                         }
                     }
 
+                    PlasmaComponents.Button {
+                        Kirigami.FormData.isSection: true
+                        Layout.alignment: Qt.AlignRight
+                        visible: KConfig.KAuthorized.authorizeControlModule(
+                            "kcm_kwin_effects")
+                        icon.name: "configure"
+                        text: i18nc("@action:button opens system settings",
+                            "Configure Desktop Effects…")
+                        Accessible.name: text
+                        onClicked: KCM.KCMLauncher.openSystemSettings(
+                            "kcm_kwin_effects")
+
+                        HoverHandler {
+                            enabled: parent.enabled
+                            cursorShape: Qt.PointingHandCursor
+                        }
+                    }
+
                     Kirigami.Heading {
                         Kirigami.FormData.isSection: true
                         level: 2
                         text: i18nc("@option:punchimenu-mode",
                             "PunchiMenu Full screen")
+                    }
+
+                    Controls.Switch {
+                        Kirigami.FormData.label: i18n("Application order:")
+                        text: i18n("Sort applications alphabetically")
+                        checked: root.sortApplicationsAlphabetically
+                        Accessible.name: text
+                        Accessible.description: i18n("Keeps drag and drop available, but prevents manual reordering while alphabetical sorting is enabled.")
+                        onToggled: root.settingChanged(
+                            "sortApplicationsAlphabetically", checked)
+                    }
+
+                    Kirigami.InlineMessage {
+                        Kirigami.FormData.isSection: true
+                        Layout.fillWidth: true
+                        visible: root.sortApplicationsAlphabetically
+                        type: Kirigami.MessageType.Information
+                        text: i18n("Alphabetical sorting is active. Application positions cannot be changed manually, but drag and drop remains available.")
+                        Accessible.name: text
                     }
 
                     Controls.Switch {

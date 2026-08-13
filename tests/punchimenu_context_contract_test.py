@@ -695,6 +695,21 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
+    close_button_start = overlay_source.find("id: closeButton")
+    close_button_contract = overlay_source[
+        close_button_start:close_button_start + 1800
+    ]
+    if close_button_start < 0 or (
+        "HoverHandler {" not in close_button_contract
+        or "enabled: closeButton.enabled" not in close_button_contract
+        or "cursorShape: Qt.PointingHandCursor" not in close_button_contract
+    ):
+        print(
+            "PunchiMenu Fullscreen close button: pointing-hand cursor "
+            "contract is incomplete",
+            file=sys.stderr,
+        )
+        passed = False
     legacy_dialog_basic_contract = (
         'i18n("Menu mode:")',
         "Controls.ComboBox {",
@@ -1186,6 +1201,7 @@ def main() -> int:
         "fullScreenBackgroundOpacityPercent",
         "showDistributionName",
         "showPageNavigationArrows",
+        "sortApplicationsAlphabetically",
         "fullScreenCloseButtonPosition",
         "gridIconScalePercent",
         "fullScreenFolderMaximumColumns",
@@ -1350,6 +1366,133 @@ def main() -> int:
         if marker not in source:
             print(
                 f"PunchiMenu Normal DnD: missing {description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    alphabetical_sorting_contract = (
+        (config_items_source, 'item.sortApplicationsAlphabetically === true',
+            "canonical boolean normalization"),
+        (main_source,
+            "configuredPunchiMenuSortApplicationsAlphabetically",
+            "reactive runtime projection"),
+        (settings_view_source,
+            'i18n("Sort applications alphabetically")',
+            "internal settings switch"),
+        (punchi_menu_config_source,
+            'i18n("Sort applications alphabetically")',
+            "advanced settings switch"),
+        (settings_view_source,
+            "visible: root.sortApplicationsAlphabetically",
+            "conditional internal information message"),
+        (punchi_menu_config_source,
+            "visible: page.sortApplicationsAlphabetically",
+            "conditional advanced information message"),
+        (settings_view_source,
+            'i18n("Alphabetical sorting is active. Application positions cannot be changed manually, but drag and drop remains available.")',
+            "internal sorting consequence"),
+        (punchi_menu_config_source,
+            'i18n("Alphabetical sorting is active. Application positions cannot be changed manually, but drag and drop remains available.")',
+            "advanced sorting consequence"),
+        (normal_source,
+            "alphabeticalSortingEnabled: root.sortApplicationsAlphabetically",
+            "Normal model projection"),
+        (overlay_source,
+            "alphabeticalSortingEnabled: root.sortApplicationsAlphabetically",
+            "Fullscreen model projection"),
+        (normal_source,
+            "if (root.sortApplicationsAlphabetically\n"
+            "                || !applicationLayoutController",
+            "Normal positional-move guard"),
+        (overlay_source,
+            "if (root.sortApplicationsAlphabetically\n"
+            "                || !applicationLayoutController",
+            "Fullscreen positional-move guard"),
+        (normal_source,
+            'dropIntent = internalDragLayer.folder\n'
+            '                                        ? "none" : "group"',
+            "Normal grouping-only drop intent"),
+        (overlay_source,
+            'dropIntent = internalDragLayer.folder\n'
+            '                                                ? "none" : "group"',
+            "Fullscreen grouping-only drop intent"),
+    )
+    for source, marker, description in alphabetical_sorting_contract:
+        if marker not in source:
+            print(
+                "PunchiMenu alphabetical sorting: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    desktop_effects_settings_contract = (
+        (settings_view_source,
+            'import org.kde.kcmutils as KCM',
+            "internal KCM launcher import"),
+        (settings_view_source,
+            'KConfig.KAuthorized.authorizeControlModule(\n'
+            '                            "kcm_kwin_effects")',
+            "internal authorization check"),
+        (settings_view_source,
+            'KCM.KCMLauncher.openSystemSettings(\n'
+            '                            "kcm_kwin_effects")',
+            "internal desktop-effects launcher"),
+        (punchi_menu_config_source,
+            'KConfig.KAuthorized.authorizeControlModule(\n'
+            '                    "kcm_kwin_effects")',
+            "advanced authorization check"),
+        (punchi_menu_config_source,
+            'KCM.KCMLauncher.openSystemSettings(\n'
+            '                    "kcm_kwin_effects")',
+            "advanced desktop-effects launcher"),
+        (settings_view_source,
+            "text: root.backgroundBlurEnabled\n"
+            "                            ? i18n(\"The background will use KWin blur when available.",
+            "internal reactive blur explanation"),
+        (punchi_menu_config_source,
+            "text: page.selectedBlurEnabled\n"
+            "                    ? i18n(\"The background will use KWin blur when available.",
+            "advanced reactive blur explanation"),
+        (settings_view_source,
+            'i18n("Without blur, the background depends on the Plasma theme and the selected opacity.")',
+            "internal disabled-blur explanation"),
+        (punchi_menu_config_source,
+            'i18n("Without blur, the background depends on the Plasma theme and the selected opacity.")',
+            "advanced disabled-blur explanation"),
+    )
+    for source, marker, description in desktop_effects_settings_contract:
+        if marker not in source:
+            print(
+                "PunchiMenu desktop effects settings: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    blur_explanation_order_contract = (
+        (
+            settings_view_source,
+            "id: backgroundBlurSwitch",
+            "text: root.backgroundBlurEnabled",
+            "id: backgroundOpacitySlider",
+            "internal settings",
+        ),
+        (
+            punchi_menu_config_source,
+            "id: backgroundBlurSwitch",
+            "text: page.selectedBlurEnabled",
+            "id: backgroundOpacitySlider",
+            "advanced settings",
+        ),
+    )
+    for source, switch_marker, message_marker, opacity_marker, description in (
+        blur_explanation_order_contract
+    ):
+        switch_index = source.find(switch_marker)
+        message_index = source.find(message_marker)
+        opacity_index = source.find(opacity_marker)
+        if not switch_index < message_index < opacity_index:
+            print(
+                "PunchiMenu blur explanation order: the message must appear "
+                f"below the switch and before opacity in {description}",
                 file=sys.stderr,
             )
             passed = False

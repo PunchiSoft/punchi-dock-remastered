@@ -18,6 +18,8 @@ FocusScope {
     readonly property alias hovered: pointer.containsMouse
 
     readonly property int previewSize: iconMetrics.effectiveSize
+    readonly property int previewInset: Math.max(Kirigami.Units.smallSpacing,
+        Math.round(previewSize * 0.18))
     readonly property string effectiveLabel: folderLabel.length > 0
         ? folderLabel
         : i18nc("@label", "Applications folder")
@@ -75,18 +77,21 @@ FocusScope {
             Layout.preferredHeight: root.previewSize
             Layout.alignment: Qt.AlignHCenter
 
-            Kirigami.Icon {
+            Rectangle {
+                id: folderPlaque
                 anchors.fill: parent
-                source: "folder"
-                opacity: 0.92
+                radius: Kirigami.Units.cornerRadius * 2
+                color: Kirigami.Theme.alternateBackgroundColor
+                border.width: 1
+                border.color: Qt.alpha(Kirigami.Theme.textColor,
+                    Kirigami.Theme.lightFrameContrast)
                 Accessible.ignored: true
             }
 
             Grid {
                 id: previewGrid
-                anchors.centerIn: parent
-                width: parent.width * 0.63
-                height: width
+                anchors.fill: parent
+                anchors.margins: root.previewInset
                 columns: 2
                 rows: 2
                 spacing: Math.max(1, Math.round(width * 0.06))

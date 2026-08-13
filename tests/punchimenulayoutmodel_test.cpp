@@ -643,6 +643,51 @@ int main(int argc, char **argv)
                 QByteArrayLiteral("appCommand")),
         "the QML role contract exposes stable data without command-bearing roles");
 
+    PunchiMenuLayoutModel alphabeticalModel;
+    alphabeticalModel.setApplications({
+        application(QStringLiteral("org.example.Zulu.desktop"),
+            QStringLiteral("Zulu"), QStringLiteral("zulu")),
+        application(QStringLiteral("org.example.Alpha.desktop"),
+            QStringLiteral("Alpha"), QStringLiteral("alpha")),
+        application(QStringLiteral("org.example.Bravo.desktop"),
+            QStringLiteral("Bravo"), QStringLiteral("bravo")),
+        application(QStringLiteral("org.example.Echo.desktop"),
+            QStringLiteral("Echo"), QStringLiteral("echo")),
+    });
+    alphabeticalModel.setLayoutDocument(document({
+        applicationNode(QStringLiteral("org.example.Zulu.desktop")),
+        folderNode(QStringLiteral("folder-alpha"),
+            QStringLiteral("Alpha Folder"), {
+                QStringLiteral("org.example.Alpha.desktop"),
+                QStringLiteral("org.example.Echo.desktop"),
+            }),
+        applicationNode(QStringLiteral("org.example.Bravo.desktop")),
+    }));
+    const QVariantMap alphabeticalSourceDocument
+        = alphabeticalModel.effectiveLayoutDocument();
+    alphabeticalModel.setAlphabeticalSortingEnabled(true);
+    passed &= expect(alphabeticalModel.alphabeticalSortingEnabled()
+            && alphabeticalModel.data(alphabeticalModel.index(0, 0),
+                   Qt::DisplayRole).toString()
+                == QStringLiteral("Alpha Folder")
+            && alphabeticalModel.data(alphabeticalModel.index(1, 0),
+                   Qt::DisplayRole).toString()
+                == QStringLiteral("Bravo")
+            && alphabeticalModel.data(alphabeticalModel.index(2, 0),
+                   Qt::DisplayRole).toString()
+                == QStringLiteral("Zulu")
+            && alphabeticalModel.effectiveLayoutDocument()
+                == alphabeticalSourceDocument,
+        "alphabetical sorting changes only the visible projection and includes folders");
+    alphabeticalModel.setAlphabeticalSortingEnabled(false);
+    passed &= expect(alphabeticalModel.data(alphabeticalModel.index(0, 0),
+                   Qt::DisplayRole).toString()
+                == QStringLiteral("Zulu")
+            && alphabeticalModel.data(alphabeticalModel.index(1, 0),
+                   Qt::DisplayRole).toString()
+                == QStringLiteral("Alpha Folder"),
+        "disabling alphabetical sorting restores the persisted manual order");
+
     QVariantList capacityMembers;
     for (int index = 0;
          index < PunchiMenuLayoutDocument::MaximumFolderMembers; ++index) {

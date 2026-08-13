@@ -20,6 +20,7 @@ FocusScope {
     property real favoriteIconScale: 1.0
     property int folderMaximumColumns: 3
     property int folderMaximumRows: 3
+    property bool sortApplicationsAlphabetically: false
     property real backgroundOpacity: 0.75
     property real themeFrameLeftMargin: 0
     property real themeFrameTopMargin: 0
@@ -428,7 +429,8 @@ FocusScope {
     }
 
     function requestDraggedNodeMove(beforeNodeId) {
-        if (!applicationLayoutController
+        if (root.sortApplicationsAlphabetically
+                || !applicationLayoutController
                 || typeof applicationLayoutController.requestMoveNode
                     !== "function") {
             return false
@@ -457,6 +459,9 @@ FocusScope {
             return false
         }
         if (internalDragLayer.folder) {
+            if (root.sortApplicationsAlphabetically) {
+                return false
+            }
             return requestDraggedNodeMove(targetNodeId)
         }
         if (String(targetApplication.nodeType || "") === "folder") {
@@ -1369,6 +1374,7 @@ FocusScope {
             : ({})
         hiddenApplicationIds: root.hiddenApplicationIds
         revealHiddenApplications: root.revealHiddenApplications
+        alphabeticalSortingEnabled: root.sortApplicationsAlphabetically
     }
 
     Connections {
@@ -2372,6 +2378,11 @@ FocusScope {
                                     return false
                                 }
                                 const pointerX = Number(drag.x)
+                                if (root.sortApplicationsAlphabetically) {
+                                    dropIntent = internalDragLayer.folder
+                                        ? "none" : "group"
+                                    return dropIntent !== "none"
+                                }
                                 if (internalDragLayer.folder) {
                                     dropIntent = pointerX < width / 2
                                         ? "insertBefore" : "insertAfter"

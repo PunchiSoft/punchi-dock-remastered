@@ -486,6 +486,23 @@ def assert_bounded_collections(folder_sources: dict[Path, str]) -> None:
         is not None,
         "Folder tile preview must instantiate at most four icons.",
     )
+    folder_tile_compact = compact(folder_tile)
+    require(
+        'id: folderPlaque' in folder_tile_compact
+        and "color: Kirigami.Theme.alternateBackgroundColor"
+        in folder_tile_compact
+        and "Kirigami.Theme.lightFrameContrast" in folder_tile_compact
+        and 'source: "folder"' not in folder_tile_compact,
+        "Folder tiles must use a theme-aware plaque instead of a folder icon "
+        "as their preview background.",
+    )
+    require(
+        "readonly property int previewInset:" in folder_tile_compact
+        and "anchors.fill: parent" in folder_tile_compact
+        and "anchors.margins: root.previewInset" in folder_tile_compact,
+        "Folder tile previews must use a stable inset 2x2 area so partial "
+        "collections begin at the plaque's upper-left cell.",
+    )
 
     require(
         "maximumWidth: root.width - Kirigami.Units.largeSpacing * 2"

@@ -679,6 +679,11 @@ function prunePunchiMenu(item) {
     item.name = "PunchiMenu"
     item.icon = normalizedPunchiMenuIcon(item.icon)
     item.menuMode = normalizedPunchiMenuMode(item.menuMode)
+    if (item.sortApplicationsAlphabetically === true) {
+        item.sortApplicationsAlphabetically = true
+    } else {
+        delete item.sortApplicationsAlphabetically
+    }
     item.normalPlacementMode = normalizedPunchiMenuNormalPlacementMode(
         item.normalPlacementMode)
     item.gridIconScalePercent = normalizedPunchiMenuGridIconScalePercent(

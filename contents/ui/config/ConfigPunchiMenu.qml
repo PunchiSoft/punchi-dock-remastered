@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
+import org.kde.config as KConfig
 import org.kde.iconthemes as KIconThemes
 import org.kde.kcmutils as KCM
 import org.kde.kirigami as Kirigami
@@ -40,6 +41,7 @@ KCM.SimpleKCM {
     property int fullScreenFolderMaximumRows: 5
     property bool showDistributionName: true
     property bool showPageNavigationArrows: true
+    property bool sortApplicationsAlphabetically: false
     property string fullScreenCloseButtonPosition: "right"
     property bool fullScreenBlurEnabled: true
     property int fullScreenBackgroundOpacityPercent: 50
@@ -146,6 +148,8 @@ KCM.SimpleKCM {
                 item.fullScreenFolderMaximumRows)
         showDistributionName = item.showDistributionName !== false
         showPageNavigationArrows = item.showPageNavigationArrows !== false
+        sortApplicationsAlphabetically =
+            item.sortApplicationsAlphabetically === true
         fullScreenCloseButtonPosition =
             ConfigItemsJS.normalizedPunchiMenuFullScreenCloseButtonPosition(
                 item.fullScreenCloseButtonPosition)
@@ -323,6 +327,18 @@ KCM.SimpleKCM {
                 }
             }
 
+            Kirigami.InlineMessage {
+                Kirigami.FormData.isSection: true
+                Layout.fillWidth: true
+                Layout.maximumWidth: page.contentWidthHint
+                visible: true
+                type: Kirigami.MessageType.Information
+                text: page.selectedBlurEnabled
+                    ? i18n("The background will use KWin blur when available. The selected opacity controls how much content behind the menu remains visible.")
+                    : i18n("Without blur, the background depends on the Plasma theme and the selected opacity.")
+                Accessible.name: text
+            }
+
             RowLayout {
                 Kirigami.FormData.label: i18n("Background opacity:")
                 Layout.maximumWidth: page.contentWidthHint
@@ -363,18 +379,52 @@ KCM.SimpleKCM {
                 Kirigami.FormData.isSection: true
                 Layout.fillWidth: true
                 Layout.maximumWidth: page.contentWidthHint
-                visible: true
-                type: Kirigami.MessageType.Information
-                text: i18n("Blur depends on the KWin Blur desktop effect. If it is disabled, increase the background opacity to keep the menu readable.")
+                visible: page.selectedBackgroundOpacityPercent < 70
+                type: Kirigami.MessageType.Warning
+                text: i18n("Low background opacity can make text and icons difficult to read when desktop blur is unavailable.")
+            }
+
+            Controls.Button {
+                Kirigami.FormData.isSection: true
+                Layout.alignment: Qt.AlignRight
+                visible: KConfig.KAuthorized.authorizeControlModule(
+                    "kcm_kwin_effects")
+                icon.name: "configure"
+                text: i18nc("@action:button opens system settings",
+                    "Configure Desktop Effects…")
+                Accessible.name: text
+                onClicked: KCM.KCMLauncher.openSystemSettings(
+                    "kcm_kwin_effects")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "button"
+                }
+            }
+
+            Controls.Switch {
+                Kirigami.FormData.label: i18n("Application order:")
+                text: i18n("Sort applications alphabetically")
+                checked: page.sortApplicationsAlphabetically
+                Accessible.name: text
+                Accessible.description: i18n("Keeps drag and drop available, but prevents manual reordering while alphabetical sorting is enabled.")
+                onClicked: page.setPunchiMenuValue(
+                    "sortApplicationsAlphabetically", checked)
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "button"
+                }
             }
 
             Kirigami.InlineMessage {
                 Kirigami.FormData.isSection: true
                 Layout.fillWidth: true
                 Layout.maximumWidth: page.contentWidthHint
-                visible: page.selectedBackgroundOpacityPercent < 70
-                type: Kirigami.MessageType.Warning
-                text: i18n("Low background opacity can make text and icons difficult to read when desktop blur is unavailable.")
+                visible: page.sortApplicationsAlphabetically
+                type: Kirigami.MessageType.Information
+                text: i18n("Alphabetical sorting is active. Application positions cannot be changed manually, but drag and drop remains available.")
+                Accessible.name: text
             }
 
             Controls.Switch {

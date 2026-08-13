@@ -29,6 +29,7 @@ FocusScope {
     property real backgroundOpacity: 0.50
     property bool showDistributionName: true
     property bool showPageNavigationArrows: true
+    property bool sortApplicationsAlphabetically: false
     property string closeButtonPosition: "right"
     property var hiddenApplicationIds: []
     property bool revealHiddenApplications: false
@@ -347,6 +348,7 @@ FocusScope {
             : ({})
         hiddenApplicationIds: root.hiddenApplicationIds
         revealHiddenApplications: root.revealHiddenApplications
+        alphabeticalSortingEnabled: root.sortApplicationsAlphabetically
     }
 
     Connections {
@@ -723,7 +725,8 @@ FocusScope {
     }
 
     function requestDraggedNodeMove(beforeNodeId) {
-        if (!applicationLayoutController
+        if (root.sortApplicationsAlphabetically
+                || !applicationLayoutController
                 || typeof applicationLayoutController.requestMoveNode
                     !== "function") {
             return false
@@ -752,6 +755,9 @@ FocusScope {
             return false
         }
         if (internalDragLayer.folder) {
+            if (root.sortApplicationsAlphabetically) {
+                return false
+            }
             return requestDraggedNodeMove(targetNodeId)
         }
         if (String(targetApplication.nodeType || "") === "folder") {
@@ -1729,6 +1735,12 @@ FocusScope {
             highlighted: closeButton.highlightedContent
             circular: true
         }
+
+        HoverHandler {
+            enabled: closeButton.enabled
+            cursorShape: Qt.PointingHandCursor
+        }
+
         onClicked: root.forceClose()
 
         Behavior on opacity {
@@ -2399,6 +2411,11 @@ FocusScope {
                                             return false
                                         }
                                         const pointerX = Number(drag.x)
+                                        if (root.sortApplicationsAlphabetically) {
+                                            dropIntent = internalDragLayer.folder
+                                                ? "none" : "group"
+                                            return dropIntent !== "none"
+                                        }
                                         if (internalDragLayer.folder) {
                                             dropIntent = pointerX < width / 2
                                                 ? "insertBefore"
@@ -2760,6 +2777,8 @@ FocusScope {
                         showDistributionName: root.showDistributionName
                         showPageNavigationArrows:
                             root.showPageNavigationArrows
+                        sortApplicationsAlphabetically:
+                            root.sortApplicationsAlphabetically
                         closeButtonPosition: root.closeButtonPosition
                         applicationIconScalePercent: Math.round(
                             root.safeApplicationIconScale * 100)

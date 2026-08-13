@@ -295,6 +295,7 @@ Item {
             "fullScreenBackgroundOpacityPercent": true,
             "showDistributionName": true,
             "showPageNavigationArrows": true,
+            "sortApplicationsAlphabetically": true,
             "fullScreenCloseButtonPosition": true,
             "gridIconScalePercent": true,
             "fullScreenFolderMaximumColumns": true,

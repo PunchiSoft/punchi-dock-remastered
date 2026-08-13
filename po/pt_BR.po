@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.7.28\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-11 14:42-0400\n"
+"POT-Creation-Date: 2026-08-13 10:48-0400\n"
 "PO-Revision-Date: 2026-07-26 04:24-0400\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -34,7 +34,7 @@ msgid "%1 / %2"
 msgstr "%1 / %2"
 
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:303
-#: contents/ui/components/punchimenu/PunchiMenuFolderTile.qml:24
+#: contents/ui/components/punchimenu/PunchiMenuFolderTile.qml:26
 msgid "%1 application"
 msgid_plural "%1 applications"
 msgstr[0] "%1 aplicativo"
@@ -54,7 +54,7 @@ msgstr "%1 está agora em primeiro plano; solte para abrir os arquivos locais"
 msgid "%1 items loaded."
 msgstr "%1 itens carregados."
 
-#: contents/ui/main.qml:1864
+#: contents/ui/main.qml:1871
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de janelas adicional"
@@ -95,7 +95,7 @@ msgstr "%1 pt"
 #: contents/ui/config/ConfigMenus.qml:158
 #: contents/ui/config/ConfigMenus.qml:186
 #: contents/ui/config/ConfigMenus.qml:214
-#: contents/ui/config/ConfigPunchiMenu.qml:654
+#: contents/ui/config/ConfigPunchiMenu.qml:704
 msgid "%1 px"
 msgstr "%1px"
 
@@ -112,17 +112,17 @@ msgid_plural "%1 seconds"
 msgstr[0] "%1 segundo"
 msgstr[1] "%1 segundos"
 
-#: contents/ui/components/DockItemsController.qml:560
+#: contents/ui/components/DockItemsController.qml:561
 msgctxt "@info:status"
 msgid "%1 was moved on the Dock."
 msgstr "%1 foi movido no Dock."
 
-#: contents/ui/components/DockItemsController.qml:557
+#: contents/ui/components/DockItemsController.qml:558
 msgctxt "@info:status"
 msgid "%1 was pinned to the Dock."
 msgstr "%1 foi fixado no Dock."
 
-#: contents/ui/components/DockItemsController.qml:563
+#: contents/ui/components/DockItemsController.qml:564
 msgctxt "@info:status"
 msgid "%1 was removed from the Dock."
 msgstr "%1 foi removido do Dock."
@@ -132,8 +132,8 @@ msgctxt "@info"
 msgid "%1 will return to the main list. The application will not be deleted."
 msgstr "%1 voltará à lista principal. O aplicativo não será excluído."
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:125
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:218
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:126
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:219
 msgctxt "@info:status %1 is the result and %2 is seconds remaining"
 msgid "%1 · %2 s"
 msgstr "%1 · %2 s"
@@ -153,8 +153,8 @@ msgctxt "@info:media artist, title and playback time"
 msgid "%1 — %2 — %3"
 msgstr "%1 — %2 — %3"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:138
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:213
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:141
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:264
 #: contents/ui/config/ConfigFolderPopups.qml:199
 #: contents/ui/config/ConfigFolderPopups.qml:237
 #: contents/ui/config/ConfigMenus.qml:282
@@ -163,11 +163,11 @@ msgstr "%1 — %2 — %3"
 #: contents/ui/config/ConfigPopups.qml:225
 #: contents/ui/config/ConfigPopups.qml:268
 #: contents/ui/config/ConfigPopups.qml:308
-#: contents/ui/config/ConfigPunchiMenu.qml:358
-#: contents/ui/config/ConfigPunchiMenu.qml:460
-#: contents/ui/config/ConfigPunchiMenu.qml:564
-#: contents/ui/config/ConfigPunchiMenu.qml:709
-#: contents/ui/config/ConfigPunchiMenu.qml:747
+#: contents/ui/config/ConfigPunchiMenu.qml:362
+#: contents/ui/config/ConfigPunchiMenu.qml:510
+#: contents/ui/config/ConfigPunchiMenu.qml:614
+#: contents/ui/config/ConfigPunchiMenu.qml:759
+#: contents/ui/config/ConfigPunchiMenu.qml:797
 #: contents/ui/config/components/PopupAnimationSettings.qml:90
 #: contents/ui/config/components/PopupAnimationSettings.qml:119
 #, javascript-format
@@ -185,7 +185,7 @@ msgstr "%1%"
 msgid "%1% completed"
 msgstr "%1% concluído"
 
-#: contents/ui/components/punchimenu/PunchiMenuFolderTile.qml:39
+#: contents/ui/components/punchimenu/PunchiMenuFolderTile.qml:41
 msgctxt "@info:accessible"
 msgid "%1, %2"
 msgstr "%1, %2"
@@ -240,17 +240,17 @@ msgstr "48 barras"
 msgid "8 bars"
 msgstr "8 barras"
 
-#: contents/ui/components/DockItemsController.qml:569
+#: contents/ui/components/DockItemsController.qml:570
 msgctxt "@info:status"
 msgid "A desktop shortcut for %1 already exists."
 msgstr "Já existe um atalho na área de trabalho para %1."
 
-#: contents/ui/components/DockItemsController.qml:566
+#: contents/ui/components/DockItemsController.qml:567
 msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Foi criado um atalho na área de trabalho para %1."
 
-#: contents/ui/main.qml:946
+#: contents/ui/main.qml:953
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr "O local de um arquivo é longo demais para ser aberto com segurança."
@@ -296,7 +296,7 @@ msgctxt "@action:context"
 msgid "Add Separator"
 msgstr "Adicionar separador"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:269
+#: contents/ui/config/ConfigPunchiMenu.qml:273
 msgid "Add a PunchiMenu item from the Items page to configure it here."
 msgstr "Adicione um item PunchiMenu na página Itens para configurá-lo aqui."
 
@@ -312,18 +312,18 @@ msgstr "Adicione um aplicativo ou item de contêiner"
 msgid "Add empty space between items"
 msgstr "Adicione espaço vazio entre os itens"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:906
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:935
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1424
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1521
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:911
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:940
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1430
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1527
 msgctxt "@action:inmenu"
 msgid "Add to Desktop"
 msgstr "Adicionar à área de trabalho"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:898
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:927
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1402
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1501
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:903
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:932
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1408
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1507
 msgctxt "@action:inmenu"
 msgid "Add to Favorites"
 msgstr "Adicionar aos favoritos"
@@ -358,7 +358,7 @@ msgid "Adds safe spacing between the dock item and folder popups."
 msgstr ""
 "Adiciona espaçamento seguro entre o item de encaixe e os pop-ups da pasta."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:635
+#: contents/ui/config/ConfigPunchiMenu.qml:685
 msgid "Adds space between PunchiMenu Normal and the panel edge."
 msgstr "Adiciona espaço entre o PunchiMenu Normal e a borda do painel."
 
@@ -409,9 +409,9 @@ msgstr "Ajusta a escala da visualização da janela entre 100 e 300 por cento."
 msgid "Alias/Quick Search:"
 msgstr "Alias/pesquisa rápida:"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:101
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1237
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1348
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:102
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1242
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1353
 msgctxt "@title:category"
 msgid "All Applications"
 msgstr "Todos os aplicativos"
@@ -429,6 +429,15 @@ msgstr "Todos os arquivos"
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:44
 msgid "All items were permanently removed."
 msgstr "Todos os itens foram removidos permanentemente."
+
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:197
+#: contents/ui/config/ConfigPunchiMenu.qml:426
+msgid ""
+"Alphabetical sorting is active. Application positions cannot be changed "
+"manually, but drag and drop remains available."
+msgstr ""
+"A ordenação alfabética está ativada. As posições dos aplicativos não podem "
+"ser alteradas manualmente, mas arrastar e soltar continua disponível."
 
 #: contents/ui/config/components/MediaPlayerDialog.qml:25
 msgctxt "@option:media-track-information"
@@ -470,7 +479,7 @@ msgstr "Seções de aparência"
 
 #: contents/ui/components/AppActionsPopup.qml:64
 #: contents/ui/components/DockItem.qml:1223
-#: contents/ui/components/DockItemsController.qml:530
+#: contents/ui/components/DockItemsController.qml:531
 #: contents/ui/components/FolderPopup.qml:256
 msgid "Application"
 msgstr "Aplicação"
@@ -489,8 +498,8 @@ msgstr "Aplicação"
 msgid "Application category"
 msgstr "Categoria de aplicativo"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:119
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:212
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:120
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:213
 msgctxt "@info:status"
 msgid "Application could not be opened: %1"
 msgstr "Não foi possível abrir o aplicativo: %1"
@@ -504,27 +513,32 @@ msgctxt "@title"
 msgid "Application folder"
 msgstr "Pasta de aplicativos"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1381
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:359
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1387
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:361
 msgctxt "@info:status"
 msgid "Application folder change undone."
 msgstr "Alteração da pasta de aplicativos desfeita."
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1380
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:358
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1386
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:360
 msgctxt "@info:status"
 msgid "Application folder updated."
 msgstr "Pasta de aplicativos atualizada."
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:187
-#: contents/ui/config/ConfigPunchiMenu.qml:428
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:238
+#: contents/ui/config/ConfigPunchiMenu.qml:478
 msgid "Application grid icon scale:"
 msgstr "Escala dos ícones da grade de aplicativos:"
+
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:183
+#: contents/ui/config/ConfigPunchiMenu.qml:406
+msgid "Application order:"
+msgstr "Ordem dos aplicativos:"
 
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:280
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:296
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionState.qml:34
-#: contents/ui/components/punchimenu/PunchiMenuFolderTile.qml:23
+#: contents/ui/components/punchimenu/PunchiMenuFolderTile.qml:25
 #: contents/ui/components/punchimenu/PunchiMenuFolderView.qml:64
 msgctxt "@label"
 msgid "Applications folder"
@@ -571,7 +585,7 @@ msgstr ""
 "pelas margens disponíveis no painel do Plasma. O modo flutuante não é "
 "afetado."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:614
+#: contents/ui/config/ConfigPunchiMenu.qml:664
 msgid ""
 "Attached keeps the menu next to its dock or panel. Centered uses the "
 "available area of the active screen."
@@ -579,7 +593,7 @@ msgstr ""
 "Ancorado mantém o menu junto ao dock ou painel. Centralizado usa a área "
 "disponível da tela ativa."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:80
+#: contents/ui/config/ConfigPunchiMenu.qml:82
 msgctxt "@option:punchimenu-placement"
 msgid "Attached to dock or panel"
 msgstr "Ancorado ao dock ou painel"
@@ -672,13 +686,13 @@ msgstr "Voltar aos controles de mídia"
 msgid "Back to window previews"
 msgstr "Voltar às visualizações da janela"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:96
-#: contents/ui/config/ConfigPunchiMenu.qml:308
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:99
+#: contents/ui/config/ConfigPunchiMenu.qml:312
 msgid "Background and legibility"
 msgstr "Fundo e legibilidade"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:101
-#: contents/ui/config/ConfigPunchiMenu.qml:313
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:104
+#: contents/ui/config/ConfigPunchiMenu.qml:317
 msgid "Background blur:"
 msgstr "Desfoque do fundo:"
 
@@ -686,10 +700,10 @@ msgstr "Desfoque do fundo:"
 msgid "Background frame:"
 msgstr "Moldura do fundo:"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:111
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:114
 #: contents/ui/config/ConfigFolderPopups.qml:215
 #: contents/ui/config/ConfigPopups.qml:285
-#: contents/ui/config/ConfigPunchiMenu.qml:327
+#: contents/ui/config/ConfigPunchiMenu.qml:331
 msgid "Background opacity:"
 msgstr "Opacidade do fundo:"
 
@@ -724,14 +738,6 @@ msgstr "Escala do emblema:"
 #: contents/ui/config/ConfigAspect.qml:983
 msgid "Badge:"
 msgstr "Emblema:"
-
-#: contents/ui/config/ConfigPunchiMenu.qml:368
-msgid ""
-"Blur depends on the KWin Blur desktop effect. If it is disabled, increase "
-"the background opacity to keep the menu readable."
-msgstr ""
-"O desfoque depende do efeito de área de trabalho Desfoque do KWin. Se ele "
-"estiver desativado, aumente a opacidade do fundo para manter o menu legível."
 
 #: contents/ui/config/ConfigAspect.qml:145
 msgctxt "Indicator position"
@@ -807,7 +813,7 @@ msgstr "Categoria:"
 msgid "Center"
 msgstr "Centro"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:84
+#: contents/ui/config/ConfigPunchiMenu.qml:86
 msgctxt "@option:punchimenu-placement"
 msgid "Centered on desktop"
 msgstr "Centralizado na área de trabalho"
@@ -816,18 +822,18 @@ msgstr "Centralizado na área de trabalho"
 msgid "Centered wave"
 msgstr "Onda centrada"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:76
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:79
 msgctxt "@info"
 msgid "Changes are saved immediately."
 msgstr "As alterações são salvas imediatamente."
 
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1131
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1137
 msgctxt "@info"
 msgid "Changes could not be saved."
 msgstr "Não foi possível salvar as alterações."
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:122
-#: contents/ui/config/ConfigPunchiMenu.qml:341
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:125
+#: contents/ui/config/ConfigPunchiMenu.qml:345
 msgid ""
 "Changes only the menu background opacity; text and icons remain fully opaque."
 msgstr ""
@@ -838,7 +844,7 @@ msgstr ""
 msgid "Changes pending"
 msgstr "Alterações pendentes"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:543
+#: contents/ui/config/ConfigPunchiMenu.qml:593
 msgid ""
 "Changes the icon size in the reserved Favorites section in both menu modes."
 msgstr ""
@@ -866,7 +872,7 @@ msgstr "Escolha a pasta"
 msgid "Choose Indicator Color"
 msgstr "Cor do indicador"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:776
+#: contents/ui/config/ConfigPunchiMenu.qml:826
 msgctxt "@action:button"
 msgid "Choose PunchiMenu icon"
 msgstr "Escolher ícone do PunchiMenu"
@@ -951,7 +957,7 @@ msgstr ""
 
 #: contents/ui/config/ConfigItems.qml:587
 #: contents/ui/config/ConfigItems.qml:642
-#: contents/ui/config/ConfigPunchiMenu.qml:253
+#: contents/ui/config/ConfigPunchiMenu.qml:257
 #: contents/ui/config/components/TrashDialog.qml:106
 #: contents/ui/config/components/TrashDialog.qml:136
 msgid "Choose icon"
@@ -1016,7 +1022,7 @@ msgstr "Limpar arquivo de configuração?"
 msgid "Clear"
 msgstr "Limpar"
 
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1938
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1950
 msgctxt "@action:button"
 msgid "Clear search"
 msgstr "Limpar pesquisa"
@@ -1052,8 +1058,8 @@ msgid "Close"
 msgstr "Fechar"
 
 #: contents/ui/components/punchimenu/PunchiMenuFolderView.qml:207
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1811
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1726
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1817
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1732
 msgctxt "@action:button"
 msgid "Close"
 msgstr "Fechar"
@@ -1064,13 +1070,13 @@ msgid_plural "Close all %1 windows"
 msgstr[0] "Fechar %1 janela"
 msgstr[1] "Fechar todas as %1 janelas"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:175
-#: contents/ui/config/ConfigPunchiMenu.qml:415
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:226
+#: contents/ui/config/ConfigPunchiMenu.qml:465
 msgid "Close button position"
 msgstr "Posição do botão Fechar"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:169
-#: contents/ui/config/ConfigPunchiMenu.qml:405
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:220
+#: contents/ui/config/ConfigPunchiMenu.qml:455
 msgid "Close button:"
 msgstr "Botão Fechar:"
 
@@ -1090,8 +1096,8 @@ msgstr "Fechar janela"
 msgid "Close window group list"
 msgstr "Fechar lista de grupos de janelas"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:3105
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:3264
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:3116
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:3283
 msgctxt "@info:accessible"
 msgid "Closes automatically"
 msgstr "Fecha automaticamente"
@@ -1140,7 +1146,13 @@ msgstr "Configuração importada com sucesso."
 msgid "Configure"
 msgstr "Configurar"
 
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2035
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:164
+#: contents/ui/config/ConfigPunchiMenu.qml:394
+msgctxt "@action:button opens system settings"
+msgid "Configure Desktop Effects…"
+msgstr "Configurar efeitos da área de trabalho…"
+
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2047
 #: contents/ui/config/code/configItemsWorkflowHelper.js:351
 #: contents/ui/config/components/PunchiMenuDialog.qml:42
 msgid "Configure PunchiMenu"
@@ -1256,8 +1268,8 @@ msgctxt "@action:button"
 msgid "Create"
 msgstr "Criar"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:889
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1370
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:894
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1376
 msgctxt "@action:inmenu"
 msgid "Create Folder…"
 msgstr "Criar pasta…"
@@ -1302,7 +1314,7 @@ msgstr ""
 "no painel está ativo apenas quando o painel Plasma está definido como "
 "Preencher disponível; caso contrário, o Punchi Dock permanece compacto."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:779
+#: contents/ui/config/ConfigPunchiMenu.qml:829
 msgctxt "@info:accessibility"
 msgid "Current icon: %1"
 msgstr "Ícone atual: %1"
@@ -1401,7 +1413,7 @@ msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
 msgstr "Detalhado"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1353
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1358
 msgctxt "@title:category"
 msgid "Development"
 msgstr "Desenvolvimento"
@@ -1442,8 +1454,8 @@ msgctxt "@action:button"
 msgid "Dissolve"
 msgstr "Desagrupar"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:955
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1578
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:960
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1584
 msgctxt "@action:inmenu"
 msgid "Dissolve Folder…"
 msgstr "Dissolver pasta…"
@@ -1453,8 +1465,8 @@ msgctxt "@title"
 msgid "Dissolve folder"
 msgstr "Dissolver pasta"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:151
-#: contents/ui/config/ConfigPunchiMenu.qml:381
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:202
+#: contents/ui/config/ConfigPunchiMenu.qml:431
 msgid "Distribution label:"
 msgstr "Rótulo da distribuição:"
 
@@ -1558,7 +1570,7 @@ msgctxt "@action:context"
 msgid "Edit item…"
 msgstr "Edit item…"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1357
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1362
 msgctxt "@title:category"
 msgid "Education"
 msgstr "Educação"
@@ -1637,13 +1649,13 @@ msgstr "Desaparecer"
 msgid "Failed to read file."
 msgstr "Falha ao ler o arquivo."
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2668
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2845
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2679
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2864
 msgctxt "@title:section"
 msgid "Favorites"
 msgstr "Favoritos"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:529
+#: contents/ui/config/ConfigPunchiMenu.qml:579
 msgid "Favorites icon scale:"
 msgstr "Escala dos ícones dos Favoritos:"
 
@@ -1830,7 +1842,7 @@ msgctxt "@option:punchimenu-mode"
 msgid "Full screen"
 msgstr "Tela inteira"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1356
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1361
 msgctxt "@title:category"
 msgid "Games"
 msgstr "Jogos"
@@ -1847,7 +1859,7 @@ msgstr "Animação pop-up geral"
 msgid "Go to today"
 msgstr "Vá para hoje"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1350
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1355
 msgctxt "@title:category"
 msgid "Graphics"
 msgstr "Gráficos"
@@ -1879,10 +1891,10 @@ msgid "Hidden"
 msgstr "Oculto"
 
 #: contents/ui/components/punchimenu/PunchiMenuFolderView.qml:280
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2260
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2857
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2301
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:3014
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2266
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2868
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2313
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:3033
 msgctxt "@info:accessibility"
 msgid "Hidden from the application listing"
 msgstr "Oculto na lista de aplicativos"
@@ -1892,16 +1904,16 @@ msgctxt "@option:media-track-information"
 msgid "Hide"
 msgstr "Ocultar"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:911
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:940
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1438
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1534
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:916
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:945
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1444
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1540
 msgctxt "@action:inmenu"
 msgid "Hide from listing"
 msgstr "Ocultar da lista"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1583
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1978
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1589
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1990
 msgctxt "@action:button"
 msgid "Hide hidden applications"
 msgstr "Ocultar aplicativos ocultos"
@@ -1938,11 +1950,11 @@ msgstr "Ampliação ao passar o ponteiro"
 msgid "Hover enlargement:"
 msgstr "Ampliação ao passar o ponteiro:"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:768
+#: contents/ui/config/ConfigPunchiMenu.qml:818
 msgid "Icon and keyboard shortcut:"
 msgstr "Ícone e atalho de teclado:"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:764
+#: contents/ui/config/ConfigPunchiMenu.qml:814
 msgid "Icon and shortcut"
 msgstr "Ícone e atalho"
 
@@ -2090,7 +2102,7 @@ msgstr "Tema instalado:"
 msgid "Intensity:"
 msgstr "Intensidade:"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1349
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1354
 msgctxt "@title:category"
 msgid "Internet"
 msgstr "Internet"
@@ -2149,6 +2161,15 @@ msgctxt "@info:accessible"
 msgid "Keep holding to bring %1 to the front"
 msgstr "Continue segurando para trazer %1 para o primeiro plano"
 
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:187
+#: contents/ui/config/ConfigPunchiMenu.qml:410
+msgid ""
+"Keeps drag and drop available, but prevents manual reordering while "
+"alphabetical sorting is enabled."
+msgstr ""
+"Mantém a função de arrastar e soltar disponível, mas impede a reordenação "
+"manual enquanto a ordenação alfabética estiver ativada."
+
 #: contents/ui/config/ConfigAspect.qml:707
 msgid "Labels"
 msgstr "Etiquetas"
@@ -2191,8 +2212,8 @@ msgstr "Ação personalizada"
 msgid "Layout profile:"
 msgstr "Perfil de layout:"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:32
-#: contents/ui/config/ConfigPunchiMenu.qml:94
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:35
+#: contents/ui/config/ConfigPunchiMenu.qml:96
 msgctxt "@option:close-button-position"
 msgid "Left"
 msgstr "Esquerda"
@@ -2213,7 +2234,7 @@ msgstr "Limitar linhas do menu"
 msgid "Limit:"
 msgstr "Limite:"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:507
+#: contents/ui/config/ConfigPunchiMenu.qml:557
 msgid ""
 "Limits the visible rows inside folders in the selected menu mode. Additional "
 "applications remain available by scrolling."
@@ -2258,23 +2279,23 @@ msgstr "Carregar conteúdo"
 msgid "Loaded file, but JSON is invalid: %1"
 msgstr "Arquivo carregado, mas JSON é inválido: %1"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2628
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2736
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2639
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2753
 msgctxt "@info:status"
 msgid "Loading applications…"
 msgstr "Carregando aplicativos…"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:581
+#: contents/ui/config/ConfigPunchiMenu.qml:631
 msgid "Location and spacing"
 msgstr "Localização e espaçamento"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1643
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1649
 #: contents/ui/components/punchimenu/PunchiMenuSessionView.qml:74
 msgctxt "@action:button"
 msgid "Log Out"
 msgstr "Encerrar sessão"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:377
+#: contents/ui/config/ConfigPunchiMenu.qml:384
 msgid ""
 "Low background opacity can make text and icons difficult to read when "
 "desktop blur is unavailable."
@@ -2314,13 +2335,13 @@ msgstr "Maximizar"
 msgid "Maximize window"
 msgstr "Maximizar janela"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:225
-#: contents/ui/config/ConfigPunchiMenu.qml:483
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:276
+#: contents/ui/config/ConfigPunchiMenu.qml:533
 msgid "Maximum application columns inside folders"
 msgstr "Máximo de colunas de aplicativos dentro de pastas"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:237
-#: contents/ui/config/ConfigPunchiMenu.qml:506
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:288
+#: contents/ui/config/ConfigPunchiMenu.qml:556
 msgid "Maximum application rows inside folders"
 msgstr "Máximo de linhas de aplicativos dentro de pastas"
 
@@ -2328,13 +2349,13 @@ msgstr "Máximo de linhas de aplicativos dentro de pastas"
 msgid "Maximum dynamic groups shown in the dock"
 msgstr "Máximo de grupos dinâmicos mostrados no dock"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:220
-#: contents/ui/config/ConfigPunchiMenu.qml:475
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:271
+#: contents/ui/config/ConfigPunchiMenu.qml:525
 msgid "Maximum folder columns:"
 msgstr "Máximo de colunas em pastas:"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:232
-#: contents/ui/config/ConfigPunchiMenu.qml:498
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:283
+#: contents/ui/config/ConfigPunchiMenu.qml:548
 msgid "Maximum folder rows:"
 msgstr "Máximo de linhas em pastas:"
 
@@ -2441,7 +2462,7 @@ msgstr ""
 "As entradas de menu e as ações por item permanecem configuradas na seção "
 "Itens."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:285
+#: contents/ui/config/ConfigPunchiMenu.qml:289
 #: contents/ui/config/components/PunchiMenuDialog.qml:53
 msgid "Menu mode:"
 msgstr "Modo do menu:"
@@ -2481,7 +2502,7 @@ msgstr "Minimizar"
 msgid "Minimize window"
 msgstr "Minimizar janela"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:280
+#: contents/ui/config/ConfigPunchiMenu.qml:284
 msgid "Mode and appearance"
 msgstr "Modo e aparência"
 
@@ -2503,8 +2524,8 @@ msgctxt "@action:button"
 msgid "Move"
 msgstr "Transferir"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:892
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1385
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:897
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1391
 msgctxt "@action:inmenu"
 msgid "Move to Folder…"
 msgstr "Mover para a pasta…"
@@ -2514,7 +2535,7 @@ msgctxt "@title"
 msgid "Move to a folder"
 msgstr "Mover para uma pasta"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1351
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1356
 msgctxt "@title:category"
 msgid "Multimedia"
 msgstr "Multimídia"
@@ -2543,7 +2564,7 @@ msgstr "Nova janela"
 msgid "Next month"
 msgstr "No próximo mês"
 
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2678
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2695
 msgctxt "@action:button"
 msgid "Next page"
 msgstr "Próxima página"
@@ -2559,14 +2580,14 @@ msgctxt "@info:accessible"
 msgid "No MPRIS player is active"
 msgstr "Nenhum reprodutor MPRIS está ativo"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2630
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2738
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2641
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2755
 msgctxt "@info:status"
 msgid "No applications match your search."
 msgstr "Nenhum aplicativo corresponde à sua pesquisa."
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2631
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2739
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2642
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2756
 msgctxt "@info:status"
 msgid "No applications were found in this category."
 msgstr "Nenhum aplicativo foi encontrado nesta categoria."
@@ -2583,7 +2604,7 @@ msgstr ""
 "Nenhum aplicativo multimídia instalado foi encontrado. A seleção automática "
 "continua disponível."
 
-#: contents/ui/main.qml:932
+#: contents/ui/main.qml:939
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "Nenhum arquivo local foi encontrado neste arrastar e soltar."
@@ -2622,31 +2643,31 @@ msgctxt "@option:media-display-mode"
 msgid "Normal (recommended)"
 msgstr "Automático (recomendado)"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:728
+#: contents/ui/config/ConfigPunchiMenu.qml:778
 msgid "Normal menu height"
 msgstr "Altura do menu Normal"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:714
+#: contents/ui/config/ConfigPunchiMenu.qml:764
 msgid "Normal menu height:"
 msgstr "Altura do menu Normal:"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:594
+#: contents/ui/config/ConfigPunchiMenu.qml:644
 msgid "Normal menu placement"
 msgstr "Posicionamento do menu Normal"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:586
+#: contents/ui/config/ConfigPunchiMenu.qml:636
 msgid "Normal menu placement:"
 msgstr "Posicionamento do menu Normal:"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:672
+#: contents/ui/config/ConfigPunchiMenu.qml:722
 msgid "Normal menu size"
 msgstr "Tamanho do menu Normal"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:690
+#: contents/ui/config/ConfigPunchiMenu.qml:740
 msgid "Normal menu width"
 msgstr "Largura do menu Normal"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:676
+#: contents/ui/config/ConfigPunchiMenu.qml:726
 msgid "Normal menu width:"
 msgstr "Largura do menu Normal:"
 
@@ -2673,7 +2694,7 @@ msgstr "Número de barras do visualizador de áudio"
 msgid "Number of bars:"
 msgstr "Número de barras:"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1352
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1357
 msgctxt "@title:category"
 msgid "Office"
 msgstr "Escritório"
@@ -2683,7 +2704,7 @@ msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 "Aplica-se somente quando este item do dock inicia um aplicativo fechado."
 
-#: contents/ui/main.qml:943
+#: contents/ui/main.qml:950
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Somente arquivos locais podem ser abertos com um aplicativo."
@@ -2752,7 +2773,7 @@ msgctxt "@action:button"
 msgid "Open %1"
 msgstr "Abrir %1"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:247
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:298
 msgctxt "@action:button"
 msgid "Open Advanced Settings…"
 msgstr "Abrir configurações avançadas…"
@@ -2782,7 +2803,7 @@ msgstr "Abrir o reprodutor selecionado minimizado"
 msgid "Open the trash folder in the file manager"
 msgstr "Abra a pasta de lixo no gerenciador de arquivos"
 
-#: contents/ui/components/punchimenu/PunchiMenuFolderTile.qml:42
+#: contents/ui/components/punchimenu/PunchiMenuFolderTile.qml:44
 msgctxt "@info:accessible"
 msgid "Open this application folder"
 msgstr "Abrir esta pasta de aplicativos"
@@ -2807,17 +2828,17 @@ msgstr "Efeito de abertura:"
 msgid "Over the Plasma background"
 msgstr "Sobre o fundo do Plasma"
 
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:3166
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:3185
 msgctxt "@action:button"
 msgid "Page %1 of %2"
 msgstr "Página %1 de %2"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:160
-#: contents/ui/config/ConfigPunchiMenu.qml:390
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:211
+#: contents/ui/config/ConfigPunchiMenu.qml:440
 msgid "Page navigation:"
 msgstr "Navegação de páginas:"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:620
+#: contents/ui/config/ConfigPunchiMenu.qml:670
 msgid "Panel distance:"
 msgstr "Distância do painel:"
 
@@ -2852,10 +2873,10 @@ msgctxt "@action:context"
 msgid "Pin to Dock"
 msgstr "Fixar no Dock"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:903
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:932
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1414
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1512
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:908
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:937
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1420
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1518
 msgctxt "@action:inmenu"
 msgid "Pin to Dock"
 msgstr "Fixar no Dock"
@@ -2961,7 +2982,7 @@ msgstr "Visualização indisponível"
 msgid "Previous month"
 msgstr "Mês anterior"
 
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2627
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2644
 msgctxt "@action:button"
 msgid "Previous page"
 msgstr "Página anterior"
@@ -3002,7 +3023,7 @@ msgid "Punchi Dock could not store the imported theme."
 msgstr "Punchi Dock não conseguiu armazenar o tema importado."
 
 #: contents/config/config.qml:11 contents/ui/config/AddItemPalette.qml:26
-#: contents/ui/config/ConfigPunchiMenu.qml:18
+#: contents/ui/config/ConfigPunchiMenu.qml:19
 msgid "PunchiMenu"
 msgstr "PunchiMenu"
 
@@ -3011,51 +3032,51 @@ msgctxt "@title"
 msgid "PunchiMenu"
 msgstr "PunchiMenu"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:542
+#: contents/ui/config/ConfigPunchiMenu.qml:592
 msgid "PunchiMenu Favorites icon scale"
 msgstr "Escala dos ícones dos Favoritos do PunchiMenu"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:147
-#: contents/ui/config/ConfigPunchiMenu.qml:70
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:179
+#: contents/ui/config/ConfigPunchiMenu.qml:72
 msgctxt "@option:punchimenu-mode"
 msgid "PunchiMenu Full screen"
 msgstr "PunchiMenu Tela cheia"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:74
+#: contents/ui/config/ConfigPunchiMenu.qml:76
 msgctxt "@option:punchimenu-mode"
 msgid "PunchiMenu Normal"
 msgstr "PunchiMenu Normal"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:69
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:72
 msgctxt "@title"
 msgid "PunchiMenu Settings"
 msgstr "Configurações do PunchiMenu"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:198
-#: contents/ui/config/ConfigPunchiMenu.qml:441
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:249
+#: contents/ui/config/ConfigPunchiMenu.qml:491
 msgid "PunchiMenu application icon scale"
 msgstr "Escala dos ícones de aplicativos do PunchiMenu"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:121
-#: contents/ui/config/ConfigPunchiMenu.qml:340
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:124
+#: contents/ui/config/ConfigPunchiMenu.qml:344
 msgid "PunchiMenu background opacity"
 msgstr "Opacidade do fundo do PunchiMenu"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:291
+#: contents/ui/config/ConfigPunchiMenu.qml:295
 #: contents/ui/config/components/PunchiMenuDialog.qml:65
 msgid "PunchiMenu display mode"
 msgstr "Modo de exibição do PunchiMenu"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:801
+#: contents/ui/config/ConfigPunchiMenu.qml:851
 msgid "PunchiMenu keyboard shortcut"
 msgstr "Atalho de teclado do PunchiMenu"
 
-#: contents/ui/config/ConfigPunchiMenu.qml:634
+#: contents/ui/config/ConfigPunchiMenu.qml:684
 msgid "PunchiMenu panel distance"
 msgstr "Distância do PunchiMenu ao painel"
 
 #: contents/ui/components/DockItem.qml:35
-#: contents/ui/components/DockItemsController.qml:796
+#: contents/ui/components/DockItemsController.qml:797
 msgctxt "@title"
 msgid "Quick Note"
 msgstr "Nota rápida"
@@ -3091,24 +3112,24 @@ msgctxt "@action:button"
 msgid "Remove"
 msgstr "Retirar"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:902
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:931
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1413
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1511
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:907
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:936
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1419
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1517
 msgctxt "@action:inmenu"
 msgid "Remove from Dock"
 msgstr "Desafixar do Dock"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:897
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:926
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1401
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1500
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:902
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:931
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1407
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1506
 msgctxt "@action:inmenu"
 msgid "Remove from Favorites"
 msgstr "Remover dos favoritos"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:922
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1482
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:927
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1488
 msgctxt "@action:inmenu"
 msgid "Remove from Folder…"
 msgstr "Remover da pasta…"
@@ -3132,8 +3153,8 @@ msgctxt "@action:button"
 msgid "Rename"
 msgstr "Renomear"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:951
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1563
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:956
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1569
 msgctxt "@action:inmenu"
 msgid "Rename Folder…"
 msgstr "Renomear pasta…"
@@ -3168,14 +3189,14 @@ msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with media card"
 msgstr "Substitua a visualização por cartão de mídia"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:105
-#: contents/ui/config/ConfigPunchiMenu.qml:317
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:108
+#: contents/ui/config/ConfigPunchiMenu.qml:321
 msgid "Requests the desktop blur effect for the selected PunchiMenu mode."
 msgstr ""
 "Solicita o efeito de desfoque da área de trabalho para o modo selecionado do "
 "PunchiMenu."
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1699
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1705
 #: contents/ui/components/punchimenu/PunchiMenuSessionView.qml:130
 msgctxt "@action:button"
 msgid "Restart"
@@ -3210,8 +3231,8 @@ msgstr "Restaurar tamanho da janela"
 msgid "Rhythmic movement:"
 msgstr "Movimento rítmico:"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:28
-#: contents/ui/config/ConfigPunchiMenu.qml:90
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:31
+#: contents/ui/config/ConfigPunchiMenu.qml:92
 msgctxt "@option:close-button-position"
 msgid "Right"
 msgstr "Direita"
@@ -3259,36 +3280,36 @@ msgstr "Salvando alteração da pasta"
 msgid "Scope:"
 msgstr "Escopo:"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1877
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1883
 msgctxt "@action:button"
 msgid "Scroll categories left"
 msgstr "Rolar categorias para a esquerda"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2028
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2034
 msgctxt "@action:button"
 msgid "Scroll categories right"
 msgstr "Rolar categorias para a direita"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2699
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2874
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2710
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2893
 msgctxt "@action:button"
 msgid "Scroll favorites left"
 msgstr "Rolar favoritos para a esquerda"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2967
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:3112
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2978
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:3131
 msgctxt "@action:button"
 msgid "Scroll favorites right"
 msgstr "Rolar favoritos para a direita"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1538
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1894
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1544
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1906
 msgctxt "@label"
 msgid "Search applications"
 msgstr "Pesquisar aplicativos"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1537
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1893
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1543
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1905
 msgctxt "@placeholder"
 msgid "Search applications…"
 msgstr "Pesquisar aplicativos…"
@@ -3335,7 +3356,7 @@ msgstr ""
 "Os separadores ajudam a agrupar itens em seu dock. A forma, o tamanho e o "
 "brilho adaptam-se automaticamente ao seu tema Plasma."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:484
+#: contents/ui/config/ConfigPunchiMenu.qml:534
 msgid ""
 "Sets an upper limit for columns inside folders in the selected menu mode. "
 "Available space may use fewer columns."
@@ -3367,8 +3388,8 @@ msgstr "Mostrar janelas ativas no dock"
 msgid "Show application names and details"
 msgstr "Mostrar nomes e detalhes de aplicativos"
 
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2034
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2082
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2046
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2094
 msgctxt "@action:button"
 msgid "Show applications"
 msgstr "Mostrar aplicativos"
@@ -3381,8 +3402,8 @@ msgstr "Mostrar números da semana do calendário"
 msgid "Show date information"
 msgstr "Mostrar informações de data"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:152
-#: contents/ui/config/ConfigPunchiMenu.qml:383
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:203
+#: contents/ui/config/ConfigPunchiMenu.qml:433
 msgid "Show distribution name in full screen"
 msgstr "Mostrar o nome da distribuição em tela cheia"
 
@@ -3394,16 +3415,16 @@ msgstr "Mostrar cada janela"
 msgid "Show folder name header at top of popups"
 msgstr "Mostrar o cabeçalho do nome da pasta no topo dos pop-ups"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1584
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1979
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1590
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1991
 msgctxt "@action:button"
 msgid "Show hidden applications"
 msgstr "Mostrar aplicativos ocultos"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:910
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:939
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1437
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1533
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:915
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:944
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1443
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1539
 msgctxt "@action:inmenu"
 msgid "Show in listing"
 msgstr "Mostrar na lista"
@@ -3421,8 +3442,8 @@ msgstr "Mostrar cartão de mídia abaixo das visualizações da janela"
 msgid "Show only windows from the current virtual desktop"
 msgstr "Mostrar apenas janelas da área de trabalho virtual atual"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:161
-#: contents/ui/config/ConfigPunchiMenu.qml:392
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:212
+#: contents/ui/config/ConfigPunchiMenu.qml:442
 msgid "Show page navigation arrows"
 msgstr "Mostrar setas de navegação de páginas"
 
@@ -3430,7 +3451,7 @@ msgstr "Mostrar setas de navegação de páginas"
 msgid "Show reflections below dock items"
 msgstr "Mostrar reflexões abaixo dos itens de encaixe"
 
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2083
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2095
 msgctxt "@action:button"
 msgid "Show session actions"
 msgstr "Mostrar ações da sessão"
@@ -3488,7 +3509,7 @@ msgctxt "@action:button"
 msgid "Shuffle"
 msgstr "Embaralhar"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1755
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1761
 #: contents/ui/components/punchimenu/PunchiMenuSessionView.qml:188
 msgctxt "@action:button"
 msgid "Shut Down"
@@ -3513,6 +3534,11 @@ msgstr "Salto lento"
 #: contents/ui/config/ConfigAspect.qml:139
 msgid "Small ring"
 msgstr "Anel pequeno"
+
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:184
+#: contents/ui/config/ConfigPunchiMenu.qml:407
+msgid "Sort applications alphabetically"
+msgstr "Ordenar aplicativos alfabeticamente"
 
 #: contents/ui/config/AddItemPalette.qml:30
 #: contents/ui/config/ConfigItems.qml:638
@@ -3543,7 +3569,7 @@ msgstr "Estrela"
 msgid "Subtle scale"
 msgstr "Escala sutil"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1354
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1359
 msgctxt "@title:category"
 msgid "System"
 msgstr "Sistema"
@@ -3587,7 +3613,7 @@ msgstr "Escala de texto:"
 msgid "Text shadows:"
 msgstr "Sombras de texto:"
 
-#: contents/ui/components/DockItemsController.qml:578
+#: contents/ui/components/DockItemsController.qml:579
 msgctxt "@info:status"
 msgid "The Dock configuration could not be saved."
 msgstr "A configuração do Dock não pôde ser salva."
@@ -3600,22 +3626,22 @@ msgstr "A ação do aplicativo não foi encontrada."
 msgid "The application could not be found."
 msgstr "O aplicativo não foi encontrado."
 
-#: contents/ui/components/DockItemsController.qml:575
+#: contents/ui/components/DockItemsController.qml:576
 msgctxt "@info:status"
 msgid "The application could not be resolved."
 msgstr "O aplicativo não pôde ser resolvido."
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:443
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:472
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1388
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:365
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:738
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:767
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:445
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:477
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1394
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:367
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:741
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:773
 msgctxt "@info:status"
 msgid "The application folder could not be updated."
 msgstr "Não foi possível atualizar a pasta de aplicativos."
 
-#: contents/ui/components/DockItemsController.qml:572
+#: contents/ui/components/DockItemsController.qml:573
 msgctxt "@info:status"
 msgid "The application identity is ambiguous."
 msgstr "A identidade do aplicativo é ambígua."
@@ -3624,6 +3650,15 @@ msgstr "A identidade do aplicativo é ambígua."
 msgctxt "@info"
 msgid "The application layout changed. Review it and try again."
 msgstr "O layout dos aplicativos mudou. Revise-o e tente novamente."
+
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:152
+#: contents/ui/config/ConfigPunchiMenu.qml:373
+msgid ""
+"The background will use KWin blur when available. The selected opacity "
+"controls how much content behind the menu remains visible."
+msgstr ""
+"O fundo usará o desfoque do KWin quando estiver disponível. A opacidade "
+"selecionada define quanto do conteúdo atrás do menu permanecerá visível."
 
 #: contents/ui/config/ConfigAspect.qml:997
 msgid ""
@@ -3652,22 +3687,22 @@ msgid ""
 msgstr ""
 "O tema externo configurado não está disponível. O fundo Plasma será usado."
 
-#: contents/ui/components/DockItemsController.qml:585
+#: contents/ui/components/DockItemsController.qml:586
 msgctxt "@info:status"
 msgid "The desktop folder is not available."
 msgstr "A pasta da área de trabalho não está disponível."
 
-#: contents/ui/components/DockItemsController.qml:592
+#: contents/ui/components/DockItemsController.qml:593
 msgctxt "@info:status"
 msgid "The desktop shortcut could not be written."
 msgstr "O atalho da área de trabalho não pôde ser gravado."
 
-#: contents/ui/components/DockItemsController.qml:588
+#: contents/ui/components/DockItemsController.qml:589
 msgctxt "@info:status"
 msgid "The desktop shortcut permissions could not be set."
 msgstr "As permissões do atalho da área de trabalho não puderam ser definidas."
 
-#: contents/ui/components/DockItemsController.qml:582
+#: contents/ui/components/DockItemsController.qml:583
 msgctxt "@info:status"
 msgid "The desktop shortcut source is not safe."
 msgstr "A origem do atalho da área de trabalho não é segura."
@@ -3695,23 +3730,23 @@ msgid ""
 msgstr ""
 "A configuração do dock é muito grande. O tamanho máximo suportado é 1 MiB."
 
-#: contents/ui/main.qml:940
+#: contents/ui/main.qml:947
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "O arrastar e soltar contém um local de arquivo inválido."
 
-#: contents/ui/main.qml:949
+#: contents/ui/main.qml:956
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
 "A lista de arquivos soltos é grande demais para ser aberta com segurança."
 
-#: contents/ui/main.qml:954
+#: contents/ui/main.qml:961
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Os arquivos soltos não puderam ser abertos."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:468
+#: contents/ui/config/ConfigPunchiMenu.qml:518
 msgid "The effective size adapts to the screen and available grid cell space."
 msgstr ""
 "O tamanho efetivo se adapta à tela e ao espaço disponível nas células da "
@@ -3726,13 +3761,13 @@ msgstr "Não foi possível aplicar a alteração da pasta. Tente novamente."
 msgid "The folder location is invalid."
 msgstr "O local da pasta é inválido."
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:251
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:422
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:252
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:424
 msgctxt "@info:status"
 msgid "The last folder change could not be undone."
 msgstr "Não foi possível desfazer a última alteração da pasta."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:523
+#: contents/ui/config/ConfigPunchiMenu.qml:573
 msgid ""
 "The menu reduces columns when the available width is insufficient and uses "
 "scrolling when content exceeds the selected row limit."
@@ -3740,7 +3775,7 @@ msgstr ""
 "O menu reduz as colunas quando a largura disponível é insuficiente e usa "
 "rolagem quando o conteúdo excede o limite de linhas selecionado."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:756
+#: contents/ui/config/ConfigPunchiMenu.qml:806
 msgid ""
 "The percentages adjust the menu size relative to your screen width and "
 "height (from 30% to 90%)."
@@ -3772,7 +3807,7 @@ msgstr ""
 "O reflexo é decorativo e não altera o tamanho ou a área de interação dos "
 "itens de encaixe."
 
-#: contents/ui/components/DockItemsController.qml:595
+#: contents/ui/components/DockItemsController.qml:596
 msgctxt "@info:status"
 msgid "The requested application action could not be completed."
 msgstr "A ação solicitada do aplicativo não pôde ser concluída."
@@ -3781,7 +3816,7 @@ msgstr "A ação solicitada do aplicativo não pôde ser concluída."
 msgid "The root value must be a JSON array."
 msgstr "O valor raiz deve ser uma matriz JSON."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:572
+#: contents/ui/config/ConfigPunchiMenu.qml:622
 msgid ""
 "The safe range applies to the reserved Favorites section in both menu modes."
 msgstr ""
@@ -3864,19 +3899,19 @@ msgstr "Fino"
 msgid "This action cannot be undone."
 msgstr "Esta ação não pode ser desfeita."
 
-#: contents/ui/main.qml:952
+#: contents/ui/main.qml:959
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
 "Este aplicativo não pode ser resolvido com segurança para abrir arquivos."
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1197
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:992
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1202
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:998
 msgctxt "@info:status"
 msgid "This application could not be resolved safely."
 msgstr "Este aplicativo não pôde ser resolvido com segurança."
 
-#: contents/ui/config/ConfigPunchiMenu.qml:663
+#: contents/ui/config/ConfigPunchiMenu.qml:713
 msgid "This distance is added after the panel thickness detected by Plasma."
 msgstr ""
 "Esta distância é adicionada após a espessura do painel detectada pelo Plasma."
@@ -3993,8 +4028,8 @@ msgstr "Tente novamente"
 msgid "Type:"
 msgstr "Tipo:"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:3108
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:3267
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:3119
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:3286
 msgctxt "@action:button"
 msgid "Undo Folder Change"
 msgstr "Desfazer alteração da pasta"
@@ -4008,8 +4043,8 @@ msgstr "Desafixar do Dock"
 msgid "Use Plasma theme colors"
 msgstr "Use cores do tema Plasma"
 
-#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:102
-#: contents/ui/config/ConfigPunchiMenu.qml:314
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:105
+#: contents/ui/config/ConfigPunchiMenu.qml:318
 msgid "Use background blur when available"
 msgstr "Usar desfoque do fundo quando disponível"
 
@@ -4017,12 +4052,12 @@ msgstr "Usar desfoque do fundo quando disponível"
 msgid "Use interactive cursors in the settings window"
 msgstr "Use cursores interativos na janela de configurações"
 
-#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2792
+#: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2811
 msgctxt "@info:user"
 msgid "User"
 msgstr "Usuário"
 
-#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1355
+#: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1360
 msgctxt "@title:category"
 msgid "Utilities"
 msgstr "Utilitários"
@@ -4202,6 +4237,14 @@ msgstr ""
 msgid "Windows"
 msgstr "Janelas"
 
+#: contents/ui/components/punchimenu/PunchiMenuSettingsView.qml:153
+#: contents/ui/config/ConfigPunchiMenu.qml:374
+msgid ""
+"Without blur, the background depends on the Plasma theme and the selected "
+"opacity."
+msgstr ""
+"Sem desfoque, o fundo depende do tema Plasma e da opacidade selecionada."
+
 #: contents/ui/config/AddItemPalette.qml:28
 msgid "Write a quick editable note"
 msgstr "Escreva uma nota editável rápida"
@@ -4210,7 +4253,7 @@ msgstr "Escreva uma nota editável rápida"
 msgid "Write a quick note"
 msgstr "Escreva uma nota rápida"
 
-#: contents/ui/main.qml:936
+#: contents/ui/main.qml:943
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Você pode abrir até %1 arquivos locais de uma vez."
@@ -4220,6 +4263,14 @@ msgstr "Você pode abrir até %1 arquivos locais de uma vez."
 #: contents/ui/config/components/ActionDialog.qml:79
 msgid "rows"
 msgstr "linhas"
+
+#~ msgid ""
+#~ "Blur depends on the KWin Blur desktop effect. If it is disabled, increase "
+#~ "the background opacity to keep the menu readable."
+#~ msgstr ""
+#~ "O desfoque depende do efeito de área de trabalho Desfoque do KWin. Se ele "
+#~ "estiver desativado, aumente a opacidade do fundo para manter o menu "
+#~ "legível."
 
 #, fuzzy
 #~| msgctxt "@option:punchimenu-mode"
