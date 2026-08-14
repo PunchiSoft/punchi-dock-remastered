@@ -134,13 +134,22 @@ def main() -> int:
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuSessionView.qml"
     ).read_text(encoding="utf-8")
-    settings_view_source = (
+    normal_settings_view_source = (
         PROJECT_ROOT
-        / "contents/ui/components/punchimenu/PunchiMenuSettingsView.qml"
+        / "contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml"
     ).read_text(encoding="utf-8")
-    settings_combo_source = (
+    fullscreen_settings_view_source = (
         PROJECT_ROOT
-        / "contents/ui/components/punchimenu/PunchiMenuComboBox.qml"
+        / "contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml"
+    ).read_text(encoding="utf-8")
+    settings_view_source = (
+        normal_settings_view_source
+        + "\n"
+        + fullscreen_settings_view_source
+    )
+    fullscreen_combo_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuFullScreenComboBox.qml"
     ).read_text(encoding="utf-8")
     avatar_component_source = (
         PROJECT_ROOT
@@ -379,9 +388,13 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
-    if "readonly property int folderMaximumLimit: normalMode ? 3 : 5" not in settings_view_source:
+    if (
+        "to: 3" not in normal_settings_view_source
+        or "to: 5" not in fullscreen_settings_view_source
+    ):
         print(
-            "PunchiMenu folder grid limits: embedded ranges must switch between Normal 1-3 and Fullscreen 1-5",
+            "PunchiMenu folder grid limits: isolated ranges must preserve "
+            "Normal 1-3 and Fullscreen 1-5",
             file=sys.stderr,
         )
         passed = False
@@ -1130,7 +1143,7 @@ def main() -> int:
         ),
         (
             overlay_source,
-            "PunchiMenuSettingsView {",
+            "PunchiMenuFullScreenSettingsView {",
             "dedicated settings view",
         ),
         (
@@ -1164,22 +1177,22 @@ def main() -> int:
             "canonical settings normalization",
         ),
         (
-            settings_view_source,
+            fullscreen_settings_view_source,
             "Controls.ScrollView {",
             "scrollable settings content",
         ),
         (
-            settings_view_source,
+            fullscreen_settings_view_source,
             'i18nc("@title", "PunchiMenu Settings")',
             "translated title",
         ),
         (
-            settings_view_source,
+            fullscreen_settings_view_source,
             "function focusInitialAction()",
             "predictable keyboard focus",
         ),
         (
-            settings_view_source,
+            fullscreen_settings_view_source,
             '"Open mode, icon, and shortcut settings…")',
             "remaining settings action",
         ),
@@ -1227,7 +1240,7 @@ def main() -> int:
         "id: configureButton",
         'icon.name: root.settingsViewActive ? "view-grid" : "configure"',
         "id: settingsViewLoader",
-        'menuMode: "normal"',
+        "PunchiMenuNormalSettingsView {",
         "root.settingChangeRequested(fieldName, value)",
         "onAdvancedConfigurationRequested:",
     )
@@ -1239,50 +1252,160 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
-    mode_specific_settings_contract = (
-        'property string menuMode: "fullScreen"',
-        'normalMode\n        ? "normalBlurEnabled"',
-        'normalMode\n        ? "normalBackgroundOpacityPercent"',
-        'normalMode\n        ? "normalFolderMaximumColumns"',
-        'normalMode\n        ? "normalFolderMaximumRows"',
-        'visible: root.normalMode',
-        'visible: root.anchoredNormalMode',
-        '"normalPlacementMode", option.value',
+    normal_settings_contract = (
+        '"normalBlurEnabled", checked',
+        '"normalBackgroundOpacityPercent",',
+        '"normalFolderMaximumColumns", value',
+        '"normalFolderMaximumRows", value',
+        "visible: root.anchoredMode",
+        '"normalPlacementMode", modelData.value',
         '"normalPanelGap", Math.round(value)',
         '"normalWidthPercent",',
         '"normalHeightPercent",',
+        "Controls.RadioButton {",
     )
-    for marker in mode_specific_settings_contract:
-        if marker not in settings_view_source:
+    for marker in normal_settings_contract:
+        if marker not in normal_settings_view_source:
             print(
-                "PunchiMenu settings view: missing mode-specific routing: "
+                "PunchiMenu Normal settings: missing isolated routing: "
                 f"{marker}",
                 file=sys.stderr,
             )
             passed = False
-    embedded_combo_popup_contract = (
-        (settings_view_source, "PunchiMenuComboBox {",
-            "shared embedded selector"),
-        (settings_combo_source, "root.mapToItem(popupParentItem, 0, root.height)",
-            "popup origin mapped to its actual parent"),
-        (settings_combo_source, "const visibleNow = root.popup.visible",
-            "position refresh when the popup opens"),
+    fullscreen_settings_contract = (
+        '"fullScreenBlurEnabled", checked',
+        '"fullScreenBackgroundOpacityPercent",',
+        '"fullScreenFolderMaximumColumns", value',
+        '"fullScreenFolderMaximumRows", value',
+        '"fullScreenCloseButtonPosition",',
+        "PunchiMenuFullScreenComboBox {",
     )
-    for source, marker, description in embedded_combo_popup_contract:
-        if marker not in source:
+    for marker in fullscreen_settings_contract:
+        if marker not in fullscreen_settings_view_source:
             print(
-                "PunchiMenu embedded ComboBox: missing "
-                f"{description}: {marker}",
+                "PunchiMenu Fullscreen settings: missing isolated routing: "
+                f"{marker}",
                 file=sys.stderr,
             )
             passed = False
-    if settings_view_source.count("PunchiMenuComboBox {") != 3:
+    selector_separation_contract = (
+        (fullscreen_combo_source,
+            "root.mapToItem(popupParentItem, 0, root.height)",
+            "Fullscreen popup origin mapping"),
+        (fullscreen_combo_source,
+            "const visibleNow = root.popup.visible",
+            "Fullscreen popup refresh"),
+        (normal_settings_view_source, "Controls.ButtonGroup {",
+            "Normal exclusive radio groups"),
+        (normal_settings_view_source,
+            "Controls.ButtonGroup.group:",
+            "Normal radio group membership"),
+        (normal_settings_view_source,
+            "checked: index === root.placementIndex()",
+            "Normal placement selection state"),
+        (normal_settings_view_source,
+            "hoverAnimationRepeater.itemAt(0)",
+            "Normal hover label first-option alignment"),
+        (normal_settings_view_source,
+            "normalPlacementRepeater.itemAt(0)",
+            "Normal placement label first-option alignment"),
+    )
+    for source, marker, description in selector_separation_contract:
+        if marker not in source:
+            print(
+                f"PunchiMenu selector separation: missing {description}: "
+                f"{marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if normal_settings_view_source.count("Controls.ButtonGroup {") != 2:
         print(
-            "PunchiMenu settings view: every embedded selector must use the "
-            "mapped popup component",
+            "PunchiMenu Normal settings: both option sets must use an "
+            "exclusive button group",
             file=sys.stderr,
         )
         passed = False
+    if normal_settings_view_source.count("exclusive: true") != 2:
+        print(
+            "PunchiMenu Normal settings: each radio group must allow exactly "
+            "one selected option",
+            file=sys.stderr,
+        )
+        passed = False
+    if normal_settings_view_source.count("Controls.RadioButton {") != 2:
+        print(
+            "PunchiMenu Normal settings: both option sets must use radio "
+            "button delegates",
+            file=sys.stderr,
+        )
+        passed = False
+    if normal_settings_view_source.count(
+        "Layout.alignment: Qt.AlignLeft") != 2:
+        print(
+            "PunchiMenu Normal settings: radio options must keep compact "
+            "left alignment",
+            file=sys.stderr,
+        )
+        passed = False
+    if fullscreen_settings_view_source.count(
+        "PunchiMenuFullScreenComboBox {") != 2:
+        print(
+            "PunchiMenu Fullscreen settings: both selectors must preserve "
+            "the Fullscreen ComboBox",
+            file=sys.stderr,
+        )
+        passed = False
+    for forbidden_normal_selector in (
+        "PlasmaComponents.ComboBox {",
+        "PunchiMenuFullScreenComboBox",
+        "PlasmaExtras.Menu",
+        "popup.",
+    ):
+        if forbidden_normal_selector in normal_settings_view_source:
+            print(
+                "PunchiMenu Normal selector: option groups must not create a "
+                f"popup: {forbidden_normal_selector}",
+                file=sys.stderr,
+            )
+            passed = False
+    if any(marker in normal_settings_view_source for marker in (
+        "showDistributionName",
+        "showPageNavigationArrows",
+        "fullScreenCloseButtonPosition",
+        "PunchiMenuFullScreenComboBox",
+    )):
+        print(
+            "PunchiMenu Normal settings: contains Fullscreen-only controls",
+            file=sys.stderr,
+        )
+        passed = False
+    if any(marker in fullscreen_settings_view_source for marker in (
+        "normalPlacementMode",
+        "normalPanelGap",
+        "normalWidthPercent",
+        "normalHeightPercent",
+    )):
+        print(
+            "PunchiMenu Fullscreen settings: contains Normal-only controls",
+            file=sys.stderr,
+        )
+        passed = False
+    for retired_component in (
+        "PunchiMenuSettingsView.qml",
+        "PunchiMenuComboBox.qml",
+        "PunchiMenuNormalInlineSelector.qml",
+    ):
+        if (
+            PROJECT_ROOT
+            / "contents/ui/components/punchimenu"
+            / retired_component
+        ).exists():
+            print(
+                "PunchiMenu settings separation: retired shared component "
+                f"still exists: {retired_component}",
+                file=sys.stderr,
+            )
+            passed = False
     if "onClicked: root.configureRequested()" in overlay_source:
         print(
             "PunchiMenu Fullscreen internal settings: the header gear still "

@@ -2784,8 +2784,7 @@ FocusScope {
                 asynchronous: false
 
                 sourceComponent: Component {
-                    PunchiMenuSettingsView {
-                        menuMode: "fullScreen"
+                    PunchiMenuFullScreenSettingsView {
                         backgroundBlurEnabled: root.backgroundBlurEnabled
                         backgroundOpacityPercent: Math.round(
                             root.safeBackgroundOpacity * 100)
