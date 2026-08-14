@@ -896,6 +896,44 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    normal_session_view_contract = (
+        ('property string contentViewActive: "applications"',
+            "exclusive content view state"),
+        ('readonly property bool applicationViewActive:',
+            "derived application state"),
+        ('readonly property bool sessionViewActive:',
+            "derived session state"),
+        ('return requestedView === "settings" || requestedView === "session"',
+            "content view normalization"),
+        ('id: sessionButton', "single session header toggle"),
+        ('source: "user-identity"', "generic user icon"),
+        ('source: "view-grid"', "return-to-applications icon"),
+        ('KCoreAddons.KUser {', "local user identity source"),
+        ('Punchi.SessionActionsController {', "native session controller"),
+        ('id: sessionViewLoader', "lazy session view loader"),
+        ('active: root.sessionViewActive', "lazy session activation"),
+        ('PunchiMenuSessionView {', "shared session action view"),
+    )
+    for marker, description in normal_session_view_contract:
+        if marker not in normal_source:
+            print(
+                "PunchiMenu Normal session view: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    for retired_header_control in (
+        "id: btnLogOut",
+        "id: btnReboot",
+        "id: btnShutdown",
+    ):
+        if retired_header_control in normal_source:
+            print(
+                "PunchiMenu Normal session view: direct header action "
+                f"returned: {retired_header_control}",
+                file=sys.stderr,
+            )
+            passed = False
     if session_view_source.count("cursorShape: Qt.PointingHandCursor") < 3:
         print(
             "PunchiMenu Fullscreen session view: every action needs a pointing cursor",
@@ -1235,7 +1273,7 @@ def main() -> int:
             )
             passed = False
     normal_internal_settings_contract = (
-        "property bool settingsViewActive: false",
+        'readonly property bool settingsViewActive:',
         "function setSettingsViewActive(active)",
         "id: configureButton",
         'icon.name: root.settingsViewActive ? "view-grid" : "configure"',
@@ -1809,12 +1847,26 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
-    if normal_source.count("icon.color: highlightedContent") < 4:
+    if normal_source.count("icon.color: highlightedContent") < 3:
         print(
-            "PunchiMenu Normal: session and Close icons must use the theme highlighted text color",
+            "PunchiMenu Normal: standard header icons must use the theme "
+            "highlighted text color",
             file=sys.stderr,
         )
         passed = False
+    normal_header_cursor_contract = (
+        "enabled: configureButton.enabled\n                        cursorShape: Qt.PointingHandCursor",
+        "enabled: sessionButton.enabled\n                        cursorShape: Qt.PointingHandCursor",
+        "enabled: btnClose.enabled\n                        cursorShape: Qt.PointingHandCursor",
+    )
+    for marker in normal_header_cursor_contract:
+        if marker not in normal_source:
+            print(
+                "PunchiMenu Normal: every persistent header action needs a "
+                f"pointing cursor: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
     header_cursor_contract = (
         "enabled: hiddenApplicationsButton.enabled\n                    cursorShape: Qt.PointingHandCursor",
         "enabled: configureButton.enabled\n                    cursorShape: Qt.PointingHandCursor",
@@ -2599,9 +2651,7 @@ def main() -> int:
             "cursorShape: Qt.PointingHandCursor",
             "category pointing cursor",
         ),
-        (normal_source, "id: logOutHover", "log-out hover source"),
-        (normal_source, "id: rebootHover", "restart hover source"),
-        (normal_source, "id: shutdownHover", "shutdown hover source"),
+        (normal_source, "id: sessionHover", "session-view hover source"),
         (normal_source, "id: categoryLeftHover", "left category cursor"),
         (normal_source, "id: categoryRightHover", "right category cursor"),
         (normal_source, "id: favoritesLeftHover", "left Favorites cursor"),

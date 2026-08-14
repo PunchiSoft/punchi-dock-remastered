@@ -79,7 +79,7 @@ require(
 require(
     NORMAL.count("highlighted: categoryLeftEdge.highlightedContent") == 1
     and NORMAL.count("highlighted: categoryRightEdge.highlightedContent") == 1
-    and NORMAL.count("background: PunchiMenuActionBackground {") >= 7,
+    and NORMAL.count("background: PunchiMenuActionBackground {") >= 6,
     "Category edge controls must use the shared theme-aware action highlight.",
 )
 search_filter_start = NORMAL.index("function filterAllApplications()")

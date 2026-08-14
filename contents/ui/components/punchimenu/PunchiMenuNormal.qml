@@ -102,7 +102,7 @@ FocusScope {
     property int dragScrollDirection: 0
     property string applicationErrorMessage: ""
     property string settingsErrorMessage: ""
-    property bool settingsViewActive: false
+    property string contentViewActive: "applications"
     property string operationMessage: ""
     property bool operationMessageIsError: false
     property bool operationMessageDismissalInProgress: false
@@ -135,6 +135,12 @@ FocusScope {
                 "%1 · %2 s", operationBaseMessage, operationSecondsRemaining)
             : operationBaseMessage
     readonly property int headerControlSize: Kirigami.Units.gridUnit * 2
+    readonly property bool applicationViewActive:
+        contentViewActive === "applications"
+    readonly property bool settingsViewActive:
+        contentViewActive === "settings"
+    readonly property bool sessionViewActive:
+        contentViewActive === "session"
     readonly property real safeApplicationIconScale: {
         const requestedScale = Number(applicationIconScale)
         return Number.isFinite(requestedScale)
@@ -217,7 +223,7 @@ FocusScope {
         }
         return count
     }
-    readonly property bool favoritesSectionVisible: !settingsViewActive
+    readonly property bool favoritesSectionVisible: applicationViewActive
         && favorites.length > 0
         && searchField.text.length === 0
         && height >= Kirigami.Units.gridUnit * 24
@@ -1251,7 +1257,7 @@ FocusScope {
         operationMessage = ""
         applicationLaunchPending = false
         settingsErrorMessage = ""
-        settingsViewActive = false
+        contentViewActive = "applications"
         activeCategoryKey = "All"
         activeCategoryTitle = i18nc("@title:category", "All Applications")
         categoriesView.currentIndex = categoryIndexForKey(activeCategoryKey)
@@ -1275,7 +1281,7 @@ FocusScope {
         menuOpen = false
         revealHiddenApplications = false
         applicationLaunchPending = false
-        settingsViewActive = false
+        contentViewActive = "applications"
         closeTimer.restart()
     }
 
@@ -1295,7 +1301,7 @@ FocusScope {
         applicationErrorMessage = ""
         operationMessage = ""
         settingsErrorMessage = ""
-        settingsViewActive = false
+        contentViewActive = "applications"
         pendingCategoryKey = ""
         suppressSearchChange = true
         searchField.clear()
@@ -1313,27 +1319,40 @@ FocusScope {
             closeApplicationContextMenu(true)
         } else if (folderSurface.active) {
             folderSurface.closeCurrentView()
-        } else if (settingsViewActive) {
-            setSettingsViewActive(false)
+        } else if (!applicationViewActive) {
+            setContentView("applications")
         } else {
             root.forceClose()
         }
         event.accepted = true
     }
 
-    function setSettingsViewActive(active) {
-        const requestedState = active === true
-        if (settingsViewActive === requestedState) {
+    function normalizedContentView(viewName) {
+        const requestedView = String(viewName || "applications")
+        return requestedView === "settings" || requestedView === "session"
+            ? requestedView : "applications"
+    }
+
+    function setContentView(viewName) {
+        const requestedView = normalizedContentView(viewName)
+        if (contentViewActive === requestedView) {
             return
         }
         cancelInternalLayoutDrag()
         closeApplicationContextMenu(false)
         folderSurface.reset()
         settingsErrorMessage = ""
-        settingsViewActive = requestedState
-        if (requestedState) {
+        contentViewActive = requestedView
+        if (settingsViewActive) {
             Qt.callLater(function() {
                 const loadedView = settingsViewLoader.item
+                if (loadedView) {
+                    loadedView.focusInitialAction()
+                }
+            })
+        } else if (sessionViewActive) {
+            Qt.callLater(function() {
+                const loadedView = sessionViewLoader.item
                 if (loadedView) {
                     loadedView.focusInitialAction()
                 }
@@ -1345,7 +1364,22 @@ FocusScope {
         }
     }
 
+    function setSettingsViewActive(active) {
+        setContentView(active ? "settings" : "applications")
+    }
+
+    function setSessionViewActive(active) {
+        setContentView(active ? "session" : "applications")
+    }
+
     function focusPrimaryContent() {
+        if (sessionViewActive) {
+            const loadedView = sessionViewLoader.item
+            if (loadedView) {
+                loadedView.focusInitialAction()
+            }
+            return
+        }
         if (settingsViewActive) {
             const loadedView = settingsViewLoader.item
             if (loadedView) {
@@ -1470,6 +1504,10 @@ FocusScope {
                 root.cancelInternalLayoutDrag()
             }
         }
+    }
+
+    KCoreAddons.KUser {
+        id: currentUser
     }
 
     Punchi.SessionActionsController {
@@ -1602,7 +1640,7 @@ FocusScope {
                 Kirigami.SearchField {
                     id: searchField
                     Layout.fillWidth: true
-                    enabled: root.menuOpen && !root.settingsViewActive
+                    enabled: root.menuOpen && root.applicationViewActive
                     placeholderText: i18nc("@placeholder", "Search applications…")
                     Accessible.name: i18nc("@label", "Search applications")
                     background: PunchiMenuSearchBackground {
@@ -1648,12 +1686,7 @@ FocusScope {
                     checked: root.settingsViewActive
                     Accessible.name: text
                     KeyNavigation.backtab: searchField
-                    KeyNavigation.tab: hiddenApplicationsButton.visible
-                            && !root.settingsViewActive
-                        ? hiddenApplicationsButton
-                        : (btnLogOut.enabled ? btnLogOut
-                            : (btnReboot.enabled ? btnReboot
-                                : (btnShutdown.enabled ? btnShutdown : btnClose)))
+                    KeyNavigation.tab: sessionButton
 
                     background: PunchiMenuActionBackground {
                         highlighted: configureButton.highlightedContent
@@ -1690,6 +1723,92 @@ FocusScope {
                 }
 
                 PlasmaComponents.ToolButton {
+                    id: sessionButton
+                    readonly property bool highlightedContent: enabled
+                        && (sessionHover.hovered || hovered || down
+                            || activeFocus || checked)
+                    readonly property color foregroundColor: highlightedContent
+                        ? root.Kirigami.Theme.highlightedTextColor
+                        : root.Kirigami.Theme.textColor
+                    Layout.preferredWidth: root.headerControlSize
+                    Layout.minimumWidth: Layout.preferredWidth
+                    Layout.maximumWidth: Layout.preferredWidth
+                    Layout.preferredHeight: root.headerControlSize
+                    Layout.minimumHeight: Layout.preferredHeight
+                    Layout.maximumHeight: Layout.preferredHeight
+                    enabled: root.menuOpen && !root.applicationLaunchPending
+                    display: PlasmaComponents.AbstractButton.IconOnly
+                    text: root.sessionViewActive
+                        ? i18nc("@action:button", "Show applications")
+                        : i18nc("@action:button", "Show session actions")
+                    checkable: true
+                    checked: root.sessionViewActive
+                    Accessible.name: text
+                    KeyNavigation.backtab: configureButton
+                    KeyNavigation.tab: hiddenApplicationsButton.visible
+                            && root.applicationViewActive
+                        ? hiddenApplicationsButton : btnClose
+
+                    contentItem: Item {
+                        implicitWidth: root.headerControlSize
+                        implicitHeight: root.headerControlSize
+
+                        Kirigami.Icon {
+                            anchors.centerIn: parent
+                            width: Kirigami.Units.iconSizes.smallMedium
+                            height: width
+                            source: "user-identity"
+                            color: sessionButton.foregroundColor
+                            visible: !root.sessionViewActive
+                            Accessible.ignored: true
+                        }
+
+                        Kirigami.Icon {
+                            anchors.centerIn: parent
+                            width: Kirigami.Units.iconSizes.smallMedium
+                            height: width
+                            source: "view-grid"
+                            color: sessionButton.foregroundColor
+                            visible: root.sessionViewActive
+                            Accessible.ignored: true
+                        }
+                    }
+
+                    background: PunchiMenuActionBackground {
+                        highlighted: sessionButton.highlightedContent
+                        circular: true
+                    }
+
+                    PlasmaCore.ToolTipArea {
+                        id: sessionToolTip
+                        anchors.fill: parent
+                        active: sessionButton.enabled
+                        mainText: sessionButton.text
+                    }
+
+                    onActiveFocusChanged: {
+                        if (activeFocus) {
+                            sessionToolTip.showToolTip()
+                        } else if (!sessionToolTip.containsMouse) {
+                            sessionToolTip.hideImmediately()
+                        }
+                    }
+                    onClicked: root.setSessionViewActive(
+                        !root.sessionViewActive)
+
+                    Keys.onDownPressed: function(event) {
+                        root.focusPrimaryContent()
+                        event.accepted = true
+                    }
+
+                    HoverHandler {
+                        id: sessionHover
+                        enabled: sessionButton.enabled
+                        cursorShape: Qt.PointingHandCursor
+                    }
+                }
+
+                PlasmaComponents.ToolButton {
                     id: hiddenApplicationsButton
                     readonly property bool highlightedContent: enabled
                         && (hiddenApplicationsHover.hovered || hovered || down
@@ -1701,7 +1820,7 @@ FocusScope {
                     Layout.minimumHeight: Layout.preferredHeight
                     Layout.maximumHeight: Layout.preferredHeight
                     visible: root.hiddenApplicationCount > 0
-                    enabled: root.menuOpen && !root.settingsViewActive
+                    enabled: root.menuOpen && root.applicationViewActive
                         && !root.applicationLaunchPending
                     icon.name: root.revealHiddenApplications
                         ? "view-visible-symbolic"
@@ -1716,13 +1835,9 @@ FocusScope {
                     checkable: true
                     checked: root.revealHiddenApplications
                     Accessible.name: text
-                    KeyNavigation.backtab: configureButton
-                    KeyNavigation.tab: btnLogOut.enabled ? btnLogOut
-                        : (btnReboot.enabled ? btnReboot
-                            : (btnShutdown.enabled ? btnShutdown : btnClose))
-                    KeyNavigation.right: btnLogOut.enabled ? btnLogOut
-                        : (btnReboot.enabled ? btnReboot
-                            : (btnShutdown.enabled ? btnShutdown : btnClose))
+                    KeyNavigation.backtab: sessionButton
+                    KeyNavigation.tab: btnClose
+                    KeyNavigation.right: btnClose
                     KeyNavigation.down: categoriesView
 
                     background: PunchiMenuActionBackground {
@@ -1756,183 +1871,6 @@ FocusScope {
                 }
 
                 PlasmaComponents.ToolButton {
-                    id: btnLogOut
-                    readonly property bool highlightedContent: enabled
-                        && (logOutHover.hovered || hovered || down
-                            || activeFocus)
-                    Layout.preferredWidth: root.headerControlSize
-                    Layout.minimumWidth: Layout.preferredWidth
-                    Layout.maximumWidth: Layout.preferredWidth
-                    Layout.preferredHeight: root.headerControlSize
-                    Layout.minimumHeight: Layout.preferredHeight
-                    Layout.maximumHeight: Layout.preferredHeight
-                    icon.name: "system-log-out"
-                    icon.color: highlightedContent
-                        ? root.Kirigami.Theme.highlightedTextColor
-                        : root.Kirigami.Theme.textColor
-                    display: PlasmaComponents.AbstractButton.IconOnly
-                    text: i18nc("@action:button", "Log Out")
-                    Accessible.name: text
-                    enabled: sessionActions.canLogout
-                    KeyNavigation.backtab: hiddenApplicationsButton.visible
-                        ? hiddenApplicationsButton : configureButton
-                    KeyNavigation.tab: root.settingsViewActive
-                        ? configureButton : categoriesView
-                    KeyNavigation.right: btnReboot.enabled ? btnReboot : (btnShutdown.enabled ? btnShutdown : btnClose)
-                    KeyNavigation.down: root.settingsViewActive
-                        ? configureButton : categoriesView
-
-                    background: PunchiMenuActionBackground {
-                        highlighted: btnLogOut.highlightedContent
-                        circular: true
-                    }
-
-                    PlasmaCore.ToolTipArea {
-                        id: logOutToolTip
-                        anchors.fill: parent
-                        active: btnLogOut.enabled
-                        mainText: btnLogOut.text
-                    }
-
-                    onActiveFocusChanged: {
-                        if (activeFocus) {
-                            logOutToolTip.showToolTip()
-                        } else if (!logOutToolTip.containsMouse) {
-                            logOutToolTip.hideImmediately()
-                        }
-                    }
-                    onClicked: {
-                        root.forceClose()
-                        sessionActions.requestLogout()
-                    }
-
-                    HoverHandler {
-                        id: logOutHover
-                        enabled: btnLogOut.enabled
-                        cursorShape: Qt.PointingHandCursor
-                    }
-                }
-
-                PlasmaComponents.ToolButton {
-                    id: btnReboot
-                    readonly property bool highlightedContent: enabled
-                        && (rebootHover.hovered || hovered || down
-                            || activeFocus)
-                    Layout.preferredWidth: root.headerControlSize
-                    Layout.minimumWidth: Layout.preferredWidth
-                    Layout.maximumWidth: Layout.preferredWidth
-                    Layout.preferredHeight: root.headerControlSize
-                    Layout.minimumHeight: Layout.preferredHeight
-                    Layout.maximumHeight: Layout.preferredHeight
-                    icon.name: "system-reboot"
-                    icon.color: highlightedContent
-                        ? root.Kirigami.Theme.highlightedTextColor
-                        : root.Kirigami.Theme.textColor
-                    display: PlasmaComponents.AbstractButton.IconOnly
-                    text: i18nc("@action:button", "Restart")
-                    Accessible.name: text
-                    enabled: sessionActions.canReboot
-                    KeyNavigation.backtab: btnLogOut.enabled
-                        ? btnLogOut : configureButton
-                    KeyNavigation.tab: root.settingsViewActive
-                        ? configureButton : categoriesView
-                    KeyNavigation.left: btnLogOut.enabled ? btnLogOut : null
-                    KeyNavigation.right: btnShutdown.enabled ? btnShutdown : btnClose
-                    KeyNavigation.down: root.settingsViewActive
-                        ? configureButton : categoriesView
-
-                    background: PunchiMenuActionBackground {
-                        highlighted: btnReboot.highlightedContent
-                        circular: true
-                    }
-
-                    PlasmaCore.ToolTipArea {
-                        id: rebootToolTip
-                        anchors.fill: parent
-                        active: btnReboot.enabled
-                        mainText: btnReboot.text
-                    }
-
-                    onActiveFocusChanged: {
-                        if (activeFocus) {
-                            rebootToolTip.showToolTip()
-                        } else if (!rebootToolTip.containsMouse) {
-                            rebootToolTip.hideImmediately()
-                        }
-                    }
-                    onClicked: {
-                        root.forceClose()
-                        sessionActions.requestReboot()
-                    }
-
-                    HoverHandler {
-                        id: rebootHover
-                        enabled: btnReboot.enabled
-                        cursorShape: Qt.PointingHandCursor
-                    }
-                }
-
-                PlasmaComponents.ToolButton {
-                    id: btnShutdown
-                    readonly property bool highlightedContent: enabled
-                        && (shutdownHover.hovered || hovered || down
-                            || activeFocus)
-                    Layout.preferredWidth: root.headerControlSize
-                    Layout.minimumWidth: Layout.preferredWidth
-                    Layout.maximumWidth: Layout.preferredWidth
-                    Layout.preferredHeight: root.headerControlSize
-                    Layout.minimumHeight: Layout.preferredHeight
-                    Layout.maximumHeight: Layout.preferredHeight
-                    icon.name: "system-shutdown"
-                    icon.color: highlightedContent
-                        ? root.Kirigami.Theme.highlightedTextColor
-                        : root.Kirigami.Theme.textColor
-                    display: PlasmaComponents.AbstractButton.IconOnly
-                    text: i18nc("@action:button", "Shut Down")
-                    Accessible.name: text
-                    enabled: sessionActions.canShutdown
-                    KeyNavigation.backtab: btnReboot.enabled
-                        ? btnReboot : (btnLogOut.enabled
-                            ? btnLogOut : configureButton)
-                    KeyNavigation.tab: root.settingsViewActive
-                        ? configureButton : categoriesView
-                    KeyNavigation.left: btnReboot.enabled ? btnReboot : (btnLogOut.enabled ? btnLogOut : null)
-                    KeyNavigation.right: btnClose
-                    KeyNavigation.down: root.settingsViewActive
-                        ? configureButton : categoriesView
-
-                    background: PunchiMenuActionBackground {
-                        highlighted: btnShutdown.highlightedContent
-                        circular: true
-                    }
-
-                    PlasmaCore.ToolTipArea {
-                        id: shutdownToolTip
-                        anchors.fill: parent
-                        active: btnShutdown.enabled
-                        mainText: btnShutdown.text
-                    }
-
-                    onActiveFocusChanged: {
-                        if (activeFocus) {
-                            shutdownToolTip.showToolTip()
-                        } else if (!shutdownToolTip.containsMouse) {
-                            shutdownToolTip.hideImmediately()
-                        }
-                    }
-                    onClicked: {
-                        root.forceClose()
-                        sessionActions.requestShutdown()
-                    }
-
-                    HoverHandler {
-                        id: shutdownHover
-                        enabled: btnShutdown.enabled
-                        cursorShape: Qt.PointingHandCursor
-                    }
-                }
-
-                PlasmaComponents.ToolButton {
                     id: btnClose
                     readonly property bool highlightedContent: enabled
                         && (closeHover.hovered || hovered || down
@@ -1950,15 +1888,14 @@ FocusScope {
                     display: PlasmaComponents.AbstractButton.IconOnly
                     text: i18nc("@action:button", "Close")
                     Accessible.name: text
-                    KeyNavigation.backtab: btnShutdown.enabled
-                        ? btnShutdown : (btnReboot.enabled
-                            ? btnReboot : (btnLogOut.enabled
-                                ? btnLogOut : configureButton))
-                    KeyNavigation.tab: root.settingsViewActive
-                        ? configureButton : categoriesView
-                    KeyNavigation.left: btnShutdown.enabled ? btnShutdown : (btnReboot.enabled ? btnReboot : (btnLogOut.enabled ? btnLogOut : null))
-                    KeyNavigation.down: root.settingsViewActive
-                        ? configureButton : categoriesView
+                    KeyNavigation.backtab: hiddenApplicationsButton.visible
+                            && root.applicationViewActive
+                        ? hiddenApplicationsButton : sessionButton
+                    KeyNavigation.tab: root.applicationViewActive
+                        ? categoriesView : sessionButton
+                    KeyNavigation.left: hiddenApplicationsButton.visible
+                            && root.applicationViewActive
+                        ? hiddenApplicationsButton : sessionButton
 
                     background: PunchiMenuActionBackground {
                         highlighted: btnClose.highlightedContent
@@ -1996,7 +1933,7 @@ FocusScope {
             Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: Kirigami.Units.gridUnit * 2.65
-                visible: !root.settingsViewActive
+                visible: root.applicationViewActive
 
                 RowLayout {
                     anchors.fill: parent
@@ -2220,14 +2157,14 @@ FocusScope {
 
             Kirigami.Separator {
                 Layout.fillWidth: true
-                visible: !root.settingsViewActive
+                visible: root.applicationViewActive
                 Accessible.ignored: true
             }
 
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                visible: !root.settingsViewActive
+                visible: root.applicationViewActive
 
                 DropArea {
                     id: applicationsDropArea
@@ -3212,6 +3149,41 @@ FocusScope {
                         }
                         onAdvancedConfigurationRequested:
                             root.configureRequested()
+                    }
+                }
+            }
+
+            Loader {
+                id: sessionViewLoader
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                active: root.sessionViewActive
+                visible: root.sessionViewActive
+                enabled: visible
+                asynchronous: false
+
+                sourceComponent: Component {
+                    PunchiMenuSessionView {
+                        userName: String(currentUser.fullName
+                            || currentUser.loginName
+                            || i18nc("@info:user", "User"))
+                        userAvatar: currentUser.faceIconUrl
+                        canLogout: sessionActions.canLogout
+                        canRestart: sessionActions.canReboot
+                        canShutdown: sessionActions.canShutdown
+
+                        onLogoutRequested: {
+                            root.forceClose()
+                            sessionActions.requestLogout()
+                        }
+                        onRestartRequested: {
+                            root.forceClose()
+                            sessionActions.requestReboot()
+                        }
+                        onShutdownRequested: {
+                            root.forceClose()
+                            sessionActions.requestShutdown()
+                        }
                     }
                 }
             }
