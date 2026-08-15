@@ -107,6 +107,12 @@ def main() -> int:
     dock_items_controller_source = (
         PROJECT_ROOT / "contents/ui/components/DockItemsController.qml"
     ).read_text(encoding="utf-8")
+    dock_context_actions_source = (
+        PROJECT_ROOT / "contents/ui/components/DockContextActionsController.qml"
+    ).read_text(encoding="utf-8")
+    app_actions_popup_source = (
+        PROJECT_ROOT / "contents/ui/components/AppActionsPopup.qml"
+    ).read_text(encoding="utf-8")
     dialog_source = (
         PROJECT_ROOT / "contents/ui/config/components/PunchiMenuDialog.qml"
     ).read_text(encoding="utf-8")
@@ -176,8 +182,11 @@ def main() -> int:
     config_page_source = (
         PROJECT_ROOT / "contents/ui/config/ConfigItems.qml"
     ).read_text(encoding="utf-8")
-    punchi_menu_config_source = (
+    punchi_menu_config_path = (
         PROJECT_ROOT / "contents/ui/config/ConfigPunchiMenu.qml"
+    )
+    additional_shortcuts_config_source = (
+        PROJECT_ROOT / "contents/ui/config/ConfigAdditionalShortcuts.qml"
     ).read_text(encoding="utf-8")
     config_model_source = (
         PROJECT_ROOT / "contents/config/config.qml"
@@ -706,15 +715,20 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
-    legacy_dialog_basic_contract = (
+    item_dialog_contract = (
         'i18n("Menu mode:")',
         "Controls.ComboBox {",
         "signal menuModeSelected(string mode)",
+        "property string iconName",
+        "signal iconPickerRequested()",
+        'i18n("Icon:")',
+        'i18nc("@action:button", "Choose PunchiMenu icon")',
+        "contentItem: RowLayout {",
     )
-    for marker in legacy_dialog_basic_contract:
+    for marker in item_dialog_contract:
         if marker not in dialog_source:
             print(
-                f"PunchiMenuDialog.qml: missing basic editor control: {marker}",
+                f"PunchiMenuDialog.qml: missing item editor control: {marker}",
                 file=sys.stderr,
             )
             passed = False
@@ -733,9 +747,7 @@ def main() -> int:
         "normalSizePercentSelected",
         "KQuickControls.KeySequenceItem",
         "signal shortcutSelected",
-        "signal iconPickerRequested",
         "property string shortcut",
-        "property string iconName",
         'i18n("Full screen and Normal are available. Compact will be enabled in a future update.")',
         'i18n("The effective size adapts to the screen and available grid cell space.")',
         'i18n("The safe range applies to the reserved Favorites section in both menu modes.")',
@@ -763,7 +775,6 @@ def main() -> int:
         "onFullScreenCloseButtonPositionSelected:",
         "onNormalSizePercentSelected:",
         "shortcut: page.cfg_punchiMenuShortcut",
-        'onIconPickerRequested: page.openIconPicker("punchimenu")',
         "onShortcutSelected:",
     )
     for marker in legacy_dialog_consumer_forbidden_markers:
@@ -773,57 +784,74 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
-    if "punchiMenuDialog.iconName" in workflow_source:
-        print(
-            "configItemsWorkflowHelper.js: retired PunchiMenuDialog icon property is still used",
-            file=sys.stderr,
-        )
-        passed = False
-    advanced_configuration_contract = (
-        "KQuickControls.KeySequenceItem",
-        'i18nc("@action:button", "Choose PunchiMenu icon")',
-        'i18n("Menu mode:")',
-        'i18n("Icon and keyboard shortcut:")',
+    item_dialog_wiring_contract = (
+        'page.openIconPicker("punchimenu")',
+        "punchiMenuDialog.iconName = ConfigItemsJS.normalizedPunchiMenuIcon(",
+        "punchiMenuDialog.iconName = item.icon",
     )
-    for marker in advanced_configuration_contract:
-        if marker not in punchi_menu_config_source:
+    for marker in item_dialog_wiring_contract:
+        source = config_page_source if marker.startswith("page.openIconPicker") else workflow_source
+        if marker not in source:
             print(
-                f"ConfigPunchiMenu.qml: advanced setting/help is missing: {marker}",
+                f"PunchiMenu item editor: missing icon wiring: {marker}",
                 file=sys.stderr,
             )
             passed = False
-    retired_kcm_controls = (
-        'i18n("Background and legibility")',
-        'i18n("Use background blur when available")',
-        'i18n("Show application names")',
-        'i18n("Sort applications alphabetically")',
-        'i18n("Application grid icon scale:")',
-        'i18n("Favorites icon scale:")',
-        'i18n("Maximum folder columns:")',
-        'i18n("Normal menu placement:")',
-        'i18n("Show page navigation arrows")',
-        'i18n("Close button:")',
+
+    if punchi_menu_config_path.exists():
+        print(
+            "ConfigPunchiMenu.qml: redundant standalone KCM page was not retired",
+            file=sys.stderr,
+        )
+        passed = False
+    if 'source: "config/ConfigPunchiMenu.qml"' in config_model_source:
+        print(
+            "config.qml: redundant PunchiMenu category was not retired",
+            file=sys.stderr,
+        )
+        passed = False
+
+    contextual_mode_contract = (
+        (dock_context_actions_source, 'i18nc("@title:menu", "Menu mode")'),
+        (dock_context_actions_source, '"kind": "submenu"'),
+        (dock_context_actions_source, '"kind": "setPunchiMenuMode"'),
+        (dock_context_actions_source, '"checked": normalModeActive'),
+        (dock_context_actions_source, '"checked": !normalModeActive'),
+        (dock_items_controller_source, '"menuMode": true'),
+        (app_actions_popup_source, "function openSubMenu(action)"),
+        (app_actions_popup_source, "function closeSubMenu()"),
+        (app_actions_popup_source, "readonly property var displayedActions"),
     )
-    for marker in retired_kcm_controls:
-        if marker in punchi_menu_config_source:
+    for source, marker in contextual_mode_contract:
+        if marker not in source:
             print(
-                "ConfigPunchiMenu.qml: migrated embedded setting remains in KCM: "
+                f"PunchiMenu contextual mode selector: missing contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    additional_shortcuts_contract = (
+        'title: i18n("Additional Shortcuts")',
+        "property string cfg_punchiMenuShortcut",
+        "KQuickControls.KeySequenceItem",
+        'Kirigami.FormData.label: i18n("Open or close PunchiMenu:")',
+        "page.cfg_punchiMenuShortcut = keySequence.toString()",
+        'Accessible.name: i18n("PunchiMenu keyboard shortcut")',
+    )
+    for marker in additional_shortcuts_contract:
+        if marker not in additional_shortcuts_config_source:
+            print(
+                "ConfigAdditionalShortcuts.qml: shortcut contract is incomplete: "
                 f"{marker}",
                 file=sys.stderr,
             )
             passed = False
-    advanced_configuration_layout_contract = (
-        'i18n("Icon and keyboard shortcut:")',
-        "display: Controls.AbstractButton.IconOnly",
-        "id: shortcutItem",
-    )
-    for marker in advanced_configuration_layout_contract:
-        if marker not in punchi_menu_config_source:
-            print(
-                f"ConfigPunchiMenu.qml: icon/shortcut row is incomplete: {marker}",
-                file=sys.stderr,
-            )
-            passed = False
+    if "Plasmoid.globalShortcut" in additional_shortcuts_config_source:
+        print(
+            "ConfigAdditionalShortcuts.qml: the dedicated editor must not change "
+            "Plasma's widget activation shortcut",
+            file=sys.stderr,
+        )
+        passed = False
     if "Plasmoid.configuration.writeConfig()" not in main_source:
         print("main.qml: quick editor hand-off is not persisted", file=sys.stderr)
         passed = False
@@ -1231,7 +1259,7 @@ def main() -> int:
         ),
         (
             fullscreen_settings_view_source,
-            '"Open mode, icon, and shortcut settings…")',
+            '"Open mode and icon settings…")',
             "remaining settings action",
         ),
     )
@@ -2761,44 +2789,13 @@ def main() -> int:
     dedicated_config_contract = (
         (
             config_model_source,
-            'source: "config/ConfigPunchiMenu.qml"',
-            "main configuration category",
+            'source: "config/ConfigAdditionalShortcuts.qml"',
+            "additional shortcuts configuration category",
         ),
-        (
-            punchi_menu_config_source,
-            '"PunchiMenu Full screen"',
-            "full-screen mode option",
-        ),
-        (
-            punchi_menu_config_source,
-            '"PunchiMenu Normal"',
-            "Normal mode option",
-        ),
-        (
-            punchi_menu_config_source,
-            "property string cfg_dockItemsJson",
-            "shared item persistence",
-        ),
-        (
-            punchi_menu_config_source,
-            "ConfigItemsJS.prunePunchiMenu(item)",
-            "shared item normalization",
-        ),
-        (
-            punchi_menu_config_source,
-            'import "code/items.js" as ItemsJS',
-            "canonical default item source",
-        ),
-        (
-            punchi_menu_config_source,
-            "function effectiveDockItemsJson()",
-            "empty-instance fallback resolver",
-        ),
-        (
-            punchi_menu_config_source,
-            "ItemsJS.defaultJson()",
-            "canonical empty-instance fallback",
-        ),
+        (dialog_source, '"value": "fullScreen"', "full-screen mode option"),
+        (dialog_source, '"value": "normal"', "Normal mode option"),
+        (workflow_source, "ConfigItemsJS.prunePunchiMenu(item)",
+         "shared item normalization"),
         (
             settings_view_source,
             '"normalPanelGap", Math.round(value)',
@@ -2847,13 +2844,6 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
-    if punchi_menu_config_source.count(
-            "ConfigItemsJS.parseJsonArray(effectiveDockItemsJson())") != 2:
-        print(
-            "ConfigPunchiMenu.qml: loading and editing must share the canonical fallback",
-            file=sys.stderr,
-        )
-        passed = False
     if "Punchi.BlurBehindController" in normal_source or "surfaceOpacity" in normal_source:
         print("PunchiMenuNormal.qml: manual surface blur was not retired", file=sys.stderr)
         passed = False

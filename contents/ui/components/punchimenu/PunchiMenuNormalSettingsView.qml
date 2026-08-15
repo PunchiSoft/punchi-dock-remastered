@@ -516,7 +516,7 @@ PunchiMenuSettingsBase {
                     Layout.alignment: Qt.AlignRight
                     icon.name: "configure"
                     text: i18nc("@action:button",
-                        "Open mode, icon, and shortcut settings…")
+                        "Open mode and icon settings…")
                     Accessible.name: text
                     onClicked: root.advancedConfigurationRequested()
                 }

@@ -21,6 +21,7 @@ Item {
     property alias cfg_contextMenuIconSize: contextMenuIconSizeSlider.value
     property alias cfg_contextMenuWidth: contextMenuWidthSlider.value
     property string cfg_contextMenuTransitionDirection: "fromRight"
+    property alias cfg_contextMenuBackgroundOpacityPercent: contextMenuBackgroundOpacitySlider.value
     property alias cfg_menuTextShadowsEnabled: menuTextShadowsCheck.checked
     property alias cfg_menuAnimation: menuAnimationSettings.animationStyle
     property alias cfg_menuAnimationSpeedPercent: menuAnimationSettings.animationSpeedPercent
@@ -219,6 +220,45 @@ Item {
 
         Controls.Label {
             text: i18n("Menus use these target dimensions after morphing from a window preview. Screen limits can reduce the effective size safely.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Background opacity:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: contextMenuBackgroundOpacitySlider
+                from: 50
+                to: 100
+                stepSize: 5
+                snapMode: Controls.Slider.SnapAlways
+                value: 75
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Context menu background opacity")
+                Accessible.description: i18n("Only the context menu background changes; icons, controls and text remain fully opaque.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: i18n("%1%", Math.round(contextMenuBackgroundOpacitySlider.value))
+                font.bold: true
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 54
+            }
+        }
+
+        Controls.Label {
+            text: i18n("Only the context menu background changes; icons, controls and text remain fully opaque.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

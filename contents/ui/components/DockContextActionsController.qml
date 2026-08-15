@@ -103,6 +103,45 @@ QtObject {
                     "targetIndex": persistentIndex
                 })
             }
+            if (itemType === "punchimenu") {
+                const normalModeActive = String(item.menuMode || "fullScreen")
+                    === "normal"
+                itemActions.push({
+                    // qmllint disable unqualified
+                    "name": i18nc("@title:menu", "Menu mode"),
+                    "detail": normalModeActive
+                        ? i18nc("@option:punchimenu-mode", "Normal")
+                        : i18nc("@option:punchimenu-mode", "Full screen"),
+                    // qmllint enable unqualified
+                    "icon": "view-grid",
+                    "kind": "submenu",
+                    "enabled": true,
+                    "children": [
+                        {
+                            // qmllint disable unqualified
+                            "name": i18nc("@option:punchimenu-mode", "Normal"),
+                            // qmllint enable unqualified
+                            "icon": "view-list-icons",
+                            "kind": "setPunchiMenuMode",
+                            "enabled": true,
+                            "checked": normalModeActive,
+                            "mode": "normal",
+                            "targetIndex": persistentIndex
+                        },
+                        {
+                            // qmllint disable unqualified
+                            "name": i18nc("@option:punchimenu-mode", "Full screen"),
+                            // qmllint enable unqualified
+                            "icon": "view-fullscreen",
+                            "kind": "setPunchiMenuMode",
+                            "enabled": true,
+                            "checked": !normalModeActive,
+                            "mode": "fullScreen",
+                            "targetIndex": persistentIndex
+                        }
+                    ]
+                })
+            }
             itemActions.push({
                 // qmllint disable unqualified
                 "name": i18nc("@action:context", "Unpin from Dock"),
@@ -183,6 +222,19 @@ QtObject {
             return root.editDockItemHandler
                 ? root.editDockItemHandler(action.targetIndex)
                 : false
+        }
+        if (action.kind === "setPunchiMenuMode") {
+            const targetIndex = Number(action.targetIndex)
+            const targetItem = Number.isInteger(targetIndex)
+                    && targetIndex >= 0
+                    && targetIndex < root.dockItemsController.dockItems.length
+                ? root.dockItemsController.dockItems[targetIndex]
+                : null
+            if (!targetItem || String(targetItem.type || "") !== "punchimenu") {
+                return false
+            }
+            return root.dockItemsController.setPunchiMenuValue(
+                "menuMode", String(action.mode || "fullScreen"))
         }
         if (action.kind === "desktopAction") {
             return root.systemDiscovery

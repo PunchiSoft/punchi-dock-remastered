@@ -55,7 +55,7 @@ def popup_body(main_qml: str, popup_id: str, next_popup_id: str) -> str:
 def assert_widget_surface(
     body: str,
     popup_name: str,
-    opacity_source: str = "root.configuredPunchiMenuNormalBackgroundOpacity",
+    opacity_source: str = "dockConfig.contextMenuBackgroundOpacity",
 ) -> None:
     for fragment, message in (
         ("location: dockGeometry.effectivePanelLocation",
@@ -144,7 +144,11 @@ def main() -> int:
     )
     assert_widget_surface(trash_menu, "Trash menu")
     assert_widget_surface(app_actions, "Application actions menu")
-    assert_widget_surface(note_popup, "Note popup")
+    assert_widget_surface(
+        note_popup,
+        "Note popup",
+        "root.configuredPunchiMenuNormalBackgroundOpacity",
+    )
     assert_widget_surface(overflow_popup, "Task overflow popup")
     for fragment, message in (
         ("type: PlasmaCore.Dialog.AppletPopup",
@@ -378,6 +382,24 @@ def main() -> int:
             "The menu KCM must allow up to fifteen visible actions")
     require(dock_configuration, "Math.max(3, Math.min(15,",
             "Runtime configuration must accept up to fifteen visible actions")
+    for source, fragment, message in (
+        (config_schema,
+         '<entry name="contextMenuBackgroundOpacityPercent" type="Int">',
+         "Context menu opacity must be persisted in KConfig"),
+        (config_menus,
+         "cfg_contextMenuBackgroundOpacityPercent",
+         "The menu KCM must own context menu opacity"),
+        (config_menus,
+         "id: contextMenuBackgroundOpacitySlider",
+         "The menu KCM must expose an opacity slider"),
+        (config_aspect,
+         "cfg_contextMenuBackgroundOpacityPercent",
+         "Appearance KCM must forward context menu opacity"),
+        (dock_configuration,
+         "readonly property real contextMenuBackgroundOpacity:",
+         "Runtime configuration must expose normalized context menu opacity"),
+    ):
+        require(source, fragment, message)
     for source, fragment, message in (
         (config_schema,
          '<entry name="folderPopupBackgroundOpacityPercent" type="Int">',

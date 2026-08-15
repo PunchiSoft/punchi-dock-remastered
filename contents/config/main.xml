@@ -61,6 +61,9 @@
     <entry name="menuTextShadowsEnabled" type="Bool">
       <default>false</default>
     </entry>
+    <entry name="contextMenuBackgroundOpacityPercent" type="Int">
+      <default>75</default>
+    </entry>
     <entry name="showItemHoverBackground" type="Bool">
       <default>true</default>
     </entry>

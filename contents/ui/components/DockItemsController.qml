@@ -291,6 +291,7 @@ Item {
 
     function setPunchiMenuValue(fieldName, value) {
         const allowedFields = {
+            "menuMode": true,
             "normalBlurEnabled": true,
             "normalBackgroundOpacityPercent": true,
             "fullScreenBlurEnabled": true,

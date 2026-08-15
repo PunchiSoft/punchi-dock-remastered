@@ -8,12 +8,6 @@ ConfigModel {
     }
 
     ConfigCategory {
-        name: i18n("PunchiMenu")
-        icon: "start-here-kde"
-        source: "config/ConfigPunchiMenu.qml"
-    }
-    
-    ConfigCategory {
         name: i18n("General")
         icon: "systemsettings"
         source: "config/ConfigGeneral.qml"
@@ -41,5 +35,11 @@ ConfigModel {
         name: i18n("Files")
         icon: "text-json"
         source: "config/ConfigFiles.qml"
+    }
+
+    ConfigCategory {
+        name: i18n("Additional Shortcuts")
+        icon: "input-keyboard"
+        source: "config/ConfigAdditionalShortcuts.qml"
     }
 }

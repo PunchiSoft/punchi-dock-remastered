@@ -9,6 +9,7 @@ Controls.Dialog {
     id: root
 
     property string menuMode: "normal"
+    property string iconName: "start-here-kde"
     property real selectorWidth: Kirigami.Units.gridUnit * 16
     readonly property var modeOptions: [
         {
@@ -29,6 +30,7 @@ Controls.Dialog {
     ]
 
     signal menuModeSelected(string mode)
+    signal iconPickerRequested()
 
     function modeIndex(mode) {
         for (let index = 0; index < modeOptions.length; index++) {
@@ -44,22 +46,21 @@ Controls.Dialog {
     standardButtons: Controls.Dialog.Close
     onOpened: modeCombo.currentIndex = root.modeIndex(root.menuMode)
 
-    contentItem: ColumnLayout {
+    contentItem: RowLayout {
         spacing: Kirigami.Units.smallSpacing
 
         Controls.Label {
-            Layout.fillWidth: true
-            Layout.maximumWidth: root.selectorWidth
             text: i18n("Menu mode:")
-            wrapMode: Text.WordWrap
         }
 
         Controls.ComboBox {
             id: modeCombo
 
             Layout.fillWidth: true
-            Layout.preferredWidth: root.selectorWidth
-            Layout.maximumWidth: root.selectorWidth
+            Layout.minimumWidth: Kirigami.Units.gridUnit * 8
+            Layout.preferredWidth: Math.min(root.selectorWidth,
+                Kirigami.Units.gridUnit * 12)
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 12
             model: root.modeOptions
             textRole: "text"
             Accessible.name: i18n("PunchiMenu display mode")
@@ -83,6 +84,23 @@ Controls.Dialog {
                 root.menuMode = String(option.value)
                 root.menuModeSelected(root.menuMode)
             }
+        }
+
+        Controls.Label {
+            text: i18n("Icon:")
+        }
+
+        Controls.Button {
+            icon.name: root.iconName
+            display: Controls.AbstractButton.IconOnly
+            text: i18nc("@action:button", "Choose PunchiMenu icon")
+            Accessible.name: text
+            Accessible.description: i18nc("@info:accessibility",
+                "Current icon: %1", root.iconName)
+            onClicked: root.iconPickerRequested()
+
+            Controls.ToolTip.visible: hovered
+            Controls.ToolTip.text: text
         }
     }
 }

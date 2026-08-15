@@ -63,6 +63,7 @@ KCM.SimpleKCM {
     property alias cfg_menuAnimation: menuAppearancePage.cfg_menuAnimation
     property alias cfg_menuAnimationSpeedPercent: menuAppearancePage.cfg_menuAnimationSpeedPercent
     property alias cfg_menuAnimationIntensity: menuAppearancePage.cfg_menuAnimationIntensity
+    property alias cfg_contextMenuBackgroundOpacityPercent: menuAppearancePage.cfg_contextMenuBackgroundOpacityPercent
     property alias cfg_menuTextShadowsEnabled: menuAppearancePage.cfg_menuTextShadowsEnabled
     property alias cfg_windowPreviewAnimation: popupAppearancePage.cfg_windowPreviewAnimation
     property alias cfg_windowPreviewAnimationSpeedPercent: popupAppearancePage.cfg_windowPreviewAnimationSpeedPercent

@@ -27,6 +27,13 @@ Item {
     property bool embedded: false
     property bool returnToMedia: false
     property bool textShadowsEnabled: false
+    property var subMenuActions: []
+    property string subMenuTitle: ""
+    readonly property bool subMenuOpen: subMenuActions instanceof Array
+        && subMenuActions.length > 0
+    readonly property var displayedActions: subMenuOpen
+        ? subMenuActions
+        : (actions || [])
     readonly property int effectiveRowHeight: Math.max(32, Math.min(64,
         Number(rowHeight || 46)))
     readonly property int effectiveIconSize: Math.max(16, Math.min(40,
@@ -37,7 +44,8 @@ Item {
             / effectiveRowHeight))
         : 1
     readonly property int visibleRows: Math.max(1, Math.min(maxVisibleRows,
-        rowsAllowedByHeight, actions.length > 0 ? actions.length : 1))
+        rowsAllowedByHeight, displayedActions.length > 0
+            ? displayedActions.length : 1))
     readonly property int actionViewportHeight: visibleRows * effectiveRowHeight
 
     implicitWidth: Math.max(240, Math.min(520, Number(targetWidth || 360),
@@ -48,6 +56,26 @@ Item {
 
     signal actionTriggered(var action)
     signal closeRequested()
+
+    function openSubMenu(action) {
+        const children = action && action.children instanceof Array
+            ? action.children : []
+        if (children.length === 0) {
+            return
+        }
+        subMenuTitle = String(action.name || "")
+        subMenuActions = children
+        actionList.positionViewAtBeginning()
+        actionList.forceActiveFocus()
+    }
+
+    function closeSubMenu() {
+        subMenuActions = []
+        subMenuTitle = ""
+        actionList.positionViewAtBeginning()
+    }
+
+    onActionsChanged: closeSubMenu()
 
     ColumnLayout {
         anchors.fill: parent
@@ -61,7 +89,11 @@ Item {
 
             PlasmaExtras.ShadowedLabel {
                 Layout.fillWidth: true
-                text: appActionsRoot.itemName.length > 0 ? appActionsRoot.itemName : i18n("Application") // qmllint disable unqualified
+                text: appActionsRoot.subMenuOpen
+                    ? appActionsRoot.subMenuTitle
+                    : (appActionsRoot.itemName.length > 0
+                        ? appActionsRoot.itemName
+                        : i18n("Application")) // qmllint disable unqualified
                 color: Kirigami.Theme.textColor
                 renderShadow: appActionsRoot.textShadowsEnabled
                 font.family: Kirigami.Theme.defaultFont.family
@@ -81,7 +113,8 @@ Item {
                     anchors.centerIn: parent
                     width: 14
                     height: 14
-                    source: appActionsRoot.embedded ? "go-previous" : "window-close"
+                    source: appActionsRoot.subMenuOpen || appActionsRoot.embedded
+                        ? "go-previous" : "window-close"
                     color: Kirigami.Theme.textColor
                 }
 
@@ -91,12 +124,20 @@ Item {
                     hoverEnabled: true
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
-                    Accessible.name: appActionsRoot.embedded
+                    Accessible.name: appActionsRoot.subMenuOpen
+                        ? i18n("Back to menu") // qmllint disable unqualified
+                        : appActionsRoot.embedded
                         ? (appActionsRoot.returnToMedia
                             ? i18n("Back to media controls") // qmllint disable unqualified
                             : i18n("Back to window previews")) // qmllint disable unqualified
                         : i18n("Close") // qmllint disable unqualified
-                    onClicked: appActionsRoot.closeRequested()
+                    onClicked: {
+                        if (appActionsRoot.subMenuOpen) {
+                            appActionsRoot.closeSubMenu()
+                        } else {
+                            appActionsRoot.closeRequested()
+                        }
+                    }
                 }
             }
         }
@@ -116,7 +157,7 @@ Item {
             ListView {
                 id: actionList
                 objectName: "appActionsActionList"
-                model: appActionsRoot.actions || []
+                model: appActionsRoot.displayedActions
                 implicitWidth: actionScroll.availableWidth
                 width: actionScroll.availableWidth
                 implicitHeight: contentHeight
@@ -132,6 +173,9 @@ Item {
                     readonly property string detailText: modelData && modelData.detail
                         ? String(modelData.detail)
                         : ""
+                    readonly property bool hasChildren: !!modelData
+                        && modelData.children instanceof Array
+                        && modelData.children.length > 0
 
                     width: actionList.width
                     height: appActionsRoot.effectiveRowHeight
@@ -143,13 +187,33 @@ Item {
                     // qmllint enable unqualified
                     enabled: !!modelData && modelData.enabled !== false
                         && (String(modelData.kind || "").length > 0
-                            || String(modelData.command || "").length > 0)
-                    checkable: !!modelData && modelData.checked !== undefined
+                            || String(modelData.command || "").length > 0
+                            || hasChildren)
+                    checkable: !hasChildren && !!modelData
+                        && modelData.checked !== undefined
                     checked: checkable && !!modelData.checked
 
                     onClicked: {
                         if (enabled) {
-                            appActionsRoot.actionTriggered(modelData)
+                            if (hasChildren) {
+                                appActionsRoot.openSubMenu(modelData)
+                            } else {
+                                appActionsRoot.actionTriggered(modelData)
+                            }
+                        }
+                    }
+
+                    Keys.onLeftPressed: function(event) {
+                        if (appActionsRoot.subMenuOpen) {
+                            appActionsRoot.closeSubMenu()
+                            event.accepted = true
+                        }
+                    }
+
+                    Keys.onRightPressed: function(event) {
+                        if (hasChildren) {
+                            appActionsRoot.openSubMenu(modelData)
+                            event.accepted = true
                         }
                     }
 
@@ -188,6 +252,14 @@ Item {
                             wrapMode: Text.NoWrap
                             opacity: 0.68
                             horizontalAlignment: Text.AlignRight
+                        }
+
+                        Kirigami.Icon {
+                            Layout.preferredWidth: Kirigami.Units.iconSizes.small
+                            Layout.preferredHeight: Kirigami.Units.iconSizes.small
+                            visible: actionDelegate.hasChildren
+                            source: "go-next"
+                            Accessible.ignored: true
                         }
                     }
                 }

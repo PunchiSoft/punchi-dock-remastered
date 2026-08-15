@@ -2079,8 +2079,7 @@ PlasmoidItem {
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
                     drawContentBackground: true
                     backgroundImagePath: "widgets/background"
-                    backgroundOpacity:
-                        root.configuredPunchiMenuNormalBackgroundOpacity
+                    backgroundOpacity: dockConfig.contextMenuBackgroundOpacity
                     contentFramePaddingPercent: 2
                     minimumSurfaceWidth: Kirigami.Units.smallSpacing
                     minimumSurfaceHeight: Kirigami.Units.smallSpacing
@@ -2143,8 +2142,7 @@ PlasmoidItem {
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
                     drawContentBackground: true
                     backgroundImagePath: "widgets/background"
-                    backgroundOpacity:
-                        root.configuredPunchiMenuNormalBackgroundOpacity
+                    backgroundOpacity: dockConfig.contextMenuBackgroundOpacity
                     contentFramePaddingPercent: 2
                     minimumSurfaceWidth: Kirigami.Units.smallSpacing
                     minimumSurfaceHeight: Kirigami.Units.smallSpacing
@@ -2455,8 +2453,7 @@ PlasmoidItem {
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
                     drawContentBackground: true
                     backgroundImagePath: "widgets/background"
-                    backgroundOpacity:
-                        root.configuredPunchiMenuNormalBackgroundOpacity
+                    backgroundOpacity: dockConfig.contextMenuBackgroundOpacity
                     contentFramePaddingPercent: 2
                     minimumSurfaceWidth: Kirigami.Units.smallSpacing
                     minimumSurfaceHeight: Kirigami.Units.smallSpacing

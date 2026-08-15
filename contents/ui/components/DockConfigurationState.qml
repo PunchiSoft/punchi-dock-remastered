@@ -64,6 +64,15 @@ QtObject {
         Plasmoid.configuration.windowPreviewTextShadowsEnabled === true
     readonly property bool popupTextShadowsEnabled:
         Plasmoid.configuration.popupTextShadowsEnabled === true
+    readonly property real contextMenuBackgroundOpacity: {
+        const requestedPercent = Number(
+            Plasmoid.configuration.contextMenuBackgroundOpacityPercent)
+        const safePercent = Number.isFinite(requestedPercent)
+            ? Math.max(50, Math.min(100,
+                Math.round(requestedPercent / 5) * 5))
+            : 75
+        return safePercent / 100
+    }
     readonly property bool menuTextShadowsEnabled:
         Plasmoid.configuration.menuTextShadowsEnabled === true
 

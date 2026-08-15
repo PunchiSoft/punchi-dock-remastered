@@ -200,6 +200,8 @@ function openPunchiMenuDialog(index) {
 
     punchiMenuDialog.menuMode = ConfigItemsJS.normalizedPunchiMenuMode(
         item.menuMode)
+    punchiMenuDialog.iconName = ConfigItemsJS.normalizedPunchiMenuIcon(
+        item.icon)
     punchiMenuDialog.open()
 }
 
@@ -217,6 +219,7 @@ function setPunchiMenuIcon(iconName) {
     item.icon = ConfigItemsJS.normalizedPunchiMenuIcon(iconName)
     ConfigItemsJS.prunePunchiMenu(item)
     setItems(nextItems)
+    punchiMenuDialog.iconName = item.icon
 }
 
 function setPunchiMenuMode(mode) {

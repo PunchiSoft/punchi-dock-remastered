@@ -734,9 +734,9 @@ KCM.SimpleKCM {
         width: Math.min(page.width - Kirigami.Units.largeSpacing * 2,
             Kirigami.Units.gridUnit * 28)
         selectorWidth: layoutMetrics.selectorWidth
-        onMenuModeSelected: function(mode) {
-            page.setPunchiMenuMode(mode)
-        }
+        onMenuModeSelected: function(mode) { page.setPunchiMenuMode(mode) }
+        onIconPickerRequested:
+            page.openIconPicker("punchimenu")
     }
 
     Controls.TextField {
