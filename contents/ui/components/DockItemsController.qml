@@ -301,6 +301,7 @@ Item {
             "showApplicationLabels": true,
             "hoverAnimation": true,
             "sortApplicationsAlphabetically": true,
+            "fullScreenApplicationOrder": true,
             "fullScreenCloseButtonPosition": true,
             "gridIconScalePercent": true,
             "favoriteIconScalePercent": true,

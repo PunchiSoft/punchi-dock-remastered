@@ -643,6 +643,16 @@ function normalizedPunchiMenuFullScreenCloseButtonPosition(value) {
         : "right"
 }
 
+function normalizedPunchiMenuFullScreenApplicationOrder(value,
+        legacyAlphabetical) {
+    var availableModes = ["manual", "alphabetical", "categories"]
+    var requestedMode = String(value || "")
+    if (availableModes.indexOf(requestedMode) >= 0) {
+        return requestedMode
+    }
+    return legacyAlphabetical === true ? "alphabetical" : "manual"
+}
+
 function normalizedPunchiMenuNormalPlacementMode(value) {
     return String(value || "anchored") === "centered"
         ? "centered"
@@ -702,6 +712,10 @@ function prunePunchiMenu(item) {
     } else {
         delete item.sortApplicationsAlphabetically
     }
+    item.fullScreenApplicationOrder =
+        normalizedPunchiMenuFullScreenApplicationOrder(
+            item.fullScreenApplicationOrder,
+            item.sortApplicationsAlphabetically === true)
     item.normalPlacementMode = normalizedPunchiMenuNormalPlacementMode(
         item.normalPlacementMode)
     item.gridIconScalePercent = normalizedPunchiMenuGridIconScalePercent(

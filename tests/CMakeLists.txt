@@ -17,6 +17,16 @@ target_link_libraries(commandclassification_test PRIVATE Qt6::Core KF6::CoreAddo
 
 add_test(NAME commandclassification_test COMMAND commandclassification_test)
 
+add_executable(applicationcategoryclassifier_test
+    applicationcategoryclassifier_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/applicationcategoryclassifier.cpp
+)
+
+target_include_directories(applicationcategoryclassifier_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(applicationcategoryclassifier_test PRIVATE Qt6::Core)
+
+add_test(NAME applicationcategoryclassifier_test COMMAND applicationcategoryclassifier_test)
+
 add_executable(dropurlpolicy_test
     dropurlpolicy_test.cpp
     ${CMAKE_SOURCE_DIR}/src/dropurlpolicy.cpp
@@ -60,6 +70,7 @@ add_test(NAME taskgeometryownershipbridge_test COMMAND taskgeometryownershipbrid
 
 add_executable(punchimenulayoutmodel_test
     punchimenulayoutmodel_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/applicationcategoryclassifier.cpp
     ${CMAKE_SOURCE_DIR}/src/punchimenulayoutdocument.cpp
     ${CMAKE_SOURCE_DIR}/src/punchimenulayoutmodel.cpp
 )
@@ -232,6 +243,7 @@ target_include_directories(pipewirebackend_probe PRIVATE ${CMAKE_SOURCE_DIR}/src
 target_link_libraries(pipewirebackend_probe PRIVATE PkgConfig::PipeWire)
 
 add_executable(systemdiscovery_test
+    ${CMAKE_SOURCE_DIR}/src/applicationcategoryclassifier.cpp
     ${CMAKE_SOURCE_DIR}/src/systemdiscovery.cpp
     ${CMAKE_SOURCE_DIR}/src/commandclassification.cpp
     ${CMAKE_SOURCE_DIR}/src/desktoplauncherresolver.cpp

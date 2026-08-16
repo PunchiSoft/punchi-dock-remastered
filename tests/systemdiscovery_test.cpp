@@ -134,6 +134,13 @@ bool validateApplications(const QVariantList &applications, qsizetype maximumCou
             qCritical() << "Application discovery returned an incomplete entry:" << values;
             return false;
         }
+        if (!values.contains(QStringLiteral("categories"))
+            || !values.value(QStringLiteral("categories"))
+                    .canConvert<QStringList>()) {
+            qCritical() << "Application discovery did not expose KDE categories:"
+                        << storageId;
+            return false;
+        }
         if (storageIds.contains(storageId)) {
             qCritical() << "Application discovery returned a duplicate storage ID:" << storageId;
             return false;

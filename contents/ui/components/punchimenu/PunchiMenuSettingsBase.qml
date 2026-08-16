@@ -12,7 +12,6 @@ FocusScope {
     required property int backgroundOpacityPercent
     required property bool showApplicationLabels
     required property string hoverAnimation
-    required property bool sortApplicationsAlphabetically
     required property int applicationIconScalePercent
     required property int favoriteIconScalePercent
     required property int folderMaximumColumns

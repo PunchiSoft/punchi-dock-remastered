@@ -2,9 +2,11 @@
 
 #include "punchimenulayoutmodel.h"
 
+#include "applicationcategoryclassifier.h"
 #include "punchimenulayoutdocument.h"
 
 #include <QCollator>
+#include <QJSValue>
 #include <QMetaType>
 #include <QSet>
 
@@ -17,6 +19,8 @@ constexpr auto folderNodeType = "folder";
 constexpr qsizetype maximumApplicationNameLength = 256;
 constexpr qsizetype maximumApplicationIconLength = 512;
 constexpr qsizetype maximumFolderPreviewIcons = 4;
+constexpr qsizetype maximumApplicationCategories = 64;
+constexpr qsizetype maximumApplicationCategoryLength = 128;
 constexpr qsizetype maximumInputEntriesToInspect
     = PunchiMenuLayoutDocument::MaximumApplicationReferences * 4;
 
@@ -96,6 +100,39 @@ QVariantMap applicationRow(const QVariantMap &application)
     row.insert(QStringLiteral("appHidden"),
         application.value(QStringLiteral("hidden"), false));
     return row;
+}
+
+QStringList boundedCategories(const QVariant &value)
+{
+    const QVariant normalizedValue
+        = value.metaType().id() == qMetaTypeId<QJSValue>()
+        ? value.value<QJSValue>().toVariant() : value;
+    QVariantList requested;
+    if (normalizedValue.metaType().id() == QMetaType::QStringList) {
+        const QStringList requestedStrings = normalizedValue.toStringList();
+        requested.reserve(requestedStrings.size());
+        for (const QString &category : requestedStrings) {
+            requested.append(category);
+        }
+    } else {
+        requested = normalizedValue.toList();
+    }
+    QStringList result;
+    result.reserve(std::min(requested.size(), maximumApplicationCategories));
+    for (const QVariant &categoryValue : requested) {
+        const QString category = categoryValue.toString();
+        const QString normalized = boundedDisplayText(category,
+            maximumApplicationCategoryLength);
+        if (normalized.isEmpty()
+            || result.contains(normalized, Qt::CaseInsensitive)) {
+            continue;
+        }
+        result.append(normalized);
+        if (result.size() >= maximumApplicationCategories) {
+            break;
+        }
+    }
+    return result;
 }
 
 QString nodeDisplayLabel(const QVariantMap &node)
@@ -296,6 +333,11 @@ QVariantMap PunchiMenuLayoutModel::effectiveLayoutDocument() const
 QVariantList PunchiMenuLayoutModel::nodes() const
 {
     return m_nodes;
+}
+
+QVariantList PunchiMenuLayoutModel::categoryGroups() const
+{
+    return m_categoryGroups;
 }
 
 int PunchiMenuLayoutModel::folderChoiceCount() const
@@ -545,11 +587,14 @@ QVariantList PunchiMenuLayoutModel::normalizedApplications(
             mappedApplicationValue(requested, "icon", "appIcon"),
             maximumApplicationIconLength,
             QStringLiteral("application-x-executable"));
+        const QStringList categories = boundedCategories(
+            requested.value(QStringLiteral("categories")));
         seen.insert(key);
         result.append(QVariantMap{
             {QStringLiteral("storageId"), storageId},
             {QStringLiteral("name"), name},
             {QStringLiteral("icon"), icon},
+            {QStringLiteral("categories"), categories},
         });
         if (result.size()
             >= PunchiMenuLayoutDocument::MaximumApplicationReferences) {
@@ -673,9 +718,55 @@ void PunchiMenuLayoutModel::rebuildNodes()
             });
     }
 
+    QHash<QString, QVariantList> membersByCategory;
+    for (const QVariant &nodeValue : rebuiltNodes) {
+        const QVariantMap node = nodeValue.toMap();
+        if (node.value(QStringLiteral("nodeType")).toString()
+            != QLatin1String(applicationNodeType)) {
+            continue;
+        }
+        const QString category = ApplicationCategoryClassifier::primaryGroup(
+            node.value(QStringLiteral("categories")).toStringList());
+        membersByCategory[category].append(node);
+    }
+
+    QVariantList rebuiltCategoryGroups;
+    QStringList categoryOrder
+        = ApplicationCategoryClassifier::orderedGroups();
+    categoryOrder.append(QStringLiteral("Other"));
+    QCollator categoryMemberCollator;
+    categoryMemberCollator.setCaseSensitivity(Qt::CaseInsensitive);
+    categoryMemberCollator.setNumericMode(true);
+    for (const QString &category : categoryOrder) {
+        QVariantList members = membersByCategory.value(category);
+        if (members.isEmpty()) {
+            continue;
+        }
+        std::stable_sort(members.begin(), members.end(),
+            [&categoryMemberCollator](const QVariant &leftValue,
+                const QVariant &rightValue) {
+                const QVariantMap left = leftValue.toMap();
+                const QVariantMap right = rightValue.toMap();
+                const int nameOrder = categoryMemberCollator.compare(
+                    left.value(QStringLiteral("appName")).toString(),
+                    right.value(QStringLiteral("appName")).toString());
+                if (nameOrder != 0) {
+                    return nameOrder < 0;
+                }
+                return left.value(QStringLiteral("nodeId")).toString()
+                    < right.value(QStringLiteral("nodeId")).toString();
+            });
+        rebuiltCategoryGroups.append(QVariantMap{
+            {QStringLiteral("categoryId"), category},
+            {QStringLiteral("members"), members},
+            {QStringLiteral("memberCount"), members.size()},
+        });
+    }
+
     beginResetModel();
     m_effectiveLayoutDocument = effective.document;
     m_nodes = rebuiltNodes;
+    m_categoryGroups = rebuiltCategoryGroups;
     endResetModel();
     Q_EMIT nodesChanged();
 }

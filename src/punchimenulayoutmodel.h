@@ -19,6 +19,7 @@ class PunchiMenuLayoutModel : public QAbstractListModel
     Q_PROPERTY(bool alphabeticalSortingEnabled READ alphabeticalSortingEnabled WRITE setAlphabeticalSortingEnabled NOTIFY alphabeticalSortingEnabledChanged)
     Q_PROPERTY(QVariantMap effectiveLayoutDocument READ effectiveLayoutDocument NOTIFY nodesChanged)
     Q_PROPERTY(QVariantList nodes READ nodes NOTIFY nodesChanged)
+    Q_PROPERTY(QVariantList categoryGroups READ categoryGroups NOTIFY nodesChanged)
     Q_PROPERTY(int folderChoiceCount READ folderChoiceCount NOTIFY nodesChanged)
     Q_PROPERTY(QString lastErrorCode READ lastErrorCode NOTIFY lastErrorCodeChanged)
 
@@ -63,6 +64,7 @@ public:
 
     [[nodiscard]] QVariantMap effectiveLayoutDocument() const;
     [[nodiscard]] QVariantList nodes() const;
+    [[nodiscard]] QVariantList categoryGroups() const;
     [[nodiscard]] int folderChoiceCount() const;
     [[nodiscard]] QString lastErrorCode() const;
 
@@ -97,5 +99,6 @@ private:
     bool m_alphabeticalSortingEnabled = false;
     QVariantMap m_effectiveLayoutDocument;
     QVariantList m_nodes;
+    QVariantList m_categoryGroups;
     QString m_lastErrorCode;
 };

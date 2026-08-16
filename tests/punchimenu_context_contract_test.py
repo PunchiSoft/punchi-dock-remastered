@@ -80,6 +80,10 @@ def main() -> int:
     overlay_source = (
         PROJECT_ROOT / "contents/ui/components/punchimenu/PunchiMenuOverlay.qml"
     ).read_text(encoding="utf-8")
+    category_sections_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml"
+    ).read_text(encoding="utf-8")
     drag_layer_source = (
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuDragLayer.qml"
@@ -569,12 +573,12 @@ def main() -> int:
         ),
         (
             "anchors.leftMargin: root.applicationGridHorizontalInset",
-            1,
+            2,
             "stable left grid inset",
         ),
         (
             "anchors.rightMargin: root.applicationGridHorizontalInset",
-            1,
+            2,
             "stable right grid inset",
         ),
         (
@@ -891,7 +895,10 @@ def main() -> int:
         (overlay_source, "visible: root.sessionViewRequested", "grid active state"),
         (overlay_source, "readonly property int headerControlSize", "shared header control metric"),
         (overlay_source, "background: PunchiMenuActionBackground {", "themed header action surface"),
-        (overlay_source, "if (root.applicationViewActive)", "wheel isolation"),
+        (overlay_source,
+            "if (root.applicationViewActive\n"
+            "                            && !root.categoryGroupingActive)",
+            "wheel isolation"),
         (session_view_source, "signal logoutRequested()", "logout intent"),
         (session_view_source, "signal restartRequested()", "restart intent"),
         (session_view_source, "signal shutdownRequested()", "shutdown intent"),
@@ -1280,6 +1287,7 @@ def main() -> int:
         "showPageNavigationArrows",
         "showApplicationLabels",
         "sortApplicationsAlphabetically",
+        "fullScreenApplicationOrder",
         "fullScreenCloseButtonPosition",
         "gridIconScalePercent",
         "favoriteIconScalePercent",
@@ -1414,9 +1422,9 @@ def main() -> int:
         )
         passed = False
     if fullscreen_settings_view_source.count(
-        "PunchiMenuFullScreenComboBox {") != 2:
+        "PunchiMenuFullScreenComboBox {") != 3:
         print(
-            "PunchiMenu Fullscreen settings: both selectors must preserve "
+            "PunchiMenu Fullscreen settings: all three selectors must preserve "
             "the Fullscreen ComboBox",
             file=sys.stderr,
         )
@@ -1645,15 +1653,14 @@ def main() -> int:
             "alphabeticalSortingEnabled: root.sortApplicationsAlphabetically",
             "Normal model projection"),
         (overlay_source,
-            "alphabeticalSortingEnabled: root.sortApplicationsAlphabetically",
+            'root.safeApplicationOrderMode === "alphabetical"',
             "Fullscreen model projection"),
         (normal_source,
             "if (root.sortApplicationsAlphabetically\n"
             "                || !applicationLayoutController",
             "Normal positional-move guard"),
         (overlay_source,
-            "if (root.sortApplicationsAlphabetically\n"
-            "                || !applicationLayoutController",
+            'if (root.safeApplicationOrderMode !== "manual"',
             "Fullscreen positional-move guard"),
         (normal_source,
             'dropIntent = internalDragLayer.folder\n'
@@ -1669,6 +1676,71 @@ def main() -> int:
             print(
                 "PunchiMenu alphabetical sorting: missing "
                 f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    category_grouping_contract = (
+        (config_items_source,
+            "normalizedPunchiMenuFullScreenApplicationOrder",
+            "canonical Fullscreen order normalization"),
+        (main_source,
+            "configuredPunchiMenuFullScreenApplicationOrder",
+            "independent Fullscreen runtime projection"),
+        (main_source,
+            "categories: application.categories || []",
+            "KDE category metadata preservation"),
+        (fullscreen_settings_view_source,
+            '"By categories"',
+            "category ordering option"),
+        (fullscreen_settings_view_source,
+            "model: root.applicationOrderOptions",
+            "Fullscreen popup selector model"),
+        (fullscreen_settings_view_source,
+            '"fullScreenApplicationOrder",',
+            "category order persistence"),
+        (overlay_source,
+            "PunchiMenuCategorySectionsView {",
+            "dedicated category sections view"),
+        (overlay_source,
+            "categoryGroups: applicationLayoutModel.categoryGroups",
+            "model-backed category projection"),
+        (category_sections_source,
+            "Kirigami.Separator {",
+            "simple themed section separator"),
+        (category_sections_source,
+            "model: sectionDelegate.members",
+            "direct application members per section"),
+        (category_sections_source,
+            "root.launchRequested(storageId)",
+            "direct application launch from a category"),
+    )
+    for source, marker, description in category_grouping_contract:
+        if marker not in source:
+            print(
+                "PunchiMenu category grouping: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "Controls.RadioButton {" in fullscreen_settings_view_source:
+        print(
+            "PunchiMenu category grouping: Fullscreen must use its mapped "
+            "popup selector instead of Normal-mode radio buttons",
+            file=sys.stderr,
+        )
+        passed = False
+    forbidden_virtual_category_markers = (
+        (overlay_source, 'nodeType: "category"'),
+        (overlay_source, "openVirtualFolder"),
+        (folder_surface_source, 'viewMode === "category"'),
+        (folder_tile_source, "categoryTile"),
+        (folder_view_source, "categoryView"),
+    )
+    for source, marker in forbidden_virtual_category_markers:
+        if marker in source:
+            print(
+                "PunchiMenu category grouping: categories must remain direct "
+                f"sections, found obsolete virtual-folder marker: {marker}",
                 file=sys.stderr,
             )
             passed = False

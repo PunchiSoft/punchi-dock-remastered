@@ -4,6 +4,7 @@
 #include "punchimenulayoutmodel.h"
 
 #include <QCoreApplication>
+#include <QJSEngine>
 
 #include <iostream>
 
@@ -687,6 +688,85 @@ int main(int argc, char **argv)
                    Qt::DisplayRole).toString()
                 == QStringLiteral("Alpha Folder"),
         "disabling alphabetical sorting restores the persisted manual order");
+
+    PunchiMenuLayoutModel categoryModel;
+    QVariantMap browserApplication = application(
+        QStringLiteral("org.example.Browser.desktop"),
+        QStringLiteral("Zulu Browser"), QStringLiteral("browser"));
+    browserApplication.insert(QStringLiteral("categories"),
+        QStringList{QStringLiteral("Network"),
+            QStringLiteral("WebBrowser")});
+    QVariantMap mailApplication = application(
+        QStringLiteral("org.example.Mail.desktop"),
+        QStringLiteral("Alpha Mail"), QStringLiteral("mail"));
+    mailApplication.insert(QStringLiteral("categories"),
+        QStringList{QStringLiteral("Network"), QStringLiteral("Email")});
+    QVariantMap graphicsApplication = application(
+        QStringLiteral("org.example.Graphics.desktop"),
+        QStringLiteral("Graphics"), QStringLiteral("graphics"));
+    graphicsApplication.insert(QStringLiteral("categories"),
+        QVariantList{QStringLiteral("X-Flatpak"),
+            QStringLiteral("Graphics")});
+    QVariantMap uncategorizedApplication = application(
+        QStringLiteral("org.example.Custom.desktop"),
+        QStringLiteral("Custom"), QStringLiteral("custom"));
+    uncategorizedApplication.insert(QStringLiteral("categories"),
+        QStringList{QStringLiteral("X-Custom")});
+    categoryModel.setApplications({browserApplication, mailApplication,
+        graphicsApplication, uncategorizedApplication});
+    const QVariantList categoryGroups = categoryModel.categoryGroups();
+    const QVariantList networkMembers = categoryGroups.constFirst().toMap()
+        .value(QStringLiteral("members")).toList();
+    passed &= expect(categoryGroups.size() == 3
+            && categoryGroups.constFirst().toMap()
+                    .value(QStringLiteral("categoryId")).toString()
+                == QStringLiteral("Network")
+            && networkMembers.size() == 2
+            && networkMembers.constFirst().toMap()
+                    .value(QStringLiteral("appName")).toString()
+                == QStringLiteral("Alpha Mail")
+            && categoryGroups.constLast().toMap()
+                    .value(QStringLiteral("categoryId")).toString()
+                == QStringLiteral("Other"),
+        "category groups follow KDE order and alphabetize their applications");
+    passed &= expect(categoryGroups.at(1).toMap()
+                    .value(QStringLiteral("categoryId")).toString()
+                == QStringLiteral("Graphics")
+            && categoryGroups.at(1).toMap()
+                    .value(QStringLiteral("memberCount")).toInt() == 1,
+        "QML-style category arrays preserve package-specific metadata and KDE grouping");
+    QJSEngine qmlEngine;
+    QVariantMap qmlApplication = application(
+        QStringLiteral("org.example.Qml.desktop"),
+        QStringLiteral("QML Browser"), QStringLiteral("browser"));
+    qmlApplication.insert(QStringLiteral("categories"), QVariant::fromValue(
+        qmlEngine.evaluate(QStringLiteral("['Network', 'WebBrowser']"))));
+    PunchiMenuLayoutModel qmlCategoryModel;
+    qmlCategoryModel.setApplications({qmlApplication});
+    passed &= expect(qmlCategoryModel.categoryGroups().size() == 1
+            && qmlCategoryModel.categoryGroups().constFirst().toMap()
+                    .value(QStringLiteral("categoryId")).toString()
+                == QStringLiteral("Network"),
+        "QJSValue category arrays survive the QML-to-model boundary");
+    categoryModel.setLayoutDocument(document({
+        folderNode(QStringLiteral("network-folder"),
+            QStringLiteral("Network tools"), {
+                QStringLiteral("org.example.Browser.desktop"),
+                QStringLiteral("org.example.Mail.desktop"),
+            }),
+        applicationNode(QStringLiteral("org.example.Graphics.desktop")),
+        applicationNode(QStringLiteral("org.example.Custom.desktop")),
+    }));
+    const QVariantList categoryGroupsWithFolder
+        = categoryModel.categoryGroups();
+    passed &= expect(categoryModel.data(categoryModel.index(0, 0),
+                         PunchiMenuLayoutModel::NodeTypeRole).toString()
+                == QStringLiteral("folder")
+            && categoryGroupsWithFolder.size() == 2
+            && categoryGroupsWithFolder.constFirst().toMap()
+                    .value(QStringLiteral("categoryId")).toString()
+                == QStringLiteral("Graphics"),
+        "applications in user folders remain separate from category sections");
 
     QVariantList capacityMembers;
     for (int index = 0;

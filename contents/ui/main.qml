@@ -170,6 +170,11 @@ PlasmoidItem {
     readonly property bool configuredPunchiMenuSortApplicationsAlphabetically:
         !!configuredPunchiMenuItem
         && configuredPunchiMenuItem.sortApplicationsAlphabetically === true
+    readonly property string configuredPunchiMenuFullScreenApplicationOrder:
+        ConfigItemsJS.normalizedPunchiMenuFullScreenApplicationOrder(
+            configuredPunchiMenuItem
+                ? configuredPunchiMenuItem.fullScreenApplicationOrder : "",
+            configuredPunchiMenuSortApplicationsAlphabetically)
     readonly property string configuredPunchiMenuFullScreenCloseButtonPosition:
         configuredPunchiMenuItem
             && configuredPunchiMenuItem.fullScreenCloseButtonPosition === "left"
@@ -281,7 +286,8 @@ PlasmoidItem {
                         storageId: storageId,
                         name: String(application.name || storageId),
                         icon: String(application.icon
-                            || "application-x-executable")
+                            || "application-x-executable"),
+                        categories: application.categories || []
                     })
                 }
             }
@@ -550,8 +556,8 @@ PlasmoidItem {
                 showApplicationLabels:
                     root.configuredPunchiMenuShowApplicationLabels
                 hoverAnimation: root.configuredPunchiMenuHoverAnimation
-                sortApplicationsAlphabetically:
-                    root.configuredPunchiMenuSortApplicationsAlphabetically
+                applicationOrderMode:
+                    root.configuredPunchiMenuFullScreenApplicationOrder
                 closeButtonPosition:
                     root.configuredPunchiMenuFullScreenCloseButtonPosition
                 backgroundBlurEnabled: root.configuredPunchiMenuFullScreenBlurEnabled

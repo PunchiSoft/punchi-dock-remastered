@@ -27,6 +27,8 @@ set_target_properties(punchidockintegrationplugin PROPERTIES
 )
 
 target_sources(punchidockintegration PRIVATE
+    applicationcategoryclassifier.cpp
+    applicationcategoryclassifier.h
     audiospectrumcontroller.cpp
     audiospectrumcontroller.h
     blurbehindcontroller.cpp

@@ -2,6 +2,7 @@
 
 #include "systemdiscovery.h"
 
+#include "applicationcategoryclassifier.h"
 #include <KLocalizedString>
 #include <KNotificationJobUiDelegate>
 #include <KOSRelease>
@@ -69,6 +70,7 @@ QVariantMap serviceMap(const KService::Ptr &service)
         {QStringLiteral("desktopFilePath"), service->entryPath()},
         {QStringLiteral("executable"), serviceExecLookupKey(service)},
         {QStringLiteral("launcherUrl"), QString(QStringLiteral("applications:") + storageId)},
+        {QStringLiteral("categories"), service->categories()},
     };
 }
 
@@ -369,33 +371,8 @@ QString desktopDirectoryIconForCategory(const QString &category)
 
 bool isCategoryMatch(const QStringList &serviceCategories, const QString &requestedCategory)
 {
-    const QString trimmedRequested = requestedCategory.trimmed();
-    if (trimmedRequested.isEmpty() || trimmedRequested.compare(QStringLiteral("All"), Qt::CaseInsensitive) == 0) {
-        return true;
-    }
-
-    static const QHash<QString, QStringList> categoryFamilies = {
-        {QStringLiteral("AudioVideo"),  {QStringLiteral("AudioVideo"), QStringLiteral("Audio"), QStringLiteral("Video"), QStringLiteral("Player"), QStringLiteral("Music"), QStringLiteral("Recorder"), QStringLiteral("TV"), QStringLiteral("AudioVideoEditing")}},
-        {QStringLiteral("Network"),     {QStringLiteral("Network"), QStringLiteral("WebBrowser"), QStringLiteral("Email"), QStringLiteral("IRCClient"), QStringLiteral("Feed"), QStringLiteral("FileTransfer"), QStringLiteral("RemoteAccess"), QStringLiteral("Internet")}},
-        {QStringLiteral("Development"), {QStringLiteral("Development"), QStringLiteral("IDE"), QStringLiteral("Building"), QStringLiteral("Debugger"), QStringLiteral("TextEditor"), QStringLiteral("RevisionControl"), QStringLiteral("WebDevelopment")}},
-        {QStringLiteral("Graphics"),    {QStringLiteral("Graphics"), QStringLiteral("VectorGraphics"), QStringLiteral("RasterGraphics"), QStringLiteral("3DGraphics"), QStringLiteral("Photography"), QStringLiteral("Viewer"), QStringLiteral("Paint")}},
-        {QStringLiteral("Office"),      {QStringLiteral("Office"), QStringLiteral("WordProcessor"), QStringLiteral("Spreadsheet"), QStringLiteral("Presentation"), QStringLiteral("Publishing"), QStringLiteral("Finance"), QStringLiteral("Calendar"), QStringLiteral("Calculator")}},
-        {QStringLiteral("System"),      {QStringLiteral("System"), QStringLiteral("Monitor"), QStringLiteral("Security"), QStringLiteral("Settings"), QStringLiteral("PackageManager"), QStringLiteral("TerminalEmulator")}},
-        {QStringLiteral("Utility"),     {QStringLiteral("Utility"), QStringLiteral("Utilities"), QStringLiteral("FileTools"), QStringLiteral("Archiving"), QStringLiteral("Clock"), QStringLiteral("TextEditor")}},
-        {QStringLiteral("Game"),        {QStringLiteral("Game"), QStringLiteral("ActionGame"), QStringLiteral("AdventureGame"), QStringLiteral("ArcadeGame"), QStringLiteral("BoardGame"), QStringLiteral("CardGame"), QStringLiteral("BlocksGame"), QStringLiteral("Emulator")}},
-        {QStringLiteral("Education"),   {QStringLiteral("Education"), QStringLiteral("Science"), QStringLiteral("Math"), QStringLiteral("History"), QStringLiteral("Geography")}}
-    };
-
-    const QStringList targetSubcategories = categoryFamilies.value(trimmedRequested, QStringList{trimmedRequested});
-    for (const QString &subCat : targetSubcategories) {
-        for (const QString &serviceCat : serviceCategories) {
-            if (serviceCat.compare(subCat, Qt::CaseInsensitive) == 0) {
-                return true;
-            }
-        }
-    }
-
-    return false;
+    return ApplicationCategoryClassifier::matches(
+        serviceCategories, requestedCategory);
 }
 
 QVariantList discoverApplications(const QString &category, qsizetype maximumCount)

@@ -16,6 +16,7 @@ PunchiMenuSettingsBase {
     required property bool showDistributionName
     required property bool showPageNavigationArrows
     required property string closeButtonPosition
+    required property string applicationOrderMode
 
     readonly property var closeButtonPositionOptions: [
         {
@@ -27,9 +28,33 @@ PunchiMenuSettingsBase {
             "value": "left"
         }
     ]
+    readonly property var applicationOrderOptions: [
+        {
+            "text": i18nc("@option:application-order", "Manual"),
+            "value": "manual"
+        },
+        {
+            "text": i18nc("@option:application-order", "Alphabetical"),
+            "value": "alphabetical"
+        },
+        {
+            "text": i18nc("@option:application-order", "By categories"),
+            "value": "categories"
+        }
+    ]
 
     function closeButtonPositionIndex() {
         return root.closeButtonPosition === "left" ? 1 : 0
+    }
+
+    function applicationOrderIndex() {
+        for (let index = 0; index < applicationOrderOptions.length; ++index) {
+            if (applicationOrderOptions[index].value
+                    === root.applicationOrderMode) {
+                return index
+            }
+        }
+        return 0
     }
 
     function focusInitialAction() {
@@ -204,22 +229,32 @@ PunchiMenuSettingsBase {
                         }
                     }
 
-                    Controls.Switch {
+                    PunchiMenuFullScreenComboBox {
                         Kirigami.FormData.label: i18n("Application order:")
-                        text: i18n("Sort applications alphabetically")
-                        checked: root.sortApplicationsAlphabetically
-                        Accessible.name: text
-                        Accessible.description: i18n("Keeps drag and drop available, but prevents manual reordering while alphabetical sorting is enabled.")
-                        onToggled: root.settingChanged(
-                            "sortApplicationsAlphabetically", checked)
+                        Layout.preferredWidth: Kirigami.Units.gridUnit * 12
+                        model: root.applicationOrderOptions
+                        textRole: "text"
+                        valueRole: "value"
+                        currentIndex: root.applicationOrderIndex()
+                        Accessible.name: i18n("Application order")
+                        Accessible.description: i18n("Choose manual order, alphabetical order, or grouping by KDE application categories.")
+                        onActivated: function(index) {
+                            const option = root.applicationOrderOptions[index]
+                            if (option) {
+                                root.settingChanged(
+                                    "fullScreenApplicationOrder", option.value)
+                            }
+                        }
                     }
 
                     Kirigami.InlineMessage {
                         Kirigami.FormData.isSection: true
                         Layout.fillWidth: true
-                        visible: root.sortApplicationsAlphabetically
+                        visible: root.applicationOrderMode !== "manual"
                         type: Kirigami.MessageType.Information
-                        text: i18n("Alphabetical sorting is active. Application positions cannot be changed manually, but drag and drop remains available.")
+                        text: root.applicationOrderMode === "categories"
+                            ? i18n("Category grouping is active. Applications are sorted alphabetically within each category. Manual positions cannot be changed, but drag and drop remains available.")
+                            : i18n("Alphabetical sorting is active. Application positions cannot be changed manually, but drag and drop remains available.")
                         Accessible.name: text
                     }
 

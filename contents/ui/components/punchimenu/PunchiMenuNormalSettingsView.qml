@@ -13,6 +13,8 @@ import org.kde.plasma.components as PlasmaComponents
 PunchiMenuSettingsBase {
     id: root
 
+    required property bool sortApplicationsAlphabetically
+
     required property string normalPlacementMode
     required property int normalPanelGap
     required property int normalWidthPercent

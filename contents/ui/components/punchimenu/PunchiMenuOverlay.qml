@@ -31,7 +31,7 @@ FocusScope {
     property bool showPageNavigationArrows: true
     property bool showApplicationLabels: true
     property string hoverAnimation: "pulse"
-    property bool sortApplicationsAlphabetically: false
+    property string applicationOrderMode: "manual"
     property string closeButtonPosition: "right"
     property var hiddenApplicationIds: []
     property bool revealHiddenApplications: false
@@ -140,9 +140,27 @@ FocusScope {
     readonly property int gridRows: Math.max(3, Math.min(5,
         Math.floor(Math.max(1, pagesView.height) / (Kirigami.Units.gridUnit * 6))))
     readonly property int pageCapacity: Math.max(1, gridColumns * gridRows)
+    readonly property string safeApplicationOrderMode:
+        applicationOrderMode === "alphabetical"
+            || applicationOrderMode === "categories"
+        ? applicationOrderMode : "manual"
     readonly property bool organizedListingActive:
         searchText.trim().length === 0
         && applicationCatalogLoaded
+    readonly property bool categoryGroupingActive:
+        organizedListingActive
+        && safeApplicationOrderMode === "categories"
+    readonly property var categoryFolderNodes: {
+        const result = []
+        const nodes = applicationLayoutModel.nodes || []
+        for (let index = 0; index < nodes.length; index++) {
+            const node = nodes[index]
+            if (node && String(node.nodeType || "") === "folder") {
+                result.push(node)
+            }
+        }
+        return result
+    }
     readonly property var visibleApplications: {
         const result = []
         const query = searchText.trim().toLocaleLowerCase()
@@ -182,7 +200,8 @@ FocusScope {
         }
         return result
     }
-    readonly property int pageCount: visibleApplications.length > 0
+    readonly property int pageCount: !categoryGroupingActive
+        && visibleApplications.length > 0
         ? Math.ceil(visibleApplications.length / pageCapacity)
         : 0
     readonly property bool favoritesSectionVisible: applicationViewActive
@@ -350,7 +369,8 @@ FocusScope {
             : ({})
         hiddenApplicationIds: root.hiddenApplicationIds
         revealHiddenApplications: root.revealHiddenApplications
-        alphabeticalSortingEnabled: root.sortApplicationsAlphabetically
+        alphabeticalSortingEnabled:
+            root.safeApplicationOrderMode === "alphabetical"
     }
 
     Connections {
@@ -643,7 +663,9 @@ FocusScope {
     }
 
     function beginInternalLayoutDrag(application, sourceItem, x, y) {
-        if (!organizedListingActive || folderSurface.active
+        if (!organizedListingActive
+                || safeApplicationOrderMode === "categories"
+                || folderSurface.active
                 || !applicationViewActive || applicationLaunchPending
                 || !applicationLayoutController
                 || applicationLayoutController.transactionPending) {
@@ -727,7 +749,7 @@ FocusScope {
     }
 
     function requestDraggedNodeMove(beforeNodeId) {
-        if (root.sortApplicationsAlphabetically
+        if (root.safeApplicationOrderMode !== "manual"
                 || !applicationLayoutController
                 || typeof applicationLayoutController.requestMoveNode
                     !== "function") {
@@ -757,7 +779,7 @@ FocusScope {
             return false
         }
         if (internalDragLayer.folder) {
-            if (root.sortApplicationsAlphabetically) {
+            if (root.safeApplicationOrderMode !== "manual") {
                 return false
             }
             return requestDraggedNodeMove(targetNodeId)
@@ -1290,6 +1312,8 @@ FocusScope {
         if (event.key === Qt.Key_Escape) {
             root.forceClose()
             event.accepted = true
+        } else if (root.categoryGroupingActive) {
+            return
         } else if (event.key === Qt.Key_Left) {
             root.setCurrentApplication(root.currentApplicationIndex - 1)
             event.accepted = true
@@ -2193,7 +2217,9 @@ FocusScope {
                 enabled: root.applicationViewActive
                     && !root.modeTransitionActive
                     && !root.applicationLaunchPending
+                    && !root.categoryGroupingActive
                 visible: root.applicationViewActive
+                    && !root.categoryGroupingActive
 
                 onMovementStarted: root.resetPageNavigation()
                 onMovementEnded: {
@@ -2324,8 +2350,8 @@ FocusScope {
                                     enabled: visible
                                     activeFocusOnTab: false
                                     folderId: String(appDelegate.modelData.folderId || "")
-                                    folderLabel: String(
-                                        appDelegate.modelData.folderLabel || "")
+                                    folderLabel: String(appDelegate.modelData
+                                        .folderLabel || "")
                                     previewIcons: appDelegate.modelData
                                         .folderPreviewIcons || []
                                     memberCount: Number(appDelegate.modelData
@@ -2425,7 +2451,8 @@ FocusScope {
                                             return false
                                         }
                                         const pointerX = Number(drag.x)
-                                        if (root.sortApplicationsAlphabetically) {
+                                        if (root.safeApplicationOrderMode
+                                                !== "manual") {
                                             dropIntent = internalDragLayer.folder
                                                 ? "none" : "group"
                                             return dropIntent !== "none"
@@ -2619,6 +2646,51 @@ FocusScope {
                 }
             }
 
+            PunchiMenuCategorySectionsView {
+                id: categorySectionsView
+                anchors.fill: parent
+                anchors.leftMargin: root.applicationGridHorizontalInset
+                anchors.rightMargin: root.applicationGridHorizontalInset
+                visible: root.applicationViewActive
+                    && root.categoryGroupingActive
+                enabled: visible && !root.modeTransitionActive
+                    && !root.applicationLaunchPending
+                categoryGroups: applicationLayoutModel.categoryGroups
+                folderNodes: root.categoryFolderNodes
+                showApplicationLabels: root.showApplicationLabels
+                motionEnabled: root.motionEnabled
+                hoverEnabled: root.applicationHoverAllowed
+                hoverAnimation: root.hoverAnimation
+                iconScale: root.safeApplicationIconScale
+                baseIconSize: root.responsiveApplicationIconBase
+
+                onLaunchRequested: function(storageId) {
+                    if (root.applicationLaunchPending
+                            || storageId.length === 0) {
+                        return
+                    }
+                    root.applicationErrorMessage = ""
+                    root.applicationLaunchPending = true
+                    root.systemDiscovery.launchApplication(storageId)
+                }
+                onApplicationContextRequested: function(sourceItem,
+                        application, x, y) {
+                    root.openApplicationContextMenu(sourceItem,
+                        String(application.appStorageId || ""),
+                        String(application.appName || ""),
+                        String(application.appIcon || ""), "", x, y)
+                }
+                onFolderOpenRequested: function(folderId) {
+                    folderSurface.openFolder(folderId)
+                }
+                onFolderContextRequested: function(sourceItem, folder, x, y) {
+                    root.openFolderContextMenu(sourceItem, folder, x, y)
+                }
+                onFolderRenameRequested: function(folderId) {
+                    folderSurface.beginRename(folderId)
+                }
+            }
+
             Kirigami.WheelHandler {
                 id: wheelInputHandler
                 target: pagesView
@@ -2629,7 +2701,8 @@ FocusScope {
                         wheel.accepted = true
                         return
                     }
-                    if (root.applicationViewActive) {
+                    if (root.applicationViewActive
+                            && !root.categoryGroupingActive) {
                         root.handlePageWheel(wheel)
                     }
                 }
@@ -2793,8 +2866,8 @@ FocusScope {
                             root.showPageNavigationArrows
                         showApplicationLabels: root.showApplicationLabels
                         hoverAnimation: root.hoverAnimation
-                        sortApplicationsAlphabetically:
-                            root.sortApplicationsAlphabetically
+                        applicationOrderMode:
+                            root.safeApplicationOrderMode
                         closeButtonPosition: root.closeButtonPosition
                         applicationIconScalePercent: Math.round(
                             root.safeApplicationIconScale * 100)

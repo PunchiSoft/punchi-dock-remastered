@@ -882,7 +882,7 @@ Module {
         exportMetaObjectRevisions: [256]
         Enum {
             name: "Role"
-            lineNumber: 26
+            lineNumber: 27
             values: [
                 "NodeTypeRole",
                 "NodeIdRole",
@@ -961,12 +961,21 @@ Module {
             isReadonly: true
         }
         Property {
+            name: "categoryGroups"
+            type: "QVariantList"
+            read: "categoryGroups"
+            notify: "nodesChanged"
+            index: 7
+            lineNumber: 22
+            isReadonly: true
+        }
+        Property {
             name: "folderChoiceCount"
             type: "int"
             read: "folderChoiceCount"
             notify: "nodesChanged"
-            index: 7
-            lineNumber: 22
+            index: 8
+            lineNumber: 23
             isReadonly: true
         }
         Property {
@@ -974,51 +983,51 @@ Module {
             type: "QString"
             read: "lastErrorCode"
             notify: "lastErrorCodeChanged"
-            index: 8
-            lineNumber: 23
+            index: 9
+            lineNumber: 24
             isReadonly: true
         }
-        Signal { name: "applicationsChanged"; lineNumber: 77 }
-        Signal { name: "layoutDocumentChanged"; lineNumber: 78 }
-        Signal { name: "hiddenApplicationIdsChanged"; lineNumber: 79 }
-        Signal { name: "revealHiddenApplicationsChanged"; lineNumber: 80 }
-        Signal { name: "alphabeticalSortingEnabledChanged"; lineNumber: 81 }
-        Signal { name: "nodesChanged"; lineNumber: 82 }
-        Signal { name: "lastErrorCodeChanged"; lineNumber: 83 }
+        Signal { name: "applicationsChanged"; lineNumber: 79 }
+        Signal { name: "layoutDocumentChanged"; lineNumber: 80 }
+        Signal { name: "hiddenApplicationIdsChanged"; lineNumber: 81 }
+        Signal { name: "revealHiddenApplicationsChanged"; lineNumber: 82 }
+        Signal { name: "alphabeticalSortingEnabledChanged"; lineNumber: 83 }
+        Signal { name: "nodesChanged"; lineNumber: 84 }
+        Signal { name: "lastErrorCodeChanged"; lineNumber: 85 }
         Signal {
             name: "validationFailed"
-            lineNumber: 84
+            lineNumber: 86
             Parameter { name: "errorCode"; type: "QString" }
         }
         Method {
             name: "indexForNodeId"
             type: "int"
             isMethodConstant: true
-            lineNumber: 69
+            lineNumber: 71
             Parameter { name: "nodeId"; type: "QString" }
         }
         Method {
             name: "indexForFolder"
             type: "int"
             isMethodConstant: true
-            lineNumber: 70
+            lineNumber: 72
             Parameter { name: "folderId"; type: "QString" }
         }
         Method {
             name: "applicationPlacement"
             type: "QVariantMap"
             isMethodConstant: true
-            lineNumber: 71
+            lineNumber: 73
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
             name: "folderInfo"
             type: "QVariantMap"
             isMethodConstant: true
-            lineNumber: 73
+            lineNumber: 75
             Parameter { name: "folderId"; type: "QString" }
         }
-        Method { name: "folderChoices"; type: "QVariantList"; isMethodConstant: true; lineNumber: 74 }
+        Method { name: "folderChoices"; type: "QVariantList"; isMethodConstant: true; lineNumber: 76 }
     }
     Component {
         file: "punchimenushortcutcontroller.h"
