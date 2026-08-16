@@ -520,6 +520,16 @@ def main() -> int:
         "id: menuTextShadowsSwitch",
         "ConfigMenus must use a switch for menu text shadows",
     )
+    require(
+        config_aspect,
+        "property alias cfg_showEditDockItemAction: menuAppearancePage.cfg_showEditDockItemAction",
+        "ConfigAspect must expose showEditDockItemAction alias to KCM root",
+    )
+    require(
+        config_aspect,
+        "property alias cfg_showConfigureDockAction: menuAppearancePage.cfg_showConfigureDockAction",
+        "ConfigAspect must expose showConfigureDockAction alias to KCM root",
+    )
 
     print("Popup menu surface contracts are consistent")
     return 0
