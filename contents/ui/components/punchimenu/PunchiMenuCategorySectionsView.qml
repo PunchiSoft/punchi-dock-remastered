@@ -21,6 +21,12 @@ FocusScope {
     property int selectedSectionIndex: -1
     property int selectedItemIndex: -1
 
+    property bool isDragActive: false
+    property string dragSourceNodeId: ""
+    property bool isDragFolder: false
+    property string dragKey: "application/x-punchi-dock-node"
+    property bool suppressDragReleaseClick: false
+
     readonly property real effectiveIconScale: Math.max(0.75,
         Math.min(1.5, Number(iconScale || 1.0)))
     readonly property real scrollBarReserve: sectionScrollBar.visible
@@ -73,6 +79,16 @@ FocusScope {
     signal folderRenameRequested(string folderId)
     signal returnToSearchRequested()
     signal bottomReached()
+    signal dragBeginRequested(var application, var sourceItem, real x, real y)
+    signal dragUpdateRequested(var sourceItem, real x, real y)
+    signal dragFinishRequested()
+    signal dragCancelRequested()
+    signal dropOntoNodeRequested(var targetNode)
+
+    function isInternalLayoutDrag(event) {
+        return root.isDragActive && event
+            && event.keys && event.keys.indexOf(root.dragKey) >= 0
+    }
 
     function categoryLabel(categoryId) {
         switch (String(categoryId || "Other")) {
@@ -425,6 +441,14 @@ FocusScope {
                         readonly property bool isSelected:
                             root.selectedSectionIndex === sectionDelegate.index
                             && root.selectedItemIndex === launcherDelegate.index
+                        readonly property bool isDragSource:
+                            root.isDragActive
+                            && root.dragSourceNodeId.length > 0
+                            && root.dragSourceNodeId === String(modelData
+                                ? modelData.nodeId || "" : "")
+                        readonly property bool dropGroupingActive:
+                            nodeDropTarget.containsDrag
+                            && nodeDropTarget.dropIntent === "group"
                         readonly property bool highlighted: isSelected
                             || activeFocus
                             || (root.hoverEnabled
@@ -433,7 +457,8 @@ FocusScope {
                         width: root.cellWidth
                         height: root.cellHeight
                         activeFocusOnTab: !isFolder
-                        opacity: isHiddenApplication ? 0.58 : 1.0
+                        opacity: isDragSource ? 0.34
+                            : isHiddenApplication ? 0.58 : 1.0
                         Accessible.ignored: isFolder
                         Accessible.role: Accessible.Button
                         Accessible.name: root.applicationName(modelData)
@@ -468,6 +493,7 @@ FocusScope {
                             memberCount: Number(launcherDelegate.modelData
                                 .folderMemberCount || 0)
                             selected: launcherDelegate.isSelected
+                                || launcherDelegate.dropGroupingActive
                                 || activeFocus || hovered
                             motionEnabled: root.motionEnabled
                             requestedIconSize: root.iconSize
@@ -489,10 +515,11 @@ FocusScope {
                             hovered: root.hoverEnabled
                                 && applicationPointer.containsMouse
                             selected: launcherDelegate.isSelected
-                                || launcherDelegate.activeFocus
+                                || launcherDelegate.dropGroupingActive
                             focused: launcherDelegate.isSelected
                                 || launcherDelegate.activeFocus
                             pressed: applicationPointer.pressed
+                                && !root.isDragActive
                             motionEnabled: root.motionEnabled
                             animationMode: root.hoverAnimation
                             transformSelf: false
@@ -556,8 +583,68 @@ FocusScope {
                             }
                         }
 
+                        DropArea {
+                            id: nodeDropTarget
+                            property string dropIntent: "none"
+                            anchors.fill: parent
+                            anchors.margins: Kirigami.Units.smallSpacing
+                            keys: [root.dragKey]
+                            z: 20
+
+                            function updateDropIntent(drag) {
+                                if (!root.isInternalLayoutDrag(drag)
+                                        || root.dragSourceNodeId
+                                            === String(launcherDelegate
+                                                .modelData
+                                                ? launcherDelegate.modelData
+                                                    .nodeId || "" : "")) {
+                                    dropIntent = "none"
+                                    return false
+                                }
+                                dropIntent = root.isDragFolder ? "none" : "group"
+                                return dropIntent !== "none"
+                            }
+
+                            onEntered: function(drag) {
+                                drag.accepted = updateDropIntent(drag)
+                            }
+                            onPositionChanged: function(drag) {
+                                drag.accepted = updateDropIntent(drag)
+                            }
+                            onExited: {
+                                dropIntent = "none"
+                            }
+                            onDropped: function(drop) {
+                                if (!root.isInternalLayoutDrag(drop)) {
+                                    drop.accepted = false
+                                    dropIntent = "none"
+                                    return
+                                }
+                                drop.accepted = root.dropOntoNodeRequested(
+                                    launcherDelegate.modelData)
+                                dropIntent = "none"
+                            }
+                        }
+
+                        Kirigami.Icon {
+                            anchors.right: parent.right
+                            anchors.top: parent.top
+                            anchors.margins: Kirigami.Units.smallSpacing
+                            width: Kirigami.Units.iconSizes.small
+                            height: width
+                            visible: nodeDropTarget.containsDrag
+                                && nodeDropTarget.dropIntent === "group"
+                            source: launcherDelegate.isFolder
+                                ? "folder-add-symbolic"
+                                : "folder-new-symbolic"
+                            color: Kirigami.Theme.highlightColor
+                            z: 30
+                            Accessible.ignored: true
+                        }
+
                         scale: root.motionEnabled
                             && applicationPointer.pressed
+                            && !root.isDragActive
                             && root.hoverAnimation !== "none"
                             ? 0.97 : itemHighlight.visualScale
 
@@ -568,9 +655,45 @@ FocusScope {
                             acceptedButtons:
                                 Qt.LeftButton | Qt.RightButton
                             hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
+                            preventStealing: root.isDragActive
+                            cursorShape: launcherDelegate.isDragSource
+                                ? Qt.ClosedHandCursor : Qt.PointingHandCursor
+                            z: 40
 
+                            onPressAndHold: function(mouse) {
+                                if (mouse.button === Qt.LeftButton) {
+                                    root.selectedSectionIndex
+                                        = sectionDelegate.index
+                                    root.selectedItemIndex
+                                        = launcherDelegate.index
+                                    root.dragBeginRequested(
+                                        launcherDelegate.modelData,
+                                        applicationPointer,
+                                        mouse.x, mouse.y)
+                                }
+                            }
+                            onPositionChanged: function(mouse) {
+                                if (launcherDelegate.isDragSource) {
+                                    root.dragUpdateRequested(
+                                        applicationPointer,
+                                        mouse.x, mouse.y)
+                                }
+                            }
+                            onReleased: function(mouse) {
+                                if (mouse.button === Qt.LeftButton
+                                        && launcherDelegate.isDragSource) {
+                                    root.dragFinishRequested()
+                                }
+                            }
+                            onCanceled: {
+                                if (launcherDelegate.isDragSource) {
+                                    root.dragCancelRequested()
+                                }
+                            }
                             onClicked: function(mouse) {
+                                if (root.suppressDragReleaseClick) {
+                                    return
+                                }
                                 root.selectedSectionIndex = sectionDelegate.index
                                 root.selectedItemIndex = launcherDelegate.index
                                 launcherDelegate.forceActiveFocus()

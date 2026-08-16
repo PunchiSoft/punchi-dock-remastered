@@ -312,6 +312,7 @@ Item {
             "normalWidthPercent": true,
             "normalHeightPercent": true,
             "normalShowCategories": true,
+            "normalCategoryGrouping": true,
             "fullScreenFolderMaximumColumns": true,
             "fullScreenFolderMaximumRows": true
         }

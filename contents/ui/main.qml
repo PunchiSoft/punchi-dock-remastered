@@ -267,6 +267,13 @@ PlasmoidItem {
         }
         return true
     }
+    readonly property bool configuredPunchiMenuNormalCategoryGrouping: {
+        const item = configuredPunchiMenuItem
+        if (item && item.normalCategoryGrouping !== undefined) {
+            return item.normalCategoryGrouping === true
+        }
+        return false
+    }
     signal taskStructureChanged()
 
     // Virtual desktop visibility.
@@ -848,6 +855,7 @@ PlasmoidItem {
                 normalWidthPercent: root.configuredPunchiMenuNormalWidthPercent
                 normalHeightPercent: root.configuredPunchiMenuNormalHeightPercent
                 showCategories: root.configuredPunchiMenuNormalShowCategories
+                categoryGroupingEnabled: root.configuredPunchiMenuNormalCategoryGrouping
                 themeFrameLeftMargin: punchiMenuNormalDialog.themeFrameMargin("left")
                 themeFrameTopMargin: punchiMenuNormalDialog.themeFrameMargin("top")
                 themeFrameRightMargin: punchiMenuNormalDialog.themeFrameMargin("right")

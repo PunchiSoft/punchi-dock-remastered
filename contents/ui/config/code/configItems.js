@@ -781,6 +781,11 @@ function prunePunchiMenu(item) {
     } else {
         item.normalShowCategories = false
     }
+    if (item.normalCategoryGrouping !== true) {
+        delete item.normalCategoryGrouping
+    } else {
+        item.normalCategoryGrouping = true
+    }
 }
 
 function pruneApp(item) {

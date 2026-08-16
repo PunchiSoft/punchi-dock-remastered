@@ -21,7 +21,7 @@
         "ServiceTypes": [
             "Plasma/Applet"
         ],
-        "Version": "0.9.7.34",
+        "Version": "0.9.7.35",
         "Website": "https://github.com/PunchiSoft/punchi-dock-remastered"
     },
     "X-Plasma-API-Minimum-Version": "6.0"

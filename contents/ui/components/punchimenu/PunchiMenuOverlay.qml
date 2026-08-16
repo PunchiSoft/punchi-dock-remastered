@@ -664,7 +664,6 @@ FocusScope {
 
     function beginInternalLayoutDrag(application, sourceItem, x, y) {
         if (!organizedListingActive
-                || safeApplicationOrderMode === "categories"
                 || folderSurface.active
                 || !applicationViewActive || applicationLaunchPending
                 || !applicationLayoutController
@@ -2759,6 +2758,24 @@ FocusScope {
                 hoverAnimation: root.hoverAnimation
                 iconScale: root.safeApplicationIconScale
                 baseIconSize: root.responsiveApplicationIconBase
+
+                isDragActive: internalDragLayer.active
+                dragSourceNodeId: String(internalDragLayer.nodeId || "")
+                isDragFolder: Boolean(internalDragLayer.folder)
+                dragKey: internalDragLayer.dragKey
+                suppressDragReleaseClick: root.suppressDragReleaseClick
+
+                onDragBeginRequested: function(application, sourceItem, x, y) {
+                    root.beginInternalLayoutDrag(application, sourceItem, x, y)
+                }
+                onDragUpdateRequested: function(sourceItem, x, y) {
+                    root.updateInternalLayoutDrag(sourceItem, x, y)
+                }
+                onDragFinishRequested: root.finishInternalLayoutDrag()
+                onDragCancelRequested: root.cancelInternalLayoutDrag()
+                onDropOntoNodeRequested: function(targetNode) {
+                    return root.handleDraggedNodeDrop(targetNode)
+                }
 
                 onLaunchRequested: function(storageId) {
                     if (root.applicationLaunchPending

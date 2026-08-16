@@ -1296,6 +1296,7 @@ def main() -> int:
         "normalWidthPercent",
         "normalHeightPercent",
         "normalShowCategories",
+        "normalCategoryGrouping",
         "normalFolderMaximumColumns",
         "normalFolderMaximumRows",
         "fullScreenFolderMaximumColumns",
@@ -1330,6 +1331,7 @@ def main() -> int:
     normal_settings_contract = (
         '"normalBlurEnabled", checked',
         '"normalBackgroundOpacityPercent",',
+        '"normalCategoryGrouping", checked',
         '"normalShowCategories", checked',
         '"normalFolderMaximumColumns", value',
         '"normalFolderMaximumRows", value',

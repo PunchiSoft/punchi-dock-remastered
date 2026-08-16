@@ -240,6 +240,26 @@ FocusScope {
         && applicationCatalog.length > 0
     readonly property bool searchListingActive:
         searchField.text.trim().length > 0
+    property bool categoryGroupingEnabled: false
+    readonly property bool categoryGroupingActive:
+        categoryGroupingEnabled
+        && !searchListingActive
+        && applicationCatalog.length > 0
+    readonly property bool effectiveTopCategoryBarVisible:
+        showCategories
+        && !categoryGroupingActive
+        && applicationViewActive
+    readonly property var categoryFolderNodes: {
+        const result = []
+        const nodes = applicationLayoutModel.nodes || []
+        for (let index = 0; index < nodes.length; index++) {
+            const node = nodes[index]
+            if (node && String(node.nodeType || "") === "folder") {
+                result.push(node)
+            }
+        }
+        return result
+    }
     readonly property bool applicationHoverAllowed:
         !internalDragLayer.active
     readonly property int applicationListingCount: searchListingActive
@@ -1394,8 +1414,10 @@ FocusScope {
             }
             return
         }
-        if (categoriesView.count > 0) {
+        if (effectiveTopCategoryBarVisible && categoriesView.count > 0) {
             categoriesView.forceActiveFocus()
+        } else if (categoryGroupingActive && categorySectionsView.visible) {
+            categorySectionsView.forceActiveFocus()
         } else {
             focusApplicationsGrid()
         }
@@ -1899,7 +1921,9 @@ FocusScope {
                             && root.applicationViewActive
                         ? hiddenApplicationsButton : sessionButton
                     KeyNavigation.tab: root.applicationViewActive
-                        ? (root.showCategories ? categoriesView : applicationsGrid)
+                        ? (root.effectiveTopCategoryBarVisible
+                            ? categoriesView
+                            : (root.categoryGroupingActive ? categorySectionsView : applicationsGrid))
                         : sessionButton
                     KeyNavigation.left: hiddenApplicationsButton.visible
                             && root.applicationViewActive
@@ -1935,15 +1959,15 @@ FocusScope {
 
             Kirigami.Separator {
                 Layout.fillWidth: true
-                visible: root.showCategories && root.applicationViewActive
+                visible: root.effectiveTopCategoryBarVisible
                 Accessible.ignored: true
             }
 
             Item {
                 Layout.fillWidth: true
-                Layout.preferredHeight: (root.showCategories && root.applicationViewActive)
+                Layout.preferredHeight: root.effectiveTopCategoryBarVisible
                     ? Kirigami.Units.gridUnit * 2.65 : 0
-                visible: root.showCategories && root.applicationViewActive
+                visible: root.effectiveTopCategoryBarVisible
 
                 RowLayout {
                     anchors.fill: parent
@@ -2181,6 +2205,8 @@ FocusScope {
                     anchors.fill: applicationsGrid
                     keys: [internalDragLayer.dragKey]
                     z: 0
+                    visible: !root.categoryGroupingActive && !root.searchListingActive
+                    enabled: visible
 
                     onEntered: function(drag) {
                         drag.accepted = root.isInternalLayoutDrag(drag)
@@ -2192,6 +2218,79 @@ FocusScope {
                         }
                         drop.accepted = root.requestDraggedNodeMove(
                             root.nodeIdForGridDrop(drop.x, drop.y))
+                    }
+                }
+
+                PunchiMenuCategorySectionsView {
+                    id: categorySectionsView
+                    anchors.fill: parent
+                    visible: root.applicationViewActive
+                        && root.categoryGroupingActive
+                        && !root.searchListingActive
+                    enabled: visible && !root.applicationLaunchPending
+                    activeFocusOnTab: visible
+                    KeyNavigation.backtab: root.effectiveTopCategoryBarVisible
+                        ? categoriesView : btnClose
+                    categoryGroups: applicationLayoutModel.categoryGroups
+                    folderNodes: root.categoryFolderNodes
+                    showApplicationLabels: root.showApplicationLabels
+                    motionEnabled: root.motionEnabled
+                    hoverEnabled: root.applicationHoverAllowed
+                    hoverAnimation: root.hoverAnimation
+                    iconScale: root.safeApplicationIconScale
+                    baseIconSize: Kirigami.Units.iconSizes.huge
+
+                    isDragActive: internalDragLayer.active
+                    dragSourceNodeId: String(internalDragLayer.nodeId || "")
+                    isDragFolder: Boolean(internalDragLayer.folder)
+                    dragKey: internalDragLayer.dragKey
+                    suppressDragReleaseClick: root.suppressDragReleaseClick
+
+                    onDragBeginRequested: function(application, sourceItem, x, y) {
+                        root.beginInternalLayoutDrag(application, sourceItem, x, y)
+                    }
+                    onDragUpdateRequested: function(sourceItem, x, y) {
+                        root.updateInternalLayoutDrag(sourceItem, x, y)
+                    }
+                    onDragFinishRequested: root.finishInternalLayoutDrag()
+                    onDragCancelRequested: root.cancelInternalLayoutDrag(false)
+                    onDropOntoNodeRequested: function(targetNode) {
+                        return root.handleDraggedNodeDrop(targetNode)
+                    }
+
+                    onLaunchRequested: function(storageId) {
+                        if (root.applicationLaunchPending || storageId.length === 0) {
+                            return
+                        }
+                        root.applicationErrorMessage = ""
+                        root.applicationLaunchPending = true
+                        root.systemDiscovery.launchApplication(storageId)
+                    }
+                    onApplicationContextRequested: function(sourceItem, application, x, y) {
+                        root.openApplicationContextMenu(sourceItem,
+                            String(application.appStorageId || ""),
+                            String(application.appName || ""),
+                            String(application.appIcon || ""), "", x, y)
+                    }
+                    onFolderOpenRequested: function(folderId) {
+                        folderSurface.openFolder(folderId)
+                    }
+                    onFolderContextRequested: function(sourceItem, folder, x, y) {
+                        root.openFolderContextMenu(sourceItem, folder, x, y)
+                    }
+                    onFolderRenameRequested: function(folderId) {
+                        folderSurface.beginRename(folderId)
+                    }
+                    onReturnToSearchRequested: function() {
+                        searchField.forceActiveFocus()
+                    }
+                    onBottomReached: {
+                        if (root.favoritesSectionVisible && favoritesView.count > 0) {
+                            favoritesView.forceActiveFocus()
+                            if (favoritesView.currentIndex < 0) {
+                                favoritesView.currentIndex = 0
+                            }
+                        }
                     }
                 }
 
@@ -2208,6 +2307,7 @@ FocusScope {
                             + Kirigami.Units.smallSpacing
                     anchors.fill: parent
                     z: 1
+                    visible: !root.categoryGroupingActive || root.searchListingActive
                     model: root.applicationListingCount
                     cellWidth: Math.max(1,
                         (width - verticalScrollBarReserve) / root.columnCount)
@@ -2216,12 +2316,12 @@ FocusScope {
                             + Kirigami.Units.gridUnit * 3)
                     clip: true
                     focus: true
-                    activeFocusOnTab: true
+                    activeFocusOnTab: visible
                     boundsBehavior: Flickable.StopAtBounds
                     interactive: !internalDragLayer.active
-                    enabled: !root.applicationLaunchPending
+                    enabled: visible && !root.applicationLaunchPending
                     keyNavigationWraps: false
-                    KeyNavigation.backtab: root.showCategories ? categoriesView : btnClose
+                    KeyNavigation.backtab: root.effectiveTopCategoryBarVisible ? categoriesView : btnClose
 
                     onActiveFocusChanged: {
                         if (activeFocus && root.applicationListingCount > 0) {
@@ -2678,7 +2778,9 @@ FocusScope {
                     anchors.bottom: applicationsGrid.bottom
                     z: 3
                     orientation: Qt.Vertical
-                    policy: applicationsGrid.verticalScrollRequired
+                    visible: applicationsGrid.visible
+                        && applicationsGrid.verticalScrollRequired
+                    policy: visible
                         ? PlasmaComponents.ScrollBar.AlwaysOn
                         : PlasmaComponents.ScrollBar.AlwaysOff
                     size: stableSize
@@ -2712,9 +2814,11 @@ FocusScope {
                     anchors.centerIn: parent
                     width: Math.min(parent.width - Kirigami.Units.largeSpacing * 2,
                         Kirigami.Units.gridUnit * 24)
-                    visible: root.applicationsLoading
-                        || (!root.applicationsLoading
-                            && root.applicationListingCount === 0)
+                    visible: (!root.categoryGroupingActive
+                        || root.searchListingActive)
+                        && (root.applicationsLoading
+                            || (!root.applicationsLoading
+                                && root.applicationListingCount === 0))
                     spacing: Kirigami.Units.mediumSpacing
 
                     Controls.BusyIndicator {
@@ -2899,7 +3003,11 @@ FocusScope {
                         }
 
                         Keys.onUpPressed: function(event) {
-                            root.focusApplicationsGrid()
+                            if (root.categoryGroupingActive && categorySectionsView.visible) {
+                                categorySectionsView.forceActiveFocus()
+                            } else {
+                                root.focusApplicationsGrid()
+                            }
                             event.accepted = true
                         }
                         Keys.onReturnPressed: function(event) {
@@ -3139,6 +3247,7 @@ FocusScope {
                             root.safeBackgroundOpacity * 100)
                         showApplicationLabels: root.showApplicationLabels
                         normalShowCategories: root.showCategories
+                        normalCategoryGrouping: root.categoryGroupingEnabled
                         hoverAnimation: root.hoverAnimation
                         sortApplicationsAlphabetically:
                             root.sortApplicationsAlphabetically

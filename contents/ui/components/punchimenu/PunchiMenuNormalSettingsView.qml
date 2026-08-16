@@ -15,6 +15,7 @@ PunchiMenuSettingsBase {
 
     required property bool sortApplicationsAlphabetically
     property bool normalShowCategories: true
+    property bool normalCategoryGrouping: false
 
     required property string normalPlacementMode
     required property int normalPanelGap
@@ -195,9 +196,29 @@ PunchiMenuSettingsBase {
                     }
 
                     Controls.Switch {
+                        Kirigami.FormData.label: i18n("Categories:")
+                        text: i18n("Group applications by category")
+                        checked: root.normalCategoryGrouping
+                        Accessible.name: text
+                        Accessible.description: i18n("Organizes applications into continuous category sections with separators.")
+                        onToggled: root.settingChanged(
+                            "normalCategoryGrouping", checked)
+                    }
+
+                    Kirigami.InlineMessage {
+                        Kirigami.FormData.isSection: true
+                        Layout.fillWidth: true
+                        visible: root.normalCategoryGrouping
+                        type: Kirigami.MessageType.Information
+                        text: i18n("Category grouping is active; the top category carousel is hidden.")
+                        Accessible.name: text
+                    }
+
+                    Controls.Switch {
                         Kirigami.FormData.label: i18n("Categories bar:")
                         text: i18n("Show category carousel")
                         checked: root.normalShowCategories
+                        enabled: !root.normalCategoryGrouping
                         Accessible.name: text
                         Accessible.description: i18n("Shows the horizontal category carousel above applications in PunchiMenu Normal.")
                         onToggled: root.settingChanged(
