@@ -952,8 +952,13 @@ PlasmoidItem {
         systemDiscovery: systemDiscovery
         taskController: taskController
         dockItemsController: dockItemsController
+        showEditDockItemAction: Plasmoid.configuration.showEditDockItemAction !== false
+        showConfigureDockAction: Plasmoid.configuration.showConfigureDockAction !== false
         editDockItemHandler: function(index) {
             return root.openDockItemEditor(index)
+        }
+        configureDockHandler: function() {
+            return root.openDockConfiguration()
         }
     }
     DropFeedbackPopup {
@@ -969,6 +974,22 @@ PlasmoidItem {
     // Translation functions and controller ids are provided by the plasmoid
     // context and remain valid at runtime.
     // qmllint disable unqualified
+    function openDockConfiguration() {
+        const configureAction = Plasmoid.internalAction("configure")
+        if (!configureAction || configureAction.enabled === false) {
+            return false
+        }
+
+        Plasmoid.configuration.pendingEditDockItemIndex = -1
+        // Persist the hand-off before opening the KCM, which may run in a
+        // separate configuration context.
+        // qmllint disable missing-property
+        Plasmoid.configuration.writeConfig()
+        // qmllint enable missing-property
+        configureAction.trigger()
+        return true
+    }
+
     function openDockItemEditor(index) {
         if (!Number.isInteger(index) || index < 0) {
             return false

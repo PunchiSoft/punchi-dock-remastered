@@ -61,6 +61,12 @@
     <entry name="menuTextShadowsEnabled" type="Bool">
       <default>false</default>
     </entry>
+    <entry name="showEditDockItemAction" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="showConfigureDockAction" type="Bool">
+      <default>true</default>
+    </entry>
     <entry name="contextMenuBackgroundOpacityPercent" type="Int">
       <default>75</default>
     </entry>

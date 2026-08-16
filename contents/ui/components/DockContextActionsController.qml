@@ -7,6 +7,9 @@ QtObject {
     property var taskController: null
     property var dockItemsController: null
     property var editDockItemHandler: null
+    property var configureDockHandler: null
+    property bool showEditDockItemAction: true
+    property bool showConfigureDockAction: true
 
     function removablePinnedItem(item) {
         if (!item) {
@@ -92,15 +95,25 @@ QtObject {
             }
         } else if (itemOrigin === "pinned" && root.removablePinnedItem(item)) {
             const itemActions = []
-            if (root.editablePinnedItem(item, persistentIndex)) {
+            if (root.showEditDockItemAction && root.editablePinnedItem(item, persistentIndex)) {
                 itemActions.push({
                     // qmllint disable unqualified
                     "name": i18nc("@action:context", "Edit item…"),
                     // qmllint enable unqualified
-                    "icon": "configure",
+                    "icon": "document-edit",
                     "kind": "editDockItem",
                     "enabled": true,
                     "targetIndex": persistentIndex
+                })
+            }
+            if (root.showConfigureDockAction && typeof root.configureDockHandler === "function") {
+                itemActions.push({
+                    // qmllint disable unqualified
+                    "name": i18nc("@action:context", "Configure Punchi Dock…"),
+                    // qmllint enable unqualified
+                    "icon": "preferences-system",
+                    "kind": "configureDock",
+                    "enabled": true
                 })
             }
             if (itemType === "punchimenu") {
@@ -208,6 +221,16 @@ QtObject {
 
         root.appendUniqueActions(actions,
             root.taskController.contextActionsForRows(taskRows || []), seenNames)
+        if (root.showConfigureDockAction && typeof root.configureDockHandler === "function") {
+            root.appendUniqueActions(actions, [{
+                // qmllint disable unqualified
+                "name": i18nc("@action:context", "Configure Punchi Dock…"),
+                // qmllint enable unqualified
+                "icon": "preferences-system",
+                "kind": "configureDock",
+                "enabled": true
+            }], seenNames)
+        }
         return actions
     }
 
@@ -217,13 +240,15 @@ QtObject {
         }
         const itemType = String(item.type || "app")
         if (itemType !== "app") {
-            return itemOrigin === "pinned" && root.removablePinnedItem(item)
+            return (itemOrigin === "pinned" && root.removablePinnedItem(item))
+                || (root.showConfigureDockAction && typeof root.configureDockHandler === "function")
         }
         return itemOrigin === "pinned"
             || (itemOrigin === "dynamic" && !!root.taskController.pinDescriptorForEntry(item))
             || String(item.storageId || item.appId || item.command || "").trim().length > 0
             || (item.actions instanceof Array && item.actions.length > 0)
             || (taskRows instanceof Array && taskRows.length > 0)
+            || (root.showConfigureDockAction && typeof root.configureDockHandler === "function")
     }
 
     function triggerAction(action) {
@@ -244,6 +269,11 @@ QtObject {
         if (action.kind === "editDockItem") {
             return root.editDockItemHandler
                 ? root.editDockItemHandler(action.targetIndex)
+                : false
+        }
+        if (action.kind === "configureDock") {
+            return root.configureDockHandler
+                ? root.configureDockHandler()
                 : false
         }
         if (action.kind === "setPunchiMenuMode") {

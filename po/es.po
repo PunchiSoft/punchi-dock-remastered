@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-16 09:29-0400\n"
+"POT-Creation-Date: 2026-08-16 10:03-0400\n"
 "PO-Revision-Date: 2026-07-18 02:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Spanish\n"
@@ -53,7 +53,7 @@ msgstr "%1 está ahora al frente; suelte para abrir los archivos locales"
 msgid "%1 items loaded."
 msgstr "%1 elementos cargados."
 
-#: contents/ui/main.qml:1927
+#: contents/ui/main.qml:1948
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de ventanas más"
@@ -92,9 +92,9 @@ msgstr "%1 pt"
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:473
 #: contents/ui/config/ConfigFolderPopups.qml:275
 #: contents/ui/config/ConfigFolderPopups.qml:360
-#: contents/ui/config/ConfigMenus.qml:159
-#: contents/ui/config/ConfigMenus.qml:187
-#: contents/ui/config/ConfigMenus.qml:215
+#: contents/ui/config/ConfigMenus.qml:161
+#: contents/ui/config/ConfigMenus.qml:189
+#: contents/ui/config/ConfigMenus.qml:217
 msgid "%1 px"
 msgstr "%1 px"
 
@@ -164,8 +164,8 @@ msgstr "%1 — %2 — %3"
 #: contents/ui/config/components/PopupAnimationSettings.qml:119
 #: contents/ui/config/ConfigFolderPopups.qml:199
 #: contents/ui/config/ConfigFolderPopups.qml:237
-#: contents/ui/config/ConfigMenus.qml:253
-#: contents/ui/config/ConfigMenus.qml:322
+#: contents/ui/config/ConfigMenus.qml:255
+#: contents/ui/config/ConfigMenus.qml:347
 #: contents/ui/config/ConfigMouse.qml:135
 #: contents/ui/config/ConfigMouse.qml:177
 #: contents/ui/config/ConfigPopups.qml:225
@@ -252,7 +252,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Se creó un acceso directo de escritorio para %1."
 
-#: contents/ui/main.qml:1009
+#: contents/ui/main.qml:1030
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr ""
@@ -603,7 +603,7 @@ msgstr ""
 "Las aplicaciones volverán a la lista principal. No se eliminará ninguna "
 "aplicación."
 
-#: contents/ui/config/ConfigMenus.qml:273
+#: contents/ui/config/ConfigMenus.qml:275
 msgid "Applies to context menu headers, action labels and secondary details."
 msgstr ""
 "Se aplica a los encabezados de menús contextuales, etiquetas de acción y "
@@ -765,7 +765,7 @@ msgstr "Marco del fondo:"
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:144
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:128
 #: contents/ui/config/ConfigFolderPopups.qml:215
-#: contents/ui/config/ConfigMenus.qml:231
+#: contents/ui/config/ConfigMenus.qml:233
 #: contents/ui/config/ConfigPopups.qml:285
 msgid "Background opacity:"
 msgstr "Opacidad del fondo:"
@@ -1211,7 +1211,7 @@ msgstr "Collapse controls after:"
 msgid "Color source"
 msgstr "Fuente del color"
 
-#: contents/ui/config/ConfigMenus.qml:37
+#: contents/ui/config/ConfigMenus.qml:39
 msgctxt "@item:inlistbox Context menu size"
 msgid "Comfortable"
 msgstr "Cómodo"
@@ -1220,7 +1220,7 @@ msgstr "Cómodo"
 msgid "Command:"
 msgstr "Orden:"
 
-#: contents/ui/config/ConfigMenus.qml:36
+#: contents/ui/config/ConfigMenus.qml:38
 msgctxt "@item:inlistbox Context menu size"
 msgid "Compact"
 msgstr "Reducido"
@@ -1252,6 +1252,12 @@ msgstr "Configurar"
 msgctxt "@action:button opens system settings"
 msgid "Configure Desktop Effects…"
 msgstr "Configurar efectos del escritorio…"
+
+#: contents/ui/components/DockContextActionsController.qml:112
+#: contents/ui/components/DockContextActionsController.qml:227
+msgctxt "@action:context"
+msgid "Configure Punchi Dock…"
+msgstr "Configurar Punchi Dock…"
 
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1713
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2165
@@ -1314,27 +1320,27 @@ msgctxt "@info:accessible"
 msgid "Contents of the %1 folder"
 msgstr "Contenido de la carpeta %1"
 
-#: contents/ui/config/ConfigMenus.qml:243
+#: contents/ui/config/ConfigMenus.qml:245
 msgid "Context menu background opacity"
 msgstr "Opacidad del fondo del menú contextual"
 
-#: contents/ui/config/ConfigMenus.qml:288
+#: contents/ui/config/ConfigMenus.qml:313
 msgid "Context menu entrance direction"
 msgstr "Dirección de entrada del menú contextual"
 
-#: contents/ui/config/ConfigMenus.qml:178
+#: contents/ui/config/ConfigMenus.qml:180
 msgid "Context menu icon size"
 msgstr "Tamaño de iconos del menú contextual"
 
-#: contents/ui/config/ConfigMenus.qml:150
+#: contents/ui/config/ConfigMenus.qml:152
 msgid "Context menu row height"
 msgstr "Altura de fila del menú contextual"
 
-#: contents/ui/config/ConfigMenus.qml:115
+#: contents/ui/config/ConfigMenus.qml:117
 msgid "Context menu size preset"
 msgstr "Perfil de tamaño del menú contextual"
 
-#: contents/ui/config/ConfigMenus.qml:206
+#: contents/ui/config/ConfigMenus.qml:208
 msgid "Context menu target width"
 msgstr "Anchura objetivo del menú contextual"
 
@@ -1426,7 +1432,7 @@ msgctxt "@info:accessibility"
 msgid "Current icon: %1"
 msgstr "Icono actual: %1"
 
-#: contents/ui/config/ConfigMenus.qml:39
+#: contents/ui/config/ConfigMenus.qml:41
 msgctxt "@item:inlistbox Context menu size"
 msgid "Custom"
 msgstr "Personalizado"
@@ -1679,7 +1685,7 @@ msgstr ""
 msgid "Edge direction:"
 msgstr "Dirección desde el borde:"
 
-#: contents/ui/components/DockContextActionsController.qml:98
+#: contents/ui/components/DockContextActionsController.qml:101
 msgctxt "@action:context"
 msgid "Edit item…"
 msgstr "Editar elemento…"
@@ -1931,7 +1937,7 @@ msgstr "Embellecer"
 msgid "Format:"
 msgstr "Formato:"
 
-#: contents/ui/config/ConfigMenus.qml:64
+#: contents/ui/config/ConfigMenus.qml:66
 msgctxt "@item:inlistbox Context menu entrance"
 msgid "From the bottom"
 msgstr "Desde abajo"
@@ -1940,17 +1946,17 @@ msgstr "Desde abajo"
 msgid "From the edge"
 msgstr "Desde el borde"
 
-#: contents/ui/config/ConfigMenus.qml:62
+#: contents/ui/config/ConfigMenus.qml:64
 msgctxt "@item:inlistbox Context menu entrance"
 msgid "From the left"
 msgstr "Desde la izquierda"
 
-#: contents/ui/config/ConfigMenus.qml:61
+#: contents/ui/config/ConfigMenus.qml:63
 msgctxt "@item:inlistbox Context menu entrance"
 msgid "From the right"
 msgstr "Desde la derecha"
 
-#: contents/ui/config/ConfigMenus.qml:63
+#: contents/ui/config/ConfigMenus.qml:65
 msgctxt "@item:inlistbox Context menu entrance"
 msgid "From the top"
 msgstr "Desde arriba"
@@ -1963,8 +1969,8 @@ msgstr "Icono de papelera llena:"
 msgid "Full screen"
 msgstr "Pantalla completa"
 
-#: contents/ui/components/DockContextActionsController.qml:119
-#: contents/ui/components/DockContextActionsController.qml:156
+#: contents/ui/components/DockContextActionsController.qml:132
+#: contents/ui/components/DockContextActionsController.qml:169
 #: contents/ui/config/components/PunchiMenuDialog.qml:16
 msgctxt "@option:punchimenu-mode"
 msgid "Full screen"
@@ -2118,7 +2124,7 @@ msgid "Icon reflections are unavailable in vertical panels."
 msgstr "Los reflejos de iconos no están disponibles en paneles verticales."
 
 #: contents/ui/config/ConfigFolderPopups.qml:338
-#: contents/ui/config/ConfigMenus.qml:166
+#: contents/ui/config/ConfigMenus.qml:168
 msgid "Icon size:"
 msgstr "Tamaño de los iconos:"
 
@@ -2335,7 +2341,7 @@ msgstr ""
 msgid "Labels:"
 msgstr "Etiquetas:"
 
-#: contents/ui/config/ConfigMenus.qml:38
+#: contents/ui/config/ConfigMenus.qml:40
 msgctxt "@item:inlistbox Context menu size"
 msgid "Large"
 msgstr "Grande"
@@ -2435,7 +2441,7 @@ msgctxt "@action:button"
 msgid "Log Out"
 msgstr "Cerrar sesión"
 
-#: contents/ui/config/ConfigMenus.qml:329
+#: contents/ui/config/ConfigMenus.qml:354
 msgid ""
 "Lower values make the preview-to-menu movement gentler; higher values make "
 "it faster. 100% follows the Plasma theme duration."
@@ -2499,7 +2505,7 @@ msgstr "Máximo de filas en carpetas:"
 msgid "Maximum length reached"
 msgstr "Se ha alcanzado la longitud máxima"
 
-#: contents/ui/config/ConfigMenus.qml:130
+#: contents/ui/config/ConfigMenus.qml:132
 msgid "Maximum visible context menu actions"
 msgstr "Máximo de acciones visibles del menú contextual"
 
@@ -2583,22 +2589,26 @@ msgctxt "@item:inlistbox Window preview background frame"
 msgid "Medium"
 msgstr "Medio"
 
-#: contents/ui/config/ConfigMenus.qml:351
+#: contents/ui/config/ConfigMenus.qml:284
+msgid "Menu actions:"
+msgstr "Acciones del menú:"
+
+#: contents/ui/config/ConfigMenus.qml:376
 msgid "Menu animation"
 msgstr "Animación de menús"
 
-#: contents/ui/config/ConfigMenus.qml:282
+#: contents/ui/config/ConfigMenus.qml:307
 msgid "Menu entrance:"
 msgstr "Entrada del menú:"
 
-#: contents/ui/config/ConfigMenus.qml:342
+#: contents/ui/config/ConfigMenus.qml:367
 msgid ""
 "Menu entries and per-item actions remain configured from the Items section."
 msgstr ""
 "Las entradas del menú y las acciones por elemento se siguen configurando "
 "desde la sección Elementos."
 
-#: contents/ui/components/DockContextActionsController.qml:123
+#: contents/ui/components/DockContextActionsController.qml:136
 msgctxt "@title:menu"
 msgid "Menu mode"
 msgstr "Modo del menú"
@@ -2607,15 +2617,15 @@ msgstr "Modo del menú"
 msgid "Menu mode:"
 msgstr "Modo del menú:"
 
-#: contents/ui/config/ConfigMenus.qml:108
+#: contents/ui/config/ConfigMenus.qml:110
 msgid "Menu size:"
 msgstr "Tamaño del menú:"
 
-#: contents/ui/config/ConfigMenus.qml:301
+#: contents/ui/config/ConfigMenus.qml:326
 msgid "Menu transition speed:"
 msgstr "Velocidad de transición del menú:"
 
-#: contents/ui/config/ConfigMenus.qml:194
+#: contents/ui/config/ConfigMenus.qml:196
 msgid "Menu width:"
 msgstr "Anchura del menú:"
 
@@ -2623,7 +2633,7 @@ msgstr "Anchura del menú:"
 msgid "Menus"
 msgstr "Menús"
 
-#: contents/ui/config/ConfigMenus.qml:222
+#: contents/ui/config/ConfigMenus.qml:224
 msgid ""
 "Menus use these target dimensions after morphing from a window preview. "
 "Screen limits can reduce the effective size safely."
@@ -2646,7 +2656,7 @@ msgstr "Minimizar la ventana"
 msgid "More window groups"
 msgstr "Más grupos de ventanas"
 
-#: contents/ui/config/ConfigMenus.qml:65
+#: contents/ui/config/ConfigMenus.qml:67
 msgctxt "@item:inlistbox Context menu entrance"
 msgid "Morph only"
 msgstr "Solo transformación"
@@ -2745,7 +2755,7 @@ msgstr ""
 "No se encontraron aplicaciones multimedia instaladas. La selección "
 "automática sigue disponible."
 
-#: contents/ui/main.qml:995
+#: contents/ui/main.qml:1016
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "No se encontraron archivos locales en este arrastre."
@@ -2782,14 +2792,14 @@ msgctxt "@option:punchimenu-mode"
 msgid "Normal"
 msgstr "Normal"
 
-#: contents/ui/components/DockContextActionsController.qml:116
-#: contents/ui/components/DockContextActionsController.qml:132
+#: contents/ui/components/DockContextActionsController.qml:129
+#: contents/ui/components/DockContextActionsController.qml:145
 msgctxt "@option:punchimenu-mode"
 msgid "Normal (anchored)"
 msgstr "Normal (anclado)"
 
-#: contents/ui/components/DockContextActionsController.qml:118
-#: contents/ui/components/DockContextActionsController.qml:144
+#: contents/ui/components/DockContextActionsController.qml:131
+#: contents/ui/components/DockContextActionsController.qml:157
 msgctxt "@option:punchimenu-mode"
 msgid "Normal (floating center)"
 msgstr "Normal (flotante central)"
@@ -2863,7 +2873,7 @@ msgstr ""
 "cerrada.Solo se aplica cuando este elemento del dock inicia una aplicación "
 "cerrada."
 
-#: contents/ui/main.qml:1006
+#: contents/ui/main.qml:1027
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Solo se pueden abrir archivos locales con una aplicación."
@@ -2893,8 +2903,8 @@ msgstr ""
 msgid "Only tasks on the current desktop will appear."
 msgstr "Solo aparecerán las tareas del escritorio actual."
 
-#: contents/ui/config/ConfigMenus.qml:244
-#: contents/ui/config/ConfigMenus.qml:261
+#: contents/ui/config/ConfigMenus.qml:246
+#: contents/ui/config/ConfigMenus.qml:263
 msgid ""
 "Only the context menu background changes; icons, controls and text remain "
 "fully opaque."
@@ -2933,7 +2943,7 @@ msgstr ""
 msgid "Opacity:"
 msgstr "Opacidad:"
 
-#: contents/ui/components/DockContextActionsController.qml:72
+#: contents/ui/components/DockContextActionsController.qml:75
 msgctxt "@action:context"
 msgid "Open"
 msgstr "Abrir %1"
@@ -3062,7 +3072,7 @@ msgstr "Eliminar permanentemente todos los elementos de la papelera"
 msgid "Permanently remove all trashed items"
 msgstr "Eliminar permanentemente todos los elementos de la papelera"
 
-#: contents/ui/components/DockContextActionsController.qml:85
+#: contents/ui/components/DockContextActionsController.qml:88
 msgctxt "@action:context"
 msgid "Pin to Dock"
 msgstr "Anclar al dock"
@@ -3163,7 +3173,7 @@ msgstr "Ventana emergente de vista previa:"
 msgid "Preview scale:"
 msgstr "Escala de la vista previa:"
 
-#: contents/ui/config/ConfigMenus.qml:313
+#: contents/ui/config/ConfigMenus.qml:338
 msgid "Preview to context menu transition speed"
 msgstr "Velocidad de transición de la vista previa al menú contextual"
 
@@ -3455,7 +3465,7 @@ msgstr "Pastilla redondeada"
 msgid "Rounded square"
 msgstr "Cuadrado redondeado"
 
-#: contents/ui/config/ConfigMenus.qml:138
+#: contents/ui/config/ConfigMenus.qml:140
 msgid "Row height:"
 msgstr "Altura de fila:"
 
@@ -3565,6 +3575,14 @@ msgstr "Forma:"
 msgid "Shaped"
 msgstr "Con forma"
 
+#: contents/ui/config/ConfigMenus.qml:296
+msgid "Show \"Configure Punchi Dock…\""
+msgstr "Mostrar «Configurar Punchi Dock…»"
+
+#: contents/ui/config/ConfigMenus.qml:285
+msgid "Show \"Edit item…\""
+msgstr "Mostrar «Editar elemento…»"
+
 #: contents/ui/config/ConfigAspect.qml:684
 msgid "Show a themed background behind items"
 msgstr "Mostrar un fondo temático detrás de los elementos"
@@ -3663,7 +3681,7 @@ msgstr "Mostrar sombras sutiles en el texto del dock"
 msgid "Show subtle shadows on dock labels"
 msgstr "Mostrar sombras sutiles en el texto del dock"
 
-#: contents/ui/config/ConfigMenus.qml:272
+#: contents/ui/config/ConfigMenus.qml:274
 msgid "Show subtle shadows on menu text"
 msgstr "Mostrar sombras sutiles en el texto de los menús"
 
@@ -3712,6 +3730,12 @@ msgstr ""
 "Muestra el fondo de realce de Plasma al pasar el puntero sobre un elemento o "
 "cuando su aplicación está activa."
 
+#: contents/ui/config/ConfigMenus.qml:298
+msgid "Shows the general Punchi Dock preferences action in dock context menus."
+msgstr ""
+"Muestra la acción de preferencias generales de Punchi Dock en los menús "
+"contextuales del dock."
+
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:223
 msgid ""
 "Shows the horizontal category carousel above applications in PunchiMenu "
@@ -3719,6 +3743,12 @@ msgid ""
 msgstr ""
 "Muestra el carrusel horizontal de categorías sobre las aplicaciones en "
 "PunchiMenu Normal."
+
+#: contents/ui/config/ConfigMenus.qml:287
+msgid "Shows the quick item editor action in dock context menus."
+msgstr ""
+"Muestra la acción del editor rápido de elementos en los menús contextuales del "
+"dock."
 
 #: contents/ui/components/MediaTransportControls.qml:49
 msgctxt "@action:button"
@@ -3827,7 +3857,7 @@ msgstr "Escala del texto:"
 
 #: contents/ui/config/ConfigAspect.qml:723
 #: contents/ui/config/ConfigFolderPopups.qml:485
-#: contents/ui/config/ConfigMenus.qml:271
+#: contents/ui/config/ConfigMenus.qml:273
 #: contents/ui/config/ConfigPopups.qml:400
 msgid "Text shadows:"
 msgstr "Sombras de texto:"
@@ -3954,12 +3984,12 @@ msgstr ""
 "La configuración del dock es demasiado grande. El tamaño máximo admitido es "
 "1 MiB."
 
-#: contents/ui/main.qml:1003
+#: contents/ui/main.qml:1024
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "El arrastre contiene una ubicación de archivo local no válida."
 
-#: contents/ui/main.qml:1012
+#: contents/ui/main.qml:1033
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
@@ -3967,7 +3997,7 @@ msgstr ""
 "seguridad.La lista de archivos arrastrados es demasiado grande para abrirla "
 "de forma segura."
 
-#: contents/ui/main.qml:1017
+#: contents/ui/main.qml:1038
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "No se pudieron abrir los archivos arrastrados."
@@ -4097,7 +4127,7 @@ msgstr "Delgado"
 msgid "This action cannot be undone."
 msgstr "Esta acción no se puede deshacer."
 
-#: contents/ui/main.qml:1015
+#: contents/ui/main.qml:1036
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -4233,7 +4263,7 @@ msgctxt "@action:button"
 msgid "Undo Folder Change"
 msgstr "Deshacer cambio de carpeta"
 
-#: contents/ui/components/DockContextActionsController.qml:170
+#: contents/ui/components/DockContextActionsController.qml:183
 msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Desanclar del dock"
@@ -4295,7 +4325,7 @@ msgstr ""
 msgid "View:"
 msgstr "Vista:"
 
-#: contents/ui/config/ConfigMenus.qml:125
+#: contents/ui/config/ConfigMenus.qml:127
 msgid "Visible actions:"
 msgstr "Acciones visibles:"
 
@@ -4461,7 +4491,7 @@ msgstr "Escribir una nota rápida editable"
 msgid "Write a quick note"
 msgstr "Escribir una nota rápida"
 
-#: contents/ui/main.qml:999
+#: contents/ui/main.qml:1020
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Puede abrir hasta %1 archivos locales a la vez."

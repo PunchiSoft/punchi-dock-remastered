@@ -483,6 +483,43 @@ def main() -> int:
         "Plasmoid.configuration.menuTextShadowsEnabled === true",
         "Runtime menu text shadows must remain opt-in",
     )
+    require(
+        config_schema,
+        '<entry name="showEditDockItemAction" type="Bool">\n'
+        "      <default>true</default>",
+        "showEditDockItemAction must default to true in schema",
+    )
+    require(
+        config_schema,
+        '<entry name="showConfigureDockAction" type="Bool">\n'
+        "      <default>true</default>",
+        "showConfigureDockAction must default to true in schema",
+    )
+    require(
+        main_qml,
+        "showEditDockItemAction: Plasmoid.configuration.showEditDockItemAction !== false",
+        "Runtime edit dock item action must bind to configuration",
+    )
+    require(
+        main_qml,
+        "showConfigureDockAction: Plasmoid.configuration.showConfigureDockAction !== false",
+        "Runtime configure dock action must bind to configuration",
+    )
+    require(
+        config_menus,
+        "property alias cfg_showEditDockItemAction: showEditDockItemActionSwitch.checked",
+        "ConfigMenus must expose showEditDockItemAction alias",
+    )
+    require(
+        config_menus,
+        "property alias cfg_showConfigureDockAction: showConfigureDockActionSwitch.checked",
+        "ConfigMenus must expose showConfigureDockAction alias",
+    )
+    require(
+        config_menus,
+        "id: menuTextShadowsSwitch",
+        "ConfigMenus must use a switch for menu text shadows",
+    )
 
     print("Popup menu surface contracts are consistent")
     return 0

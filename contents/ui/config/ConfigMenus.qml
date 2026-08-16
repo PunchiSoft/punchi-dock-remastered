@@ -22,7 +22,9 @@ Item {
     property alias cfg_contextMenuWidth: contextMenuWidthSlider.value
     property string cfg_contextMenuTransitionDirection: "fromRight"
     property alias cfg_contextMenuBackgroundOpacityPercent: contextMenuBackgroundOpacitySlider.value
-    property alias cfg_menuTextShadowsEnabled: menuTextShadowsCheck.checked
+    property alias cfg_menuTextShadowsEnabled: menuTextShadowsSwitch.checked
+    property alias cfg_showEditDockItemAction: showEditDockItemActionSwitch.checked
+    property alias cfg_showConfigureDockAction: showConfigureDockActionSwitch.checked
     property alias cfg_menuAnimation: menuAnimationSettings.animationStyle
     property alias cfg_menuAnimationSpeedPercent: menuAnimationSettings.animationSpeedPercent
     property alias cfg_menuAnimationIntensity: menuAnimationSettings.animationIntensityPercent
@@ -266,11 +268,34 @@ Item {
             color: Kirigami.Theme.disabledTextColor
         }
 
-        Controls.CheckBox {
-            id: menuTextShadowsCheck
+        Controls.Switch {
+            id: menuTextShadowsSwitch
             Kirigami.FormData.label: i18n("Text shadows:")
             text: i18n("Show subtle shadows on menu text")
             Accessible.description: i18n("Applies to context menu headers, action labels and secondary details.")
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.interactiveCursorEnabled
+            }
+        }
+
+        Controls.Switch {
+            id: showEditDockItemActionSwitch
+            Kirigami.FormData.label: i18n("Menu actions:")
+            text: i18n("Show \"Edit item…\"")
+            Accessible.name: text
+            Accessible.description: i18n("Shows the quick item editor action in dock context menus.")
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.interactiveCursorEnabled
+            }
+        }
+
+        Controls.Switch {
+            id: showConfigureDockActionSwitch
+            text: i18n("Show \"Configure Punchi Dock…\"")
+            Accessible.name: text
+            Accessible.description: i18n("Shows the general Punchi Dock preferences action in dock context menus.")
 
             ConfigCursorBehavior {
                 cursorEnabled: page.interactiveCursorEnabled
