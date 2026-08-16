@@ -1295,6 +1295,7 @@ def main() -> int:
         "normalPanelGap",
         "normalWidthPercent",
         "normalHeightPercent",
+        "normalShowCategories",
         "normalFolderMaximumColumns",
         "normalFolderMaximumRows",
         "fullScreenFolderMaximumColumns",
@@ -1329,6 +1330,7 @@ def main() -> int:
     normal_settings_contract = (
         '"normalBlurEnabled", checked',
         '"normalBackgroundOpacityPercent",',
+        '"normalShowCategories", checked',
         '"normalFolderMaximumColumns", value',
         '"normalFolderMaximumRows", value',
         "visible: root.anchoredMode",

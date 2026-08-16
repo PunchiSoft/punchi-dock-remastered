@@ -93,6 +93,7 @@ FocusScope {
     }
     property var hiddenApplicationIds: []
     property bool revealHiddenApplications: false
+    property bool showCategories: true
     property bool favoriteLimitReached: false
     property bool menuOpen: false
     property bool applicationsLoading: false
@@ -113,6 +114,12 @@ FocusScope {
     property bool suppressSearchChange: false
     property int preferredApplicationIndexAfterRefresh: -1
     property var searchApplications: []
+
+    onShowCategoriesChanged: {
+        if (!showCategories && activeCategoryKey !== "All") {
+            selectCategory("All", i18nc("@title:category", "All Applications"), false)
+        }
+    }
 
     readonly property int columnCount: 6
     readonly property bool motionEnabled: Kirigami.Units.longDuration > 0
@@ -1892,7 +1899,8 @@ FocusScope {
                             && root.applicationViewActive
                         ? hiddenApplicationsButton : sessionButton
                     KeyNavigation.tab: root.applicationViewActive
-                        ? categoriesView : sessionButton
+                        ? (root.showCategories ? categoriesView : applicationsGrid)
+                        : sessionButton
                     KeyNavigation.left: hiddenApplicationsButton.visible
                             && root.applicationViewActive
                         ? hiddenApplicationsButton : sessionButton
@@ -1927,13 +1935,15 @@ FocusScope {
 
             Kirigami.Separator {
                 Layout.fillWidth: true
+                visible: root.showCategories && root.applicationViewActive
                 Accessible.ignored: true
             }
 
             Item {
                 Layout.fillWidth: true
-                Layout.preferredHeight: Kirigami.Units.gridUnit * 2.65
-                visible: root.applicationViewActive
+                Layout.preferredHeight: (root.showCategories && root.applicationViewActive)
+                    ? Kirigami.Units.gridUnit * 2.65 : 0
+                visible: root.showCategories && root.applicationViewActive
 
                 RowLayout {
                     anchors.fill: parent
@@ -2002,7 +2012,7 @@ FocusScope {
                         model: categoryModel
                         boundsBehavior: Flickable.StopAtBounds
                         keyNavigationWraps: false
-                        activeFocusOnTab: true
+                        activeFocusOnTab: root.showCategories && root.applicationViewActive
                         KeyNavigation.tab: applicationsGrid
                         KeyNavigation.backtab: btnClose
 
@@ -2211,7 +2221,7 @@ FocusScope {
                     interactive: !internalDragLayer.active
                     enabled: !root.applicationLaunchPending
                     keyNavigationWraps: false
-                    KeyNavigation.backtab: categoriesView
+                    KeyNavigation.backtab: root.showCategories ? categoriesView : btnClose
 
                     onActiveFocusChanged: {
                         if (activeFocus && root.applicationListingCount > 0) {
@@ -3128,6 +3138,7 @@ FocusScope {
                         backgroundOpacityPercent: Math.round(
                             root.safeBackgroundOpacity * 100)
                         showApplicationLabels: root.showApplicationLabels
+                        normalShowCategories: root.showCategories
                         hoverAnimation: root.hoverAnimation
                         sortApplicationsAlphabetically:
                             root.sortApplicationsAlphabetically

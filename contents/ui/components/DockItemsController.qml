@@ -311,6 +311,7 @@ Item {
             "normalPanelGap": true,
             "normalWidthPercent": true,
             "normalHeightPercent": true,
+            "normalShowCategories": true,
             "fullScreenFolderMaximumColumns": true,
             "fullScreenFolderMaximumRows": true
         }

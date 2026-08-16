@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS_DIR = PROJECT_ROOT / "Scripts"
+SCRIPTS_DIR = PROJECT_ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 SCRIPT_PATH = SCRIPTS_DIR / "qmllint_i18n_candidates.py"
 SPEC = importlib.util.spec_from_file_location("qmllint_i18n_candidates", SCRIPT_PATH)

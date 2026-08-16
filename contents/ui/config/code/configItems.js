@@ -776,6 +776,11 @@ function prunePunchiMenu(item) {
         item.normalHeightPercent)
     item.normalPanelGap = normalizedPunchiMenuNormalPanelGap(
         item.normalPanelGap)
+    if (item.normalShowCategories !== false) {
+        delete item.normalShowCategories
+    } else {
+        item.normalShowCategories = false
+    }
 }
 
 function pruneApp(item) {

@@ -260,6 +260,13 @@ PlasmoidItem {
             ? Math.max(0, Math.min(32, Math.round(requestedGap)))
             : 8
     }
+    readonly property bool configuredPunchiMenuNormalShowCategories: {
+        const item = configuredPunchiMenuItem
+        if (item && item.normalShowCategories !== undefined) {
+            return item.normalShowCategories !== false
+        }
+        return true
+    }
     signal taskStructureChanged()
 
     // Virtual desktop visibility.
@@ -840,6 +847,7 @@ PlasmoidItem {
                 normalPanelGap: root.configuredPunchiMenuNormalPanelGap
                 normalWidthPercent: root.configuredPunchiMenuNormalWidthPercent
                 normalHeightPercent: root.configuredPunchiMenuNormalHeightPercent
+                showCategories: root.configuredPunchiMenuNormalShowCategories
                 themeFrameLeftMargin: punchiMenuNormalDialog.themeFrameMargin("left")
                 themeFrameTopMargin: punchiMenuNormalDialog.themeFrameMargin("top")
                 themeFrameRightMargin: punchiMenuNormalDialog.themeFrameMargin("right")

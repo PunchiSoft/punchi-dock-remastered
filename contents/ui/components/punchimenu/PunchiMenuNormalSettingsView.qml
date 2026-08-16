@@ -14,6 +14,7 @@ PunchiMenuSettingsBase {
     id: root
 
     required property bool sortApplicationsAlphabetically
+    property bool normalShowCategories: true
 
     required property string normalPlacementMode
     required property int normalPanelGap
@@ -191,6 +192,16 @@ PunchiMenuSettingsBase {
                         Accessible.description: i18n("Shows application names below their icons in the application grid and Favorites.")
                         onToggled: root.settingChanged(
                             "showApplicationLabels", checked)
+                    }
+
+                    Controls.Switch {
+                        Kirigami.FormData.label: i18n("Categories bar:")
+                        text: i18n("Show category carousel")
+                        checked: root.normalShowCategories
+                        Accessible.name: text
+                        Accessible.description: i18n("Shows the horizontal category carousel above applications in PunchiMenu Normal.")
+                        onToggled: root.settingChanged(
+                            "normalShowCategories", checked)
                     }
 
                     GridLayout {

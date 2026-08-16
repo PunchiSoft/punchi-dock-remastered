@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SCRIPTS_ROOT = PROJECT_ROOT / "Scripts"
+SCRIPTS_ROOT = PROJECT_ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS_ROOT))
 SPEC = importlib.util.spec_from_file_location(
     "qmllint_debt_cycle", SCRIPTS_ROOT / "qmllint_debt_cycle.py"
