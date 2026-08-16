@@ -104,14 +104,24 @@ QtObject {
                 })
             }
             if (itemType === "punchimenu") {
-                const normalModeActive = String(item.menuMode || "fullScreen")
-                    === "normal"
+                const currentMode = String(item.menuMode || "normal")
+                const normalPlacement = String(item.normalPlacementMode || "anchored")
+                const isNormalAnchored = currentMode === "normal"
+                    && normalPlacement !== "centered"
+                const isNormalCentered = currentMode === "normal"
+                    && normalPlacement === "centered"
+                const isFullScreen = currentMode === "fullScreen"
+                const activeDetail = isNormalAnchored
+                    // qmllint disable unqualified
+                    ? i18nc("@option:punchimenu-mode", "Normal (anchored)")
+                    : isNormalCentered
+                        ? i18nc("@option:punchimenu-mode", "Normal (floating center)")
+                        : i18nc("@option:punchimenu-mode", "Full screen")
+                    // qmllint enable unqualified
                 itemActions.push({
                     // qmllint disable unqualified
                     "name": i18nc("@title:menu", "Menu mode"),
-                    "detail": normalModeActive
-                        ? i18nc("@option:punchimenu-mode", "Normal")
-                        : i18nc("@option:punchimenu-mode", "Full screen"),
+                    "detail": activeDetail,
                     // qmllint enable unqualified
                     "icon": "view-grid",
                     "kind": "submenu",
@@ -119,13 +129,26 @@ QtObject {
                     "children": [
                         {
                             // qmllint disable unqualified
-                            "name": i18nc("@option:punchimenu-mode", "Normal"),
+                            "name": i18nc("@option:punchimenu-mode", "Normal (anchored)"),
                             // qmllint enable unqualified
                             "icon": "view-list-icons",
                             "kind": "setPunchiMenuMode",
                             "enabled": true,
-                            "checked": normalModeActive,
+                            "checked": isNormalAnchored,
                             "mode": "normal",
+                            "placementMode": "anchored",
+                            "targetIndex": persistentIndex
+                        },
+                        {
+                            // qmllint disable unqualified
+                            "name": i18nc("@option:punchimenu-mode", "Normal (floating center)"),
+                            // qmllint enable unqualified
+                            "icon": "window-center",
+                            "kind": "setPunchiMenuMode",
+                            "enabled": true,
+                            "checked": isNormalCentered,
+                            "mode": "normal",
+                            "placementMode": "centered",
                             "targetIndex": persistentIndex
                         },
                         {
@@ -135,7 +158,7 @@ QtObject {
                             "icon": "view-fullscreen",
                             "kind": "setPunchiMenuMode",
                             "enabled": true,
-                            "checked": !normalModeActive,
+                            "checked": isFullScreen,
                             "mode": "fullScreen",
                             "targetIndex": persistentIndex
                         }
@@ -232,6 +255,10 @@ QtObject {
                 : null
             if (!targetItem || String(targetItem.type || "") !== "punchimenu") {
                 return false
+            }
+            if (action.placementMode) {
+                root.dockItemsController.setPunchiMenuValue(
+                    "normalPlacementMode", String(action.placementMode))
             }
             return root.dockItemsController.setPunchiMenuValue(
                 "menuMode", String(action.mode || "fullScreen"))
