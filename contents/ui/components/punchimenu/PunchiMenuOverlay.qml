@@ -990,7 +990,7 @@ FocusScope {
             Math.min(visibleApplications.length - 1, index))
         const targetPage = pageForApplication(currentApplicationIndex)
         if (targetPage !== pagesView.currentIndex) {
-            goToPage(targetPage)
+            pagesView.currentIndex = targetPage
         }
     }
 
@@ -1286,7 +1286,7 @@ FocusScope {
         }
     }
 
-    Keys.onPressed: function(event) {
+    function handleNavigationKey(event) {
         if (internalDragLayer.active) {
             if (event.key === Qt.Key_Escape || event.key === Qt.Key_Back) {
                 root.cancelInternalLayoutDrag()
@@ -1309,22 +1309,80 @@ FocusScope {
             }
             return
         }
-        if (event.key === Qt.Key_Escape) {
-            root.forceClose()
-            event.accepted = true
-        } else if (root.categoryGroupingActive) {
+
+        if (root.categoryGroupingActive) {
+            if (event.key === Qt.Key_Left) {
+                categorySectionsView.moveHorizontal(-1)
+                event.accepted = true
+            } else if (event.key === Qt.Key_Right) {
+                categorySectionsView.moveHorizontal(1)
+                event.accepted = true
+            } else if (event.key === Qt.Key_Up) {
+                categorySectionsView.moveVertical(-1)
+                event.accepted = true
+            } else if (event.key === Qt.Key_Down) {
+                categorySectionsView.moveVertical(1)
+                event.accepted = true
+            } else if (event.key === Qt.Key_PageUp) {
+                categorySectionsView.moveVertical(-3)
+                event.accepted = true
+            } else if (event.key === Qt.Key_PageDown) {
+                categorySectionsView.moveVertical(3)
+                event.accepted = true
+            } else if (event.key === Qt.Key_Home) {
+                categorySectionsView.selectFirstItem()
+                event.accepted = true
+            } else if (event.key === Qt.Key_End) {
+                categorySectionsView.selectLastItem()
+                event.accepted = true
+            } else if (event.key === Qt.Key_Menu
+                    || (event.key === Qt.Key_F10
+                        && (event.modifiers & Qt.ShiftModifier))) {
+                categorySectionsView.openCurrentContextMenu()
+                event.accepted = true
+            } else if (event.key === Qt.Key_Return
+                    || event.key === Qt.Key_Enter
+                    || event.key === Qt.Key_Space) {
+                categorySectionsView.launchCurrentItem()
+                event.accepted = true
+            }
             return
-        } else if (event.key === Qt.Key_Left) {
-            root.setCurrentApplication(root.currentApplicationIndex - 1)
+        }
+
+        if (event.key === Qt.Key_Left) {
+            if (root.currentApplicationIndex < 0) {
+                root.setCurrentApplication(0)
+            } else {
+                root.setCurrentApplication(root.currentApplicationIndex - 1)
+            }
             event.accepted = true
         } else if (event.key === Qt.Key_Right) {
-            root.setCurrentApplication(root.currentApplicationIndex + 1)
+            if (root.currentApplicationIndex < 0) {
+                root.setCurrentApplication(0)
+            } else {
+                root.setCurrentApplication(root.currentApplicationIndex + 1)
+            }
             event.accepted = true
         } else if (event.key === Qt.Key_Up) {
-            root.setCurrentApplication(root.currentApplicationIndex - root.gridColumns)
+            if (root.currentApplicationIndex < 0) {
+                root.setCurrentApplication(0)
+            } else if (root.currentApplicationIndex >= root.gridColumns) {
+                root.setCurrentApplication(root.currentApplicationIndex - root.gridColumns)
+            } else if (pagesView.currentIndex > 0) {
+                root.setCurrentApplication(root.currentApplicationIndex - root.gridColumns)
+            }
             event.accepted = true
         } else if (event.key === Qt.Key_Down) {
-            root.setCurrentApplication(root.currentApplicationIndex + root.gridColumns)
+            if (root.currentApplicationIndex < 0) {
+                root.setCurrentApplication(0)
+            } else if (root.currentApplicationIndex + root.gridColumns < root.visibleApplications.length) {
+                root.setCurrentApplication(root.currentApplicationIndex + root.gridColumns)
+            } else if (root.favoritesSectionVisible && favoritesView.count > 0) {
+                favoritesView.forceActiveFocus()
+                if (favoritesView.currentIndex < 0) {
+                    favoritesView.currentIndex = 0
+                }
+            }
             event.accepted = true
         } else if (event.key === Qt.Key_PageUp) {
             root.requestPageStep(-1)
@@ -1348,6 +1406,23 @@ FocusScope {
             root.launchApplicationAt(root.currentApplicationIndex)
             event.accepted = true
         }
+    }
+
+    Keys.onPressed: function(event) {
+        if (event.key === Qt.Key_Escape) {
+            root.forceClose()
+            event.accepted = true
+            return
+        }
+        if (event.text.length > 0 && event.text >= " " && !event.modifiers) {
+            searchField.forceActiveFocus()
+            searchField.text += event.text
+            searchField.cursorPosition = searchField.text.length
+            root.searchText = searchField.text
+            event.accepted = true
+            return
+        }
+        root.handleNavigationKey(event)
     }
 
     Shortcut {
@@ -1757,6 +1832,8 @@ FocusScope {
         display: PlasmaComponents.AbstractButton.IconOnly
         text: i18nc("@action:button", "Close")
         Accessible.name: text
+        KeyNavigation.tab: searchField
+        KeyNavigation.backtab: sessionButton
         background: PunchiMenuActionBackground {
             highlighted: closeButton.highlightedContent
             circular: true
@@ -1942,22 +2019,38 @@ FocusScope {
 
                         onTextEdited: root.searchText = text
 
-                        Keys.onDownPressed: function(event) {
-                            root.forceActiveFocus()
-                            if (root.currentApplicationIndex < 0
-                                    && root.visibleApplications.length > 0) {
-                                root.setCurrentApplication(0)
+                        Keys.onPressed: function(event) {
+                            if (event.key === Qt.Key_Escape) {
+                                if (text.length > 0) {
+                                    clear()
+                                    root.searchText = ""
+                                } else {
+                                    root.forceClose()
+                                }
+                                event.accepted = true
+                                return
                             }
-                            event.accepted = true
-                        }
-                        Keys.onEscapePressed: function(event) {
-                            if (text.length > 0) {
-                                clear()
-                                root.searchText = ""
-                            } else {
-                                root.forceClose()
+                            if (event.key === Qt.Key_Down
+                                    || event.key === Qt.Key_Up
+                                    || event.key === Qt.Key_PageUp
+                                    || event.key === Qt.Key_PageDown
+                                    || event.key === Qt.Key_Return
+                                    || event.key === Qt.Key_Enter) {
+                                root.handleNavigationKey(event)
+                                return
                             }
-                            event.accepted = true
+                            if (event.key === Qt.Key_Left) {
+                                if (text.length === 0 || cursorPosition === 0) {
+                                    root.handleNavigationKey(event)
+                                }
+                                return
+                            }
+                            if (event.key === Qt.Key_Right) {
+                                if (text.length === 0 || cursorPosition === text.length) {
+                                    root.handleNavigationKey(event)
+                                }
+                                return
+                            }
                         }
                     }
 
@@ -2133,7 +2226,10 @@ FocusScope {
                     ? settingsViewLoader.item
                     : root.sessionViewActive
                     && sessionViewLoader.item
-                    ? sessionViewLoader.item : closeButton
+                    ? sessionViewLoader.item
+                    : (root.favoritesSectionVisible && favoritesView.count > 0
+                        ? favoritesView
+                        : (root.categoryGroupingActive ? categorySectionsView : pagesView))
                 // qmllint enable incompatible-type
 
                 contentItem: Item {
@@ -2689,6 +2785,17 @@ FocusScope {
                 onFolderRenameRequested: function(folderId) {
                     folderSurface.beginRename(folderId)
                 }
+                onReturnToSearchRequested: function() {
+                    searchField.forceActiveFocus()
+                }
+                onBottomReached: {
+                    if (root.favoritesSectionVisible && favoritesView.count > 0) {
+                        favoritesView.forceActiveFocus()
+                        if (favoritesView.currentIndex < 0) {
+                            favoritesView.currentIndex = 0
+                        }
+                    }
+                }
             }
 
             Kirigami.WheelHandler {
@@ -3022,6 +3129,8 @@ FocusScope {
                     boundsBehavior: Flickable.StopAtBounds
                     keyNavigationWraps: false
                     activeFocusOnTab: root.favoritesSectionVisible
+                    KeyNavigation.tab: closeButton
+                    KeyNavigation.backtab: sessionButton
                     enabled: !root.applicationLaunchPending
 
                     onDraggingChanged: {
@@ -3055,27 +3164,44 @@ FocusScope {
                         }
                     }
 
-                    Keys.onUpPressed: function(event) {
-                        root.forceActiveFocus()
-                        event.accepted = true
-                    }
-                    Keys.onReturnPressed: function(event) {
-                        root.launchFavoriteAt(currentIndex)
-                        event.accepted = true
-                    }
-                    Keys.onEnterPressed: function(event) {
-                        root.launchFavoriteAt(currentIndex)
-                        event.accepted = true
-                    }
-                    Keys.onSpacePressed: function(event) {
-                        root.launchFavoriteAt(currentIndex)
-                        event.accepted = true
-                    }
                     Keys.onPressed: function(event) {
+                        if (event.key === Qt.Key_Escape) {
+                            root.forceClose()
+                            event.accepted = true
+                            return
+                        }
+                        if (event.key === Qt.Key_Up) {
+                            searchField.forceActiveFocus()
+                            if (root.categoryGroupingActive) {
+                                categorySectionsView.selectLastItem()
+                            } else {
+                                if (root.visibleApplications.length > 0) {
+                                    root.setCurrentApplication(root.visibleApplications.length - 1)
+                                }
+                            }
+                            event.accepted = true
+                            return
+                        }
+                        if (event.key === Qt.Key_Return
+                                || event.key === Qt.Key_Enter
+                                || event.key === Qt.Key_Space) {
+                            root.launchFavoriteAt(currentIndex)
+                            event.accepted = true
+                            return
+                        }
                         if (event.key === Qt.Key_Menu
                                 || (event.key === Qt.Key_F10
                                     && (event.modifiers & Qt.ShiftModifier))) {
                             event.accepted = root.openCurrentFavoriteContextMenu()
+                            return
+                        }
+                        if (event.text.length > 0 && event.text >= " " && !event.modifiers) {
+                            searchField.forceActiveFocus()
+                            searchField.text += event.text
+                            searchField.cursorPosition = searchField.text.length
+                            root.searchText = searchField.text
+                            event.accepted = true
+                            return
                         }
                     }
 

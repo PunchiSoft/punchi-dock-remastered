@@ -18,6 +18,8 @@ FocusScope {
     property string hoverAnimation: "pulse"
     property real iconScale: 1.0
     property real baseIconSize: Kirigami.Units.iconSizes.huge
+    property int selectedSectionIndex: -1
+    property int selectedItemIndex: -1
 
     readonly property real effectiveIconScale: Math.max(0.75,
         Math.min(1.5, Number(iconScale || 1.0)))
@@ -69,6 +71,8 @@ FocusScope {
     signal folderOpenRequested(string folderId)
     signal folderContextRequested(var sourceItem, var folder, real x, real y)
     signal folderRenameRequested(string folderId)
+    signal returnToSearchRequested()
+    signal bottomReached()
 
     function categoryLabel(categoryId) {
         switch (String(categoryId || "Other")) {
@@ -120,6 +124,208 @@ FocusScope {
         }
         return String(application.appIcon || application.icon
             || "application-x-executable")
+    }
+
+    function ensureItemVisible(sectionIndex, itemIndex) {
+        if (sectionIndex < 0 || sectionIndex >= sectionList.count) {
+            return
+        }
+        sectionList.positionViewAtIndex(sectionIndex, ListView.Contain)
+    }
+
+    function clearSelection() {
+        root.selectedSectionIndex = -1
+        root.selectedItemIndex = -1
+    }
+
+    function selectFirstItem() {
+        if (root.sections.length === 0) {
+            root.clearSelection()
+            return
+        }
+        for (let s = 0; s < root.sections.length; s++) {
+            const members = root.sections[s].members || []
+            if (members.length > 0) {
+                root.selectedSectionIndex = s
+                root.selectedItemIndex = 0
+                ensureItemVisible(s, 0)
+                return
+            }
+        }
+    }
+
+    function selectLastItem() {
+        if (root.sections.length === 0) {
+            root.clearSelection()
+            return
+        }
+        for (let s = root.sections.length - 1; s >= 0; s--) {
+            const members = root.sections[s].members || []
+            if (members.length > 0) {
+                root.selectedSectionIndex = s
+                root.selectedItemIndex = members.length - 1
+                ensureItemVisible(s, members.length - 1)
+                return
+            }
+        }
+    }
+
+    function moveHorizontal(step) {
+        if (root.sections.length === 0) {
+            return
+        }
+        if (root.selectedSectionIndex < 0 || root.selectedItemIndex < 0) {
+            selectFirstItem()
+            return
+        }
+        const s = root.selectedSectionIndex
+        const i = root.selectedItemIndex + step
+        const currentMembers = root.sections[s].members || []
+
+        if (step > 0) {
+            if (i < currentMembers.length) {
+                root.selectedItemIndex = i
+            } else {
+                let nextSection = s + 1
+                while (nextSection < root.sections.length
+                    && (root.sections[nextSection].members || []).length === 0) {
+                    nextSection++
+                }
+                if (nextSection < root.sections.length) {
+                    root.selectedSectionIndex = nextSection
+                    root.selectedItemIndex = 0
+                }
+            }
+        } else {
+            if (i >= 0) {
+                root.selectedItemIndex = i
+            } else {
+                let prevSection = s - 1
+                while (prevSection >= 0
+                    && (root.sections[prevSection].members || []).length === 0) {
+                    prevSection--
+                }
+                if (prevSection >= 0) {
+                    const prevMembers = root.sections[prevSection].members || []
+                    root.selectedSectionIndex = prevSection
+                    root.selectedItemIndex = Math.max(0, prevMembers.length - 1)
+                }
+            }
+        }
+        ensureItemVisible(root.selectedSectionIndex, root.selectedItemIndex)
+    }
+
+    function moveVertical(step) {
+        if (root.sections.length === 0) {
+            return
+        }
+        if (root.selectedSectionIndex < 0 || root.selectedItemIndex < 0) {
+            selectFirstItem()
+            return
+        }
+        const cols = root.columnCount
+        const s = root.selectedSectionIndex
+        const i = root.selectedItemIndex
+        const currentMembers = root.sections[s].members || []
+        const currentColumn = i % cols
+        const currentRow = Math.floor(i / cols)
+        const totalRows = Math.ceil(currentMembers.length / cols)
+
+        if (step > 0) {
+            const nextRowIndex = i + cols * step
+            if (nextRowIndex < currentMembers.length) {
+                root.selectedItemIndex = nextRowIndex
+            } else if (currentRow < totalRows - 1 && step === 1) {
+                root.selectedItemIndex = currentMembers.length - 1
+            } else {
+                let nextSection = s + 1
+                while (nextSection < root.sections.length
+                    && (root.sections[nextSection].members || []).length === 0) {
+                    nextSection++
+                }
+                if (nextSection < root.sections.length) {
+                    const nextMembers = root.sections[nextSection].members || []
+                    const targetIndex = Math.min(currentColumn,
+                        nextMembers.length - 1)
+                    root.selectedSectionIndex = nextSection
+                    root.selectedItemIndex = Math.max(0, targetIndex)
+                } else {
+                    root.bottomReached()
+                }
+            }
+        } else {
+            const prevRowIndex = i + cols * step
+            if (prevRowIndex >= 0) {
+                root.selectedItemIndex = prevRowIndex
+            } else {
+                if (s === 0) {
+                    root.selectedItemIndex = currentColumn
+                    ensureItemVisible(0, root.selectedItemIndex)
+                    return
+                }
+                let prevSection = s - 1
+                while (prevSection >= 0
+                    && (root.sections[prevSection].members || []).length === 0) {
+                    prevSection--
+                }
+                if (prevSection >= 0) {
+                    const prevMembers = root.sections[prevSection].members || []
+                    const prevTotalRows = Math.ceil(prevMembers.length / cols)
+                    const prevLastRowStart = (prevTotalRows - 1) * cols
+                    const targetIndex = Math.min(
+                        prevLastRowStart + currentColumn,
+                        prevMembers.length - 1)
+                    root.selectedSectionIndex = prevSection
+                    root.selectedItemIndex = Math.max(0, targetIndex)
+                }
+            }
+        }
+        ensureItemVisible(root.selectedSectionIndex, root.selectedItemIndex)
+    }
+
+    function launchCurrentItem() {
+        if (root.selectedSectionIndex < 0 || root.selectedItemIndex < 0) {
+            return
+        }
+        const section = root.sections[root.selectedSectionIndex]
+        if (!section) {
+            return
+        }
+        const members = section.members || []
+        const item = members[root.selectedItemIndex]
+        if (!item) {
+            return
+        }
+        if (section.folderSection) {
+            root.folderOpenRequested(String(item.folderId || ""))
+        } else {
+            const storageId = root.applicationStorageId(item)
+            if (storageId.length > 0) {
+                root.launchRequested(storageId)
+            }
+        }
+    }
+
+    function openCurrentContextMenu() {
+        if (root.selectedSectionIndex < 0 || root.selectedItemIndex < 0) {
+            return
+        }
+        const section = root.sections[root.selectedSectionIndex]
+        if (!section) {
+            return
+        }
+        const members = section.members || []
+        const item = members[root.selectedItemIndex]
+        if (!item) {
+            return
+        }
+        if (section.folderSection) {
+            root.folderContextRequested(null, item,
+                root.cellWidth / 2, root.cellHeight / 2)
+        } else {
+            root.applicationContextRequested(null, item,
+                root.cellWidth / 2, root.cellHeight / 2)
+        }
     }
 
     PunchiMenuIconMetrics {
@@ -216,7 +422,11 @@ FocusScope {
                             sectionDelegate.folderSection
                         readonly property bool isHiddenApplication:
                             !isFolder && Boolean(modelData.appHidden)
-                        readonly property bool highlighted: activeFocus
+                        readonly property bool isSelected:
+                            root.selectedSectionIndex === sectionDelegate.index
+                            && root.selectedItemIndex === launcherDelegate.index
+                        readonly property bool highlighted: isSelected
+                            || activeFocus
                             || (root.hoverEnabled
                                 && applicationPointer.containsMouse)
 
@@ -232,7 +442,7 @@ FocusScope {
                                 "Hidden from the application listing")
                             : i18nc("@info:accessible",
                                 "Launch this application")
-                        Accessible.focused: activeFocus
+                        Accessible.focused: isSelected || activeFocus
                         Accessible.onPressAction: launchApplication()
 
                         function launchApplication() {
@@ -257,7 +467,8 @@ FocusScope {
                                 .folderPreviewIcons || []
                             memberCount: Number(launcherDelegate.modelData
                                 .folderMemberCount || 0)
-                            selected: activeFocus || hovered
+                            selected: launcherDelegate.isSelected
+                                || activeFocus || hovered
                             motionEnabled: root.motionEnabled
                             requestedIconSize: root.iconSize
                             hoverAnimation: root.hoverAnimation
@@ -277,8 +488,10 @@ FocusScope {
                             visible: !launcherDelegate.isFolder
                             hovered: root.hoverEnabled
                                 && applicationPointer.containsMouse
-                            selected: launcherDelegate.activeFocus
-                            focused: launcherDelegate.activeFocus
+                            selected: launcherDelegate.isSelected
+                                || launcherDelegate.activeFocus
+                            focused: launcherDelegate.isSelected
+                                || launcherDelegate.activeFocus
                             pressed: applicationPointer.pressed
                             motionEnabled: root.motionEnabled
                             animationMode: root.hoverAnimation
@@ -358,6 +571,8 @@ FocusScope {
                             cursorShape: Qt.PointingHandCursor
 
                             onClicked: function(mouse) {
+                                root.selectedSectionIndex = sectionDelegate.index
+                                root.selectedItemIndex = launcherDelegate.index
                                 launcherDelegate.forceActiveFocus()
                                 if (mouse.button === Qt.RightButton) {
                                     root.applicationContextRequested(
