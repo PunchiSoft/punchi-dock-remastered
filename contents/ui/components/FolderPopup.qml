@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
@@ -166,6 +168,9 @@ Item {
             }
 
             delegate: Item {
+                id: appDelegate
+                required property var modelData
+
                 width: gridView.cellWidth
                 height: gridView.cellHeight
 
@@ -190,13 +195,13 @@ Item {
                     Kirigami.Icon {
                         Layout.preferredWidth: folderRoot.effectiveIconSize
                         Layout.preferredHeight: folderRoot.effectiveIconSize
-                        source: modelData.icon || "application-x-executable"
+                        source: (appDelegate.modelData && appDelegate.modelData.icon) ? appDelegate.modelData.icon : "application-x-executable"
                     }
                     Column {
                         Layout.fillWidth: true
                         visible: folderRoot.showItemLabels
                         PlasmaExtras.ShadowedLabel {
-                            text: modelData.name
+                            text: (appDelegate.modelData && appDelegate.modelData.name) ? appDelegate.modelData.name : ""
                             color: Kirigami.Theme.textColor
                             renderShadow: folderRoot.textShadowsEnabled
                             font.family: folderRoot.effectiveFontFamily
@@ -206,7 +211,7 @@ Item {
                             width: parent.width
                         }
                         PlasmaComponents.Label {
-                            text: modelData.command || ""
+                            text: (appDelegate.modelData && appDelegate.modelData.command) ? appDelegate.modelData.command : ""
                             font.family: folderRoot.effectiveFontFamily
                             font.pointSize: Math.max(8, folderRoot.effectiveFontSize - 1)
                             color: Kirigami.Theme.textColor
@@ -229,11 +234,11 @@ Item {
                         Layout.preferredWidth: folderRoot.effectiveIconSize
                         Layout.preferredHeight: folderRoot.effectiveIconSize
                         Layout.alignment: Qt.AlignCenter
-                        source: modelData.icon || "application-x-executable"
+                        source: (appDelegate.modelData && appDelegate.modelData.icon) ? appDelegate.modelData.icon : "application-x-executable"
                     }
                     PlasmaExtras.ShadowedLabel {
                         visible: folderRoot.showItemLabels
-                        text: modelData.name
+                        text: (appDelegate.modelData && appDelegate.modelData.name) ? appDelegate.modelData.name : ""
                         color: Kirigami.Theme.textColor
                         renderShadow: folderRoot.textShadowsEnabled
                         font.family: folderRoot.effectiveFontFamily
@@ -252,29 +257,26 @@ Item {
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
-                    Accessible.name: modelData.name
-                        || i18n("Application") // qmllint disable unqualified
-                    // The delegate model and owning popup are provided by the
-                    // GridView context and resolve correctly at runtime.
-                    // qmllint disable unqualified
+                    Accessible.name: (appDelegate.modelData && appDelegate.modelData.name)
+                        ? appDelegate.modelData.name
+                        : i18n("Application") // qmllint disable unqualified
                     onClicked: function(mouse) {
                         if (mouse.button === Qt.RightButton) {
-                            folderRoot.appContextMenuRequested(modelData)
+                            folderRoot.appContextMenuRequested(appDelegate.modelData)
                             return
                         }
-                        folderRoot.appLaunched(modelData)
+                        folderRoot.appLaunched(appDelegate.modelData)
                     }
-                    Keys.onReturnPressed: folderRoot.appLaunched(modelData)
-                    Keys.onSpacePressed: folderRoot.appLaunched(modelData)
+                    Keys.onReturnPressed: folderRoot.appLaunched(appDelegate.modelData)
+                    Keys.onSpacePressed: folderRoot.appLaunched(appDelegate.modelData)
                     Keys.onPressed: function(event) {
                         if (event.key === Qt.Key_Menu
                                 || (event.key === Qt.Key_F10
                                     && (event.modifiers & Qt.ShiftModifier))) {
-                            folderRoot.appContextMenuRequested(modelData)
+                            folderRoot.appContextMenuRequested(appDelegate.modelData)
                             event.accepted = true
                         }
                     }
-                    // qmllint enable unqualified
                 }
             }
         }

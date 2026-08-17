@@ -1,8 +1,6 @@
 import QtCore
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Controls as Controls
-import QtQuick.Dialogs
 import org.kde.kirigami as Kirigami
 import org.kde.iconthemes as KIconThemes
 import org.kde.plasma.plasmoid
@@ -11,7 +9,6 @@ import "../org/punchi/dock" as Punchi
 import "code/configItemsController.js" as ConfigItemsControllerJS
 import "code/configItems.js" as ConfigItemsJS
 import "code/configScripts.js" as ConfigScriptsJS
-import "code/items.js" as ItemsJS
 import "code/configItemsStateHelper.js" as StateHelper
 import "code/configItemsFormHelper.js" as FormHelper
 import "code/configItemsWorkflowHelper.js" as WorkflowHelper
@@ -23,7 +20,7 @@ import org.kde.kcmutils as KCM
 KCM.SimpleKCM {
     id: page
 
-    title: i18n("Items")
+    title: i18n("Items") // qmllint disable unqualified
     implicitWidth: layoutMetrics.pageImplicitWidth
 
     ConfigLayoutMetrics {
@@ -76,9 +73,11 @@ KCM.SimpleKCM {
         onApplicationDiscovered: function(application) {
             page.applyDiscoveredApplication(application)
         }
+        // qmllint disable unqualified
         onOperationFailed: function(operation, message) {
             mainView.showStatus(i18n("System operation failed: %1", message), Kirigami.MessageType.Error)
         }
+        // qmllint enable unqualified
     }
 
     Punchi.DockRuntimeService {
@@ -133,6 +132,7 @@ KCM.SimpleKCM {
         return instanceId === "default" ? "dock_items.json" : "dock_items_" + instanceId + ".json"
     }
 
+    // qmllint disable unqualified
     function timedItemName() {
         return selectedItemType === "calendar" ? i18n("Calendar") : i18n("Clock")
     }
@@ -173,6 +173,7 @@ KCM.SimpleKCM {
         }
         return selectedItemType === "calendar" ? i18n("Choose calendar color") : i18n("Choose clock color")
     }
+    // qmllint enable unqualified
 
     function timedColorValue() {
         if (timedColorTarget === "background") {
@@ -256,6 +257,7 @@ KCM.SimpleKCM {
         runtimeService.playSound(configuredSound, "trash-empty")
     }
 
+    // qmllint disable unqualified
     function availableFonts(includeEmpty) {
         var result = []
         if (includeEmpty) {
@@ -282,6 +284,7 @@ KCM.SimpleKCM {
     function displayFontName(value) {
         return ConfigItemsControllerJS.displayFontName(value, i18n("Automatic"))
     }
+    // qmllint enable unqualified
 
     function resetTimedColor(target) {
         if (target === "background") {
@@ -584,7 +587,7 @@ KCM.SimpleKCM {
 
     KIconThemes.IconDialog {
         id: iconPicker
-        title: i18n("Choose icon")
+        title: i18n("Choose icon") // qmllint disable unqualified
         iconSize: 48
         modality: Qt.WindowModal
         onAccepted: page.chooseIcon(iconName)
@@ -592,8 +595,8 @@ KCM.SimpleKCM {
 
     FolderPathDialog {
         id: containerFolderDialog
-        titleText: i18n("Choose folder")
-        onFolderChosen: page.setContainerFolder(path)
+        titleText: i18n("Choose folder") // qmllint disable unqualified
+        onFolderChosen: (path) => page.setContainerFolder(path)
     }
 
     ColorPaletteDialog {
@@ -602,9 +605,10 @@ KCM.SimpleKCM {
         width: Math.min(page.width - Kirigami.Units.largeSpacing * 2, Kirigami.Units.gridUnit * 24)
         currentColor: page.timedColorValue()
         fallbackColor: page.timedFallbackColor()
-        onColorChosen: page.applyTimedColor(color)
+        onColorChosen: (color) => page.applyTimedColor(color)
     }
 
+    // qmllint disable unqualified
     ActionDialog {
         id: actionDialog
         title: page.selectedConfigureTitle()
@@ -684,6 +688,7 @@ KCM.SimpleKCM {
         onRemoveActionRequested: page.removeAction()
         onActionFormChanged: page.applyActionForm()
     }
+    // qmllint enable unqualified
 
     TrashDialog {
         id: trashDialog
@@ -708,7 +713,7 @@ KCM.SimpleKCM {
 
     MediaPlayerDialog {
         id: mediaPlayerDialog
-        title: i18n("Configure media player")
+        title: i18n("Configure media player") // qmllint disable unqualified
         width: Math.min(page.width - Kirigami.Units.largeSpacing * 2,
             Kirigami.Units.gridUnit * 28)
         selectorWidth: layoutMetrics.selectorWidth
@@ -744,14 +749,16 @@ KCM.SimpleKCM {
         visible: false
     }
 
+    // qmllint disable unqualified
     SoundFileDialog {
         id: trashSoundFileDialog
         title: i18n("Choose sound")
         startFolder: "file://" + page.defaultTrashSoundFolder()
         audioFilesText: i18n("Audio files")
         allFilesText: i18n("All files")
-        onSoundChosen: page.setTrashEmptySound(path)
+        onSoundChosen: (path) => page.setTrashEmptySound(path)
     }
+    // qmllint enable unqualified
 
     ConfigItemsMainView {
         id: mainView

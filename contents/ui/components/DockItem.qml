@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
@@ -24,6 +26,7 @@ Item {
     readonly property string effectiveIndicatorPosition:
         indicatorPosition === "top" ? "top" : "bottom"
 
+    // qmllint disable unqualified
     readonly property string localizedItemName: {
         if (itemType === "trash" && itemName === "Trash") {
             return i18n("Trash")
@@ -39,6 +42,7 @@ Item {
         }
         return itemName
     }
+    // qmllint enable unqualified
 
     property int itemIndex: -1
     property int hoveredIndex: -1
@@ -455,7 +459,7 @@ Item {
     Timer {
         id: clockTimer
         interval: 1000
-        running: itemType === "calendar"
+        running: dockItemContainer.itemType === "calendar"
         repeat: true
         triggeredOnStart: true
         onTriggered: {
@@ -464,8 +468,8 @@ Item {
             var mm = String(date.getMinutes()).padStart(2, '0')
             var dd = String(date.getDate()).padStart(2, '0')
             var mo = String(date.getMonth() + 1).padStart(2, '0')
-            currentTime = hh + ":" + mm
-            currentDate = dd + "/" + mo
+            dockItemContainer.currentTime = hh + ":" + mm
+            dockItemContainer.currentDate = dd + "/" + mo
         }
     }
 
@@ -925,34 +929,34 @@ Item {
             id: itemIcon
             z: 1
             anchors.centerIn: parent
-            width: highQualityIconSize
-            height: highQualityIconSize
-            source: iconName
-            visible: itemType !== "calendar" && !separatorItem && !spacerItem
+            width: dockItemContainer.highQualityIconSize
+            height: dockItemContainer.highQualityIconSize
+            source: dockItemContainer.iconName
+            visible: dockItemContainer.itemType !== "calendar" && !dockItemContainer.separatorItem && !dockItemContainer.spacerItem
                 && !dockItemContainer.overflowItem
                 && !dockItemContainer.mediaItem
 
-            scale: highQualityIconScale * waveScale
+            scale: dockItemContainer.highQualityIconScale * dockItemContainer.waveScale
             transform: Translate {
-                x: hoverOffsetX
-                y: hoverOffsetY
+                x: dockItemContainer.hoverOffsetX
+                y: dockItemContainer.hoverOffsetY
             }
         }
 
         Column {
             id: calendarText
             anchors.centerIn: parent
-            visible: itemType === "calendar"
+            visible: dockItemContainer.itemType === "calendar"
             spacing: 1
 
-            scale: waveScale
+            scale: dockItemContainer.waveScale
             transform: Translate {
-                x: hoverOffsetX
-                y: hoverOffsetY
+                x: dockItemContainer.hoverOffsetX
+                y: dockItemContainer.hoverOffsetY
             }
 
             PlasmaExtras.ShadowedLabel {
-                text: currentTime
+                text: dockItemContainer.currentTime
                 renderShadow: dockItemContainer.calendarTextShadowsEnabled
                 font.pixelSize: Math.round(14 * dockItemContainer.timeTextScale)
                 font.weight: Font.Normal
@@ -960,7 +964,7 @@ Item {
             }
 
             PlasmaExtras.ShadowedLabel {
-                text: currentDate
+                text: dockItemContainer.currentDate
                 renderShadow: dockItemContainer.calendarTextShadowsEnabled
                 font.pixelSize: Math.round(9 * dockItemContainer.dateTextScale)
                 opacity: 0.68
@@ -988,19 +992,19 @@ Item {
             anchors.centerIn: parent
             width: dockItemContainer.iconSize
             height: dockItemContainer.iconSize
-            visible: itemType === "app"
-                && taskIndicatorCount > 0
-            count: taskIndicatorCount
-            active: taskIsActive
-            demandsAttention: taskDemandsAttention
-            type: indicatorType
-            position: effectiveIndicatorPosition
+            visible: dockItemContainer.itemType === "app"
+                && dockItemContainer.taskIndicatorCount > 0
+            count: dockItemContainer.taskIndicatorCount
+            active: dockItemContainer.taskIsActive
+            demandsAttention: dockItemContainer.taskDemandsAttention
+            type: dockItemContainer.indicatorType
+            position: dockItemContainer.effectiveIndicatorPosition
             customColor: dockItemContainer.indicatorColor.length > 0
                 ? dockItemContainer.indicatorColor
                 : "transparent"
-            thickness: indicatorThickness
+            thickness: dockItemContainer.indicatorThickness
             indicatorOpacity: dockItemContainer.indicatorOpacity
-            iconSize: iconSize
+            iconSize: dockItemContainer.iconSize
             transformOrigin: Item.Center
             scale: dockItemContainer.waveScale
             transform: Translate {
@@ -1012,9 +1016,9 @@ Item {
         WindowCountBadge {
             z: 3
             anchors.fill: parent
-            count: taskIndicatorCount
-            iconSize: iconSize
-            demandsAttention: taskDemandsAttention
+            count: dockItemContainer.taskIndicatorCount
+            iconSize: dockItemContainer.iconSize
+            demandsAttention: dockItemContainer.taskDemandsAttention
             badgeEnabled: dockItemContainer.windowCountBadgeEnabled
             groupingEnabled: dockItemContainer.windowGroupingEnabled
             position: dockItemContainer.windowCountBadgePosition
@@ -1080,7 +1084,7 @@ Item {
 
     PlasmaExtras.ShadowedLabel {
         id: persistentLabel
-        visible: showPersistentLabel && !separatorItem && !spacerItem
+        visible: dockItemContainer.showPersistentLabel && !dockItemContainer.separatorItem && !dockItemContainer.spacerItem
             && !dockItemContainer.mediaItem
         anchors.top: visualArea.bottom
         anchors.topMargin: 2
@@ -1090,8 +1094,8 @@ Item {
         elide: Text.ElideRight
         text: dockItemContainer.localizedItemName
         renderShadow: dockItemContainer.textShadowsEnabled
-        font.pixelSize: labelFontSize
-        opacity: mouseArea.containsMouse || taskIsActive ? 1.0 : 0.88
+        font.pixelSize: dockItemContainer.labelFontSize
+        opacity: mouseArea.containsMouse || dockItemContainer.taskIsActive ? 1.0 : 0.88
         transform: Translate {
             x: dockItemContainer.verticalPanelMode
                 ? 0.0 : dockItemContainer.waveMainAxisShift
@@ -1197,9 +1201,9 @@ Item {
         id: mouseArea
         anchors.fill: parent
         enabled: !dockItemContainer.mediaItem
-        hoverEnabled: !separatorItem && !spacerItem
+        hoverEnabled: !dockItemContainer.separatorItem && !dockItemContainer.spacerItem
         activeFocusOnTab: true
-        Accessible.role: separatorItem || spacerItem
+        Accessible.role: dockItemContainer.separatorItem || dockItemContainer.spacerItem
             ? Accessible.StaticText : Accessible.Button
         Accessible.name: dockItemContainer.localizedItemName
         // qmllint disable unqualified
@@ -1241,15 +1245,15 @@ Item {
                 : ""
         }
         // qmllint enable unqualified
-        acceptedButtons: separatorItem || spacerItem
+        acceptedButtons: dockItemContainer.separatorItem || dockItemContainer.spacerItem
             ? Qt.NoButton
-            : ((itemType === "trash" || supportsContextMenu)
+            : ((dockItemContainer.itemType === "trash" || dockItemContainer.supportsContextMenu)
                 ? Qt.LeftButton | Qt.RightButton
                 : Qt.LeftButton)
         
         onContainsMouseChanged: {
-            if (separatorItem || spacerItem || itemType === "calendar") {
-                if (!containsMouse && dockItemContainer.layoutController.hoveredIndex === itemIndex) {
+            if (dockItemContainer.separatorItem || dockItemContainer.spacerItem || dockItemContainer.itemType === "calendar") {
+                if (!containsMouse && dockItemContainer.layoutController.hoveredIndex === dockItemContainer.itemIndex) {
                     dockItemContainer.layoutController.hoveredIndex = -1
                     dockItemContainer.layoutController.mouseOffset = 0.0
                 }
@@ -1257,11 +1261,11 @@ Item {
             }
             if (containsMouse) {
                 dockItemContainer.restartSelectionPulse()
-                dockItemContainer.layoutController.hoveredIndex = itemIndex
+                dockItemContainer.layoutController.hoveredIndex = dockItemContainer.itemIndex
                 dockItemContainer.updateWavePointer(
                     mouseArea.mouseX, mouseArea.mouseY)
                 dockItemContainer.hoverEntered(dockItemContainer)
-            } else if (dockItemContainer.layoutController.hoveredIndex === itemIndex) {
+            } else if (dockItemContainer.layoutController.hoveredIndex === dockItemContainer.itemIndex) {
                 dockItemContainer.resetSelectionPulse()
                 if (!dockItemContainer.shouldKeepWaveActiveAcrossLayoutGap()) {
                     dockItemContainer.layoutController.hoveredIndex = -1
@@ -1275,7 +1279,7 @@ Item {
         }
         
         onPositionChanged: function(mouse) {
-            if (separatorItem || spacerItem || itemType === "calendar") {
+            if (dockItemContainer.separatorItem || dockItemContainer.spacerItem || dockItemContainer.itemType === "calendar") {
                 return
             }
             if (containsMouse) {
@@ -1290,23 +1294,23 @@ Item {
         }
         
         onClicked: function(mouse) {
-            if (separatorItem || spacerItem) {
+            if (dockItemContainer.separatorItem || dockItemContainer.spacerItem) {
                 return
             }
             if (mouse.button === Qt.RightButton) {
                 return
             }
-            if (clickEffect === "pulse") {
+            if (dockItemContainer.clickEffect === "pulse") {
                 clickPulseAnimation.restart()
-            } else if (clickEffect === "bounce") {
+            } else if (dockItemContainer.clickEffect === "bounce") {
                 clickBounceAnimation.restart()
-            } else if (clickEffect === "press") {
+            } else if (dockItemContainer.clickEffect === "press") {
                 clickPressAnimation.restart()
             }
-            dockItemContainer.itemClicked(itemCommand)
+            dockItemContainer.itemClicked(dockItemContainer.itemCommand)
         }
-        Keys.onReturnPressed: if (!separatorItem && !spacerItem) dockItemContainer.itemClicked(itemCommand)
-        Keys.onSpacePressed: if (!separatorItem && !spacerItem) dockItemContainer.itemClicked(itemCommand)
+        Keys.onReturnPressed: if (!dockItemContainer.separatorItem && !dockItemContainer.spacerItem) dockItemContainer.itemClicked(dockItemContainer.itemCommand)
+        Keys.onSpacePressed: if (!dockItemContainer.separatorItem && !dockItemContainer.spacerItem) dockItemContainer.itemClicked(dockItemContainer.itemCommand)
         Keys.onPressed: function(event) {
             if (dockItemContainer.mediaHoverControlsEnabled
                     && event.key === Qt.Key_M
@@ -1315,7 +1319,7 @@ Item {
                 event.accepted = true
                 return
             }
-            if ((itemType === "trash" || supportsContextMenu) && (event.key === Qt.Key_Menu
+            if ((dockItemContainer.itemType === "trash" || dockItemContainer.supportsContextMenu) && (event.key === Qt.Key_Menu
                     || (event.key === Qt.Key_F10 && (event.modifiers & Qt.ShiftModifier)))) {
                 dockItemContainer.contextMenuRequested(dockItemContainer, true)
                 event.accepted = true

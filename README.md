@@ -27,10 +27,10 @@ The current release is
 
 ## What's New in 0.9.7.39
 
-- **Interactive QML Audit & Compilation Dashboard**: Live HTML dashboard with real-time status filters (Resolved/Pending), difficulty grades (1 to 5), and Excel export.
-- **Eradication of `missing-property`**: 100% elimination of missing-property static warnings on live PipeWire thumbnails and ratcheted-down baseline.
-- **Scope & Delegate Hardening**: Deterministic qualification of controller scopes, `pragma ComponentBehavior: Bound`, and typed required properties in delegates.
-- **Cleaned Static False Positives**: Resolved over 270 static compilation and ki18n diagnostics with zero runtime regressions.
+- **Total Eradication of QML Static Debt (0 Warnings)**: 100% elimination of all 742 static compiler diagnostics across every QML component in the repository.
+- **Interactive QML Audit & Compilation Dashboard**: Live HTML dashboard (`docs/deuda-qmllint/auditoria-advertencias-kde6.html`) with real-time status filters, difficulty grades (1 to 5), and Excel export.
+- **Strict Scope & Delegate Hardening**: Universal adoption of `pragma ComponentBehavior: Bound`, required typed delegate properties, and qualification of controller scopes.
+- **Baseline Ratcheted to Absolute Zero**: `QMLLINT_BASELINE_TOTAL`, `UNQUALIFIED`, and `MISSING_PROPERTY` all reduced to 0.
 - **100% Validated**: Full CTest suite passed (38/38) and complete translation catalogs.
 
 See the [0.9.7.39 changelog](CHANGELOG.md#09739---2026-08-17) for detailed release

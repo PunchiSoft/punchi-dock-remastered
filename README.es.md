@@ -27,10 +27,10 @@ La versión actual es
 
 ## Novedades de la versión 0.9.7.39
 
-- **Dashboard Interactivo y Matriz de Auditoría QML**: Panel HTML en tiempo real con filtros por estado (Resueltas/Pendientes), 5 grados de dificultad y exportación a Excel.
-- **Erradicación de `missing-property`**: Eliminación total del 100% de advertencias en miniaturas PipeWire y blindaje del baseline a 0.
-- **Calificación de Ámbitos y Delegados**: Calificación estricta de controladores (`root.controller`), `pragma ComponentBehavior: Bound` y propiedades requeridas en delegados.
-- **Saneamiento de Falsos Positivos**: Más de 270 firmas estáticas de compilación y ki18n depuradas sin riesgo de regresión.
+- **Erradicación Total de Deuda QML (0 Advertencias)**: 100% de eliminación de las 742 advertencias estáticas de compilación en todos los componentes QML del repositorio.
+- **Dashboard Interactivo y Matriz de Auditoría QML**: Panel HTML en tiempo real (`docs/deuda-qmllint/auditoria-advertencias-kde6.html`) con filtros por estado, 5 grados de dificultad y exportación a Excel.
+- **Calificación Estricta de Ámbitos y Delegados**: Adopción universal de `pragma ComponentBehavior: Bound`, propiedades requeridas tipadas en delegados y calificación de controladores.
+- **Baseline Blindado a Cero Absoluto**: Reducción a 0 de `QMLLINT_BASELINE_TOTAL`, `UNQUALIFIED` y `MISSING_PROPERTY`.
 - **100% Validado**: Suite CTest completa aprobada (38/38) y catálogos de traducción al 100%.
 
 Consulta el [changelog de la versión 0.9.7.39](CHANGELOG.md#09739---2026-08-17) para

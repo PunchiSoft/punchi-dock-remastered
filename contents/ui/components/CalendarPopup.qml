@@ -232,9 +232,9 @@ Item {
                         activeFocusOnTab: true
                         Accessible.role: Accessible.Button
                         Accessible.name: i18n("Previous month") // qmllint disable unqualified
-                        onClicked: prevMonth()
-                        Keys.onReturnPressed: prevMonth()
-                        Keys.onSpacePressed: prevMonth()
+                        onClicked: calendarRoot.prevMonth()
+                        Keys.onReturnPressed: calendarRoot.prevMonth()
+                        Keys.onSpacePressed: calendarRoot.prevMonth()
                     }
                 }
 
@@ -259,9 +259,9 @@ Item {
                         activeFocusOnTab: true
                         Accessible.role: Accessible.Button
                         Accessible.name: i18n("Go to today") // qmllint disable unqualified
-                        onClicked: goToToday()
-                        Keys.onReturnPressed: goToToday()
-                        Keys.onSpacePressed: goToToday()
+                        onClicked: calendarRoot.goToToday()
+                        Keys.onReturnPressed: calendarRoot.goToToday()
+                        Keys.onSpacePressed: calendarRoot.goToToday()
                     }
                 }
 
@@ -286,9 +286,9 @@ Item {
                         activeFocusOnTab: true
                         Accessible.role: Accessible.Button
                         Accessible.name: i18n("Next month") // qmllint disable unqualified
-                        onClicked: nextMonth()
-                        Keys.onReturnPressed: nextMonth()
-                        Keys.onSpacePressed: nextMonth()
+                        onClicked: calendarRoot.nextMonth()
+                        Keys.onReturnPressed: calendarRoot.nextMonth()
+                        Keys.onSpacePressed: calendarRoot.nextMonth()
                     }
                 }
 
@@ -376,6 +376,7 @@ Item {
             Repeater {
                 model: calendarRoot.dayNames
                 delegate: Item {
+                    id: dayHeaderDelegate
                     required property string modelData
 
                     Layout.fillWidth: true
@@ -383,7 +384,7 @@ Item {
 
                     PlasmaComponents.Label {
                         anchors.centerIn: parent
-                        text: modelData
+                        text: dayHeaderDelegate.modelData
                         font.family: Kirigami.Theme.smallFont.family
                         font.pixelSize: Math.max(8, Math.round(10 * calendarRoot.effectivePopupScale))
                         font.weight: Font.DemiBold
@@ -406,6 +407,7 @@ Item {
             Repeater {
                 model: calendarCellsModel
                 delegate: Item {
+                    id: cellDelegate
                     required property bool isWeekNumber
                     required property int weekNumber
                     required property int dayNumber
@@ -417,7 +419,7 @@ Item {
 
                     // Vertical line for week column separation.
                     Rectangle {
-                        visible: isWeekNumber
+                        visible: cellDelegate.isWeekNumber
                         anchors.right: parent.right
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
@@ -434,33 +436,33 @@ Item {
                         radius: calendarRoot.scaledCellRadius
                         
                         color: {
-                            if (isWeekNumber) return "transparent"
-                            if (isToday) return Kirigami.Theme.highlightColor
+                            if (cellDelegate.isWeekNumber) return "transparent"
+                            if (cellDelegate.isToday) return Kirigami.Theme.highlightColor
                             if (cellMouse.containsMouse) return Kirigami.Theme.hoverColor
                             return "transparent"
                         }
                         
                         PlasmaComponents.Label {
                             anchors.centerIn: parent
-                            text: isWeekNumber ? weekNumber : dayNumber
-                            font.family: isWeekNumber ? Kirigami.Theme.smallFont.family : Kirigami.Theme.defaultFont.family
-                            font.pixelSize: isWeekNumber
+                            text: cellDelegate.isWeekNumber ? cellDelegate.weekNumber : cellDelegate.dayNumber
+                            font.family: cellDelegate.isWeekNumber ? Kirigami.Theme.smallFont.family : Kirigami.Theme.defaultFont.family
+                            font.pixelSize: cellDelegate.isWeekNumber
                                 ? Math.max(8, Math.round(9 * calendarRoot.effectivePopupScale))
                                 : Math.max(10, Math.round(13 * calendarRoot.effectivePopupScale))
-                            font.weight: isToday && !isWeekNumber ? Font.Bold : Font.Normal
+                            font.weight: cellDelegate.isToday && !cellDelegate.isWeekNumber ? Font.Bold : Font.Normal
                             
-                            color: isToday && !isWeekNumber
+                            color: cellDelegate.isToday && !cellDelegate.isWeekNumber
                                 ? Kirigami.Theme.highlightedTextColor
                                 : Kirigami.Theme.textColor
-                            opacity: isWeekNumber ? 0.35 : (isToday || isCurrentMonth ? 1.0 : 0.25)
+                            opacity: cellDelegate.isWeekNumber ? 0.35 : (cellDelegate.isToday || cellDelegate.isCurrentMonth ? 1.0 : 0.25)
                         }
 
                         MouseArea {
                             id: cellMouse
                             anchors.fill: parent
-                            enabled: !isWeekNumber
+                            enabled: !cellDelegate.isWeekNumber
                             hoverEnabled: true
-                            cursorShape: isWeekNumber ? Qt.ArrowCursor : Qt.PointingHandCursor
+                            cursorShape: cellDelegate.isWeekNumber ? Qt.ArrowCursor : Qt.PointingHandCursor
                         }
                     }
                 }

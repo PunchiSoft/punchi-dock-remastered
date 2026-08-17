@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import org.kde.plasma.plasmoid
@@ -1135,6 +1137,7 @@ PlasmoidItem {
 
     fullRepresentation: Item {
         id: mainContainer
+        property bool contextMenuVisible: false
         // fullRepresentation is compiled as a nested component, so qmllint
         // cannot resolve accesses to the owning PlasmoidItem even though
         // Plasma provides that lexical context at runtime.
@@ -1522,38 +1525,40 @@ PlasmoidItem {
                     model: dockItemsController.dockItems
                     delegate: DockItem {
                         id: dockItemDelegate
+                        required property var modelData
+                        required property int index
                         layoutController: dockLayout
-                        itemIndex: index
+                        itemIndex: dockItemDelegate.index
                         hoveredIndex: dockLayout.hoveredIndex
                         inPanel: root.inPanel
                         panelLocation: dockGeometry.effectivePanelLocation
                         iconSize: dockGeometry.effectiveIconSize
                         // The media item's text preference belongs to modelData.
                         // qmllint disable unqualified
-                        mediaMainAxisLength: dockGeometry.mediaItemMainAxisLengthForItem(modelData)
+                        mediaMainAxisLength: dockGeometry.mediaItemMainAxisLengthForItem(dockItemDelegate.modelData)
                         // qmllint enable unqualified
-                        mediaController: modelData.type === "media"
+                        mediaController: dockItemDelegate.modelData.type === "media"
                             ? dockMediaController
                             : null
-                        mediaLaunchAvailable: modelData.type === "media"
-                            && String(modelData.defaultPlayerStorageId || "").length > 0
-                        mediaDefaultPlayerName: modelData.type === "media"
-                            ? String(modelData.defaultPlayerName || "")
+                        mediaLaunchAvailable: dockItemDelegate.modelData.type === "media"
+                            && String(dockItemDelegate.modelData.defaultPlayerStorageId || "").length > 0
+                        mediaDefaultPlayerName: dockItemDelegate.modelData.type === "media"
+                            ? String(dockItemDelegate.modelData.defaultPlayerName || "")
                             : ""
-                        mediaDefaultPlayerIcon: modelData.type === "media"
-                            ? String(modelData.defaultPlayerIcon || "")
+                        mediaDefaultPlayerIcon: dockItemDelegate.modelData.type === "media"
+                            ? String(dockItemDelegate.modelData.defaultPlayerIcon || "")
                             : ""
                         // The delegate model supplies modelData at runtime.
                         // qmllint disable unqualified
-                        mediaTextMode: modelData.type === "media"
-                            ? String(modelData.mediaTextMode || "automatic")
+                        mediaTextMode: dockItemDelegate.modelData.type === "media"
+                            ? String(dockItemDelegate.modelData.mediaTextMode || "automatic")
                             : "automatic"
-                        mediaDisplayMode: modelData.type === "media"
-                            ? String(modelData.mediaDisplayMode || "normal")
+                        mediaDisplayMode: dockItemDelegate.modelData.type === "media"
+                            ? String(dockItemDelegate.modelData.mediaDisplayMode || "normal")
                             : "normal"
-                        mediaAutoCollapseDelaySeconds: modelData.type === "media"
-                            ? Number(modelData.mediaAutoCollapseDelaySeconds === undefined
-                                ? 3 : modelData.mediaAutoCollapseDelaySeconds)
+                        mediaAutoCollapseDelaySeconds: dockItemDelegate.modelData.type === "media"
+                            ? Number(dockItemDelegate.modelData.mediaAutoCollapseDelaySeconds === undefined
+                                ? 3 : dockItemDelegate.modelData.mediaAutoCollapseDelaySeconds)
                             : 3
                         dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                         mediaMotionEnabled: dockConfig.menuAnimationStyle !== "none"
@@ -1575,8 +1580,8 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         positionTransitionEnabled: dockItemsController.itemTransitionActive
                         animateEntry: {
-                            const appId = taskController.dockItemApplicationId(modelData)
-                            const launcherUrl = taskController.dockItemLauncherUrl(modelData)
+                            const appId = taskController.dockItemApplicationId(dockItemDelegate.modelData)
+                            const launcherUrl = taskController.dockItemLauncherUrl(dockItemDelegate.modelData)
                             return (dockItemsController.recentlyTransitionedAppId.length > 0
                                     && appId === dockItemsController.recentlyTransitionedAppId)
                                 || (dockItemsController.recentlyTransitionedLauncherUrl.length > 0
@@ -1586,7 +1591,7 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         showPersistentLabel: dockConfig.dockShowLabels
                         textShadowsEnabled: dockConfig.dockTextShadowsEnabled
-                        calendarTextShadowsEnabled: modelData.calendarTextShadowsEnabled !== false
+                        calendarTextShadowsEnabled: dockItemDelegate.modelData.calendarTextShadowsEnabled !== false
                         labelFontSize: dockConfig.dockLabelFontSize
                         indicatorType: dockConfig.dockIndicatorType
                         indicatorPosition: dockConfig.dockIndicatorPosition
@@ -1612,22 +1617,22 @@ PlasmoidItem {
                         readonly property int taskRevision: root.taskVisualRevision
                         readonly property var taskState: {
                             taskRevision
-                            return taskController.taskStateForDockItem(modelData)
+                            return taskController.taskStateForDockItem(dockItemDelegate.modelData)
                         }
                         
-                        itemType: modelData.type || "app"
-                        timeTextScale: modelData.timeTextScale === undefined ? (modelData.textScale === undefined ? 1.0 : modelData.textScale) : modelData.timeTextScale
-                        dateTextScale: modelData.dateTextScale === undefined ? (modelData.textScale === undefined ? 1.0 : modelData.textScale) : modelData.dateTextScale
-                        separatorStyleSetting: modelData.separatorStyle || "line"
-                        separatorThicknessSetting: modelData.separatorThickness === undefined ? 2 : modelData.separatorThickness
-                        separatorLengthRatioSetting: modelData.separatorLengthRatio === undefined ? 0.72 : modelData.separatorLengthRatio
-                        separatorOpacitySetting: modelData.separatorOpacity === undefined ? 0.34 : modelData.separatorOpacity
-                        separatorGlowSetting: modelData.separatorGlowEnabled === true
-                        iconName: modelData.type === "trash" && modelData.showState !== false
-                            ? (dockItemsController.trashHasItems ? (modelData.fullIcon || "user-trash-full") : (modelData.icon || "user-trash"))
-                            : (modelData.icon || "")
-                        itemName: modelData.name || ""
-                        itemCommand: modelData.command || ""
+                        itemType: dockItemDelegate.modelData.type || "app"
+                        timeTextScale: dockItemDelegate.modelData.timeTextScale === undefined ? (dockItemDelegate.modelData.textScale === undefined ? 1.0 : dockItemDelegate.modelData.textScale) : dockItemDelegate.modelData.timeTextScale
+                        dateTextScale: dockItemDelegate.modelData.dateTextScale === undefined ? (dockItemDelegate.modelData.textScale === undefined ? 1.0 : dockItemDelegate.modelData.textScale) : dockItemDelegate.modelData.dateTextScale
+                        separatorStyleSetting: dockItemDelegate.modelData.separatorStyle || "line"
+                        separatorThicknessSetting: dockItemDelegate.modelData.separatorThickness === undefined ? 2 : dockItemDelegate.modelData.separatorThickness
+                        separatorLengthRatioSetting: dockItemDelegate.modelData.separatorLengthRatio === undefined ? 0.72 : dockItemDelegate.modelData.separatorLengthRatio
+                        separatorOpacitySetting: dockItemDelegate.modelData.separatorOpacity === undefined ? 0.34 : dockItemDelegate.modelData.separatorOpacity
+                        separatorGlowSetting: dockItemDelegate.modelData.separatorGlowEnabled === true
+                        iconName: dockItemDelegate.modelData.type === "trash" && dockItemDelegate.modelData.showState !== false
+                            ? (dockItemsController.trashHasItems ? (dockItemDelegate.modelData.fullIcon || "user-trash-full") : (dockItemDelegate.modelData.icon || "user-trash"))
+                            : (dockItemDelegate.modelData.icon || "")
+                        itemName: dockItemDelegate.modelData.name || ""
+                        itemCommand: dockItemDelegate.modelData.command || ""
                         taskIndicatorCount: taskState.count
                         taskIsActive: taskState.isActive
                         taskDemandsAttention: taskState.demandsAttention
@@ -1642,10 +1647,10 @@ PlasmoidItem {
                             || (appActionsDialog.visible && appActionsDialog.visualParent === dockItemDelegate)
                             || (root.punchiMenuDialogInstance && root.punchiMenuDialogInstance.visible && root.punchiMenuAnchorItem === dockItemDelegate)
                         // qmllint enable unqualified
-                        supportsContextMenu: dockContextActionsController.itemHasContextMenu(modelData, taskState.rows, "pinned")
+                        supportsContextMenu: dockContextActionsController.itemHasContextMenu(dockItemDelegate.modelData, taskState.rows, "pinned")
                         mediaHoverControlsEnabled: dockConfig.mediaControlsOnHover && taskState.count > 0
                         // qmllint disable unqualified
-                        externalDropEnabled: modelData.type === "app"
+                        externalDropEnabled: dockItemDelegate.modelData.type === "app"
                             && dockConfig.appDragAndDropEnabled
                         externalDropValidator: function(urls) {
                             return dockItemsController.validateDroppedUrls(urls)
@@ -1665,7 +1670,7 @@ PlasmoidItem {
                         // intentionally retain its owning plasmoid and model row.
                         // qmllint disable unqualified
                         Component.onCompleted: {
-                            if (modelData.type === "punchimenu") {
+                            if (dockItemDelegate.modelData.type === "punchimenu") {
                                 root.punchiMenuAnchorItem = dockItemDelegate
                             }
                         }
@@ -1686,18 +1691,18 @@ PlasmoidItem {
                         // qmllint enable unqualified
                         
                         onItemClicked: function(cmd) {
-                            if (modelData.type === "folder") {
-                                popupCoordinator.openFolderPopup(modelData, dockItemDelegate)
-                            } else if (modelData.type === "calendar") {
-                                popupCoordinator.openCalendarPopup(modelData, dockItemDelegate)
-                            } else if (modelData.type === "note") {
-                                popupCoordinator.openNotePopup(modelData, dockItemDelegate, index)
-                            } else if (modelData.type === "punchimenu") {
+                            if (dockItemDelegate.modelData.type === "folder") {
+                                popupCoordinator.openFolderPopup(dockItemDelegate.modelData, dockItemDelegate)
+                            } else if (dockItemDelegate.modelData.type === "calendar") {
+                                popupCoordinator.openCalendarPopup(dockItemDelegate.modelData, dockItemDelegate)
+                            } else if (dockItemDelegate.modelData.type === "note") {
+                                popupCoordinator.openNotePopup(dockItemDelegate.modelData, dockItemDelegate, dockItemDelegate.index)
+                            } else if (dockItemDelegate.modelData.type === "punchimenu") {
                                 popupCoordinator.closeAllPopups(null)
                                 root.togglePunchiMenu(dockItemDelegate)
                             } else {
                                 popupCoordinator.closeAllPopups(null)
-                                dockItemsController.handleDockItemActivation(modelData, dockItemDelegate)
+                                dockItemsController.handleDockItemActivation(dockItemDelegate.modelData, dockItemDelegate)
                             }
                         }
                         // qmllint disable unqualified
@@ -1706,17 +1711,17 @@ PlasmoidItem {
                         }
                         onExternalUrlsDropped: function(urls, visualParent) {
                             root.handleApplicationUrlsDrop(
-                                modelData, taskState.rows, urls, visualParent)
+                                dockItemDelegate.modelData, taskState.rows, urls, visualParent)
                         }
                         onApplicationLauncherDropped: function(urls, insertionIndex) {
                             dockItemsController.pinApplicationLauncherAt(
                                 urls, insertionIndex)
                         }
                         onMediaLaunchRequested: {
-                            root.launchConfiguredMediaPlayer(modelData, false)
+                            root.launchConfiguredMediaPlayer(dockItemDelegate.modelData, false)
                         }
                         onMediaPlaybackLaunchRequested: {
-                            root.launchConfiguredMediaPlayer(modelData, true)
+                            root.launchConfiguredMediaPlayer(dockItemDelegate.modelData, true)
                         }
                         onMediaExpansionChanged: function(expanded, transitionDuration) {
                             root.mediaItemExpanded = expanded
@@ -1724,23 +1729,23 @@ PlasmoidItem {
                         }
                         // qmllint enable unqualified
                         onContextMenuRequested: function(visualParent, keyboardInvoked) {
-                            if (modelData.type === "trash") {
-                                popupCoordinator.openTrashMenu(modelData, visualParent, keyboardInvoked)
-                            } else if (dockContextActionsController.itemHasContextMenu(modelData, taskState.rows, "pinned")) {
-                                popupCoordinator.openAppContextMenu(modelData, visualParent,
-                                    taskState.rows, "pinned", index)
+                            if (dockItemDelegate.modelData.type === "trash") {
+                                popupCoordinator.openTrashMenu(dockItemDelegate.modelData, visualParent, keyboardInvoked)
+                            } else if (dockContextActionsController.itemHasContextMenu(dockItemDelegate.modelData, taskState.rows, "pinned")) {
+                                popupCoordinator.openAppContextMenu(dockItemDelegate.modelData, visualParent,
+                                    taskState.rows, "pinned", dockItemDelegate.index)
                             }
                         }
                         onHoverEntered: function(visualParent) {
                             if ((dockConfig.mediaControlsOnHover || dockConfig.windowPreviewStyle !== "none")
                                     && taskState.count > 0) {
-                                popupCoordinator.scheduleTaskWindowsPopup(modelData.name || "",
+                                popupCoordinator.scheduleTaskWindowsPopup(dockItemDelegate.modelData.name || "",
                                     taskState.rows, visualParent, false,
                                     dockConfig.windowPreviewStyle !== "none")
                             }
                         }
                         onMediaControlsRequested: function(visualParent) {
-                            popupCoordinator.scheduleTaskWindowsPopup(modelData.name || "",
+                            popupCoordinator.scheduleTaskWindowsPopup(dockItemDelegate.modelData.name || "",
                                 taskState.rows, visualParent, true, false)
                         }
                         onHoverExited: function(visualParent) {

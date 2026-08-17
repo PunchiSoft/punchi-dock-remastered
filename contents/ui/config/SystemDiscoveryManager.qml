@@ -1,5 +1,4 @@
 import QtQuick
-import org.kde.kirigami as Kirigami
 import "../org/punchi/dock" as Punchi
 
 Item {

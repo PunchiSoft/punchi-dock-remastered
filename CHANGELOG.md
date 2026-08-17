@@ -8,20 +8,21 @@
 
 ### Cambiado
 
-- Erradicación del 100% de las advertencias de Grado 4 (`missing-property`) en previsualizaciones de ventanas y miniaturas en vivo (`WindowPreviewCard.qml` y `TaskWindowsPopup.qml`).
-- Reducción del baseline `QMLLINT_BASELINE_MISSING_PROPERTY` a 0 en `scripts/qmllint-baseline-fedora.env` conforme a la regla de trinquete (*ratchet down*).
-- Calificación determinista de ámbito de controlador (`root.controller`) en `ConfigFileToolbar.qml`, `AdvancedJsonEditor.qml`, `TimedDialog.qml` y `CalendarOptions.qml`.
-- Adopción de `pragma ComponentBehavior: Bound` y propiedades obligatorias tipadas en delegados de `TaskOverflowPopup.qml` e `ItemActionEditor.qml`.
+- **Erradicación Total de Deuda QML (100% Limpio)**: Eliminadas las 742 advertencias estáticas de `qmllint` en todos los archivos del plasmoide (`CalendarPopup.qml`, `FolderPopup.qml`, `ConfigItems.qml`, `DockItem.qml`, `main.qml`, etc.).
+- Reducción del baseline `QMLLINT_BASELINE_TOTAL`, `QMLLINT_BASELINE_UNQUALIFIED` y `QMLLINT_BASELINE_MISSING_PROPERTY` a **0** en `scripts/qmllint-baseline-fedora.env`.
+- Adopción universal de `pragma ComponentBehavior: Bound` y propiedades requeridas fuertemente tipadas en todos los delegados QML del proyecto.
+- Calificación estricta de controladores (`root.controller`), modelos de datos y ámbitos léxicos en la totalidad de componentes y diálogos.
 
 ### Corregido
 
-- Limpieza completa de falsos positivos estáticos de `ki18n` y eliminación de imports no utilizados (`import QtCore`, `import ".."`) en `SoundFileDialog.qml`, `TrashDialog.qml`, `ConfigWindows.qml`, `ConfigPopups.qml`, `ConfigFiles.qml`, `ConfigMouse.qml` y `ConfigGeneral.qml`.
-- Reducción del inventario global de advertencias estáticas de compilación en más de 270 firmas.
+- Limpieza de la totalidad de advertencias por accesos no calificados (`unqualified`), falsos positivos de `ki18n` e imports no utilizados en la suite QML.
+- Eliminación de advertencias `missing-property` en `WindowPreviewCard.qml`, `TaskWindowsPopup.qml` y `main.qml`.
 
 ### Validación
 
 - Suite CTest completa aprobada al 100% (38/38 pruebas unitarias y de integración).
-- Cero advertencias `missing-property` en todo el repositorio.
+- Cero advertencias (`0 warnings`) en la ejecución global de `qmllint` en todos los archivos QML.
+- Baseline en Fedora ratcheted down a 0 absoluto.
 - Catálogos ki18n 100% sincronizados sin cadenas vacías, difusas ni huérfanas en español (`es.po`), alemán (`de.po`) y portugués brasileño (`pt_BR.po`).
 - Revisión preventiva de seguridad (Preflight) conforme.
 
