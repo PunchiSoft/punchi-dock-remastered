@@ -1,4 +1,3 @@
-import QtCore
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
@@ -13,7 +12,7 @@ import "components"
 KCM.SimpleKCM {
     id: page
 
-    title: i18n("JSON Configuration")
+    title: i18n("JSON Configuration") // qmllint disable unqualified
     implicitWidth: layoutMetrics.pageImplicitWidth
 
     ConfigLayoutMetrics {
@@ -68,7 +67,7 @@ KCM.SimpleKCM {
         try {
             var result = ConfigItemsJS.parseJsonArray(advancedJsonEditor.text)
             if (!result.ok) {
-                statusLabel.text = i18n("The root value must be a JSON array.")
+                statusLabel.text = i18n("The root value must be a JSON array.") // qmllint disable unqualified
                 statusLabel.type = Kirigami.MessageType.Error
                 return false
             }
@@ -82,33 +81,33 @@ KCM.SimpleKCM {
             var duplicateSingleton = DockLogic.duplicateSingletonType(result.items)
             if (duplicateSingleton.length > 0) {
                 statusLabel.text = duplicateSingleton === "punchimenu"
-                    ? i18n("Only one PunchiMenu item is allowed in the dock configuration.")
-                    : i18n("Only one media player item is allowed in the dock configuration.")
+                    ? i18n("Only one PunchiMenu item is allowed in the dock configuration.") // qmllint disable unqualified
+                    : i18n("Only one media player item is allowed in the dock configuration.") // qmllint disable unqualified
                 statusLabel.type = Kirigami.MessageType.Error
                 return false
             }
         } catch (error) {
-            statusLabel.text = i18n("Invalid JSON: %1", error)
+            statusLabel.text = i18n("Invalid JSON: %1", error) // qmllint disable unqualified
             statusLabel.type = Kirigami.MessageType.Error
             return false
         }
 
-        statusLabel.text = i18n("JSON looks valid.")
+        statusLabel.text = i18n("JSON looks valid.") // qmllint disable unqualified
         statusLabel.type = Kirigami.MessageType.Positive
         return true
     }
 
     function prepareDefaultItems() {
         var formatted = ItemsJS.defaultJson()
-        setEditorText(formatted)
-        statusLabel.text = i18n("Default items restored.")
+        page.setEditorText(formatted)
+        statusLabel.text = i18n("Default items restored.") // qmllint disable unqualified
         statusLabel.type = Kirigami.MessageType.Information
     }
 
     function cleanItemsFileConfirmed() {
         var formatted = "[]"
-        setEditorText(formatted)
-        statusLabel.text = i18n("Clean completed.")
+        page.setEditorText(formatted)
+        statusLabel.text = i18n("Clean completed.") // qmllint disable unqualified
         statusLabel.type = Kirigami.MessageType.Information
     }
 
@@ -127,7 +126,7 @@ KCM.SimpleKCM {
         // We select the text first so the user also sees what's happening.
         advancedJsonEditor.selectAll()
         advancedJsonEditor.copy()
-        statusLabel.text = i18n("Copied to clipboard! You can paste this in any file to save your backup.")
+        statusLabel.text = i18n("Copied to clipboard! You can paste this in any file to save your backup.") // qmllint disable unqualified
         statusLabel.type = Kirigami.MessageType.Positive
     }
 
@@ -158,7 +157,7 @@ KCM.SimpleKCM {
     Controls.Dialog {
         id: cleanConfirmDialog
         modal: true
-        title: i18n("Clean configuration file?")
+        title: i18n("Clean configuration file?") // qmllint disable unqualified
         standardButtons: Controls.Dialog.Cancel | Controls.Dialog.Ok
         anchors.centerIn: parent
         width: Math.min(page.width - Kirigami.Units.gridUnit * 2, Kirigami.Units.gridUnit * 28)
@@ -168,13 +167,13 @@ KCM.SimpleKCM {
         Controls.Label {
             width: parent.width
             wrapMode: Text.WordWrap
-            text: i18n("This will replace the saved dock items with an empty array. This cannot be undone from Punchi Dock.")
+            text: i18n("This will replace the saved dock items with an empty array. This cannot be undone from Punchi Dock.") // qmllint disable unqualified
         }
     }
 
     FileDialog {
         id: importDialog
-        title: i18n("Import JSON Configuration")
+        title: i18n("Import JSON Configuration") // qmllint disable unqualified
         nameFilters: ["JSON files (*.json)", "All files (*)"]
         fileMode: FileDialog.OpenFile
         onAccepted: {
@@ -199,8 +198,8 @@ KCM.SimpleKCM {
                         if (result.ok && result.items.length <= DockLogic.maximumDockItemCount) {
                             var normalizedItems = DockLogic.withSingletonItems(result.items)
                             var formatted = JSON.stringify(ItemsJS.withConfigureDockItem(normalizedItems), null, 4)
-                            setEditorText(formatted)
-                            statusLabel.text = i18n("Configuration imported successfully.")
+                            page.setEditorText(formatted)
+                            statusLabel.text = i18n("Configuration imported successfully.") // qmllint disable unqualified
                             statusLabel.type = Kirigami.MessageType.Positive
                         } else if (result.ok) {
                             // qmllint disable unqualified
@@ -208,11 +207,11 @@ KCM.SimpleKCM {
                             // qmllint enable unqualified
                             page.statusMessage.type = Kirigami.MessageType.Error
                         } else {
-                            statusLabel.text = i18n("Loaded file, but JSON is invalid: %1", result.error)
+                            statusLabel.text = i18n("Loaded file, but JSON is invalid: %1", result.error) // qmllint disable unqualified
                             statusLabel.type = Kirigami.MessageType.Error
                         }
                     } else {
-                        statusLabel.text = i18n("Failed to read file.")
+                        statusLabel.text = i18n("Failed to read file.") // qmllint disable unqualified
                         statusLabel.type = Kirigami.MessageType.Error
                     }
                 }

@@ -55,8 +55,8 @@ KCM.SimpleKCM {
         : 96
     readonly property bool flexiblePanelLengthAvailable: inPanel
     readonly property var panelLengthOptions: [
-        { "text": i18n("Fit content"), "value": "content" },
-        { "text": i18n("Fill free panel space"), "value": "fill" }
+        { "text": i18n("Fit content"), "value": "content" }, // qmllint disable unqualified
+        { "text": i18n("Fill free panel space"), "value": "fill" } // qmllint disable unqualified
     ]
     // qmllint disable unqualified
     readonly property var panelAlignmentOptions: verticalPanel ? [
@@ -76,7 +76,7 @@ KCM.SimpleKCM {
         for (var index = 0; index < ids.length; index++) {
             result.push({
                 "id": String(ids[index]),
-                "name": index < names.length ? names[index] : i18n("Desktop %1", index + 1)
+                "name": index < names.length ? names[index] : i18n("Desktop %1", index + 1) // qmllint disable unqualified
             })
         }
         return result
@@ -137,7 +137,7 @@ KCM.SimpleKCM {
 
             RowLayout {
                 visible: page.flexiblePanelLengthAvailable
-                Kirigami.FormData.label: i18n("Panel length:")
+                Kirigami.FormData.label: i18n("Panel length:") // qmllint disable unqualified
                 Layout.maximumWidth: page.contentWidthHint
 
                 Controls.ComboBox {
@@ -149,7 +149,7 @@ KCM.SimpleKCM {
                     model: page.panelLengthOptions
                     currentIndex: Math.max(0, indexOfValue(page.cfg_panelLengthMode))
                     onActivated: page.cfg_panelLengthMode = currentValue
-                    Accessible.name: i18n("Panel length")
+                    Accessible.name: i18n("Panel length") // qmllint disable unqualified
 
                     ConfigCursorBehavior {
                         cursorEnabled: page.interactiveCursorEnabled
@@ -183,7 +183,7 @@ KCM.SimpleKCM {
 
             // Icon size control.
             RowLayout {
-                Kirigami.FormData.label: page.inPanel ? i18n("Panel icon size:") : i18n("Floating icon size:")
+                Kirigami.FormData.label: page.inPanel ? i18n("Panel icon size:") : i18n("Floating icon size:") // qmllint disable unqualified
                 Layout.maximumWidth: page.contentWidthHint
 
                 Controls.Slider {
@@ -237,19 +237,19 @@ KCM.SimpleKCM {
             // qmllint enable unqualified
 
             Kirigami.InlineMessage {
-                Kirigami.FormData.label: page.inPanel ? i18n("Limit:") : ""
+                Kirigami.FormData.label: page.inPanel ? i18n("Limit:") : "" // qmllint disable unqualified
                 Layout.fillWidth: true
                 Layout.maximumWidth: page.contentWidthHint
                 visible: page.inPanel
                 type: Kirigami.MessageType.Information
                 text: page.detectedPanelThickness > 0
-                    ? i18n("Estimated panel-safe maximum: %1 px", page.safePanelIconSizeMax)
-                    : i18n("The real panel thickness is not available in this view, so a safe fallback limit is being used.")
+                    ? i18n("Estimated panel-safe maximum: %1 px", page.safePanelIconSizeMax) // qmllint disable unqualified
+                    : i18n("The real panel thickness is not available in this view, so a safe fallback limit is being used.") // qmllint disable unqualified
             }
 
             // Virtual desktop visibility control.
             RowLayout {
-                Kirigami.FormData.label: i18n("Desktop visibility:")
+                Kirigami.FormData.label: i18n("Desktop visibility:") // qmllint disable unqualified
                 Layout.maximumWidth: page.contentWidthHint
 
                 Controls.ComboBox {
@@ -259,8 +259,8 @@ KCM.SimpleKCM {
                     textRole: "text"
                     valueRole: "value"
                     model: [
-                        { "text": i18n("All desktops"), "value": "all" },
-                        { "text": i18n("Single desktop"), "value": "single" }
+                        { "text": i18n("All desktops"), "value": "all" }, // qmllint disable unqualified
+                        { "text": i18n("Single desktop"), "value": "single" } // qmllint disable unqualified
                     ]
 
                     currentIndex: Math.max(0, indexOfValue(page.cfg_virtualDesktopMode))
@@ -281,7 +281,7 @@ KCM.SimpleKCM {
 
             // Target virtual desktop selector.
             RowLayout {
-                Kirigami.FormData.label: i18n("Target desktop:")
+                Kirigami.FormData.label: i18n("Target desktop:") // qmllint disable unqualified
                 visible: page.cfg_virtualDesktopMode === "single"
                 Layout.maximumWidth: page.contentWidthHint
 
@@ -318,8 +318,8 @@ KCM.SimpleKCM {
                     && (page.virtualDesktopModel.length === 0 || !page.targetVirtualDesktopAvailable)
                 type: Kirigami.MessageType.Warning
                 text: page.virtualDesktopModel.length === 0
-                    ? i18n("No virtual desktops were found.")
-                    : i18n("The selected desktop no longer exists. Choose another desktop.")
+                    ? i18n("No virtual desktops were found.") // qmllint disable unqualified
+                    : i18n("The selected desktop no longer exists. Choose another desktop.") // qmllint disable unqualified
             }
         }
 
@@ -331,10 +331,10 @@ KCM.SimpleKCM {
             type: Kirigami.MessageType.Information
             showCloseButton: false
             text: !page.inPanel
-                ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Floating mode</b>.<br>Panel-only sizing and integration options are unavailable.")
+                ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Floating mode</b>.<br>Panel-only sizing and integration options are unavailable.") // qmllint disable unqualified
                 : page.verticalPanel
-                    ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Vertical panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.")
-                    : i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Horizontal panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.")
+                    ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Vertical panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.") // qmllint disable unqualified
+                    : i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Horizontal panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.") // qmllint disable unqualified
             Accessible.name: text.replace("<br>", " ").replace("<b>", "").replace("</b>", "")
         }
     }

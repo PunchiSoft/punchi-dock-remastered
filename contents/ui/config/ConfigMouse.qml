@@ -35,17 +35,17 @@ KCM.SimpleKCM {
     readonly property bool hoverEnlargementMayBeClipped:
         inPanel && hoverEnlargementPercent >= 100
     readonly property var hoverAnimationOptions: [
-        { "text": i18n("None"), "value": "none" },
-        { "text": i18n("Wave"), "value": "wave" },
-        { "text": i18n("Single"), "value": "single" },
-        { "text": i18n("Axis zoom"), "value": "axisZoom" },
-        { "text": i18n("Pulse"), "value": "selectionPulse" }
+        { "text": i18n("None"), "value": "none" }, // qmllint disable unqualified
+        { "text": i18n("Wave"), "value": "wave" }, // qmllint disable unqualified
+        { "text": i18n("Single"), "value": "single" }, // qmllint disable unqualified
+        { "text": i18n("Axis zoom"), "value": "axisZoom" }, // qmllint disable unqualified
+        { "text": i18n("Pulse"), "value": "selectionPulse" } // qmllint disable unqualified
     ]
     readonly property var clickEffectOptions: [
-        { "text": i18n("None"), "value": "none" },
-        { "text": i18n("Pulse"), "value": "pulse" },
-        { "text": i18n("Press"), "value": "press" },
-        { "text": i18n("Bounce"), "value": "bounce" }
+        { "text": i18n("None"), "value": "none" }, // qmllint disable unqualified
+        { "text": i18n("Pulse"), "value": "pulse" }, // qmllint disable unqualified
+        { "text": i18n("Press"), "value": "press" }, // qmllint disable unqualified
+        { "text": i18n("Bounce"), "value": "bounce" } // qmllint disable unqualified
     ]
     // qmllint disable unqualified
     readonly property var windowMinimizeEffectOptions: [
@@ -83,7 +83,7 @@ KCM.SimpleKCM {
 
     Kirigami.FormLayout {
         RowLayout {
-            Kirigami.FormData.label: i18n("Hover animation:")
+            Kirigami.FormData.label: i18n("Hover animation:") // qmllint disable unqualified
             Layout.maximumWidth: page.contentWidthHint
 
             Controls.ComboBox {
@@ -153,7 +153,7 @@ KCM.SimpleKCM {
         }
 
         RowLayout {
-            Kirigami.FormData.label: i18n("Dock motion speed:")
+            Kirigami.FormData.label: i18n("Dock motion speed:") // qmllint disable unqualified
             Layout.maximumWidth: page.contentWidthHint
 
             Controls.Slider {
@@ -164,8 +164,8 @@ KCM.SimpleKCM {
                 snapMode: Controls.Slider.SnapAlways
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
-                Accessible.name: i18n("Dock motion speed")
-                Accessible.description: i18n("Controls how quickly dock items enter, move, and resize. It does not change popup or menu animations.")
+                Accessible.name: i18n("Dock motion speed") // qmllint disable unqualified
+                Accessible.description: i18n("Controls how quickly dock items enter, move, and resize. It does not change popup or menu animations.") // qmllint disable unqualified
 
                 ConfigCursorBehavior {
                     cursorEnabled: page.cfg_globalMouseCursor
@@ -174,14 +174,14 @@ KCM.SimpleKCM {
             }
 
             Controls.Label {
-                text: i18n("%1%", Math.round(dockMotionSpeedSlider.value))
+                text: i18n("%1%", Math.round(dockMotionSpeedSlider.value)) // qmllint disable unqualified
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 56
             }
         }
 
         Controls.Label {
-            text: i18n("100% preserves the current timing. Lower values are slower and higher values are faster.")
+            text: i18n("100% preserves the current timing. Lower values are slower and higher values are faster.") // qmllint disable unqualified
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
@@ -190,7 +190,7 @@ KCM.SimpleKCM {
         }
 
         RowLayout {
-            Kirigami.FormData.label: i18n("Click effect:")
+            Kirigami.FormData.label: i18n("Click effect:") // qmllint disable unqualified
             Layout.maximumWidth: page.contentWidthHint
 
             Controls.ComboBox {

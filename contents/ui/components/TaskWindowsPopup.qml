@@ -111,10 +111,10 @@ Item {
                 delegate: Controls.ItemDelegate {
                     id: windowRow
                     required property var modelData
-                    readonly property string primaryText: modelData.title || modelData.name || i18n("Window")
+                    readonly property string primaryText: modelData.title || modelData.name || i18n("Window") // qmllint disable unqualified
                     readonly property string secondaryText: modelData.active
-                        ? i18n("Active window")
-                        : (modelData.subtitle || modelData.name || i18n("Window preview"))
+                        ? i18n("Active window") // qmllint disable unqualified
+                        : (modelData.subtitle || modelData.name || i18n("Window preview")) // qmllint disable unqualified
                     readonly property bool canMinimize: !!modelData.minimizable
                     readonly property bool isMinimized: !!modelData.minimized
                     readonly property bool canMaximize: !!modelData.maximizable
@@ -133,7 +133,7 @@ Item {
                     padding: 0
                     highlighted: !!modelData.active
                     Accessible.name: primaryText
-                    Accessible.description: modelData.active ? i18n("Active window") : i18n("Activate window")
+                    Accessible.description: modelData.active ? i18n("Active window") : i18n("Activate window") // qmllint disable unqualified
                     onClicked: taskPopupRoot.activateRequested(modelData.row)
 
                     background: Rectangle {
@@ -203,7 +203,7 @@ Item {
                                     anchors.centerIn: parent
                                     width: parent.width - 16
                                     spacing: 6
-                                    visible: !(pipewireLoader.item && pipewireLoader.item.hasThumbnail)
+                                    visible: !(pipewireLoader.item && pipewireLoader.item.hasThumbnail) // qmllint disable missing-property
 
                                     Kirigami.Icon {
                                         anchors.horizontalCenter: parent.horizontalCenter
@@ -260,7 +260,7 @@ Item {
                                             Layout.preferredHeight: 28
                                             padding: 2
                                             focusPolicy: Qt.StrongFocus
-                                            Accessible.name: i18n("Bring window to front")
+                                            Accessible.name: i18n("Bring window to front") // qmllint disable unqualified
                                             Controls.ToolTip.visible: hovered || activeFocus
                                             Controls.ToolTip.text: Accessible.name
                                             Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
@@ -294,8 +294,8 @@ Item {
                                             padding: 2
                                             focusPolicy: Qt.StrongFocus
                                             Accessible.name: windowRow.isMinimized
-                                                ? i18n("Restore from minimized state")
-                                                : i18n("Minimize window")
+                                                ? i18n("Restore from minimized state") // qmllint disable unqualified
+                                                : i18n("Minimize window") // qmllint disable unqualified
                                             Controls.ToolTip.visible: hovered || activeFocus
                                             Controls.ToolTip.text: Accessible.name
                                             Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
@@ -329,8 +329,8 @@ Item {
                                             padding: 2
                                             focusPolicy: Qt.StrongFocus
                                             Accessible.name: windowRow.isMaximized
-                                                ? i18n("Restore window size")
-                                                : i18n("Maximize window")
+                                                ? i18n("Restore window size") // qmllint disable unqualified
+                                                : i18n("Maximize window") // qmllint disable unqualified
                                             Controls.ToolTip.visible: hovered || activeFocus
                                             Controls.ToolTip.text: Accessible.name
                                             Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
@@ -363,7 +363,7 @@ Item {
                                             Layout.preferredHeight: 28
                                             padding: 2
                                             focusPolicy: Qt.StrongFocus
-                                            Accessible.name: i18n("Close window")
+                                            Accessible.name: i18n("Close window") // qmllint disable unqualified
                                             Controls.ToolTip.visible: hovered || activeFocus
                                             Controls.ToolTip.text: Accessible.name
                                             Controls.ToolTip.delay: Kirigami.Units.toolTipDelay

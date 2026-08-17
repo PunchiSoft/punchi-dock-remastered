@@ -398,7 +398,7 @@ Item {
     property bool launcherDropInsertAfter: false
     property string launcherDropApplicationName: ""
     property bool externalDropActivationEnabled: false
-    property int externalDropActivationDelay: 1600
+    property int externalDropActivationDelay: 250
     property var externalDropActivator: null
     property string externalDropState: "none"
     property real externalDropActivationProgress: 0
@@ -1346,6 +1346,17 @@ Item {
             || dockItemContainer.externalDropEnabled
             || dockItemContainer.launcherDropEnabled
 
+        onContainsDragChanged: {
+            if (!containsDrag) {
+                dockItemContainer.cancelExternalDropActivation()
+                dockItemContainer.externalDropState = "none"
+                dockItemContainer.launcherDropApplicationName = ""
+                if (dockItemContainer.layoutController) {
+                    dockItemContainer.layoutController.launcherDropTransitionActive = false
+                }
+            }
+        }
+
         onEntered: function(drag) {
             if (dockItemContainer.isPunchiLauncherDrag(drag)) {
                 const launcherValidation
@@ -1375,15 +1386,9 @@ Item {
                 drag.accepted = false
                 return
             }
-            if (dockItemContainer.itemType === "trash") {
-                drag.accept()
-                return
-            }
-            const validation = dockItemContainer.validateExternalDrop(drag.urls)
-            drag.accepted = validation.accepted
-            dockItemContainer.externalDropState = validation.accepted
-                ? "acceptable" : "rejected"
-            if (validation.accepted) {
+            drag.accept()
+            dockItemContainer.externalDropState = "acceptable"
+            if (dockItemContainer.itemType !== "trash") {
                 dockItemContainer.beginExternalDropActivation()
             }
         }
@@ -1437,13 +1442,6 @@ Item {
             }
             if (dockItemContainer.itemType === "trash" && drop.hasUrls) {
                 dockItemContainer.layoutController.trashUrlsDropped(drop.urls)
-                dockItemContainer.externalDropState = "none"
-                return
-            }
-            const validation = dockItemContainer.validateExternalDrop(
-                drop.hasUrls ? drop.urls : [])
-            drop.accepted = validation.accepted
-            if (!validation.accepted) {
                 dockItemContainer.externalDropState = "none"
                 return
             }

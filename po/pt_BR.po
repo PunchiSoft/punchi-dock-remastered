@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-16 10:32-0400\n"
+"POT-Creation-Date: 2026-08-17 13:10-0400\n"
 "PO-Revision-Date: 2026-07-26 04:24-0400\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -74,7 +74,7 @@ msgid "%1 of %2 items"
 msgstr "%1 de %2 itens"
 
 #: contents/ui/components/DockItem.qml:1236
-#: contents/ui/components/TaskOverflowPopup.qml:109
+#: contents/ui/components/TaskOverflowPopup.qml:111
 msgid "%1 open window"
 msgid_plural "%1 open windows"
 msgstr[0] "%1 janela aberta"
@@ -101,8 +101,8 @@ msgstr "%1px"
 
 #: contents/ui/config/components/ActionDialog.qml:80
 #: contents/ui/config/ConfigItems.qml:655
-#: contents/ui/config/ItemActionEditor.qml:34
-#: contents/ui/config/ItemActionEditor.qml:100
+#: contents/ui/config/ItemActionEditor.qml:35
+#: contents/ui/config/ItemActionEditor.qml:101
 msgid "%1 rows"
 msgstr "%1 linhas"
 
@@ -169,9 +169,9 @@ msgstr "%1 — %2 — %3"
 #: contents/ui/config/ConfigMenus.qml:347
 #: contents/ui/config/ConfigMouse.qml:135
 #: contents/ui/config/ConfigMouse.qml:177
-#: contents/ui/config/ConfigPopups.qml:225
-#: contents/ui/config/ConfigPopups.qml:268
-#: contents/ui/config/ConfigPopups.qml:308
+#: contents/ui/config/ConfigPopups.qml:223
+#: contents/ui/config/ConfigPopups.qml:266
+#: contents/ui/config/ConfigPopups.qml:306
 #, javascript-format
 msgid "%1%"
 msgstr "%1%"
@@ -202,7 +202,7 @@ msgctxt "@info:accessible"
 msgid "%1. Playing."
 msgstr "%1. Reproduzindo."
 
-#: contents/ui/config/ConfigPopups.qml:275
+#: contents/ui/config/ConfigPopups.qml:273
 msgid ""
 "100 percent uses the recommended base size. Larger previews keep their "
 "aspect ratio and remain limited by the available screen space."
@@ -274,7 +274,7 @@ msgstr "Nome da ação:"
 msgid "Activate window"
 msgstr "Ativar janela"
 
-#: contents/ui/config/ConfigPopups.qml:153
+#: contents/ui/config/ConfigPopups.qml:151
 msgid ""
 "Active applications do not show hover previews or grouped-window popups."
 msgstr ""
@@ -404,7 +404,7 @@ msgstr "Ajusta a espessura do indicador entre 2 e 10 pixels."
 msgid "Adjusts the spacing between dock icons from 0 to 24 pixels."
 msgstr "Ajusta o espaçamento entre os ícones do dock de 0 a 24 pixels."
 
-#: contents/ui/config/ConfigPopups.qml:259
+#: contents/ui/config/ConfigPopups.qml:257
 msgid "Adjusts the window preview scale between 100 and 300 percent."
 msgstr "Ajusta a escala da visualização da janela entre 100 e 300 por cento."
 
@@ -595,7 +595,7 @@ msgstr ""
 msgid "Applies to folder popup labels and note popup titles."
 msgstr "Aplica-se a rótulos pop-up de pastas e títulos de pop-up de notas."
 
-#: contents/ui/config/ConfigPopups.qml:403
+#: contents/ui/config/ConfigPopups.qml:401
 msgid "Applies to window titles, window details and overflow group labels."
 msgstr ""
 "Aplica-se a títulos de janelas, detalhes de janelas e rótulos de grupos de "
@@ -735,7 +735,7 @@ msgstr "Fundo e legibilidade"
 msgid "Background blur:"
 msgstr "Desfoque do fundo:"
 
-#: contents/ui/config/ConfigPopups.qml:326
+#: contents/ui/config/ConfigPopups.qml:324
 msgid "Background frame:"
 msgstr "Moldura do fundo:"
 
@@ -743,7 +743,7 @@ msgstr "Moldura do fundo:"
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:128
 #: contents/ui/config/ConfigFolderPopups.qml:215
 #: contents/ui/config/ConfigMenus.qml:233
-#: contents/ui/config/ConfigPopups.qml:285
+#: contents/ui/config/ConfigPopups.qml:283
 msgid "Background opacity:"
 msgstr "Opacidade do fundo:"
 
@@ -1027,8 +1027,8 @@ msgstr ""
 "Choose how long the media controls stay expanded after interaction. Zero "
 "keeps them expanded."
 
-#: contents/ui/config/components/TrashDialog.qml:106
-#: contents/ui/config/components/TrashDialog.qml:136
+#: contents/ui/config/components/TrashDialog.qml:105
+#: contents/ui/config/components/TrashDialog.qml:135
 #: contents/ui/config/ConfigItems.qml:587
 #: contents/ui/config/ConfigItems.qml:642
 msgid "Choose icon"
@@ -1042,7 +1042,7 @@ msgstr ""
 "Escolha a ordem manual, a ordem alfabética ou o agrupamento por categorias "
 "de aplicativos do KDE."
 
-#: contents/ui/config/components/TrashDialog.qml:203
+#: contents/ui/config/components/TrashDialog.qml:202
 #: contents/ui/config/ConfigItems.qml:749
 msgid "Choose sound"
 msgstr "Escolha o som"
@@ -1065,7 +1065,7 @@ msgid ""
 msgstr ""
 "Escolha se deseja importar um tema JSON ou todos os temas JSON de uma pasta."
 
-#: contents/ui/config/ConfigPopups.qml:389
+#: contents/ui/config/ConfigPopups.qml:387
 msgid ""
 "Choose whether window previews show the app icon with window details, only "
 "the icon, or no information overlay."
@@ -1089,11 +1089,11 @@ msgstr "Círculo"
 msgid "Clean"
 msgstr "Limpar"
 
-#: contents/ui/config/ConfigFiles.qml:111
+#: contents/ui/config/ConfigFiles.qml:110
 msgid "Clean completed."
 msgstr "Limpeza concluída."
 
-#: contents/ui/config/ConfigFiles.qml:161
+#: contents/ui/config/ConfigFiles.qml:160
 msgid "Clean configuration file?"
 msgstr "Limpar arquivo de configuração?"
 
@@ -1157,7 +1157,7 @@ msgstr "Posição do botão Fechar"
 msgid "Close button:"
 msgstr "Botão Fechar:"
 
-#: contents/ui/components/TaskOverflowPopup.qml:173
+#: contents/ui/components/TaskOverflowPopup.qml:175
 #: contents/ui/components/TaskWindowsPopup.qml:366
 #: contents/ui/components/WindowPreviewCard.qml:229
 msgid "Close window"
@@ -1169,7 +1169,7 @@ msgctxt "@action:button"
 msgid "Close window"
 msgstr "Fechar janela"
 
-#: contents/ui/components/TaskOverflowPopup.qml:75
+#: contents/ui/components/TaskOverflowPopup.qml:77
 msgid "Close window group list"
 msgstr "Fechar lista de grupos de janelas"
 
@@ -1215,7 +1215,7 @@ msgstr "Compacto (em breve)"
 msgid "Configuration file"
 msgstr "Arquivo de configuração"
 
-#: contents/ui/config/ConfigFiles.qml:203
+#: contents/ui/config/ConfigFiles.qml:202
 msgid "Configuration imported successfully."
 msgstr "Configuração importada com sucesso."
 
@@ -1275,7 +1275,7 @@ msgid "Configure spacer"
 msgstr "Configurar espaçador"
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:360
-#: contents/ui/config/components/TrashDialog.qml:27
+#: contents/ui/config/components/TrashDialog.qml:26
 msgid "Configure trash"
 msgstr "Configurar lixo"
 
@@ -1328,8 +1328,8 @@ msgstr ""
 "Controla a rapidez com que os itens do dock aparecem, se movem e mudam de "
 "tamanho. Isso não altera as animações de pop-ups ou menus."
 
-#: contents/ui/config/ConfigPopups.qml:339
-#: contents/ui/config/ConfigPopups.qml:353
+#: contents/ui/config/ConfigPopups.qml:337
+#: contents/ui/config/ConfigPopups.qml:351
 msgid ""
 "Controls the themed space around window previews without changing their size."
 msgstr ""
@@ -1340,7 +1340,7 @@ msgstr ""
 msgid "Copied"
 msgstr "Copiado"
 
-#: contents/ui/config/ConfigFiles.qml:130
+#: contents/ui/config/ConfigFiles.qml:129
 msgid ""
 "Copied to clipboard! You can paste this in any file to save your backup."
 msgstr ""
@@ -1429,12 +1429,12 @@ msgstr "Escala de texto de data"
 msgid "Date text scale:"
 msgstr "Escala de texto de data:"
 
-#: contents/ui/config/components/TrashDialog.qml:194
+#: contents/ui/config/components/TrashDialog.qml:193
 #: contents/ui/config/ConfigFileToolbar.qml:41
 msgid "Default"
 msgstr "Padrão"
 
-#: contents/ui/config/ConfigFiles.qml:104
+#: contents/ui/config/ConfigFiles.qml:103
 msgid "Default items restored."
 msgstr "Itens padrão restaurados."
 
@@ -1521,7 +1521,7 @@ msgctxt "@info Window live preview state"
 msgid "Disabled"
 msgstr "Desativada"
 
-#: contents/ui/config/ConfigPopups.qml:65
+#: contents/ui/config/ConfigPopups.qml:64
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Disabled"
 msgstr "Desativado"
@@ -1615,7 +1615,7 @@ msgctxt "@item:inlistbox Separator shape"
 msgid "Double line"
 msgstr "Double line"
 
-#: contents/ui/config/components/TrashDialog.qml:75
+#: contents/ui/config/components/TrashDialog.qml:74
 msgid "Drag files"
 msgstr "Arrastar arquivos"
 
@@ -1677,11 +1677,11 @@ msgstr "Educação"
 msgid "Empty Trash"
 msgstr "Esvaziar Lixo"
 
-#: contents/ui/config/components/TrashDialog.qml:91
+#: contents/ui/config/components/TrashDialog.qml:90
 msgid "Empty icon:"
 msgstr "Ícone vazio:"
 
-#: contents/ui/config/components/TrashDialog.qml:157
+#: contents/ui/config/components/TrashDialog.qml:156
 msgid "Empty sound:"
 msgstr "Som vazio:"
 
@@ -1742,7 +1742,7 @@ msgstr "Tema JSON externo"
 msgid "Fade"
 msgstr "Desaparecer"
 
-#: contents/ui/config/ConfigFiles.qml:215
+#: contents/ui/config/ConfigFiles.qml:214
 msgid "Failed to read file."
 msgstr "Falha ao ler o arquivo."
 
@@ -1876,7 +1876,7 @@ msgstr "Família de fontes:"
 msgid "Font size:"
 msgstr "Tamanho da fonte:"
 
-#: contents/ui/config/ConfigPopups.qml:187
+#: contents/ui/config/ConfigPopups.qml:185
 msgid ""
 "For MPRIS-compatible applications, displays media playback controls below "
 "the window preview list."
@@ -1884,7 +1884,7 @@ msgstr ""
 "Para aplicativos compatíveis com MPRIS, exibe os controles de reprodução de "
 "mídia abaixo da lista de visualização da janela."
 
-#: contents/ui/config/ConfigPopups.qml:189
+#: contents/ui/config/ConfigPopups.qml:187
 msgid ""
 "For MPRIS-compatible applications, replaces the window preview with a full "
 "cover background media card."
@@ -1892,7 +1892,7 @@ msgstr ""
 "Para aplicativos compatíveis com MPRIS, substitui a visualização da janela "
 "por um cartão de mídia de fundo com capa completa."
 
-#: contents/ui/config/ConfigPopups.qml:191
+#: contents/ui/config/ConfigPopups.qml:189
 msgid ""
 "For MPRIS-compatible applications, replaces the window preview with artwork, "
 "playback controls, and volume card."
@@ -1932,7 +1932,7 @@ msgctxt "@item:inlistbox Context menu entrance"
 msgid "From the top"
 msgstr "Do topo"
 
-#: contents/ui/config/components/TrashDialog.qml:121
+#: contents/ui/config/components/TrashDialog.qml:120
 msgid "Full icon:"
 msgstr "Ícone completo:"
 
@@ -2004,7 +2004,7 @@ msgstr "Agrupamento e limites"
 msgid "Height:"
 msgstr "Altura:"
 
-#: contents/ui/config/ConfigPopups.qml:46
+#: contents/ui/config/ConfigPopups.qml:45
 msgctxt "@item:inlistbox Window preview information"
 msgid "Hidden"
 msgstr "Oculto"
@@ -2072,12 +2072,12 @@ msgstr "Ampliação ao passar o ponteiro"
 msgid "Hover enlargement:"
 msgstr "Ampliação ao passar o ponteiro:"
 
-#: contents/ui/config/ConfigPopups.qml:44
+#: contents/ui/config/ConfigPopups.qml:43
 msgctxt "@item:inlistbox Window preview information"
 msgid "Icon and text"
 msgstr "Ícone e texto"
 
-#: contents/ui/config/ConfigPopups.qml:45
+#: contents/ui/config/ConfigPopups.qml:44
 msgctxt "@item:inlistbox Window preview information"
 msgid "Icon only"
 msgstr "Somente ícone"
@@ -2112,7 +2112,7 @@ msgstr "Espaçamento dos ícones:"
 msgid "Icon:"
 msgstr "Ícone:"
 
-#: contents/ui/config/ConfigFiles.qml:177
+#: contents/ui/config/ConfigFiles.qml:176
 msgid "Import JSON Configuration"
 msgstr "Importar configuração JSON"
 
@@ -2231,7 +2231,7 @@ msgctxt "@title:category"
 msgid "Internet"
 msgstr "Internet"
 
-#: contents/ui/config/ConfigFiles.qml:91
+#: contents/ui/config/ConfigFiles.qml:90
 msgid "Invalid JSON: %1"
 msgstr "JSON inválido: %1"
 
@@ -2264,11 +2264,11 @@ msgstr "Itens no Dock"
 msgid "Items to add"
 msgstr "Itens para adicionar"
 
-#: contents/ui/config/ConfigFiles.qml:16
+#: contents/ui/config/ConfigFiles.qml:15
 msgid "JSON Configuration"
 msgstr "Configuração JSON"
 
-#: contents/ui/config/ConfigFiles.qml:96
+#: contents/ui/config/ConfigFiles.qml:95
 msgid "JSON looks valid."
 msgstr "JSON parece válido."
 
@@ -2357,7 +2357,7 @@ msgstr "Limitar linhas do menu"
 msgid "Limit:"
 msgstr "Limite:"
 
-#: contents/ui/config/ConfigPopups.qml:425
+#: contents/ui/config/ConfigPopups.qml:423
 msgid ""
 "Limits visible popup rows; additional entries remain accessible by scrolling."
 msgstr ""
@@ -2390,7 +2390,7 @@ msgstr "Vista simples"
 msgid "Load content"
 msgstr "Carregar conteúdo"
 
-#: contents/ui/config/ConfigFiles.qml:211
+#: contents/ui/config/ConfigFiles.qml:210
 msgid "Loaded file, but JSON is invalid: %1"
 msgstr "Arquivo carregado, mas JSON é inválido: %1"
 
@@ -2440,7 +2440,7 @@ msgstr "Manual"
 msgid "Maximize"
 msgstr "Maximizar"
 
-#: contents/ui/components/TaskOverflowPopup.qml:161
+#: contents/ui/components/TaskOverflowPopup.qml:163
 #: contents/ui/components/TaskWindowsPopup.qml:333
 #: contents/ui/components/WindowPreviewCard.qml:215
 msgid "Maximize window"
@@ -2486,7 +2486,7 @@ msgstr "Máximo de colunas pop-up de pasta visíveis"
 msgid "Maximum visible folder popup rows"
 msgstr "Máximo de linhas pop-up de pasta visíveis"
 
-#: contents/ui/config/ConfigPopups.qml:417
+#: contents/ui/config/ConfigPopups.qml:415
 msgid "Maximum visible popup rows"
 msgstr "Máximo de linhas pop-up visíveis"
 
@@ -2496,7 +2496,7 @@ msgctxt "@info:accessible"
 msgid "Media application"
 msgstr "Aplicativo de mídia"
 
-#: contents/ui/config/ConfigPopups.qml:192
+#: contents/ui/config/ConfigPopups.qml:190
 msgid ""
 "Media applications behave like standard windows without showing media "
 "controls on hover."
@@ -2504,11 +2504,11 @@ msgstr ""
 "Os aplicativos de mídia se comportam como janelas padrão sem mostrar "
 "controles de mídia ao passar o mouse."
 
-#: contents/ui/config/ConfigPopups.qml:215
+#: contents/ui/config/ConfigPopups.qml:213
 msgid "Media card background opacity"
 msgstr "Opacidade do fundo do cartão de mídia"
 
-#: contents/ui/config/ConfigPopups.qml:201
+#: contents/ui/config/ConfigPopups.qml:199
 msgid "Media card opacity:"
 msgstr "Opacidade do cartão de mídia:"
 
@@ -2544,7 +2544,7 @@ msgstr "Controles do reprodutor multimídia"
 msgid "Media player item"
 msgstr "Item do reprodutor multimídia"
 
-#: contents/ui/config/ConfigPopups.qml:162
+#: contents/ui/config/ConfigPopups.qml:160
 msgid "Media players:"
 msgstr "Reprodutores de mídia:"
 
@@ -2553,7 +2553,7 @@ msgctxt "@label:slider"
 msgid "Media volume"
 msgstr "Volume de mídia"
 
-#: contents/ui/config/ConfigPopups.qml:50
+#: contents/ui/config/ConfigPopups.qml:49
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Medium"
 msgstr "Médio"
@@ -2615,13 +2615,13 @@ msgstr ""
 msgid "Minimize"
 msgstr "Minimizar"
 
-#: contents/ui/components/TaskOverflowPopup.qml:146
+#: contents/ui/components/TaskOverflowPopup.qml:148
 #: contents/ui/components/TaskWindowsPopup.qml:298
 #: contents/ui/components/WindowPreviewCard.qml:200
 msgid "Minimize window"
 msgstr "Minimizar janela"
 
-#: contents/ui/components/TaskOverflowPopup.qml:64
+#: contents/ui/components/TaskOverflowPopup.qml:66
 msgid "More window groups"
 msgstr "Mais grupos de janelas"
 
@@ -2666,7 +2666,7 @@ msgid "Mute media volume"
 msgstr "Silenciar volume de mídia"
 
 #: contents/ui/config/components/TimedDialog.qml:46
-#: contents/ui/config/components/TrashDialog.qml:43
+#: contents/ui/config/components/TrashDialog.qml:42
 #: contents/ui/config/ConfigItems.qml:625
 msgid "Name:"
 msgstr "Nome:"
@@ -2848,7 +2848,7 @@ msgstr "Somente arquivos locais podem ser abertos com um aplicativo."
 msgid "Only one PunchiMenu item can be added."
 msgstr "Apenas um item PunchiMenu pode ser adicionado."
 
-#: contents/ui/config/ConfigFiles.qml:85
+#: contents/ui/config/ConfigFiles.qml:84
 msgid "Only one PunchiMenu item is allowed in the dock configuration."
 msgstr "Apenas um item PunchiMenu é permitido na configuração do dock."
 
@@ -2857,7 +2857,7 @@ msgstr "Apenas um item PunchiMenu é permitido na configuração do dock."
 msgid "Only one media player item can be added."
 msgstr "Apenas um item de reprodutor multimídia pode ser adicionado."
 
-#: contents/ui/config/ConfigFiles.qml:86
+#: contents/ui/config/ConfigFiles.qml:85
 msgid "Only one media player item is allowed in the dock configuration."
 msgstr ""
 "Apenas um item de reprodutor multimídia é permitido na configuração do dock."
@@ -2884,8 +2884,8 @@ msgstr ""
 "Apenas o fundo do pop-up de pastas é alterado; aplicativos, ícones, "
 "controles e texto permanecem totalmente opacos."
 
-#: contents/ui/config/ConfigPopups.qml:216
-#: contents/ui/config/ConfigPopups.qml:233
+#: contents/ui/config/ConfigPopups.qml:214
+#: contents/ui/config/ConfigPopups.qml:231
 msgid ""
 "Only the media card background changes; artwork, controls and text remain "
 "fully opaque."
@@ -2893,8 +2893,8 @@ msgstr ""
 "Apenas o fundo do cartão de mídia é alterado; a capa, os controles e o texto "
 "permanecem totalmente opacos."
 
-#: contents/ui/config/ConfigPopups.qml:299
-#: contents/ui/config/ConfigPopups.qml:316
+#: contents/ui/config/ConfigPopups.qml:297
+#: contents/ui/config/ConfigPopups.qml:314
 msgid ""
 "Only the popup background changes; thumbnails, window content, controls and "
 "text remain fully opaque."
@@ -3084,7 +3084,7 @@ msgstr "Progresso da reprodução"
 msgid "Popup distance:"
 msgstr "Distância pop-up:"
 
-#: contents/ui/config/ConfigPopups.qml:412
+#: contents/ui/config/ConfigPopups.qml:410
 msgid "Popup rows:"
 msgstr "Linhas pop-up:"
 
@@ -3122,15 +3122,15 @@ msgstr "Pressione M para abrir os controles de mídia"
 msgid "Preview disabled"
 msgstr "Visualização desativada"
 
-#: contents/ui/config/ConfigPopups.qml:363
+#: contents/ui/config/ConfigPopups.qml:361
 msgid "Preview information:"
 msgstr "Informações de visualização:"
 
-#: contents/ui/config/ConfigPopups.qml:125
+#: contents/ui/config/ConfigPopups.qml:123
 msgid "Preview popup:"
 msgstr "Pop-up de visualização:"
 
-#: contents/ui/config/ConfigPopups.qml:244
+#: contents/ui/config/ConfigPopups.qml:242
 msgid "Preview scale:"
 msgstr "Escala de visualização:"
 
@@ -3349,12 +3349,12 @@ msgctxt "@action:button"
 msgid "Repeat track"
 msgstr "Repetir faixa"
 
-#: contents/ui/config/ConfigPopups.qml:56
+#: contents/ui/config/ConfigPopups.qml:55
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with full cover media card"
 msgstr "Substitua a visualização por um cartão de mídia de capa completa"
 
-#: contents/ui/config/ConfigPopups.qml:55
+#: contents/ui/config/ConfigPopups.qml:54
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with media card"
 msgstr "Substitua a visualização por cartão de mídia"
@@ -3379,7 +3379,7 @@ msgstr "Restaurar"
 msgid "Restore from maximized"
 msgstr "Restaurar do maximizado"
 
-#: contents/ui/components/TaskOverflowPopup.qml:145
+#: contents/ui/components/TaskOverflowPopup.qml:147
 #: contents/ui/components/TaskWindowsPopup.qml:297
 #: contents/ui/components/WindowPreviewCard.qml:199
 msgid "Restore from minimized state"
@@ -3390,7 +3390,7 @@ msgctxt "@action:button"
 msgid "Restore media volume"
 msgstr "Restaurar volume de mídia"
 
-#: contents/ui/components/TaskOverflowPopup.qml:160
+#: contents/ui/components/TaskOverflowPopup.qml:162
 #: contents/ui/components/TaskWindowsPopup.qml:332
 #: contents/ui/components/WindowPreviewCard.qml:214
 msgid "Restore window size"
@@ -3611,7 +3611,7 @@ msgstr "Mostrar na lista"
 msgid "Show item names in the dock"
 msgstr "Mostrar nomes de itens no dock"
 
-#: contents/ui/config/ConfigPopups.qml:60
+#: contents/ui/config/ConfigPopups.qml:59
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Show media card below window previews"
 msgstr "Mostrar cartão de mídia abaixo das visualizações da janela"
@@ -3650,7 +3650,7 @@ msgstr "Mostrar sombras sutis no texto do menu"
 msgid "Show subtle shadows on popup text"
 msgstr "Mostrar sombras sutis no texto pop-up"
 
-#: contents/ui/config/ConfigPopups.qml:401
+#: contents/ui/config/ConfigPopups.qml:399
 msgid "Show subtle shadows on window preview text"
 msgstr "Mostrar sombras sutis no texto de visualização da janela"
 
@@ -3658,7 +3658,7 @@ msgstr "Mostrar sombras sutis no texto de visualização da janela"
 msgid "Show the number of open windows"
 msgstr "Mostrar o número de janelas abertas"
 
-#: contents/ui/config/components/TrashDialog.qml:68
+#: contents/ui/config/components/TrashDialog.qml:67
 msgid "Show trash state"
 msgstr "Mostrar estado da lixeira"
 
@@ -3802,7 +3802,7 @@ msgstr "Podem aparecer tarefas de todos os desktops virtuais."
 msgid "Tasks:"
 msgstr "Tarefas:"
 
-#: contents/ui/config/components/TrashDialog.qml:185
+#: contents/ui/config/components/TrashDialog.qml:184
 msgid "Test sound"
 msgstr "Teste de som"
 
@@ -3817,7 +3817,7 @@ msgstr "Escala de texto:"
 #: contents/ui/config/ConfigAspect.qml:725
 #: contents/ui/config/ConfigFolderPopups.qml:485
 #: contents/ui/config/ConfigMenus.qml:273
-#: contents/ui/config/ConfigPopups.qml:400
+#: contents/ui/config/ConfigPopups.qml:398
 msgid "Text shadows:"
 msgstr "Sombras de texto:"
 
@@ -3923,7 +3923,7 @@ msgstr ""
 "A distância é adicionada à margem pop-up normal do Plasma e afeta apenas os "
 "pop-ups das pastas."
 
-#: contents/ui/config/ConfigFiles.qml:77 contents/ui/config/ConfigFiles.qml:207
+#: contents/ui/config/ConfigFiles.qml:76 contents/ui/config/ConfigFiles.qml:206
 msgid "The dock configuration contains too many items. The maximum is %1."
 msgstr "A configuração do dock contém muitos itens. O máximo é %1."
 
@@ -3931,8 +3931,8 @@ msgstr "A configuração do dock contém muitos itens. O máximo é %1."
 msgid "The dock configuration is too large."
 msgstr "A configuração do dock é muito grande."
 
-#: contents/ui/config/ConfigFiles.qml:46 contents/ui/config/ConfigFiles.qml:63
-#: contents/ui/config/ConfigFiles.qml:193
+#: contents/ui/config/ConfigFiles.qml:45 contents/ui/config/ConfigFiles.qml:62
+#: contents/ui/config/ConfigFiles.qml:192
 msgid ""
 "The dock configuration is too large. The maximum supported size is 1 MiB."
 msgstr ""
@@ -3998,7 +3998,7 @@ msgctxt "@info:status"
 msgid "The requested application action could not be completed."
 msgstr "A ação solicitada do aplicativo não pôde ser concluída."
 
-#: contents/ui/config/ConfigFiles.qml:71
+#: contents/ui/config/ConfigFiles.qml:70
 msgid "The root value must be a JSON array."
 msgstr "O valor raiz deve ser uma matriz JSON."
 
@@ -4069,7 +4069,7 @@ msgstr "Não há pastas disponíveis para este aplicativo."
 msgid "Thickness:"
 msgstr "Espessura:"
 
-#: contents/ui/config/ConfigPopups.qml:49
+#: contents/ui/config/ConfigPopups.qml:48
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Thin"
 msgstr "Fino"
@@ -4134,7 +4134,7 @@ msgid ""
 msgstr ""
 "Esta versão do Punchi Dock não suporta o renderizador solicitado pelo tema."
 
-#: contents/ui/config/ConfigFiles.qml:171
+#: contents/ui/config/ConfigFiles.qml:170
 msgid ""
 "This will replace the saved dock items with an empty array. This cannot be "
 "undone from Punchi Dock."
@@ -4333,7 +4333,7 @@ msgstr ""
 "Quando ativados, os campos de texto usam um cursor em forma de I, enquanto "
 "os controles deslizantes, botões e seletores usam um ponteiro interativo."
 
-#: contents/ui/config/ConfigPopups.qml:51
+#: contents/ui/config/ConfigPopups.qml:50
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Wide"
 msgstr "Largo"
@@ -4375,33 +4375,33 @@ msgstr "Janela minimizada"
 msgid "Window preview"
 msgstr "Visualização da janela"
 
-#: contents/ui/config/ConfigPopups.qml:441
+#: contents/ui/config/ConfigPopups.qml:439
 msgid "Window preview animation"
 msgstr "Animação de visualização da janela"
 
-#: contents/ui/config/ConfigPopups.qml:338
+#: contents/ui/config/ConfigPopups.qml:336
 msgid "Window preview background frame"
 msgstr "Moldura do fundo da visualização de janelas"
 
-#: contents/ui/config/ConfigPopups.qml:298
+#: contents/ui/config/ConfigPopups.qml:296
 msgid "Window preview background opacity"
 msgstr "Opacidade do fundo da visualização de janelas"
 
-#: contents/ui/config/ConfigPopups.qml:375
+#: contents/ui/config/ConfigPopups.qml:373
 msgid "Window preview information"
 msgstr "Informações de visualização da janela"
 
-#: contents/ui/config/ConfigPopups.qml:258
+#: contents/ui/config/ConfigPopups.qml:256
 msgid "Window preview scale"
 msgstr "Escala de visualização da janela"
 
 #: contents/ui/config/ConfigAspect.qml:170
 #: contents/ui/config/ConfigPopups.qml:38
-#: contents/ui/config/ConfigPopups.qml:121
+#: contents/ui/config/ConfigPopups.qml:119
 msgid "Window previews"
 msgstr "Visualizações de janela"
 
-#: contents/ui/config/ConfigPopups.qml:152
+#: contents/ui/config/ConfigPopups.qml:150
 msgid ""
 "Window selectors and hover previews use cards with the app icon and no live "
 "window content."
@@ -4409,7 +4409,7 @@ msgstr ""
 "Os seletores de janela e as visualizações instantâneas usam cartões com o "
 "ícone do aplicativo e sem conteúdo de janela ativo."
 
-#: contents/ui/config/ConfigPopups.qml:150
+#: contents/ui/config/ConfigPopups.qml:148
 msgid ""
 "Window selectors and hover previews use live thumbnails when the compositor "
 "can provide them."
@@ -4444,407 +4444,6 @@ msgstr "Você pode abrir até %1 arquivos locais de uma vez."
 
 #: contents/ui/config/components/ActionDialog.qml:79
 #: contents/ui/config/ConfigItems.qml:654
-#: contents/ui/config/ItemActionEditor.qml:33
+#: contents/ui/config/ItemActionEditor.qml:34
 msgid "rows"
 msgstr "linhas"
-
-#~ msgctxt "@info:accessible"
-#~ msgid "Applications in the %1 category"
-#~ msgstr "Aplicativos na categoria %1"
-
-#~ msgctxt "@info:accessible"
-#~ msgid "Open this application category"
-#~ msgstr "Abrir esta categoria de aplicativos"
-
-#~ msgid ""
-#~ "Groups applications using the categories provided by their KDE "
-#~ "application entries."
-#~ msgstr ""
-#~ "Agrupa os aplicativos usando as categorias fornecidas por suas entradas "
-#~ "de aplicativo do KDE."
-
-#~ msgid "Add a PunchiMenu item from the Items page to configure it here."
-#~ msgstr "Adicione um item PunchiMenu na página Itens para configurá-lo aqui."
-
-#~ msgid "Mode and appearance"
-#~ msgstr "Modo e aparência"
-
-#~ msgid "Icon"
-#~ msgstr "Ícone"
-
-#~ msgid "Icon and keyboard shortcut:"
-#~ msgstr "Ícone e atalho de teclado:"
-
-#~ msgid "Icon and shortcut"
-#~ msgstr "Ícone e atalho"
-
-#~ msgid ""
-#~ "Limits the visible rows inside folders in the selected menu mode. "
-#~ "Additional applications remain available by scrolling."
-#~ msgstr ""
-#~ "Limita as linhas visíveis dentro de pastas no modo de menu selecionado. "
-#~ "Aplicativos adicionais permanecem disponíveis por meio da rolagem."
-
-#~ msgid ""
-#~ "Low background opacity can make text and icons difficult to read when "
-#~ "desktop blur is unavailable."
-#~ msgstr ""
-#~ "Uma opacidade baixa do fundo pode dificultar a leitura do texto e dos "
-#~ "ícones quando o desfoque da área de trabalho não está disponível."
-
-#~ msgid "Normal menu size"
-#~ msgstr "Tamanho do menu Normal"
-
-#~ msgid ""
-#~ "Sets an upper limit for columns inside folders in the selected menu mode. "
-#~ "Available space may use fewer columns."
-#~ msgstr ""
-#~ "Define um limite máximo de colunas dentro de pastas no modo de menu "
-#~ "selecionado. O espaço disponível pode usar menos colunas."
-
-#~ msgid ""
-#~ "The effective size adapts to the screen and available grid cell space."
-#~ msgstr ""
-#~ "O tamanho efetivo se adapta à tela e ao espaço disponível nas células da "
-#~ "grade."
-
-#~ msgid ""
-#~ "The menu reduces columns when the available width is insufficient and "
-#~ "uses scrolling when content exceeds the selected row limit."
-#~ msgstr ""
-#~ "O menu reduz as colunas quando a largura disponível é insuficiente e usa "
-#~ "rolagem quando o conteúdo excede o limite de linhas selecionado."
-
-#~ msgid ""
-#~ "The percentages adjust the menu size relative to your screen width and "
-#~ "height (from 30% to 90%)."
-#~ msgstr ""
-#~ "Os percentuais ajustam o tamanho do menu em relação à largura e altura da "
-#~ "sua tela (de 30% a 90%)."
-
-#~ msgid ""
-#~ "The safe range applies to the reserved Favorites section in both menu "
-#~ "modes."
-#~ msgstr ""
-#~ "O intervalo seguro se aplica à seção reservada de Favoritos nos dois "
-#~ "modos de menu."
-
-#~ msgid "This distance is added after the panel thickness detected by Plasma."
-#~ msgstr ""
-#~ "Esta distância é adicionada após a espessura do painel detectada pelo "
-#~ "Plasma."
-
-#~ msgid ""
-#~ "Blur depends on the KWin Blur desktop effect. If it is disabled, increase "
-#~ "the background opacity to keep the menu readable."
-#~ msgstr ""
-#~ "O desfoque depende do efeito de área de trabalho Desfoque do KWin. Se ele "
-#~ "estiver desativado, aumente a opacidade do fundo para manter o menu "
-#~ "legível."
-
-#~| msgctxt "@option:punchimenu-mode"
-#~| msgid "PunchiMenu Full screen"
-#~ msgid "PunchiMenu Full screen"
-#~ msgstr "PunchiMenu Tela cheia"
-
-#~| msgid "Application grid icon scale:"
-#~ msgctxt "@label"
-#~ msgid "Application icon scale:"
-#~ msgstr "Escala dos ícones da grade de aplicativos:"
-
-#~| msgid "Background and legibility"
-#~ msgctxt "@title:group"
-#~ msgid "Background and legibility"
-#~ msgstr "Fundo e legibilidade"
-
-#~| msgid "Background blur:"
-#~ msgctxt "@label"
-#~ msgid "Background blur:"
-#~ msgstr "Desfoque do fundo:"
-
-#~| msgid "Background opacity:"
-#~ msgctxt "@label"
-#~ msgid "Background opacity:"
-#~ msgstr "Opacidade do fundo:"
-
-#~| msgid "Close button position"
-#~ msgctxt "@label"
-#~ msgid "Close button position"
-#~ msgstr "Posição do botão Fechar"
-
-#~| msgid "Close button:"
-#~ msgctxt "@label"
-#~ msgid "Close button:"
-#~ msgstr "Botão Fechar:"
-
-#~| msgid "Distribution label:"
-#~ msgctxt "@label"
-#~ msgid "Distribution label:"
-#~ msgstr "Rótulo da distribuição:"
-
-#~| msgid "Full screen"
-#~ msgctxt "@title:group"
-#~ msgid "Fullscreen layout"
-#~ msgstr "Tela inteira"
-
-#~| msgid "Maximum application columns inside folders"
-#~ msgctxt "@label"
-#~ msgid "Maximum application columns inside folders"
-#~ msgstr "Máximo de colunas de aplicativos dentro de pastas"
-
-#~| msgid "Maximum application rows inside folders"
-#~ msgctxt "@label"
-#~ msgid "Maximum application rows inside folders"
-#~ msgstr "Máximo de linhas de aplicativos dentro de pastas"
-
-#~| msgid "Maximum folder columns:"
-#~ msgctxt "@label"
-#~ msgid "Maximum folder columns:"
-#~ msgstr "Máximo de colunas em pastas:"
-
-#~| msgid "Maximum folder rows:"
-#~ msgctxt "@label"
-#~ msgid "Maximum folder rows:"
-#~ msgstr "Máximo de linhas em pastas:"
-
-#~| msgid "Page navigation:"
-#~ msgctxt "@label"
-#~ msgid "Page navigation:"
-#~ msgstr "Navegação de páginas:"
-
-#~| msgid "PunchiMenu application icon scale"
-#~ msgctxt "@label"
-#~ msgid "PunchiMenu application icon scale"
-#~ msgstr "Escala dos ícones de aplicativos do PunchiMenu"
-
-#~| msgid "PunchiMenu background opacity"
-#~ msgctxt "@label"
-#~ msgid "PunchiMenu background opacity"
-#~ msgstr "Opacidade do fundo do PunchiMenu"
-
-#~| msgid "Requests the desktop blur effect for the selected PunchiMenu mode."
-#~ msgctxt "@info:accessibility"
-#~ msgid "Requests the desktop blur effect for PunchiMenu Fullscreen."
-#~ msgstr ""
-#~ "Solicita o efeito de desfoque da área de trabalho para o modo selecionado "
-#~ "do PunchiMenu."
-
-#~| msgctxt "@action:button"
-#~| msgid "Choose PunchiMenu icon"
-#~ msgctxt "@action:button"
-#~ msgid "Show PunchiMenu settings"
-#~ msgstr "Escolher ícone do PunchiMenu"
-
-#~| msgid "Show distribution name in full screen"
-#~ msgctxt "@option:check"
-#~ msgid "Show distribution name"
-#~ msgstr "Mostrar o nome da distribuição em tela cheia"
-
-#~| msgid "Show page navigation arrows"
-#~ msgctxt "@option:check"
-#~ msgid "Show page navigation arrows"
-#~ msgstr "Mostrar setas de navegação de páginas"
-
-#~| msgid "Use background blur when available"
-#~ msgctxt "@option:check"
-#~ msgid "Use background blur when available"
-#~ msgstr "Usar desfoque do fundo quando disponível"
-
-#~ msgid "Selection pulse"
-#~ msgstr "Pulso de seleção"
-
-#~ msgid ""
-#~ "At 0%, hover enlargement is disabled. The highlight and other non-scaling "
-#~ "hover feedback remain available."
-#~ msgstr ""
-#~ "Em 0%, a ampliação ao passar o ponteiro fica desativada. O realce e os "
-#~ "demais retornos sem alteração de escala continuam disponíveis."
-
-#~ msgid "Hover zoom scale"
-#~ msgstr "Escala de zoom flutuante"
-
-#~ msgid "Hover zoom scale:"
-#~ msgstr "Escala de zoom flutuante:"
-
-#~ msgid "Paragraph"
-#~ msgstr "Parágrafo"
-
-#~ msgid "Show labels"
-#~ msgstr "Mostrar rótulos"
-
-#~ msgid "Keyboard shortcut:"
-#~ msgstr "Atalho de teclado:"
-
-#~ msgctxt "@title:menu"
-#~ msgid "PunchiMenu"
-#~ msgstr "PunchiMenu"
-
-#~ msgid ""
-#~ "Full screen and Normal are available. Compact will be enabled in a future "
-#~ "update."
-#~ msgstr ""
-#~ "Tela inteira e Normal estão disponíveis. Compacto será habilitado em uma "
-#~ "atualização futura."
-
-#~ msgctxt "@info:category"
-#~ msgid "All Apps"
-#~ msgstr "Todos os apps"
-
-#~ msgctxt "@info:status"
-#~ msgid "Browser & Web"
-#~ msgstr "Navegação e Web"
-
-#~ msgctxt "@info:category"
-#~ msgid "Code"
-#~ msgstr "Código"
-
-#~ msgctxt "@info:category"
-#~ msgid "Design"
-#~ msgstr "Design"
-
-#~ msgctxt "@info:status"
-#~ msgid "Documents & Sheets"
-#~ msgstr "Documentos e Planilhas"
-
-#~ msgctxt "@info:status"
-#~ msgid "Draw & Photo"
-#~ msgstr "Desenho e Fotos"
-
-#~ msgctxt "@info:category"
-#~ msgid "Entertainment"
-#~ msgstr "Entretenimento"
-
-#~ msgctxt "@info:status"
-#~ msgid "IDEs & Tools"
-#~ msgstr "IDEs e Ferramentas"
-
-#~ msgctxt "@info:status"
-#~ msgid "KDE Plasma 6"
-#~ msgstr "KDE Plasma 6"
-
-#~ msgctxt "@info:status"
-#~ msgid "Learn & Study"
-#~ msgstr "Aprender e Estudar"
-
-#~ msgctxt "@info:status"
-#~ msgid "Music & Video"
-#~ msgstr "Música e Vídeo"
-
-#~ msgctxt "@info:category"
-#~ msgid "Network"
-#~ msgstr "Rede"
-
-#~ msgctxt "@info:category"
-#~ msgid "OS"
-#~ msgstr "Sistema Operacional"
-
-#~ msgctxt "@info:status"
-#~ msgid "Play & Steam"
-#~ msgstr "Jogos e Steam"
-
-#~ msgctxt "@action:button"
-#~ msgid "Previous category"
-#~ msgstr "Categoria anterior"
-
-#~ msgctxt "@info:category"
-#~ msgid "Productivity"
-#~ msgstr "Produtividade"
-
-#~ msgctxt "@info:category"
-#~ msgid "Science"
-#~ msgstr "Ciência"
-
-#~ msgctxt "@info:status"
-#~ msgid "System Applications"
-#~ msgstr "Aplicativos do sistema"
-
-#~ msgctxt "@info:status"
-#~ msgid "System Utilities"
-#~ msgstr "Utilitários do Sistema"
-
-#~ msgctxt "@info:category"
-#~ msgid "Tools"
-#~ msgstr "Ferramentas"
-
-#~ msgid ""
-#~ "The percentages are limited to keep the menu usable on the current screen."
-#~ msgstr ""
-#~ "As porcentagens são limitadas para manter o menu utilizável na tela atual."
-
-#~ msgctxt "@info:tooltip"
-#~ msgid "Default icon: %1"
-#~ msgstr "Ícone padrão: %1"
-
-#~ msgctxt "@info:status"
-#~ msgid "This favorite could not be resolved to an installed application."
-#~ msgstr "Este favorito não pôde ser associado a um aplicativo instalado."
-
-#~ msgid ""
-#~ "No shortcut is assigned by default. Changes are applied when you press "
-#~ "Apply."
-#~ msgstr ""
-#~ "Nenhum atalho é atribuído por padrão. As alterações são aplicadas ao "
-#~ "pressionar Aplicar."
-
-#~ msgid "PunchiMenu has no configurable options."
-#~ msgstr "O PunchiMenu não possui opções configuráveis."
-
-#~ msgid "Only one media player item can be added"
-#~ msgstr "Apenas um item de reprodutor multimídia pode ser adicionado"
-
-#~ msgid "Applies to dock labels and the calendar item text."
-#~ msgstr "Aplica-se a rótulos de encaixe e ao texto do item de calendário."
-
-#~ msgid "Control the active MPRIS player"
-#~ msgstr "Controlar o reprodutor MPRIS ativo"
-
-#~ msgid "The media player item follows the active MPRIS player automatically."
-#~ msgstr ""
-#~ "The media player item follows the active MPRIS player automatically.O "
-#~ "item do reprodutor multimídia acompanha automaticamente o reprodutor "
-#~ "MPRIS ativo."
-
-#~ msgid ""
-#~ "The ring surrounds the icon, so it does not use a top or bottom position."
-#~ msgstr "O anel envolve o ícone e não usa uma posição superior ou inferior."
-
-#~ msgid "%1x"
-#~ msgstr "%1x"
-
-#~ msgid "Scales popup dimensions, icons, and text proportionally."
-#~ msgstr "Dimensiona dimensões pop-up, ícones e texto proporcionalmente."
-
-#~ msgid "Choose badge color"
-#~ msgstr "Escolher a cor do emblema"
-
-#~ msgid "Open the Plasma color selector"
-#~ msgstr "Abra o seletor de cores do Plasma"
-
-#~ msgid "Select custom color"
-#~ msgstr "Selecione a cor personalizada"
-
-#~ msgid "Use environment color"
-#~ msgstr "Use a cor do ambiente"
-
-#~ msgid "Use the Plasma theme color or select a custom badge color."
-#~ msgstr ""
-#~ "Use the Plasma theme color or select a custom badge color.Use a cor do "
-#~ "tema do Plasma ou selecione uma cor personalizada para o emblema."
-
-#~ msgid "Use the color provided by the Plasma theme"
-#~ msgstr "Use a cor fornecida pelo tema Plasma"
-
-#~ msgid "Auto"
-#~ msgstr "Auto"
-
-#~ msgid "Badge background color"
-#~ msgstr "Cor de fundo do emblema"
-
-#~ msgid "Badge text color"
-#~ msgstr "Cor do texto do emblema"
-
-#~ msgid "Badge text color:"
-#~ msgstr "Cor do texto do emblema:"
-
-#~ msgid "Custom"
-#~ msgstr "Personalizado"

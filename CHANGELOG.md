@@ -1,3 +1,71 @@
+## [0.9.7.39] - 2026-08-17
+
+### Agregado
+
+- Dashboard interactivo HTML de auditoría de compilación y deuda QML (`docs/deuda-qmllint/auditoria-advertencias-kde6.html`) con filtros dinámicos en tiempo real por estado (Resueltas/Pendientes), grado de dificultad (1 a 5) y exportador a Excel (CSV).
+- Matriz de auditoría estructurada en CSV UTF-8 con BOM (`docs/deuda-qmllint/matriz-advertencias-kde6.csv`) y resumen ejecutivo técnico (`docs/deuda-qmllint/auditoria-ejecutiva-kde6.md`).
+- Purga automatizada de traducciones huérfanas y obsoletas (`#~`) en `scripts/dev/update-translations.sh` mediante `msgattrib --no-obsolete`.
+
+### Cambiado
+
+- Erradicación del 100% de las advertencias de Grado 4 (`missing-property`) en previsualizaciones de ventanas y miniaturas en vivo (`WindowPreviewCard.qml` y `TaskWindowsPopup.qml`).
+- Reducción del baseline `QMLLINT_BASELINE_MISSING_PROPERTY` a 0 en `scripts/qmllint-baseline-fedora.env` conforme a la regla de trinquete (*ratchet down*).
+- Calificación determinista de ámbito de controlador (`root.controller`) en `ConfigFileToolbar.qml`, `AdvancedJsonEditor.qml`, `TimedDialog.qml` y `CalendarOptions.qml`.
+- Adopción de `pragma ComponentBehavior: Bound` y propiedades obligatorias tipadas en delegados de `TaskOverflowPopup.qml` e `ItemActionEditor.qml`.
+
+### Corregido
+
+- Limpieza completa de falsos positivos estáticos de `ki18n` y eliminación de imports no utilizados (`import QtCore`, `import ".."`) en `SoundFileDialog.qml`, `TrashDialog.qml`, `ConfigWindows.qml`, `ConfigPopups.qml`, `ConfigFiles.qml`, `ConfigMouse.qml` y `ConfigGeneral.qml`.
+- Reducción del inventario global de advertencias estáticas de compilación en más de 270 firmas.
+
+### Validación
+
+- Suite CTest completa aprobada al 100% (38/38 pruebas unitarias y de integración).
+- Cero advertencias `missing-property` en todo el repositorio.
+- Catálogos ki18n 100% sincronizados sin cadenas vacías, difusas ni huérfanas en español (`es.po`), alemán (`de.po`) y portugués brasileño (`pt_BR.po`).
+- Revisión preventiva de seguridad (Preflight) conforme.
+
+## [0.9.7.38] - 2026-08-16
+
+### Agregado
+
+- Vista de secciones de categorías nativas en PunchiMenu Normal (`PunchiMenuCategorySectionsView`) con clasificación inteligente de aplicaciones en C++ (`ApplicationCategoryClassifier`).
+- Interruptor configurable para mostrar u ocultar el carrusel de categorías en PunchiMenu Normal (`cfg_punchiMenuNormalShowCategoryCarousel`).
+- Soporte completo de Drag & Drop para reorganizar y agrupar aplicaciones dentro de la vista por categorías en Normal.
+- Modos de posicionamiento en el menú contextual de PunchiMenu: Acoplado al Dock, Centrado en Pantalla o según la Configuración.
+- Agrupación por categorías, búsqueda activa transparente, integración de favoritos y navegación por teclado 2D completa en PunchiMenu Pantalla Completa.
+- Vista de sesión de usuario en PunchiMenu Normal con controles integrados de bloqueo, cierre de sesión, reinicio y apagado.
+- Acción de acceso directo "Configurar Punchi Dock..." en los menús contextuales de aplicaciones y elementos del dock.
+- Interruptores en KCM de Configuración de Menús (`ConfigMenus.qml` / `main.xml`) para controlar la visibilidad de "Configurar Punchi Dock...", "Añadir al escritorio" y "Editar este elemento...", con refresco reactivo instantáneo (Hot Refresh).
+- Módulo de configuración de atajos adicionales (`ConfigAdditionalShortcuts.qml`).
+- Integración C++ avanzada de papelera en múltiples particiones (`TrashIntegration`) con menús de acciones y seguimiento de estado.
+- Vistas de configuración modular embebidas (`PunchiMenuNormalSettingsView` y `PunchiMenuFullScreenSettingsView`) basadas en `PunchiMenuSettingsBase`.
+
+### Cambiado
+
+- Sustitución del archivo monolítico `ConfigPunchiMenu.qml` por paneles de configuración embebidos con aislamiento estricto de preferencias por modo.
+- El retardo de elevación de ventanas al arrastrar archivos sobre el dock (`externalDropActivationDelay`) se redujo de 1600 ms a 250 ms, conforme al estándar oficial de KDE Plasma TaskManager.
+- El ciclo de vida de `DropArea` en el dock se vinculó a `onContainsDragChanged` para garantizar el reseteo inmediato del estado visual al salir el puntero o cancelar un arrastre.
+- La fase de hover en Wayland (`onEntered`) ahora acepta la bandera de URLs (`drag.hasUrls`) y delega la auditoría estricta de seguridad C++ a `onDropped`, previniendo falsos rechazos en listas vacías.
+- Aislamiento en la detección y coincidencia de reproductores KDE MPRIS (Elisa, Spotify, VLC) evitando interferencias con ventanas de terminal u otros procesos.
+- Optimización de la onda elástica (`waveMainAxisShift`) y el cajón de desbordamiento (Overflow Drawer) para paneles verticales y horizontales.
+
+### Corregido
+
+- Se solucionó el fallo de alertas e iconos de advertencia (`dialog-warning-symbolic`) que quedaban congelados de forma permanente sobre los iconos del dock al arrastrar archivos desde Dolphin en Wayland (Debian 13 y Fedora).
+- Se corrigió la fuga de memoria potencial durante el listado asíncrono de carpetas en `SystemDiscovery`.
+- Se corrigió el recorte y la visibilidad de ranuras de inserción en PunchiMenu Normal y Fullscreen.
+- Se restableció la visibilidad y alias de propiedades para las opciones del menú contextual en el KCM de configuración.
+- Se restauraron los permisos de archivo en `.qmltypes`.
+
+### Validación
+
+- Cobertura CTest ampliada de 30 a 38 pruebas unitarias y de integración (100% aprobadas), incluyendo contratos para `ApplicationCategoryClassifier`, `TrashIntegration`, `DockOverflow`, `DockWave`, `PopupCoordinator`, `AppActionsPopup` y `PunchiMenuLayoutModel`.
+- Herramientas automatizadas de ciclo de deuda e inventario `qmllint` añadidas en `scripts/`.
+- Cero deuda técnica nueva en `qmllint` respecto a los baselines de Debian 13 y Fedora.
+- Catálogos ki18n actualizados a 891 mensajes por idioma (100% traducidos en alemán, español y portugués brasileño sin mensajes vacíos ni difusos).
+- Revisión preventiva de seguridad (Preflight) aprobada, manteniendo intacta la política estricta de `DropUrlPolicy`.
+
 ## [0.9.7] - 2026-08-09
 
 ### Agregado

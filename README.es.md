@@ -5,11 +5,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7">
-    <img src="https://img.shields.io/badge/release-v0.9.7-4caf50" alt="Versión v0.9.7">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.39">
+    <img src="https://img.shields.io/badge/release-v0.9.7.39-4caf50" alt="Versión v0.9.7.39">
   </a>
   <a href="LICENSE">
-    <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
+    <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
   </a>
   <a href="https://www.paypal.com/donate/?hosted_button_id=HXFSZU4K8C38W">
     <img src="https://img.shields.io/badge/Donar-PayPal-0070ba" alt="Donar con PayPal">
@@ -18,30 +18,23 @@
 
 [English](README.md) | [Español](README.es.md)
 
-Punchi Dock Remastered es un dock de lanzadores e interfaz de tareas nativo para KDE Plasma 6, diseñado principalmente para Wayland. Puede funcionar como dock flotante o integrarse en un panel de Plasma respetando el tema activo.
+Punchi Dock Remastered es un dock nativo de lanzadores e interfaz de tareas para KDE Plasma 6, diseñado principalmente para Wayland. Puede funcionar como dock flotante o integrarse en un panel de Plasma siguiendo el tema activo.
 
-Este repositorio es una reescritura modular del proyecto original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). Actualmente el proyecto está preparando su camino hacia una versión estable 1.0.
+Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). Actualmente el proyecto prepara su camino hacia la versión estable 1.0.
 
 La versión actual es
-[v0.9.7](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7).
+[v0.9.7.39](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.39).
 
-## Novedades de la versión 0.9.7
+## Novedades de la versión 0.9.7.39
 
-- **Arrastre interno en PunchiMenu**: Aplicaciones, favoritos y carpetas pueden
-  reorganizarse en Normal y Pantalla completa mediante destinos explícitos.
-- **Popups más fiables**: Las miniaturas y tarjetas multimedia preparan una
-  geometría válida antes de que Plasma muestre el diálogo.
-- **Tarjetas MPRIS refinadas**: Los modos tarjeta y carátula completa usan una
-  ruta de estado dedicada, opacidad configurable, margen seguro y recorte
-  redondeado de imagen.
-- **Superficies unificadas**: PunchiMenu, carpetas, menús contextuales y tarjetas
-  multimedia siguen con mayor coherencia el tema y los estados de interacción
-  de Plasma.
-- **Mayor cobertura**: El árbol actual incluye 30 pruebas automatizadas para
-  coordinación de popups, miniaturas, superficies y shaders.
+- **Dashboard Interactivo y Matriz de Auditoría QML**: Panel HTML en tiempo real con filtros por estado (Resueltas/Pendientes), 5 grados de dificultad y exportación a Excel.
+- **Erradicación de `missing-property`**: Eliminación total del 100% de advertencias en miniaturas PipeWire y blindaje del baseline a 0.
+- **Calificación de Ámbitos y Delegados**: Calificación estricta de controladores (`root.controller`), `pragma ComponentBehavior: Bound` y propiedades requeridas en delegados.
+- **Saneamiento de Falsos Positivos**: Más de 270 firmas estáticas de compilación y ki18n depuradas sin riesgo de regresión.
+- **100% Validado**: Suite CTest completa aprobada (38/38) y catálogos de traducción al 100%.
 
-Consulta el [changelog de la versión 0.9.7](CHANGELOG.md#097---2026-08-09) para
-obtener las notas detalladas del lanzamiento.
+Consulta el [changelog de la versión 0.9.7.39](CHANGELOG.md#09739---2026-08-17) para
+conocer las notas detalladas del lanzamiento y la validación realizada.
 
 ## Capturas
 
@@ -123,13 +116,13 @@ En Fedora, `kpackagetool6` pertenece a `kf6-kpackage` y normalmente ya está dis
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.7-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.7.39-fedora44-x86_64.plasmoid
 ```
 
 Para actualizar una instalación existente:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.7-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.7.39-fedora44-x86_64.plasmoid
 ```
 
 Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actualizado no se carga inmediatamente.
@@ -171,7 +164,7 @@ Compila el módulo nativo y crea el artefacto utilizando el script maestro de se
 scripts/setup.sh
 ```
 
-O para generación automática no interactiva del paquete universal:
+Or para generación automática no interactiva del paquete universal:
 
 ```bash
 scripts/setup-universal.sh
@@ -181,8 +174,8 @@ scripts/setup-universal.sh
 dist/punchi-dock-remastered-<versión>-<distribución>-<arquitectura>.plasmoid
 ```
 
-La release 0.9.7 de GitHub ofrece
-`punchi-dock-remastered-0.9.7-fedora44-x86_64.plasmoid`. Los artefactos
+La release 0.9.7.39 de GitHub ofrece
+`punchi-dock-remastered-0.9.7.39-fedora44-x86_64.plasmoid`. Los artefactos
 universales se publican por separado únicamente después de completar su
 compilación en Debian 13 y su validación entre distribuciones.
 No instales un artefacto identificado para otra distribución.

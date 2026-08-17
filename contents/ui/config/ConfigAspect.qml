@@ -136,6 +136,7 @@ KCM.SimpleKCM {
     }
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
+    // qmllint disable unqualified
     readonly property var indicatorTypeOptions: [
         { "text": i18n("Line"), "value": "line" },
         { "text": i18n("Dot"), "value": "dot" },
@@ -143,7 +144,6 @@ KCM.SimpleKCM {
         { "text": i18n("Rounded square"), "value": "square" },
         { "text": i18n("None"), "value": "none" }
     ]
-    // qmllint disable unqualified
     readonly property var indicatorPositionOptions: [
         { "text": i18nc("Indicator position", "Bottom"), "value": "bottom" },
         { "text": i18nc("Indicator position", "Top"), "value": "top" }
@@ -183,16 +183,14 @@ KCM.SimpleKCM {
         }
     }
     // qmllint enable unqualified
-    // qmllint disable unqualified
     readonly property var dockThemeModeOptions: [
-        { "text": i18n("Plasma theme"), "value": "plasma" },
-        { "text": i18n("External JSON theme"), "value": "custom" }
+        { "text": i18n("Plasma theme"), "value": "plasma" }, // qmllint disable unqualified
+        { "text": i18n("External JSON theme"), "value": "custom" } // qmllint disable unqualified
     ]
     readonly property var floatingDockOrientationOptions: [
-        { "text": i18n("Horizontal"), "value": "horizontal" },
-        { "text": i18n("Vertical"), "value": "vertical" }
+        { "text": i18n("Horizontal"), "value": "horizontal" }, // qmllint disable unqualified
+        { "text": i18n("Vertical"), "value": "vertical" } // qmllint disable unqualified
     ]
-    // qmllint enable unqualified
 
     component SectionTitle: Kirigami.Heading {
         Layout.fillWidth: true
@@ -561,7 +559,7 @@ KCM.SimpleKCM {
         // qmllint enable unqualified
 
         RowLayout {
-            Kirigami.FormData.label: i18n("Installed theme:")
+            Kirigami.FormData.label: i18n("Installed theme:") // qmllint disable unqualified
             Layout.maximumWidth: page.contentWidthHint
             visible: !page.inPanel && page.cfg_dockThemeMode === "custom"
 
@@ -580,9 +578,9 @@ KCM.SimpleKCM {
                 displayText: currentIndex >= 0
                     ? currentText
                     : count > 0
-                        ? i18n("Select a theme")
-                        : i18n("No imported themes")
-                Accessible.name: i18n("Installed Punchi Dock theme")
+                        ? i18n("Select a theme") // qmllint disable unqualified
+                        : i18n("No imported themes") // qmllint disable unqualified
+                Accessible.name: i18n("Installed Punchi Dock theme") // qmllint disable unqualified
                 onActivated: {
                     if (page.cfg_dockThemeCustomId !== currentValue) {
                         page.cfg_dockThemeCustomId = currentValue
@@ -596,10 +594,10 @@ KCM.SimpleKCM {
 
             Controls.Button {
                 id: importThemeButton
-                text: i18n("Import…")
+                text: i18n("Import…") // qmllint disable unqualified
                 icon.name: "list-add"
-                Accessible.name: i18n("Import Punchi Dock JSON themes")
-                Accessible.description: i18n("Choose whether to import one JSON theme or all JSON themes from a folder.")
+                Accessible.name: i18n("Import Punchi Dock JSON themes") // qmllint disable unqualified
+                Accessible.description: i18n("Choose whether to import one JSON theme or all JSON themes from a folder.") // qmllint disable unqualified
                 onClicked: importThemeMenu.popup(
                     importThemeButton, 0, importThemeButton.height)
 
@@ -610,12 +608,12 @@ KCM.SimpleKCM {
 
             Controls.Button {
                 id: removeThemeButton
-                text: i18nc("@action:button", "Delete")
+                text: i18nc("@action:button", "Delete") // qmllint disable unqualified
                 icon.name: "edit-delete-symbolic"
                 display: Controls.AbstractButton.IconOnly
                 enabled: dockThemeLibraryCombo.currentIndex >= 0
                     && String(dockThemeLibraryCombo.currentValue || "").length > 0
-                Accessible.name: i18n("Delete the selected installed Punchi Dock theme")
+                Accessible.name: i18n("Delete the selected installed Punchi Dock theme") // qmllint disable unqualified
                 onClicked: page.requestSelectedThemeRemoval()
 
                 Controls.ToolTip.visible: hovered
@@ -631,7 +629,7 @@ KCM.SimpleKCM {
             visible: !page.inPanel
                 && page.cfg_dockThemeMode === "custom"
                 && dockThemeRepository.availableThemes.length === 0
-            text: i18n("Import a JSON theme to add it to your Punchi Dock Remastered library.")
+            text: i18n("Import a JSON theme to add it to your Punchi Dock Remastered library.") // qmllint disable unqualified
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
@@ -707,13 +705,13 @@ KCM.SimpleKCM {
 
         SectionTitle {
             Kirigami.FormData.isSection: true
-            text: i18n("Labels")
+            text: i18n("Labels") // qmllint disable unqualified
         }
 
         Controls.CheckBox {
             id: showLabelsCheck
-            Kirigami.FormData.label: i18n("Labels:")
-            text: i18n("Show item names in the dock")
+            Kirigami.FormData.label: i18n("Labels:") // qmllint disable unqualified
+            text: i18n("Show item names in the dock") // qmllint disable unqualified
 
             ConfigCursorBehavior {
                 cursorEnabled: page.interactiveCursorEnabled
@@ -722,11 +720,11 @@ KCM.SimpleKCM {
 
         Controls.CheckBox {
             id: dockTextShadowsCheck
-            Kirigami.FormData.label: i18n("Text shadows:")
-            text: i18n("Show subtle shadows on dock labels")
+            Kirigami.FormData.label: i18n("Text shadows:") // qmllint disable unqualified
+            text: i18n("Show subtle shadows on dock labels") // qmllint disable unqualified
             checked: showLabelsCheck.checked && dockTextShadowPreference.value
             enabled: showLabelsCheck.checked
-            Accessible.description: i18n("Available when dock item names are shown.")
+            Accessible.description: i18n("Available when dock item names are shown.") // qmllint disable unqualified
             onClicked: dockTextShadowPreference.value = checked
 
             ConfigCursorBehavior {
@@ -735,7 +733,7 @@ KCM.SimpleKCM {
         }
 
         Controls.Label {
-            text: i18n("Labels use a compact single-line style so the dock can remain readable without turning every item into a large card.")
+            text: i18n("Labels use a compact single-line style so the dock can remain readable without turning every item into a large card.") // qmllint disable unqualified
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
@@ -749,14 +747,14 @@ KCM.SimpleKCM {
 
         SectionTitle {
             Kirigami.FormData.isSection: true
-            text: i18n("Icon reflections")
+            text: i18n("Icon reflections") // qmllint disable unqualified
         }
 
         Controls.CheckBox {
             id: iconReflectionsCheck
             enabled: page.iconReflectionsSupported && !showLabelsCheck.checked
-            Kirigami.FormData.label: i18n("Reflection:")
-            text: i18n("Show reflections below dock items")
+            Kirigami.FormData.label: i18n("Reflection:") // qmllint disable unqualified
+            text: i18n("Show reflections below dock items") // qmllint disable unqualified
             // qmllint disable unqualified
             Accessible.description: !page.iconReflectionsSupported
                 ? i18n("Icon reflections are unavailable in vertical panels.")
@@ -826,11 +824,11 @@ KCM.SimpleKCM {
 
         SectionTitle {
             Kirigami.FormData.isSection: true
-            text: i18n("Indicator")
+            text: i18n("Indicator") // qmllint disable unqualified
         }
 
         RowLayout {
-            Kirigami.FormData.label: i18n("Indicator shape:")
+            Kirigami.FormData.label: i18n("Indicator shape:") // qmllint disable unqualified
             Layout.maximumWidth: page.contentWidthHint
 
             Controls.ComboBox {

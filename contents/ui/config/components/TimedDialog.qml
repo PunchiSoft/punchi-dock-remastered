@@ -24,10 +24,10 @@ Controls.Dialog {
     property var calendarBorderColorControl
     property var calendarRadiusControl
     modal: true
-    title: controller.selectedConfigureTitle()
+    title: timedDialog.controller.selectedConfigureTitle()
     standardButtons: Controls.Dialog.Close
-    width: Math.min(controller.width - Kirigami.Units.largeSpacing * 2, Kirigami.Units.gridUnit * 42)
-    height: Math.min(controller.height - Kirigami.Units.largeSpacing * 2, timedDialogContent.implicitHeight + Kirigami.Units.gridUnit * 8)
+    width: Math.min(timedDialog.controller.width - Kirigami.Units.largeSpacing * 2, Kirigami.Units.gridUnit * 42)
+    height: Math.min(timedDialog.controller.height - Kirigami.Units.largeSpacing * 2, timedDialogContent.implicitHeight + Kirigami.Units.gridUnit * 8)
 
     ColumnLayout {
         id: timedDialogContent
@@ -43,7 +43,7 @@ Controls.Dialog {
             Controls.Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-                text: i18n("Name:")
+                text: i18n("Name:") // qmllint disable unqualified
                 horizontalAlignment: Text.AlignLeft
                 opacity: 0.75
             }
@@ -55,53 +55,53 @@ Controls.Dialog {
                 Controls.TextField {
                     id: itemName
                     Layout.fillWidth: true
-                    enabled: controller.selectedIndex >= 0
-                    onEditingFinished: controller.applyItemForm()
+                    enabled: timedDialog.controller.selectedIndex >= 0
+                    onEditingFinished: timedDialog.controller.applyItemForm()
                 }
             }
 
             Controls.Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                visible: controller.selectedItemType === "clock"
-                text: i18n("Item width:")
+                visible: timedDialog.controller.selectedItemType === "clock"
+                text: i18n("Item width:") // qmllint disable unqualified
                 horizontalAlignment: Text.AlignLeft
                 opacity: 0.75
             }
 
             RowLayout {
                 Layout.fillWidth: true
-                visible: controller.selectedItemType === "clock"
-                enabled: controller.selectedIndex >= 0
+                visible: timedDialog.controller.selectedItemType === "clock"
+                enabled: timedDialog.controller.selectedIndex >= 0
                 spacing: Kirigami.Units.smallSpacing
 
                 Controls.Label {
-                    visible: controller.selectedItemType === "clock"
-                    text: i18n("Width:")
+                    visible: timedDialog.controller.selectedItemType === "clock"
+                    text: i18n("Width:") // qmllint disable unqualified
                     opacity: 0.75
                 }
 
                 Controls.SpinBox {
                     id: timedItemWidth
                     Layout.preferredWidth: Kirigami.Units.gridUnit * 7
-                    enabled: controller.selectedIndex >= 0
+                    enabled: timedDialog.controller.selectedIndex >= 0
                     from: 0
                     to: 600
                     stepSize: 10
                     textFromValue: function(value) {
-                        return value === 0 ? i18n("Automatic") : value + " px"
+                        return value === 0 ? i18n("Automatic") : value + " px" // qmllint disable unqualified
                     }
                     valueFromText: function(text) {
-                        return text === i18n("Automatic") ? 0 : Number.fromLocaleString(Qt.locale(), text.replace("px", ""))
+                        return text === i18n("Automatic") ? 0 : Number.fromLocaleString(Qt.locale(), text.replace("px", "")) // qmllint disable unqualified
                     }
-                    onValueModified: controller.applyItemForm()
+                    onValueModified: timedDialog.controller.applyItemForm()
 
                     Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: i18n("Item width:")
+                    Controls.ToolTip.text: i18n("Item width:") // qmllint disable unqualified
                 }
 
                 Controls.Label {
                     visible: false
-                    text: i18n("Height:")
+                    text: i18n("Height:") // qmllint disable unqualified
                     opacity: 0.75
                 }
 
@@ -109,27 +109,27 @@ Controls.Dialog {
                     id: calendarItemHeight
                     Layout.preferredWidth: Kirigami.Units.gridUnit * 7
                     visible: false
-                    enabled: controller.selectedIndex >= 0
+                    enabled: timedDialog.controller.selectedIndex >= 0
                     from: 0
                     to: 600
                     stepSize: 10
                     textFromValue: function(value) {
-                        return value === 0 ? i18n("Automatic") : value + " px"
+                        return value === 0 ? i18n("Automatic") : value + " px" // qmllint disable unqualified
                     }
                     valueFromText: function(text) {
-                        return text === i18n("Automatic") ? 0 : Number.fromLocaleString(Qt.locale(), text.replace("px", ""))
+                        return text === i18n("Automatic") ? 0 : Number.fromLocaleString(Qt.locale(), text.replace("px", "")) // qmllint disable unqualified
                     }
-                    onValueModified: controller.applyItemForm()
+                    onValueModified: timedDialog.controller.applyItemForm()
 
                     Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: i18n("Item height:")
+                    Controls.ToolTip.text: i18n("Item height:") // qmllint disable unqualified
                 }
             }
 
             Controls.Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 visible: false
-                text: i18n("Text scale:")
+                text: i18n("Text scale:") // qmllint disable unqualified
                 horizontalAlignment: Text.AlignLeft
                 opacity: 0.75
             }
@@ -137,7 +137,7 @@ Controls.Dialog {
             RowLayout {
                 Layout.fillWidth: true
                 visible: false
-                enabled: controller.selectedIndex >= 0
+                enabled: timedDialog.controller.selectedIndex >= 0
                 spacing: Kirigami.Units.smallSpacing
 
                 Controls.Slider {
@@ -147,10 +147,10 @@ Controls.Dialog {
                     to: 1.8
                     stepSize: 0.05
                     snapMode: Controls.Slider.SnapAlways
-                    onMoved: controller.applyItemForm()
+                    onMoved: timedDialog.controller.applyItemForm()
                     onValueChanged: {
-                        if (!controller.syncing) {
-                            controller.applyItemForm()
+                        if (!timedDialog.controller.syncing) {
+                            timedDialog.controller.applyItemForm()
                         }
                     }
                 }

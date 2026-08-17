@@ -1,8 +1,9 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import org.kde.kirigami as Kirigami
-
 
 Controls.Frame {
     id: root
@@ -17,8 +18,8 @@ Controls.Frame {
     }
 
     Layout.fillWidth: true
-    Layout.preferredHeight: controller.itemsColumnBodyHeight
-    Layout.maximumHeight: controller.itemsColumnBodyHeight
+    Layout.preferredHeight: root.controller.itemsColumnBodyHeight
+    Layout.maximumHeight: root.controller.itemsColumnBodyHeight
 
     ColumnLayout {
         anchors.fill: parent
@@ -29,41 +30,48 @@ Controls.Frame {
             Layout.fillHeight: true
             clip: true
             model: root.itemModel
-            currentIndex: controller.selectedIndex
+            currentIndex: root.controller.selectedIndex
             boundsBehavior: Flickable.StopAtBounds
             Controls.ScrollBar.vertical: Controls.ScrollBar {
                 policy: Controls.ScrollBar.AsNeeded
             }
 
             delegate: Controls.ItemDelegate {
+                id: itemDelegate
+
+                required property int index
+                required property string title
+                required property string subtitle
+                required property string iconName
+
                 HoverHandler { cursorShape: Qt.PointingHandCursor }
                 property bool hasVerticalScroll: itemList.contentHeight > itemList.height
 
                 width: itemList.width
-                height: controller.listRowHeight
-                rightPadding: width * 0.42 + Kirigami.Units.largeSpacing + (hasVerticalScroll ? controller.listScrollGutter : 0)
-                text: title
-                icon.name: iconName
-                icon.source: controller.iconPreviewSource(iconName)
-                highlighted: index === controller.selectedIndex
-                onClicked: controller.selectItem(index)
+                height: root.controller.listRowHeight
+                rightPadding: width * 0.42 + Kirigami.Units.largeSpacing + (hasVerticalScroll ? root.controller.listScrollGutter : 0)
+                text: itemDelegate.title
+                icon.name: itemDelegate.iconName
+                icon.source: root.controller.iconPreviewSource(itemDelegate.iconName)
+                highlighted: itemDelegate.index === root.controller.selectedIndex
+                onClicked: root.controller.selectItem(itemDelegate.index)
 
                 TapHandler {
                     acceptedButtons: Qt.LeftButton
                     onDoubleTapped: {
-                        controller.selectItem(index)
-                        if (controller.canConfigureSelectedItem()) {
-                            controller.configureSelectedItem()
+                        root.controller.selectItem(itemDelegate.index)
+                        if (root.controller.canConfigureSelectedItem()) {
+                            root.controller.configureSelectedItem()
                         }
                     }
                 }
 
                 Controls.Label {
                     anchors.right: parent.right
-                    anchors.rightMargin: Kirigami.Units.smallSpacing + (parent.hasVerticalScroll ? controller.listScrollGutter : 0)
+                    anchors.rightMargin: Kirigami.Units.smallSpacing + (itemDelegate.hasVerticalScroll ? root.controller.listScrollGutter : 0)
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width * 0.38
-                    text: subtitle
+                    text: itemDelegate.subtitle
                     elide: Text.ElideRight
                     opacity: 0.7
                     horizontalAlignment: Text.AlignRight
@@ -77,15 +85,15 @@ Controls.Frame {
             Controls.Button {
                 HoverHandler { cursorShape: Qt.PointingHandCursor }
                 icon.name: "go-up-symbolic"
-                enabled: controller.selectedIndex > 0
-                onClicked: controller.moveSelectedItem(-1)
+                enabled: root.controller.selectedIndex > 0
+                onClicked: root.controller.moveSelectedItem(-1)
             }
 
             Controls.Button {
                 HoverHandler { cursorShape: Qt.PointingHandCursor }
                 icon.name: "go-down-symbolic"
-                enabled: controller.selectedIndex >= 0 && controller.selectedIndex < controller.items.length - 1
-                onClicked: controller.moveSelectedItem(1)
+                enabled: root.controller.selectedIndex >= 0 && root.controller.selectedIndex < root.controller.items.length - 1
+                onClicked: root.controller.moveSelectedItem(1)
             }
 
             Item {
@@ -97,18 +105,18 @@ Controls.Frame {
                 text: i18n("Configure") // qmllint disable unqualified
                 icon.name: "configure-symbolic"
                 display: Controls.AbstractButton.TextBesideIcon
-                enabled: controller.canConfigureSelectedItem()
-                onClicked: controller.configureSelectedItem()
+                enabled: root.controller.canConfigureSelectedItem()
+                onClicked: root.controller.configureSelectedItem()
 
                 Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: controller.selectedConfigureTitle()
+                Controls.ToolTip.text: root.controller.selectedConfigureTitle()
             }
 
             Controls.Button {
                 HoverHandler { cursorShape: Qt.PointingHandCursor }
                 icon.name: "edit-delete-symbolic"
-                enabled: controller.selectedIndex >= 0
-                onClicked: controller.removeSelectedItem()
+                enabled: root.controller.selectedIndex >= 0
+                onClicked: root.controller.removeSelectedItem()
             }
         }
     }

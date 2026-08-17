@@ -39,34 +39,32 @@ Item {
         { "text": i18n("None"), "value": "none" }
     ]
     // qmllint enable unqualified
-    // qmllint disable unqualified
     readonly property var previewInfoOptions: [
-        { "text": i18nc("@item:inlistbox Window preview information", "Icon and text"), "value": "full" },
-        { "text": i18nc("@item:inlistbox Window preview information", "Icon only"), "value": "icon" },
-        { "text": i18nc("@item:inlistbox Window preview information", "Hidden"), "value": "none" }
+        { "text": i18nc("@item:inlistbox Window preview information", "Icon and text"), "value": "full" }, // qmllint disable unqualified
+        { "text": i18nc("@item:inlistbox Window preview information", "Icon only"), "value": "icon" }, // qmllint disable unqualified
+        { "text": i18nc("@item:inlistbox Window preview information", "Hidden"), "value": "none" } // qmllint disable unqualified
     ]
     readonly property var previewFrameSizeOptions: [
-        { "text": i18nc("@item:inlistbox Window preview background frame", "Thin"), "value": "thin" },
-        { "text": i18nc("@item:inlistbox Window preview background frame", "Medium"), "value": "medium" },
-        { "text": i18nc("@item:inlistbox Window preview background frame", "Wide"), "value": "wide" }
+        { "text": i18nc("@item:inlistbox Window preview background frame", "Thin"), "value": "thin" }, // qmllint disable unqualified
+        { "text": i18nc("@item:inlistbox Window preview background frame", "Medium"), "value": "medium" }, // qmllint disable unqualified
+        { "text": i18nc("@item:inlistbox Window preview background frame", "Wide"), "value": "wide" } // qmllint disable unqualified
     ]
     readonly property var mediaControlsModeOptions: {
         const options = [
-            { "text": i18nc("@item:inlistbox Media player hover mode", "Replace preview with media card"), "value": "card" },
-            { "text": i18nc("@item:inlistbox Media player hover mode", "Replace preview with full cover media card"), "value": "fullCard" }
+            { "text": i18nc("@item:inlistbox Media player hover mode", "Replace preview with media card"), "value": "card" }, // qmllint disable unqualified
+            { "text": i18nc("@item:inlistbox Media player hover mode", "Replace preview with full cover media card"), "value": "fullCard" } // qmllint disable unqualified
         ]
         if (previewStyle !== "none") {
             options.push({
-                "text": i18nc("@item:inlistbox Media player hover mode", "Show media card below window previews"),
+                "text": i18nc("@item:inlistbox Media player hover mode", "Show media card below window previews"), // qmllint disable unqualified
                 "value": "overlay"
             })
         }
         options.push({
-            "text": i18nc("@item:inlistbox Media player hover mode", "Disabled"), "value": "none"
+            "text": i18nc("@item:inlistbox Media player hover mode", "Disabled"), "value": "none" // qmllint disable unqualified
         })
         return options
     }
-    // qmllint enable unqualified
     component SectionTitle: Kirigami.Heading {
         Layout.fillWidth: true
         level: 3

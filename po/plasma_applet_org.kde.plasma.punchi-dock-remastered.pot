@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7.39\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-16 10:32-0400\n"
+"POT-Creation-Date: 2026-08-17 13:10-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,7 +74,7 @@ msgid "%1 of %2 items"
 msgstr ""
 
 #: contents/ui/components/DockItem.qml:1236
-#: contents/ui/components/TaskOverflowPopup.qml:109
+#: contents/ui/components/TaskOverflowPopup.qml:111
 msgid "%1 open window"
 msgid_plural "%1 open windows"
 msgstr[0] ""
@@ -101,8 +101,8 @@ msgstr ""
 
 #: contents/ui/config/components/ActionDialog.qml:80
 #: contents/ui/config/ConfigItems.qml:655
-#: contents/ui/config/ItemActionEditor.qml:34
-#: contents/ui/config/ItemActionEditor.qml:100
+#: contents/ui/config/ItemActionEditor.qml:35
+#: contents/ui/config/ItemActionEditor.qml:101
 msgid "%1 rows"
 msgstr ""
 
@@ -169,9 +169,9 @@ msgstr ""
 #: contents/ui/config/ConfigMenus.qml:347
 #: contents/ui/config/ConfigMouse.qml:135
 #: contents/ui/config/ConfigMouse.qml:177
-#: contents/ui/config/ConfigPopups.qml:225
-#: contents/ui/config/ConfigPopups.qml:268
-#: contents/ui/config/ConfigPopups.qml:308
+#: contents/ui/config/ConfigPopups.qml:223
+#: contents/ui/config/ConfigPopups.qml:266
+#: contents/ui/config/ConfigPopups.qml:306
 #, javascript-format
 msgid "%1%"
 msgstr ""
@@ -202,7 +202,7 @@ msgctxt "@info:accessible"
 msgid "%1. Playing."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:275
+#: contents/ui/config/ConfigPopups.qml:273
 msgid ""
 "100 percent uses the recommended base size. Larger previews keep their "
 "aspect ratio and remain limited by the available screen space."
@@ -270,7 +270,7 @@ msgstr ""
 msgid "Activate window"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:153
+#: contents/ui/config/ConfigPopups.qml:151
 msgid ""
 "Active applications do not show hover previews or grouped-window popups."
 msgstr ""
@@ -389,7 +389,7 @@ msgstr ""
 msgid "Adjusts the spacing between dock icons from 0 to 24 pixels."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:259
+#: contents/ui/config/ConfigPopups.qml:257
 msgid "Adjusts the window preview scale between 100 and 300 percent."
 msgstr ""
 
@@ -572,7 +572,7 @@ msgstr ""
 msgid "Applies to folder popup labels and note popup titles."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:403
+#: contents/ui/config/ConfigPopups.qml:401
 msgid "Applies to window titles, window details and overflow group labels."
 msgstr ""
 
@@ -703,7 +703,7 @@ msgstr ""
 msgid "Background blur:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:326
+#: contents/ui/config/ConfigPopups.qml:324
 msgid "Background frame:"
 msgstr ""
 
@@ -711,7 +711,7 @@ msgstr ""
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:128
 #: contents/ui/config/ConfigFolderPopups.qml:215
 #: contents/ui/config/ConfigMenus.qml:233
-#: contents/ui/config/ConfigPopups.qml:285
+#: contents/ui/config/ConfigPopups.qml:283
 msgid "Background opacity:"
 msgstr ""
 
@@ -983,8 +983,8 @@ msgid ""
 "keeps them expanded."
 msgstr ""
 
-#: contents/ui/config/components/TrashDialog.qml:106
-#: contents/ui/config/components/TrashDialog.qml:136
+#: contents/ui/config/components/TrashDialog.qml:105
+#: contents/ui/config/components/TrashDialog.qml:135
 #: contents/ui/config/ConfigItems.qml:587
 #: contents/ui/config/ConfigItems.qml:642
 msgid "Choose icon"
@@ -996,7 +996,7 @@ msgid ""
 "categories."
 msgstr ""
 
-#: contents/ui/config/components/TrashDialog.qml:203
+#: contents/ui/config/components/TrashDialog.qml:202
 #: contents/ui/config/ConfigItems.qml:749
 msgid "Choose sound"
 msgstr ""
@@ -1016,7 +1016,7 @@ msgid ""
 "Choose whether to import one JSON theme or all JSON themes from a folder."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:389
+#: contents/ui/config/ConfigPopups.qml:387
 msgid ""
 "Choose whether window previews show the app icon with window details, only "
 "the icon, or no information overlay."
@@ -1036,11 +1036,11 @@ msgstr ""
 msgid "Clean"
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:111
+#: contents/ui/config/ConfigFiles.qml:110
 msgid "Clean completed."
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:161
+#: contents/ui/config/ConfigFiles.qml:160
 msgid "Clean configuration file?"
 msgstr ""
 
@@ -1104,7 +1104,7 @@ msgstr ""
 msgid "Close button:"
 msgstr ""
 
-#: contents/ui/components/TaskOverflowPopup.qml:173
+#: contents/ui/components/TaskOverflowPopup.qml:175
 #: contents/ui/components/TaskWindowsPopup.qml:366
 #: contents/ui/components/WindowPreviewCard.qml:229
 msgid "Close window"
@@ -1116,7 +1116,7 @@ msgctxt "@action:button"
 msgid "Close window"
 msgstr ""
 
-#: contents/ui/components/TaskOverflowPopup.qml:75
+#: contents/ui/components/TaskOverflowPopup.qml:77
 msgid "Close window group list"
 msgstr ""
 
@@ -1162,7 +1162,7 @@ msgstr ""
 msgid "Configuration file"
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:203
+#: contents/ui/config/ConfigFiles.qml:202
 msgid "Configuration imported successfully."
 msgstr ""
 
@@ -1222,7 +1222,7 @@ msgid "Configure spacer"
 msgstr ""
 
 #: contents/ui/config/code/configItemsWorkflowHelper.js:360
-#: contents/ui/config/components/TrashDialog.qml:27
+#: contents/ui/config/components/TrashDialog.qml:26
 msgid "Configure trash"
 msgstr ""
 
@@ -1273,8 +1273,8 @@ msgid ""
 "popup or menu animations."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:339
-#: contents/ui/config/ConfigPopups.qml:353
+#: contents/ui/config/ConfigPopups.qml:337
+#: contents/ui/config/ConfigPopups.qml:351
 msgid ""
 "Controls the themed space around window previews without changing their size."
 msgstr ""
@@ -1283,7 +1283,7 @@ msgstr ""
 msgid "Copied"
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:130
+#: contents/ui/config/ConfigFiles.qml:129
 msgid ""
 "Copied to clipboard! You can paste this in any file to save your backup."
 msgstr ""
@@ -1362,12 +1362,12 @@ msgstr ""
 msgid "Date text scale:"
 msgstr ""
 
-#: contents/ui/config/components/TrashDialog.qml:194
+#: contents/ui/config/components/TrashDialog.qml:193
 #: contents/ui/config/ConfigFileToolbar.qml:41
 msgid "Default"
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:104
+#: contents/ui/config/ConfigFiles.qml:103
 msgid "Default items restored."
 msgstr ""
 
@@ -1453,7 +1453,7 @@ msgctxt "@info Window live preview state"
 msgid "Disabled"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:65
+#: contents/ui/config/ConfigPopups.qml:64
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Disabled"
 msgstr ""
@@ -1545,7 +1545,7 @@ msgctxt "@item:inlistbox Separator shape"
 msgid "Double line"
 msgstr ""
 
-#: contents/ui/config/components/TrashDialog.qml:75
+#: contents/ui/config/components/TrashDialog.qml:74
 msgid "Drag files"
 msgstr ""
 
@@ -1599,11 +1599,11 @@ msgstr ""
 msgid "Empty Trash"
 msgstr ""
 
-#: contents/ui/config/components/TrashDialog.qml:91
+#: contents/ui/config/components/TrashDialog.qml:90
 msgid "Empty icon:"
 msgstr ""
 
-#: contents/ui/config/components/TrashDialog.qml:157
+#: contents/ui/config/components/TrashDialog.qml:156
 msgid "Empty sound:"
 msgstr ""
 
@@ -1664,7 +1664,7 @@ msgstr ""
 msgid "Fade"
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:215
+#: contents/ui/config/ConfigFiles.qml:214
 msgid "Failed to read file."
 msgstr ""
 
@@ -1789,19 +1789,19 @@ msgstr ""
 msgid "Font size:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:187
+#: contents/ui/config/ConfigPopups.qml:185
 msgid ""
 "For MPRIS-compatible applications, displays media playback controls below "
 "the window preview list."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:189
+#: contents/ui/config/ConfigPopups.qml:187
 msgid ""
 "For MPRIS-compatible applications, replaces the window preview with a full "
 "cover background media card."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:191
+#: contents/ui/config/ConfigPopups.qml:189
 msgid ""
 "For MPRIS-compatible applications, replaces the window preview with artwork, "
 "playback controls, and volume card."
@@ -1839,7 +1839,7 @@ msgctxt "@item:inlistbox Context menu entrance"
 msgid "From the top"
 msgstr ""
 
-#: contents/ui/config/components/TrashDialog.qml:121
+#: contents/ui/config/components/TrashDialog.qml:120
 msgid "Full icon:"
 msgstr ""
 
@@ -1911,7 +1911,7 @@ msgstr ""
 msgid "Height:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:46
+#: contents/ui/config/ConfigPopups.qml:45
 msgctxt "@item:inlistbox Window preview information"
 msgid "Hidden"
 msgstr ""
@@ -1979,12 +1979,12 @@ msgstr ""
 msgid "Hover enlargement:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:44
+#: contents/ui/config/ConfigPopups.qml:43
 msgctxt "@item:inlistbox Window preview information"
 msgid "Icon and text"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:45
+#: contents/ui/config/ConfigPopups.qml:44
 msgctxt "@item:inlistbox Window preview information"
 msgid "Icon only"
 msgstr ""
@@ -2019,7 +2019,7 @@ msgstr ""
 msgid "Icon:"
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:177
+#: contents/ui/config/ConfigFiles.qml:176
 msgid "Import JSON Configuration"
 msgstr ""
 
@@ -2130,7 +2130,7 @@ msgctxt "@title:category"
 msgid "Internet"
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:91
+#: contents/ui/config/ConfigFiles.qml:90
 msgid "Invalid JSON: %1"
 msgstr ""
 
@@ -2163,11 +2163,11 @@ msgstr ""
 msgid "Items to add"
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:16
+#: contents/ui/config/ConfigFiles.qml:15
 msgid "JSON Configuration"
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:96
+#: contents/ui/config/ConfigFiles.qml:95
 msgid "JSON looks valid."
 msgstr ""
 
@@ -2252,7 +2252,7 @@ msgstr ""
 msgid "Limit:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:425
+#: contents/ui/config/ConfigPopups.qml:423
 msgid ""
 "Limits visible popup rows; additional entries remain accessible by scrolling."
 msgstr ""
@@ -2281,7 +2281,7 @@ msgstr ""
 msgid "Load content"
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:211
+#: contents/ui/config/ConfigFiles.qml:210
 msgid "Loaded file, but JSON is invalid: %1"
 msgstr ""
 
@@ -2328,7 +2328,7 @@ msgstr ""
 msgid "Maximize"
 msgstr ""
 
-#: contents/ui/components/TaskOverflowPopup.qml:161
+#: contents/ui/components/TaskOverflowPopup.qml:163
 #: contents/ui/components/TaskWindowsPopup.qml:333
 #: contents/ui/components/WindowPreviewCard.qml:215
 msgid "Maximize window"
@@ -2374,7 +2374,7 @@ msgstr ""
 msgid "Maximum visible folder popup rows"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:417
+#: contents/ui/config/ConfigPopups.qml:415
 msgid "Maximum visible popup rows"
 msgstr ""
 
@@ -2384,17 +2384,17 @@ msgctxt "@info:accessible"
 msgid "Media application"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:192
+#: contents/ui/config/ConfigPopups.qml:190
 msgid ""
 "Media applications behave like standard windows without showing media "
 "controls on hover."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:215
+#: contents/ui/config/ConfigPopups.qml:213
 msgid "Media card background opacity"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:201
+#: contents/ui/config/ConfigPopups.qml:199
 msgid "Media card opacity:"
 msgstr ""
 
@@ -2430,7 +2430,7 @@ msgstr ""
 msgid "Media player item"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:162
+#: contents/ui/config/ConfigPopups.qml:160
 msgid "Media players:"
 msgstr ""
 
@@ -2439,7 +2439,7 @@ msgctxt "@label:slider"
 msgid "Media volume"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:50
+#: contents/ui/config/ConfigPopups.qml:49
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Medium"
 msgstr ""
@@ -2496,13 +2496,13 @@ msgstr ""
 msgid "Minimize"
 msgstr ""
 
-#: contents/ui/components/TaskOverflowPopup.qml:146
+#: contents/ui/components/TaskOverflowPopup.qml:148
 #: contents/ui/components/TaskWindowsPopup.qml:298
 #: contents/ui/components/WindowPreviewCard.qml:200
 msgid "Minimize window"
 msgstr ""
 
-#: contents/ui/components/TaskOverflowPopup.qml:64
+#: contents/ui/components/TaskOverflowPopup.qml:66
 msgid "More window groups"
 msgstr ""
 
@@ -2547,7 +2547,7 @@ msgid "Mute media volume"
 msgstr ""
 
 #: contents/ui/config/components/TimedDialog.qml:46
-#: contents/ui/config/components/TrashDialog.qml:43
+#: contents/ui/config/components/TrashDialog.qml:42
 #: contents/ui/config/ConfigItems.qml:625
 msgid "Name:"
 msgstr ""
@@ -2726,7 +2726,7 @@ msgstr ""
 msgid "Only one PunchiMenu item can be added."
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:85
+#: contents/ui/config/ConfigFiles.qml:84
 msgid "Only one PunchiMenu item is allowed in the dock configuration."
 msgstr ""
 
@@ -2735,7 +2735,7 @@ msgstr ""
 msgid "Only one media player item can be added."
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:86
+#: contents/ui/config/ConfigFiles.qml:85
 msgid "Only one media player item is allowed in the dock configuration."
 msgstr ""
 
@@ -2757,15 +2757,15 @@ msgid ""
 "text remain fully opaque."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:216
-#: contents/ui/config/ConfigPopups.qml:233
+#: contents/ui/config/ConfigPopups.qml:214
+#: contents/ui/config/ConfigPopups.qml:231
 msgid ""
 "Only the media card background changes; artwork, controls and text remain "
 "fully opaque."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:299
-#: contents/ui/config/ConfigPopups.qml:316
+#: contents/ui/config/ConfigPopups.qml:297
+#: contents/ui/config/ConfigPopups.qml:314
 msgid ""
 "Only the popup background changes; thumbnails, window content, controls and "
 "text remain fully opaque."
@@ -2949,7 +2949,7 @@ msgstr ""
 msgid "Popup distance:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:412
+#: contents/ui/config/ConfigPopups.qml:410
 msgid "Popup rows:"
 msgstr ""
 
@@ -2987,15 +2987,15 @@ msgstr ""
 msgid "Preview disabled"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:363
+#: contents/ui/config/ConfigPopups.qml:361
 msgid "Preview information:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:125
+#: contents/ui/config/ConfigPopups.qml:123
 msgid "Preview popup:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:244
+#: contents/ui/config/ConfigPopups.qml:242
 msgid "Preview scale:"
 msgstr ""
 
@@ -3207,12 +3207,12 @@ msgctxt "@action:button"
 msgid "Repeat track"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:56
+#: contents/ui/config/ConfigPopups.qml:55
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with full cover media card"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:55
+#: contents/ui/config/ConfigPopups.qml:54
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with media card"
 msgstr ""
@@ -3235,7 +3235,7 @@ msgstr ""
 msgid "Restore from maximized"
 msgstr ""
 
-#: contents/ui/components/TaskOverflowPopup.qml:145
+#: contents/ui/components/TaskOverflowPopup.qml:147
 #: contents/ui/components/TaskWindowsPopup.qml:297
 #: contents/ui/components/WindowPreviewCard.qml:199
 msgid "Restore from minimized state"
@@ -3246,7 +3246,7 @@ msgctxt "@action:button"
 msgid "Restore media volume"
 msgstr ""
 
-#: contents/ui/components/TaskOverflowPopup.qml:160
+#: contents/ui/components/TaskOverflowPopup.qml:162
 #: contents/ui/components/TaskWindowsPopup.qml:332
 #: contents/ui/components/WindowPreviewCard.qml:214
 msgid "Restore window size"
@@ -3463,7 +3463,7 @@ msgstr ""
 msgid "Show item names in the dock"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:60
+#: contents/ui/config/ConfigPopups.qml:59
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Show media card below window previews"
 msgstr ""
@@ -3502,7 +3502,7 @@ msgstr ""
 msgid "Show subtle shadows on popup text"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:401
+#: contents/ui/config/ConfigPopups.qml:399
 msgid "Show subtle shadows on window preview text"
 msgstr ""
 
@@ -3510,7 +3510,7 @@ msgstr ""
 msgid "Show the number of open windows"
 msgstr ""
 
-#: contents/ui/config/components/TrashDialog.qml:68
+#: contents/ui/config/components/TrashDialog.qml:67
 msgid "Show trash state"
 msgstr ""
 
@@ -3644,7 +3644,7 @@ msgstr ""
 msgid "Tasks:"
 msgstr ""
 
-#: contents/ui/config/components/TrashDialog.qml:185
+#: contents/ui/config/components/TrashDialog.qml:184
 msgid "Test sound"
 msgstr ""
 
@@ -3659,7 +3659,7 @@ msgstr ""
 #: contents/ui/config/ConfigAspect.qml:725
 #: contents/ui/config/ConfigFolderPopups.qml:485
 #: contents/ui/config/ConfigMenus.qml:273
-#: contents/ui/config/ConfigPopups.qml:400
+#: contents/ui/config/ConfigPopups.qml:398
 msgid "Text shadows:"
 msgstr ""
 
@@ -3758,7 +3758,7 @@ msgid ""
 "folder popups."
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:77 contents/ui/config/ConfigFiles.qml:207
+#: contents/ui/config/ConfigFiles.qml:76 contents/ui/config/ConfigFiles.qml:206
 msgid "The dock configuration contains too many items. The maximum is %1."
 msgstr ""
 
@@ -3766,8 +3766,8 @@ msgstr ""
 msgid "The dock configuration is too large."
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:46 contents/ui/config/ConfigFiles.qml:63
-#: contents/ui/config/ConfigFiles.qml:193
+#: contents/ui/config/ConfigFiles.qml:45 contents/ui/config/ConfigFiles.qml:62
+#: contents/ui/config/ConfigFiles.qml:192
 msgid ""
 "The dock configuration is too large. The maximum supported size is 1 MiB."
 msgstr ""
@@ -3825,7 +3825,7 @@ msgctxt "@info:status"
 msgid "The requested application action could not be completed."
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:71
+#: contents/ui/config/ConfigFiles.qml:70
 msgid "The root value must be a JSON array."
 msgstr ""
 
@@ -3894,7 +3894,7 @@ msgstr ""
 msgid "Thickness:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:49
+#: contents/ui/config/ConfigPopups.qml:48
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Thin"
 msgstr ""
@@ -3951,7 +3951,7 @@ msgid ""
 "theme."
 msgstr ""
 
-#: contents/ui/config/ConfigFiles.qml:171
+#: contents/ui/config/ConfigFiles.qml:170
 msgid ""
 "This will replace the saved dock items with an empty array. This cannot be "
 "undone from Punchi Dock."
@@ -4140,7 +4140,7 @@ msgid ""
 "selectors use an interactive pointer."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:51
+#: contents/ui/config/ConfigPopups.qml:50
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Wide"
 msgstr ""
@@ -4180,39 +4180,39 @@ msgstr ""
 msgid "Window preview"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:441
+#: contents/ui/config/ConfigPopups.qml:439
 msgid "Window preview animation"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:338
+#: contents/ui/config/ConfigPopups.qml:336
 msgid "Window preview background frame"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:298
+#: contents/ui/config/ConfigPopups.qml:296
 msgid "Window preview background opacity"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:375
+#: contents/ui/config/ConfigPopups.qml:373
 msgid "Window preview information"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:258
+#: contents/ui/config/ConfigPopups.qml:256
 msgid "Window preview scale"
 msgstr ""
 
 #: contents/ui/config/ConfigAspect.qml:170
 #: contents/ui/config/ConfigPopups.qml:38
-#: contents/ui/config/ConfigPopups.qml:121
+#: contents/ui/config/ConfigPopups.qml:119
 msgid "Window previews"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:152
+#: contents/ui/config/ConfigPopups.qml:150
 msgid ""
 "Window selectors and hover previews use cards with the app icon and no live "
 "window content."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:150
+#: contents/ui/config/ConfigPopups.qml:148
 msgid ""
 "Window selectors and hover previews use live thumbnails when the compositor "
 "can provide them."
@@ -4244,6 +4244,6 @@ msgstr ""
 
 #: contents/ui/config/components/ActionDialog.qml:79
 #: contents/ui/config/ConfigItems.qml:654
-#: contents/ui/config/ItemActionEditor.qml:33
+#: contents/ui/config/ItemActionEditor.qml:34
 msgid "rows"
 msgstr ""

@@ -13,12 +13,12 @@ RowLayout {
     Controls.Label {
         id: configFileLabel
         Layout.fillWidth: true
-        text: i18n("Configuration file")
+        text: i18n("Configuration file") // qmllint disable unqualified
         elide: Text.ElideMiddle
         opacity: 0.75
 
         Controls.ToolTip.visible: configFileMouseArea.containsMouse
-        Controls.ToolTip.text: i18n("Dock Items Configuration")
+        Controls.ToolTip.text: i18n("Dock Items Configuration") // qmllint disable unqualified
         Controls.ToolTip.delay: Kirigami.Units.toolTipDelay
 
         MouseArea {
@@ -31,29 +31,29 @@ RowLayout {
 
     Controls.Button {
         HoverHandler { cursorShape: Qt.PointingHandCursor }
-        text: i18n("Import...")
+        text: i18n("Import...") // qmllint disable unqualified
         icon.name: "document-import-symbolic"
-        onClicked: controller.importJsonRequested()
+        onClicked: root.controller.importJsonRequested()
     }
 
     Controls.Button {
         HoverHandler { cursorShape: Qt.PointingHandCursor }
-        text: i18n("Default")
+        text: i18n("Default") // qmllint disable unqualified
         icon.name: "edit-reset-symbolic"
-        onClicked: controller.prepareDefaultItems()
+        onClicked: root.controller.prepareDefaultItems()
     }
 
     Controls.Button {
         HoverHandler { cursorShape: Qt.PointingHandCursor }
-        text: i18n("Clean")
+        text: i18n("Clean") // qmllint disable unqualified
         icon.name: "edit-clear-symbolic"
-        onClicked: controller.cleanItemsFile()
+        onClicked: root.controller.cleanItemsFile()
     }
 
     Controls.Button {
         HoverHandler { cursorShape: Qt.PointingHandCursor }
-        text: i18n("Export...")
+        text: i18n("Export...") // qmllint disable unqualified
         icon.name: "document-export-symbolic"
-        onClicked: controller.exportJsonRequested()
+        onClicked: root.controller.exportJsonRequested()
     }
 }

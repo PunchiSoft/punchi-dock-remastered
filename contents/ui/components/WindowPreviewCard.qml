@@ -100,7 +100,7 @@ Controls.ItemDelegate {
                     Kirigami.Theme.alternateBackgroundColor.b, 0.72)
             }
 
-            readonly property bool thumbnailReady: !!(thumbnailLoader.item && thumbnailLoader.item.hasThumbnail)
+            readonly property bool thumbnailReady: !!(thumbnailLoader.item && thumbnailLoader.item.hasThumbnail) // qmllint disable missing-property
 
             Loader {
                 id: thumbnailLoader

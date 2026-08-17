@@ -26,8 +26,8 @@ KCM.SimpleKCM {
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     readonly property var groupingModeOptions: [
-        { "text": i18n("Group by application"), "value": "application" },
-        { "text": i18n("Show each window"), "value": "window" }
+        { "text": i18n("Group by application"), "value": "application" }, // qmllint disable unqualified
+        { "text": i18n("Show each window"), "value": "window" } // qmllint disable unqualified
     ]
 
     component SectionTitle: Kirigami.Heading {
@@ -61,7 +61,7 @@ KCM.SimpleKCM {
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
             type: Kirigami.MessageType.Information
-            text: i18n("Vertical panels remain supported, but advanced visual tuning is currently focused on horizontal panels.")
+            text: i18n("Vertical panels remain supported, but advanced visual tuning is currently focused on horizontal panels.") // qmllint disable unqualified
         }
 
         Kirigami.Separator {
@@ -70,7 +70,7 @@ KCM.SimpleKCM {
 
         SectionTitle {
             Kirigami.FormData.isSection: true
-            text: i18n("Task visibility")
+            text: i18n("Task visibility") // qmllint disable unqualified
         }
 
         // qmllint disable unqualified
@@ -147,11 +147,11 @@ KCM.SimpleKCM {
         }
         SectionTitle {
             Kirigami.FormData.isSection: true
-            text: i18n("Grouping and limits")
+            text: i18n("Grouping and limits") // qmllint disable unqualified
         }
 
         RowLayout {
-            Kirigami.FormData.label: i18n("Window behavior:")
+            Kirigami.FormData.label: i18n("Window behavior:") // qmllint disable unqualified
             enabled: showActiveTasksCheck.checked
             Layout.maximumWidth: page.contentWidthHint
 
@@ -176,8 +176,8 @@ KCM.SimpleKCM {
 
         Controls.Label {
             text: page.cfg_windowGroupingMode === "application"
-                ? i18n("Dynamic task entries share one dock item per application, while pinned launchers keep their current grouped behavior.")
-                : i18n("Each dynamic window gets its own dock item, while pinned launchers still accumulate their matching windows by application.")
+                ? i18n("Dynamic task entries share one dock item per application, while pinned launchers keep their current grouped behavior.") // qmllint disable unqualified
+                : i18n("Each dynamic window gets its own dock item, while pinned launchers still accumulate their matching windows by application.") // qmllint disable unqualified
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

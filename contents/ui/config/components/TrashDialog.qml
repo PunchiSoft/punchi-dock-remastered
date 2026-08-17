@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import org.kde.kirigami as Kirigami
-import ".."
 
 
 Controls.Dialog {
@@ -24,7 +23,7 @@ Controls.Dialog {
     signal soundPickerRequested()
 
     modal: true
-    title: i18n("Configure trash")
+    title: i18n("Configure trash") // qmllint disable unqualified
     standardButtons: Controls.Dialog.Close
 
     ColumnLayout {
@@ -40,7 +39,7 @@ Controls.Dialog {
             Controls.Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-                text: i18n("Name:")
+                text: i18n("Name:") // qmllint disable unqualified
                 horizontalAlignment: Text.AlignLeft
                 opacity: 0.75
             }
@@ -65,14 +64,14 @@ Controls.Dialog {
             Controls.CheckBox {
                 id: trashShowState
                 Layout.fillWidth: true
-                text: i18n("Show trash state")
+                text: i18n("Show trash state") // qmllint disable unqualified
                 onClicked: root.formChanged()
             }
 
             Controls.CheckBox {
                 id: trashAcceptDrops
                 Layout.fillWidth: true
-                text: i18n("Drag files")
+                text: i18n("Drag files") // qmllint disable unqualified
                 onClicked: root.formChanged()
             }
         }
@@ -88,7 +87,7 @@ Controls.Dialog {
             Controls.Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-                text: i18n("Empty icon:")
+                text: i18n("Empty icon:") // qmllint disable unqualified
                 horizontalAlignment: Text.AlignLeft
                 opacity: 0.75
             }
@@ -103,7 +102,7 @@ Controls.Dialog {
                     onClicked: root.emptyIconPickerRequested()
 
                     Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: i18n("Choose icon")
+                    Controls.ToolTip.text: i18n("Choose icon") // qmllint disable unqualified
                 }
 
                 Controls.TextField {
@@ -118,7 +117,7 @@ Controls.Dialog {
             Controls.Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-                text: i18n("Full icon:")
+                text: i18n("Full icon:") // qmllint disable unqualified
                 horizontalAlignment: Text.AlignLeft
                 opacity: 0.75
             }
@@ -133,7 +132,7 @@ Controls.Dialog {
                     onClicked: root.fullIconPickerRequested()
 
                     Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: i18n("Choose icon")
+                    Controls.ToolTip.text: i18n("Choose icon") // qmllint disable unqualified
                 }
 
                 Controls.TextField {
@@ -154,7 +153,7 @@ Controls.Dialog {
             Controls.Label {
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                 Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-                text: i18n("Empty sound:")
+                text: i18n("Empty sound:") // qmllint disable unqualified
                 horizontalAlignment: Text.AlignLeft
                 opacity: 0.75
             }
@@ -182,7 +181,7 @@ Controls.Dialog {
                 display: Controls.AbstractButton.IconOnly
                 onClicked: root.soundPreviewRequested()
                 Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Test sound")
+                Controls.ToolTip.text: i18n("Test sound") // qmllint disable unqualified
             }
 
             Controls.Button {
@@ -191,7 +190,7 @@ Controls.Dialog {
                 display: Controls.AbstractButton.IconOnly
                 onClicked: root.soundResetRequested()
                 Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Default")
+                Controls.ToolTip.text: i18n("Default") // qmllint disable unqualified
             }
 
             Controls.Button {
@@ -200,7 +199,7 @@ Controls.Dialog {
                 display: Controls.AbstractButton.IconOnly
                 onClicked: root.soundPickerRequested()
                 Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Choose sound")
+                Controls.ToolTip.text: i18n("Choose sound") // qmllint disable unqualified
             }
         }
 

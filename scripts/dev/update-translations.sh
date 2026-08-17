@@ -8,7 +8,7 @@ TRANSLATION_DOMAIN="plasma_applet_org.kde.plasma.punchi-dock-remastered"
 PO_DIR="$PROJECT_ROOT/po"
 POT_FILE="$PO_DIR/$TRANSLATION_DOMAIN.pot"
 
-for required_command in xgettext msgcat msgmerge msgfmt; do
+for required_command in xgettext msgcat msgmerge msgfmt msgattrib; do
     if ! command -v "$required_command" >/dev/null 2>&1; then
         echo "Required command not found: $required_command" >&2
         exit 1
@@ -22,6 +22,7 @@ shopt -s nullglob
 catalogs=("$PO_DIR"/*.po)
 for catalog in "${catalogs[@]}"; do
     msgmerge --update --backup=none --previous "$catalog" "$POT_FILE"
+    msgattrib --no-obsolete --output-file="$catalog" "$catalog"
     msgfmt --check --check-format --output-file=/dev/null "$catalog"
     echo "Translation catalog updated: $catalog"
 done

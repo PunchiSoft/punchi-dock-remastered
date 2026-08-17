@@ -30,11 +30,11 @@ ColumnLayout {
         selectByMouse: true
         persistentSelection: true
         onTextChanged: {
-            if (!controller.syncing && !controller.loadingFromDisk && root.active) {
-                if (controller.advancedJsonChanged) {
-                    controller.advancedJsonChanged(text)
+            if (!root.controller.syncing && !root.controller.loadingFromDisk && root.active) {
+                if (root.controller.advancedJsonChanged) {
+                    root.controller.advancedJsonChanged(text)
                 } else {
-                    controller.cfg_dockItemsJson = text
+                    root.controller.cfg_dockItemsJson = text
                 }
             }
         }
@@ -47,7 +47,7 @@ ColumnLayout {
             HoverHandler { cursorShape: Qt.PointingHandCursor }
             text: i18n("Validate") // qmllint disable unqualified
             icon.name: "dialog-ok-apply-symbolic"
-            onClicked: controller.validateJson()
+            onClicked: root.controller.validateJson()
         }
 
         Controls.Button {
@@ -55,8 +55,8 @@ ColumnLayout {
             text: i18n("Format") // qmllint disable unqualified
             icon.name: "format-indent-more-symbolic"
             onClicked: {
-                if (controller.validateJson()) {
-                    controller.setItems(JSON.parse(editor.text))
+                if (root.controller.validateJson()) {
+                    root.controller.setItems(JSON.parse(editor.text))
                 }
             }
         }

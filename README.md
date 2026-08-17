@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7">
-    <img src="https://img.shields.io/badge/release-v0.9.7-4caf50" alt="Release v0.9.7">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.39">
+    <img src="https://img.shields.io/badge/release-v0.9.7.39-4caf50" alt="Release v0.9.7.39">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,22 +23,17 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7).
+[v0.9.7.39](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.39).
 
-## What's New in 0.9.7
+## What's New in 0.9.7.39
 
-- **Internal PunchiMenu drag**: Applications, favorites, and folders can be
-  reorganized in Normal and Fullscreen with explicit drop targets.
-- **More reliable popups**: Window previews and media replacement cards prepare
-  valid geometry before Plasma maps their dialog.
-- **Refined MPRIS cards**: Card and full-cover modes use a dedicated state path,
-  configurable background opacity, safe content spacing, and rounded artwork.
-- **Unified surfaces**: PunchiMenu, folders, context menus, and media cards more
-  consistently follow Plasma theme geometry and interaction states.
-- **Expanded quality coverage**: The current tree includes 30 automated tests
-  covering popup coordination, window previews, surfaces, and shaders.
+- **Interactive QML Audit & Compilation Dashboard**: Live HTML dashboard with real-time status filters (Resolved/Pending), difficulty grades (1 to 5), and Excel export.
+- **Eradication of `missing-property`**: 100% elimination of missing-property static warnings on live PipeWire thumbnails and ratcheted-down baseline.
+- **Scope & Delegate Hardening**: Deterministic qualification of controller scopes, `pragma ComponentBehavior: Bound`, and typed required properties in delegates.
+- **Cleaned Static False Positives**: Resolved over 270 static compilation and ki18n diagnostics with zero runtime regressions.
+- **100% Validated**: Full CTest suite passed (38/38) and complete translation catalogs.
 
-See the [0.9.7 changelog](CHANGELOG.md#097---2026-08-09) for detailed release
+See the [0.9.7.39 changelog](CHANGELOG.md#09739---2026-08-17) for detailed release
 notes and the validation performed for this version.
 
 ## Screenshots
@@ -132,13 +127,13 @@ On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.7-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.7.39-fedora44-x86_64.plasmoid
 ```
 
 To update an existing installation:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.7-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.7.39-fedora44-x86_64.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
@@ -190,8 +185,8 @@ scripts/setup-universal.sh
 dist/punchi-dock-remastered-<version>-<distribution>-<architecture>.plasmoid
 ```
 
-The 0.9.7 GitHub release provides
-`punchi-dock-remastered-0.9.7-fedora44-x86_64.plasmoid`. Universal artifacts
+The 0.9.7.39 GitHub release provides
+`punchi-dock-remastered-0.9.7.39-fedora44-x86_64.plasmoid`. Universal artifacts
 are published separately only after their Debian 13 build and
 cross-distribution validation are complete.
 Never install an artifact labeled for a different distribution.

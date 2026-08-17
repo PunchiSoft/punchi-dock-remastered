@@ -33,13 +33,13 @@ ColumnLayout {
     GridLayout {
         Layout.fillWidth: true
         Layout.columnSpan: 2
-        enabled: controller.selectedIndex >= 0
+        enabled: root.controller.selectedIndex >= 0
         columns: 2
         columnSpacing: Kirigami.Units.smallSpacing
         rowSpacing: Kirigami.Units.smallSpacing
 
         Controls.Label {
-            text: i18n("Format:")
+            text: i18n("Format:") // qmllint disable unqualified
             opacity: 0.75
         }
 
@@ -56,17 +56,17 @@ ColumnLayout {
                 "ddd dd MMM - HH:mm",
                 "dddd, d MMMM yyyy"
             ]
-            onAccepted: controller.applyItemForm()
+            onAccepted: root.controller.applyItemForm()
             onActivated: function(index) {
                 if (index >= 0 && index < model.length) {
                     editText = model[index]
                 }
-                controller.applyItemForm()
+                root.controller.applyItemForm()
             }
         }
 
         Controls.Label {
-            text: i18n("Time text scale:")
+            text: i18n("Time text scale:") // qmllint disable unqualified
             opacity: 0.75
         }
 
@@ -81,14 +81,14 @@ ColumnLayout {
                 to: 2.0
                 stepSize: 0.05
                 snapMode: Controls.Slider.SnapAlways
-                enabled: controller.selectedIndex >= 0
-                onMoved: controller.applyItemForm()
+                enabled: root.controller.selectedIndex >= 0
+                onMoved: root.controller.applyItemForm()
                 onValueChanged: {
-                    if (!controller.syncing) {
-                        controller.applyItemForm()
+                    if (!root.controller.syncing) {
+                        root.controller.applyItemForm()
                     }
                 }
-                Accessible.name: i18n("Time text scale")
+                Accessible.name: i18n("Time text scale") // qmllint disable unqualified
             }
 
             Controls.Label {
@@ -100,7 +100,7 @@ ColumnLayout {
         }
 
         Controls.Label {
-            text: i18n("Date text scale:")
+            text: i18n("Date text scale:") // qmllint disable unqualified
             opacity: 0.75
         }
 
@@ -115,14 +115,14 @@ ColumnLayout {
                 to: 2.0
                 stepSize: 0.05
                 snapMode: Controls.Slider.SnapAlways
-                enabled: controller.selectedIndex >= 0
-                onMoved: controller.applyItemForm()
+                enabled: root.controller.selectedIndex >= 0
+                onMoved: root.controller.applyItemForm()
                 onValueChanged: {
-                    if (!controller.syncing) {
-                        controller.applyItemForm()
+                    if (!root.controller.syncing) {
+                        root.controller.applyItemForm()
                     }
                 }
-                Accessible.name: i18n("Date text scale")
+                Accessible.name: i18n("Date text scale") // qmllint disable unqualified
             }
 
             Controls.Label {
@@ -136,23 +136,23 @@ ColumnLayout {
         Controls.CheckBox {
             id: calendarTextShadows
             Layout.columnSpan: 2
-            text: i18n("Show shadows on clock and date text")
-            visible: controller.selectedItemType === "calendar"
-            enabled: controller.selectedIndex >= 0
-            onToggled: controller.applyItemForm()
+            text: i18n("Show shadows on clock and date text") // qmllint disable unqualified
+            visible: root.controller.selectedItemType === "calendar"
+            enabled: root.controller.selectedIndex >= 0
+            onToggled: root.controller.applyItemForm()
         }
 
         Controls.CheckBox {
             id: calendarShowWeekNumbers
             Layout.columnSpan: 2
-            text: i18n("Show week numbers")
-            enabled: controller.selectedIndex >= 0
-            onToggled: controller.applyItemForm()
-            Accessible.name: i18n("Show calendar week numbers")
+            text: i18n("Show week numbers") // qmllint disable unqualified
+            enabled: root.controller.selectedIndex >= 0
+            onToggled: root.controller.applyItemForm()
+            Accessible.name: i18n("Show calendar week numbers") // qmllint disable unqualified
         }
 
         Controls.Label {
-            text: i18n("Popup scale:")
+            text: i18n("Popup scale:") // qmllint disable unqualified
             opacity: 0.75
         }
 
@@ -167,11 +167,11 @@ ColumnLayout {
                 to: 3.0
                 stepSize: 0.05
                 snapMode: Controls.Slider.SnapAlways
-                enabled: controller.selectedIndex >= 0
-                onMoved: controller.applyItemForm()
+                enabled: root.controller.selectedIndex >= 0
+                onMoved: root.controller.applyItemForm()
                 onValueChanged: {
-                    if (!controller.syncing) {
-                        controller.applyItemForm()
+                    if (!root.controller.syncing) {
+                        root.controller.applyItemForm()
                     }
                 }
                 // qmllint disable unqualified
@@ -189,7 +189,7 @@ ColumnLayout {
         }
 
         Controls.Label {
-            text: i18n("Text color:")
+            text: i18n("Text color:") // qmllint disable unqualified
             opacity: 0.75
         }
 

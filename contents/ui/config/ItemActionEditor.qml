@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
@@ -30,8 +31,8 @@ ColumnLayout {
     property string containerApplicationsText: "Container applications"
     property string enableRightClickMenuText: "Enable right-click menu"
     property string limitContextMenuRowsText: "Limit menu rows"
-    property string rowsText: i18n("rows")
-    property string rowsValueText: i18n("%1 rows")
+    property string rowsText: i18n("rows") // qmllint disable unqualified
+    property string rowsValueText: i18n("%1 rows") // qmllint disable unqualified
     property string actionNameLabel: "Action name:"
     property string actionIconLabel: "Action icon:"
     property string actionCommandLabel: "Action command:"
@@ -97,7 +98,7 @@ ColumnLayout {
             from: 1
             to: 32
             textFromValue: function(value) {
-                return i18n("%1 rows", value)
+                return i18n("%1 rows", value) // qmllint disable unqualified
             }
             valueFromText: function(text) {
                 var valueText = String(text)
@@ -125,6 +126,12 @@ ColumnLayout {
             }
 
             delegate: Controls.ItemDelegate {
+                id: actionDelegate
+                required property int index
+                required property string title
+                required property string subtitle
+                required property string iconName
+
                 HoverHandler { cursorShape: Qt.PointingHandCursor }
                 property bool hasVerticalScroll: actionList.contentHeight > actionList.height
 
@@ -139,10 +146,10 @@ ColumnLayout {
 
                 Controls.Label {
                     anchors.right: parent.right
-                    anchors.rightMargin: Kirigami.Units.largeSpacing + (parent.hasVerticalScroll ? root.scrollGutter : 0)
+                    anchors.rightMargin: Kirigami.Units.largeSpacing + (actionDelegate.hasVerticalScroll ? root.scrollGutter : 0)
                     anchors.verticalCenter: parent.verticalCenter
                     width: parent.width * 0.38
-                    text: subtitle
+                    text: actionDelegate.subtitle
                     elide: Text.ElideRight
                     opacity: 0.7
                     horizontalAlignment: Text.AlignRight
