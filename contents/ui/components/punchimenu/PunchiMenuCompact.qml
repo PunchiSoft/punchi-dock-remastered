@@ -202,15 +202,6 @@ FocusScope {
     }
 
     function categoryIcon(categoryId) {
-        if (categoryId === "All") {
-            return "applications-all"
-        }
-        if (root.systemDiscovery && typeof root.systemDiscovery.iconForCategory === "function") {
-            const icon = root.systemDiscovery.iconForCategory(categoryId)
-            if (icon && icon.length > 0) {
-                return icon
-            }
-        }
         switch (categoryId) {
         case "Network": return "applications-internet"
         case "Graphics": return "applications-graphics"
@@ -222,8 +213,16 @@ FocusScope {
         case "Game": return "applications-games"
         case "Education": return "applications-science"
         case "Settings": return "preferences-system"
-        default: return "applications-other"
+        case "All": return "applications-all"
+        default: break
         }
+        if (root.systemDiscovery && typeof root.systemDiscovery.iconForCategory === "function") {
+            const icon = root.systemDiscovery.iconForCategory(categoryId)
+            if (icon && icon.length > 0) {
+                return icon
+            }
+        }
+        return "applications-other"
     }
 
     readonly property var availableCategories: {
@@ -611,22 +610,63 @@ FocusScope {
 
                             width: height
                             height: compactFavoritesListView.height
+                            opacity: root.motionEnabled ? 0 : 1
+                            scale: root.motionEnabled ? 0.82 : 1.0
 
-                            PunchiMenuItemHighlight {
+                            SequentialAnimation {
+                                id: favEntryAnimation
+                                running: root.motionEnabled && root.menuOpen
+                                PauseAnimation {
+                                    duration: Math.min(180, favoriteItemDelegate.index * 25)
+                                }
+                                ParallelAnimation {
+                                    NumberAnimation {
+                                        target: favoriteItemDelegate
+                                        property: "opacity"
+                                        to: 1.0
+                                        duration: Math.max(140, Kirigami.Units.shortDuration)
+                                        easing.type: Easing.OutCubic
+                                    }
+                                    NumberAnimation {
+                                        target: favoriteItemDelegate
+                                        property: "scale"
+                                        to: 1.0
+                                        duration: Math.max(140, Kirigami.Units.shortDuration)
+                                        easing.type: Easing.OutBack
+                                        easing.overshoot: 1.25
+                                    }
+                                }
+                            }
+
+                            Item {
+                                id: favContentContainer
                                 anchors.fill: parent
-                                anchors.margins: 1
-                                hovered: favMouseArea.containsMouse
-                                pressed: favMouseArea.pressed
-                                motionEnabled: root.motionEnabled
-                                animationMode: root.hoverAnimation
+                                scale: favMouseArea.pressed ? 0.94 : (favMouseArea.containsMouse ? 1.08 : 1.0)
 
-                                Kirigami.Icon {
-                                    anchors.centerIn: parent
-                                    width: Kirigami.Units.iconSizes.smallMedium
-                                    height: Kirigami.Units.iconSizes.smallMedium
-                                    source: favoriteItemDelegate.favIcon
-                                    fallback: "application-x-executable"
-                                    smooth: true
+                                Behavior on scale {
+                                    enabled: root.motionEnabled
+                                    NumberAnimation {
+                                        duration: Kirigami.Units.shortDuration
+                                        easing.type: Easing.OutCubic
+                                    }
+                                }
+
+                                PunchiMenuItemHighlight {
+                                    anchors.fill: parent
+                                    anchors.margins: 1
+                                    hovered: favMouseArea.containsMouse
+                                    pressed: favMouseArea.pressed
+                                    motionEnabled: root.motionEnabled
+                                    animationMode: root.hoverAnimation
+
+                                    Kirigami.Icon {
+                                        anchors.centerIn: parent
+                                        width: Kirigami.Units.iconSizes.smallMedium
+                                        height: Kirigami.Units.iconSizes.smallMedium
+                                        source: favoriteItemDelegate.favIcon
+                                        fallback: "application-x-executable"
+                                        smooth: true
+                                    }
                                 }
                             }
 
