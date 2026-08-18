@@ -313,6 +313,9 @@ Item {
             "normalHeightPercent": true,
             "normalShowCategories": true,
             "normalCategoryGrouping": true,
+            "compactBlurEnabled": true,
+            "compactBackgroundOpacityPercent": true,
+            "compactShowQuickLaunchers": true,
             "fullScreenFolderMaximumColumns": true,
             "fullScreenFolderMaximumRows": true
         }

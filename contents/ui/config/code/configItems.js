@@ -597,6 +597,14 @@ function normalizedPunchiMenuNormalBackgroundOpacityPercent(value) {
     return Math.max(50, Math.min(100, Math.round(requestedValue / 5) * 5))
 }
 
+function normalizedPunchiMenuCompactBackgroundOpacityPercent(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 85
+    }
+    return Math.max(50, Math.min(100, Math.round(requestedValue / 5) * 5))
+}
+
 function normalizedPunchiMenuNormalWidthPercent(value) {
     var requestedValue = Number(value)
     if (!Number.isFinite(requestedValue)) {
@@ -622,11 +630,11 @@ function normalizedPunchiMenuNormalPanelGap(value) {
 }
 
 function normalizedPunchiMenuMode(value) {
-    var availableModes = ["fullScreen", "normal"]
-    var requestedMode = String(value || "fullScreen")
+    var availableModes = ["fullScreen", "normal", "compact"]
+    var requestedMode = String(value || "normal")
     return availableModes.indexOf(requestedMode) >= 0
         ? requestedMode
-        : "fullScreen"
+        : "normal"
 }
 
 function normalizedPunchiMenuHoverAnimation(value) {
@@ -785,6 +793,19 @@ function prunePunchiMenu(item) {
         delete item.normalCategoryGrouping
     } else {
         item.normalCategoryGrouping = true
+    }
+    if (item.compactBlurEnabled !== false) {
+        delete item.compactBlurEnabled
+    } else {
+        item.compactBlurEnabled = false
+    }
+    item.compactBackgroundOpacityPercent =
+        normalizedPunchiMenuCompactBackgroundOpacityPercent(
+            item.compactBackgroundOpacityPercent)
+    if (item.compactShowQuickLaunchers !== false) {
+        delete item.compactShowQuickLaunchers
+    } else {
+        item.compactShowQuickLaunchers = false
     }
 }
 

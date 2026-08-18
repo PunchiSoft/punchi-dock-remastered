@@ -228,10 +228,37 @@ PlasmoidItem {
         }
         return result
     }
-    readonly property string configuredPunchiMenuMode: configuredPunchiMenuItem
-        && String(configuredPunchiMenuItem.menuMode || "normal") === "normal"
-        ? "normal"
-        : "fullScreen"
+    readonly property bool configuredPunchiMenuCompactBlurEnabled:
+        !configuredPunchiMenuItem
+        || configuredPunchiMenuItem.compactBlurEnabled !== false
+    readonly property real configuredPunchiMenuCompactBackgroundOpacity: {
+        const requestedPercent = Number(configuredPunchiMenuItem
+            ? configuredPunchiMenuItem.compactBackgroundOpacityPercent
+            : 85)
+        const safePercent = Number.isFinite(requestedPercent)
+            ? Math.max(50, Math.min(100, Math.round(requestedPercent / 5) * 5))
+            : 85
+        return safePercent / 100
+    }
+    readonly property bool configuredPunchiMenuCompactShowQuickLaunchers: {
+        const item = configuredPunchiMenuItem
+        if (item && item.compactShowQuickLaunchers !== undefined) {
+            return item.compactShowQuickLaunchers !== false
+        }
+        return true
+    }
+    readonly property string configuredPunchiMenuMode: {
+        const itemMode = configuredPunchiMenuItem
+            ? String(configuredPunchiMenuItem.menuMode || "normal")
+            : "normal"
+        if (itemMode === "compact") {
+            return "compact"
+        }
+        if (itemMode === "normal") {
+            return "normal"
+        }
+        return "fullScreen"
+    }
     readonly property string configuredPunchiMenuNormalPlacementMode:
         configuredPunchiMenuItem
             && String(configuredPunchiMenuItem.normalPlacementMode || "anchored")
@@ -460,7 +487,7 @@ PlasmoidItem {
             punchiMenuDialogInstance = null
         }
 
-        if (requestedMode === "normal" && anchorItem
+        if ((requestedMode === "normal" || requestedMode === "compact") && anchorItem
                 && punchiMenuDialogInstance
                 && typeof punchiMenuDialogInstance.consumeRecentExternalHide
                     === "function"
@@ -471,7 +498,9 @@ PlasmoidItem {
         if (!punchiMenuDialogInstance) {
             const component = requestedMode === "normal"
                 ? punchiMenuNormalDialogComponent
-                : punchiMenuFullscreenDialogComponent
+                : (requestedMode === "compact"
+                    ? punchiMenuCompactDialogComponent
+                    : punchiMenuFullscreenDialogComponent)
             punchiMenuDialogInstance = component.createObject(root)
             if (!punchiMenuDialogInstance) {
                 return
@@ -710,8 +739,12 @@ PlasmoidItem {
                 menuWidth: punchiMenuNormalDialog.width
                 menuHeight: punchiMenuNormalDialog.height
                 panelGap: root.configuredPunchiMenuNormalPanelGap
-                floatingGap: 0
+                floatingGap: root.configuredPunchiMenuNormalPanelGap
                 screenInset: root.configuredPunchiMenuNormalPanelGap
+                themeFrameLeftMargin: punchiMenuNormalDialog.themeFrameMargin("left")
+                themeFrameTopMargin: punchiMenuNormalDialog.themeFrameMargin("top")
+                themeFrameRightMargin: punchiMenuNormalDialog.themeFrameMargin("right")
+                themeFrameBottomMargin: punchiMenuNormalDialog.themeFrameMargin("bottom")
             }
 
             function positionAtAnchor() {
@@ -902,6 +935,227 @@ PlasmoidItem {
                     })
                 }
                 onCloseFinished: punchiMenuNormalDialog.closeImmediately()
+            }
+            // qmllint enable unqualified
+        }
+    }
+
+    Component {
+        id: punchiMenuCompactDialogComponent
+
+        PlasmaCore.Dialog {
+            id: punchiMenuCompactDialog
+
+            readonly property string menuMode: "compact"
+            readonly property bool isX11Session: KWindowSystem.isPlatformX11
+            property double lastExternalHideTimestamp: -1
+            property bool internalCloseRequested: false
+
+            readonly property int defaultContentWidth: Math.round(punchiMenuCompact.implicitWidth)
+            readonly property int defaultContentHeight: Math.round(punchiMenuCompact.implicitHeight)
+
+            readonly property int desiredContentWidth: Math.max(
+                Math.round(Kirigami.Units.gridUnit * 15),
+                defaultContentWidth)
+            readonly property int desiredContentHeight: Math.max(
+                Math.round(Kirigami.Units.gridUnit * 15),
+                defaultContentHeight)
+
+            // qmllint disable unqualified
+            visualParent: null
+            location: PlasmaCore.Types.Floating
+            type: PlasmaCore.Dialog.PopupMenu
+            flags: isX11Session
+                ? Qt.Popup | Qt.FramelessWindowHint
+                : Qt.Dialog | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+            backgroundHints: PlasmaCore.Dialog.NoBackground
+            hideOnWindowDeactivate: true
+            visible: false
+            opacity: 0
+
+            readonly property Punchi.BlurBehindController compactBlurController:
+                Punchi.BlurBehindController {
+                    window: punchiMenuCompactDialog
+                    fullWindow: false
+                    maskSource: punchiMenuCompact.backgroundBlurMaskSource
+                    useMaskSourceInsets: true
+                    maskOffset: punchiMenuCompact.backgroundBlurMaskOffset
+                    enabled: punchiMenuCompactDialog.visible
+                        && root.configuredPunchiMenuCompactBlurEnabled
+                }
+
+            readonly property PunchiMenuNormalPlacement compactPlacement: PunchiMenuNormalPlacement {
+                inPanel: root.inPanel
+                placementMode: "anchored"
+                panelLocation: dockGeometry.effectivePanelLocation
+                availableScreenRect: root.availableScreenRect
+                screenGeometry: Plasmoid.containment
+                    && Plasmoid.containment.screenGeometry
+                    ? Plasmoid.containment.screenGeometry
+                    : Qt.rect(0, 0, Screen.width, Screen.height)
+                itemAnchor: root.punchiMenuAnchorItem
+                floatingDockAnchor: root.floatingDockAnchor
+                panelWindow: root.Window.window
+                panelThickness: dockGeometry.detectedPanelThickness
+                menuWidth: punchiMenuCompactDialog.width
+                menuHeight: punchiMenuCompactDialog.height
+                panelGap: root.configuredPunchiMenuNormalPanelGap
+                floatingGap: root.configuredPunchiMenuNormalPanelGap
+                screenInset: root.configuredPunchiMenuNormalPanelGap
+                themeFrameLeftMargin: punchiMenuCompactDialog.themeFrameMargin("left")
+                themeFrameTopMargin: punchiMenuCompactDialog.themeFrameMargin("top")
+                themeFrameRightMargin: punchiMenuCompactDialog.themeFrameMargin("right")
+                themeFrameBottomMargin: punchiMenuCompactDialog.themeFrameMargin("bottom")
+            }
+
+            function positionAtAnchor() {
+                const targetPosition = compactPlacement.calculatePosition()
+                x = targetPosition.x
+                y = targetPosition.y
+            }
+
+            function scheduleReposition() {
+                if (visible) {
+                    Qt.callLater(positionAtAnchor)
+                }
+            }
+
+            function themeFrameMargin(side) {
+                const nativeMargins = margins
+                const requestedMargin = nativeMargins
+                    ? Number(nativeMargins[side])
+                    : 0
+                return Number.isFinite(requestedMargin)
+                    ? Math.max(0, requestedMargin)
+                    : 0
+            }
+
+            onWidthChanged: scheduleReposition()
+            onHeightChanged: scheduleReposition()
+
+            function recordExternalHide() {
+                lastExternalHideTimestamp = Date.now()
+            }
+
+            function consumeRecentExternalHide() {
+                if (lastExternalHideTimestamp <= 0) {
+                    return false
+                }
+                const elapsedMs = Date.now() - lastExternalHideTimestamp
+                lastExternalHideTimestamp = -1
+                return elapsedMs >= 0 && elapsedMs < 350
+            }
+
+            readonly property Connections configurationConnections: Connections {
+                target: root
+                function onInPanelChanged() {
+                    punchiMenuCompactDialog.scheduleReposition()
+                }
+                function onPunchiMenuAnchorItemChanged() {
+                    punchiMenuCompactDialog.scheduleReposition()
+                }
+                function onFloatingDockAnchorChanged() {
+                    punchiMenuCompactDialog.scheduleReposition()
+                }
+                function onConfiguredPunchiMenuNormalPanelGapChanged() {
+                    punchiMenuCompactDialog.scheduleReposition()
+                }
+                function onConfiguredPunchiMenuCompactBlurEnabledChanged() {
+                    if (punchiMenuCompactDialog.visible) {
+                        punchiMenuCompactDialog.compactBlurController.reapply()
+                    }
+                }
+            }
+
+            readonly property Connections dockGeometryConnections: Connections {
+                target: dockGeometry
+                function onDetectedPanelThicknessChanged() {
+                    punchiMenuCompactDialog.scheduleReposition()
+                }
+                function onEffectivePanelLocationChanged() {
+                    punchiMenuCompactDialog.scheduleReposition()
+                }
+            }
+
+            onVisibleChanged: {
+                if (!visible) {
+                    recordExternalHide()
+                    opacity = 0
+                    punchiMenuCompact.resetMenu()
+                }
+            }
+
+            function openWithReveal() {
+                internalCloseRequested = false
+                positionAtAnchor()
+                visible = true
+                opacity = 1
+                requestActivate()
+                Qt.callLater(function() {
+                    punchiMenuCompactDialog.compactBlurController.reapply()
+                })
+                punchiMenuCompact.openMenu()
+            }
+
+            function closeImmediately() {
+                internalCloseRequested = true
+                visible = false
+                opacity = 0
+                punchiMenuCompact.resetMenu()
+                Qt.callLater(function() {
+                    punchiMenuCompactDialog.internalCloseRequested = false
+                })
+            }
+
+            mainItem: PunchiMenuCompact {
+                id: punchiMenuCompact
+                width: punchiMenuCompactDialog.desiredContentWidth
+                height: punchiMenuCompactDialog.desiredContentHeight
+                Layout.minimumWidth: punchiMenuCompactDialog.desiredContentWidth
+                Layout.preferredWidth: punchiMenuCompactDialog.desiredContentWidth
+                Layout.maximumWidth: punchiMenuCompactDialog.desiredContentWidth
+                Layout.minimumHeight: punchiMenuCompactDialog.desiredContentHeight
+                Layout.preferredHeight: punchiMenuCompactDialog.desiredContentHeight
+                Layout.maximumHeight: punchiMenuCompactDialog.desiredContentHeight
+                systemDiscovery: root.systemDiscoveryService
+                applicationCatalog: root.punchiMenuApplicationCatalog
+                dockItemsController: root.dockItemsControllerService
+                showApplicationLabels: root.configuredPunchiMenuShowApplicationLabels
+                hoverAnimation: root.configuredPunchiMenuHoverAnimation
+                sortApplicationsAlphabetically: root.configuredPunchiMenuSortApplicationsAlphabetically
+                backgroundBlurEnabled: root.configuredPunchiMenuCompactBlurEnabled
+                backgroundOpacity: root.configuredPunchiMenuCompactBackgroundOpacity
+                compactShowQuickLaunchers: root.configuredPunchiMenuCompactShowQuickLaunchers
+                normalPanelGap: root.configuredPunchiMenuNormalPanelGap
+                themeFrameLeftMargin: punchiMenuCompactDialog.themeFrameMargin("left")
+                themeFrameTopMargin: punchiMenuCompactDialog.themeFrameMargin("top")
+                themeFrameRightMargin: punchiMenuCompactDialog.themeFrameMargin("right")
+                themeFrameBottomMargin: punchiMenuCompactDialog.themeFrameMargin("bottom")
+                favorites: punchiMenuFavoritesController.favorites
+                favoriteLimitReached: punchiMenuFavoritesController.limitReached
+
+                onAddFavoriteRequested: function(storageId) {
+                    punchiMenuFavoritesController.addFavorite(storageId)
+                }
+                onRemoveFavoriteRequested: function(storageId) {
+                    punchiMenuFavoritesController.removeFavorite(storageId)
+                }
+                onPinToDockRequested: function(storageId, appName, appIcon, appCommand) {
+                    root.dockItemsControllerService.togglePinAppToDock(
+                        storageId, appName, appIcon, appCommand)
+                }
+                onAddToDesktopRequested: function(storageId, appCommand) {
+                    root.dockItemsControllerService.pinAppToDesktop(storageId, appCommand)
+                }
+                onSetApplicationHiddenRequested: function(storageId, hidden) {
+                    root.dockItemsControllerService.setPunchiMenuApplicationHidden(
+                        storageId, hidden)
+                }
+                onApplicationLaunched: punchiMenuCompactDialog.closeImmediately()
+                onMenuCloseRequested: punchiMenuCompactDialog.closeImmediately()
+                onSettingChangeRequested: function(fieldName, value) {
+                    root.dockItemsControllerService.setPunchiMenuValue(fieldName, value)
+                }
             }
             // qmllint enable unqualified
         }

@@ -124,12 +124,15 @@ QtObject {
                 const isNormalCentered = currentMode === "normal"
                     && normalPlacement === "centered"
                 const isFullScreen = currentMode === "fullScreen"
-                const activeDetail = isNormalAnchored
+                const isCompact = currentMode === "compact"
+                const activeDetail = isCompact
                     // qmllint disable unqualified
-                    ? i18nc("@option:punchimenu-mode", "Normal (anchored)")
-                    : isNormalCentered
-                        ? i18nc("@option:punchimenu-mode", "Normal (floating center)")
-                        : i18nc("@option:punchimenu-mode", "Full screen")
+                    ? i18nc("@option:punchimenu-mode", "Compact")
+                    : isNormalAnchored
+                        ? i18nc("@option:punchimenu-mode", "Normal (anchored)")
+                        : isNormalCentered
+                            ? i18nc("@option:punchimenu-mode", "Normal (floating center)")
+                            : i18nc("@option:punchimenu-mode", "Full screen")
                     // qmllint enable unqualified
                 itemActions.push({
                     // qmllint disable unqualified
@@ -173,6 +176,18 @@ QtObject {
                             "enabled": true,
                             "checked": isFullScreen,
                             "mode": "fullScreen",
+                            "targetIndex": persistentIndex
+                        },
+                        {
+                            // qmllint disable unqualified
+                            "name": i18nc("@option:punchimenu-mode", "Compact"),
+                            // qmllint enable unqualified
+                            "icon": "view-list-tree",
+                            "kind": "setPunchiMenuMode",
+                            "enabled": true,
+                            "checked": isCompact,
+                            "mode": "compact",
+                            "placementMode": "anchored",
                             "targetIndex": persistentIndex
                         }
                     ]

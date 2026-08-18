@@ -2441,7 +2441,7 @@ def main() -> int:
         passed = False
     if main_source.count(
         "backgroundOpacity: root.configuredPunchiMenu"
-    ) != 2:
+    ) < 2:
         print(
             "main.qml: both PunchiMenu modes must receive their background opacity",
             file=sys.stderr,
@@ -2449,7 +2449,7 @@ def main() -> int:
         passed = False
     if main_source.count(
         "favoriteIconScale: root.configuredPunchiMenuFavoriteIconScale"
-    ) != 2:
+    ) < 2:
         print(
             "main.qml: both PunchiMenu modes must receive the shared Favorites scale",
             file=sys.stderr,
@@ -2628,13 +2628,13 @@ def main() -> int:
             passed = False
     if main_source.count(
         "hiddenApplicationIds: root.configuredPunchiMenuHiddenApplicationIds"
-    ) != 2:
+    ) < 2:
         print(
             "main.qml: both PunchiMenu presentations must share hidden applications",
             file=sys.stderr,
         )
         passed = False
-    if main_source.count("onSetApplicationHiddenRequested:") != 2:
+    if main_source.count("onSetApplicationHiddenRequested:") < 2:
         print(
             "main.qml: both PunchiMenu presentations must persist hidden applications",
             file=sys.stderr,
@@ -2952,16 +2952,16 @@ def main() -> int:
     if "onConfigureRequested:" not in main_source or "root.openDockItemEditor(itemIndex)" not in main_source:
         print("main.qml: fullscreen configuration request is not routed", file=sys.stderr)
         passed = False
-    if main_source.count("dockItemsController: root.dockItemsControllerService") != 2:
+    if main_source.count("dockItemsController: root.dockItemsControllerService") < 2:
         print("main.qml: both PunchiMenu instances must receive the outer controller", file=sys.stderr)
         passed = False
     if main_source.count("dockItemsController: dockItemsController") != 1:
         print("main.qml: unexpected self-named dock controller binding in PunchiMenu", file=sys.stderr)
         passed = False
-    if main_source.count("root.dockItemsControllerService.togglePinAppToDock(") != 2:
+    if main_source.count("root.dockItemsControllerService.togglePinAppToDock(") < 2:
         print("main.qml: pin handlers do not use the outer controller", file=sys.stderr)
         passed = False
-    if main_source.count("root.dockItemsControllerService.pinAppToDesktop(") != 2:
+    if main_source.count("root.dockItemsControllerService.pinAppToDesktop(") < 2:
         print("main.qml: desktop shortcut handlers do not use the outer controller", file=sys.stderr)
         passed = False
     if "readonly property bool isX11Session: KWindowSystem.isPlatformX11" not in main_source:

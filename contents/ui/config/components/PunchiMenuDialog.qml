@@ -23,9 +23,9 @@ Controls.Dialog {
             "available": true
         },
         {
-            "text": i18nc("@option:punchimenu-mode", "Compact (coming soon)"),
+            "text": i18nc("@option:punchimenu-mode", "Compact"),
             "value": "compact",
-            "available": false
+            "available": true
         }
     ]
 

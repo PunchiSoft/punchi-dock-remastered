@@ -18,6 +18,10 @@ QtObject {
     property real panelGap: 0
     property real floatingGap: 0
     property real screenInset: 0
+    property real themeFrameLeftMargin: 0
+    property real themeFrameTopMargin: 0
+    property real themeFrameRightMargin: 0
+    property real themeFrameBottomMargin: 0
 
     function finiteNumber(value, fallback) {
         const numericValue = Number(value)
@@ -161,12 +165,12 @@ QtObject {
                 ? anchorRectangle.x
                 : anchorRectangle.x + anchorRectangle.width - width
             targetY = root.panelLocation === PlasmaCore.Types.TopEdge
-                ? surface.y + surface.height + gap
-                : surface.y - height - gap
+                ? surface.y + surface.height + gap - root.themeFrameTopMargin
+                : surface.y - height - gap + root.themeFrameBottomMargin
         } else {
             targetX = root.panelLocation === PlasmaCore.Types.LeftEdge
-                ? surface.x + surface.width + gap
-                : surface.x - width - gap
+                ? surface.x + surface.width + gap - root.themeFrameLeftMargin
+                : surface.x - width - gap + root.themeFrameRightMargin
             targetY = anchorCenterY <= availableCenterY
                 ? anchorRectangle.y
                 : anchorRectangle.y + anchorRectangle.height - height
