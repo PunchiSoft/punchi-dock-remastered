@@ -27,9 +27,8 @@ Item {
         ? Math.round(Kirigami.Units.longDuration * 100
             / Math.max(10, Math.min(200, animationSpeedPercent)))
         : 0
-    readonly property real slideDistance: Kirigami.Units.smallSpacing * 2
-        * intensityFactor
-    readonly property real initialOpacity: Math.max(0, 1 - (0.72 * intensityFactor))
+    readonly property real slideDistance: Math.round(Kirigami.Units.gridUnit * root.intensityFactor)
+    readonly property real initialOpacity: Math.max(0, 1 - (0.95 * root.intensityFactor))
     readonly property real safeImplicitWidth: Number.isFinite(root.implicitWidth)
         ? Math.max(1, root.implicitWidth)
         : 1
@@ -162,7 +161,7 @@ Item {
                     ? Easing.OutBack
                     : Easing.OutCubic)
             easing.overshoot: root.animationStyle === "bounce"
-                ? 1 + (1.2 * root.intensityFactor)
+                ? 1 + (0.45 * root.intensityFactor)
                 : 1.70158
             onRunningChanged: {
                 if (!running && root.closing && root.openingProgress <= 0.001) {
@@ -191,14 +190,29 @@ Item {
     Item {
         id: animatedSurface
         anchors.fill: parent
+        transformOrigin: {
+            if (root.popupDirection === Qt.BottomEdge) {
+                return Item.Bottom
+            }
+            if (root.popupDirection === Qt.TopEdge) {
+                return Item.Top
+            }
+            if (root.popupDirection === Qt.LeftEdge) {
+                return Item.Left
+            }
+            if (root.popupDirection === Qt.RightEdge) {
+                return Item.Right
+            }
+            return Item.Center
+        }
         opacity: root.animationStyle === "none"
             ? 1
             : Math.min(1, root.initialOpacity
                 + (root.openingProgress * (1 - root.initialOpacity)))
         scale: root.animationStyle === "scale"
-            ? 1 - (0.04 * root.intensityFactor * (1 - root.openingProgress))
+            ? 1 - (0.16 * root.intensityFactor * (1 - root.openingProgress))
             : root.animationStyle === "bounce"
-                ? 1 - (0.06 * root.intensityFactor * (1 - root.openingProgress))
+                ? 1 - (0.22 * root.intensityFactor * (1 - root.openingProgress))
                 : 1
         transform: Translate {
             x: root.slideX

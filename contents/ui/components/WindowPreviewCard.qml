@@ -84,6 +84,10 @@ Controls.ItemDelegate {
         border.color: Kirigami.Theme.highlightColor
     }
 
+    HoverHandler {
+        cursorShape: Qt.PointingHandCursor
+    }
+
     contentItem: Item {
         Item {
             id: previewFrame
@@ -91,6 +95,14 @@ Controls.ItemDelegate {
             width: root.previewWidth
             height: root.previewHeight
             clip: true
+            scale: root.hovered ? 1.02 : 1.0
+
+            Behavior on scale {
+                NumberAnimation {
+                    duration: Kirigami.Units.shortDuration
+                    easing.type: Easing.OutCubic
+                }
+            }
 
             Rectangle {
                 anchors.fill: parent

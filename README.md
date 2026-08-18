@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.39">
-    <img src="https://img.shields.io/badge/release-v0.9.7.39-4caf50" alt="Release v0.9.7.39">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.40">
+    <img src="https://img.shields.io/badge/release-v0.9.7.40-4caf50" alt="Release v0.9.7.40">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,17 +23,17 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7.39](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.39).
+[v0.9.7.40](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.40).
 
-## What's New in 0.9.7.39
+## What's New in 0.9.7.40
 
-- **Total Eradication of QML Static Debt (0 Warnings)**: 100% elimination of all 742 static compiler diagnostics across every QML component in the repository.
-- **Interactive QML Audit & Compilation Dashboard**: Live HTML dashboard (`docs/deuda-qmllint/auditoria-advertencias-kde6.html`) with real-time status filters, difficulty grades (1 to 5), and Excel export.
-- **Strict Scope & Delegate Hardening**: Universal adoption of `pragma ComponentBehavior: Bound`, required typed delegate properties, and qualification of controller scopes.
-- **Baseline Ratcheted to Absolute Zero**: `QMLLINT_BASELINE_TOTAL`, `UNQUALIFIED`, and `MISSING_PROPERTY` all reduced to 0.
+- **New Compact Menu Mode (`PunchiMenuCompact`)**: Sleek, focused menu view with rounded search, dynamic favorites row with complete context menu actions, and category flyouts.
+- **Theme Shadow Frame Compensation**: Precise dock alignment discounting Plasma Breeze shadow projection in `PunchiMenuNormalPlacement`.
+- **Cinematic Window Thumbnail Motion**: Fluid opening animations anchored directly to dock icons with responsive cubic/elastic easing curves and interactive hover elevation.
+- **Synchronized Context Menu Lifecycle**: Instant dismissal of popups on navigation and close transitions.
 - **100% Validated**: Full CTest suite passed (38/38) and complete translation catalogs.
 
-See the [0.9.7.39 changelog](CHANGELOG.md#09739---2026-08-17) for detailed release
+See the [0.9.7.40 changelog](CHANGELOG.md#09740---2026-08-17) for detailed release
 notes and the validation performed for this version.
 
 ## Screenshots
@@ -127,13 +127,13 @@ On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.7.39-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.7.40-fedora44-x86_64.plasmoid
 ```
 
 To update an existing installation:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.7.39-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.7.40-fedora44-x86_64.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
@@ -185,8 +185,8 @@ scripts/setup-universal.sh
 dist/punchi-dock-remastered-<version>-<distribution>-<architecture>.plasmoid
 ```
 
-The 0.9.7.39 GitHub release provides
-`punchi-dock-remastered-0.9.7.39-fedora44-x86_64.plasmoid`. Universal artifacts
+The 0.9.7.40 GitHub release provides
+`punchi-dock-remastered-0.9.7.40-fedora44-x86_64.plasmoid`. Universal artifacts
 are published separately only after their Debian 13 build and
 cross-distribution validation are complete.
 Never install an artifact labeled for a different distribution.

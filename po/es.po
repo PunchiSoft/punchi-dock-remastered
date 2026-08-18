@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-17 19:30-0400\n"
+"POT-Creation-Date: 2026-08-17 21:15-0400\n"
 "PO-Revision-Date: 2026-07-18 02:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Spanish\n"
@@ -53,7 +53,7 @@ msgstr "%1 está ahora al frente; suelte para abrir los archivos locales"
 msgid "%1 items loaded."
 msgstr "%1 elementos cargados."
 
-#: contents/ui/main.qml:2199
+#: contents/ui/main.qml:2207
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de ventanas más"
@@ -252,7 +252,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Se creó un acceso directo de escritorio para %1."
 
-#: contents/ui/main.qml:1278
+#: contents/ui/main.qml:1286
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr ""
@@ -312,7 +312,7 @@ msgstr "Añadir una aplicación o un elemento contenedor"
 msgid "Add empty space between items"
 msgstr "Añadir espacio vacío entre elementos"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:308
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:351
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:956
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:985
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1530
@@ -321,7 +321,7 @@ msgctxt "@action:inmenu"
 msgid "Add to Desktop"
 msgstr "Añadir al escritorio"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:300
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:343
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:948
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:977
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1508
@@ -430,7 +430,7 @@ msgstr ""
 msgid "Alias/Quick Search:"
 msgstr "Alias/Búsqueda rápida:"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:145
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:183
 msgctxt "@title:application-category"
 msgid "All Applications"
 msgstr "Todas las aplicaciones"
@@ -847,7 +847,7 @@ msgid "Bounce"
 msgstr "Rebote"
 
 #: contents/ui/components/TaskWindowsPopup.qml:263
-#: contents/ui/components/WindowPreviewCard.qml:185
+#: contents/ui/components/WindowPreviewCard.qml:197
 msgid "Bring window to front"
 msgstr "Traer ventana al frente"
 
@@ -1203,7 +1203,7 @@ msgstr "Botón Cerrar:"
 
 #: contents/ui/components/TaskOverflowPopup.qml:175
 #: contents/ui/components/TaskWindowsPopup.qml:366
-#: contents/ui/components/WindowPreviewCard.qml:229
+#: contents/ui/components/WindowPreviewCard.qml:241
 msgid "Close window"
 msgstr "Cerrar la ventana"
 
@@ -1556,7 +1556,7 @@ msgid "Detailed"
 msgstr "Detallado"
 
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:106
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:133
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:171
 msgctxt "@title:application-category"
 msgid "Development"
 msgstr "Desarrollo"
@@ -1719,7 +1719,7 @@ msgid "Edit item…"
 msgstr "Editar elemento…"
 
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:114
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:141
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:179
 msgctxt "@title:application-category"
 msgid "Education"
 msgstr "Educación"
@@ -1926,7 +1926,7 @@ msgid "Folder:"
 msgstr "Carpeta:"
 
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:96
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:123
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:161
 msgctxt "@title:application-category"
 msgid "Folders"
 msgstr "Carpetas"
@@ -2012,7 +2012,7 @@ msgid "Full screen"
 msgstr "Pantalla completa"
 
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:112
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:139
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:177
 msgctxt "@title:application-category"
 msgid "Games"
 msgstr "Juegos"
@@ -2035,7 +2035,7 @@ msgid "Go to today"
 msgstr "Ir a hoy"
 
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:100
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:127
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:165
 msgctxt "@title:application-category"
 msgid "Graphics"
 msgstr "Gráficos"
@@ -2296,7 +2296,7 @@ msgid "Intensity:"
 msgstr "Intensidad:"
 
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:98
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:125
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:163
 msgctxt "@title:application-category"
 msgid "Internet"
 msgstr "Internet"
@@ -2479,12 +2479,12 @@ msgstr "Cargando aplicaciones…"
 msgid "Location and size"
 msgstr "Ubicación y tamaño"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:717
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:764
 msgctxt "@action:button"
 msgid "Lock"
 msgstr "Bloquear"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:728
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:775
 #: contents/ui/components/punchimenu/PunchiMenuSessionView.qml:74
 msgctxt "@action:button"
 msgid "Log Out"
@@ -2522,7 +2522,7 @@ msgstr "Maximizar"
 
 #: contents/ui/components/TaskOverflowPopup.qml:163
 #: contents/ui/components/TaskWindowsPopup.qml:333
-#: contents/ui/components/WindowPreviewCard.qml:215
+#: contents/ui/components/WindowPreviewCard.qml:227
 msgid "Maximize window"
 msgstr "Maximizar la ventana"
 
@@ -2702,7 +2702,7 @@ msgstr "Minimizar"
 
 #: contents/ui/components/TaskOverflowPopup.qml:148
 #: contents/ui/components/TaskWindowsPopup.qml:298
-#: contents/ui/components/WindowPreviewCard.qml:200
+#: contents/ui/components/WindowPreviewCard.qml:212
 msgid "Minimize window"
 msgstr "Minimizar la ventana"
 
@@ -2736,7 +2736,7 @@ msgid "Move to a folder"
 msgstr "Mover a una carpeta"
 
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:102
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:129
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:167
 msgctxt "@title:application-category"
 msgid "Multimedia"
 msgstr "Multimedia"
@@ -2810,7 +2810,7 @@ msgstr ""
 "No se encontraron aplicaciones multimedia instaladas. La selección "
 "automática sigue disponible."
 
-#: contents/ui/main.qml:1264
+#: contents/ui/main.qml:1272
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "No se encontraron archivos locales en este arrastre."
@@ -2912,7 +2912,7 @@ msgid "Number of bars:"
 msgstr "Número de barras:"
 
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:104
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:131
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:169
 msgctxt "@title:application-category"
 msgid "Office"
 msgstr "Oficina"
@@ -2929,7 +2929,7 @@ msgstr ""
 "cerrada.Solo se aplica cuando este elemento del dock inicia una aplicación "
 "cerrada."
 
-#: contents/ui/main.qml:1275
+#: contents/ui/main.qml:1283
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Solo se pueden abrir archivos locales con una aplicación."
@@ -3081,7 +3081,7 @@ msgstr ""
 "separadores."
 
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:116
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:147
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:185
 msgctxt "@title:application-category"
 msgid "Other"
 msgstr "Otras"
@@ -3135,7 +3135,7 @@ msgctxt "@action:context"
 msgid "Pin to Dock"
 msgstr "Anclar al dock"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:305
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:348
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:953
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:982
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1520
@@ -3380,7 +3380,7 @@ msgctxt "@action:button"
 msgid "Remove"
 msgstr "Quitar"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:304
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:347
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:952
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:981
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1519
@@ -3389,7 +3389,7 @@ msgctxt "@action:inmenu"
 msgid "Remove from Dock"
 msgstr "Desanclar del dock"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:299
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:342
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:947
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:976
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1507
@@ -3481,7 +3481,7 @@ msgstr "Restaurar desde maximizada"
 
 #: contents/ui/components/TaskOverflowPopup.qml:147
 #: contents/ui/components/TaskWindowsPopup.qml:297
-#: contents/ui/components/WindowPreviewCard.qml:199
+#: contents/ui/components/WindowPreviewCard.qml:211
 msgid "Restore from minimized state"
 msgstr "Restaurar desde el estado minimizado"
 
@@ -3492,7 +3492,7 @@ msgstr "Restaurar volumen multimedia"
 
 #: contents/ui/components/TaskOverflowPopup.qml:162
 #: contents/ui/components/TaskWindowsPopup.qml:332
-#: contents/ui/components/WindowPreviewCard.qml:214
+#: contents/ui/components/WindowPreviewCard.qml:226
 msgid "Restore window size"
 msgstr "Restaurar el tamaño de la ventana"
 
@@ -3570,19 +3570,19 @@ msgctxt "@action:button"
 msgid "Scroll favorites right"
 msgstr "Desplazar favoritos a la derecha"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:443
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:490
 msgctxt "@title:category"
 msgid "Search Results"
 msgstr "Resultados de búsqueda"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:420
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:467
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1674
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2008
 msgctxt "@label"
 msgid "Search applications"
 msgstr "Buscar aplicaciones"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:419
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:466
 msgctxt "@info:placeholder"
 msgid "Search applications…"
 msgstr "Buscar aplicaciones…"
@@ -3635,12 +3635,12 @@ msgstr ""
 "Los separadores ayudan a agrupar elementos en el dock. La forma, el tamaño y "
 "el resplandor se adaptan automáticamente al tema de Plasma."
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:703
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:750
 msgctxt "@action:button"
 msgid "Settings"
 msgstr "Preferencias"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:143
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:181
 msgctxt "@title:application-category"
 msgid "Settings"
 msgstr "Preferencias"
@@ -3842,7 +3842,7 @@ msgctxt "@action:button"
 msgid "Shuffle"
 msgstr "Aleatorio"
 
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:741
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:788
 #: contents/ui/components/punchimenu/PunchiMenuSessionView.qml:188
 msgctxt "@action:button"
 msgid "Shut Down"
@@ -3907,7 +3907,7 @@ msgid "Subtle scale"
 msgstr "Escala sutil"
 
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:108
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:135
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:173
 msgctxt "@title:application-category"
 msgid "System"
 msgstr "Sistema"
@@ -4078,12 +4078,12 @@ msgstr ""
 "La configuración del dock es demasiado grande. El tamaño máximo admitido es "
 "1 MiB."
 
-#: contents/ui/main.qml:1272
+#: contents/ui/main.qml:1280
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "El arrastre contiene una ubicación de archivo local no válida."
 
-#: contents/ui/main.qml:1281
+#: contents/ui/main.qml:1289
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
@@ -4091,7 +4091,7 @@ msgstr ""
 "seguridad.La lista de archivos arrastrados es demasiado grande para abrirla "
 "de forma segura."
 
-#: contents/ui/main.qml:1286
+#: contents/ui/main.qml:1294
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "No se pudieron abrir los archivos arrastrados."
@@ -4221,7 +4221,7 @@ msgstr "Delgado"
 msgid "This action cannot be undone."
 msgstr "Esta acción no se puede deshacer."
 
-#: contents/ui/main.qml:1284
+#: contents/ui/main.qml:1292
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -4382,7 +4382,7 @@ msgid "User"
 msgstr "Usuario"
 
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:110
-#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:137
+#: contents/ui/components/punchimenu/PunchiMenuCompact.qml:175
 msgctxt "@title:application-category"
 msgid "Utilities"
 msgstr "Utilidades"
@@ -4586,7 +4586,7 @@ msgstr "Escribir una nota rápida editable"
 msgid "Write a quick note"
 msgstr "Escribir una nota rápida"
 
-#: contents/ui/main.qml:1268
+#: contents/ui/main.qml:1276
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Puede abrir hasta %1 archivos locales a la vez."

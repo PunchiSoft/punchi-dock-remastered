@@ -1,3 +1,37 @@
+## [0.9.7.40] - 2026-08-17
+
+### Agregado
+
+- **Nuevo Modo Compacto de PunchiMenu (`PunchiMenuCompact`)**:
+  - Vista de menú compacto con submenú lateral de aplicaciones (`PunchiMenuCompactFlyout`).
+  - Campo de búsqueda estilizado con esquinas redondeadas (`Kirigami.SearchField` + `PunchiMenuSearchBackground` nativo).
+  - Fila superior dinámica de favoritos conectada a `root.favorites` con soporte para menú contextual completo (eliminar de favoritos, anclar al dock y añadir acceso al escritorio).
+  - Menú de categorías con resaltado canónico unificado `PunchiMenuItemHighlight` y cursor `PointingHandCursor`.
+  - Vista integrada de configuración compacta (`PunchiMenuCompactSettingsView`) con interruptor de fila de favoritos y controles de escala, opacidad y separación.
+- **Cinemática de Apertura para Miniaturas de Ventanas**:
+  - Transformación dinámica con origen anclado al dock (`transformOrigin: Bottom/Top/Left/Right`) en `PopupAnimatedContent.qml`.
+  - Curvas de aceleración y desaceleración fluidas (`Easing.OutCubic` y `Easing.OutBack`) con amplitud visible de escala (`0.84 -> 1.00`) y deslizamiento de 18 px.
+  - Microinteracción interactiva de elevación (`scale: 1.02`) y cursor `PointingHandCursor` en tarjetas de previsualización (`WindowPreviewCard.qml`).
+
+### Cambiado
+
+- **Compensación de Sombras de Marco Temático de Plasma**:
+  - Integración de `themeFrameOverlap` en `compactBackground` y propagación de `themeFrameMargin` a `PunchiMenuNormalPlacement.qml`, descontando la holgura transparente del tema Breeze y permitiendo que con `0 px` el menú quede pegado al ras del dock.
+- **Calibración de Altura Implícita del Menú Compacto**:
+  - Ajuste de altura a `21.6 gridUnits` (sin favoritos) y `24.2 gridUnits` (con favoritos), eliminando por completo el espacio vacío inferior.
+
+### Corregido
+
+- **Cierre Sincronizado del Menú Contextual**:
+  - Corrección del fallo donde el menú contextual emergente permanecía visible en pantalla tras cerrar el menú o cambiar de categoría.
+
+### Validación
+
+- Suite CTest aprobada al 100% (38/38 pruebas).
+- `qmllint-qt6`: 0 advertencias, 0 errores, 0 deuda técnica.
+- Catálogos ki18n (`es`, `de`, `pt_BR`) 100% traducidos sin cadenas difusas ni huérfanas.
+- Revisión preventiva de seguridad (Preflight) conforme.
+
 ## [0.9.7.39] - 2026-08-17
 
 ### Agregado
