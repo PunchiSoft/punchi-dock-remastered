@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.40">
-    <img src="https://img.shields.io/badge/release-v0.9.7.40-4caf50" alt="Versión v0.9.7.40">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.41">
+    <img src="https://img.shields.io/badge/release-v0.9.7.41-4caf50" alt="Versión v0.9.7.41">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -23,17 +23,15 @@ Punchi Dock Remastered es un dock nativo de lanzadores e interfaz de tareas para
 Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). Actualmente el proyecto prepara su camino hacia la versión estable 1.0.
 
 La versión actual es
-[v0.9.7.40](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.40).
+[v0.9.7.41](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.41).
 
-## Novedades de la versión 0.9.7.40
+## Novedades de la versión 0.9.7.41
 
-- **Nuevo Modo Compacto de PunchiMenu (`PunchiMenuCompact`)**: Vista de menú compacto con búsqueda redondeada, fila dinámica de favoritos conectada a `root.favorites` con acciones contextuales completas y submenús laterales de categorías.
-- **Compensación de Sombras Temáticas de Plasma**: Alineación al ras del dock descontando la holgura transparente del marco Breeze en `PunchiMenuNormalPlacement`.
-- **Cinemática de Apertura en Miniaturas de Ventanas**: Animaciones de apertura fluidas con origen anclado al dock (`transformOrigin: Bottom/Top/Left/Right`), curvas elásticas naturales y elevación interactiva al pasar el cursor.
-- **Ciclo de Vida Sincronizado del Menú Contextual**: Cierre automático e instantáneo de menús emergentes al cambiar de vista o cerrar el menú.
+- **Animación en Cascada en Popups de Carpetas (`FolderPopup`)**: Apertura escalonada secuencial de las aplicaciones contenidas con retardo indexado dinámico y amortiguación elástica.
+- **Elevación Táctil Interactiva**: Microinteracción fluida en hover (`1.04x`) y respuesta a la presión (`0.95x`) con cursores de mano en cada elemento de la carpeta.
 - **100% Validado**: Suite CTest completa aprobada (38/38) y catálogos de traducción al 100%.
 
-Consulta el [changelog de la versión 0.9.7.40](CHANGELOG.md#09740---2026-08-17) para
+Consulta el [changelog de la versión 0.9.7.41](CHANGELOG.md#09741---2026-08-17) para
 conocer las notas detalladas del lanzamiento y la validación realizada.
 
 ## Capturas
@@ -116,13 +114,13 @@ En Fedora, `kpackagetool6` pertenece a `kf6-kpackage` y normalmente ya está dis
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.7.40-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.7.41-fedora44-x86_64.plasmoid
 ```
 
 Para actualizar una instalación existente:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.7.40-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.7.41-fedora44-x86_64.plasmoid
 ```
 
 Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actualizado no se carga inmediatamente.
@@ -174,8 +172,8 @@ scripts/setup-universal.sh
 dist/punchi-dock-remastered-<versión>-<distribución>-<arquitectura>.plasmoid
 ```
 
-La release 0.9.7.40 de GitHub ofrece
-`punchi-dock-remastered-0.9.7.40-fedora44-x86_64.plasmoid`. Los artefactos
+La release 0.9.7.41 de GitHub ofrece
+`punchi-dock-remastered-0.9.7.41-fedora44-x86_64.plasmoid`. Los artefactos
 universales se publican por separado únicamente después de completar su
 compilación en Debian 13 y su validación entre distribuciones.
 No instales un artefacto identificado para otra distribución.

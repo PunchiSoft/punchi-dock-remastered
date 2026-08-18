@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.40">
-    <img src="https://img.shields.io/badge/release-v0.9.7.40-4caf50" alt="Release v0.9.7.40">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.41">
+    <img src="https://img.shields.io/badge/release-v0.9.7.41-4caf50" alt="Release v0.9.7.41">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,17 +23,15 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7.40](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.40).
+[v0.9.7.41](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.41).
 
-## What's New in 0.9.7.40
+## What's New in 0.9.7.41
 
-- **New Compact Menu Mode (`PunchiMenuCompact`)**: Sleek, focused menu view with rounded search, dynamic favorites row with complete context menu actions, and category flyouts.
-- **Theme Shadow Frame Compensation**: Precise dock alignment discounting Plasma Breeze shadow projection in `PunchiMenuNormalPlacement`.
-- **Cinematic Window Thumbnail Motion**: Fluid opening animations anchored directly to dock icons with responsive cubic/elastic easing curves and interactive hover elevation.
-- **Synchronized Context Menu Lifecycle**: Instant dismissal of popups on navigation and close transitions.
+- **Staggered Cascade Animation in Folder Popups (`FolderPopup`)**: Smooth sequential entrance animation for folder applications with indexed delay and elastic easing.
+- **Interactive Tactile Elevation**: Smooth hover elevation (`1.04x`) and press feedback (`0.95x`) with pointing hand cursors across folder items.
 - **100% Validated**: Full CTest suite passed (38/38) and complete translation catalogs.
 
-See the [0.9.7.40 changelog](CHANGELOG.md#09740---2026-08-17) for detailed release
+See the [0.9.7.41 changelog](CHANGELOG.md#09741---2026-08-17) for detailed release
 notes and the validation performed for this version.
 
 ## Screenshots
@@ -127,13 +125,13 @@ On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already
 
 ```bash
 sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.7.40-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.7.41-fedora44-x86_64.plasmoid
 ```
 
 To update an existing installation:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.7.40-fedora44-x86_64.plasmoid
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.7.41-fedora44-x86_64.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
@@ -185,8 +183,8 @@ scripts/setup-universal.sh
 dist/punchi-dock-remastered-<version>-<distribution>-<architecture>.plasmoid
 ```
 
-The 0.9.7.40 GitHub release provides
-`punchi-dock-remastered-0.9.7.40-fedora44-x86_64.plasmoid`. Universal artifacts
+The 0.9.7.41 GitHub release provides
+`punchi-dock-remastered-0.9.7.41-fedora44-x86_64.plasmoid`. Universal artifacts
 are published separately only after their Debian 13 build and
 cross-distribution validation are complete.
 Never install an artifact labeled for a different distribution.

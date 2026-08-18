@@ -136,6 +136,7 @@ Item {
                 MouseArea {
                     id: closeMouse
                     anchors.fill: parent; hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
                     Accessible.name: i18n("Close") // qmllint disable unqualified
@@ -170,19 +171,60 @@ Item {
             delegate: Item {
                 id: appDelegate
                 required property var modelData
+                required property int index
 
                 width: gridView.cellWidth
                 height: gridView.cellHeight
+                opacity: Kirigami.Units.longDuration > 0 ? 0 : 1
+                scale: Kirigami.Units.longDuration > 0 ? 0.82 : 1.0
 
-                // Shared launcher highlight used across Punchi Dock.
-                PunchiMenuComponents.PunchiMenuItemHighlight {
-                    anchors.fill: parent
-                    anchors.margins: Kirigami.Units.smallSpacing
-                    hovered: itemMouse.containsMouse
-                    focused: itemMouse.activeFocus
-                    pressed: itemMouse.pressed
-                    motionEnabled: Kirigami.Units.longDuration > 0
+                SequentialAnimation {
+                    id: entryAnimation
+                    running: Kirigami.Units.longDuration > 0
+                    PauseAnimation {
+                        duration: Math.min(180, appDelegate.index * 22)
+                    }
+                    ParallelAnimation {
+                        NumberAnimation {
+                            target: appDelegate
+                            property: "opacity"
+                            to: 1.0
+                            duration: Math.max(140, Kirigami.Units.shortDuration)
+                            easing.type: Easing.OutCubic
+                        }
+                        NumberAnimation {
+                            target: appDelegate
+                            property: "scale"
+                            to: 1.0
+                            duration: Math.max(140, Kirigami.Units.shortDuration)
+                            easing.type: Easing.OutBack
+                            easing.overshoot: 1.2
+                        }
+                    }
                 }
+
+                Item {
+                    id: itemContentContainer
+                    anchors.fill: parent
+                    scale: itemMouse.pressed ? 0.95 : (itemMouse.containsMouse ? 1.04 : 1.0)
+
+                    Behavior on scale {
+                        enabled: Kirigami.Units.longDuration > 0
+                        NumberAnimation {
+                            duration: Kirigami.Units.shortDuration
+                            easing.type: Easing.OutCubic
+                        }
+                    }
+
+                    // Shared launcher highlight used across Punchi Dock.
+                    PunchiMenuComponents.PunchiMenuItemHighlight {
+                        anchors.fill: parent
+                        anchors.margins: Kirigami.Units.smallSpacing
+                        hovered: itemMouse.containsMouse
+                        focused: itemMouse.activeFocus
+                        pressed: itemMouse.pressed
+                        motionEnabled: Kirigami.Units.longDuration > 0
+                    }
 
                 // List and detail modes place the icon before the label.
                 RowLayout {
@@ -249,11 +291,13 @@ Item {
                         elide: Text.ElideRight
                     }
                 }
+            }
 
                 MouseArea {
                     id: itemMouse
                     anchors.fill: parent
                     hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
                     acceptedButtons: Qt.LeftButton | Qt.RightButton
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button

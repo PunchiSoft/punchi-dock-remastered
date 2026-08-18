@@ -1,3 +1,20 @@
+## [0.9.7.41] - 2026-08-17
+
+### Agregado
+
+- **Animación en Cascada y Elevación Interactiva en Popups de Carpetas (`FolderPopup`)**:
+  - Despliegue escalonado secuencial (*Staggered Cascade*) de las aplicaciones contenidas con retardo indexado dinámico de 22 ms.
+  - Curvas de escala elásticas (`0.82 ──► 1.00`) con `Easing.OutBack` y desvanecimiento alfa `Easing.OutCubic`.
+  - Microinteracción de elevación táctil en hover (`1.04x`) y respuesta de presión (`0.95x`) en cada elemento de la carpeta.
+  - Integración de cursores de mano nativos `PointingHandCursor` en delegados de aplicaciones y botón de cierre.
+
+### Validación
+
+- Suite CTest aprobada al 100% (38/38 pruebas).
+- `qmllint-qt6`: 0 advertencias, 0 errores, 0 deuda técnica.
+- Catálogos ki18n (`es`, `de`, `pt_BR`) 100% traducidos.
+- Revisión preventiva de seguridad (Preflight) conforme.
+
 ## [0.9.7.40] - 2026-08-17
 
 ### Agregado
