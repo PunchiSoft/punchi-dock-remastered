@@ -97,8 +97,23 @@ FocusScope {
 
     signal applicationLaunched()
     signal menuCloseRequested()
+    signal closeFinished()
     signal settingChangeRequested(string fieldName, var value)
     signal applicationContextRequested(var sourceItem, var application, real x, real y)
+
+    readonly property int openDuration: motionEnabled
+        ? Math.max(220, Math.min(280, Kirigami.Units.longDuration))
+        : 0
+    readonly property int closeDuration: motionEnabled
+        ? Math.max(140, Math.min(180, Kirigami.Units.shortDuration))
+        : 0
+
+    Timer {
+        id: compactCloseTimer
+        interval: root.closeDuration
+        repeat: false
+        onTriggered: root.closeFinished()
+    }
 
     onMenuOpenChanged: {
         if (!menuOpen) {
@@ -263,6 +278,7 @@ FocusScope {
     }
 
     function openMenu() {
+        compactCloseTimer.stop()
         root.closeApplicationContextMenu(false)
         root.menuOpen = true
         root.settingsViewActive = false
@@ -272,7 +288,16 @@ FocusScope {
         searchField.forceActiveFocus()
     }
 
+    function forceClose() {
+        compactCloseTimer.stop()
+        root.closeApplicationContextMenu(false)
+        root.menuOpen = false
+        root.closeFlyout()
+        compactCloseTimer.restart()
+    }
+
     function resetMenu() {
+        compactCloseTimer.stop()
         root.closeApplicationContextMenu(false)
         root.menuOpen = false
         root.settingsViewActive = false
@@ -283,7 +308,7 @@ FocusScope {
 
     function closeMenu() {
         root.closeApplicationContextMenu(false)
-        resetMenu()
+        forceClose()
         root.menuCloseRequested()
     }
 
@@ -425,24 +450,65 @@ FocusScope {
         }
     }
 
-    KSvg.FrameSvgItem {
-        id: compactBackground
+    Item {
+        id: surface
         anchors.fill: parent
-        anchors.leftMargin: -root.themeFrameOverlapLeft
-        anchors.topMargin: -root.themeFrameOverlapTop
-        anchors.rightMargin: -root.themeFrameOverlapRight
-        anchors.bottomMargin: -root.themeFrameOverlapBottom
-        imagePath: "widgets/background"
-        opacity: root.safeBackgroundOpacity
-    }
+        opacity: root.menuOpen ? 1.0 : 0.0
+        scale: root.motionEnabled
+            ? (root.menuOpen ? 1.0 : 0.88)
+            : 1.0
+        transformOrigin: Item.Bottom
 
-    RowLayout {
-        anchors.fill: parent
-        anchors.leftMargin: root.themeMarginLeft + Kirigami.Units.smallSpacing
-        anchors.topMargin: root.themeMarginTop + Kirigami.Units.smallSpacing
-        anchors.rightMargin: root.themeMarginRight + Kirigami.Units.smallSpacing
-        anchors.bottomMargin: root.themeMarginBottom + Kirigami.Units.smallSpacing
-        spacing: Kirigami.Units.smallSpacing
+        Behavior on scale {
+            enabled: root.motionEnabled
+            NumberAnimation {
+                duration: root.menuOpen ? root.openDuration : root.closeDuration
+                easing.type: root.menuOpen ? Easing.OutBack : Easing.InQuad
+                easing.overshoot: 1.15
+            }
+        }
+
+        transform: Translate {
+            id: surfaceTranslation
+            y: root.motionEnabled
+                ? (root.menuOpen ? 0 : Kirigami.Units.gridUnit * 1.5)
+                : 0
+
+            Behavior on y {
+                enabled: root.motionEnabled
+                NumberAnimation {
+                    duration: root.menuOpen ? root.openDuration : root.closeDuration
+                    easing.type: root.menuOpen ? Easing.OutCubic : Easing.InQuad
+                }
+            }
+        }
+
+        Behavior on opacity {
+            enabled: root.motionEnabled
+            NumberAnimation {
+                duration: root.menuOpen ? root.openDuration : root.closeDuration
+                easing.type: root.menuOpen ? Easing.OutCubic : Easing.InQuad
+            }
+        }
+
+        KSvg.FrameSvgItem {
+            id: compactBackground
+            anchors.fill: parent
+            anchors.leftMargin: -root.themeFrameOverlapLeft
+            anchors.topMargin: -root.themeFrameOverlapTop
+            anchors.rightMargin: -root.themeFrameOverlapRight
+            anchors.bottomMargin: -root.themeFrameOverlapBottom
+            imagePath: "widgets/background"
+            opacity: root.safeBackgroundOpacity
+        }
+
+        RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: root.themeMarginLeft + Kirigami.Units.smallSpacing
+            anchors.topMargin: root.themeMarginTop + Kirigami.Units.smallSpacing
+            anchors.rightMargin: root.themeMarginRight + Kirigami.Units.smallSpacing
+            anchors.bottomMargin: root.themeMarginBottom + Kirigami.Units.smallSpacing
+            spacing: Kirigami.Units.smallSpacing
 
         // Main Column
         Item {
@@ -858,6 +924,7 @@ FocusScope {
             }
         }
     }
+}
 
     PunchiMenuContextSurface {
         id: applicationContextMenuSurface

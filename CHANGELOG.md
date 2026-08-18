@@ -1,3 +1,19 @@
+## [0.9.7.42] - 2026-08-17
+
+### Agregado
+
+- **Cinemática de Apertura y Cierre Suave en PunchiMenu Normal y Compacto**:
+  - Brote elástico de superficie (*Spring Reveal*) con escala dinámica (`0.88 ──► 1.00`), curvas `Easing.OutBack` (sobreimpulso `1.15`) y traslación vertical anclada al dock (`1.5 gridUnits`) en `PunchiMenuNormal.qml`.
+  - Superficie animada reactiva en `PunchiMenuCompact.qml` con escala, desplazamiento vertical y desvanecimiento alfa coordinados.
+  - Cierre suave diferido con Fade Out (`closeWithFade()`) y temporizadores de ciclo de vida dedicados en `punchiMenuNormalDialog` y `punchiMenuCompactDialog` (`main.qml`), eliminando desapariciones abruptas al cerrar el menú por clic exterior, tecla Escape o lanzamiento de aplicaciones.
+
+### Validación
+
+- Suite CTest aprobada al 100% (38/38 pruebas).
+- `qmllint-qt6`: 0 advertencias, 0 errores, 0 deuda técnica.
+- Catálogos ki18n (`es`, `de`, `pt_BR`) 100% traducidos.
+- Revisión preventiva de seguridad (Preflight) conforme.
+
 ## [0.9.7.41] - 2026-08-17
 
 ### Agregado

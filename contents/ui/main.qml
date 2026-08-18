@@ -513,7 +513,11 @@ PlasmoidItem {
         }
 
         if (punchiMenuDialogInstance.visible) {
-            punchiMenuDialogInstance.closeImmediately()
+            if (typeof punchiMenuDialogInstance.closeWithFade === "function") {
+                punchiMenuDialogInstance.closeWithFade()
+            } else {
+                punchiMenuDialogInstance.closeImmediately()
+            }
         } else {
             punchiMenuDialogInstance.openWithReveal()
         }
@@ -833,7 +837,26 @@ PlasmoidItem {
                 Qt.callLater(finishOpening)
             }
 
+            readonly property Timer normalDialogCloseTimer: Timer {
+                id: normalDialogCloseTimer
+                interval: 160
+                repeat: false
+                onTriggered: {
+                    punchiMenuNormalDialog.closeImmediately()
+                }
+            }
+
+            function closeWithFade() {
+                if (!visible || normalDialogCloseTimer.running) {
+                    return
+                }
+                internalCloseRequested = true
+                punchiMenuNormal.forceClose()
+                normalDialogCloseTimer.restart()
+            }
+
             function closeImmediately() {
+                normalDialogCloseTimer.stop()
                 internalCloseRequested = true
                 lastExternalHideTimestamp = -1
                 punchiMenuNormal.resetMenu()
@@ -1097,7 +1120,26 @@ PlasmoidItem {
                 punchiMenuCompact.openMenu()
             }
 
+            readonly property Timer compactDialogCloseTimer: Timer {
+                id: compactDialogCloseTimer
+                interval: 160
+                repeat: false
+                onTriggered: {
+                    punchiMenuCompactDialog.closeImmediately()
+                }
+            }
+
+            function closeWithFade() {
+                if (!visible || compactDialogCloseTimer.running) {
+                    return
+                }
+                internalCloseRequested = true
+                punchiMenuCompact.forceClose()
+                compactDialogCloseTimer.restart()
+            }
+
             function closeImmediately() {
+                compactDialogCloseTimer.stop()
                 internalCloseRequested = true
                 visible = false
                 opacity = 0
@@ -1151,8 +1193,9 @@ PlasmoidItem {
                     root.dockItemsControllerService.setPunchiMenuApplicationHidden(
                         storageId, hidden)
                 }
-                onApplicationLaunched: punchiMenuCompactDialog.closeImmediately()
-                onMenuCloseRequested: punchiMenuCompactDialog.closeImmediately()
+                onApplicationLaunched: punchiMenuCompactDialog.closeWithFade()
+                onMenuCloseRequested: punchiMenuCompactDialog.closeWithFade()
+                onCloseFinished: punchiMenuCompactDialog.closeImmediately()
                 onSettingChangeRequested: function(fieldName, value) {
                     root.dockItemsControllerService.setPunchiMenuValue(fieldName, value)
                 }

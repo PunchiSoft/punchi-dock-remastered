@@ -124,10 +124,10 @@ FocusScope {
     readonly property int columnCount: 6
     readonly property bool motionEnabled: Kirigami.Units.longDuration > 0
     readonly property int openDuration: motionEnabled
-        ? Math.max(160, Math.min(240, Kirigami.Units.longDuration))
+        ? Math.max(220, Math.min(280, Kirigami.Units.longDuration))
         : 0
     readonly property int closeDuration: motionEnabled
-        ? Math.max(100, Math.min(160, Kirigami.Units.shortDuration))
+        ? Math.max(140, Math.min(180, Kirigami.Units.shortDuration))
         : 0
     readonly property int operationMessageDuration: 7000
     readonly property string operationBaseMessage: operationMessage.length > 0
@@ -1602,9 +1602,27 @@ FocusScope {
         id: surface
         anchors.fill: parent
         opacity: root.menuOpen ? 1.0 : 0.0
+        scale: root.motionEnabled
+            ? (root.menuOpen ? 1.0 : (root.normalPlacementMode === "centered" ? 0.93 : 0.88))
+            : 1.0
+        transformOrigin: root.normalPlacementMode === "centered"
+            ? Item.Center
+            : Item.Bottom
+
+        Behavior on scale {
+            enabled: root.motionEnabled
+            NumberAnimation {
+                duration: root.menuOpen ? root.openDuration : root.closeDuration
+                easing.type: root.menuOpen ? Easing.OutBack : Easing.InQuad
+                easing.overshoot: 1.15
+            }
+        }
+
         transform: Translate {
             id: surfaceTranslation
-            y: root.menuOpen ? 0 : Kirigami.Units.gridUnit * 0.65
+            y: root.motionEnabled
+                ? (root.menuOpen ? 0 : (root.normalPlacementMode === "centered" ? 0 : Kirigami.Units.gridUnit * 1.5))
+                : 0
 
             Behavior on y {
                 enabled: root.motionEnabled
