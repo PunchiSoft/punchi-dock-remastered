@@ -157,6 +157,13 @@ FocusScope {
         alphabeticalSortingEnabled: root.sortApplicationsAlphabetically
     }
 
+    PunchiMenuApplicationState {
+        id: applicationState
+
+        favorites: root.favorites
+        applicationCatalog: root.applicationCatalog
+    }
+
     readonly property var categoryOrder: [
         "Network",
         "Graphics",
@@ -334,20 +341,7 @@ FocusScope {
     }
 
     function isFavorite(storageId) {
-        const id = String(storageId || "").trim()
-        if (id.length === 0 || !root.favorites) {
-            return false
-        }
-        for (let i = 0; i < root.favorites.length; i++) {
-            const fav = root.favorites[i]
-            const favId = typeof fav === "string"
-                ? fav
-                : String((fav && (fav.appStorageId || fav.storageId || fav.id)) || "")
-            if (favId === id) {
-                return true
-            }
-        }
-        return false
+        return applicationState.isFavorite(storageId)
     }
 
     function contextEntry(actionId, text, iconName, enabled) {

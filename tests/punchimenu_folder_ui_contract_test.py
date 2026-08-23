@@ -751,7 +751,9 @@ def assert_folder_action_contracts(
 
 
 def assert_exact_case_hidden_ids(
-    main_source: str, menu_sources: dict[str, str]
+    main_source: str,
+    menu_sources: dict[str, str],
+    application_state_source: str,
 ) -> None:
     """Prevent case folding of desktop-file storage identities."""
 
@@ -778,47 +780,66 @@ def assert_exact_case_hidden_ids(
         "main.qml must deduplicate and retain exact hidden storage IDs.",
     )
 
-    for mode, source in menu_sources.items():
-        lookup = block_matching(
-            source,
-            r"readonly\s+property\s+var\s+hiddenApplicationLookup\s*:\s*\{",
-            f"PunchiMenu {mode} hidden application lookup",
+    lookup = block_matching(
+        application_state_source,
+        r"readonly\s+property\s+var\s+hiddenApplicationLookup\s*:\s*\{",
+        "shared hidden application lookup",
+    )
+    hidden_check = block_matching(
+        application_state_source,
+        r"function\s+isApplicationHidden\s*\([^)]*\)\s*\{",
+        "shared hidden application check",
+    )
+    normalized_storage_id = block_matching(
+        application_state_source,
+        r"function\s+normalizedStorageId\s*\([^)]*\)\s*\{",
+        "shared hidden application ID normalization",
+    )
+    for description, block in (
+        ("lookup", lookup),
+        ("check", hidden_check),
+        ("normalization", normalized_storage_id),
+    ):
+        require(
+            lower_case_call.search(block) is None,
+            f"Shared hidden ID {description} must preserve case.",
         )
-        hidden_check = block_matching(
+    require(
+        re.search(
+            r"lookup\s*\[\s*[\"']#[\"']\s*\+\s*storageId\s*\]\s*=\s*true",
+            compact(lookup),
+        )
+        is not None,
+        "The shared controller must index exact hidden storage IDs.",
+    )
+    require(
+        re.search(
+            r"hiddenApplicationLookup\s*\[\s*[\"']#[\"']\s*\+\s*"
+            r"requestedId\s*\]",
+            compact(hidden_check),
+        )
+        is not None,
+        "The shared controller must query hidden IDs without case folding.",
+    )
+
+    count_contracts = {
+        "Normal": "applicationState.hiddenIdCount",
+        "Fullscreen": "applicationState.hiddenCatalogApplicationCount",
+    }
+    for mode, source in menu_sources.items():
+        mode_hidden_check = block_matching(
             source,
             r"function\s+isApplicationHidden\s*\([^)]*\)\s*\{",
             f"PunchiMenu {mode} hidden application check",
         )
-        hidden_count = block_matching(
-            source,
-            r"readonly\s+property\s+int\s+hiddenApplicationCount\s*:\s*\{",
-            f"PunchiMenu {mode} hidden application count",
-        )
-        for description, block in (
-            ("lookup", lookup),
-            ("check", hidden_check),
-            ("count", hidden_count),
-        ):
-            require(
-                lower_case_call.search(block) is None,
-                f"PunchiMenu {mode} hidden ID {description} must preserve case.",
-            )
         require(
-            re.search(
-                r"lookup\s*\[\s*[\"']#[\"']\s*\+\s*storageId\s*\]\s*=\s*true",
-                compact(lookup),
-            )
-            is not None,
-            f"PunchiMenu {mode} must index exact hidden storage IDs.",
+            "applicationState.isApplicationHidden(storageId)"
+            in compact(mode_hidden_check),
+            f"PunchiMenu {mode} must delegate hidden identity checks.",
         )
         require(
-            re.search(
-                r"hiddenApplicationLookup\s*\[\s*[\"']#[\"']\s*\+\s*"
-                r"normalizedId\s*\]",
-                compact(hidden_check),
-            )
-            is not None,
-            f"PunchiMenu {mode} must query hidden IDs without case folding.",
+            count_contracts[mode] in compact(source),
+            f"PunchiMenu {mode} must preserve its hidden count policy.",
         )
 
 
@@ -1169,6 +1190,9 @@ def main() -> None:
     folder_sources = assert_folder_component_inventory()
     menu_sources = {mode: source_for(path) for mode, path in MENU_PATHS.items()}
     main_source = source_for(PROJECT_ROOT / "contents/ui/main.qml")
+    application_state_source = source_for(
+        PUNCHIMENU_DIRECTORY / "PunchiMenuApplicationState.qml"
+    )
 
     assert_menu_integration(menu_sources)
     assert_folder_visibility_gates(
@@ -1177,7 +1201,9 @@ def main() -> None:
     assert_folder_component_boundaries(folder_sources)
     assert_bounded_collections(folder_sources)
     assert_folder_action_contracts(menu_sources, folder_sources)
-    assert_exact_case_hidden_ids(main_source, menu_sources)
+    assert_exact_case_hidden_ids(
+        main_source, menu_sources, application_state_source
+    )
     assert_modal_interaction_and_accessibility(menu_sources, folder_sources)
     assert_exact_case_favorite_ids(menu_sources)
     assert_layout_conflict_reconciliation(main_source)

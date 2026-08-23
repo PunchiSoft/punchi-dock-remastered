@@ -67,6 +67,10 @@ TestCase {
         return findChild(popup, "appActionsActionList")
     }
 
+    function init() {
+        failOnWarning(/.?/)
+    }
+
     function test_delegateResolvesBoundOuterScope() {
         const list = actionList()
         verify(list !== null)

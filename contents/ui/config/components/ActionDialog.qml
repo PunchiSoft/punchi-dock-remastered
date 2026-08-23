@@ -35,11 +35,11 @@ Controls.Dialog {
     property alias actionIconText: actionEditor.actionIconText
     property alias actionCommandText: actionEditor.actionCommandText
     property alias spacerSizeValue: itemEditor.spacerSizeValue
-    property alias separatorStyleControl: itemEditor.separatorStyleControl
-    property alias separatorThicknessControl: itemEditor.separatorThicknessControl
-    property alias separatorLengthRatioControl: itemEditor.separatorLengthRatioControl
-    property alias separatorOpacityControl: itemEditor.separatorOpacityControl
-    property alias separatorGlowControl: itemEditor.separatorGlowControl
+    readonly property string separatorStyleValue: itemEditor.separatorStyleValue
+    readonly property real separatorThicknessValue: itemEditor.separatorThicknessValue
+    readonly property real separatorLengthRatioValue: itemEditor.separatorLengthRatioValue
+    readonly property real separatorOpacityValue: itemEditor.separatorOpacityValue
+    readonly property bool separatorGlowEnabled: itemEditor.separatorGlowEnabled
     readonly property string containerSourceValue: itemEditor.containerSourceValue
     property alias containerSourceIndex: itemEditor.containerSourceIndex
     property alias containerPathText: itemEditor.containerPathText
@@ -113,6 +113,26 @@ Controls.Dialog {
 
     function layoutIndexFor(value) {
         return itemEditor.layoutIndexFor(value)
+    }
+
+    function setSeparatorStyleValue(value) {
+        itemEditor.setSeparatorStyleValue(value)
+    }
+
+    function setSeparatorThicknessValue(value) {
+        itemEditor.setSeparatorThicknessValue(value)
+    }
+
+    function setSeparatorLengthRatioValue(value) {
+        itemEditor.setSeparatorLengthRatioValue(value)
+    }
+
+    function setSeparatorOpacityValue(value) {
+        itemEditor.setSeparatorOpacityValue(value)
+    }
+
+    function setSeparatorGlowEnabled(enabled) {
+        itemEditor.setSeparatorGlowEnabled(enabled)
     }
 
     function iconPreview(value, fallback) {

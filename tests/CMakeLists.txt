@@ -1,3 +1,6 @@
+find_package(Qt6 6.6 REQUIRED COMPONENTS QuickTest Test)
+find_package(PlasmaQuick 6.0 REQUIRED)
+
 add_executable(spectrumanalyzer_test
     spectrumanalyzer_test.cpp
     ${CMAKE_SOURCE_DIR}/src/spectrumanalyzer.cpp
@@ -154,6 +157,16 @@ add_test(
 )
 
 add_test(
+    NAME punchimenu_application_state_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/punchimenu_application_state_contract_test.py
+)
+
+add_test(
+    NAME separator_editor_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/separator_editor_contract_test.py
+)
+
+add_test(
     NAME punchimenu_layout_persistence_contract_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/punchimenu_layout_persistence_contract_test.py
 )
@@ -233,6 +246,11 @@ add_test(
     COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/local_package_install_test.sh
 )
 
+add_test(
+    NAME plasma_runtime_diagnostics_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/plasma_runtime_diagnostics_test.sh
+)
+
 add_executable(pipewirebackend_probe EXCLUDE_FROM_ALL
     pipewirebackend_probe.cpp
     ${CMAKE_SOURCE_DIR}/src/pipewireaudiobackend.cpp
@@ -271,38 +289,81 @@ target_link_libraries(trashintegration_test PRIVATE
 add_test(NAME trashintegration_test COMMAND trashintegration_test)
 set_tests_properties(trashintegration_test PROPERTIES SKIP_RETURN_CODE 77)
 
-if(TARGET Qt6::qmltestrunner)
-    set(POPUP_COORDINATOR_QML_TEST_RUNNER $<TARGET_FILE:Qt6::qmltestrunner>)
-else()
-    find_program(POPUP_COORDINATOR_QML_TEST_RUNNER
-        NAMES qmltestrunner qmltestrunner6 qmltestrunner-qt6
-        REQUIRED
+find_program(PUNCHI_DBUS_RUN_SESSION NAMES dbus-run-session REQUIRED)
+
+add_executable(plasmoid_full_load_test plasmoid_full_load_test.cpp)
+add_dependencies(plasmoid_full_load_test
+    punchidockintegration
+    punchidockintegrationplugin
+)
+target_compile_definitions(plasmoid_full_load_test PRIVATE
+    PUNCHI_PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    PUNCHI_INTEGRATION_LIBRARY="$<TARGET_FILE:punchidockintegration>"
+    PUNCHI_INTEGRATION_PLUGIN="$<TARGET_FILE:punchidockintegrationplugin>"
+    PUNCHI_INTEGRATION_QMLDIR="${CMAKE_BINARY_DIR}/bin/org/punchi/dock/qmldir"
+    PUNCHI_INTEGRATION_QMLTYPES="${CMAKE_BINARY_DIR}/bin/org/punchi/dock/punchidockintegration.qmltypes"
+)
+target_link_libraries(plasmoid_full_load_test PRIVATE
+    Qt6::Gui
+    Qt6::Quick
+    Qt6::Test
+    KF6::ConfigQml
+    KF6::CoreAddons
+    KF6::Package
+    Plasma::Plasma
+    Plasma::PlasmaQuick
+)
+add_test(
+    NAME plasmoid_full_load_test
+    COMMAND ${PUNCHI_DBUS_RUN_SESSION}
+        --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        --
+        $<TARGET_FILE:plasmoid_full_load_test>
+)
+set_tests_properties(plasmoid_full_load_test PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
+    TIMEOUT 60
+)
+
+add_executable(punchi_qmltestrunner punchi_qmltestrunner.cpp)
+target_link_libraries(punchi_qmltestrunner PRIVATE
+    Qt6::Qml
+    Qt6::QuickTest
+    KF6::I18n
+)
+if(TARGET KF6::I18nQml)
+    target_link_libraries(punchi_qmltestrunner PRIVATE KF6::I18nQml)
+    target_compile_definitions(punchi_qmltestrunner PRIVATE
+        PUNCHI_HAS_KLOCALIZED_QML_CONTEXT
     )
 endif()
 
-add_test(
-    NAME popup_coordinator_state_test
-    COMMAND ${POPUP_COORDINATOR_QML_TEST_RUNNER}
-        -input ${CMAKE_CURRENT_SOURCE_DIR}/popup_coordinator_state_test.qml
-)
-set_tests_properties(popup_coordinator_state_test PROPERTIES
-    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
-)
+function(punchi_add_qml_test test_name qml_file)
+    add_test(
+        NAME ${test_name}
+        COMMAND $<TARGET_FILE:punchi_qmltestrunner>
+            -input ${CMAKE_CURRENT_SOURCE_DIR}/${qml_file}
+    )
+    set_tests_properties(${test_name} PROPERTIES
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+        FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    )
+endfunction()
 
-add_test(
-    NAME task_popup_surface_test
-    COMMAND ${POPUP_COORDINATOR_QML_TEST_RUNNER}
-        -input ${CMAKE_CURRENT_SOURCE_DIR}/task_popup_surface_test.qml
+punchi_add_qml_test(
+    popup_coordinator_state_test
+    popup_coordinator_state_test.qml
 )
-set_tests_properties(task_popup_surface_test PROPERTIES
-    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+punchi_add_qml_test(task_popup_surface_test task_popup_surface_test.qml)
+punchi_add_qml_test(
+    app_actions_popup_runtime_test
+    app_actions_popup_runtime_test.qml
 )
-
-add_test(
-    NAME app_actions_popup_runtime_test
-    COMMAND ${POPUP_COORDINATOR_QML_TEST_RUNNER}
-        -input ${CMAKE_CURRENT_SOURCE_DIR}/app_actions_popup_runtime_test.qml
+punchi_add_qml_test(
+    punchimenu_application_state_test
+    punchimenu_application_state_test.qml
 )
-set_tests_properties(app_actions_popup_runtime_test PROPERTIES
-    ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+punchi_add_qml_test(
+    themed_separator_lifecycle_test
+    themed_separator_lifecycle_test.qml
 )

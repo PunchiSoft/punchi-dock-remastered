@@ -1,3 +1,38 @@
+## [0.9.7.43] - 2026-08-23
+
+### Agregado
+
+- Estado compartido `PunchiMenuApplicationState` para normalizar favoritos,
+  aplicaciones ocultas y conteos de catálogo entre los modos Normal,
+  Pantalla Completa y Compacto.
+- Prueba integral `plasmoid_full_load_test` que carga dos veces el KPackage real
+  mediante Plasma, instancia la representación completa y valida su destrucción
+  bajo XDG y D-Bus aislados.
+- Runner QML propio con contexto ki18n y política de fallo ante warnings de
+  runtime, junto con contratos para estado de aplicaciones, editor de
+  separadores y ciclo de vida de `ThemedSeparator`.
+- Diagnóstico de inicio de Plasma Shell limitado al PID recién creado, con log
+  privado y detección bloqueante de errores QML atribuibles al plasmoide.
+
+### Cambiado
+
+- El editor de separadores intercambia valores tipados entre componentes en
+  lugar de exponer controles visuales mediante cadenas de aliases.
+- `ThemedSeparator` conserva una fuente temática segura y evita delegados
+  efímeros en los estilos de línea doble y chevrón.
+- El controlador del atajo de PunchiMenu difiere el acceso a `KGlobalAccel`
+  mientras no exista una secuencia configurada.
+- Los instaladores locales exigen un reinicio verificable de Plasma Shell y
+  reutilizan el diagnóstico de journal centralizado.
+
+### Validación
+
+- Suite CTest aprobada al 100% (44/44 pruebas).
+- `qmllint` 6.11.1: 0 advertencias en total y en todas las categorías del
+  baseline Fedora.
+- Catálogos ki18n (`es`, `de`, `pt_BR`) al 100%, sin mensajes vacíos ni fuzzy.
+- Revisión preventiva de seguridad conforme para el commit local.
+
 ## [0.9.7.42] - 2026-08-17
 
 ### Agregado

@@ -103,6 +103,7 @@ TestCase {
     }
 
     function init() {
+        failOnWarning(/.?/)
         surfaceLoader.active = true
         verify(surface !== null)
         fakeMediaController.applicationId = "org.mozilla.firefox"

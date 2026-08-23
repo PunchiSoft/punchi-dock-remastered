@@ -7,11 +7,32 @@ ColumnLayout {
     id: root
 
     property var controller
-    property alias separatorStyleControl: separatorStyleCombo
-    property alias separatorThicknessControl: separatorThicknessSlider
-    property alias separatorLengthRatioControl: separatorLengthRatioSlider
-    property alias separatorOpacityControl: separatorOpacitySlider
-    property alias separatorGlowControl: separatorGlowCheckBox
+    readonly property string separatorStyleValue: String(separatorStyleCombo.currentValue || "")
+    readonly property real separatorThicknessValue: separatorThicknessSlider.value
+    readonly property real separatorLengthRatioValue: separatorLengthRatioSlider.value
+    readonly property real separatorOpacityValue: separatorOpacitySlider.value
+    readonly property bool separatorGlowEnabled: separatorGlowCheckBox.checked
+
+    function setSeparatorStyleValue(value) {
+        separatorStyleCombo.currentIndex = Math.max(0,
+            separatorStyleCombo.indexOfValue(value || "line"))
+    }
+
+    function setSeparatorThicknessValue(value) {
+        separatorThicknessSlider.value = value
+    }
+
+    function setSeparatorLengthRatioValue(value) {
+        separatorLengthRatioSlider.value = value
+    }
+
+    function setSeparatorOpacityValue(value) {
+        separatorOpacitySlider.value = value
+    }
+
+    function setSeparatorGlowEnabled(enabled) {
+        separatorGlowCheckBox.checked = enabled === true
+    }
 
     spacing: Kirigami.Units.smallSpacing
 

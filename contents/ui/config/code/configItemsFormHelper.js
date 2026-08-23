@@ -89,27 +89,17 @@ function refreshItemForm() {
     calendarPopupScale.value = Math.max(0.5, Math.min(3.0,
         Number(item.popupScale === undefined ? 1.0 : item.popupScale)))
 
-    if (separatorStyle && separatorStyle.model) {
-        var requestedSeparatorStyle = item.separatorStyle === "pill"
-            ? "capsule"
-            : (item.separatorStyle || "line")
-        separatorStyle.currentIndex = Math.max(0, [
-            "line", "dot", "square", "capsule", "star", "diamond", "ring",
-            "doubleLine", "chevron"
-        ].indexOf(requestedSeparatorStyle))
-    }
-    if (separatorThickness) {
-        separatorThickness.value = item.separatorThickness === undefined ? 2 : item.separatorThickness
-    }
-    if (separatorLengthRatio) {
-        separatorLengthRatio.value = item.separatorLengthRatio === undefined ? 0.72 : item.separatorLengthRatio
-    }
-    if (separatorOpacity) {
-        separatorOpacity.value = item.separatorOpacity === undefined ? 0.34 : item.separatorOpacity
-    }
-    if (separatorGlow) {
-        separatorGlow.checked = item.separatorGlowEnabled === true
-    }
+    var requestedSeparatorStyle = item.separatorStyle === "pill"
+        ? "capsule"
+        : (item.separatorStyle || "line")
+    actionDialog.setSeparatorStyleValue(requestedSeparatorStyle)
+    actionDialog.setSeparatorThicknessValue(
+        item.separatorThickness === undefined ? 2 : item.separatorThickness)
+    actionDialog.setSeparatorLengthRatioValue(
+        item.separatorLengthRatio === undefined ? 0.72 : item.separatorLengthRatio)
+    actionDialog.setSeparatorOpacityValue(
+        item.separatorOpacity === undefined ? 0.34 : item.separatorOpacity)
+    actionDialog.setSeparatorGlowEnabled(item.separatorGlowEnabled === true)
 
     trashDialog.soundPath = item.emptySound || defaultTrashEmptySound
     trashDialog.showStateChecked = item.showState === undefined ? true : item.showState
@@ -153,21 +143,13 @@ function applyItemForm(force) {
     item.type = item.type || "app"
 
     if (item.type === "separator") {
-        if (separatorStyle && separatorStyle.currentValue) {
-            item.separatorStyle = separatorStyle.currentValue
+        if (actionDialog.separatorStyleValue.length > 0) {
+            item.separatorStyle = actionDialog.separatorStyleValue
         }
-        if (separatorThickness) {
-            item.separatorThickness = separatorThickness.value
-        }
-        if (separatorLengthRatio) {
-            item.separatorLengthRatio = separatorLengthRatio.value
-        }
-        if (separatorOpacity) {
-            item.separatorOpacity = separatorOpacity.value
-        }
-        if (separatorGlow) {
-            item.separatorGlowEnabled = separatorGlow.checked
-        }
+        item.separatorThickness = actionDialog.separatorThicknessValue
+        item.separatorLengthRatio = actionDialog.separatorLengthRatioValue
+        item.separatorOpacity = actionDialog.separatorOpacityValue
+        item.separatorGlowEnabled = actionDialog.separatorGlowEnabled
         ConfigItemsJS.pruneSeparator(item)
     } else if (item.type === "spacer") {
         item.size = actionDialog.spacerSizeValue

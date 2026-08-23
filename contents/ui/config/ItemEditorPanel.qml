@@ -18,11 +18,11 @@ GridLayout {
     readonly property string containerLayoutValue: containerLayout.currentValue || "grid"
     property alias containerLayoutIndex: containerLayout.currentIndex
     property alias spacerSizeValue: spacerSize.value
-    property alias separatorStyleControl: separatorOptions.separatorStyleControl
-    property alias separatorThicknessControl: separatorOptions.separatorThicknessControl
-    property alias separatorLengthRatioControl: separatorOptions.separatorLengthRatioControl
-    property alias separatorOpacityControl: separatorOptions.separatorOpacityControl
-    property alias separatorGlowControl: separatorOptions.separatorGlowControl
+    readonly property string separatorStyleValue: separatorOptions.separatorStyleValue
+    readonly property real separatorThicknessValue: separatorOptions.separatorThicknessValue
+    readonly property real separatorLengthRatioValue: separatorOptions.separatorLengthRatioValue
+    readonly property real separatorOpacityValue: separatorOptions.separatorOpacityValue
+    readonly property bool separatorGlowEnabled: separatorOptions.separatorGlowEnabled
     readonly property string containerSourceValue: containerSource.currentValue || "manual"
     property alias containerSourceIndex: containerSource.currentIndex
     property alias containerPathText: containerPath.text
@@ -76,6 +76,26 @@ GridLayout {
 
     function layoutIndexFor(value) {
         return Math.max(0, containerLayout.indexOfValue(value || "grid"))
+    }
+
+    function setSeparatorStyleValue(value) {
+        separatorOptions.setSeparatorStyleValue(value)
+    }
+
+    function setSeparatorThicknessValue(value) {
+        separatorOptions.setSeparatorThicknessValue(value)
+    }
+
+    function setSeparatorLengthRatioValue(value) {
+        separatorOptions.setSeparatorLengthRatioValue(value)
+    }
+
+    function setSeparatorOpacityValue(value) {
+        separatorOptions.setSeparatorOpacityValue(value)
+    }
+
+    function setSeparatorGlowEnabled(enabled) {
+        separatorOptions.setSeparatorGlowEnabled(enabled)
     }
 
     function iconPreview(value, fallback) {

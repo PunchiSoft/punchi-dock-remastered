@@ -107,11 +107,6 @@ KCM.SimpleKCM {
     property alias calendarAccentColor: timedDialog.calendarAccentColorControl
     property alias calendarBorderColor: timedDialog.calendarBorderColorControl
     property alias calendarRadius: timedDialog.calendarRadiusControl
-    property alias separatorStyle: actionDialog.separatorStyleControl
-    property alias separatorThickness: actionDialog.separatorThicknessControl
-    property alias separatorLengthRatio: actionDialog.separatorLengthRatioControl
-    property alias separatorOpacity: actionDialog.separatorOpacityControl
-    property alias separatorGlow: actionDialog.separatorGlowControl
     function configInstanceId() {
         var value = ""
         try {

@@ -8,13 +8,21 @@ Item {
 
     property var theme: ({})
     property real availableLength: 0
-    property string style: String(theme.style || "line")
-    property real thickness: Number(theme.thickness || 2)
-    property real lengthRatio: Number(theme.lengthRatio || 0.72)
-    property real customOpacity: Number(theme.opacity === undefined ? 0.34 : theme.opacity)
-    property bool glowEnabled: theme.glowEnabled === true || (theme.glow && theme.glow.size > 0)
+    property string style: String(root.effectiveTheme.style || "line")
+    property real thickness: Number(root.effectiveTheme.thickness || 2)
+    property real lengthRatio: Number(root.effectiveTheme.lengthRatio || 0.72)
+    property real customOpacity: Number(root.effectiveTheme.opacity === undefined
+        ? 0.34
+        : root.effectiveTheme.opacity)
+    property bool glowEnabled: root.effectiveTheme.glowEnabled === true
+        || (root.effectiveTheme.glow !== undefined
+            && root.effectiveTheme.glow !== null
+            && Number(root.effectiveTheme.glow.size) > 0)
     property bool verticalPanel: false
 
+    readonly property var effectiveTheme: root.theme && typeof root.theme === "object"
+        ? root.theme
+        : ({})
     readonly property var supportedStyles: [
         "line", "dot", "square", "capsule", "star", "diamond", "ring",
         "doubleLine", "chevron"
@@ -49,8 +57,9 @@ Item {
         || root.effectiveStyle === "capsule"
         ? root.effectiveThickness / 2
         : (root.effectiveStyle === "square" ? 0 : Math.min(
-            root.effectiveThickness / 2, Number(theme.radius || 0)))
-    readonly property color effectiveColor: theme.color || Kirigami.Theme.textColor
+            root.effectiveThickness / 2, Number(root.effectiveTheme.radius || 0)))
+    readonly property color effectiveColor: root.effectiveTheme.color
+        || Kirigami.Theme.textColor
 
     implicitWidth: root.verticalPanel ? root.effectiveLength : root.effectiveCrossLength
     implicitHeight: root.verticalPanel ? root.effectiveCrossLength : root.effectiveLength
@@ -112,55 +121,73 @@ Item {
         }
 
         Item {
+            id: doubleLineSurface
+
             anchors.fill: parent
             visible: root.effectiveStyle === "doubleLine"
 
-            Repeater {
-                model: 2
+            Rectangle {
+                x: 0
+                y: 0
+                width: root.verticalPanel
+                    ? doubleLineSurface.width
+                    : root.doubleLineStroke
+                height: root.verticalPanel
+                    ? root.doubleLineStroke
+                    : doubleLineSurface.height
+                radius: root.doubleLineStroke / 2
+                color: root.effectiveColor
+                antialiasing: true
+            }
 
-                delegate: Rectangle {
-                    required property int index
-
-                    x: root.verticalPanel
-                        ? 0
-                        : (index === 0 ? 0 : parent.width - width)
-                    y: root.verticalPanel
-                        ? (index === 0 ? 0 : parent.height - height)
-                        : 0
-                    width: root.verticalPanel ? parent.width : root.doubleLineStroke
-                    height: root.verticalPanel ? root.doubleLineStroke : parent.height
-                    radius: root.doubleLineStroke / 2
-                    color: root.effectiveColor
-                    antialiasing: true
-                }
+            Rectangle {
+                x: root.verticalPanel ? 0 : doubleLineSurface.width - width
+                y: root.verticalPanel ? doubleLineSurface.height - height : 0
+                width: root.verticalPanel
+                    ? doubleLineSurface.width
+                    : root.doubleLineStroke
+                height: root.verticalPanel
+                    ? root.doubleLineStroke
+                    : doubleLineSurface.height
+                radius: root.doubleLineStroke / 2
+                color: root.effectiveColor
+                antialiasing: true
             }
         }
 
         Item {
+            id: chevronSurface
+
             anchors.centerIn: parent
             visible: root.effectiveStyle === "chevron"
             width: root.effectiveLength
             height: root.effectiveLength
             rotation: root.verticalPanel ? 90 : 0
 
-            Repeater {
-                model: 2
+            Rectangle {
+                readonly property real armLength: chevronSurface.width * 0.66
 
-                delegate: Rectangle {
-                    required property int index
+                x: (chevronSurface.width - armLength) / 2
+                y: chevronSurface.height * 0.28 - root.effectiveThickness / 2
+                width: armLength
+                height: root.effectiveThickness
+                radius: height / 2
+                color: root.effectiveColor
+                rotation: 45
+                antialiasing: true
+            }
 
-                    readonly property real armLength: parent.width * 0.66
+            Rectangle {
+                readonly property real armLength: chevronSurface.width * 0.66
 
-                    x: (parent.width - armLength) / 2
-                    y: parent.height * (index === 0 ? 0.28 : 0.72)
-                        - root.effectiveThickness / 2
-                    width: armLength
-                    height: root.effectiveThickness
-                    radius: height / 2
-                    color: root.effectiveColor
-                    rotation: index === 0 ? 45 : -45
-                    antialiasing: true
-                }
+                x: (chevronSurface.width - armLength) / 2
+                y: chevronSurface.height * 0.72 - root.effectiveThickness / 2
+                width: armLength
+                height: root.effectiveThickness
+                radius: height / 2
+                color: root.effectiveColor
+                rotation: -45
+                antialiasing: true
             }
         }
     }

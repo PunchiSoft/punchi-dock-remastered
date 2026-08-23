@@ -58,7 +58,9 @@ void PunchiMenuShortcutController::setInstanceId(uint instanceId)
         Q_EMIT activeShortcutChanged();
         updateRegistered(false);
     }
-    initializeAction();
+    if (!m_configuredShortcut.isEmpty()) {
+        initializeAction();
+    }
 }
 
 QString PunchiMenuShortcutController::configuredShortcut() const
@@ -141,6 +143,10 @@ void PunchiMenuShortcutController::initializeAction()
 
 void PunchiMenuShortcutController::applyConfiguredShortcut()
 {
+    if (!m_action && m_configuredShortcut.isEmpty()) {
+        updateRegistered(false);
+        return;
+    }
     if (!m_action) {
         initializeAction();
     }

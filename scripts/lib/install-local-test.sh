@@ -9,6 +9,8 @@ PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
 source "$LIB_DIR/plasma-version.sh"
 # shellcheck source=local-package-install.sh
 source "$LIB_DIR/local-package-install.sh"
+# shellcheck source=plasma-runtime-diagnostics.sh
+source "$LIB_DIR/plasma-runtime-diagnostics.sh"
 
 # shellcheck disable=SC1091
 source /etc/os-release
@@ -20,6 +22,7 @@ DEBUG_LOG="$PROJECT_ROOT/debug.log"
 PLUGIN_ID="org.kde.plasma.punchi-dock-remastered"
 DATA_ROOT="$(qtpaths6 --writable-path GenericDataLocation)"
 INSTALL_DIR="$DATA_ROOT/plasma/plasmoids/$PLUGIN_ID"
+PUNCHI_PLASMA_PID=""
 
 restart_plasma_shell() {
     local previous_pid=""
@@ -80,6 +83,7 @@ restart_plasma_shell() {
     for _attempt in {1..20}; do
         current_pid="$(pgrep -xn plasmashell 2>/dev/null || true)"
         if [[ -n "$current_pid" && "$current_pid" != "$previous_pid" ]]; then
+            PUNCHI_PLASMA_PID="$current_pid"
             echo "Plasma Shell PID after restart: $current_pid"
             echo "Plasma Shell restart confirmed"
             return 0
@@ -105,10 +109,16 @@ echo "Installed package: $ZIP_FILE"
 echo "Installation directory: $INSTALL_DIR"
 
 echo "==> [2/3] Restarting Plasma Shell"
+restart_started_at="$(date --iso-8601=seconds)"
 restart_plasma_shell
 
 echo "==> [3/3] Collecting local startup diagnostics"
-sleep 4
-journalctl --user --since "10 seconds ago" | grep -iE "punchi|qml|typeerror|referenceerror|dockmodel" > "$DEBUG_LOG" || true
+sleep 5
+if ! kill -0 "$PUNCHI_PLASMA_PID" >/dev/null 2>&1; then
+    echo "Error: Plasma Shell PID $PUNCHI_PLASMA_PID stopped during startup." >&2
+    exit 1
+fi
+punchi_collect_plasma_runtime_diagnostics \
+    "$PUNCHI_PLASMA_PID" "$restart_started_at" "$DEBUG_LOG" "$PLUGIN_ID"
 
 echo "Local test installation and Plasma restart completed. Diagnostics: $DEBUG_LOG"

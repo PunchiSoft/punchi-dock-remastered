@@ -206,30 +206,9 @@ FocusScope {
     readonly property real maximumThemeFrameOverlap: Math.max(
         themeFrameOverlapLeft, themeFrameOverlapTop,
         themeFrameOverlapRight, themeFrameOverlapBottom)
-    readonly property var hiddenApplicationLookup: {
-        const source = hiddenApplicationIds instanceof Array
-            ? hiddenApplicationIds
-            : []
-        const lookup = {}
-        for (let index = 0; index < source.length && index < 512; index++) {
-            const storageId = String(source[index] || "").trim()
-            if (storageId.length === 0 || storageId.length > 512
-                    || /[\u0000-\u001f\u007f]/.test(storageId)) {
-                continue
-            }
-            lookup["#" + storageId] = true
-        }
-        return lookup
-    }
-    readonly property int hiddenApplicationCount: {
-        let count = 0
-        for (const key in hiddenApplicationLookup) {
-            if (hiddenApplicationLookup[key] === true) {
-                count++
-            }
-        }
-        return count
-    }
+    readonly property var hiddenApplicationLookup:
+        applicationState.hiddenApplicationLookup
+    readonly property int hiddenApplicationCount: applicationState.hiddenIdCount
     readonly property bool favoritesSectionVisible: applicationViewActive
         && favorites.length > 0
         && searchField.text.length === 0
@@ -766,23 +745,11 @@ FocusScope {
     }
 
     function isFavorite(storageId) {
-        const requestedId = String(storageId || "").trim()
-        if (requestedId.length === 0) {
-            return false
-        }
-        for (let index = 0; index < favorites.length; index++) {
-            if (String(favorites[index].appStorageId || "").trim()
-                    === requestedId) {
-                return true
-            }
-        }
-        return false
+        return applicationState.isFavorite(storageId)
     }
 
     function isApplicationHidden(storageId) {
-        const normalizedId = String(storageId || "").trim()
-        return normalizedId.length > 0
-            && !!hiddenApplicationLookup["#" + normalizedId]
+        return applicationState.isApplicationHidden(storageId)
     }
 
     function applicationShouldBeVisible(storageId) {
@@ -1489,6 +1456,14 @@ FocusScope {
 
     ListModel { id: allApplicationsModel }
     ListModel { id: visibleApplicationsModel }
+
+    PunchiMenuApplicationState {
+        id: applicationState
+
+        favorites: root.favorites
+        hiddenApplicationIds: root.hiddenApplicationIds
+        applicationCatalog: root.applicationCatalog
+    }
 
     Punchi.PunchiMenuLayoutModel {
         id: applicationLayoutModel

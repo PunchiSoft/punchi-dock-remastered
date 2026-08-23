@@ -229,6 +229,7 @@ TestCase {
     }
 
     function init() {
+        failOnWarning(/.?/)
         resetFixture()
     }
 

@@ -106,35 +106,10 @@ FocusScope {
             ? Math.max(1, Math.min(5, Math.round(requestedCount)))
             : 5
     }
-    readonly property var hiddenApplicationLookup: {
-        const source = hiddenApplicationIds instanceof Array
-            ? hiddenApplicationIds
-            : []
-        const lookup = {}
-        for (let index = 0; index < source.length && index < 512; index++) {
-            const storageId = String(source[index] || "").trim()
-            if (storageId.length === 0 || storageId.length > 512
-                    || /[\u0000-\u001f\u007f]/.test(storageId)) {
-                continue
-            }
-            lookup["#" + storageId] = true
-        }
-        return lookup
-    }
-    readonly property int hiddenApplicationCount: {
-        let count = 0
-        const source = applicationCatalog
-        const sourceCount = source.length
-        for (let index = 0; index < sourceCount; index++) {
-            const storageId = String(source[index].storageId
-                || source[index].appStorageId || "").trim()
-            if (storageId.length > 0
-                    && hiddenApplicationLookup["#" + storageId]) {
-                count++
-            }
-        }
-        return count
-    }
+    readonly property var hiddenApplicationLookup:
+        applicationState.hiddenApplicationLookup
+    readonly property int hiddenApplicationCount:
+        applicationState.hiddenCatalogApplicationCount
     readonly property int gridColumns: Math.max(4, Math.min(8,
         Math.floor(Math.max(1, pagesView.width) / (Kirigami.Units.gridUnit * 7))))
     readonly property int gridRows: Math.max(3, Math.min(5,
@@ -345,6 +320,14 @@ FocusScope {
     signal configureRequested()
     signal settingChangeRequested(string fieldName, var value)
 
+    PunchiMenuApplicationState {
+        id: applicationState
+
+        favorites: root.favorites
+        hiddenApplicationIds: root.hiddenApplicationIds
+        applicationCatalog: root.applicationCatalog
+    }
+
     Punchi.BlurBehindController {
         id: nativeBlurController
         window: root.Window.window
@@ -449,23 +432,11 @@ FocusScope {
     }
 
     function isFavorite(storageId) {
-        const requestedId = String(storageId || "").trim()
-        if (requestedId.length === 0 || !root.favorites) {
-            return false
-        }
-        for (let index = 0; index < root.favorites.length; index++) {
-            if (String(root.favorites[index].appStorageId || "").trim()
-                    === requestedId) {
-                return true
-            }
-        }
-        return false
+        return applicationState.isFavorite(storageId)
     }
 
     function isApplicationHidden(storageId) {
-        const normalizedId = String(storageId || "").trim()
-        return normalizedId.length > 0
-            && !!hiddenApplicationLookup["#" + normalizedId]
+        return applicationState.isApplicationHidden(storageId)
     }
 
     function horizontalScrollLimit(view) {
