@@ -157,9 +157,11 @@ require(
     "Selection Pulse must run once on hover and settle back to the original scale.",
 )
 require(
-    "hoverAnimationMode: dockConfig.dockHoverAnimation" in MAIN
+    "readonly property string effectiveHoverAnimationMode:" in MAIN
+    and 'persistentDragActive ? "none"' in MAIN
+    and MAIN.count("dockLayout.effectiveHoverAnimationMode") >= 3
     and "Plasmoid.configuration.hoverAnimation" not in MAIN,
-    "Every dock consumer must use the normalized reactive hover animation.",
+    "Every dock consumer must use normalized hover motion and freeze it while reordering.",
 )
 require(
     "cfg_hoverScale" not in CONFIG_GENERAL

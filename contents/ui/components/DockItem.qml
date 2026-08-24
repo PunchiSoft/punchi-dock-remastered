@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.extras as PlasmaExtras
+import "../../code/dockDropState.js" as DockDropState
 import "punchimenu" as PunchiMenuComponents
 
 Item {
@@ -22,6 +23,7 @@ Item {
     property real separatorLengthRatioSetting: 0.72
     property real separatorOpacitySetting: 0.34
     property bool separatorGlowSetting: false
+    property bool separatorVisibleSetting: true
 
     readonly property string effectiveIndicatorPosition:
         indicatorPosition === "top" ? "top" : "bottom"
@@ -31,14 +33,18 @@ Item {
         if (itemType === "trash" && itemName === "Trash") {
             return i18n("Trash")
         }
-        if (itemType === "calendar" && itemName === "Calendar") {
-            return i18n("Calendar")
+        if (itemType === "calendar"
+                && (itemName === "Calendar" || itemName === "Calendar/Clock")) {
+            return i18n("Calendar/Clock")
         }
         if (itemType === "note" && itemName === "Quick Note") {
             return i18nc("@title", "Quick Note")
         }
         if (itemType === "punchimenu" && (itemName === "PunchiMenu" || !itemName)) {
             return i18nc("@title", "PunchiMenu")
+        }
+        if (itemType === "dynamic-applications") {
+            return i18nc("@title", "Open applications")
         }
         return itemName
     }
@@ -69,6 +75,14 @@ Item {
     property real iconReflectionAvailableExtent: -1
     property bool animateEntry: false
     property bool positionTransitionEnabled: false
+    property bool persistentReorderEnabled: false
+    property bool persistentPointerReorderEnabled: false
+    property bool persistentReorderActive: false
+    property bool persistentReorderSource: false
+    property bool persistentReorderTarget: false
+    property bool persistentReorderInsertAfter: false
+    property int persistentModelIndex: -1
+    property bool suppressClickAfterReorder: false
     property bool taskPopupTracksVisualArea: false
     property real entryOpacity: 1.0
     property real entryScale: 1.0
@@ -399,7 +413,10 @@ Item {
     property var externalDropValidator: null
     property bool launcherDropEnabled: false
     property var launcherDropValidator: null
+    property bool launcherContainerDropTarget: false
+    property bool launcherContainerDropEnabled: false
     property bool launcherDropInsertAfter: false
+    property int launcherModelInsertionIndex: -1
     property string launcherDropApplicationName: ""
     property bool externalDropActivationEnabled: false
     property int externalDropActivationDelay: 250
@@ -411,6 +428,7 @@ Item {
     readonly property Item taskGeometryItem: taskGeometryProxy
     readonly property bool containsMouse: mouseArea.containsMouse
     readonly property bool separatorItem: itemType === "separator"
+        || itemType === "dynamic-applications"
     readonly property bool spacerItem: itemType === "spacer"
     readonly property bool mediaItem: itemType === "media"
     readonly property bool overflowItem: itemType === "overflow"
@@ -500,6 +518,13 @@ Item {
     signal taskMinimized(int itemIndex)
     signal externalUrlsDropped(var urls, var visualParent)
     signal applicationLauncherDropped(var urls, int insertionIndex, var visualParent)
+    signal applicationLauncherContainerDropped(var urls, var visualParent)
+    signal persistentReorderPressStarted(var visualParent)
+    signal persistentReorderStarted(int modelIndex, var visualParent)
+    signal persistentReorderMoved(real x, real y)
+    signal persistentReorderFinished()
+    signal persistentReorderCanceled()
+    signal persistentKeyboardMoveRequested(int modelIndex, int delta)
     signal mediaLaunchRequested()
     signal mediaPlaybackLaunchRequested()
 
@@ -527,10 +552,28 @@ Item {
         return dockItemContainer.launcherDropValidator(urls || [])
     }
 
-    function isPunchiLauncherDrag(event) {
-        return dockItemContainer.launcherDropEnabled && event && event.hasUrls
-            && event.formats
+    function hasPunchiLauncherMarker(event) {
+        return event && event.formats
             && event.formats.indexOf("application/x-punchi-launcher") >= 0
+    }
+
+    function mayContainApplicationLauncher(event) {
+        if (!dockItemContainer.launcherDropEnabled || !event
+                || !event.hasUrls) {
+            return false
+        }
+        if (dockItemContainer.hasPunchiLauncherMarker(event)) {
+            return true
+        }
+        const urls = event.urls || []
+        return urls.length === 1
+            && /\.desktop$/i.test(String(urls[0] || ""))
+    }
+
+    function isApplicationLauncherDrag(event, validation) {
+        return dockItemContainer.launcherDropEnabled && event && event.hasUrls
+            && (dockItemContainer.hasPunchiLauncherMarker(event)
+                || (validation && validation.accepted))
     }
 
     function updateLauncherDropPosition(x, y) {
@@ -539,8 +582,24 @@ Item {
             : x >= dockItemContainer.width / 2
     }
 
+    function maintainLauncherDropAcceptance(event) {
+        if (!event) {
+            return false
+        }
+        const accepted = DockDropState.launcherDropAcceptance(
+            dockItemContainer.externalDropState)
+        if (accepted === undefined) {
+            return false
+        }
+        event.accepted = accepted
+        return accepted
+    }
+
     function launcherInsertionIndex() {
-        return Math.max(0, dockItemContainer.itemIndex
+        const baseIndex = dockItemContainer.launcherModelInsertionIndex >= 0
+            ? dockItemContainer.launcherModelInsertionIndex
+            : dockItemContainer.itemIndex
+        return Math.max(0, baseIndex
             + (dockItemContainer.launcherDropInsertAfter ? 1 : 0))
     }
 
@@ -574,6 +633,9 @@ Item {
         ? visualArea : null
     readonly property bool launcherDropPlaceholderVisible:
         externalDropState === "launcherAcceptable"
+    readonly property bool externalDropRejected:
+        externalDropState === "rejected"
+        || externalDropState === "launcherContainmentRejected"
     readonly property real launcherDropLayoutSpacing: {
         if (!layoutController) {
             return Kirigami.Units.smallSpacing
@@ -624,7 +686,7 @@ Item {
                     ? mediaCurrentMainAxisLength + 12
                     : (visualAreaHeight + labelAreaHeight))))
         : (visualAreaHeight + labelAreaHeight)
-    opacity: entryOpacity
+    opacity: entryOpacity * (persistentReorderSource ? 0.28 : 1.0)
 
     Behavior on x {
         enabled: dockItemContainer.positionAnimationReady
@@ -743,12 +805,34 @@ Item {
     }
 
     Rectangle {
+        id: persistentReorderInsertionIndicator
+        z: 9
+        visible: dockItemContainer.persistentReorderTarget
+        radius: Math.min(width, height) / 2
+        color: Kirigami.Theme.highlightColor
+        width: dockItemContainer.verticalPanelMode
+            ? Math.max(12, dockItemContainer.width * 0.72)
+            : Math.max(3, Math.round(Kirigami.Units.smallSpacing / 2))
+        height: dockItemContainer.verticalPanelMode
+            ? Math.max(3, Math.round(Kirigami.Units.smallSpacing / 2))
+            : Math.max(12, dockItemContainer.height * 0.72)
+        x: dockItemContainer.verticalPanelMode
+            ? Math.round((dockItemContainer.width - width) / 2)
+            : (dockItemContainer.persistentReorderInsertAfter
+                ? dockItemContainer.width - width / 2 : -width / 2)
+        y: dockItemContainer.verticalPanelMode
+            ? (dockItemContainer.persistentReorderInsertAfter
+                ? dockItemContainer.height - height / 2 : -height / 2)
+            : Math.round((dockItemContainer.height - height) / 2)
+    }
+
+    Rectangle {
         z: 8
         anchors.fill: parent
         visible: dockItemContainer.externalDropState !== "none"
             && dockItemContainer.externalDropState !== "launcherAcceptable"
         radius: 8
-        color: dockItemContainer.externalDropState !== "rejected"
+        color: !dockItemContainer.externalDropRejected
             ? Qt.rgba(Kirigami.Theme.highlightColor.r,
                 Kirigami.Theme.highlightColor.g,
                 Kirigami.Theme.highlightColor.b, 0.22)
@@ -756,7 +840,7 @@ Item {
                 Kirigami.Theme.negativeTextColor.g,
                 Kirigami.Theme.negativeTextColor.b, 0.18)
         border.width: 2
-        border.color: dockItemContainer.externalDropState !== "rejected"
+        border.color: !dockItemContainer.externalDropRejected
             ? Kirigami.Theme.highlightColor
             : Kirigami.Theme.negativeTextColor
 
@@ -766,12 +850,13 @@ Item {
             anchors.margins: 3
             width: Math.max(14, dockItemContainer.iconSize * 0.34)
             height: width
-            source: dockItemContainer.externalDropState === "rejected"
+            source: dockItemContainer.externalDropRejected
                 ? "dialog-warning-symbolic"
                 : (dockItemContainer.externalDropState === "activated"
                     ? "go-up-symbolic"
-                    : (dockItemContainer.externalDropState === "launcherAcceptable"
-                        ? "list-add-symbolic" : "document-open-symbolic"))
+                    : (dockItemContainer.externalDropState
+                            === "launcherContainmentAcceptable"
+                        ? "folder-add-symbolic" : "document-open-symbolic"))
         }
 
         Rectangle {
@@ -974,6 +1059,7 @@ Item {
 
         ThemedSeparator {
             visible: dockItemContainer.separatorItem
+                && dockItemContainer.separatorVisibleSetting
             anchors.centerIn: parent
             theme: dockItemContainer.customSeparatorEnabled
                 ? dockItemContainer.separatorTheme : ({})
@@ -1201,9 +1287,15 @@ Item {
         id: mouseArea
         anchors.fill: parent
         enabled: !dockItemContainer.mediaItem
-        hoverEnabled: !dockItemContainer.separatorItem && !dockItemContainer.spacerItem
+        hoverEnabled: !dockItemContainer.persistentReorderActive
+            && !dockItemContainer.separatorItem
+            && !dockItemContainer.spacerItem
         activeFocusOnTab: true
-        Accessible.role: dockItemContainer.separatorItem || dockItemContainer.spacerItem
+        preventStealing: dockItemContainer.persistentReorderSource
+        cursorShape: dockItemContainer.persistentReorderSource
+            ? Qt.ClosedHandCursor : Qt.ArrowCursor
+        Accessible.role: (dockItemContainer.separatorItem || dockItemContainer.spacerItem)
+                && !dockItemContainer.persistentReorderEnabled
             ? Accessible.StaticText : Accessible.Button
         Accessible.name: dockItemContainer.localizedItemName
         // qmllint disable unqualified
@@ -1226,8 +1318,30 @@ Item {
                         ? dockItemContainer.launcherDropApplicationName
                         : i18n("Application"))
             }
-            if (dockItemContainer.externalDropState === "rejected") {
+            if (dockItemContainer.externalDropState
+                    === "launcherContainmentAcceptable") {
+                return i18nc("@info:accessible", "Release to add %1 to %2",
+                    dockItemContainer.launcherDropApplicationName.length > 0
+                        ? dockItemContainer.launcherDropApplicationName
+                        : i18n("Application"),
+                    dockItemContainer.localizedItemName)
+            }
+            if (dockItemContainer.externalDropState
+                    === "launcherContainmentRejected") {
+                return i18nc("@info:accessible",
+                    "%1 is updated automatically and cannot accept applications",
+                    dockItemContainer.localizedItemName)
+            }
+            if (dockItemContainer.externalDropRejected) {
                 return i18nc("@info:accessible", "This file drop cannot be accepted")
+            }
+            if (dockItemContainer.persistentPointerReorderEnabled) {
+                return i18nc("@info:accessible",
+                    "Press and hold to move this Dock item. Use Control+Shift with an arrow key to move it from the keyboard.")
+            }
+            if (dockItemContainer.persistentReorderEnabled) {
+                return i18nc("@info:accessible",
+                    "Use Control+Shift with an arrow key to move this Dock item.")
             }
             if (dockItemContainer.windowCountBadgeEnabled
                     && dockItemContainer.windowGroupingEnabled
@@ -1245,7 +1359,8 @@ Item {
                 : ""
         }
         // qmllint enable unqualified
-        acceptedButtons: dockItemContainer.separatorItem || dockItemContainer.spacerItem
+        acceptedButtons: (dockItemContainer.separatorItem || dockItemContainer.spacerItem)
+                && !dockItemContainer.persistentReorderEnabled
             ? Qt.NoButton
             : ((dockItemContainer.itemType === "trash" || dockItemContainer.supportsContextMenu)
                 ? Qt.LeftButton | Qt.RightButton
@@ -1279,6 +1394,9 @@ Item {
         }
         
         onPositionChanged: function(mouse) {
+            if (dockItemContainer.persistentReorderSource && pressed) {
+                dockItemContainer.persistentReorderMoved(mouse.x, mouse.y)
+            }
             if (dockItemContainer.separatorItem || dockItemContainer.spacerItem || dockItemContainer.itemType === "calendar") {
                 return
             }
@@ -1288,12 +1406,50 @@ Item {
         }
 
         onPressed: function(mouse) {
+            if (mouse.button === Qt.LeftButton
+                    && dockItemContainer.persistentPointerReorderEnabled
+                    && !dockItemContainer.persistentReorderActive) {
+                dockItemContainer.persistentReorderPressStarted(
+                    dockItemContainer)
+            }
             if (mouse.button === Qt.RightButton) {
                 dockItemContainer.contextMenuRequested(dockItemContainer, false)
             }
         }
+
+        onPressAndHold: function(mouse) {
+            if (mouse.button !== Qt.LeftButton
+                    || !dockItemContainer.persistentPointerReorderEnabled
+                    || dockItemContainer.persistentReorderActive) {
+                return
+            }
+            dockItemContainer.persistentReorderStarted(
+                dockItemContainer.persistentModelIndex, dockItemContainer)
+            if (dockItemContainer.persistentReorderSource) {
+                dockItemContainer.suppressClickAfterReorder = true
+                mouse.accepted = true
+                mouseArea.forceActiveFocus(Qt.MouseFocusReason)
+                dockItemContainer.persistentReorderMoved(mouse.x, mouse.y)
+            }
+        }
+
+        onReleased: {
+            if (dockItemContainer.persistentReorderSource) {
+                dockItemContainer.persistentReorderFinished()
+            }
+        }
+
+        onCanceled: {
+            if (dockItemContainer.persistentReorderSource) {
+                dockItemContainer.persistentReorderCanceled()
+            }
+        }
         
         onClicked: function(mouse) {
+            if (dockItemContainer.suppressClickAfterReorder) {
+                dockItemContainer.suppressClickAfterReorder = false
+                return
+            }
             if (dockItemContainer.separatorItem || dockItemContainer.spacerItem) {
                 return
             }
@@ -1312,6 +1468,28 @@ Item {
         Keys.onReturnPressed: if (!dockItemContainer.separatorItem && !dockItemContainer.spacerItem) dockItemContainer.itemClicked(dockItemContainer.itemCommand)
         Keys.onSpacePressed: if (!dockItemContainer.separatorItem && !dockItemContainer.spacerItem) dockItemContainer.itemClicked(dockItemContainer.itemCommand)
         Keys.onPressed: function(event) {
+            if (dockItemContainer.persistentReorderSource
+                    && event.key === Qt.Key_Escape) {
+                dockItemContainer.suppressClickAfterReorder = true
+                dockItemContainer.persistentReorderCanceled()
+                event.accepted = true
+                return
+            }
+            const reorderModifiers = Qt.ControlModifier | Qt.ShiftModifier
+            if (dockItemContainer.persistentReorderEnabled
+                    && event.modifiers === reorderModifiers) {
+                const previousKey = dockItemContainer.verticalPanelMode
+                    ? Qt.Key_Up : Qt.Key_Left
+                const nextKey = dockItemContainer.verticalPanelMode
+                    ? Qt.Key_Down : Qt.Key_Right
+                if (event.key === previousKey || event.key === nextKey) {
+                    dockItemContainer.persistentKeyboardMoveRequested(
+                        dockItemContainer.persistentModelIndex,
+                        event.key === previousKey ? -1 : 1)
+                    event.accepted = true
+                    return
+                }
+            }
             if (dockItemContainer.mediaHoverControlsEnabled
                     && event.key === Qt.Key_M
                     && event.modifiers === Qt.NoModifier) {
@@ -1362,14 +1540,28 @@ Item {
         }
 
         onEntered: function(drag) {
-            if (dockItemContainer.isPunchiLauncherDrag(drag)) {
-                const launcherValidation
-                    = dockItemContainer.validateLauncherDrop(drag.urls)
-                drag.accepted = launcherValidation.accepted
-                if (launcherValidation.accepted) {
-                    dockItemContainer.cancelExternalDropActivation()
-                    dockItemContainer.launcherDropApplicationName
-                        = String(launcherValidation.name || "")
+            const launcherCandidate
+                = dockItemContainer.mayContainApplicationLauncher(drag)
+            const launcherValidation = launcherCandidate
+                ? dockItemContainer.validateLauncherDrop(drag.urls)
+                : { "accepted": false }
+            if (dockItemContainer.isApplicationLauncherDrag(
+                    drag, launcherValidation)) {
+                dockItemContainer.cancelExternalDropActivation()
+                dockItemContainer.launcherDropApplicationName
+                    = String(launcherValidation.name || "")
+                if (!launcherValidation.accepted) {
+                    drag.accepted = false
+                    dockItemContainer.externalDropState = "rejected"
+                    return
+                }
+                drag.accepted = true
+                if (dockItemContainer.launcherContainerDropTarget) {
+                    dockItemContainer.externalDropState
+                        = dockItemContainer.launcherContainerDropEnabled
+                            ? "launcherContainmentAcceptable"
+                            : "launcherContainmentRejected"
+                } else {
                     const position = externalDropArea.mapToItem(
                         dockItemContainer, drag.x, drag.y)
                     dockItemContainer.updateLauncherDropPosition(
@@ -1403,8 +1595,8 @@ Item {
                     dockItemContainer, drag.x, drag.y)
                 dockItemContainer.updateLauncherDropPosition(
                     position.x, position.y)
-                drag.accepted = true
             }
+            dockItemContainer.maintainLauncherDropAcceptance(drag)
         }
 
         onExited: {
@@ -1418,11 +1610,19 @@ Item {
 
         onDropped: function(drop) {
             dockItemContainer.cancelExternalDropActivation()
-            if (dockItemContainer.isPunchiLauncherDrag(drop)) {
-                const launcherValidation
-                    = dockItemContainer.validateLauncherDrop(drop.urls)
+            const launcherCandidate
+                = dockItemContainer.mayContainApplicationLauncher(drop)
+            const launcherValidation = launcherCandidate
+                ? dockItemContainer.validateLauncherDrop(drop.urls)
+                : { "accepted": false }
+            if (dockItemContainer.isApplicationLauncherDrag(
+                    drop, launcherValidation)) {
                 drop.accepted = launcherValidation.accepted
-                if (launcherValidation.accepted) {
+                if (launcherValidation.accepted
+                        && dockItemContainer.launcherContainerDropTarget) {
+                    dockItemContainer.applicationLauncherContainerDropped(
+                        drop.urls, dockItemContainer)
+                } else if (launcherValidation.accepted) {
                     const position = externalDropArea.mapToItem(
                         dockItemContainer, drop.x, drop.y)
                     dockItemContainer.updateLauncherDropPosition(

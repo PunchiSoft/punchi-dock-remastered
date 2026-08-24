@@ -13,7 +13,10 @@ GridLayout {
     property alias appDescriptionText: appDescription.text
     property alias appIconText: appIconName.text
     property alias appCommandText: appCommand.text
-    readonly property string itemModeValue: itemMode.currentValue || "app"
+    readonly property bool dynamicApplicationsItem:
+        selectedItemType === "dynamic-applications"
+    readonly property string itemModeValue: dynamicApplicationsItem
+        ? "dynamic-applications" : (itemMode.currentValue || "app")
     property alias itemModeIndex: itemMode.currentIndex
     readonly property string containerLayoutValue: containerLayout.currentValue || "grid"
     property alias containerLayoutIndex: containerLayout.currentIndex
@@ -23,6 +26,10 @@ GridLayout {
     readonly property real separatorLengthRatioValue: separatorOptions.separatorLengthRatioValue
     readonly property real separatorOpacityValue: separatorOptions.separatorOpacityValue
     readonly property bool separatorGlowEnabled: separatorOptions.separatorGlowEnabled
+    readonly property bool separatorVisibleChecked:
+        separatorVisibleCheckBox.checked
+    property bool separatorControlsSyncing: false
+    readonly property bool syncing: separatorControlsSyncing
     readonly property string containerSourceValue: containerSource.currentValue || "manual"
     property alias containerSourceIndex: containerSource.currentIndex
     property alias containerPathText: containerPath.text
@@ -79,23 +86,63 @@ GridLayout {
     }
 
     function setSeparatorStyleValue(value) {
-        separatorOptions.setSeparatorStyleValue(value)
+        root.separatorControlsSyncing = true
+        try {
+            separatorOptions.setSeparatorStyleValue(value)
+        } finally {
+            root.separatorControlsSyncing = false
+        }
     }
 
     function setSeparatorThicknessValue(value) {
-        separatorOptions.setSeparatorThicknessValue(value)
+        root.separatorControlsSyncing = true
+        try {
+            separatorOptions.setSeparatorThicknessValue(value)
+        } finally {
+            root.separatorControlsSyncing = false
+        }
     }
 
     function setSeparatorLengthRatioValue(value) {
-        separatorOptions.setSeparatorLengthRatioValue(value)
+        root.separatorControlsSyncing = true
+        try {
+            separatorOptions.setSeparatorLengthRatioValue(value)
+        } finally {
+            root.separatorControlsSyncing = false
+        }
     }
 
     function setSeparatorOpacityValue(value) {
-        separatorOptions.setSeparatorOpacityValue(value)
+        root.separatorControlsSyncing = true
+        try {
+            separatorOptions.setSeparatorOpacityValue(value)
+        } finally {
+            root.separatorControlsSyncing = false
+        }
     }
 
     function setSeparatorGlowEnabled(enabled) {
-        separatorOptions.setSeparatorGlowEnabled(enabled)
+        root.separatorControlsSyncing = true
+        try {
+            separatorOptions.setSeparatorGlowEnabled(enabled)
+        } finally {
+            root.separatorControlsSyncing = false
+        }
+    }
+
+    function setSeparatorVisibleChecked(visible) {
+        root.separatorControlsSyncing = true
+        try {
+            separatorVisibleCheckBox.checked = visible !== false
+        } finally {
+            root.separatorControlsSyncing = false
+        }
+    }
+
+    function applyItemForm() {
+        if (!root.separatorControlsSyncing) {
+            root.formChanged()
+        }
     }
 
     function iconPreview(value, fallback) {
@@ -111,6 +158,7 @@ GridLayout {
     Controls.Label {
         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         Layout.preferredWidth: Kirigami.Units.gridUnit * 5
+        visible: !root.dynamicApplicationsItem
         text: root.itemTypeLabel
         horizontalAlignment: Text.AlignLeft
         opacity: 0.75
@@ -118,6 +166,7 @@ GridLayout {
 
     RowLayout {
         Layout.fillWidth: true
+        visible: !root.dynamicApplicationsItem
         spacing: Kirigami.Units.smallSpacing
 
         Controls.ComboBox {
@@ -295,15 +344,28 @@ GridLayout {
         onValueModified: root.formChanged()
     }
 
+    Controls.CheckBox {
+        id: separatorVisibleCheckBox
+        objectName: "dynamicApplicationsSeparatorVisibleCheckBox"
+        Layout.columnSpan: 2
+        Layout.fillWidth: true
+        visible: root.dynamicApplicationsItem
+        checked: true
+        text: i18n("Show separator") // qmllint disable unqualified
+        Accessible.name: text
+        onToggled: root.applyItemForm()
+    }
+
     SeparatorOptions {
         id: separatorOptions
+        objectName: "dynamicApplicationsSeparatorOptions"
         Layout.columnSpan: 2
         Layout.fillWidth: true
         visible: root.itemModeValue === "separator"
-        controller: ({
-            syncing: false,
-            applyItemForm: function() { root.formChanged() }
-        })
+            || root.dynamicApplicationsItem
+        enabled: !root.dynamicApplicationsItem
+            || separatorVisibleCheckBox.checked
+        controller: root
     }
 
     Controls.Label {

@@ -16,8 +16,10 @@ Item {
     property var taskController: null
     property var trashIntegration: null
     property string minimizeEffect: "none"
+    property bool dynamicApplicationsEnabled: false
 
     property var dockItems: []
+    property bool dockItemsLoaded: false
     property string recentlyTransitionedAppId: ""
     property string recentlyTransitionedLauncherUrl: ""
     property int minimizeReactionRevision: 0
@@ -37,12 +39,22 @@ Item {
         }
     }
 
+    Timer {
+        id: dynamicApplicationsMarkerTimer
+        interval: 0
+        repeat: false
+        onTriggered: root.ensureDynamicApplicationsMarker()
+    }
+
+    onDynamicApplicationsEnabledChanged: root.scheduleDynamicApplicationsMarker()
+
     Connections {
         target: Plasmoid.configuration
 
         function onDockItemsJsonChanged() {
             const raw = Plasmoid.configuration.dockItemsJson || ""
             root.dockItems = raw.trim().length > 0 ? Logic.loadItems(raw) : []
+            root.scheduleDynamicApplicationsMarker()
             if (root.runtimeService) {
                 root.runtimeService.persistDockItemsJson(raw, root.configInstanceId())
             }
@@ -64,6 +76,8 @@ Item {
     Component.onCompleted: {
         const raw = Plasmoid.configuration.dockItemsJson || ""
         root.dockItems = Logic.loadItems(raw)
+        root.dockItemsLoaded = true
+        root.scheduleDynamicApplicationsMarker()
         if (root.trashIntegration) {
             root.trashIntegration.refresh()
         }
@@ -214,6 +228,66 @@ Item {
         if (root.runtimeService) {
             return root.runtimeService.persistDockItemsJson(raw, root.configInstanceId())
         }
+        return true
+    }
+
+    function scheduleDynamicApplicationsMarker() {
+        if (root.dockItemsLoaded && root.dynamicApplicationsEnabled) {
+            dynamicApplicationsMarkerTimer.restart()
+        }
+    }
+
+    function ensureDynamicApplicationsMarker() {
+        if (!root.dockItemsLoaded || !root.dynamicApplicationsEnabled) {
+            return false
+        }
+
+        const previousItems = root.dockItems
+        const update = Logic.dynamicApplicationsMarkerUpdate(previousItems)
+        if (!update.changed) {
+            if (update.errorCode === "maximumItemCount") {
+                console.warn("Punchi Dock: Cannot add the open-applications marker because the dock item limit was reached.")
+            }
+            return false
+        }
+
+        root.dockItems = update.items
+        if (!root.syncDockItemsConfiguration()) {
+            root.dockItems = previousItems
+            console.warn("Punchi Dock: Failed to persist the open-applications marker.")
+            return false
+        }
+        return true
+    }
+
+    function movePersistentItem(sourceIndex, targetIndex, expectedItemText) {
+        const source = Number(sourceIndex)
+        const target = Number(targetIndex)
+        if (!Number.isInteger(source) || !Number.isInteger(target)
+                || source < 0 || source >= root.dockItems.length
+                || target < 0 || target >= root.dockItems.length) {
+            return false
+        }
+        const expected = String(expectedItemText || "")
+        if (expected.length === 0
+                || root.canonicalJsonText(root.dockItems[source]) !== expected) {
+            return false
+        }
+        if (source === target) {
+            return true
+        }
+
+        const previousItems = root.dockItems
+        const result = ConfigItemsJS.moveItem(previousItems, source, target)
+        if (!result || !(result.items instanceof Array)) {
+            return false
+        }
+        root.dockItems = result.items
+        if (!root.syncDockItemsConfiguration()) {
+            root.dockItems = previousItems
+            return false
+        }
+        itemTransitionTimer.restart()
         return true
     }
 
@@ -616,6 +690,52 @@ Item {
         }
         return { "success": !!success, "status": String(status || "failed"), "message": message }
     }
+
+    function containerApplicationDropResult(success, status, applicationName,
+            containerName, container) {
+        const appName = String(applicationName || "").trim()
+        const targetName = String(containerName || "").trim().length > 0
+            ? String(containerName).trim()
+            : i18nc("@title", "Container")
+        let message = ""
+        switch (status) {
+        case "added":
+            message = i18nc("@info:status", "%1 was added to %2.",
+                appName, targetName)
+            break
+        case "duplicate":
+            message = i18nc("@info:status", "%1 is already in %2.",
+                appName, targetName)
+            break
+        case "managed-container":
+            message = i18nc("@info:status",
+                "%1 is updated automatically. Change its content source to Manual before adding applications.",
+                targetName)
+            break
+        case "invalid-application":
+            message = i18nc("@info:status",
+                "The dropped launcher could not be resolved safely.")
+            break
+        case "invalid-target":
+            message = i18nc("@info:status",
+                "The target container changed before the application could be added.")
+            break
+        case "persist-failed":
+            message = i18nc("@info:status",
+                "The Dock configuration could not be saved.")
+            break
+        default:
+            message = i18nc("@info:status",
+                "The application could not be added to the container.")
+            break
+        }
+        return {
+            "success": !!success,
+            "status": String(status || "failed"),
+            "message": message,
+            "container": container || null
+        }
+    }
     // qmllint enable unqualified
 
     function resolveApplication(storageId, command) {
@@ -759,6 +879,77 @@ Item {
                 validation.errorCode || "invalid-source", "")
         }
         return root.pinAppToDockAt(validation.storageId, targetIndex)
+    }
+
+    function addApplicationLauncherToContainer(urls, targetIndex,
+            expectedContainerText) {
+        const validation = root.validateApplicationLauncherDrop(urls)
+        if (!validation.accepted) {
+            return root.containerApplicationDropResult(false,
+                "invalid-application", "", "", null)
+        }
+
+        const index = Number(targetIndex)
+        const appName = String(validation.name || validation.storageId || "")
+        if (!Number.isInteger(index) || index < 0
+                || index >= root.dockItems.length) {
+            return root.containerApplicationDropResult(false,
+                "invalid-target", appName, "", null)
+        }
+
+        const currentContainer = root.dockItems[index]
+        const containerName = String(currentContainer
+            ? currentContainer.name || "" : "")
+        const expectedText = String(expectedContainerText || "")
+        if (expectedText.length === 0
+                || root.canonicalJsonText(currentContainer) !== expectedText) {
+            return root.containerApplicationDropResult(false,
+                "invalid-target", appName, containerName, currentContainer)
+        }
+
+        const update = ConfigItemsJS.addApplicationToManualContainer(
+            root.dockItems, index, validation)
+        if (!update.changed) {
+            return root.containerApplicationDropResult(false,
+                update.status, appName, containerName, update.container)
+        }
+        if (!root.persistenceAdapter
+                || typeof root.persistenceAdapter.commitDockItemsJson
+                    !== "function") {
+            return root.containerApplicationDropResult(false,
+                "persist-failed", appName, containerName, currentContainer)
+        }
+
+        let candidateRaw = ""
+        try {
+            candidateRaw = JSON.stringify(update.items)
+        } catch (error) {
+            return root.containerApplicationDropResult(false,
+                "persist-failed", appName, containerName, currentContainer)
+        }
+        if (candidateRaw.length > Logic.maximumDockItemsJsonLength) {
+            return root.containerApplicationDropResult(false,
+                "persist-failed", appName, containerName, currentContainer)
+        }
+
+        const expectedRaw = String(
+            Plasmoid.configuration.dockItemsJson || "")
+        const persistenceResult = root.persistenceAdapter.commitDockItemsJson(
+            expectedRaw, candidateRaw)
+        if (!persistenceResult || !persistenceResult.success) {
+            return root.containerApplicationDropResult(false,
+                persistenceResult && persistenceResult.errorCode === "conflict"
+                    ? "invalid-target" : "persist-failed",
+                appName, containerName, currentContainer)
+        }
+        root.dockItems = update.items
+        if (root.runtimeService) {
+            root.runtimeService.persistDockItemsJson(
+                candidateRaw, root.configInstanceId())
+        }
+        root.configurationChanged()
+        return root.containerApplicationDropResult(true, "added", appName,
+            containerName, update.container)
     }
 
     function pinAppToDesktop(storageId, command) {

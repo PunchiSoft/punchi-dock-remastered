@@ -129,7 +129,8 @@ KCM.SimpleKCM {
 
     // qmllint disable unqualified
     function timedItemName() {
-        return selectedItemType === "calendar" ? i18n("Calendar") : i18n("Clock")
+        return selectedItemType === "calendar"
+            ? i18n("Calendar/Clock") : i18n("Clock")
     }
 
     function timedFontLabel() {
@@ -449,6 +450,56 @@ KCM.SimpleKCM {
 
     function refreshContainerContent() { WorkflowHelper.refreshContainerContent() }
 
+    function validateApplicationLauncherDrop(urls) {
+        return systemDiscovery.validateApplicationLauncherDrop(urls || [])
+    }
+
+    // qmllint disable unqualified
+    function containerApplicationDropMessage(status, applicationName,
+            containerName) {
+        if (status === "added") {
+            return i18nc("@info:status", "%1 was added to %2.",
+                applicationName, containerName)
+        }
+        if (status === "duplicate") {
+            return i18nc("@info:status", "%1 is already in %2.",
+                applicationName, containerName)
+        }
+        if (status === "managed-container") {
+            return i18nc("@info:status",
+                "%1 is updated automatically. Change its content source to Manual before adding applications.",
+                containerName)
+        }
+        if (status === "invalid-target") {
+            return i18nc("@info:status",
+                "The target container changed before the application could be added.")
+        }
+        return i18nc("@info:status",
+            "The dropped launcher could not be resolved safely.")
+    }
+    // qmllint enable unqualified
+
+    function addApplicationLauncherToSelectedContainer(urls) {
+        const validation = page.validateApplicationLauncherDrop(urls)
+        const item = page.selectedItem()
+        const containerName = String(item ? item.name || "" : "")
+        const applicationName = String(validation
+            ? validation.name || validation.storageId || "" : "")
+        const result = validation && validation.accepted
+            ? WorkflowHelper.addApplicationLauncherToSelectedContainer(
+                validation)
+            : {
+                "changed": false,
+                "status": "invalid-application",
+                "container": item || null
+            }
+        actionDialog.applicationLauncherDropMessage
+            = page.containerApplicationDropMessage(result.status,
+                applicationName, containerName)
+        actionDialog.applicationLauncherDropMessageIsError = !result.changed
+        return result.changed
+    }
+
         function applyDiscoveredApplication(application) { FormHelper.applyDiscoveredApplication(application) }
 
         function applyContainerApps(apps) { FormHelper.applyContainerApps(apps) }
@@ -655,6 +706,12 @@ KCM.SimpleKCM {
         actionNameLabel: page.selectedItemType === "folder" ? i18n("App name:") : i18n("Action name:")
         actionIconLabel: page.selectedItemType === "folder" ? i18n("App icon:") : i18n("Action icon:")
         actionCommandLabel: page.selectedItemType === "folder" ? i18n("App command:") : i18n("Action command:")
+        dropApplicationsHereText: i18nc("@info:placeholder", "Drop applications here")
+        addApplicationText: i18nc("@action:button", "Add application")
+        addActionText: i18nc("@action:button", "Add action")
+        applicationLauncherDropValidator: function(urls) {
+            return page.validateApplicationLauncherDrop(urls)
+        }
         onFormChanged: page.applyItemForm()
         onItemModeChanged: function(mode) { page.setSelectedItemMode(mode) }
         onContainerLayoutChanged: function(layout) { page.setContainerLayout(layout) }
@@ -682,6 +739,9 @@ KCM.SimpleKCM {
         onMoveActionRequested: function(delta) { page.moveAction(delta) }
         onRemoveActionRequested: page.removeAction()
         onActionFormChanged: page.applyActionForm()
+        onApplicationLauncherDropped: function(urls) {
+            page.addApplicationLauncherToSelectedContainer(urls)
+        }
     }
     // qmllint enable unqualified
 

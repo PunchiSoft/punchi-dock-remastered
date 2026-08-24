@@ -148,6 +148,11 @@ var items = [
         "showWeekday": true,
         "showWeekNumbers": true,
         "hoverInteraction": false
+    },
+    {
+        "_comment": "Persistent marker that selects where open applications are rendered without storing dynamic tasks.",
+        "type": "dynamic-applications",
+        "name": "Open applications"
     }
 ]
 

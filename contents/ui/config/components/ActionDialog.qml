@@ -40,12 +40,22 @@ Controls.Dialog {
     readonly property real separatorLengthRatioValue: itemEditor.separatorLengthRatioValue
     readonly property real separatorOpacityValue: itemEditor.separatorOpacityValue
     readonly property bool separatorGlowEnabled: itemEditor.separatorGlowEnabled
+    readonly property bool separatorVisibleChecked:
+        itemEditor.separatorVisibleChecked
     readonly property string containerSourceValue: itemEditor.containerSourceValue
     property alias containerSourceIndex: itemEditor.containerSourceIndex
     property alias containerPathText: itemEditor.containerPathText
     readonly property string containerCategoryValue: itemEditor.containerCategoryValue
     property alias containerCategoryIndex: itemEditor.containerCategoryIndex
     property int actionCount: actionEditor.actionCount
+    readonly property bool applicationLauncherDropEnabled:
+        root.selectedItemType === "folder"
+        && root.containerSourceValue === "manual"
+    property var applicationLauncherDropValidator: null
+    property alias applicationLauncherDropMessage:
+        actionEditor.applicationLauncherDropMessage
+    property alias applicationLauncherDropMessageIsError:
+        actionEditor.applicationLauncherDropMessageIsError
 
     property string nameLabel: "Name:"
     property string aliasLabel: "Alias:"
@@ -81,6 +91,9 @@ Controls.Dialog {
     property string actionNameLabel: "Action name:"
     property string actionIconLabel: "Action icon:"
     property string actionCommandLabel: "Action command:"
+    property string dropApplicationsHereText: "Drop applications here"
+    property string addApplicationText: "Add application"
+    property string addActionText: "Add action"
 
     signal formChanged()
     signal itemModeChanged(string mode)
@@ -98,6 +111,7 @@ Controls.Dialog {
     signal moveActionRequested(int delta)
     signal removeActionRequested()
     signal actionFormChanged()
+    signal applicationLauncherDropped(var urls)
 
     function positionActionAtIndex(index) {
         actionEditor.positionActionAtIndex(index)
@@ -135,6 +149,10 @@ Controls.Dialog {
         itemEditor.setSeparatorGlowEnabled(enabled)
     }
 
+    function setSeparatorVisibleChecked(visible) {
+        itemEditor.setSeparatorVisibleChecked(visible)
+    }
+
     function iconPreview(value, fallback) {
         var text = String(value || "")
         return text.length > 0 ? text : fallback
@@ -142,6 +160,10 @@ Controls.Dialog {
 
     modal: true
     standardButtons: Controls.Dialog.Close
+    onOpened: {
+        root.applicationLauncherDropMessage = ""
+        root.applicationLauncherDropMessageIsError = false
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -201,6 +223,10 @@ Controls.Dialog {
             framePadding: root.framePadding
             scrollGutter: root.scrollGutter
             canMoveActionDown: root.canMoveActionDown
+            applicationLauncherDropEnabled:
+                root.applicationLauncherDropEnabled
+            applicationLauncherDropValidator:
+                root.applicationLauncherDropValidator
             rightClickCommandsText: root.rightClickCommandsText
             containerApplicationsText: root.containerApplicationsText
             enableRightClickMenuText: root.enableRightClickMenuText
@@ -211,6 +237,9 @@ Controls.Dialog {
             actionIconLabel: root.actionIconLabel
             actionCommandLabel: root.actionCommandLabel
             chooseIconText: root.chooseIconText
+            dropApplicationsHereText: root.dropApplicationsHereText
+            addApplicationText: root.addApplicationText
+            addActionText: root.addActionText
             onActionsEnabledToggled: function(checked) { root.actionsEnabledToggled(checked) }
             onActionSelected: function(index) { root.actionSelected(index) }
             onAddActionRequested: root.addActionRequested()
@@ -218,6 +247,9 @@ Controls.Dialog {
             onRemoveActionRequested: root.removeActionRequested()
             onActionFormChanged: root.actionFormChanged()
             onIconPickerRequested: function(target) { root.iconPickerRequested(target) }
+            onApplicationLauncherDropped: function(urls) {
+                root.applicationLauncherDropped(urls)
+            }
         }
 
     }

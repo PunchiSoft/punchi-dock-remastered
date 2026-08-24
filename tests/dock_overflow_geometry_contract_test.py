@@ -44,8 +44,8 @@ require(
 )
 require(
     "visible: root.overflowTaskRows.length > 0" in overflow_item
-    and "itemIndex: dockItemsController.dockItems.length" in overflow_item
-    and "+ root.visibleTaskRows.length" in overflow_item,
+    and "itemIndex: root.dynamicVisualIndex(root.visibleTaskRows.length)"
+    in overflow_item,
     "The synthetic overflow entry must remain the final visible dock index.",
 )
 require(

@@ -54,6 +54,7 @@ function refreshItemForm() {
         trashDialog.acceptDropsChecked = true
         actionDialog.actionsEnabledChecked = false
         actionDialog.containerLayoutIndex = 0
+        actionDialog.setSeparatorVisibleChecked(true)
         return
     }
 
@@ -100,6 +101,7 @@ function refreshItemForm() {
     actionDialog.setSeparatorOpacityValue(
         item.separatorOpacity === undefined ? 0.34 : item.separatorOpacity)
     actionDialog.setSeparatorGlowEnabled(item.separatorGlowEnabled === true)
+    actionDialog.setSeparatorVisibleChecked(item.showSeparator !== false)
 
     trashDialog.soundPath = item.emptySound || defaultTrashEmptySound
     trashDialog.showStateChecked = item.showState === undefined ? true : item.showState
@@ -142,7 +144,17 @@ function applyItemForm(force) {
     var item = nextItems[selectedIndex]
     item.type = item.type || "app"
 
-    if (item.type === "separator") {
+    if (item.type === "dynamic-applications") {
+        item.showSeparator = actionDialog.separatorVisibleChecked
+        if (actionDialog.separatorStyleValue.length > 0) {
+            item.separatorStyle = actionDialog.separatorStyleValue
+        }
+        item.separatorThickness = actionDialog.separatorThicknessValue
+        item.separatorLengthRatio = actionDialog.separatorLengthRatioValue
+        item.separatorOpacity = actionDialog.separatorOpacityValue
+        item.separatorGlowEnabled = actionDialog.separatorGlowEnabled
+        ConfigItemsJS.pruneDynamicApplications(item)
+    } else if (item.type === "separator") {
         if (actionDialog.separatorStyleValue.length > 0) {
             item.separatorStyle = actionDialog.separatorStyleValue
         }

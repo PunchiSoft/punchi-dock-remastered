@@ -25,6 +25,7 @@ ColumnLayout {
         model: [
             { "type": "punchimenu", "title": i18n("PunchiMenu"), "description": i18n("Open application menu & carousel"), "icon": "start-here-kde" },
             { "type": "app", "title": i18n("Dock item"), "description": i18n("Add an app or container item"), "icon": "application-x-executable" },
+            { "type": "dynamic-applications", "title": i18n("Open applications"), "description": i18n("Choose where open apps appear"), "icon": "window-duplicate" },
             { "type": "note", "title": i18n("Note"), "description": i18n("Write a quick editable note"), "icon": "knotes" },
             { "type": "separator", "title": i18n("Separator"), "description": i18n("Add a visual separator"), "icon": "draw-line" },
             { "type": "spacer", "title": i18n("Spacer"), "description": i18n("Add empty space between items"), "icon": "distribute-horizontal-x" },
@@ -42,6 +43,8 @@ ColumnLayout {
             Layout.maximumHeight: Layout.preferredHeight
             enabled: (modelData.type !== "media" || !root.controller.hasItemType("media"))
                 && (modelData.type !== "punchimenu" || !root.controller.hasItemType("punchimenu"))
+                && (modelData.type !== "dynamic-applications"
+                    || !root.controller.hasItemType("dynamic-applications"))
             onClicked: root.addRequested(modelData.type)
             Accessible.name: modelData.title
             Accessible.description: modelData.description
@@ -89,9 +92,13 @@ ColumnLayout {
                 if (enabled) {
                     return modelData.description
                 }
-                return modelData.type === "punchimenu"
-                    ? i18n("Only one PunchiMenu item can be added.")
-                    : i18n("Only one media player item can be added.")
+                if (modelData.type === "punchimenu") {
+                    return i18n("Only one PunchiMenu item can be added.")
+                }
+                if (modelData.type === "dynamic-applications") {
+                    return i18n("Only one open applications item can be added.")
+                }
+                return i18n("Only one media player item can be added.")
             }
         }
     }

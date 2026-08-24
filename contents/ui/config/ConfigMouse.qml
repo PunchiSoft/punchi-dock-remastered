@@ -23,6 +23,8 @@ KCM.SimpleKCM {
     property alias cfg_dockMotionSpeedPercent: dockMotionSpeedSlider.value
     property alias cfg_globalMouseCursor: globalMouseCursorCheck.checked
     property alias cfg_enableAppDragAndDrop: enableAppDragAndDropCheck.checked
+    property alias cfg_enableFloatingItemDragReordering:
+        enableFloatingItemDragReorderingCheck.checked
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     readonly property bool inPanel:
@@ -282,6 +284,30 @@ KCM.SimpleKCM {
 
         Controls.Label {
             text: i18n("When disabled, application icons ignore dragged files. The Trash can still receive files.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+        // qmllint enable unqualified
+
+        // qmllint disable unqualified
+        Controls.CheckBox {
+            id: enableFloatingItemDragReorderingCheck
+            Kirigami.FormData.label: i18n("Floating Dock reordering:")
+            visible: !page.inPanel
+            text: i18n("Enable press-and-hold item reordering")
+            Layout.maximumWidth: page.contentWidthHint
+
+            ConfigCursorBehavior {
+                cursorEnabled: page.cfg_globalMouseCursor
+            }
+        }
+
+        Controls.Label {
+            visible: !page.inPanel
+            text: i18n("Disabled by default because Plasma uses press and hold to enter widget editing in floating mode.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

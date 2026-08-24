@@ -649,6 +649,13 @@ Item {
         }
     }
 
+    function cancelTaskPopupForPointerReorder() {
+        if (root.popupDialogActive(taskWindowsDialogRef)) {
+            root.hideTaskWindowsDialog()
+        }
+        root.resetTaskPopupState()
+    }
+
     function resetTaskPopupState() {
         taskPopupOpenTimer.stop()
         taskPopupCloseTimer.stop()

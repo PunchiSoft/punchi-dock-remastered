@@ -6,7 +6,7 @@
 const maximumDockItemsJsonLength = 1024 * 1024
 const maximumDockItemCount = 512
 
-const singletonDockItemTypes = ["media", "punchimenu"]
+const singletonDockItemTypes = ["media", "punchimenu", "dynamic-applications"]
 
 function duplicateSingletonType(items) {
     var seenTypes = {}
@@ -39,6 +39,38 @@ function withSingletonItems(items) {
         result.push(item)
     }
     return result
+}
+
+function dynamicApplicationsMarkerUpdate(items) {
+    var currentItems = Array.isArray(items) ? items : []
+    for (var index = 0; index < currentItems.length; index++) {
+        var item = currentItems[index]
+        if (item && item.type === "dynamic-applications") {
+            return {
+                "items": currentItems,
+                "changed": false,
+                "errorCode": ""
+            }
+        }
+    }
+    if (currentItems.length >= maximumDockItemCount) {
+        return {
+            "items": currentItems,
+            "changed": false,
+            "errorCode": "maximumItemCount"
+        }
+    }
+
+    var updatedItems = currentItems.slice()
+    updatedItems.push({
+        "type": "dynamic-applications",
+        "name": "Open applications"
+    })
+    return {
+        "items": updatedItems,
+        "changed": true,
+        "errorCode": ""
+    }
 }
 
 function loadItems(jsonString) {

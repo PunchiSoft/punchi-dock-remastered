@@ -115,7 +115,10 @@ function openAppActionsDialog(index) {
     }
 
     var item = selectedItem()
-    if (!item || (item.type !== "folder" && item.type !== "note" && item.type !== "separator" && item.type !== "spacer" && (item.type || "app") !== "app")) {
+    if (!item || (item.type !== "folder" && item.type !== "note"
+            && item.type !== "separator" && item.type !== "spacer"
+            && item.type !== "dynamic-applications"
+            && (item.type || "app") !== "app")) {
         return
     }
 
@@ -371,6 +374,9 @@ function selectedConfigureTitle() {
     if (selectedItemType === "separator") {
         return i18n("Configure separator")
     }
+    if (selectedItemType === "dynamic-applications") {
+        return i18n("Configure open applications")
+    }
     if (selectedItemType === "spacer") {
         return i18n("Configure spacer")
     }
@@ -392,7 +398,9 @@ function configureSelectedItem() {
         openPunchiMenuDialog(selectedIndex)
     } else if (selectedItemType === "media") {
         openMediaPlayerDialog(selectedIndex)
-    } else if (selectedItemType === "folder" || selectedItemType === "note" || selectedItemType === "separator" || selectedItemType === "spacer") {
+    } else if (selectedItemType === "folder" || selectedItemType === "note"
+            || selectedItemType === "separator" || selectedItemType === "spacer"
+            || selectedItemType === "dynamic-applications") {
         openAppActionsDialog(selectedIndex)
     } else if (selectedItemType === "trash") {
         openTrashDialog(selectedIndex)
@@ -413,6 +421,12 @@ function addItem(type) {
     if (type === "punchimenu" && hasItemType("punchimenu")) {
         mainView.showStatus(
             i18n("Only one PunchiMenu item can be added."),
+            Kirigami.MessageType.Information)
+        return
+    }
+    if (type === "dynamic-applications" && hasItemType("dynamic-applications")) {
+        mainView.showStatus(
+            i18n("Only one open applications item can be added."),
             Kirigami.MessageType.Information)
         return
     }
@@ -475,6 +489,30 @@ function addAction() {
     items = result.items
     refreshFromItems()
     Qt.callLater(showSelectedAction)
+}
+
+function addApplicationLauncherToSelectedContainer(application) {
+    var item = selectedItem()
+    if (!item) {
+        return {
+            "items": items,
+            "changed": false,
+            "status": "invalid-target",
+            "container": null
+        }
+    }
+
+    var result = ConfigItemsJS.addApplicationToManualContainer(
+        items, selectedIndex, application)
+    if (!result.changed) {
+        return result
+    }
+
+    selectedActionIndex = result.container.apps.length - 1
+    items = result.items
+    refreshFromItems()
+    Qt.callLater(showSelectedAction)
+    return result
 }
 
 function removeAction() {

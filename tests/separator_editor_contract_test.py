@@ -35,6 +35,9 @@ def main() -> int:
     form_helper = (CONFIG / "code/configItemsFormHelper.js").read_text(
         encoding="utf-8"
     )
+    workflow_helper = (CONFIG / "code/configItemsWorkflowHelper.js").read_text(
+        encoding="utf-8"
+    )
 
     passed = True
     for label, source in sources.items():
@@ -80,6 +83,46 @@ def main() -> int:
             "item.separatorGlowEnabled = actionDialog.separatorGlowEnabled",
         ),
         "configItemsFormHelper.js",
+    ) and passed
+
+    passed = require_markers(
+        sources["ItemEditorPanel.qml"],
+        (
+            "readonly property bool dynamicApplicationsItem:",
+            "readonly property bool separatorVisibleChecked:",
+            "function setSeparatorVisibleChecked(visible)",
+            'text: i18n("Show separator")',
+            "|| root.dynamicApplicationsItem",
+            "|| separatorVisibleCheckBox.checked",
+        ),
+        "ItemEditorPanel.qml dynamic applications editor",
+    ) and passed
+    passed = require_markers(
+        sources["ActionDialog.qml"],
+        (
+            "readonly property bool separatorVisibleChecked:",
+            "function setSeparatorVisibleChecked(visible)",
+        ),
+        "ActionDialog.qml dynamic applications editor",
+    ) and passed
+    passed = require_markers(
+        form_helper,
+        (
+            "actionDialog.setSeparatorVisibleChecked(item.showSeparator !== false)",
+            'if (item.type === "dynamic-applications")',
+            "item.showSeparator = actionDialog.separatorVisibleChecked",
+            "ConfigItemsJS.pruneDynamicApplications(item)",
+        ),
+        "configItemsFormHelper.js dynamic applications editor",
+    ) and passed
+    passed = require_markers(
+        workflow_helper,
+        (
+            'return i18n("Configure open applications")',
+            'item.type !== "dynamic-applications"',
+            'selectedItemType === "dynamic-applications"',
+        ),
+        "configItemsWorkflowHelper.js dynamic applications editor",
     ) and passed
 
     return 0 if passed else 1

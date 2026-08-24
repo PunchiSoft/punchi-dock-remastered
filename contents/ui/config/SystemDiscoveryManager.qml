@@ -20,6 +20,10 @@ Item {
         systemDiscovery.requestApplication(alias)
     }
 
+    function validateApplicationLauncherDrop(urls) {
+        return systemDiscovery.validateApplicationLauncherDrop(urls || [])
+    }
+
     function iconForCategory(category) {
         return systemDiscovery.iconForCategory(category)
     }

@@ -198,7 +198,7 @@ QtObject {
 
     function panelMainAxisExtentForDockItem(item) {
         const itemType = item && item.type ? String(item.type) : "app"
-        if (itemType === "separator") {
+        if (itemType === "separator" || itemType === "dynamic-applications") {
             return 10
         }
         if (itemType === "spacer") {

@@ -99,9 +99,9 @@ require(
     "The native controller must publish a verified desktop URL and the Punchi marker MIME type.",
 )
 require(
-    "isPunchiLauncherDrag" in DOCK_ITEM
+    "isApplicationLauncherDrag" in DOCK_ITEM
     and "applicationLauncherDropped" in DOCK_ITEM
-    and DOCK_ITEM.index("isPunchiLauncherDrag(drop)")
+    and DOCK_ITEM.index("isApplicationLauncherDrag(")
     < DOCK_ITEM.index('itemType === "trash" && drop.hasUrls'),
     "Launcher drops must be routed before trash and ordinary file drops.",
 )

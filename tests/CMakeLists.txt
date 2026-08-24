@@ -182,6 +182,16 @@ add_test(
 )
 
 add_test(
+    NAME dock_container_launcher_drop_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dock_container_launcher_drop_contract_test.py
+)
+
+add_test(
+    NAME container_editor_launcher_drop_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/container_editor_launcher_drop_contract_test.py
+)
+
+add_test(
     NAME dock_wave_panel_geometry_contract_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dock_wave_panel_geometry_contract_test.py
 )
@@ -189,6 +199,11 @@ add_test(
 add_test(
     NAME dock_overflow_geometry_contract_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dock_overflow_geometry_contract_test.py
+)
+
+add_test(
+    NAME dock_dynamic_applications_reorder_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dock_dynamic_applications_reorder_contract_test.py
 )
 
 add_test(
@@ -362,6 +377,30 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     punchimenu_application_state_test
     punchimenu_application_state_test.qml
+)
+punchi_add_qml_test(
+    dynamic_applications_marker_logic_test
+    dynamic_applications_marker_logic_test.qml
+)
+punchi_add_qml_test(
+    dynamic_applications_options_test
+    dynamic_applications_options_test.qml
+)
+punchi_add_qml_test(
+    dock_reorder_drag_layer_test
+    dock_reorder_drag_layer_test.qml
+)
+punchi_add_qml_test(
+    container_launcher_drop_logic_test
+    container_launcher_drop_logic_test.qml
+)
+punchi_add_qml_test(
+    dock_item_launcher_drop_state_test
+    dock_item_launcher_drop_state_test.qml
+)
+punchi_add_qml_test(
+    item_action_editor_drop_test
+    item_action_editor_drop_test.qml
 )
 punchi_add_qml_test(
     themed_separator_lifecycle_test

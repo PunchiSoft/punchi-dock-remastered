@@ -79,6 +79,22 @@ PlasmoidItem {
     property bool mediaItemExpanded: true
     readonly property var visibleTaskRows: taskController.visibleTaskRows
     readonly property var overflowTaskRows: taskController.overflowTaskRows
+    readonly property int dynamicApplicationsMarkerIndex: {
+        const items = dockItemsController.dockItems || []
+        for (let index = 0; index < items.length; index++) {
+            if (items[index]
+                    && items[index].type === "dynamic-applications") {
+                return index
+            }
+        }
+        return -1
+    }
+    readonly property int dynamicApplicationsAnchorIndex:
+        dynamicApplicationsMarkerIndex >= 0
+            ? dynamicApplicationsMarkerIndex
+            : dockItemsController.dockItems.length
+    readonly property int renderedOverflowItemCount:
+        overflowTaskRows.length > 0 ? 1 : 0
     readonly property int taskVisualRevision: taskController.visualRevision
     readonly property var dockItemsControllerService: dockItemsController
     readonly property var configuredMediaItem: {
@@ -304,6 +320,62 @@ PlasmoidItem {
         return false
     }
     signal taskStructureChanged()
+
+    function persistentVisualIndex(modelIndex) {
+        const index = Number(modelIndex)
+        if (root.dynamicApplicationsMarkerIndex < 0
+                || index <= root.dynamicApplicationsMarkerIndex) {
+            return index
+        }
+        return index + root.visibleTaskRows.length
+            + root.renderedOverflowItemCount
+    }
+
+    function dynamicVisualIndex(taskIndex) {
+        return root.dynamicApplicationsAnchorIndex
+            + (root.dynamicApplicationsMarkerIndex >= 0 ? 1 : 0)
+            + Number(taskIndex)
+    }
+
+    function dynamicLauncherInsertionIndex() {
+        return root.dynamicApplicationsMarkerIndex >= 0
+            ? root.dynamicApplicationsMarkerIndex
+            : dockItemsController.dockItems.length
+    }
+
+    function dockItemReorderIconName(item) {
+        const itemData = item || ({})
+        const configuredIcon = String(itemData.icon || "")
+        if (configuredIcon.length > 0) {
+            return configuredIcon
+        }
+        const type = String(itemData.type || "")
+        if (type === "dynamic-applications") {
+            return "window-duplicate"
+        }
+        if (type === "separator") {
+            return "draw-line"
+        }
+        if (type === "spacer") {
+            return "distribute-horizontal-x"
+        }
+        if (type === "calendar") {
+            return "view-calendar-day"
+        }
+        if (type === "note") {
+            return "knotes"
+        }
+        if (type === "folder") {
+            return "folder"
+        }
+        if (type === "trash") {
+            return "user-trash"
+        }
+        if (type === "punchimenu") {
+            return "start-here-kde"
+        }
+        return "application-x-executable"
+    }
 
     // Virtual desktop visibility.
     TaskManager.VirtualDesktopInfo {
@@ -1231,6 +1303,7 @@ PlasmoidItem {
 
     DockItemsController {
         id: dockItemsController
+        dynamicApplicationsEnabled: Plasmoid.configuration.showActiveTasks
         runtimeService: runtimeService
         persistenceAdapter: dockItemsPersistenceAdapter
         systemDiscovery: systemDiscovery
@@ -1337,7 +1410,8 @@ PlasmoidItem {
         return i18nc("@info:status", "The dropped files could not be opened.")
     }
 
-    function handleApplicationUrlsDrop(item, taskRows, urls, visualParent) {
+    function handleApplicationUrlsDrop(item, taskRows, urls, visualParent,
+            coordinator) {
         const result = dockItemsController.handleApplicationUrlsDrop(
             item, taskRows, urls)
         if (!result.accepted) {
@@ -1346,7 +1420,30 @@ PlasmoidItem {
             return
         }
         dropFeedbackPopup.dismissFeedback()
-        popupCoordinator.closeAllPopups(null)
+        if (coordinator) {
+            coordinator.closeAllPopups(null)
+        }
+    }
+
+    function handleContainerApplicationLauncherDrop(urls, targetIndex,
+            expectedContainerText, visualParent, coordinator) {
+        const result = dockItemsController.addApplicationLauncherToContainer(
+            urls, targetIndex, expectedContainerText)
+        if (!result.success) {
+            dropFeedbackPopup.presentFeedback(visualParent, result.message,
+                false)
+            return
+        }
+
+        dropFeedbackPopup.dismissFeedback()
+        const folderPopup = coordinator
+            ? coordinator.folderPopupDialogRef : null
+        const activeFolderMatches = folderPopup && folderPopup.visible
+            && dockItemsController.canonicalJsonText(
+                coordinator.activeFolderData) === expectedContainerText
+        if (result.success && activeFolderMatches && result.container) {
+            coordinator.activeFolderData = result.container
+        }
     }
 
     function launchConfiguredMediaPlayer(item, playWhenReady) {
@@ -1746,12 +1843,166 @@ PlasmoidItem {
                 property real hoverZoomProgress: hoveredIndex >= 0 ? 1.0 : 0.0
                 property bool mediaMorphActive: false
                 property bool launcherDropTransitionActive: false
+                property int persistentDragSourceIndex: -1
+                property int persistentDragTargetIndex: -1
+                property string persistentDragExpectedItemText: ""
+                property var persistentDragSourceItem: null
+                property point persistentDragPointerPosition:
+                    Qt.point(0, 0)
+                property string persistentDragIconName:
+                    "application-x-executable"
+                readonly property bool persistentDragActive:
+                    persistentDragSourceIndex >= 0
+                readonly property string effectiveHoverAnimationMode:
+                    persistentDragActive ? "none"
+                        : dockConfig.dockHoverAnimation
+
+                function cancelPersistentDrag() {
+                    persistentDragSourceIndex = -1
+                    persistentDragTargetIndex = -1
+                    persistentDragExpectedItemText = ""
+                    persistentDragSourceItem = null
+                    persistentDragPointerPosition = Qt.point(0, 0)
+                    persistentDragIconName = "application-x-executable"
+                }
+
+                function beginPersistentDrag(sourceIndex, sourceItem) {
+                    const index = Number(sourceIndex)
+                    const items = dockItemsController.dockItems || []
+                    if (persistentDragActive || !sourceItem
+                            || !Number.isInteger(index)
+                            || index < 0 || index >= items.length
+                            || !items[index]
+                            || items[index].type === "media"
+                            || (!root.inPanel
+                                && !dockConfig.floatingItemDragReorderingEnabled)) {
+                        return false
+                    }
+                    popupCoordinator.closeAllPopups(null)
+                    hoveredIndex = -1
+                    lastHoveredIndex = -1
+                    mouseOffset = 0.0
+                    lastMouseOffset = 0.0
+                    pointerPrimaryAxis = -1
+                    lastPointerPrimaryAxis = -1
+                    persistentDragSourceIndex = index
+                    persistentDragTargetIndex = index
+                    persistentDragExpectedItemText
+                        = dockItemsController.canonicalJsonText(items[index])
+                    persistentDragSourceItem = sourceItem
+                    persistentDragIconName
+                        = root.dockItemReorderIconName(items[index])
+                    return persistentDragExpectedItemText.length > 0
+                }
+
+                function updatePersistentDrag(sourceItem, x, y) {
+                    if (!persistentDragActive
+                            || sourceItem !== persistentDragSourceItem) {
+                        return
+                    }
+                    const point = sourceItem.mapToItem(dockLayout, x, y)
+                    persistentDragPointerPosition
+                        = sourceItem.mapToItem(dockWrapper, x, y)
+                    const primaryPosition = dockGeometry.verticalPanel
+                        ? point.y : point.x
+                    const itemCount = persistentDockItemsRepeater.count
+                    let beforeIndex = itemCount
+                    for (let index = 0; index < itemCount; index++) {
+                        if (index === persistentDragSourceIndex) {
+                            continue
+                        }
+                        const candidate = persistentDockItemsRepeater.itemAt(index)
+                        if (!candidate) {
+                            continue
+                        }
+                        const candidateCenter = dockGeometry.verticalPanel
+                            ? candidate.y + candidate.height / 2
+                            : candidate.x + candidate.width / 2
+                        if (primaryPosition < candidateCenter) {
+                            beforeIndex = index
+                            break
+                        }
+                    }
+                    if (beforeIndex >= itemCount) {
+                        persistentDragTargetIndex = itemCount - 1
+                    } else if (beforeIndex > persistentDragSourceIndex) {
+                        persistentDragTargetIndex = beforeIndex - 1
+                    } else {
+                        persistentDragTargetIndex = beforeIndex
+                    }
+                }
+
+                function finishPersistentDrag() {
+                    if (!persistentDragActive) {
+                        return
+                    }
+                    const sourceIndex = persistentDragSourceIndex
+                    const targetIndex = persistentDragTargetIndex
+                    const expectedItemText = persistentDragExpectedItemText
+                    cancelPersistentDrag()
+                    if (!dockItemsController.movePersistentItem(
+                            sourceIndex, targetIndex, expectedItemText)) {
+                        console.warn("Punchi Dock: Persistent item reorder was canceled because the configuration changed or could not be saved.")
+                    }
+                }
+
+                function movePersistentItemFromKeyboard(modelIndex, delta) {
+                    const sourceIndex = Number(modelIndex)
+                    const targetIndex = sourceIndex + Number(delta)
+                    const items = dockItemsController.dockItems || []
+                    if (!Number.isInteger(sourceIndex)
+                            || !Number.isInteger(targetIndex)
+                            || sourceIndex < 0 || sourceIndex >= items.length
+                            || targetIndex < 0 || targetIndex >= items.length
+                            || !items[sourceIndex]) {
+                        return
+                    }
+                    const expectedItemText
+                        = dockItemsController.canonicalJsonText(items[sourceIndex])
+                    dockItemsController.movePersistentItem(
+                        sourceIndex, targetIndex, expectedItemText)
+                }
+
+                Connections {
+                    target: dockItemsController
+
+                    function onConfigurationChanged() {
+                        if (dockLayout.persistentDragActive) {
+                            dockLayout.cancelPersistentDrag()
+                        }
+                    }
+                }
+
+                Connections {
+                    target: dockConfig
+
+                    function onFloatingItemDragReorderingEnabledChanged() {
+                        if (!root.inPanel
+                                && !dockConfig.floatingItemDragReorderingEnabled
+                                && dockLayout.persistentDragActive) {
+                            dockLayout.cancelPersistentDrag()
+                        }
+                    }
+                }
+
+                Connections {
+                    target: root
+
+                    function onInPanelChanged() {
+                        if (!root.inPanel
+                                && !dockConfig.floatingItemDragReorderingEnabled
+                                && dockLayout.persistentDragActive) {
+                            dockLayout.cancelPersistentDrag()
+                        }
+                    }
+                }
 
                 HoverHandler {
                     id: dockWaveHover
                     // qmllint disable unqualified
                     enabled:
                         dockConfig.dockHoverAnimation === "wave"
+                        && !dockLayout.persistentDragActive
                     // qmllint enable unqualified
                     readonly property point trackedPosition: point.position
 
@@ -1819,13 +2070,37 @@ PlasmoidItem {
                 }
 
                 Repeater {
+                    id: persistentDockItemsRepeater
                     model: dockItemsController.dockItems
                     delegate: DockItem {
                         id: dockItemDelegate
                         required property var modelData
                         required property int index
                         layoutController: dockLayout
-                        itemIndex: dockItemDelegate.index
+                        Layout.column: dockGeometry.verticalPanel
+                            ? 0 : root.persistentVisualIndex(dockItemDelegate.index)
+                        Layout.row: dockGeometry.verticalPanel
+                            ? root.persistentVisualIndex(dockItemDelegate.index) : 0
+                        itemIndex: root.persistentVisualIndex(dockItemDelegate.index)
+                        persistentModelIndex: dockItemDelegate.index
+                        persistentReorderEnabled:
+                            dockItemDelegate.modelData.type !== "media"
+                        persistentPointerReorderEnabled:
+                            dockItemDelegate.persistentReorderEnabled
+                            && (root.inPanel
+                                || dockConfig.floatingItemDragReorderingEnabled)
+                        persistentReorderActive: dockLayout.persistentDragActive
+                        persistentReorderSource: dockLayout.persistentDragSourceIndex
+                            === dockItemDelegate.index
+                        persistentReorderTarget: dockLayout.persistentDragActive
+                            && dockLayout.persistentDragTargetIndex
+                                === dockItemDelegate.index
+                            && dockLayout.persistentDragSourceIndex
+                                !== dockItemDelegate.index
+                        persistentReorderInsertAfter:
+                            dockLayout.persistentDragSourceIndex
+                                < dockLayout.persistentDragTargetIndex
+                        launcherModelInsertionIndex: dockItemDelegate.index
                         hoveredIndex: dockLayout.hoveredIndex
                         inPanel: root.inPanel
                         panelLocation: dockGeometry.effectivePanelLocation
@@ -1861,7 +2136,8 @@ PlasmoidItem {
                         mediaMotionEnabled: dockConfig.menuAnimationStyle !== "none"
                             && dockConfig.dockHoverAnimation !== "none"
                         hoverScaleSetting: dockConfig.panelHoverScale
-                        hoverAnimationMode: dockConfig.dockHoverAnimation
+                        hoverAnimationMode:
+                            dockLayout.effectiveHoverAnimationMode
                         clickEffect: dockConfig.dockClickEffect
                         windowMinimizeEffect: dockConfig.dockWindowMinimizeEffect
                         taskMinimizedCount: taskState.minimizedCount
@@ -1925,6 +2201,8 @@ PlasmoidItem {
                         separatorLengthRatioSetting: dockItemDelegate.modelData.separatorLengthRatio === undefined ? 0.72 : dockItemDelegate.modelData.separatorLengthRatio
                         separatorOpacitySetting: dockItemDelegate.modelData.separatorOpacity === undefined ? 0.34 : dockItemDelegate.modelData.separatorOpacity
                         separatorGlowSetting: dockItemDelegate.modelData.separatorGlowEnabled === true
+                        separatorVisibleSetting:
+                            dockItemDelegate.modelData.showSeparator !== false
                         iconName: dockItemDelegate.modelData.type === "trash" && dockItemDelegate.modelData.showState !== false
                             ? (dockItemsController.trashHasItems ? (dockItemDelegate.modelData.fullIcon || "user-trash-full") : (dockItemDelegate.modelData.icon || "user-trash"))
                             : (dockItemDelegate.modelData.icon || "")
@@ -1956,6 +2234,12 @@ PlasmoidItem {
                         launcherDropValidator: function(urls) {
                             return dockItemsController.validateApplicationLauncherDrop(urls)
                         }
+                        launcherContainerDropTarget:
+                            dockItemDelegate.modelData.type === "folder"
+                        launcherContainerDropEnabled:
+                            dockItemDelegate.launcherContainerDropTarget
+                            && (dockItemDelegate.modelData.sourceType
+                                || "manual") === "manual"
                         externalDropActivationEnabled: taskState.count > 0
                             && !taskState.isActive
                         externalDropActivator: function() {
@@ -2008,11 +2292,34 @@ PlasmoidItem {
                         }
                         onExternalUrlsDropped: function(urls, visualParent) {
                             root.handleApplicationUrlsDrop(
-                                dockItemDelegate.modelData, taskState.rows, urls, visualParent)
+                                dockItemDelegate.modelData, taskState.rows,
+                                urls, visualParent, popupCoordinator)
                         }
                         onApplicationLauncherDropped: function(urls, insertionIndex) {
                             dockItemsController.pinApplicationLauncherAt(
                                 urls, insertionIndex)
+                        }
+                        onApplicationLauncherContainerDropped: function(
+                                urls, visualParent) {
+                            root.handleContainerApplicationLauncherDrop(
+                                urls, dockItemDelegate.index,
+                                dockItemsController.canonicalJsonText(
+                                    dockItemDelegate.modelData), visualParent,
+                                popupCoordinator)
+                        }
+                        onPersistentReorderPressStarted: {
+                            popupCoordinator.cancelTaskPopupForPointerReorder()
+                        }
+                        onPersistentReorderStarted: function(modelIndex, visualParent) {
+                            dockLayout.beginPersistentDrag(modelIndex, visualParent)
+                        }
+                        onPersistentReorderMoved: function(x, y) {
+                            dockLayout.updatePersistentDrag(dockItemDelegate, x, y)
+                        }
+                        onPersistentReorderFinished: dockLayout.finishPersistentDrag()
+                        onPersistentReorderCanceled: dockLayout.cancelPersistentDrag()
+                        onPersistentKeyboardMoveRequested: function(modelIndex, delta) {
+                            dockLayout.movePersistentItemFromKeyboard(modelIndex, delta)
                         }
                         onMediaLaunchRequested: {
                             root.launchConfiguredMediaPlayer(dockItemDelegate.modelData, false)
@@ -2064,14 +2371,23 @@ PlasmoidItem {
                             return taskController.taskDataForEntry(modelData)
                         }
 
-                        itemIndex: dockItemsController.dockItems.length + index
+                        Layout.column: dockGeometry.verticalPanel
+                            ? 0 : root.dynamicVisualIndex(taskDockItemDelegate.index)
+                        Layout.row: dockGeometry.verticalPanel
+                            ? root.dynamicVisualIndex(taskDockItemDelegate.index) : 0
+                        itemIndex: root.dynamicVisualIndex(taskDockItemDelegate.index)
+                        launcherModelInsertionIndex:
+                            root.dynamicLauncherInsertionIndex()
                         hoveredIndex: dockLayout.hoveredIndex
                         inPanel: root.inPanel
                         panelLocation: dockGeometry.effectivePanelLocation
                         iconSize: dockGeometry.effectiveIconSize
                         hoverScaleSetting: dockConfig.panelHoverScale
                         // qmllint disable unqualified
-                        hoverAnimationMode: dockConfig.dockHoverAnimation
+                        hoverAnimationMode:
+                            dockLayout.effectiveHoverAnimationMode
+                        persistentReorderActive:
+                            dockLayout.persistentDragActive
                         // qmllint enable unqualified
                         dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                         clickEffect: dockConfig.dockClickEffect
@@ -2184,7 +2500,7 @@ PlasmoidItem {
                         }
                         onApplicationLauncherDropped: function(urls, insertionIndex) {
                             dockItemsController.pinApplicationLauncherAt(
-                                urls, insertionIndex)
+                                urls, root.dynamicLauncherInsertionIndex())
                         }
                         // qmllint enable unqualified
                         onContextMenuRequested: function(visualParent) {
@@ -2217,18 +2533,26 @@ PlasmoidItem {
                     id: taskOverflowDockItem
                     visible: root.overflowTaskRows.length > 0
                     layoutController: dockLayout
+                    Layout.column: dockGeometry.verticalPanel
+                        ? 0 : root.dynamicVisualIndex(root.visibleTaskRows.length)
+                    Layout.row: dockGeometry.verticalPanel
+                        ? root.dynamicVisualIndex(root.visibleTaskRows.length) : 0
                     Layout.preferredWidth: root.inPanel
                         ? dockGeometry.panelItemWidth : implicitWidth
                     Layout.preferredHeight: root.inPanel
                         ? dockGeometry.panelItemHeight : implicitHeight
-                    itemIndex: dockItemsController.dockItems.length
-                        + root.visibleTaskRows.length
+                    itemIndex: root.dynamicVisualIndex(root.visibleTaskRows.length)
+                    launcherModelInsertionIndex:
+                        root.dynamicLauncherInsertionIndex()
                     hoveredIndex: dockLayout.hoveredIndex
                     inPanel: root.inPanel
                     panelLocation: dockGeometry.effectivePanelLocation
                     iconSize: dockGeometry.effectiveIconSize
                     hoverScaleSetting: dockConfig.panelHoverScale
-                    hoverAnimationMode: dockConfig.dockHoverAnimation
+                    hoverAnimationMode:
+                        dockLayout.effectiveHoverAnimationMode
+                    persistentReorderActive:
+                        dockLayout.persistentDragActive
                     dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                     clickEffect: dockConfig.dockClickEffect
                     windowMinimizeEffect: dockConfig.dockWindowMinimizeEffect
@@ -2268,11 +2592,23 @@ PlasmoidItem {
                     }
                     onApplicationLauncherDropped: function(urls, insertionIndex) {
                         dockItemsController.pinApplicationLauncherAt(
-                            urls, insertionIndex)
+                            urls, root.dynamicLauncherInsertionIndex())
                     }
                 }
                 // qmllint enable unqualified
 
+            }
+
+            DockReorderDragLayer {
+                id: dockReorderDragLayer
+                anchors.fill: parent
+                z: 20
+                active: dockLayout.persistentDragActive
+                pointerPosition:
+                    dockLayout.persistentDragPointerPosition
+                iconName: dockLayout.persistentDragIconName
+                iconSize: dockGeometry.effectiveIconSize
+                motionEnabled: Kirigami.Units.longDuration > 0
             }
         }
 

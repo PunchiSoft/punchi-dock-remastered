@@ -14,6 +14,11 @@ ColumnLayout {
     property string selectedItemType: "app"
     property string itemModeValue: "app"
     property string appIconText: ""
+    property bool applicationLauncherDropEnabled: false
+    property var applicationLauncherDropValidator: null
+    property string applicationLauncherDropMessage: ""
+    property bool applicationLauncherDropMessageIsError: false
+    property string applicationLauncherDropState: "none"
     property real rowHeight: Kirigami.Units.gridUnit * 2.4
     property real footerHeight: Kirigami.Units.gridUnit * 2.4
     property real framePadding: Kirigami.Units.largeSpacing * 2
@@ -37,6 +42,9 @@ ColumnLayout {
     property string actionIconLabel: "Action icon:"
     property string actionCommandLabel: "Action command:"
     property string chooseIconText: "Choose icon"
+    property string dropApplicationsHereText: "Drop applications here"
+    property string addApplicationText: "Add application"
+    property string addActionText: "Add action"
 
     signal actionsEnabledToggled(bool checked)
     signal actionSelected(int index)
@@ -45,6 +53,7 @@ ColumnLayout {
     signal removeActionRequested()
     signal actionFormChanged()
     signal iconPickerRequested(string target)
+    signal applicationLauncherDropped(var urls)
 
     function positionActionAtIndex(index) {
         if (index >= 0 && actionList.count > 0) {
@@ -55,6 +64,50 @@ ColumnLayout {
     function iconPreview(value, fallback) {
         var text = String(value || "")
         return text.length > 0 ? text : fallback
+    }
+
+    function validateApplicationLauncherUrls(urls) {
+        if (!root.applicationLauncherDropEnabled
+                || typeof root.applicationLauncherDropValidator
+                    !== "function") {
+            return { "accepted": false }
+        }
+        try {
+            const result = root.applicationLauncherDropValidator(urls || [])
+            return result && result.accepted === true
+                ? result : { "accepted": false }
+        } catch (error) {
+            return { "accepted": false }
+        }
+    }
+
+    function beginApplicationLauncherDrop(urls) {
+        root.applicationLauncherDropMessage = ""
+        const validation = root.validateApplicationLauncherUrls(urls)
+        root.applicationLauncherDropState = validation.accepted
+            ? "acceptable" : "rejected"
+        return validation.accepted
+    }
+
+    function finishApplicationLauncherDrop(urls) {
+        const validation = root.validateApplicationLauncherUrls(urls)
+        root.applicationLauncherDropState = "none"
+        if (!validation.accepted) {
+            return false
+        }
+        root.applicationLauncherDropped(urls || [])
+        return true
+    }
+
+    function resetApplicationLauncherDrop() {
+        root.applicationLauncherDropState = "none"
+    }
+
+    onApplicationLauncherDropEnabledChanged: {
+        if (!root.applicationLauncherDropEnabled) {
+            root.resetApplicationLauncherDrop()
+            root.applicationLauncherDropMessage = ""
+        }
     }
 
     visible: root.itemModeValue === "app" || root.itemModeValue === "container"
@@ -68,6 +121,15 @@ ColumnLayout {
         Layout.fillWidth: true
         text: root.itemModeValue === "container" ? root.containerApplicationsText : root.rightClickCommandsText
         level: 3
+    }
+
+    Kirigami.InlineMessage {
+        Layout.fillWidth: true
+        visible: root.itemModeValue === "container"
+            && root.applicationLauncherDropMessage.length > 0
+        text: root.applicationLauncherDropMessage
+        type: root.applicationLauncherDropMessageIsError
+            ? Kirigami.MessageType.Error : Kirigami.MessageType.Positive
     }
 
     Controls.CheckBox {
@@ -113,46 +175,124 @@ ColumnLayout {
         Layout.maximumHeight: root.rowHeight * 4 + root.footerHeight + root.framePadding
         enabled: root.itemModeValue === "container" || actionMenuEnabled.checked
 
-        ListView {
-            id: actionList
+        Item {
+            id: actionListFrame
             Layout.fillWidth: true
             Layout.fillHeight: true
-            clip: true
-            model: root.actionModel
-            currentIndex: root.selectedActionIndex
-            boundsBehavior: Flickable.StopAtBounds
-            Controls.ScrollBar.vertical: Controls.ScrollBar {
-                policy: Controls.ScrollBar.AsNeeded
+
+            Rectangle {
+                anchors.fill: parent
+                visible: root.applicationLauncherDropState !== "none"
+                radius: Kirigami.Units.cornerRadius
+                color: Qt.alpha(root.applicationLauncherDropState
+                    === "acceptable" ? Kirigami.Theme.highlightColor
+                    : Kirigami.Theme.negativeTextColor, 0.10)
+                border.width: 2
+                border.color: root.applicationLauncherDropState
+                    === "acceptable" ? Kirigami.Theme.highlightColor
+                    : Kirigami.Theme.negativeTextColor
+                z: 0
             }
 
-            delegate: Controls.ItemDelegate {
-                id: actionDelegate
-                required property int index
-                required property string title
-                required property string subtitle
-                required property string iconName
+            ListView {
+                id: actionList
+                anchors.fill: parent
+                clip: true
+                model: root.actionModel
+                currentIndex: root.selectedActionIndex
+                boundsBehavior: Flickable.StopAtBounds
+                z: 1
+                Controls.ScrollBar.vertical: Controls.ScrollBar {
+                    policy: Controls.ScrollBar.AsNeeded
+                }
 
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                property bool hasVerticalScroll: actionList.contentHeight > actionList.height
+                delegate: Controls.ItemDelegate {
+                    id: actionDelegate
+                    required property int index
+                    required property string title
+                    required property string subtitle
+                    required property string iconName
 
-                width: actionList.width
-                height: root.rowHeight
-                rightPadding: width * 0.42 + Kirigami.Units.largeSpacing + (hasVerticalScroll ? root.scrollGutter : 0)
-                text: title
-                icon.name: iconName
-                icon.source: root.iconPreview(iconName, "application-x-executable")
-                highlighted: index === root.selectedActionIndex
-                onClicked: root.actionSelected(index)
+                    HoverHandler { cursorShape: Qt.PointingHandCursor }
+                    property bool hasVerticalScroll: actionList.contentHeight > actionList.height
+
+                    width: actionList.width
+                    height: root.rowHeight
+                    rightPadding: width * 0.42 + Kirigami.Units.largeSpacing + (hasVerticalScroll ? root.scrollGutter : 0)
+                    text: title
+                    icon.name: iconName
+                    icon.source: root.iconPreview(iconName, "application-x-executable")
+                    highlighted: index === root.selectedActionIndex
+                    onClicked: root.actionSelected(index)
+
+                    Controls.Label {
+                        anchors.right: parent.right
+                        anchors.rightMargin: Kirigami.Units.largeSpacing + (actionDelegate.hasVerticalScroll ? root.scrollGutter : 0)
+                        anchors.verticalCenter: parent.verticalCenter
+                        width: parent.width * 0.38
+                        text: actionDelegate.subtitle
+                        elide: Text.ElideRight
+                        opacity: 0.7
+                        horizontalAlignment: Text.AlignRight
+                    }
+                }
+            }
+
+            ColumnLayout {
+                anchors.centerIn: parent
+                width: Math.min(parent.width - Kirigami.Units.largeSpacing * 2,
+                    Kirigami.Units.gridUnit * 18)
+                visible: root.applicationLauncherDropEnabled
+                    && actionList.count === 0
+                spacing: Kirigami.Units.smallSpacing
+                z: 1
+
+                Kirigami.Icon {
+                    Layout.alignment: Qt.AlignHCenter
+                    Layout.preferredWidth: Kirigami.Units.iconSizes.medium
+                    Layout.preferredHeight: Layout.preferredWidth
+                    source: root.applicationLauncherDropState === "rejected"
+                        ? "dialog-cancel" : "folder-add-symbolic"
+                    Accessible.ignored: true
+                }
 
                 Controls.Label {
-                    anchors.right: parent.right
-                    anchors.rightMargin: Kirigami.Units.largeSpacing + (actionDelegate.hasVerticalScroll ? root.scrollGutter : 0)
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: parent.width * 0.38
-                    text: actionDelegate.subtitle
-                    elide: Text.ElideRight
-                    opacity: 0.7
-                    horizontalAlignment: Text.AlignRight
+                    Layout.fillWidth: true
+                    text: root.dropApplicationsHereText
+                    color: root.applicationLauncherDropState === "rejected"
+                        ? Kirigami.Theme.negativeTextColor
+                        : (root.applicationLauncherDropState === "acceptable"
+                            ? Kirigami.Theme.highlightColor
+                            : Kirigami.Theme.disabledTextColor)
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                }
+            }
+
+            DropArea {
+                id: containerApplicationDropArea
+                objectName: "containerApplicationDropArea"
+                anchors.fill: parent
+                enabled: root.applicationLauncherDropEnabled
+                z: 2
+
+                onEntered: function(drag) {
+                    drag.accepted = root.beginApplicationLauncherDrop(
+                        drag.hasUrls ? drag.urls : [])
+                }
+                onPositionChanged: function(drag) {
+                    drag.accepted = root.applicationLauncherDropState
+                        === "acceptable"
+                }
+                onExited: root.resetApplicationLauncherDrop()
+                onDropped: function(drop) {
+                    drop.accepted = root.finishApplicationLauncherDrop(
+                        drop.hasUrls ? drop.urls : [])
+                }
+                onContainsDragChanged: {
+                    if (!containerApplicationDropArea.containsDrag) {
+                        root.resetApplicationLauncherDrop()
+                    }
                 }
             }
         }
@@ -161,10 +301,15 @@ ColumnLayout {
             Layout.fillWidth: true
 
             Controls.Button {
+                objectName: "addActionButton"
                 HoverHandler { cursorShape: Qt.PointingHandCursor }
                 icon.name: "list-add-symbolic"
                 enabled: root.selectedItemIndex >= 0
                 onClicked: root.addActionRequested()
+                Accessible.name: root.itemModeValue === "container"
+                    ? root.addApplicationText : root.addActionText
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: Accessible.name
             }
 
             Controls.Button {

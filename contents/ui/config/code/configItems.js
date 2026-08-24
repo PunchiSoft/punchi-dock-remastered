@@ -251,6 +251,9 @@ function itemTitle(item, translate) {
     if (item.type === "separator") {
         return translate("Separator")
     }
+    if (item.type === "dynamic-applications") {
+        return translate("Open applications")
+    }
     if (item.type === "spacer") {
         return translate("Spacer")
     }
@@ -258,7 +261,11 @@ function itemTitle(item, translate) {
         return defaultName(item.name, "Clock", translate)
     }
     if (item.type === "calendar") {
-        return defaultName(item.name, "Calendar", translate)
+        if (!item.name || item.name === "Calendar"
+                || item.name === "Calendar/Clock") {
+            return translate("Calendar/Clock")
+        }
+        return defaultName(item.name, "Calendar/Clock", translate)
     }
     if (item.type === "trash") {
         return defaultName(item.name, "Trash", translate)
@@ -279,6 +286,9 @@ function itemTypeTitle(type, translate) {
     if (type === "separator") {
         return translate("Separator")
     }
+    if (type === "dynamic-applications") {
+        return translate("Open applications")
+    }
     if (type === "spacer") {
         return translate("Spacer")
     }
@@ -286,7 +296,7 @@ function itemTypeTitle(type, translate) {
         return translate("Clock")
     }
     if (type === "calendar") {
-        return translate("Calendar")
+        return translate("Calendar/Clock")
     }
     if (type === "trash") {
         return translate("Trash")
@@ -330,6 +340,9 @@ function itemSubtitle(item, translate, translatePlural) {
             ? String(item.defaultPlayerName)
             : translate("Automatically select the active player")
     }
+    if (item.type === "dynamic-applications") {
+        return translate("Choose where open apps appear")
+    }
     if (item.type === "spacer") {
         return translate("%1 px", item.size || 24)
     }
@@ -345,6 +358,9 @@ function itemIcon(item) {
     }
     if (item.type === "separator") {
         return "draw-line"
+    }
+    if (item.type === "dynamic-applications") {
+        return "window-duplicate"
     }
     if (item.type === "spacer") {
         return "distribute-horizontal-x"
@@ -426,8 +442,7 @@ function removeKeys(item, keys) {
     }
 }
 
-function pruneSeparator(item) {
-    removeKeys(item, ["name", "icon", "command", "apps"])
+function pruneSeparatorAppearance(item) {
     var requestedStyle = item.separatorStyle === "pill"
         ? "capsule"
         : String(item.separatorStyle || "line")
@@ -442,6 +457,26 @@ function pruneSeparator(item) {
     item.separatorLengthRatio = Math.max(0.20, Math.min(1.0, Number(item.separatorLengthRatio === undefined ? 0.72 : item.separatorLengthRatio)))
     item.separatorOpacity = Math.max(0.10, Math.min(1.0, Number(item.separatorOpacity === undefined ? 0.34 : item.separatorOpacity)))
     item.separatorGlowEnabled = item.separatorGlowEnabled === true
+}
+
+function pruneSeparator(item) {
+    removeKeys(item, ["name", "icon", "command", "apps"])
+    pruneSeparatorAppearance(item)
+}
+
+function pruneDynamicApplications(item) {
+    removeKeys(item, [
+        "icon", "command", "apps", "actions", "actionsEnabled",
+        "description", "storageId", "appId"
+    ])
+    item.type = "dynamic-applications"
+    item.name = "Open applications"
+    if (item.showSeparator === false) {
+        item.showSeparator = false
+    } else {
+        delete item.showSeparator
+    }
+    pruneSeparatorAppearance(item)
 }
 
 function pruneSpacer(item) {
@@ -841,6 +876,12 @@ function pruneFolder(item) {
 }
 
 function newItem(type, defaultTrashEmptySound) {
+    if (type === "dynamic-applications") {
+        return {
+            "type": "dynamic-applications",
+            "name": "Open applications"
+        }
+    }
     if (type === "separator") {
         return { "type": "separator" }
     }
@@ -1108,6 +1149,116 @@ function addContainerApp(items, selectedIndex) {
     return {
         "items": nextItems,
         "selectedActionIndex": nextItems[selectedIndex].apps.length - 1
+    }
+}
+
+function containerApplicationIdentityKeys(application) {
+    var source = application || {}
+    var keys = []
+    var storageId = normalizedApplicationId(source.storageId || "")
+        .toLowerCase()
+    var appId = normalizedApplicationId(source.appId || "").toLowerCase()
+    if (storageId.length > 0) {
+        keys.push("storage:" + storageId)
+    }
+    if (appId.length > 0 && appId !== storageId) {
+        keys.push("app:" + appId)
+    }
+    return keys
+}
+
+function addApplicationToManualContainer(items, selectedIndex, application) {
+    if (!(items instanceof Array) || !Number.isInteger(selectedIndex)
+            || selectedIndex < 0 || selectedIndex >= items.length) {
+        return {
+            "items": items,
+            "changed": false,
+            "status": "invalid-target",
+            "container": null
+        }
+    }
+
+    var currentContainer = items[selectedIndex]
+    if (!currentContainer || currentContainer.type !== "folder") {
+        return {
+            "items": items,
+            "changed": false,
+            "status": "invalid-target",
+            "container": currentContainer || null
+        }
+    }
+    if ((currentContainer.sourceType || "manual") !== "manual") {
+        return {
+            "items": items,
+            "changed": false,
+            "status": "managed-container",
+            "container": currentContainer
+        }
+    }
+
+    var sourceApplication = application || {}
+    var storageId = String(sourceApplication.storageId || "").trim()
+    var incomingKeys = containerApplicationIdentityKeys(sourceApplication)
+    if (storageId.length === 0 || storageId.length > 512
+            || incomingKeys.length === 0) {
+        return {
+            "items": items,
+            "changed": false,
+            "status": "invalid-application",
+            "container": currentContainer
+        }
+    }
+
+    var existingApplications = currentContainer.apps instanceof Array
+        ? currentContainer.apps : []
+    for (var applicationIndex = 0;
+            applicationIndex < existingApplications.length;
+            applicationIndex++) {
+        var existingKeys = containerApplicationIdentityKeys(
+            existingApplications[applicationIndex])
+        for (var incomingIndex = 0;
+                incomingIndex < incomingKeys.length; incomingIndex++) {
+            if (existingKeys.indexOf(incomingKeys[incomingIndex]) >= 0) {
+                return {
+                    "items": items,
+                    "changed": false,
+                    "status": "duplicate",
+                    "container": currentContainer
+                }
+            }
+        }
+    }
+
+    var nextItems = clone(items)
+    var nextContainer = nextItems[selectedIndex]
+    nextContainer.apps = nextContainer.apps instanceof Array
+        ? nextContainer.apps : []
+    var nextApplication = {
+        "type": "app",
+        "name": String(sourceApplication.name || storageId)
+            .trim().substring(0, 256),
+        "icon": String(sourceApplication.icon
+            || "application-x-executable").trim().substring(0, 512),
+        "command": String(sourceApplication.command || "")
+            .trim().substring(0, 4096),
+        "storageId": storageId,
+        "appId": normalizedApplicationId(
+            sourceApplication.appId || storageId).substring(0, 512)
+    }
+    var description = String(sourceApplication.description || "")
+        .trim().substring(0, 512)
+    if (description.length > 0) {
+        nextApplication.description = description
+    }
+    pruneApp(nextApplication)
+    nextContainer.apps.push(nextApplication)
+    pruneFolder(nextContainer)
+    return {
+        "items": nextItems,
+        "changed": true,
+        "status": "added",
+        "container": nextContainer,
+        "application": nextApplication
     }
 }
 

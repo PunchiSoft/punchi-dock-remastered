@@ -8,17 +8,19 @@ PlasmaCore.Dialog {
     id: root
 
     property string message: ""
+    property bool positive: false
 
     type: PlasmaCore.Dialog.Tooltip
     flags: Qt.ToolTip | Qt.FramelessWindowHint | Qt.WindowDoesNotAcceptFocus
     visible: feedbackTimer.running && root.visualParent !== null
 
-    function presentFeedback(targetItem, text) {
+    function presentFeedback(targetItem, text, positiveFeedback) {
         if (!targetItem || String(text || "").length === 0) {
             return
         }
         root.visualParent = targetItem
         root.message = String(text)
+        root.positive = positiveFeedback === true
         feedbackTimer.restart()
     }
 
@@ -26,6 +28,7 @@ PlasmaCore.Dialog {
         feedbackTimer.stop()
         root.visualParent = null
         root.message = ""
+        root.positive = false
     }
 
     mainItem: RowLayout {
@@ -40,7 +43,8 @@ PlasmaCore.Dialog {
         }
 
         Kirigami.Icon {
-            source: "dialog-warning-symbolic"
+            source: root.positive
+                ? "dialog-ok-apply-symbolic" : "dialog-warning-symbolic"
             Layout.preferredWidth: Kirigami.Units.iconSizes.smallMedium
             Layout.preferredHeight: Kirigami.Units.iconSizes.smallMedium
         }

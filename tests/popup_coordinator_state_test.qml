@@ -430,6 +430,41 @@ TestCase {
         verify(!fakeDialog.visible)
     }
 
+    function test_reorderPressCancelsPendingPreviewBeforeLongPress() {
+        coordinator.mediaHoverMode = "none"
+        coordinator.windowPreviewsEnabled = true
+        coordinator.scheduleTaskWindowsPopup("Firefox", [1], firstAnchor,
+            false, true)
+
+        verify(coordinator.pendingTaskPopupRequestValid)
+        coordinator.cancelTaskPopupForPointerReorder()
+
+        wait(330)
+        compare(fakeDialog.openCount, 0)
+        verify(!fakeDialog.visible)
+        verify(!coordinator.pendingTaskPopupRequestValid)
+        compare(coordinator.pendingTaskPopupRows.length, 0)
+        compare(coordinator.taskPopupVisualParent, null)
+    }
+
+    function test_reorderPressClosesVisiblePreviewImmediately() {
+        coordinator.mediaHoverMode = "none"
+        coordinator.windowPreviewsEnabled = true
+        coordinator.scheduleTaskWindowsPopup("Firefox", [1], firstAnchor,
+            false, true)
+        tryCompare(fakeDialog, "openCount", 1, 600)
+        verify(fakeDialog.visible)
+
+        coordinator.cancelTaskPopupForPointerReorder()
+
+        compare(fakeDialog.closeCount, 1)
+        verify(!fakeDialog.visible)
+        verify(!coordinator.pendingTaskPopupRequestValid)
+        compare(coordinator.pendingTaskPopupRows.length, 0)
+        compare(coordinator.taskPopupVisualParent, null)
+        compare(coordinator.activeTaskPopupPresentation, "none")
+    }
+
     function test_cancelDuringGuardedPreparationStopsOpening() {
         coordinator.mediaHoverMode = "none"
         coordinator.windowPreviewsEnabled = true

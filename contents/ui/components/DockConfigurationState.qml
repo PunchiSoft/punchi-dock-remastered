@@ -21,6 +21,8 @@ QtObject {
     readonly property bool mediaControlsOnHover: mediaControlsMode !== "none"
     readonly property bool appDragAndDropEnabled:
         Plasmoid.configuration.enableAppDragAndDrop !== false
+    readonly property bool floatingItemDragReorderingEnabled:
+        Plasmoid.configuration.enableFloatingItemDragReordering === true
     readonly property int dockMotionSpeedPercent: {
         const configuredPercent = Number(Plasmoid.configuration.dockMotionSpeedPercent)
         const safePercent = Number.isFinite(configuredPercent) ? configuredPercent : 100

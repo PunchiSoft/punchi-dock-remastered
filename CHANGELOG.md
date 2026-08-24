@@ -1,3 +1,48 @@
+## [0.9.7.44] - 2026-08-24
+
+### Agregado
+
+- Marcador persistente y reordenable de aplicaciones abiertas que permite
+  elegir dónde se intercalan las tareas dinámicas sin almacenar ventanas en la
+  configuración.
+- Reordenamiento de elementos persistentes mediante pulsación prolongada en el
+  panel y mediante `Ctrl+Shift` más las flechas; el gesto en modo flotante es
+  opcional y permanece desactivado por defecto para no interferir con Plasma.
+- Incorporación de lanzadores validados a contenedores manuales mediante
+  drag-and-drop desde PunchiMenu o el escritorio, incluida una ruta secundaria
+  dentro del editor de carpetas.
+- Cobertura de regresión para la migración del marcador, el orden visual, el
+  arrastre persistente, la aceptación del drop y la persistencia de carpetas.
+
+### Cambiado
+
+- La animación hover y las miniaturas se suspenden mientras se reordena un
+  elemento para mantener estable el gesto y su indicador de inserción.
+- El marcador de aplicaciones abiertas reutiliza la apariencia configurable
+  del separador y permite ocultar únicamente su trazo sin perder el anclaje.
+- El elemento de calendario se identifica como `Calendar/Clock` para evitar la
+  traducción ambigua que aparecía como agenda.
+
+### Corregido
+
+- La aceptación de lanzadores sobre carpetas se conserva durante todo el
+  movimiento del puntero y no se pierde antes de soltar.
+- El alta en contenedores publica inmediatamente el modelo persistido y evita
+  accesos a identificadores QML fuera de ámbito; un éxito queda silencioso y no
+  abre diálogos.
+
+### Validación
+
+- Suite CTest aprobada al 100% (53/53 pruebas), incluida la carga integral del
+  plasmoide.
+- `qmllint` 6.11.1: 0 advertencias en total y en todas las categorías del
+  baseline Fedora.
+- Catálogos ki18n (`es`, `de`, `pt_BR`) completos con 927/927 mensajes, sin
+  entradas vacías ni difusas.
+- Flujo directo de lanzadores a un contenedor manual confirmado por el usuario
+  en Plasma real.
+- Revisión preventiva de seguridad conforme para el commit y el paquete local.
+
 ## [0.9.7.43] - 2026-08-23
 
 ### Agregado
