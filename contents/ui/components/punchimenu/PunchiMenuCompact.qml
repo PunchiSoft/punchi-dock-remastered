@@ -91,9 +91,20 @@ FocusScope {
     }
 
     readonly property var backgroundBlurMaskSource: compactBackground
-    readonly property point backgroundBlurMaskOffset: {
-        const scenePosition = compactBackground.mapToItem(null, Qt.point(0, 0))
-        return Qt.point(Math.round(scenePosition.x), Math.round(scenePosition.y))
+    readonly property point backgroundBlurMaskOffset:
+        mappedSurfaceGeometry.backgroundMaskOffset
+
+    PunchiMenuMappedSurfaceGeometry {
+        id: mappedSurfaceGeometry
+        targetItem: root
+        surfaceItem: surface
+        backgroundItem: compactBackground
+        translationX: surfaceTranslation.x
+        translationY: surfaceTranslation.y
+        leftInset: compactBackground.inset.left
+        topInset: compactBackground.inset.top
+        rightInset: compactBackground.inset.right
+        bottomInset: compactBackground.inset.bottom
     }
 
     signal applicationLaunched()

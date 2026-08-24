@@ -73,6 +73,9 @@ def main() -> int:
     normal_source = (
         PROJECT_ROOT / "contents/ui/components/punchimenu/PunchiMenuNormal.qml"
     ).read_text(encoding="utf-8")
+    compact_menu_source = (
+        PROJECT_ROOT / "contents/ui/components/punchimenu/PunchiMenuCompact.qml"
+    ).read_text(encoding="utf-8")
     mapped_surface_geometry_source = (
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuMappedSurfaceGeometry.qml"
@@ -2451,6 +2454,35 @@ def main() -> int:
         print(
             "PunchiMenu background legibility: Normal must consume the "
             "reactive mapped mask offset",
+            file=sys.stderr,
+        )
+        passed = False
+    compact_menu_compact_source = re.sub(r"\s+", " ", compact_menu_source)
+    compact_blur_mapping_contract = (
+        "backgroundBlurMaskOffset: "
+        "mappedSurfaceGeometry.backgroundMaskOffset",
+        "PunchiMenuMappedSurfaceGeometry { id: mappedSurfaceGeometry",
+        "targetItem: root surfaceItem: surface "
+        "backgroundItem: compactBackground",
+        "translationX: surfaceTranslation.x "
+        "translationY: surfaceTranslation.y",
+        "leftInset: compactBackground.inset.left",
+        "topInset: compactBackground.inset.top",
+        "rightInset: compactBackground.inset.right",
+        "bottomInset: compactBackground.inset.bottom",
+    )
+    for marker in compact_blur_mapping_contract:
+        if marker not in compact_menu_compact_source:
+            print(
+                "PunchiMenu background legibility: Compact must consume the "
+                f"reactive mapped mask geometry: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if "compactBackground.mapToItem(null" in compact_menu_source:
+        print(
+            "PunchiMenu background legibility: Compact must not keep a "
+            "non-reactive direct mask offset binding",
             file=sys.stderr,
         )
         passed = False

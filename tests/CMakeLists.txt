@@ -391,6 +391,10 @@ punchi_add_qml_test(
     dynamic_applications_marker_logic_test.qml
 )
 punchi_add_qml_test(
+    config_items_default_loading_test
+    config_items_default_loading_test.qml
+)
+punchi_add_qml_test(
     dynamic_applications_options_test
     dynamic_applications_options_test.qml
 )

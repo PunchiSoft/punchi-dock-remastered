@@ -8,6 +8,10 @@ import "../org/punchi/dock" as Punchi
 
 import "code/configItemsController.js" as ConfigItemsControllerJS
 import "code/configItems.js" as ConfigItemsJS
+// Exposes the dependency in the shared QML scope used by WorkflowHelper.
+// qmllint disable unused-imports
+import "code/items.js" as ItemsJS
+// qmllint enable unused-imports
 import "code/configScripts.js" as ConfigScriptsJS
 import "code/configItemsStateHelper.js" as StateHelper
 import "code/configItemsFormHelper.js" as FormHelper
