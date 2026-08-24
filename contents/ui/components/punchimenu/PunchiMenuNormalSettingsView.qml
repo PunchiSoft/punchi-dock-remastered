@@ -18,7 +18,7 @@ PunchiMenuSettingsBase {
     property bool normalCategoryGrouping: false
 
     required property string normalPlacementMode
-    required property int normalPanelGap
+    required property int normalPanelDistancePercent
     required property int normalWidthPercent
     required property int normalHeightPercent
 
@@ -445,23 +445,23 @@ PunchiMenuSettingsBase {
                         Kirigami.FormData.label: i18n("Panel distance:")
 
                         Controls.Slider {
-                            id: normalPanelGapSlider
+                            id: normalPanelDistanceSlider
 
                             Layout.fillWidth: true
                             from: 0
-                            to: 32
-                            stepSize: 1
+                            to: 100
+                            stepSize: 5
                             snapMode: Controls.Slider.SnapAlways
-                            value: root.normalPanelGap
+                            value: root.normalPanelDistancePercent
                             Accessible.name: i18n(
                                 "PunchiMenu panel distance")
                             Accessible.description: i18n("Adds space between PunchiMenu Normal and the panel edge.")
                             onMoved: root.settingChanged(
-                                "normalPanelGap", Math.round(value))
+                                "normalPanelDistancePercent", Math.round(value))
                             onValueChanged: {
                                 if (activeFocus && !pressed) {
                                     root.settingChanged(
-                                        "normalPanelGap", Math.round(value))
+                                        "normalPanelDistancePercent", Math.round(value))
                                 }
                             }
                         }
@@ -470,8 +470,8 @@ PunchiMenuSettingsBase {
                             Layout.preferredWidth:
                                 Kirigami.Units.gridUnit * 3
                             horizontalAlignment: Text.AlignRight
-                            text: i18n("%1 px", Math.round(
-                                normalPanelGapSlider.value))
+                            text: i18n("%1%", Math.round(
+                                normalPanelDistanceSlider.value))
                         }
                     }
 

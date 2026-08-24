@@ -96,4 +96,36 @@ TestCase {
         verify(!invalidTarget.changed)
         compare(invalidTarget.status, "invalid-target")
     }
+
+    function test_folderLayoutUpdateIsImmutableAndPresentationOnly() {
+        const original = [manualContainer("grid")]
+        original[0].apps = [launcher()]
+
+        const result = ConfigItems.setFolderLayout(original, 0, "detailed")
+
+        verify(result.changed)
+        compare(result.status, "updated")
+        compare(original[0].layout, "grid")
+        compare(result.items[0].layout, "detailed")
+        compare(result.items[0].apps.length, 1)
+        compare(result.items[0].sourceType, "manual")
+    }
+
+    function test_folderLayoutUpdateRejectsInvalidInputsAndNoOp() {
+        const original = [manualContainer("list")]
+        const unchanged = ConfigItems.setFolderLayout(original, 0, "list")
+        verify(!unchanged.changed)
+        compare(unchanged.status, "unchanged")
+        verify(unchanged.items === original)
+
+        const invalidLayout = ConfigItems.setFolderLayout(
+            original, 0, "radial")
+        verify(!invalidLayout.changed)
+        compare(invalidLayout.status, "invalid-layout")
+
+        const invalidTarget = ConfigItems.setFolderLayout(
+            [{ "type": "app" }], 0, "grid")
+        verify(!invalidTarget.changed)
+        compare(invalidTarget.status, "invalid-target")
+    }
 }

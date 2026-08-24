@@ -22,6 +22,10 @@ QtObject {
     property real themeFrameTopMargin: 0
     property real themeFrameRightMargin: 0
     property real themeFrameBottomMargin: 0
+    property real surfaceFrameLeftMargin: 0
+    property real surfaceFrameTopMargin: 0
+    property real surfaceFrameRightMargin: 0
+    property real surfaceFrameBottomMargin: 0
 
     function finiteNumber(value, fallback) {
         const numericValue = Number(value)
@@ -152,6 +156,14 @@ QtObject {
         const gap = Math.max(0, root.inPanel
             ? root.finiteNumber(root.panelGap, 0)
             : root.finiteNumber(root.floatingGap, 0))
+        const surfaceLeftInset = Math.max(0, root.finiteNumber(
+            root.surfaceFrameLeftMargin, 0))
+        const surfaceTopInset = Math.max(0, root.finiteNumber(
+            root.surfaceFrameTopMargin, 0))
+        const surfaceRightInset = Math.max(0, root.finiteNumber(
+            root.surfaceFrameRightMargin, 0))
+        const surfaceBottomInset = Math.max(0, root.finiteNumber(
+            root.surfaceFrameBottomMargin, 0))
         const availableCenterX = available.x + available.width / 2
         const availableCenterY = available.y + available.height / 2
         const anchorCenterX = anchorRectangle.x + anchorRectangle.width / 2
@@ -161,19 +173,19 @@ QtObject {
 
         if (root.panelLocation === PlasmaCore.Types.TopEdge
                 || root.panelLocation === PlasmaCore.Types.BottomEdge) {
-            targetX = anchorCenterX <= availableCenterX
-                ? anchorRectangle.x
-                : anchorRectangle.x + anchorRectangle.width - width
+            targetX = anchorCenterX - width / 2
             targetY = root.panelLocation === PlasmaCore.Types.TopEdge
-                ? surface.y + surface.height + gap - root.themeFrameTopMargin
-                : surface.y - height - gap + root.themeFrameBottomMargin
+                ? surface.y + surface.height - surfaceBottomInset
+                    + gap - root.themeFrameTopMargin
+                : surface.y + surfaceTopInset - height
+                    - gap + root.themeFrameBottomMargin
         } else {
             targetX = root.panelLocation === PlasmaCore.Types.LeftEdge
-                ? surface.x + surface.width + gap - root.themeFrameLeftMargin
-                : surface.x - width - gap + root.themeFrameRightMargin
-            targetY = anchorCenterY <= availableCenterY
-                ? anchorRectangle.y
-                : anchorRectangle.y + anchorRectangle.height - height
+                ? surface.x + surface.width - surfaceRightInset
+                    + gap - root.themeFrameLeftMargin
+                : surface.x + surfaceLeftInset - width
+                    - gap + root.themeFrameRightMargin
+            targetY = anchorCenterY - height / 2
         }
 
         return Qt.point(

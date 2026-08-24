@@ -191,6 +191,21 @@ void BlurBehindController::setMaskOffset(const QPoint &maskOffset)
     apply();
 }
 
+QRect BlurBehindController::maskClipRect() const
+{
+    return m_maskClipRect;
+}
+
+void BlurBehindController::setMaskClipRect(const QRect &maskClipRect)
+{
+    if (m_maskClipRect == maskClipRect) {
+        return;
+    }
+    m_maskClipRect = maskClipRect;
+    Q_EMIT maskClipRectChanged();
+    apply();
+}
+
 bool BlurBehindController::fullWindow() const
 {
     return m_fullWindow;
@@ -344,9 +359,13 @@ void BlurBehindController::apply()
         return;
     }
 
-    const QRegion requestedRegion = m_fullWindow
+    QRegion requestedRegion = m_fullWindow
         ? QRegion()
         : sourceMask.translated(m_maskOffset);
+    if (!m_fullWindow && m_maskClipRect.isValid()
+        && !m_maskClipRect.isEmpty()) {
+        requestedRegion &= QRegion(m_maskClipRect);
+    }
     KWindowEffects::enableBlurBehind(
         m_window,
         shouldEnable,

@@ -20,6 +20,7 @@ Item {
     property alias cfg_contextMenuRowHeight: contextMenuRowHeightSlider.value
     property alias cfg_contextMenuIconSize: contextMenuIconSizeSlider.value
     property alias cfg_contextMenuWidth: contextMenuWidthSlider.value
+    property alias cfg_contextMenuDistancePercent: contextMenuDistanceSlider.value
     property string cfg_contextMenuTransitionDirection: "fromRight"
     property alias cfg_contextMenuBackgroundOpacityPercent: contextMenuBackgroundOpacitySlider.value
     property alias cfg_menuTextShadowsEnabled: menuTextShadowsSwitch.checked
@@ -222,6 +223,44 @@ Item {
 
         Controls.Label {
             text: i18n("Menus use these target dimensions after morphing from a window preview. Screen limits can reduce the effective size safely.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Menu distance:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: contextMenuDistanceSlider
+                from: 0
+                to: 100
+                value: 0
+                stepSize: 5
+                snapMode: Controls.Slider.SnapAlways
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Dock context menu distance")
+                Accessible.description: i18n("Adds adaptive spacing between dock items and their context menus.")
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                    role: "slider"
+                }
+            }
+
+            Controls.Label {
+                text: i18n("%1%", Math.round(contextMenuDistanceSlider.value))
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 56
+            }
+        }
+
+        Controls.Label {
+            text: i18n("The percentage scales with Plasma metrics and is limited to a safe maximum distance.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

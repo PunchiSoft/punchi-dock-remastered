@@ -656,12 +656,21 @@ function normalizedPunchiMenuNormalHeightPercent(value) {
     return Math.max(30, Math.min(90, Math.round(requestedValue / 5) * 5))
 }
 
-function normalizedPunchiMenuNormalPanelGap(value) {
+function normalizedPunchiMenuNormalPanelDistancePercent(value, legacyGap) {
     var requestedValue = Number(value)
-    if (!Number.isFinite(requestedValue)) {
-        return 8
+    if (Number.isFinite(requestedValue)) {
+        return Math.max(0, Math.min(100,
+            Math.round(requestedValue / 5) * 5))
     }
-    return Math.max(0, Math.min(32, Math.round(requestedValue)))
+
+    var requestedLegacyGap = Number(legacyGap)
+    if (Number.isFinite(requestedLegacyGap)) {
+        var safeLegacyGap = Math.max(0, Math.min(32,
+            requestedLegacyGap))
+        return Math.max(0, Math.min(100,
+            Math.round((safeLegacyGap * 100 / 32) / 5) * 5))
+    }
+    return 25
 }
 
 function normalizedPunchiMenuMode(value) {
@@ -817,8 +826,10 @@ function prunePunchiMenu(item) {
         item.normalWidthPercent)
     item.normalHeightPercent = normalizedPunchiMenuNormalHeightPercent(
         item.normalHeightPercent)
-    item.normalPanelGap = normalizedPunchiMenuNormalPanelGap(
-        item.normalPanelGap)
+    item.normalPanelDistancePercent =
+        normalizedPunchiMenuNormalPanelDistancePercent(
+            item.normalPanelDistancePercent, item.normalPanelGap)
+    delete item.normalPanelGap
     if (item.normalShowCategories !== false) {
         delete item.normalShowCategories
     } else {
@@ -873,6 +884,34 @@ function pruneFolder(item) {
         item.apps[index].command = item.apps[index].command || ""
         pruneApp(item.apps[index])
     }
+}
+
+function setFolderLayout(items, targetIndex, layout) {
+    var source = items instanceof Array ? items : []
+    var index = Number(targetIndex)
+    var nextLayout = String(layout || "")
+    if (!Number.isInteger(index) || index < 0 || index >= source.length) {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+    if (nextLayout !== "grid" && nextLayout !== "list"
+            && nextLayout !== "detailed") {
+        return { "items": source, "changed": false, "status": "invalid-layout" }
+    }
+
+    var currentFolder = source[index]
+    if (!currentFolder || currentFolder.type !== "folder") {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+    var currentLayout = currentFolder.layout === "list"
+            || currentFolder.layout === "detailed"
+        ? currentFolder.layout : "grid"
+    if (currentLayout === nextLayout) {
+        return { "items": source, "changed": false, "status": "unchanged" }
+    }
+
+    var nextItems = clone(source)
+    nextItems[index].layout = nextLayout
+    return { "items": nextItems, "changed": true, "status": "updated" }
 }
 
 function newItem(type, defaultTrashEmptySound) {
@@ -956,7 +995,7 @@ function newItem(type, defaultTrashEmptySound) {
             "normalBackgroundOpacityPercent": 75,
             "normalWidthPercent": 55,
             "normalHeightPercent": 65,
-            "normalPanelGap": 8
+            "normalPanelDistancePercent": 25
         }
     }
     if (type === "media") {

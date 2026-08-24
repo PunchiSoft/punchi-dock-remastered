@@ -22,7 +22,7 @@ def require(condition: bool, message: str) -> None:
 
 dock_layout_start = MAIN.index("GridLayout {\n                id: dockLayout")
 dock_layout_end = MAIN.index(
-    "\n            }\n        }\n\n        GuardedPopupDialog {\n            id: folderPopupDialog",
+    "\n            }\n        }\n\n        GuardedPositionedPopupDialog {\n            id: folderPopupDialog",
     dock_layout_start,
 )
 dock_layout = MAIN[dock_layout_start:dock_layout_end]

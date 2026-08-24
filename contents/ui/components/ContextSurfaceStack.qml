@@ -156,6 +156,43 @@ Item {
         return mediaVisible && mediaCard.focusFirstControl()
     }
 
+    function backgroundFrameInset(side) {
+        const insets = menuBackground["inset"]
+        if (!insets) {
+            return 0
+        }
+        const requestedInset = Number(insets[side])
+        return Number.isFinite(requestedInset)
+            ? Math.max(0, requestedInset)
+            : 0
+    }
+
+    function effectiveBackgroundWindowRect() {
+        if (!root.drawContentBackground || root.mediaOnly
+                || menuBackground.width <= 0
+                || menuBackground.height <= 0) {
+            return Qt.rect(0, 0, 0, 0)
+        }
+        const leftInset = root.backgroundFrameInset("left")
+        const topInset = root.backgroundFrameInset("top")
+        const rightInset = root.backgroundFrameInset("right")
+        const bottomInset = root.backgroundFrameInset("bottom")
+        if (leftInset + rightInset >= menuBackground.width
+                || topInset + bottomInset >= menuBackground.height) {
+            return Qt.rect(0, 0, 0, 0)
+        }
+        const topLeft = menuBackground.mapToItem(
+            null, Qt.point(leftInset, topInset))
+        const bottomRight = menuBackground.mapToItem(null, Qt.point(
+            menuBackground.width - rightInset,
+            menuBackground.height - bottomInset))
+        return Qt.rect(
+            Math.round(Math.min(topLeft.x, bottomRight.x)),
+            Math.round(Math.min(topLeft.y, bottomRight.y)),
+            Math.max(0, Math.round(Math.abs(bottomRight.x - topLeft.x))),
+            Math.max(0, Math.round(Math.abs(bottomRight.y - topLeft.y))))
+    }
+
     function rememberPositiveContentGeometry() {
         if (Number.isFinite(root.contentImplicitWidth)
                 && root.contentImplicitWidth > 0) {

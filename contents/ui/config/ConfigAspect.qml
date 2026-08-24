@@ -87,6 +87,7 @@ KCM.SimpleKCM {
     property alias cfg_folderDetailedFontFamily: folderPopupPage.cfg_folderDetailedFontFamily
     property alias cfg_folderDetailedFontSize: folderPopupPage.cfg_folderDetailedFontSize
     property alias cfg_folderPopupExtraDistance: folderPopupPage.cfg_folderPopupExtraDistance
+    property alias cfg_folderPopupDistancePercent: folderPopupPage.cfg_folderPopupDistancePercent
     property alias cfg_folderPopupScale: folderPopupPage.cfg_folderPopupScale
     property alias cfg_folderPopupBackgroundOpacityPercent: folderPopupPage.cfg_folderPopupBackgroundOpacityPercent
     property alias cfg_folderPopupShowHeader: folderPopupPage.cfg_folderPopupShowHeader
@@ -96,6 +97,7 @@ KCM.SimpleKCM {
     property alias cfg_contextMenuRowHeight: menuAppearancePage.cfg_contextMenuRowHeight
     property alias cfg_contextMenuIconSize: menuAppearancePage.cfg_contextMenuIconSize
     property alias cfg_contextMenuWidth: menuAppearancePage.cfg_contextMenuWidth
+    property alias cfg_contextMenuDistancePercent: menuAppearancePage.cfg_contextMenuDistancePercent
     property alias cfg_audioSpectrumEnabled: audioVisualizerPage.cfg_audioSpectrumEnabled
     property alias cfg_audioSpectrumIntensity: audioVisualizerPage.cfg_audioSpectrumIntensity
     property alias cfg_audioSpectrumUsePlasmaTheme: audioVisualizerPage.cfg_audioSpectrumUsePlasmaTheme

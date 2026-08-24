@@ -331,6 +331,18 @@ Item {
         return anchor
     }
 
+    function assignPopupAnchor(dialog, anchor) {
+        if (!dialog) {
+            return
+        }
+        if (typeof dialog.placementAnchor !== "undefined") {
+            dialog.placementAnchor = anchor
+            dialog.visualParent = null
+        } else {
+            dialog.visualParent = anchor
+        }
+    }
+
     function closeAllPopups(exceptDialog) {
         const dialogs = [folderPopupDialogRef, calendarPopupDialogRef, trashMenuDialogRef,
             notePopupDialogRef, appActionsDialogRef, taskOverflowDialogRef, taskWindowsDialogRef]
@@ -359,7 +371,8 @@ Item {
         activeTrashEmptySound = itemData && itemData.emptySound
             ? String(itemData.emptySound)
             : ""
-        trashMenuDialogRef.visualParent = preparePopupAnchor(visualParent)
+        root.assignPopupAnchor(trashMenuDialogRef,
+            preparePopupAnchor(visualParent))
         if (trashIntegrationRef.emptying) {
             trashContextContentRef.showConfirmation()
         } else {
@@ -434,7 +447,7 @@ Item {
         closeAllPopups(appActionsDialogRef)
         contextMenuOpening = true
         Qt.callLater(function() {
-            appActionsDialogRef.visualParent = anchor
+            root.assignPopupAnchor(appActionsDialogRef, anchor)
             root.showPopupDialog(appActionsDialogRef)
             Qt.callLater(function() {
                 root.contextMenuOpening = false
@@ -449,7 +462,8 @@ Item {
         const wasActive = root.popupDialogActive(folderPopupDialogRef)
         closeAllPopups(folderPopupDialogRef)
         activeFolderData = itemData
-        folderPopupDialogRef.visualParent = preparePopupAnchor(visualParent)
+        root.assignPopupAnchor(folderPopupDialogRef,
+            preparePopupAnchor(visualParent))
         if (wasActive) {
             root.hidePopupDialog(folderPopupDialogRef)
         } else {

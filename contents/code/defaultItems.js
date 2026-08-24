@@ -13,7 +13,8 @@ var items = [
         "fullScreenBackgroundOpacityPercent": 50,
         "normalBackgroundOpacityPercent": 75,
         "normalWidthPercent": 55,
-        "normalHeightPercent": 65
+        "normalHeightPercent": 65,
+        "normalPanelDistancePercent": 25
     },
     {
         "_comment": "Media player item. Automatically follows the active MPRIS player.",

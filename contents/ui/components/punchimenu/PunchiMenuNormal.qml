@@ -26,7 +26,7 @@ FocusScope {
     property bool backgroundBlurEnabled: true
     property real backgroundOpacity: 0.75
     property string normalPlacementMode: "anchored"
-    property int normalPanelGap: 8
+    property int normalPanelDistancePercent: 25
     property int normalWidthPercent: 55
     property int normalHeightPercent: 65
     property real themeFrameLeftMargin: 0
@@ -34,6 +34,28 @@ FocusScope {
     property real themeFrameRightMargin: 0
     property real themeFrameBottomMargin: 0
     readonly property var backgroundBlurMaskSource: normalBackground
+    readonly property rect backgroundBlurClipGeometry: {
+        // BlurBehindController consumes window-client coordinates, while the
+        // shared effective geometry is intentionally local to this item for
+        // the modal veil. Map the same bounds without contracting them again.
+        const bounds = root.effectiveBackgroundGeometry
+        const topLeft = root.mapToItem(
+            null, Qt.point(bounds.x, bounds.y))
+        const bottomRight = root.mapToItem(null, Qt.point(
+            bounds.x + bounds.width, bounds.y + bounds.height))
+        const geometryValues = [
+            bounds.x, bounds.y, bounds.width, bounds.height,
+            topLeft.x, topLeft.y, bottomRight.x, bottomRight.y
+        ]
+        if (!geometryValues.every(value => Number.isFinite(value))) {
+            return Qt.rect(0, 0, 0, 0)
+        }
+        return Qt.rect(
+            Math.round(Math.min(topLeft.x, bottomRight.x)),
+            Math.round(Math.min(topLeft.y, bottomRight.y)),
+            Math.max(0, Math.round(Math.abs(bottomRight.x - topLeft.x))),
+            Math.max(0, Math.round(Math.abs(bottomRight.y - topLeft.y))))
+    }
     readonly property point backgroundBlurMaskOffset: {
         // mapToItem() follows the complete visual hierarchy. Reading the
         // participating geometry explicitly keeps the binding reactive while
@@ -56,7 +78,7 @@ FocusScope {
         return Kirigami.Units.cornerRadius * 2
             + root.maximumThemeFrameOverlap
     }
-    readonly property rect folderDialogBackdropGeometry: {
+    readonly property rect effectiveBackgroundGeometry: {
         // Match the effective themed surface: margins describe only its
         // content area, while the uncontracted frame includes its projection.
         const leftInset = Number(normalBackground.inset.left)
@@ -91,6 +113,8 @@ FocusScope {
             Math.max(0, Math.round(Math.abs(bottomRight.x - topLeft.x))),
             Math.max(0, Math.round(Math.abs(bottomRight.y - topLeft.y))))
     }
+    readonly property rect folderDialogBackdropGeometry:
+        root.effectiveBackgroundGeometry
     property var hiddenApplicationIds: []
     property bool revealHiddenApplications: false
     property bool showCategories: true
@@ -3251,7 +3275,8 @@ FocusScope {
                         folderMaximumColumns: root.safeFolderMaximumColumns
                         folderMaximumRows: root.safeFolderMaximumRows
                         normalPlacementMode: root.normalPlacementMode
-                        normalPanelGap: root.normalPanelGap
+                        normalPanelDistancePercent:
+                            root.normalPanelDistancePercent
                         normalWidthPercent: root.normalWidthPercent
                         normalHeightPercent: root.normalHeightPercent
                         errorMessage: root.settingsErrorMessage

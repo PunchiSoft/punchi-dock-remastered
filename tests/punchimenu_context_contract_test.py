@@ -825,9 +825,17 @@ def main() -> int:
         (dock_context_actions_source, '"normalPlacementMode", String(action.placementMode)'),
         (dock_context_actions_source, 'i18nc("@action:context", "Configure Punchi Dock…")'),
         (dock_context_actions_source, '"kind": "configureDock"'),
+        (dock_context_actions_source, 'i18nc("@title:menu", "Folder view")'),
+        (dock_context_actions_source, '"kind": "setFolderView"'),
+        (dock_context_actions_source, '"expectedFolderText": expectedFolderText'),
         (main_source, "function openDockConfiguration()"),
         (main_source, "configureDockHandler: function()"),
         (dock_items_controller_source, '"menuMode": true'),
+        (dock_items_controller_source, "function setFolderLayout(targetIndex, layout, expectedFolderText)"),
+        (dock_items_controller_source, "root.canonicalJsonText(currentFolder) !== expectedText"),
+        (dock_items_controller_source, "root.persistenceAdapter.commitDockItemsJson("),
+        (dock_items_controller_source, "root.dockItems = update.items"),
+        (dock_items_controller_source, "root.configurationChanged()"),
         (app_actions_popup_source, "function openSubMenu(action)"),
         (app_actions_popup_source, "function closeSubMenu()"),
         (app_actions_popup_source, "readonly property var displayedActions"),
@@ -839,6 +847,33 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    folder_layout_start = dock_items_controller_source.index(
+        "function setFolderLayout(targetIndex, layout, expectedFolderText)"
+    )
+    folder_layout_end = dock_items_controller_source.index(
+        "function punchiMenuApplicationLayout()", folder_layout_start
+    )
+    folder_layout_transaction = dock_items_controller_source[
+        folder_layout_start:folder_layout_end
+    ]
+    folder_layout_commit = folder_layout_transaction.index(
+        "root.persistenceAdapter.commitDockItemsJson("
+    )
+    folder_layout_publish = folder_layout_transaction.index(
+        "root.dockItems = update.items"
+    )
+    if folder_layout_commit >= folder_layout_publish:
+        print(
+            "Folder view changes must be durable before publishing QML state.",
+            file=sys.stderr,
+        )
+        passed = False
+    if "root.syncDockItemsConfiguration()" in folder_layout_transaction:
+        print(
+            "Folder view changes must use the compare-and-swap persistence adapter.",
+            file=sys.stderr,
+        )
+        passed = False
     additional_shortcuts_contract = (
         'title: i18n("Additional Shortcuts")',
         "property string cfg_punchiMenuShortcut",
@@ -1298,7 +1333,7 @@ def main() -> int:
         "gridIconScalePercent",
         "favoriteIconScalePercent",
         "normalPlacementMode",
-        "normalPanelGap",
+        "normalPanelDistancePercent",
         "normalWidthPercent",
         "normalHeightPercent",
         "normalShowCategories",
@@ -1343,7 +1378,7 @@ def main() -> int:
         '"normalFolderMaximumRows", value',
         "visible: root.anchoredMode",
         '"normalPlacementMode", modelData.value',
-        '"normalPanelGap", Math.round(value)',
+        '"normalPanelDistancePercent", Math.round(value)',
         '"normalWidthPercent",',
         '"normalHeightPercent",',
         "Controls.RadioButton {",
@@ -1465,7 +1500,7 @@ def main() -> int:
         passed = False
     if any(marker in fullscreen_settings_view_source for marker in (
         "normalPlacementMode",
-        "normalPanelGap",
+        "normalPanelDistancePercent",
         "normalWidthPercent",
         "normalHeightPercent",
     )):
@@ -2133,7 +2168,8 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
-    if "screenInset: root.configuredPunchiMenuNormalPanelGap" not in main_source:
+    if ('screenInset: root.configuredPunchiMenuNormalPlacementMode === "anchored"'
+            not in main_source):
         print(
             "PunchiMenu Normal: configured edge distance is not applied to screen bounds",
             file=sys.stderr,
@@ -2377,6 +2413,8 @@ def main() -> int:
         r"maskSource\s*:\s*punchiMenuNormal\.backgroundBlurMaskSource\s*"
         r"useMaskSourceInsets\s*:\s*true\s*"
         r"maskOffset\s*:\s*punchiMenuNormal\.backgroundBlurMaskOffset\s*"
+        r"maskClipRect\s*:\s*"
+        r"punchiMenuNormal\.backgroundBlurClipGeometry\s*"
         r"enabled\s*:\s*punchiMenuNormalDialog\.visible\s*"
         r"&&\s*root\.configuredPunchiMenuNormalBlurEnabled\s*\}",
         re.DOTALL,
@@ -2880,22 +2918,22 @@ def main() -> int:
          "shared item normalization"),
         (
             settings_view_source,
-            '"normalPanelGap", Math.round(value)',
+            '"normalPanelDistancePercent", Math.round(value)',
             "embedded panel distance control",
         ),
         (
             config_items_source,
-            "function normalizedPunchiMenuNormalPanelGap(value)",
+            "function normalizedPunchiMenuNormalPanelDistancePercent(value, legacyGap)",
             "panel distance normalization",
         ),
         (
             config_items_source,
-            '"normalPanelGap": 8',
+            '"normalPanelDistancePercent": 25',
             "panel distance default",
         ),
         (
             main_source,
-            "readonly property int configuredPunchiMenuNormalPanelGap",
+            "readonly property int configuredPunchiMenuNormalPanelDistancePercent",
             "reactive panel distance projection",
         ),
         (

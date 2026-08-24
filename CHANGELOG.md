@@ -1,3 +1,37 @@
+## [0.9.7.45] - 2026-08-24
+
+### Agregado
+
+- Selector contextual para cambiar directamente la vista de una carpeta entre
+  rejilla, lista y detalle, con persistencia transaccional del cambio.
+- Controles porcentuales y reactivos para ajustar la distancia de carpetas,
+  menús contextuales y PunchiMenu respecto del dock.
+
+### Cambiado
+
+- El límite máximo de separación sigue las métricas adaptativas de Kirigami en
+  lugar de depender de píxeles fijos, manteniendo una distancia visual segura.
+- Los popups flotantes calculan su posición desde los bordes efectivos de los
+  fondos temáticos de Plasma y compensan su sombra exterior.
+
+### Corregido
+
+- El valor de separación 0 % vuelve a unir visualmente los popups y menús al
+  dock sin conservar un hueco equivalente a la proyección del tema.
+- La región de blur y el velo modal de carpetas en PunchiMenu Normal comparten
+  la misma geometría efectiva, convertida al sistema de coordenadas propio de
+  cada consumidor, y ya no sobresalen ni se desplazan hacia el interior.
+
+### Validación
+
+- Suite CTest aprobada al 100% (56/56 pruebas), incluida la carga integral del
+  plasmoide y el contrato geométrico para los cuatro bordes.
+- `qmllint` 6.11.1: 0 advertencias en total y en todas las categorías del
+  baseline Fedora.
+- Catálogos ki18n (`es`, `de`, `pt_BR`) completos, sin entradas vacías ni
+  difusas.
+- Revisión preventiva de seguridad conforme para commit y push.
+
 ## [0.9.7.44] - 2026-08-24
 
 ### Agregado

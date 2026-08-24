@@ -28,7 +28,24 @@ Item {
             || customTheme.renderer === "shelf"
             || customTheme.renderer === "shaped")
 
+    function backgroundFrameInset(side) {
+        if (!backgroundRoot.plasmaBackgroundVisible
+                || backgroundRoot.customThemeVisible) {
+            return 0
+        }
+        const frame = backgroundRoot.preferOpaque
+            ? solidPanelBackground : panelBackground
+        const insets = frame ? frame["inset"] : null
+        if (!insets) {
+            return 0
+        }
+        const requestedInset = Number(insets[side])
+        return Number.isFinite(requestedInset) && requestedInset >= 0
+            ? requestedInset : 0
+    }
+
     KSvg.FrameSvgItem {
+        id: panelBackground
         anchors.fill: parent
         z: 0
         imagePath: "widgets/panel-background"
@@ -37,6 +54,7 @@ Item {
     }
 
     KSvg.FrameSvgItem {
+        id: solidPanelBackground
         anchors.fill: parent
         z: 0
         imagePath: "solid/widgets/panel-background"

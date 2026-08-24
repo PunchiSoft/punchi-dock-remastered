@@ -152,6 +152,7 @@ TestCase {
         property bool visible: false
         property bool preparingToShow: false
         property var visualParent: null
+        property var placementAnchor: null
 
         function openSafely() {
             visible = true
@@ -197,6 +198,7 @@ TestCase {
         fakeAppActionsDialog.visible = false
         fakeAppActionsDialog.preparingToShow = false
         fakeAppActionsDialog.visualParent = null
+        fakeAppActionsDialog.placementAnchor = null
         fakeSurfaceStack.focusMediaControlsCount = 0
         fakeAnimatedContent.cancelClosingCount = 0
         fakeAnimatedContent.beginClosingCount = 0
@@ -499,6 +501,19 @@ TestCase {
         compare(fakePopupContent.showActionsCount, 1)
         verify(fakePopupContent.actionsVisible)
         compare(coordinator.activeTaskPopupPresentation, "preview")
+    }
+
+    function test_positionedMenuUsesDedicatedPlacementAnchor() {
+        coordinator.openAppContextMenu({
+            "appId": "org.mozilla.firefox",
+            "name": "Firefox"
+        }, firstAnchor, [], "pinned", 0)
+
+        tryVerify(function() {
+            return fakeAppActionsDialog.visible
+        }, 300)
+        compare(fakeAppActionsDialog.placementAnchor, firstAnchor)
+        compare(fakeAppActionsDialog.visualParent, null)
     }
 
     function test_overlayActionsPreserveResolvedPresentation() {

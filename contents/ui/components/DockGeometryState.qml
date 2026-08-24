@@ -14,7 +14,8 @@ QtObject {
     property int configuredIconSpacing: 8
     property string configuredPanelLengthMode: "fit"
     property string configuredPanelAlignmentMode: "start"
-    property int folderPopupExtraDistance: 0
+    property int folderPopupDistancePercent: 0
+    property int contextMenuDistancePercent: 0
     property real panelHoverScale: 1.0
     property bool dockShowLabels: false
     property int dockLabelAreaHeight: 0
@@ -29,6 +30,9 @@ QtObject {
     property real hostHeight: 0
     property var panelWindow: null
     property var containment: null
+
+    readonly property PopupSpacingMetrics popupSpacingMetrics:
+        PopupSpacingMetrics {}
 
     readonly property int dockSpacing: {
         const spacing = Number(root.configuredIconSpacing)
@@ -125,8 +129,12 @@ QtObject {
         return Qt.BottomEdge
     }
     readonly property int popupMargin: root.inPanel ? 2 : 10
-    readonly property int folderPopupMargin: popupMargin
-        + Math.max(0, Math.min(32, Number(root.folderPopupExtraDistance || 0)))
+    readonly property int maximumAdaptivePopupGap:
+        root.popupSpacingMetrics.maximumGap
+    readonly property int folderPopupGap:
+        root.popupGapForPercent(root.folderPopupDistancePercent)
+    readonly property int contextMenuGap:
+        root.popupGapForPercent(root.contextMenuDistancePercent)
     readonly property int detectedPanelThickness: {
         try {
             if (!root.containment) {
@@ -172,6 +180,14 @@ QtObject {
     function normalizedMediaTextMode(item) {
         const mode = item ? String(item.mediaTextMode || "automatic") : "automatic"
         return mode === "always" || mode === "hidden" ? mode : "automatic"
+    }
+
+    function normalizedPopupDistancePercent(value) {
+        return root.popupSpacingMetrics.normalizedPercent(value)
+    }
+
+    function popupGapForPercent(value) {
+        return root.popupSpacingMetrics.gapForPercent(value)
     }
 
     function mediaMetadataVisibleForItem(item) {

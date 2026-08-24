@@ -6,6 +6,10 @@ import "../contents/ui/config/code/configItems.js" as ConfigItems
 TestCase {
     name: "DynamicApplicationsMarkerLogic"
 
+    function init() {
+        failOnWarning(/.?/)
+    }
+
     function test_appendsMarkerAfterExistingItems() {
         const original = [
             { "type": "app", "name": "First" },
@@ -97,5 +101,32 @@ TestCase {
         }, translate), "translated:Calendar/Clock")
         compare(ConfigItems.itemTypeTitle("calendar", translate),
             "translated:Calendar/Clock")
+    }
+
+    function test_punchiMenuPanelDistanceMigratesFromLegacyPixels() {
+        const item = {
+            "type": "punchimenu",
+            "normalPanelGap": 8
+        }
+
+        ConfigItems.prunePunchiMenu(item)
+
+        compare(item.normalPanelDistancePercent, 25)
+        verify(Object.keys(item).indexOf("normalPanelGap") < 0)
+    }
+
+    function test_punchiMenuPanelDistancePrefersAndClampsPercentage() {
+        const explicitItem = {
+            "type": "punchimenu",
+            "normalPanelDistancePercent": 73,
+            "normalPanelGap": 1
+        }
+        ConfigItems.prunePunchiMenu(explicitItem)
+        compare(explicitItem.normalPanelDistancePercent, 75)
+        verify(Object.keys(explicitItem).indexOf("normalPanelGap") < 0)
+
+        const defaultItem = { "type": "punchimenu" }
+        ConfigItems.prunePunchiMenu(defaultItem)
+        compare(defaultItem.normalPanelDistancePercent, 25)
     }
 }

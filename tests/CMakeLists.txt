@@ -369,6 +369,10 @@ punchi_add_qml_test(
     popup_coordinator_state_test
     popup_coordinator_state_test.qml
 )
+punchi_add_qml_test(
+    popup_visible_gap_placement_test
+    popup_visible_gap_placement_test.qml
+)
 punchi_add_qml_test(task_popup_surface_test task_popup_surface_test.qml)
 punchi_add_qml_test(
     app_actions_popup_runtime_test
@@ -393,6 +397,14 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     container_launcher_drop_logic_test
     container_launcher_drop_logic_test.qml
+)
+punchi_add_qml_test(
+    dock_folder_view_context_test
+    dock_folder_view_context_test.qml
+)
+punchi_add_qml_test(
+    popup_spacing_metrics_test
+    popup_spacing_metrics_test.qml
 )
 punchi_add_qml_test(
     dock_item_launcher_drop_state_test

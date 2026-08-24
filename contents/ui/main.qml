@@ -297,14 +297,18 @@ PlasmoidItem {
             ? Math.max(30, Math.min(90, Math.round(requestedPercent / 5) * 5))
             : 65
     }
-    readonly property int configuredPunchiMenuNormalPanelGap: {
-        const requestedGap = Number(configuredPunchiMenuItem
-            ? configuredPunchiMenuItem.normalPanelGap
-            : 8)
-        return Number.isFinite(requestedGap)
-            ? Math.max(0, Math.min(32, Math.round(requestedGap)))
-            : 8
+    readonly property int configuredPunchiMenuNormalPanelDistancePercent: {
+        const requestedPercent = Number(configuredPunchiMenuItem
+            ? configuredPunchiMenuItem.normalPanelDistancePercent
+            : 25)
+        return Number.isFinite(requestedPercent)
+            ? Math.max(0, Math.min(100,
+                Math.round(requestedPercent / 5) * 5))
+            : 25
     }
+    readonly property int configuredPunchiMenuNormalPanelGap:
+        dockGeometry.popupGapForPercent(
+            root.configuredPunchiMenuNormalPanelDistancePercent)
     readonly property bool configuredPunchiMenuNormalShowCategories: {
         const item = configuredPunchiMenuItem
         if (item && item.normalShowCategories !== undefined) {
@@ -496,7 +500,8 @@ PlasmoidItem {
         configuredPanelLengthMode: String(Plasmoid.configuration.panelLengthMode || "fit")
         configuredPanelAlignmentMode: String(Plasmoid.configuration.panelAlignmentMode || "start")
         panelHoverScale: dockConfig.panelHoverScale
-        folderPopupExtraDistance: dockConfig.folderPopupExtraDistance
+        folderPopupDistancePercent: dockConfig.folderPopupDistancePercent
+        contextMenuDistancePercent: dockConfig.contextMenuDistancePercent
         dockShowLabels: dockConfig.dockShowLabels
         dockLabelAreaHeight: dockConfig.dockLabelAreaHeight
         dockItems: dockItemsController.dockItems
@@ -794,6 +799,8 @@ PlasmoidItem {
                     maskSource: punchiMenuNormal.backgroundBlurMaskSource
                     useMaskSourceInsets: true
                     maskOffset: punchiMenuNormal.backgroundBlurMaskOffset
+                    maskClipRect:
+                        punchiMenuNormal.backgroundBlurClipGeometry
                     enabled: punchiMenuNormalDialog.visible
                         && root.configuredPunchiMenuNormalBlurEnabled
                 }
@@ -816,11 +823,21 @@ PlasmoidItem {
                 menuHeight: punchiMenuNormalDialog.height
                 panelGap: root.configuredPunchiMenuNormalPanelGap
                 floatingGap: root.configuredPunchiMenuNormalPanelGap
-                screenInset: root.configuredPunchiMenuNormalPanelGap
+                screenInset: root.configuredPunchiMenuNormalPlacementMode === "anchored"
+                    ? root.configuredPunchiMenuNormalPanelGap
+                    : 0
                 themeFrameLeftMargin: punchiMenuNormalDialog.themeFrameMargin("left")
                 themeFrameTopMargin: punchiMenuNormalDialog.themeFrameMargin("top")
                 themeFrameRightMargin: punchiMenuNormalDialog.themeFrameMargin("right")
                 themeFrameBottomMargin: punchiMenuNormalDialog.themeFrameMargin("bottom")
+                surfaceFrameLeftMargin: root.inPanel
+                    ? 0 : dockBackground.backgroundFrameInset("left")
+                surfaceFrameTopMargin: root.inPanel
+                    ? 0 : dockBackground.backgroundFrameInset("top")
+                surfaceFrameRightMargin: root.inPanel
+                    ? 0 : dockBackground.backgroundFrameInset("right")
+                surfaceFrameBottomMargin: root.inPanel
+                    ? 0 : dockBackground.backgroundFrameInset("bottom")
             }
 
             function positionAtAnchor() {
@@ -981,7 +998,8 @@ PlasmoidItem {
                 backgroundOpacity: root.configuredPunchiMenuNormalBackgroundOpacity
                 normalPlacementMode:
                     root.configuredPunchiMenuNormalPlacementMode
-                normalPanelGap: root.configuredPunchiMenuNormalPanelGap
+                normalPanelDistancePercent:
+                    root.configuredPunchiMenuNormalPanelDistancePercent
                 normalWidthPercent: root.configuredPunchiMenuNormalWidthPercent
                 normalHeightPercent: root.configuredPunchiMenuNormalHeightPercent
                 showCategories: root.configuredPunchiMenuNormalShowCategories
@@ -1101,6 +1119,14 @@ PlasmoidItem {
                 themeFrameTopMargin: punchiMenuCompactDialog.themeFrameMargin("top")
                 themeFrameRightMargin: punchiMenuCompactDialog.themeFrameMargin("right")
                 themeFrameBottomMargin: punchiMenuCompactDialog.themeFrameMargin("bottom")
+                surfaceFrameLeftMargin: root.inPanel
+                    ? 0 : dockBackground.backgroundFrameInset("left")
+                surfaceFrameTopMargin: root.inPanel
+                    ? 0 : dockBackground.backgroundFrameInset("top")
+                surfaceFrameRightMargin: root.inPanel
+                    ? 0 : dockBackground.backgroundFrameInset("right")
+                surfaceFrameBottomMargin: root.inPanel
+                    ? 0 : dockBackground.backgroundFrameInset("bottom")
             }
 
             function positionAtAnchor() {
@@ -1240,7 +1266,8 @@ PlasmoidItem {
                 backgroundBlurEnabled: root.configuredPunchiMenuCompactBlurEnabled
                 backgroundOpacity: root.configuredPunchiMenuCompactBackgroundOpacity
                 compactShowQuickLaunchers: root.configuredPunchiMenuCompactShowQuickLaunchers
-                normalPanelGap: root.configuredPunchiMenuNormalPanelGap
+                normalPanelDistancePercent:
+                    root.configuredPunchiMenuNormalPanelDistancePercent
                 themeFrameLeftMargin: punchiMenuCompactDialog.themeFrameMargin("left")
                 themeFrameTopMargin: punchiMenuCompactDialog.themeFrameMargin("top")
                 themeFrameRightMargin: punchiMenuCompactDialog.themeFrameMargin("right")
@@ -1710,6 +1737,7 @@ PlasmoidItem {
             }
 
             DockBackground {
+                id: dockBackground
                 anchors.fill: parent
                 preferOpaque: !!(Plasmoid.containmentDisplayHints
                     & PlasmaCore.Types.ContainmentPrefersOpaqueBackground)
@@ -2215,11 +2243,11 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === dockItemDelegate)
-                            || (folderPopupDialog.visible && folderPopupDialog.visualParent === dockItemDelegate)
+                            || (folderPopupDialog.visible && folderPopupDialog.placementAnchor === dockItemDelegate)
                             || (calendarPopupDialog.visible && calendarPopupDialog.visualParent === dockItemDelegate)
                             || (notePopupDialog.visible && notePopupDialog.visualParent === dockItemDelegate)
-                            || (trashMenuDialog.visible && trashMenuDialog.visualParent === dockItemDelegate)
-                            || (appActionsDialog.visible && appActionsDialog.visualParent === dockItemDelegate)
+                            || (trashMenuDialog.visible && trashMenuDialog.placementAnchor === dockItemDelegate)
+                            || (appActionsDialog.visible && appActionsDialog.placementAnchor === dockItemDelegate)
                             || (root.punchiMenuDialogInstance && root.punchiMenuDialogInstance.visible && root.punchiMenuAnchorItem === dockItemDelegate)
                         // qmllint enable unqualified
                         supportsContextMenu: dockContextActionsController.itemHasContextMenu(dockItemDelegate.modelData, taskState.rows, "pinned")
@@ -2448,11 +2476,11 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === taskDockItemDelegate)
-                            || (folderPopupDialog.visible && folderPopupDialog.visualParent === taskDockItemDelegate)
+                            || (folderPopupDialog.visible && folderPopupDialog.placementAnchor === taskDockItemDelegate)
                             || (calendarPopupDialog.visible && calendarPopupDialog.visualParent === taskDockItemDelegate)
                             || (notePopupDialog.visible && notePopupDialog.visualParent === taskDockItemDelegate)
-                            || (trashMenuDialog.visible && trashMenuDialog.visualParent === taskDockItemDelegate)
-                            || (appActionsDialog.visible && appActionsDialog.visualParent === taskDockItemDelegate)
+                            || (trashMenuDialog.visible && trashMenuDialog.placementAnchor === taskDockItemDelegate)
+                            || (appActionsDialog.visible && appActionsDialog.placementAnchor === taskDockItemDelegate)
                             || (root.punchiMenuDialogInstance && root.punchiMenuDialogInstance.visible && root.punchiMenuAnchorItem === taskDockItemDelegate)
                         // qmllint enable unqualified
                         supportsContextMenu: dockContextActionsController.itemHasContextMenu(modelData, taskData.rows, "dynamic")
@@ -2612,9 +2640,21 @@ PlasmoidItem {
             }
         }
 
-        GuardedPopupDialog {
+        GuardedPositionedPopupDialog {
             id: folderPopupDialog
-            location: dockGeometry.effectivePanelLocation
+            inPanel: root.inPanel
+            panelLocation: dockGeometry.effectivePanelLocation
+            availableScreenRect: root.availableScreenRect
+            screenGeometry: Plasmoid.containment
+                && Plasmoid.containment.screenGeometry
+                ? Plasmoid.containment.screenGeometry
+                : Qt.rect(0, 0, Screen.width, Screen.height)
+            floatingDockAnchor: root.floatingDockAnchor
+            floatingDockSurfaceFrame: dockBackground
+            panelWindow: root.Window.window
+            panelThickness: dockGeometry.detectedPanelThickness
+            popupGap: dockGeometry.folderPopupGap
+            surfaceFrame: folderSurfaceStack
             hideOnWindowDeactivate: true
 
             mainItem: PopupAnimatedContent {
@@ -2627,6 +2667,7 @@ PlasmoidItem {
                 // qmllint enable unqualified
 
                 ContextSurfaceStack {
+                    id: folderSurfaceStack
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
                     showMedia: false
                     // Folder profiles use different widths. Resolve the final
@@ -2687,7 +2728,7 @@ PlasmoidItem {
 
                         onAppContextMenuRequested: function(app) {
                             popupCoordinator.openAppContextMenu(app,
-                                folderPopupDialog.visualParent, undefined,
+                                folderPopupDialog.placementAnchor, undefined,
                                 "folder", -1)
                         }
 
@@ -2740,9 +2781,21 @@ PlasmoidItem {
         }
 
         // Trash context menu popup.
-        GuardedPopupDialog {
+        GuardedPositionedPopupDialog {
             id: trashMenuDialog
-            location: dockGeometry.effectivePanelLocation
+            inPanel: root.inPanel
+            panelLocation: dockGeometry.effectivePanelLocation
+            availableScreenRect: root.availableScreenRect
+            screenGeometry: Plasmoid.containment
+                && Plasmoid.containment.screenGeometry
+                ? Plasmoid.containment.screenGeometry
+                : Qt.rect(0, 0, Screen.width, Screen.height)
+            floatingDockAnchor: root.floatingDockAnchor
+            floatingDockSurfaceFrame: dockBackground
+            panelWindow: root.Window.window
+            panelThickness: dockGeometry.detectedPanelThickness
+            popupGap: dockGeometry.contextMenuGap
+            surfaceFrame: trashSurfaceStack
             hideOnWindowDeactivate: !trashContextContent.confirmationVisible
 
             mainItem: PopupAnimatedContent {
@@ -2802,9 +2855,21 @@ PlasmoidItem {
             }
         }
 
-        GuardedPopupDialog {
+        GuardedPositionedPopupDialog {
             id: appActionsDialog
-            location: dockGeometry.effectivePanelLocation
+            inPanel: root.inPanel
+            panelLocation: dockGeometry.effectivePanelLocation
+            availableScreenRect: root.availableScreenRect
+            screenGeometry: Plasmoid.containment
+                && Plasmoid.containment.screenGeometry
+                ? Plasmoid.containment.screenGeometry
+                : Qt.rect(0, 0, Screen.width, Screen.height)
+            floatingDockAnchor: root.floatingDockAnchor
+            floatingDockSurfaceFrame: dockBackground
+            panelWindow: root.Window.window
+            panelThickness: dockGeometry.detectedPanelThickness
+            popupGap: dockGeometry.contextMenuGap
+            surfaceFrame: appActionsSurfaceStack
             hideOnWindowDeactivate: !popupCoordinator.contextMenuOpening
             onOpenFailed: popupCoordinator.contextMenuOpening = false
 

@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QPoint>
 #include <QPointer>
+#include <QRect>
 #include <QRegion>
 #include <QWindow>
 #include <qqmlintegration.h>
@@ -18,6 +19,7 @@ class BlurBehindController : public QObject
     Q_PROPERTY(QObject *window READ window WRITE setWindow NOTIFY windowChanged)
     Q_PROPERTY(QObject *maskSource READ maskSource WRITE setMaskSource NOTIFY maskSourceChanged)
     Q_PROPERTY(QPoint maskOffset READ maskOffset WRITE setMaskOffset NOTIFY maskOffsetChanged)
+    Q_PROPERTY(QRect maskClipRect READ maskClipRect WRITE setMaskClipRect NOTIFY maskClipRectChanged)
     Q_PROPERTY(bool useMaskSourceInsets READ useMaskSourceInsets WRITE setUseMaskSourceInsets NOTIFY useMaskSourceInsetsChanged)
     Q_PROPERTY(bool fullWindow READ fullWindow WRITE setFullWindow NOTIFY fullWindowChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
@@ -34,6 +36,8 @@ public:
     void setMaskSource(QObject *maskSource);
     QPoint maskOffset() const;
     void setMaskOffset(const QPoint &maskOffset);
+    QRect maskClipRect() const;
+    void setMaskClipRect(const QRect &maskClipRect);
     bool useMaskSourceInsets() const;
     void setUseMaskSourceInsets(bool useMaskSourceInsets);
     bool fullWindow() const;
@@ -52,6 +56,7 @@ Q_SIGNALS:
     void windowChanged();
     void maskSourceChanged();
     void maskOffsetChanged();
+    void maskClipRectChanged();
     void useMaskSourceInsetsChanged();
     void fullWindowChanged();
     void enabledChanged();
@@ -70,6 +75,7 @@ private:
     QPointer<QObject> m_maskSource;
     QPointer<QObject> m_maskInsetSource;
     QPoint m_maskOffset;
+    QRect m_maskClipRect;
     QRegion m_cachedSourceMask;
     QRegion m_cachedContractedMask;
     QMargins m_cachedInsets;

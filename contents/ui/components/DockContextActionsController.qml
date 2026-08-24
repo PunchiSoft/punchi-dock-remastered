@@ -193,6 +193,68 @@ QtObject {
                     ]
                 })
             }
+            if (itemType === "folder") {
+                const currentFolderView = item.layout === "list"
+                        || item.layout === "detailed"
+                    ? item.layout : "grid"
+                const activeFolderViewDetail = currentFolderView === "list"
+                    // qmllint disable unqualified
+                    ? i18nc("@item:inlistbox Folder popup layout", "List")
+                    : currentFolderView === "detailed"
+                        ? i18nc("@item:inlistbox Folder popup layout", "Detailed")
+                        : i18nc("@item:inlistbox Folder popup layout", "Grid")
+                    // qmllint enable unqualified
+                const expectedFolderText = typeof root.dockItemsController.canonicalJsonText
+                        === "function"
+                    ? root.dockItemsController.canonicalJsonText(item) : ""
+                itemActions.push({
+                    // qmllint disable unqualified
+                    "name": i18nc("@title:menu", "Folder view"),
+                    "detail": activeFolderViewDetail,
+                    // qmllint enable unqualified
+                    "icon": "view-grid",
+                    "kind": "submenu",
+                    "enabled": true,
+                    "children": [
+                        {
+                            // qmllint disable unqualified
+                            "name": i18nc("@item:inlistbox Folder popup layout", "Grid"),
+                            // qmllint enable unqualified
+                            "icon": "view-grid",
+                            "kind": "setFolderView",
+                            "enabled": true,
+                            "checked": currentFolderView === "grid",
+                            "layout": "grid",
+                            "targetIndex": persistentIndex,
+                            "expectedFolderText": expectedFolderText
+                        },
+                        {
+                            // qmllint disable unqualified
+                            "name": i18nc("@item:inlistbox Folder popup layout", "List"),
+                            // qmllint enable unqualified
+                            "icon": "view-list-icons",
+                            "kind": "setFolderView",
+                            "enabled": true,
+                            "checked": currentFolderView === "list",
+                            "layout": "list",
+                            "targetIndex": persistentIndex,
+                            "expectedFolderText": expectedFolderText
+                        },
+                        {
+                            // qmllint disable unqualified
+                            "name": i18nc("@item:inlistbox Folder popup layout", "Detailed"),
+                            // qmllint enable unqualified
+                            "icon": "view-list-details",
+                            "kind": "setFolderView",
+                            "enabled": true,
+                            "checked": currentFolderView === "detailed",
+                            "layout": "detailed",
+                            "targetIndex": persistentIndex,
+                            "expectedFolderText": expectedFolderText
+                        }
+                    ]
+                })
+            }
             itemActions.push({
                 // qmllint disable unqualified
                 "name": i18nc("@action:context", "Unpin from Dock"),
@@ -307,6 +369,11 @@ QtObject {
             }
             return root.dockItemsController.setPunchiMenuValue(
                 "menuMode", String(action.mode || "fullScreen"))
+        }
+        if (action.kind === "setFolderView") {
+            return root.dockItemsController.setFolderLayout(
+                action.targetIndex, String(action.layout || ""),
+                String(action.expectedFolderText || ""))
         }
         if (action.kind === "desktopAction") {
             return root.systemDiscovery

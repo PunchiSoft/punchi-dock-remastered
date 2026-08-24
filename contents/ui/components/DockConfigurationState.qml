@@ -4,6 +4,26 @@ import org.kde.plasma.plasmoid
 QtObject {
     id: root
 
+    function normalizedPopupDistancePercent(value, fallbackValue) {
+        const requestedPercent = Number(value)
+        const fallbackPercent = Number(fallbackValue)
+        const safePercent = Number.isFinite(requestedPercent)
+            ? requestedPercent
+            : (Number.isFinite(fallbackPercent) ? fallbackPercent : 0)
+        return Math.max(0, Math.min(100,
+            Math.round(safePercent / 5) * 5))
+    }
+
+    function legacyFolderPopupDistancePercent() {
+        const legacyDistance = Number(
+            Plasmoid.configuration.folderPopupExtraDistance)
+        const safeLegacyDistance = Number.isFinite(legacyDistance)
+            ? Math.max(0, Math.min(32, legacyDistance))
+            : 0
+        return root.normalizedPopupDistancePercent(
+            safeLegacyDistance * 100 / 32, 0)
+    }
+
     property bool inPanel: false
     property bool horizontalPanel: false
     property int effectiveIconSize: 48
@@ -112,8 +132,13 @@ QtObject {
         String(Plasmoid.configuration.folderDetailedFontFamily || "")
     readonly property int folderDetailedFontSize: Math.max(8, Math.min(18,
         Number(Plasmoid.configuration.folderDetailedFontSize || 10)))
-    readonly property int folderPopupExtraDistance: Math.max(0, Math.min(32,
-        Number(Plasmoid.configuration.folderPopupExtraDistance || 0)))
+    readonly property int folderPopupDistancePercent: {
+        const configuredPercent = Number(
+            Plasmoid.configuration.folderPopupDistancePercent)
+        return Number.isFinite(configuredPercent) && configuredPercent >= 0
+            ? root.normalizedPopupDistancePercent(configuredPercent, 0)
+            : root.legacyFolderPopupDistancePercent()
+    }
     readonly property real folderPopupScale: Math.max(0.5, Math.min(3.0,
         Number(Plasmoid.configuration.folderPopupScale || 1.0)))
     readonly property real folderPopupBackgroundOpacity: {
@@ -301,4 +326,7 @@ QtObject {
         Number(Plasmoid.configuration.contextMenuIconSize || 26)))
     readonly property int contextMenuWidth: Math.max(240, Math.min(520,
         Number(Plasmoid.configuration.contextMenuWidth || 360)))
+    readonly property int contextMenuDistancePercent:
+        root.normalizedPopupDistancePercent(
+            Plasmoid.configuration.contextMenuDistancePercent, 0)
 }

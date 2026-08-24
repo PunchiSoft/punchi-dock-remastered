@@ -40,8 +40,9 @@ def qml_object_body_by_id(
 
 def popup_body(main_qml: str, popup_id: str, next_popup_id: str) -> str:
     match = re.search(
-        rf"GuardedPopupDialog\s*\{{\s*id:\s*{popup_id}\b"
-        rf"(?P<body>.*?)\n\s*(?:GuardedPopupDialog|"
+        rf"(?:GuardedPopupDialog|GuardedPositionedPopupDialog)\s*\{{\s*"
+        rf"id:\s*{popup_id}\b(?P<body>.*?)\n\s*"
+        rf"(?:GuardedPopupDialog|GuardedPositionedPopupDialog|"
         rf"PlasmaCore\.(?:AppletPopup|Dialog))\s*\{{\s*"
         rf"id:\s*{next_popup_id}\b",
         main_qml,
@@ -56,10 +57,9 @@ def assert_widget_surface(
     body: str,
     popup_name: str,
     opacity_source: str = "dockConfig.contextMenuBackgroundOpacity",
+    adaptive_margin_source: str = "",
 ) -> None:
-    for fragment, message in (
-        ("location: dockGeometry.effectivePanelLocation",
-         f"{popup_name} must follow the effective panel location"),
+    required_fragments = [
         ("ContextSurfaceStack {",
          f"{popup_name} must reuse the shared context surface"),
         ('backgroundImagePath: "widgets/background"',
@@ -68,7 +68,24 @@ def assert_widget_surface(
          f"{popup_name} must follow its approved opacity source"),
         ("contentFramePaddingPercent: 2",
          f"{popup_name} must retain the two-percent content frame"),
-    ):
+    ]
+    if adaptive_margin_source:
+        required_fragments.extend((
+            ("panelLocation: dockGeometry.effectivePanelLocation",
+             f"{popup_name} must follow the resolved dock edge"),
+            (f"popupGap: {adaptive_margin_source}",
+             f"{popup_name} must consume its adaptive gap"),
+            ("floatingDockAnchor: root.floatingDockAnchor",
+             f"{popup_name} must use the floating dock surface"),
+            ("panelWindow: root.Window.window",
+             f"{popup_name} must use the complete panel surface"),
+        ))
+    else:
+        required_fragments.append((
+            "location: dockGeometry.effectivePanelLocation",
+            f"{popup_name} must follow the effective panel location",
+        ))
+    for fragment, message in required_fragments:
         require(body, fragment, message)
 
     if "backgroundHints: PlasmaCore.AppletPopup.StandardBackground" in body:
@@ -79,6 +96,9 @@ def main() -> int:
     main_qml = (PROJECT_ROOT / "contents/ui/main.qml").read_text()
     guarded_dialog = (
         PROJECT_ROOT / "contents/ui/components/GuardedPopupDialog.qml"
+    ).read_text()
+    guarded_positioned_popup = (
+        PROJECT_ROOT / "contents/ui/components/GuardedPositionedPopupDialog.qml"
     ).read_text()
     animated_content = (
         PROJECT_ROOT / "contents/ui/components/PopupAnimatedContent.qml"
@@ -100,6 +120,18 @@ def main() -> int:
     ).read_text()
     dock_configuration = (
         PROJECT_ROOT / "contents/ui/components/DockConfigurationState.qml"
+    ).read_text()
+    dock_geometry = (
+        PROJECT_ROOT / "contents/ui/components/DockGeometryState.qml"
+    ).read_text()
+    popup_spacing_metrics = (
+        PROJECT_ROOT / "contents/ui/components/PopupSpacingMetrics.qml"
+    ).read_text()
+    dock_background = (
+        PROJECT_ROOT / "contents/ui/components/DockBackground.qml"
+    ).read_text()
+    context_surface_stack = (
+        PROJECT_ROOT / "contents/ui/components/ContextSurfaceStack.qml"
     ).read_text()
     config_menus = (
         PROJECT_ROOT / "contents/ui/config/ConfigMenus.qml"
@@ -141,9 +173,18 @@ def main() -> int:
         folder_popup,
         "Folder popup",
         "dockConfig.folderPopupBackgroundOpacity",
+        "dockGeometry.folderPopupGap",
     )
-    assert_widget_surface(trash_menu, "Trash menu")
-    assert_widget_surface(app_actions, "Application actions menu")
+    assert_widget_surface(
+        trash_menu,
+        "Trash menu",
+        adaptive_margin_source="dockGeometry.contextMenuGap",
+    )
+    assert_widget_surface(
+        app_actions,
+        "Application actions menu",
+        adaptive_margin_source="dockGeometry.contextMenuGap",
+    )
     assert_widget_surface(
         note_popup,
         "Note popup",
@@ -169,6 +210,46 @@ def main() -> int:
          "Guarded menus must invalidate pending opens"),
     ):
         require(guarded_dialog, fragment, message)
+    for fragment, message in (
+        ("GuardedPopupDialog {",
+         "Adaptive popups must retain the transparent guarded host"),
+        ("visualParent: null",
+         "Adaptive popups must prevent competing native repositioning"),
+        ("PunchiMenuNormalPlacement {",
+         "Adaptive popups must reuse the bounded placement controller"),
+        ("panelGap: root.popupGap",
+         "Adaptive popups must apply the gap to panels"),
+        ("floatingGap: root.popupGap",
+         "Adaptive popups must apply the gap to floating docks"),
+        ("screenInset: root.popupGap",
+         "Adaptive popups must retain safe screen bounds"),
+        ("function surfaceFrameInset(side)",
+         "Adaptive popups must compensate the themed frame projection"),
+        ("function dockSurfaceFrameInset(side)",
+         "Adaptive popups must compensate the floating Dock frame projection"),
+        ("function scheduleReposition()",
+         "Adaptive popups must react to geometry and configuration"),
+    ):
+        require(guarded_positioned_popup, fragment, message)
+    for fragment, message in (
+        ("function backgroundFrameInset(side)",
+         "The floating Dock background must expose its effective frame inset"),
+        ('id: panelBackground',
+         "The translucent Dock frame must be addressable for placement"),
+        ('id: solidPanelBackground',
+         "The opaque Dock frame must be addressable for placement"),
+    ):
+        require(dock_background, fragment, message)
+    require(
+        context_surface_stack,
+        "function effectiveBackgroundWindowRect()",
+        "Popup placement must measure its themed surface in window-client coordinates",
+    )
+    require(
+        guarded_positioned_popup,
+        "readonly property rect effectivePopupGeometry:",
+        "Adaptive popups must consume their measured visible geometry",
+    )
     for fragment, message in (
         ("readonly property real safeImplicitWidth:",
          "Animated popup content must sanitize its real width"),
@@ -495,6 +576,33 @@ def main() -> int:
         "      <default>true</default>",
         "showConfigureDockAction must default to true in schema",
     )
+    for fragment, message in (
+        ('<entry name="folderPopupExtraDistance" type="Int">',
+         "The legacy folder distance must remain readable for migration"),
+        ('<entry name="folderPopupDistancePercent" type="Int">\n'
+         "      <default>-1</default>",
+         "The folder distance must expose a legacy-aware percentage key"),
+        ('<entry name="contextMenuDistancePercent" type="Int">\n'
+         "      <default>0</default>",
+         "Context menu distance must default to an attached surface"),
+    ):
+        require(config_schema, fragment, message)
+    for fragment, message in (
+        ("readonly property int maximumAdaptivePopupGap:",
+         "Dock geometry must expose one adaptive maximum"),
+        ("function popupGapForPercent(value)",
+         "Dock geometry must centralize percentage conversion"),
+    ):
+        require(dock_geometry, fragment, message)
+    for fragment, message in (
+        ("Math.round(Kirigami.Units.gridUnit * 2)",
+         "The adaptive maximum must follow Kirigami grid metrics"),
+        ("function normalizedPercent(value)",
+         "The shared metric must clamp and normalize percentages"),
+        ("function gapForPercent(value)",
+         "The shared metric must own the effective-gap conversion"),
+    ):
+        require(popup_spacing_metrics, fragment, message)
     require(
         main_qml,
         "showEditDockItemAction: Plasmoid.configuration.showEditDockItemAction !== false",
@@ -521,6 +629,21 @@ def main() -> int:
         "ConfigMenus must use a switch for menu text shadows",
     )
     require(
+        config_menus,
+        "property alias cfg_contextMenuDistancePercent: contextMenuDistanceSlider.value",
+        "ConfigMenus must expose the adaptive context menu distance",
+    )
+    require(
+        config_folder_popups,
+        "property int cfg_folderPopupDistancePercent: -1",
+        "Folder popup settings must expose the legacy-aware distance",
+    )
+    require(
+        config_folder_popups,
+        "value: page.effectiveFolderPopupDistancePercent",
+        "Folder popup settings must display migrated legacy values",
+    )
+    require(
         config_aspect,
         "property alias cfg_showEditDockItemAction: menuAppearancePage.cfg_showEditDockItemAction",
         "ConfigAspect must expose showEditDockItemAction alias to KCM root",
@@ -529,6 +652,16 @@ def main() -> int:
         config_aspect,
         "property alias cfg_showConfigureDockAction: menuAppearancePage.cfg_showConfigureDockAction",
         "ConfigAspect must expose showConfigureDockAction alias to KCM root",
+    )
+    require(
+        config_aspect,
+        "property alias cfg_folderPopupDistancePercent: folderPopupPage.cfg_folderPopupDistancePercent",
+        "ConfigAspect must expose the folder distance percentage",
+    )
+    require(
+        config_aspect,
+        "property alias cfg_contextMenuDistancePercent: menuAppearancePage.cfg_contextMenuDistancePercent",
+        "ConfigAspect must expose the context menu distance percentage",
     )
 
     print("Popup menu surface contracts are consistent")

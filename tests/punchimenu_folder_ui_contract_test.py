@@ -897,7 +897,7 @@ def assert_modal_interaction_and_accessibility(
     normal_backdrop_geometry = compact(
         block_matching(
             normal_source,
-            r"readonly property rect folderDialogBackdropGeometry\s*:\s*\{",
+            r"readonly property rect effectiveBackgroundGeometry\s*:\s*\{",
             "PunchiMenu Normal folder backdrop geometry",
         )
     )
@@ -917,6 +917,19 @@ def assert_modal_interaction_and_accessibility(
         "PunchiMenu Normal folder veil must follow the effective themed "
         "surface through FrameSvg insets instead of content margins or the "
         "uncontracted projected frame.",
+    )
+    require(
+        "readonly property rect folderDialogBackdropGeometry: "
+        "root.effectiveBackgroundGeometry" in normal_compact,
+        "PunchiMenu Normal folder veil must consume the shared effective "
+        "themed-surface geometry.",
+    )
+    require(
+        "const bounds = root.effectiveBackgroundGeometry" in normal_compact
+        and "const topLeft = root.mapToItem(" in normal_compact
+        and "null, Qt.point(bounds.x, bounds.y))" in normal_compact,
+        "PunchiMenu Normal blur must map the shared effective geometry into "
+        "window-client coordinates without an additional contraction.",
     )
     require(
         "Accessible.onPressAction: root.activated()" in folder_tile,

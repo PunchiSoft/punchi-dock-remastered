@@ -72,19 +72,25 @@ contribution requirements.
 - Pinned launchers and optional dynamic task entries.
 - Custom launchers with safe preservation of commands and arguments.
 - Window cards, live previews, and grouped-window controls, including a choice of cards, live thumbnails, or no preview popup.
-- Configurable folders with grid, list, and detail views, plus quick notes, trash, separators, and calendar items.
+- Configurable folders with grid, list, and detail views, direct view switching
+  from the context menu, and launcher drag-and-drop from PunchiMenu or the
+  desktop, plus quick notes, trash, separators, and calendar items.
 - PunchiMenu application launcher with Normal and Fullscreen presentations,
   search, categories, favorites, named application folders, selective hiding,
   keyboard operation, a global shortcut, and native session actions. Compact
   remains reserved for a future version.
 - Optional PipeWire audio visualizer with six styles, dynamic or Plasma-themed colors, and up to 48 visual elements.
-- Plasma-themed popups with configurable opening animations, smooth preview-to-menu transitions, and continuous retargeting between dock items.
+- Plasma-themed popups with configurable opening animations, adaptive
+  theme-aware distance from the dock, smooth preview-to-menu transitions, and
+  continuous retargeting between dock items.
 - Native application and window actions in the context menus of pinned launchers and dynamic tasks.
 - Optional window-count badges for grouped applications with multiple windows.
 - Contextual MPRIS media cards with artwork, track information, playback controls, and an accessible mute or restore-volume action in every card layout.
 - A compact dock MPRIS item with selectable player, artwork fallback, vertical text modes, and launch-then-Play behavior.
 - Circular theme/custom color controls and configurable icon spacing with explicit visual units.
-- Safe file drag-and-drop onto pinned applications and the Trash, plus item-aware unpin actions for applications and folders.
+- Persistent dock-item reordering by long press or keyboard, safe file
+  drag-and-drop onto pinned applications and the Trash, and item-aware unpin
+  actions for applications and folders.
 - An optional MPRIS card below live window previews, revealed after the preview to preserve visual continuity.
 - Asynchronous trash operations with activity, progress, completion sound, and themed KDE notifications.
 - External JSON background themes stored in a managed user library, with recursive folder import, removal, and safe Plasma fallback.

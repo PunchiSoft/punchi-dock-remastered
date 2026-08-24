@@ -12,7 +12,7 @@ PunchiMenuSettingsBase {
 
     required property bool sortApplicationsAlphabetically
     property bool compactShowQuickLaunchers: true
-    property int normalPanelGap: 0
+    property int normalPanelDistancePercent: 25
 
     signal returnToMenuRequested()
 
@@ -106,17 +106,19 @@ PunchiMenuSettingsBase {
                     }
 
                     Controls.Slider {
-                        id: panelGapSlider
+                        id: panelDistanceSlider
                         Layout.fillWidth: true
                         from: 0
-                        to: 32
-                        stepSize: 1
-                        value: root.normalPanelGap
-                        onMoved: root.settingChanged("normalPanelGap", Math.round(value))
+                        to: 100
+                        stepSize: 5
+                        value: root.normalPanelDistancePercent
+                        onMoved: root.settingChanged(
+                            "normalPanelDistancePercent", Math.round(value))
                     }
 
                     Controls.Label {
-                        text: Math.round(panelGapSlider.value) + " px"
+                        text: i18n("%1%", Math.round(
+                            panelDistanceSlider.value))
                         Layout.preferredWidth: Kirigami.Units.gridUnit * 2.5
                         horizontalAlignment: Text.AlignRight
                     }

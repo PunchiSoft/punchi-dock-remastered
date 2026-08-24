@@ -46,16 +46,12 @@ function setContainerLayout(layout) {
         return
     }
 
-    var nextLayout = layout === "list" || layout === "detailed" ? layout : "grid"
-    var nextItems = clone(items)
-    var item = nextItems[selectedIndex]
-    if (!item || item.type !== "folder" || item.layout === nextLayout) {
+    var update = ConfigItemsJS.setFolderLayout(items, selectedIndex, layout)
+    if (!update.changed) {
         return
     }
 
-    item.layout = nextLayout
-    ConfigItemsJS.pruneFolder(item)
-    items = nextItems
+    items = update.items
     markChanged()
 }
 

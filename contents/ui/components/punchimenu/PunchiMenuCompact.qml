@@ -23,7 +23,7 @@ FocusScope {
     property bool backgroundBlurEnabled: true
     property real backgroundOpacity: 0.85
     property bool compactShowQuickLaunchers: true
-    property int normalPanelGap: 0
+    property int normalPanelDistancePercent: 25
     property real themeFrameLeftMargin: 0
     property real themeFrameTopMargin: 0
     property real themeFrameRightMargin: 0
@@ -906,7 +906,8 @@ FocusScope {
                 backgroundOpacityPercent: Math.round(root.safeBackgroundOpacity * 100)
                 sortApplicationsAlphabetically: root.sortApplicationsAlphabetically
                 compactShowQuickLaunchers: root.compactShowQuickLaunchers
-                normalPanelGap: root.normalPanelGap
+                normalPanelDistancePercent:
+                    root.normalPanelDistancePercent
                 hoverAnimation: root.hoverAnimation
                 showApplicationLabels: root.showApplicationLabels
                 applicationIconScalePercent: 100

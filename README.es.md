@@ -61,19 +61,25 @@ conocer las notas detalladas del lanzamiento y la validación realizada.
 - Lanzadores fijados y entradas dinámicas de tareas opcionales.
 - Lanzadores personalizados con preservación segura de comandos y argumentos.
 - Tarjetas de ventanas, miniaturas vivas y controles para ventanas agrupadas, con selección entre tarjetas, miniaturas en vivo o sin ventana emergente.
-- Carpetas configurables con vistas de rejilla, lista y detalle, además de notas rápidas, papelera, separadores y calendario.
+- Carpetas configurables con vistas de rejilla, lista y detalle, cambio directo
+  de vista desde el menú contextual y arrastre de lanzadores desde PunchiMenu o
+  el escritorio, además de notas rápidas, papelera, separadores y calendario.
 - Lanzador de aplicaciones PunchiMenu con modos Normal y Pantalla completa,
   búsqueda, categorías, favoritos, carpetas de aplicaciones con nombre,
   ocultación selectiva, operación por teclado, atajo global y acciones de
   sesión nativas. Compacto queda reservado para una versión futura.
 - Visualizador de audio PipeWire opcional con seis estilos, colores dinámicos o del tema Plasma y hasta 48 elementos visuales.
-- Popups adaptados al tema de Plasma con animaciones de apertura configurables, transiciones fluidas entre miniaturas y menús, y retargeting continuo entre elementos del dock.
+- Popups adaptados al tema de Plasma con animaciones de apertura configurables,
+  distancia adaptativa respecto del dock, transiciones fluidas entre miniaturas
+  y menús, y retargeting continuo entre elementos del dock.
 - Acciones nativas de aplicacion y ventana en los menus contextuales de launchers fijados y tareas dinamicas.
 - Badges opcionales de conteo para aplicaciones agrupadas con varias ventanas.
 - Tarjetas multimedia MPRIS contextuales con caratula, informacion de pista, controles de reproduccion y una accion accesible para silenciar o restaurar el volumen en todos los formatos de tarjeta.
 - Item MPRIS compacto para el dock con reproductor seleccionable, fallback de caratula, modos de texto vertical y apertura seguida de Play.
 - Controles circulares de color Plasma/personalizado y separacion configurable entre iconos con unidades visuales explicitas.
-- Arrastre seguro de archivos hacia aplicaciones fijadas y la Papelera, además de acciones de desanclado adaptadas a aplicaciones y carpetas.
+- Reordenamiento persistente de elementos del dock mediante pulsación prolongada
+  o teclado, arrastre seguro de archivos hacia aplicaciones fijadas y la
+  Papelera, y acciones de desanclado adaptadas a aplicaciones y carpetas.
 - Tarjeta MPRIS opcional bajo las miniaturas vivas, revelada despues de la vista previa para conservar la continuidad visual.
 - Operaciones asíncronas de papelera con actividad, progreso, sonido de finalización y notificaciones temáticas de KDE.
 - Temas externos JSON almacenados en una biblioteca administrada, con importación recursiva de carpetas, borrado y fallback seguro al fondo Plasma.

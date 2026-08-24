@@ -31,7 +31,8 @@ Item {
     property bool cfg_folderDetailedShowLabels: true
     property string cfg_folderDetailedFontFamily: ""
     property int cfg_folderDetailedFontSize: 10
-    property alias cfg_folderPopupExtraDistance: folderPopupExtraDistanceSlider.value
+    property int cfg_folderPopupExtraDistance: 0
+    property int cfg_folderPopupDistancePercent: -1
     property alias cfg_folderPopupScale: folderPopupScaleSlider.value
     property alias cfg_folderPopupBackgroundOpacityPercent: folderPopupBackgroundOpacitySlider.value
     property alias cfg_folderPopupShowHeader: showFolderHeaderCheck.checked
@@ -46,6 +47,19 @@ Item {
         !!Plasmoid.configuration.globalMouseCursor
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
+    readonly property int effectiveFolderPopupDistancePercent: {
+        const configuredPercent = Number(page.cfg_folderPopupDistancePercent)
+        if (Number.isFinite(configuredPercent) && configuredPercent >= 0) {
+            return Math.max(0, Math.min(100,
+                Math.round(configuredPercent / 5) * 5))
+        }
+        const legacyDistance = Number(page.cfg_folderPopupExtraDistance)
+        const safeLegacyDistance = Number.isFinite(legacyDistance)
+            ? Math.max(0, Math.min(32, legacyDistance))
+            : 0
+        return Math.max(0, Math.min(100,
+            Math.round((safeLegacyDistance * 100 / 32) / 5) * 5))
+    }
     readonly property int activeIconSize: activeProfile === "list"
         ? cfg_folderListIconSize
         : (activeProfile === "detailed"
@@ -255,15 +269,18 @@ Item {
             Layout.maximumWidth: page.contentWidthHint
 
             Controls.Slider {
-                id: folderPopupExtraDistanceSlider
+                id: folderPopupDistanceSlider
                 from: 0
-                to: 32
-                stepSize: 1
+                to: 100
+                stepSize: 5
                 snapMode: Controls.Slider.SnapAlways
+                value: page.effectiveFolderPopupDistancePercent
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Folder popup distance")
                 Accessible.description: i18n("Adds safe spacing between the dock item and folder popups.")
+                onMoved: page.cfg_folderPopupDistancePercent =
+                    Math.round(value)
 
                 ConfigCursorBehavior {
                     cursorEnabled: page.interactiveCursorEnabled
@@ -272,14 +289,14 @@ Item {
             }
 
             Controls.Label {
-                text: i18n("%1 px", Math.round(folderPopupExtraDistanceSlider.value))
+                text: i18n("%1%", Math.round(folderPopupDistanceSlider.value))
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 56
             }
         }
 
         Controls.Label {
-            text: i18n("The distance is added to Plasma's normal popup margin and only affects folder popups.")
+            text: i18n("The percentage scales with Plasma metrics. It only affects folder popups and is limited to a safe maximum distance.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
