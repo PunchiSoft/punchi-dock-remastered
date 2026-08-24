@@ -136,32 +136,6 @@ int main()
     passed &= expect(maskOffsetChangeCount == 1,
                      "setting the same maskOffset must not emit a duplicate change");
 
-    const int maskClipRectPropertyIndex = metaObject->indexOfProperty("maskClipRect");
-    passed &= expect(maskClipRectPropertyIndex >= 0,
-                     "maskClipRect property must be exposed");
-    if (maskClipRectPropertyIndex >= 0) {
-        const QMetaProperty property = metaObject->property(maskClipRectPropertyIndex);
-        passed &= expect(property.metaType().id() == QMetaType::QRect,
-                         "maskClipRect must use window-local integer geometry");
-        passed &= expect(property.isWritable(),
-                         "maskClipRect must be writable from QML");
-        passed &= expect(property.notifySignal().name() == "maskClipRectChanged",
-                         "maskClipRect must use its dedicated notifier");
-    }
-
-    int maskClipRectChangeCount = 0;
-    QObject::connect(&controller, &BlurBehindController::maskClipRectChanged,
-                     [&maskClipRectChangeCount]() {
-        ++maskClipRectChangeCount;
-    });
-    const QRect effectiveSurfaceRect(10, 12, 72, 40);
-    controller.setMaskClipRect(effectiveSurfaceRect);
-    controller.setMaskClipRect(effectiveSurfaceRect);
-    passed &= expect(controller.maskClipRect() == effectiveSurfaceRect,
-                     "maskClipRect must preserve the effective surface geometry");
-    passed &= expect(maskClipRectChangeCount == 1,
-                     "setting the same maskClipRect must not emit a duplicate change");
-
     const int useInsetsPropertyIndex = metaObject->indexOfProperty("useMaskSourceInsets");
     passed &= expect(useInsetsPropertyIndex >= 0,
                      "useMaskSourceInsets property must be exposed");

@@ -47,6 +47,9 @@ TestCase {
     function init() {
         failOnWarning(/.?/)
         placement.panelGap = 0
+        placement.menuWidth = 200
+        placement.menuHeight = 100
+        placement.horizontalAnchorWidth = placement.menuWidth
     }
 
     function verifyVisibleGap(edge, expectedGap) {
@@ -139,5 +142,34 @@ TestCase {
             Qt.point(itemAnchor.width / 2, itemAnchor.height / 2))
         compare(placement.calculatePosition().y,
             Math.round(anchorCenter.y - placement.menuHeight / 2))
+    }
+
+    function test_inlineExpansionKeepsPrimarySurfaceAnchored() {
+        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 0)
+        const collapsedX = placement.calculatePosition().x
+
+        placement.horizontalAnchorWidth = placement.menuWidth
+        placement.menuWidth = 440
+        const expandedX = placement.calculatePosition().x
+        const anchorCenter = itemAnchor.mapToGlobal(
+            Qt.point(itemAnchor.width / 2, itemAnchor.height / 2))
+
+        compare(expandedX, collapsedX)
+        compare(expandedX + placement.horizontalAnchorWidth / 2,
+            Math.round(anchorCenter.x))
+
+        placement.menuWidth = placement.horizontalAnchorWidth
+        compare(placement.calculatePosition().x, collapsedX)
+    }
+
+    function test_inlineExpansionStillClampsFullWindowToScreen() {
+        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 0)
+        itemAnchor.x = 880
+        placement.horizontalAnchorWidth = placement.menuWidth
+        placement.menuWidth = 440
+
+        const expandedX = placement.calculatePosition().x
+        compare(expandedX, 560)
+        compare(expandedX + placement.menuWidth, 1000)
     }
 }

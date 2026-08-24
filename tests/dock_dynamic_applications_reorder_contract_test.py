@@ -104,6 +104,22 @@ require(
     "Startup, configuration changes, and hot refresh must schedule migration.",
 )
 
+dock_items_entry_start = CONFIG_SCHEMA.index(
+    '<entry name="dockItemsJson" type="String">'
+)
+dock_items_entry_end = CONFIG_SCHEMA.index("</entry>", dock_items_entry_start)
+require(
+    "<default></default>"
+    in CONFIG_SCHEMA[dock_items_entry_start:dock_items_entry_end]
+    and CONTROLLER.count("root.dockItems = Logic.loadItems(raw)") >= 2
+    and 'raw.trim().length > 0 ? Logic.loadItems(raw) : []' not in CONTROLLER
+    and "cfg_dockItemsJson && cfg_dockItemsJson.length > 0"
+    in WORKFLOW
+    and ": ItemsJS.defaultJson()" in WORKFLOW,
+    "An empty first-run KConfig value must resolve to defaults in both the "
+    "runtime and KCM, while an explicit JSON array remains authoritative.",
+)
+
 for marker in (
     "readonly property int dynamicApplicationsMarkerIndex",
     "function persistentVisualIndex(modelIndex)",

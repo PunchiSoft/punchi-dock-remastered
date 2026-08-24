@@ -373,6 +373,10 @@ punchi_add_qml_test(
     popup_visible_gap_placement_test
     popup_visible_gap_placement_test.qml
 )
+punchi_add_qml_test(
+    punchimenu_mapped_surface_geometry_test
+    punchimenu_mapped_surface_geometry_test.qml
+)
 punchi_add_qml_test(task_popup_surface_test task_popup_surface_test.qml)
 punchi_add_qml_test(
     app_actions_popup_runtime_test

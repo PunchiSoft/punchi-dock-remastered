@@ -93,22 +93,13 @@ Module {
             lineNumber: 20
         }
         Property {
-            name: "maskClipRect"
-            type: "QRect"
-            read: "maskClipRect"
-            write: "setMaskClipRect"
-            notify: "maskClipRectChanged"
-            index: 3
-            lineNumber: 22
-        }
-        Property {
             name: "useMaskSourceInsets"
             type: "bool"
             read: "useMaskSourceInsets"
             write: "setUseMaskSourceInsets"
             notify: "useMaskSourceInsetsChanged"
-            index: 4
-            lineNumber: 23
+            index: 3
+            lineNumber: 21
         }
         Property {
             name: "fullWindow"
@@ -116,8 +107,8 @@ Module {
             read: "fullWindow"
             write: "setFullWindow"
             notify: "fullWindowChanged"
-            index: 5
-            lineNumber: 24
+            index: 4
+            lineNumber: 22
         }
         Property {
             name: "enabled"
@@ -125,16 +116,16 @@ Module {
             read: "enabled"
             write: "setEnabled"
             notify: "enabledChanged"
-            index: 6
-            lineNumber: 25
+            index: 5
+            lineNumber: 23
         }
         Property {
             name: "available"
             type: "bool"
             read: "available"
             notify: "availableChanged"
-            index: 7
-            lineNumber: 26
+            index: 6
+            lineNumber: 24
             isReadonly: true
         }
         Property {
@@ -142,20 +133,19 @@ Module {
             type: "bool"
             read: "active"
             notify: "activeChanged"
-            index: 8
-            lineNumber: 27
+            index: 7
+            lineNumber: 25
             isReadonly: true
         }
-        Signal { name: "windowChanged"; lineNumber: 55 }
-        Signal { name: "maskSourceChanged"; lineNumber: 56 }
-        Signal { name: "maskOffsetChanged"; lineNumber: 57 }
-        Signal { name: "maskClipRectChanged"; lineNumber: 58 }
-        Signal { name: "useMaskSourceInsetsChanged"; lineNumber: 59 }
-        Signal { name: "fullWindowChanged"; lineNumber: 60 }
-        Signal { name: "enabledChanged"; lineNumber: 61 }
-        Signal { name: "availableChanged"; lineNumber: 62 }
-        Signal { name: "activeChanged"; lineNumber: 63 }
-        Method { name: "reapply"; lineNumber: 52 }
+        Signal { name: "windowChanged"; lineNumber: 52 }
+        Signal { name: "maskSourceChanged"; lineNumber: 53 }
+        Signal { name: "maskOffsetChanged"; lineNumber: 54 }
+        Signal { name: "useMaskSourceInsetsChanged"; lineNumber: 55 }
+        Signal { name: "fullWindowChanged"; lineNumber: 56 }
+        Signal { name: "enabledChanged"; lineNumber: 57 }
+        Signal { name: "availableChanged"; lineNumber: 58 }
+        Signal { name: "activeChanged"; lineNumber: 59 }
+        Method { name: "reapply"; lineNumber: 49 }
     }
     Component {
         file: "dockitemspersistenceadapter.h"

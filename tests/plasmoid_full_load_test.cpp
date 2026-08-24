@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QGuiApplication>
+#include <QJSValue>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QPointer>
@@ -192,6 +193,8 @@ struct LoadResult {
     bool compactMatchesFull = false;
     bool preferredMatchesFull = false;
     bool fullRepresentationItemLoaded = false;
+    bool dockItemsControllerAvailable = false;
+    int dockItemCount = -1;
     QString pluginName;
     QString launchError;
     QStringList runtimeMessages;
@@ -291,6 +294,8 @@ private Q_SLOTS:
             QVERIFY2(result.compactMatchesFull, "The compact representation no longer aliases the full representation");
             QVERIFY2(result.preferredMatchesFull, "The preferred representation is not the full representation");
             QVERIFY2(result.fullRepresentationItemLoaded, "The full representation item was not instantiated");
+            QVERIFY2(result.dockItemsControllerAvailable, "The dock items controller is unavailable");
+            QVERIFY2(result.dockItemCount > 0, "A clean first run did not load the default dock items");
             QVERIFY2(result.appletDestroyed, "The applet survived its explicit teardown");
             QVERIFY2(result.quickItemDestroyed, "The AppletQuickItem survived applet teardown");
             QVERIFY2(result.runtimeMessages.isEmpty(), qPrintable(result.runtimeMessages.join(QLatin1Char('\n'))));
@@ -334,7 +339,31 @@ private:
 
                 item->setExpanded(true);
                 drainDeferredEvents();
-                result.fullRepresentationItemLoaded = item->fullRepresentationItem() != nullptr;
+                QQuickItem *fullRepresentationItem = item->fullRepresentationItem();
+                result.fullRepresentationItemLoaded = fullRepresentationItem != nullptr;
+                if (fullRepresentationItem) {
+                    const QVariant controllerValue =
+                        fullRepresentationItem->property("dockItemsControllerService");
+                    QObject *controller = qvariant_cast<QObject *>(controllerValue);
+                    if (!controller && controllerValue.canConvert<QJSValue>()) {
+                        controller = controllerValue.value<QJSValue>().toQObject();
+                    }
+                    if (!controller) {
+                        controller = item->findChild<QObject *>(
+                            QStringLiteral("dockItemsController"));
+                    }
+                    result.dockItemsControllerAvailable = controller != nullptr;
+                    if (controller) {
+                        const QVariant dockItems = controller->property("dockItems");
+                        if (dockItems.canConvert<QJSValue>()) {
+                            result.dockItemCount = dockItems.value<QJSValue>()
+                                                       .property(QStringLiteral("length"))
+                                                       .toInt();
+                        } else {
+                            result.dockItemCount = dockItems.toList().size();
+                        }
+                    }
+                }
             }
 
             delete applet;

@@ -799,8 +799,6 @@ PlasmoidItem {
                     maskSource: punchiMenuNormal.backgroundBlurMaskSource
                     useMaskSourceInsets: true
                     maskOffset: punchiMenuNormal.backgroundBlurMaskOffset
-                    maskClipRect:
-                        punchiMenuNormal.backgroundBlurClipGeometry
                     enabled: punchiMenuNormalDialog.visible
                         && root.configuredPunchiMenuNormalBlurEnabled
                 }
@@ -1112,6 +1110,7 @@ PlasmoidItem {
                 panelThickness: dockGeometry.detectedPanelThickness
                 menuWidth: punchiMenuCompactDialog.width
                 menuHeight: punchiMenuCompactDialog.height
+                horizontalAnchorWidth: punchiMenuCompact.primarySurfaceWidth
                 panelGap: root.configuredPunchiMenuNormalPanelGap
                 floatingGap: root.configuredPunchiMenuNormalPanelGap
                 screenInset: root.configuredPunchiMenuNormalPanelGap
@@ -1330,6 +1329,7 @@ PlasmoidItem {
 
     DockItemsController {
         id: dockItemsController
+        objectName: "dockItemsController"
         dynamicApplicationsEnabled: Plasmoid.configuration.showActiveTasks
         runtimeService: runtimeService
         persistenceAdapter: dockItemsPersistenceAdapter

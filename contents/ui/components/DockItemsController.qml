@@ -53,7 +53,7 @@ Item {
 
         function onDockItemsJsonChanged() {
             const raw = Plasmoid.configuration.dockItemsJson || ""
-            root.dockItems = raw.trim().length > 0 ? Logic.loadItems(raw) : []
+            root.dockItems = Logic.loadItems(raw)
             root.scheduleDynamicApplicationsMarker()
             if (root.runtimeService) {
                 root.runtimeService.persistDockItemsJson(raw, root.configInstanceId())

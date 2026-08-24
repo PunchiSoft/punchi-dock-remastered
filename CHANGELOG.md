@@ -1,3 +1,34 @@
+## [0.9.7.46] - 2026-08-24
+
+### Agregado
+
+- Geometría compartida y reactiva para mapear la superficie temática efectiva
+  de PunchiMenu entre los sistemas de coordenadas del menú, el diálogo y sus
+  capas auxiliares.
+- Cobertura de primer inicio que carga dos instancias aisladas del plasmoide y
+  comprueba que el modelo contiene los elementos predeterminados.
+
+### Corregido
+
+- La región de blur y el velo modal de PunchiMenu Normal vuelven a excluir la
+  proyección exterior de la sombra sin desplazarse al mover o redimensionar el
+  menú, tanto en modo anclado como centrado.
+- Los submenús de PunchiMenu Compacto calculan el anclaje horizontal desde la
+  superficie primaria visible y no desde el ancho exterior de su ventana.
+- Una instalación o instancia nueva ya no pierde los elementos predeterminados
+  cuando KConfig notifica inicialmente un `dockItemsJson` vacío; el valor JSON
+  explícito `[]` continúa representando un dock vacío intencional.
+
+### Validación
+
+- Suite CTest aprobada al 100% (57/57 pruebas), incluida la carga integral de
+  dos instancias sin configuración previa.
+- `qmllint` 6.11.1: 0 advertencias en total y en todas las categorías del
+  baseline Fedora.
+- Catálogos ki18n (`es`, `de`, `pt_BR`) completos, sin entradas vacías ni
+  difusas y validados mediante `msgfmt --check --check-format`.
+- Revisión preventiva de seguridad conforme para commit; no se realizó push.
+
 ## [0.9.7.45] - 2026-08-24
 
 ### Agregado

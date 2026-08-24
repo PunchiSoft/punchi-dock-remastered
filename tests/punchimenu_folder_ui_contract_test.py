@@ -895,41 +895,37 @@ def assert_modal_interaction_and_accessibility(
     normal_source = menu_sources["Normal"]
     normal_compact = compact(normal_source)
     normal_backdrop_geometry = compact(
-        block_matching(
-            normal_source,
-            r"readonly property rect effectiveBackgroundGeometry\s*:\s*\{",
-            "PunchiMenu Normal folder backdrop geometry",
+        source_for(
+            PUNCHIMENU_DIRECTORY / "PunchiMenuMappedSurfaceGeometry.qml"
         )
     )
     normal_folder_tile = compact(
         qml_blocks(normal_source, "PunchiMenuFolderTile")[0]
     )
     require(
-        "normalBackground.inset.left" in normal_backdrop_geometry
-        and "normalBackground.inset.top" in normal_backdrop_geometry
-        and "normalBackground.inset.right" in normal_backdrop_geometry
-        and "normalBackground.inset.bottom" in normal_backdrop_geometry
-        and "root, Qt.point(leftInset, topInset)"
+        "root.leftInset" in normal_backdrop_geometry
+        and "root.topInset" in normal_backdrop_geometry
+        and "root.rightInset" in normal_backdrop_geometry
+        and "root.bottomInset" in normal_backdrop_geometry
+        and "root.surfaceItem.width, root.surfaceItem.height"
         in normal_backdrop_geometry
-        and "normalBackground.width - rightInset" in normal_backdrop_geometry
-        and "normalBackground.height - bottomInset" in normal_backdrop_geometry
-        and "normalBackground.margins" not in normal_backdrop_geometry,
+        and "root.surfaceItem.scale, root.surfaceItem.transformOrigin"
+        in normal_backdrop_geometry
+        and "root.backgroundItem.mapToItem(root.targetItem,"
+        in normal_backdrop_geometry
+        and "root.backgroundItem.width - root.rightInset"
+        in normal_backdrop_geometry
+        and "root.backgroundItem.height - root.bottomInset"
+        in normal_backdrop_geometry
+        and ".margins" not in normal_backdrop_geometry,
         "PunchiMenu Normal folder veil must follow the effective themed "
         "surface through FrameSvg insets instead of content margins or the "
         "uncontracted projected frame.",
     )
     require(
-        "readonly property rect folderDialogBackdropGeometry: "
-        "root.effectiveBackgroundGeometry" in normal_compact,
-        "PunchiMenu Normal folder veil must consume the shared effective "
-        "themed-surface geometry.",
-    )
-    require(
-        "const bounds = root.effectiveBackgroundGeometry" in normal_compact
-        and "const topLeft = root.mapToItem(" in normal_compact
-        and "null, Qt.point(bounds.x, bounds.y))" in normal_compact,
-        "PunchiMenu Normal blur must map the shared effective geometry into "
-        "window-client coordinates without an additional contraction.",
+        "folderDialogBackdropGeometry: "
+        "mappedSurfaceGeometry.effectiveBackdropGeometry" in normal_compact,
+        "PunchiMenu Normal must consume the reactive mapped backdrop geometry.",
     )
     require(
         "Accessible.onPressAction: root.activated()" in folder_tile,

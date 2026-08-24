@@ -76,11 +76,12 @@ FocusScope {
     readonly property real itemHeight: Math.round(Kirigami.Units.gridUnit * 2.0)
     readonly property real mainColumnWidth: Math.round(Kirigami.Units.gridUnit * 16)
     readonly property real flyoutWidth: Math.round(Kirigami.Units.gridUnit * 20)
+    readonly property real primarySurfaceWidth: mainColumnWidth + baseFrameMargins
     readonly property bool flyoutVisible: !settingsViewActive
         && (root.activeCategoryKey.length > 0 || root.searchQuery.length > 0)
     readonly property real totalContentWidth: flyoutVisible
-        ? mainColumnWidth + flyoutWidth + Kirigami.Units.smallSpacing * 2 + baseFrameMargins
-        : mainColumnWidth + baseFrameMargins
+        ? primarySurfaceWidth + flyoutWidth + Kirigami.Units.smallSpacing * 2
+        : primarySurfaceWidth
 
     readonly property real safeBackgroundOpacity: {
         const requestedOpacity = Number(backgroundOpacity)

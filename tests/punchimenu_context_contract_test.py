@@ -73,6 +73,10 @@ def main() -> int:
     normal_source = (
         PROJECT_ROOT / "contents/ui/components/punchimenu/PunchiMenuNormal.qml"
     ).read_text(encoding="utf-8")
+    mapped_surface_geometry_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuMappedSurfaceGeometry.qml"
+    ).read_text(encoding="utf-8")
     normal_context_surface_source = (
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuContextSurface.qml"
@@ -2369,7 +2373,7 @@ def main() -> int:
         ),
         (
             normal_source,
-            "readonly property point backgroundBlurMaskOffset: {",
+            "readonly property point backgroundBlurMaskOffset:",
             "Normal background-owned blur mask offset",
         ),
         (
@@ -2413,8 +2417,6 @@ def main() -> int:
         r"maskSource\s*:\s*punchiMenuNormal\.backgroundBlurMaskSource\s*"
         r"useMaskSourceInsets\s*:\s*true\s*"
         r"maskOffset\s*:\s*punchiMenuNormal\.backgroundBlurMaskOffset\s*"
-        r"maskClipRect\s*:\s*"
-        r"punchiMenuNormal\.backgroundBlurClipGeometry\s*"
         r"enabled\s*:\s*punchiMenuNormalDialog\.visible\s*"
         r"&&\s*root\.configuredPunchiMenuNormalBlurEnabled\s*\}",
         re.DOTALL,
@@ -2427,18 +2429,31 @@ def main() -> int:
         )
         passed = False
     normal_blur_mapping_contract = (
-        "normalBackground.mapToItem(",
-        "surfaceTranslation.x, surfaceTranslation.y",
-        "id: surfaceTranslation",
+        "root.backgroundItem.mapToItem(",
+        "root.surfaceItem.width, root.surfaceItem.height",
+        "root.surfaceItem.scale, root.surfaceItem.transformOrigin",
+        "root.translationX, root.translationY",
     )
     for marker in normal_blur_mapping_contract:
-        if marker not in normal_source:
+        if marker not in mapped_surface_geometry_source:
             print(
                 "PunchiMenu background legibility: the blur position must "
                 f"follow the animated visual hierarchy: {marker}",
                 file=sys.stderr,
             )
             passed = False
+    normal_compact_source = re.sub(r"\s+", " ", normal_source)
+    if (
+        "backgroundBlurMaskOffset: "
+        "mappedSurfaceGeometry.backgroundMaskOffset"
+        not in normal_compact_source
+    ):
+        print(
+            "PunchiMenu background legibility: Normal must consume the "
+            "reactive mapped mask offset",
+            file=sys.stderr,
+        )
+        passed = False
     retired_blur_geometry_markers = (
         "blurPadding",
         "blurInsetPercent",
@@ -2449,6 +2464,21 @@ def main() -> int:
     if any(marker in main_source for marker in retired_blur_geometry_markers):
         print(
             "PunchiMenu background legibility: independent Normal blur geometry must not return",
+            file=sys.stderr,
+        )
+        passed = False
+    retired_normal_blur_clip_markers = (
+        (main_source, "maskClipRect"),
+        (normal_source, "backgroundBlurClipGeometry"),
+        (normal_source, "effectiveBackgroundGeometry"),
+    )
+    if any(
+        marker in source
+        for source, marker in retired_normal_blur_clip_markers
+    ):
+        print(
+            "PunchiMenu background legibility: the exact Normal mask must not "
+            "be intersected with a parallel rectangular geometry",
             file=sys.stderr,
         )
         passed = False

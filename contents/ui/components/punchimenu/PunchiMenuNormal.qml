@@ -34,87 +34,14 @@ FocusScope {
     property real themeFrameRightMargin: 0
     property real themeFrameBottomMargin: 0
     readonly property var backgroundBlurMaskSource: normalBackground
-    readonly property rect backgroundBlurClipGeometry: {
-        // BlurBehindController consumes window-client coordinates, while the
-        // shared effective geometry is intentionally local to this item for
-        // the modal veil. Map the same bounds without contracting them again.
-        const bounds = root.effectiveBackgroundGeometry
-        const topLeft = root.mapToItem(
-            null, Qt.point(bounds.x, bounds.y))
-        const bottomRight = root.mapToItem(null, Qt.point(
-            bounds.x + bounds.width, bounds.y + bounds.height))
-        const geometryValues = [
-            bounds.x, bounds.y, bounds.width, bounds.height,
-            topLeft.x, topLeft.y, bottomRight.x, bottomRight.y
-        ]
-        if (!geometryValues.every(value => Number.isFinite(value))) {
-            return Qt.rect(0, 0, 0, 0)
-        }
-        return Qt.rect(
-            Math.round(Math.min(topLeft.x, bottomRight.x)),
-            Math.round(Math.min(topLeft.y, bottomRight.y)),
-            Math.max(0, Math.round(Math.abs(bottomRight.x - topLeft.x))),
-            Math.max(0, Math.round(Math.abs(bottomRight.y - topLeft.y))))
-    }
-    readonly property point backgroundBlurMaskOffset: {
-        // mapToItem() follows the complete visual hierarchy. Reading the
-        // participating geometry explicitly keeps the binding reactive while
-        // the surface translation is animated.
-        const geometryValues = [
-            root.x, root.y,
-            surface.x, surface.y,
-            surfaceTranslation.x, surfaceTranslation.y,
-            normalBackground.x, normalBackground.y
-        ]
-        if (geometryValues.some(value => !Number.isFinite(value))) {
-            return Qt.point(0, 0)
-        }
-        const scenePosition = normalBackground.mapToItem(
-            null, Qt.point(0, 0))
-        return Qt.point(Math.round(scenePosition.x),
-            Math.round(scenePosition.y))
-    }
+    readonly property point backgroundBlurMaskOffset:
+        mappedSurfaceGeometry.backgroundMaskOffset
     readonly property real normalBackgroundBlurRadius: {
         return Kirigami.Units.cornerRadius * 2
             + root.maximumThemeFrameOverlap
     }
-    readonly property rect effectiveBackgroundGeometry: {
-        // Match the effective themed surface: margins describe only its
-        // content area, while the uncontracted frame includes its projection.
-        const leftInset = Number(normalBackground.inset.left)
-        const topInset = Number(normalBackground.inset.top)
-        const rightInset = Number(normalBackground.inset.right)
-        const bottomInset = Number(normalBackground.inset.bottom)
-        const geometryValues = [
-            surface.x, surface.y,
-            surfaceTranslation.x, surfaceTranslation.y,
-            normalBackground.x, normalBackground.y,
-            normalBackground.width, normalBackground.height,
-            leftInset, topInset, rightInset, bottomInset
-        ]
-        const hasValidGeometry = geometryValues.every(
-            value => Number.isFinite(value))
-        const hasValidInsets = hasValidGeometry
-            && leftInset >= 0 && topInset >= 0
-            && rightInset >= 0 && bottomInset >= 0
-            && leftInset + rightInset < normalBackground.width
-            && topInset + bottomInset < normalBackground.height
-        if (!hasValidInsets) {
-            return Qt.rect(0, 0, root.width, root.height)
-        }
-        const topLeft = normalBackground.mapToItem(
-            root, Qt.point(leftInset, topInset))
-        const bottomRight = normalBackground.mapToItem(
-            root, Qt.point(normalBackground.width - rightInset,
-                normalBackground.height - bottomInset))
-        return Qt.rect(
-            Math.round(Math.min(topLeft.x, bottomRight.x)),
-            Math.round(Math.min(topLeft.y, bottomRight.y)),
-            Math.max(0, Math.round(Math.abs(bottomRight.x - topLeft.x))),
-            Math.max(0, Math.round(Math.abs(bottomRight.y - topLeft.y))))
-    }
     readonly property rect folderDialogBackdropGeometry:
-        root.effectiveBackgroundGeometry
+        mappedSurfaceGeometry.effectiveBackdropGeometry
     property var hiddenApplicationIds: []
     property bool revealHiddenApplications: false
     property bool showCategories: true
@@ -272,6 +199,19 @@ FocusScope {
             : visibleApplicationsModel.count
 
     property var dockItemsController: null
+
+    PunchiMenuMappedSurfaceGeometry {
+        id: mappedSurfaceGeometry
+        targetItem: root
+        surfaceItem: surface
+        backgroundItem: normalBackground
+        translationX: surfaceTranslation.x
+        translationY: surfaceTranslation.y
+        leftInset: normalBackground.inset.left
+        topInset: normalBackground.inset.top
+        rightInset: normalBackground.inset.right
+        bottomInset: normalBackground.inset.bottom
+    }
 
     signal closeFinished()
     signal addFavoriteRequested(string storageId)

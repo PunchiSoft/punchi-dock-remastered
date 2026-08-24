@@ -15,6 +15,7 @@ QtObject {
     property real panelThickness: 0
     property real menuWidth: 1
     property real menuHeight: 1
+    property real horizontalAnchorWidth: menuWidth
     property real panelGap: 0
     property real floatingGap: 0
     property real screenInset: 0
@@ -129,6 +130,8 @@ QtObject {
         const available = root.absoluteAvailableRect()
         const width = Math.max(1, root.finiteNumber(root.menuWidth, 1))
         const height = Math.max(1, root.finiteNumber(root.menuHeight, 1))
+        const horizontalAnchorWidth = Math.min(width, Math.max(1,
+            root.finiteNumber(root.horizontalAnchorWidth, width)))
         const inset = Math.max(0, root.finiteNumber(root.screenInset, 0))
         const minimumX = available.x + inset
         const minimumY = available.y + inset
@@ -173,7 +176,7 @@ QtObject {
 
         if (root.panelLocation === PlasmaCore.Types.TopEdge
                 || root.panelLocation === PlasmaCore.Types.BottomEdge) {
-            targetX = anchorCenterX - width / 2
+            targetX = anchorCenterX - horizontalAnchorWidth / 2
             targetY = root.panelLocation === PlasmaCore.Types.TopEdge
                 ? surface.y + surface.height - surfaceBottomInset
                     + gap - root.themeFrameTopMargin

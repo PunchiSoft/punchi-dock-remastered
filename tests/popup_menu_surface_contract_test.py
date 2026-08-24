@@ -133,6 +133,14 @@ def main() -> int:
     context_surface_stack = (
         PROJECT_ROOT / "contents/ui/components/ContextSurfaceStack.qml"
     ).read_text()
+    compact_menu = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuCompact.qml"
+    ).read_text()
+    normal_placement = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuNormalPlacement.qml"
+    ).read_text()
     config_menus = (
         PROJECT_ROOT / "contents/ui/config/ConfigMenus.qml"
     ).read_text()
@@ -240,6 +248,16 @@ def main() -> int:
          "The opaque Dock frame must be addressable for placement"),
     ):
         require(dock_background, fragment, message)
+    for source, fragment, message in (
+        (normal_placement, "property real horizontalAnchorWidth: menuWidth",
+         "Popup placement must default horizontal anchoring to the full window"),
+        (compact_menu, "readonly property real primarySurfaceWidth:",
+         "Compact PunchiMenu must expose its stable primary surface width"),
+        (main_qml,
+         "horizontalAnchorWidth: punchiMenuCompact.primarySurfaceWidth",
+         "Compact PunchiMenu must anchor its primary surface instead of its flyout"),
+    ):
+        require(source, fragment, message)
     require(
         context_surface_stack,
         "function effectiveBackgroundWindowRect()",

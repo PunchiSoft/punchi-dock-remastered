@@ -103,6 +103,18 @@ TestCase {
             "translated:Calendar/Clock")
     }
 
+    function test_emptyConfigurationUsesDefaultsButExplicitArrayStaysEmpty() {
+        const defaults = Logic.loadItems("")
+
+        verify(defaults.length > 0)
+        compare(defaults[0].type, "punchimenu")
+        compare(Logic.loadItems("[]").length, 0)
+
+        const defaultCount = defaults.length
+        defaults.pop()
+        compare(Logic.loadItems("").length, defaultCount)
+    }
+
     function test_punchiMenuPanelDistanceMigratesFromLegacyPixels() {
         const item = {
             "type": "punchimenu",
