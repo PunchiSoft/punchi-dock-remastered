@@ -23,6 +23,14 @@ TestCase {
         height: 40
     }
 
+    Item {
+        id: floatingDockAnchor
+        x: 0
+        y: 700
+        width: 1000
+        height: 80
+    }
+
     PunchiMenuNormalPlacement {
         id: placement
         inPanel: true
@@ -30,6 +38,7 @@ TestCase {
         availableScreenRect: Qt.rect(0, 0, 1000, 800)
         screenGeometry: Qt.rect(0, 0, 1000, 800)
         panelWindow: panelWindow
+        floatingDockAnchor: floatingDockAnchor
         itemAnchor: itemAnchor
         menuWidth: 200
         menuHeight: 100
@@ -46,15 +55,17 @@ TestCase {
 
     function init() {
         failOnWarning(/.?/)
+        placement.inPanel = true
         placement.panelGap = 0
+        placement.floatingGap = 0
         placement.menuWidth = 200
         placement.menuHeight = 100
         placement.horizontalAnchorWidth = placement.menuWidth
     }
 
-    function verifyVisibleGap(edge, expectedGap) {
+    function verifyVisibleGap(edge, requestedGap, expectedGap) {
         placement.panelLocation = edge
-        placement.panelGap = expectedGap
+        placement.panelGap = requestedGap
 
         if (edge === PlasmaCore.Types.TopEdge) {
             panelWindow.x = 0
@@ -114,22 +125,38 @@ TestCase {
         }
     }
 
-    function test_zeroPercentJoinsEffectiveSurfacesOnEveryEdge() {
-        verifyVisibleGap(PlasmaCore.Types.TopEdge, 0)
-        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 0)
-        verifyVisibleGap(PlasmaCore.Types.LeftEdge, 0)
-        verifyVisibleGap(PlasmaCore.Types.RightEdge, 0)
+    function test_zeroPercentKeepsThemedMinimumGapOnPanels() {
+        const minimumGap = placement.minimumPanelGap
+        verifyVisibleGap(PlasmaCore.Types.TopEdge, 0, minimumGap)
+        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 0, minimumGap)
+        verifyVisibleGap(PlasmaCore.Types.LeftEdge, 0, minimumGap)
+        verifyVisibleGap(PlasmaCore.Types.RightEdge, 0, minimumGap)
     }
 
     function test_configuredGapStartsAtEffectiveSurfaceEdges() {
-        verifyVisibleGap(PlasmaCore.Types.TopEdge, 10)
-        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 10)
-        verifyVisibleGap(PlasmaCore.Types.LeftEdge, 10)
-        verifyVisibleGap(PlasmaCore.Types.RightEdge, 10)
+        verifyVisibleGap(PlasmaCore.Types.TopEdge, 10, 10)
+        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 10, 10)
+        verifyVisibleGap(PlasmaCore.Types.LeftEdge, 10, 10)
+        verifyVisibleGap(PlasmaCore.Types.RightEdge, 10, 10)
+    }
+
+    function test_zeroPercentStillJoinsEffectiveFloatingSurfaces() {
+        placement.inPanel = false
+        placement.panelLocation = PlasmaCore.Types.BottomEdge
+        placement.floatingGap = 0
+
+        const position = placement.calculatePosition()
+        const floatingDockRect = placement.globalItemRect(floatingDockAnchor)
+        const dockVisibleTop = floatingDockRect.y
+            + placement.surfaceFrameTopMargin
+        const popupVisibleBottom = position.y + placement.menuHeight
+            - placement.themeFrameBottomMargin
+        compare(dockVisibleTop - popupVisibleBottom, 0)
     }
 
     function test_popupIsCenteredOnHorizontalDockItem() {
-        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 0)
+        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 0,
+            placement.minimumPanelGap)
         const anchorCenter = itemAnchor.mapToGlobal(
             Qt.point(itemAnchor.width / 2, itemAnchor.height / 2))
         compare(placement.calculatePosition().x,
@@ -137,7 +164,8 @@ TestCase {
     }
 
     function test_popupIsCenteredOnVerticalDockItem() {
-        verifyVisibleGap(PlasmaCore.Types.LeftEdge, 0)
+        verifyVisibleGap(PlasmaCore.Types.LeftEdge, 0,
+            placement.minimumPanelGap)
         const anchorCenter = itemAnchor.mapToGlobal(
             Qt.point(itemAnchor.width / 2, itemAnchor.height / 2))
         compare(placement.calculatePosition().y,
@@ -145,7 +173,8 @@ TestCase {
     }
 
     function test_inlineExpansionKeepsPrimarySurfaceAnchored() {
-        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 0)
+        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 0,
+            placement.minimumPanelGap)
         const collapsedX = placement.calculatePosition().x
 
         placement.horizontalAnchorWidth = placement.menuWidth
@@ -163,7 +192,8 @@ TestCase {
     }
 
     function test_inlineExpansionStillClampsFullWindowToScreen() {
-        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 0)
+        verifyVisibleGap(PlasmaCore.Types.BottomEdge, 0,
+            placement.minimumPanelGap)
         itemAnchor.x = 880
         placement.horizontalAnchorWidth = placement.menuWidth
         placement.menuWidth = 440

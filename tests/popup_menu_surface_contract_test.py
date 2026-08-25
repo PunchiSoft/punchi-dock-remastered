@@ -249,6 +249,12 @@ def main() -> int:
     ):
         require(dock_background, fragment, message)
     for source, fragment, message in (
+        (normal_placement,
+         "Math.max(0, Math.round(Kirigami.Units.smallSpacing))",
+         "Panel popups must derive their minimum gap from a theme metric"),
+        (normal_placement,
+         "? Math.max(root.minimumPanelGap, requestedGap)",
+         "Only panel placement must enforce the themed minimum gap"),
         (normal_placement, "property real horizontalAnchorWidth: menuWidth",
          "Popup placement must default horizontal anchoring to the full window"),
         (compact_menu, "readonly property real primarySurfaceWidth:",

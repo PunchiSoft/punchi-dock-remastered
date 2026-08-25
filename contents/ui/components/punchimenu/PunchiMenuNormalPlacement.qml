@@ -1,4 +1,5 @@
 import QtQuick
+import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 
 QtObject {
@@ -18,6 +19,8 @@ QtObject {
     property real horizontalAnchorWidth: menuWidth
     property real panelGap: 0
     property real floatingGap: 0
+    readonly property real minimumPanelGap:
+        Math.max(0, Math.round(Kirigami.Units.smallSpacing))
     property real screenInset: 0
     property real themeFrameLeftMargin: 0
     property real themeFrameTopMargin: 0
@@ -156,9 +159,12 @@ QtObject {
         }
         const surface = root.validRect(fallbackSurface)
             ? fallbackSurface : anchorRectangle
-        const gap = Math.max(0, root.inPanel
+        const requestedGap = Math.max(0, root.inPanel
             ? root.finiteNumber(root.panelGap, 0)
             : root.finiteNumber(root.floatingGap, 0))
+        const gap = root.inPanel
+            ? Math.max(root.minimumPanelGap, requestedGap)
+            : requestedGap
         const surfaceLeftInset = Math.max(0, root.finiteNumber(
             root.surfaceFrameLeftMargin, 0))
         const surfaceTopInset = Math.max(0, root.finiteNumber(
