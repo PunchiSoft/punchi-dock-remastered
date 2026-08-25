@@ -46,9 +46,11 @@ KCM.SimpleKCM {
     property bool loadingFromDisk: false
     property bool updatingConfigJson: false
     property bool diskItemsLoaded: false
+    property int pendingRemovalIndex: -1
     property string timedColorTarget: "text"
     property string cfg_dockItemsJson: ""
     property int cfg_pendingEditDockItemIndex: -1
+    property bool cfg_showActiveTasks: true
     property alias cfg_actionPopupLimitRows: actionDialog.actionPopupLimitRowsChecked
     property alias cfg_actionPopupMaxVisibleRows: actionDialog.actionPopupMaxVisibleRowsValue
     property bool pendingEditConsumed: false
@@ -588,6 +590,10 @@ KCM.SimpleKCM {
 
     function removeSelectedItem() { WorkflowHelper.removeSelectedItem() }
 
+    function confirmDynamicApplicationsRemoval() {
+        WorkflowHelper.confirmDynamicApplicationsRemoval()
+    }
+
     function moveSelectedItem(delta) { WorkflowHelper.moveSelectedItem(delta) }
 
     function addAction() { WorkflowHelper.addAction() }
@@ -647,6 +653,31 @@ KCM.SimpleKCM {
         id: containerFolderDialog
         titleText: i18n("Choose folder") // qmllint disable unqualified
         onFolderChosen: (path) => page.setContainerFolder(path)
+    }
+
+    Controls.Dialog {
+        id: dynamicApplicationsRemovalDialog
+        objectName: "dynamicApplicationsRemovalDialog"
+        modal: true
+        title: i18n("Remove open applications from the dock?") // qmllint disable unqualified
+        standardButtons: Controls.Dialog.Cancel | Controls.Dialog.Ok
+        anchors.centerIn: parent
+        width: Math.min(page.width - Kirigami.Units.gridUnit * 2,
+            Kirigami.Units.gridUnit * 30)
+
+        onAccepted: page.confirmDynamicApplicationsRemoval()
+        onRejected: page.pendingRemovalIndex = -1
+
+        Component.onCompleted: {
+            standardButton(Controls.Dialog.Ok).text = i18n("Remove and disable") // qmllint disable unqualified
+            standardButton(Controls.Dialog.Ok).icon.name = "edit-delete"
+        }
+
+        Controls.Label {
+            width: parent.width
+            wrapMode: Text.WordWrap
+            text: i18n("Removing this item will also disable Show active windows in the dock. You can enable it again from the Windows settings.") // qmllint disable unqualified
+        }
     }
 
     ColorPaletteDialog {

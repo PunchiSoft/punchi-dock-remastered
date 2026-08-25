@@ -426,10 +426,14 @@ function addItem(type) {
             Kirigami.MessageType.Information)
         return
     }
+    const impact = ConfigItemsJS.itemAdditionImpact(type)
     var nextItems = clone(items)
     nextItems.push(ConfigItemsJS.newItem(type, defaultTrashEmptySound))
     selectedIndex = nextItems.length - 1
     setItems(nextItems)
+    if (impact.enableActiveTasks) {
+        cfg_showActiveTasks = true
+    }
 }
 
 function applyTimedColor(value) {
@@ -458,9 +462,35 @@ function removeSelectedItem() {
     if (selectedIndex < 0) {
         return
     }
-    var result = ConfigItemsJS.removeItem(items, selectedIndex)
+    var impact = ConfigItemsJS.itemRemovalImpact(selectedItem())
+    if (impact.confirmationRequired) {
+        pendingRemovalIndex = selectedIndex
+        dynamicApplicationsRemovalDialog.open()
+        return
+    }
+    removeItemAtIndex(selectedIndex, false)
+}
+
+function confirmDynamicApplicationsRemoval() {
+    var targetIndex = pendingRemovalIndex
+    pendingRemovalIndex = -1
+    if (targetIndex < 0 || targetIndex >= items.length) {
+        return
+    }
+    var impact = ConfigItemsJS.itemRemovalImpact(items[targetIndex])
+    if (!impact.confirmationRequired) {
+        return
+    }
+    removeItemAtIndex(targetIndex, impact.disableActiveTasks)
+}
+
+function removeItemAtIndex(targetIndex, disableActiveTasks) {
+    var result = ConfigItemsJS.removeItem(items, targetIndex)
     selectedIndex = result.selectedIndex
     setItems(result.items)
+    if (disableActiveTasks) {
+        cfg_showActiveTasks = false
+    }
 }
 
 function moveSelectedItem(delta) {

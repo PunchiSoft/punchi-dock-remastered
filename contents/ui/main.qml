@@ -14,6 +14,7 @@ import "config/code/configItems.js" as ConfigItemsJS
 
 PlasmoidItem {
     id: root
+    objectName: "punchiDockRoot"
 
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
     toolTipMainText: ""
@@ -69,6 +70,26 @@ PlasmoidItem {
     // qmllint enable import
 
     property bool deletingActiveNote: false
+    property var dynamicApplicationsMoveModeTarget: null
+    readonly property bool dynamicApplicationsMoveModeActive:
+        !!dynamicApplicationsMoveModeTarget
+        && dynamicApplicationsMoveModeTarget.dynamicApplicationsMoveModeActive
+
+    function requestDynamicApplicationsMoveMode() {
+        const target = root.dynamicApplicationsMoveModeTarget
+        if (!target || typeof target.enterDynamicApplicationsMoveMode
+                !== "function" || root.dynamicApplicationsMarkerIndex < 0) {
+            return false
+        }
+        Qt.callLater(function() {
+            if (root.dynamicApplicationsMoveModeTarget === target
+                    && typeof target.enterDynamicApplicationsMoveMode
+                        === "function") {
+                target.enterDynamicApplicationsMoveMode()
+            }
+        })
+        return true
+    }
     
     // Host environment detection (panel or floating dock).
     property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
@@ -509,6 +530,8 @@ PlasmoidItem {
         visibleTaskCount: root.visibleTaskRows.length
         overflowTaskCount: root.overflowTaskRows.length
         totalDynamicGroups: taskController.totalDynamicGroups
+        dynamicApplicationsMoveModeActive:
+            root.dynamicApplicationsMoveModeActive
         availableScreenRect: root.availableScreenRect
         floatingAnchor: root.floatingDockAnchor
         hostHeight: root.height
@@ -1359,6 +1382,9 @@ PlasmoidItem {
         configureDockHandler: function() {
             return root.openDockConfiguration()
         }
+        moveDynamicApplicationsHandler: function() {
+            return root.requestDynamicApplicationsMoveMode()
+        }
     }
     DropFeedbackPopup {
         id: dropFeedbackPopup
@@ -1558,7 +1584,22 @@ PlasmoidItem {
 
     fullRepresentation: Item {
         id: mainContainer
+        objectName: "punchiDockFullRepresentation"
         property bool contextMenuVisible: false
+        readonly property bool dynamicApplicationsMoveModeActive:
+            dockLayout.persistentMoveModeActive
+
+        function enterDynamicApplicationsMoveMode() {
+            return dockLayout.enterDynamicApplicationsMoveMode()
+        }
+
+        Component.onCompleted:
+            root.dynamicApplicationsMoveModeTarget = mainContainer
+        Component.onDestruction: {
+            if (root.dynamicApplicationsMoveModeTarget === mainContainer) {
+                root.dynamicApplicationsMoveModeTarget = null
+            }
+        }
         // fullRepresentation is compiled as a nested component, so qmllint
         // cannot resolve accesses to the owning PlasmoidItem even though
         // Plasma provides that lexical context at runtime.
@@ -1872,6 +1913,7 @@ PlasmoidItem {
                 property bool mediaMorphActive: false
                 property bool launcherDropTransitionActive: false
                 property int persistentDragSourceIndex: -1
+                property int persistentMoveModeIndex: -1
                 property int persistentDragTargetIndex: -1
                 property string persistentDragExpectedItemText: ""
                 property var persistentDragSourceItem: null
@@ -1881,6 +1923,8 @@ PlasmoidItem {
                     "application-x-executable"
                 readonly property bool persistentDragActive:
                     persistentDragSourceIndex >= 0
+                readonly property bool persistentMoveModeActive:
+                    persistentMoveModeIndex >= 0
                 readonly property string effectiveHoverAnimationMode:
                     persistentDragActive ? "none"
                         : dockConfig.dockHoverAnimation
@@ -1892,6 +1936,26 @@ PlasmoidItem {
                     persistentDragSourceItem = null
                     persistentDragPointerPosition = Qt.point(0, 0)
                     persistentDragIconName = "application-x-executable"
+                    persistentMoveModeIndex = -1
+                }
+
+                function enterDynamicApplicationsMoveMode() {
+                    const index = root.dynamicApplicationsMarkerIndex
+                    const items = dockItemsController.dockItems || []
+                    if (!Number.isInteger(index) || index < 0
+                            || index >= items.length || !items[index]
+                            || items[index].type !== "dynamic-applications") {
+                        return false
+                    }
+                    popupCoordinator.closeAllPopups(null)
+                    persistentMoveModeIndex = index
+                    Qt.callLater(function() {
+                        const handle = persistentDockItemsRepeater.itemAt(index)
+                        if (handle && handle.focusItem) {
+                            handle.focusItem()
+                        }
+                    })
+                    return true
                 }
 
                 function beginPersistentDrag(sourceIndex, sourceItem) {
@@ -1901,9 +1965,12 @@ PlasmoidItem {
                             || !Number.isInteger(index)
                             || index < 0 || index >= items.length
                             || !items[index]
-                            || items[index].type === "media"
-                            || (!root.inPanel
-                                && !dockConfig.floatingItemDragReorderingEnabled)) {
+                            || items[index].type === "media") {
+                        return false
+                    }
+                    if (!root.inPanel
+                            && !dockConfig.floatingItemDragReorderingEnabled
+                            && persistentMoveModeIndex !== index) {
                         return false
                     }
                     popupCoordinator.closeAllPopups(null)
@@ -1987,8 +2054,17 @@ PlasmoidItem {
                     }
                     const expectedItemText
                         = dockItemsController.canonicalJsonText(items[sourceIndex])
-                    dockItemsController.movePersistentItem(
-                        sourceIndex, targetIndex, expectedItemText)
+                    if (dockItemsController.movePersistentItem(
+                            sourceIndex, targetIndex, expectedItemText)
+                            && persistentMoveModeIndex === sourceIndex) {
+                        persistentMoveModeIndex = targetIndex
+                        Qt.callLater(function() {
+                            const handle = persistentDockItemsRepeater.itemAt(targetIndex)
+                            if (handle && handle.focusItem) {
+                                handle.focusItem()
+                            }
+                        })
+                    }
                 }
 
                 Connections {
@@ -2115,8 +2191,16 @@ PlasmoidItem {
                             dockItemDelegate.modelData.type !== "media"
                         persistentPointerReorderEnabled:
                             dockItemDelegate.persistentReorderEnabled
-                            && (root.inPanel
+                            && (dockItemDelegate.persistentMoveHandleVisible
+                                || root.inPanel
                                 || dockConfig.floatingItemDragReorderingEnabled)
+                        persistentMoveHandleVisible:
+                            dockItemDelegate.modelData.type
+                                === "dynamic-applications"
+                            && dockLayout.persistentMoveModeIndex
+                                === dockItemDelegate.index
+                        persistentDirectReorderEnabled:
+                            dockItemDelegate.persistentMoveHandleVisible
                         persistentReorderActive: dockLayout.persistentDragActive
                         persistentReorderSource: dockLayout.persistentDragSourceIndex
                             === dockItemDelegate.index
@@ -2346,6 +2430,7 @@ PlasmoidItem {
                         }
                         onPersistentReorderFinished: dockLayout.finishPersistentDrag()
                         onPersistentReorderCanceled: dockLayout.cancelPersistentDrag()
+                        onPersistentMoveModeCanceled: dockLayout.cancelPersistentDrag()
                         onPersistentKeyboardMoveRequested: function(modelIndex, delta) {
                             dockLayout.movePersistentItemFromKeyboard(modelIndex, delta)
                         }

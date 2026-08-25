@@ -13,11 +13,34 @@ TestCase {
     property var items: []
     property bool setItemsCalled: false
     property bool lastMarkAsChanged: true
+    property int selectedIndex: -1
+    property int pendingRemovalIndex: -1
+    property bool cfg_showActiveTasks: true
+    property string defaultTrashEmptySound: ""
+
+    QtObject {
+        id: dynamicApplicationsRemovalDialog
+        property int openCount: 0
+        function open() { openCount += 1 }
+    }
+
+    function selectedItem() {
+        return selectedIndex >= 0 && selectedIndex < items.length
+            ? items[selectedIndex] : null
+    }
+
+    function clone(value) {
+        return JSON.parse(JSON.stringify(value))
+    }
+
+    function hasItemType(type) {
+        return items.some(function(item) { return item.type === type })
+    }
 
     function setItems(nextItems, markAsChanged) {
         items = nextItems
         setItemsCalled = true
-        lastMarkAsChanged = markAsChanged
+        lastMarkAsChanged = markAsChanged === undefined ? true : markAsChanged
     }
 
     function init() {
@@ -28,6 +51,10 @@ TestCase {
         items = []
         setItemsCalled = false
         lastMarkAsChanged = true
+        selectedIndex = -1
+        pendingRemovalIndex = -1
+        cfg_showActiveTasks = true
+        dynamicApplicationsRemovalDialog.openCount = 0
     }
 
     function test_missingConfigurationLoadsDefaults() {
@@ -50,5 +77,49 @@ TestCase {
         verify(diskItemsLoaded)
         compare(items.length, 0)
         compare(lastMarkAsChanged, false)
+    }
+
+    function test_removingMarkerWaitsForConfirmationThenDisablesTasks() {
+        items = [
+            { "type": "dynamic-applications" },
+            { "type": "app", "name": "Pinned" }
+        ]
+        selectedIndex = 0
+
+        WorkflowHelper.removeSelectedItem()
+
+        compare(dynamicApplicationsRemovalDialog.openCount, 1)
+        compare(pendingRemovalIndex, 0)
+        compare(items.length, 2)
+        verify(cfg_showActiveTasks)
+
+        WorkflowHelper.confirmDynamicApplicationsRemoval()
+
+        compare(pendingRemovalIndex, -1)
+        compare(items.length, 1)
+        compare(items[0].type, "app")
+        verify(!cfg_showActiveTasks)
+    }
+
+    function test_removingRegularItemDoesNotDisableTasks() {
+        items = [{ "type": "app", "name": "Pinned" }]
+        selectedIndex = 0
+
+        WorkflowHelper.removeSelectedItem()
+
+        compare(dynamicApplicationsRemovalDialog.openCount, 0)
+        compare(items.length, 0)
+        verify(cfg_showActiveTasks)
+    }
+
+    function test_addingMarkerEnablesActiveTasks() {
+        items = []
+        cfg_showActiveTasks = false
+
+        WorkflowHelper.addItem("dynamic-applications")
+
+        compare(items.length, 1)
+        compare(items[0].type, "dynamic-applications")
+        verify(cfg_showActiveTasks)
     }
 }

@@ -8,6 +8,7 @@ QtObject {
     property var dockItemsController: null
     property var editDockItemHandler: null
     property var configureDockHandler: null
+    property var moveDynamicApplicationsHandler: null
     property bool showEditDockItemAction: true
     property bool showConfigureDockAction: true
 
@@ -80,6 +81,17 @@ QtObject {
                 "targetItem": item
             }], seenNames)
         } else if (itemType === "app" && itemOrigin === "dynamic") {
+            if (typeof root.moveDynamicApplicationsHandler === "function") {
+                root.appendUniqueActions(actions, [{
+                    // Plasma injects translation functions into the applet context.
+                    // qmllint disable unqualified
+                    "name": i18nc("@action:context", "Move open applications section"),
+                    // qmllint enable unqualified
+                    "icon": "transform-move",
+                    "kind": "moveDynamicApplications",
+                    "enabled": true
+                }], seenNames)
+            }
             const pinDescriptor = root.taskController.pinDescriptorForEntry(item)
             if (pinDescriptor && !root.taskController.dockContainsPinDescriptor(pinDescriptor)) {
                 root.appendUniqueActions(actions, [{
@@ -321,7 +333,9 @@ QtObject {
                 || (root.showConfigureDockAction && typeof root.configureDockHandler === "function")
         }
         return itemOrigin === "pinned"
-            || (itemOrigin === "dynamic" && !!root.taskController.pinDescriptorForEntry(item))
+            || (itemOrigin === "dynamic"
+                && (typeof root.moveDynamicApplicationsHandler === "function"
+                    || !!root.taskController.pinDescriptorForEntry(item)))
             || String(item.storageId || item.appId || item.command || "").trim().length > 0
             || (item.actions instanceof Array && item.actions.length > 0)
             || (taskRows instanceof Array && taskRows.length > 0)
@@ -351,6 +365,11 @@ QtObject {
         if (action.kind === "configureDock") {
             return root.configureDockHandler
                 ? root.configureDockHandler()
+                : false
+        }
+        if (action.kind === "moveDynamicApplications") {
+            return root.moveDynamicApplicationsHandler
+                ? root.moveDynamicApplicationsHandler()
                 : false
         }
         if (action.kind === "setPunchiMenuMode") {

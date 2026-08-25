@@ -1161,6 +1161,21 @@ function removeItem(items, selectedIndex) {
     }
 }
 
+function itemRemovalImpact(item) {
+    var removesOpenApplications = !!item
+        && String(item.type || "") === "dynamic-applications"
+    return {
+        "confirmationRequired": removesOpenApplications,
+        "disableActiveTasks": removesOpenApplications
+    }
+}
+
+function itemAdditionImpact(type) {
+    return {
+        "enableActiveTasks": String(type || "") === "dynamic-applications"
+    }
+}
+
 function moveItem(items, selectedIndex, target) {
     var nextItems = clone(items)
     var item = nextItems.splice(selectedIndex, 1)[0]

@@ -12,6 +12,9 @@ CONFIG_MOUSE = (ROOT / "contents/ui/config/ConfigMouse.qml").read_text(
 DOCK_ITEM = (ROOT / "contents/ui/components/DockItem.qml").read_text(
     encoding="utf-8"
 )
+CONTEXT_ACTIONS = (
+    ROOT / "contents/ui/components/DockContextActionsController.qml"
+).read_text(encoding="utf-8")
 DOCK_CONFIGURATION = (
     ROOT / "contents/ui/components/DockConfigurationState.qml"
 ).read_text(encoding="utf-8")
@@ -35,6 +38,9 @@ CONFIG_ITEMS = (ROOT / "contents/ui/config/code/configItems.js").read_text(
 WORKFLOW = (
     ROOT / "contents/ui/config/code/configItemsWorkflowHelper.js"
 ).read_text(encoding="utf-8")
+CONFIG_ITEMS_PAGE = (ROOT / "contents/ui/config/ConfigItems.qml").read_text(
+    encoding="utf-8"
+)
 PALETTE = (ROOT / "contents/ui/config/AddItemPalette.qml").read_text(
     encoding="utf-8"
 )
@@ -48,6 +54,44 @@ def require(condition: bool, message: str) -> None:
 require(
     '"dynamic-applications"' in LOGIC.split("singletonDockItemTypes", 1)[1],
     "The open-applications marker must be a singleton persistent item.",
+)
+require(
+    'objectName: "punchiDockRoot"' in MAIN
+    and "property var dynamicApplicationsMoveModeTarget: null" in MAIN
+    and "function requestDynamicApplicationsMoveMode()" in MAIN
+    and "target.enterDynamicApplicationsMoveMode()" in MAIN
+    and 'objectName: "punchiDockFullRepresentation"' in MAIN
+    and "root.dynamicApplicationsMoveModeTarget = mainContainer" in MAIN
+    and "dynamicApplicationsMoveModeActive:" in GEOMETRY
+    and "root.dynamicApplicationsMoveHandleExtent" in GEOMETRY,
+    "The context action must cross the full-representation boundary through "
+    "a live bridge and reserve visible marker geometry.",
+)
+require(
+    '"kind": "moveDynamicApplications"' in CONTEXT_ACTIONS
+    and '"Move open applications section"' in CONTEXT_ACTIONS
+    and "moveDynamicApplicationsHandler" in CONTEXT_ACTIONS
+    and "function enterDynamicApplicationsMoveMode()" in MAIN
+    and "persistentMoveHandleVisible:" in MAIN
+    and "persistentDirectReorderEnabled:" in MAIN
+    and "Drag to move the open applications section." in DOCK_ITEM,
+    "Dynamic tasks must expose a distinct, accessible section-move mode.",
+)
+
+require(
+    "function itemRemovalImpact(item)" in CONFIG_ITEMS
+    and "function itemAdditionImpact(type)" in CONFIG_ITEMS
+    and 'String(item.type || "") === "dynamic-applications"' in CONFIG_ITEMS
+    and "impact.confirmationRequired" in WORKFLOW
+    and "dynamicApplicationsRemovalDialog.open()" in WORKFLOW
+    and "cfg_showActiveTasks = false" in WORKFLOW
+    and "impact.enableActiveTasks" in WORKFLOW
+    and "cfg_showActiveTasks = true" in WORKFLOW
+    and "property bool cfg_showActiveTasks: true" in CONFIG_ITEMS_PAGE
+    and 'id: dynamicApplicationsRemovalDialog' in CONFIG_ITEMS_PAGE
+    and 'i18n("Remove and disable")' in CONFIG_ITEMS_PAGE,
+    "Removing the open-applications marker must be confirmed and disable "
+    "active tasks in the same pending KCM edit.",
 )
 require(
     '"type": "dynamic-applications"' in DEFAULTS

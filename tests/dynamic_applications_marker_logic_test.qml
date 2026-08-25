@@ -92,6 +92,29 @@ TestCase {
         verify(Object.keys(item).indexOf("showSeparator") < 0)
     }
 
+    function test_removingMarkerRequiresConfirmationAndDisablesActiveTasks() {
+        const markerImpact = ConfigItems.itemRemovalImpact({
+            "type": "dynamic-applications"
+        })
+        verify(markerImpact.confirmationRequired)
+        verify(markerImpact.disableActiveTasks)
+
+        const applicationImpact = ConfigItems.itemRemovalImpact({
+            "type": "app"
+        })
+        verify(!applicationImpact.confirmationRequired)
+        verify(!applicationImpact.disableActiveTasks)
+    }
+
+    function test_addingMarkerEnablesActiveTasks() {
+        const markerImpact = ConfigItems.itemAdditionImpact(
+            "dynamic-applications")
+        verify(markerImpact.enableActiveTasks)
+
+        const applicationImpact = ConfigItems.itemAdditionImpact("app")
+        verify(!applicationImpact.enableActiveTasks)
+    }
+
     function test_calendarUsesUnambiguousDefaultTitle() {
         const translate = function(text) { return "translated:" + text }
 

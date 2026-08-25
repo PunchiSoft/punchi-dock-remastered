@@ -77,6 +77,8 @@ Item {
     property bool positionTransitionEnabled: false
     property bool persistentReorderEnabled: false
     property bool persistentPointerReorderEnabled: false
+    property bool persistentDirectReorderEnabled: false
+    property bool persistentMoveHandleVisible: false
     property bool persistentReorderActive: false
     property bool persistentReorderSource: false
     property bool persistentReorderTarget: false
@@ -524,6 +526,7 @@ Item {
     signal persistentReorderMoved(real x, real y)
     signal persistentReorderFinished()
     signal persistentReorderCanceled()
+    signal persistentMoveModeCanceled()
     signal persistentKeyboardMoveRequested(int modelIndex, int delta)
     signal mediaLaunchRequested()
     signal mediaPlaybackLaunchRequested()
@@ -667,24 +670,32 @@ Item {
         ? launcherDropReservedExtent : 0
 
     // Keep layout container measurements fully static to prevent jitter.
+    readonly property real persistentMoveHandleMainExtent:
+        Math.max(iconSize + Kirigami.Units.smallSpacing * 2,
+            Math.round(iconSize * 3.6))
+
     implicitWidth: verticalPanelMode
         ? Math.max(iconSize + 12, !mediaItem && showPersistentLabel ? Math.round(iconSize * 1.85) : 0)
-        : (separatorItem
+        : (persistentMoveHandleVisible
+            ? persistentMoveHandleMainExtent
+            : (separatorItem
             ? Math.max(10, Math.ceil(separatorThickness + 4))
             : (spacerItem
                 ? Math.max(12, iconSize * 0.5)
                 : (mediaItem
                     ? mediaCurrentMainAxisLength + 12
                     : Math.max(iconSize + 12,
-                        showPersistentLabel ? Math.round(iconSize * 1.85) : 0))))
+                        showPersistentLabel ? Math.round(iconSize * 1.85) : 0)))))
     implicitHeight: verticalPanelMode
-        ? (separatorItem
+        ? (persistentMoveHandleVisible
+            ? Math.max(iconSize + 12, visualAreaHeight + labelAreaHeight)
+            : (separatorItem
             ? Math.max(10, Math.ceil(separatorThickness + 4))
             : (spacerItem
                 ? Math.max(12, iconSize * 0.5)
                 : (mediaItem
                     ? mediaCurrentMainAxisLength + 12
-                    : (visualAreaHeight + labelAreaHeight))))
+                    : (visualAreaHeight + labelAreaHeight)))))
         : (visualAreaHeight + labelAreaHeight)
     opacity: entryOpacity * (persistentReorderSource ? 0.28 : 1.0)
 
@@ -824,6 +835,59 @@ Item {
             ? (dockItemContainer.persistentReorderInsertAfter
                 ? dockItemContainer.height - height / 2 : -height / 2)
             : Math.round((dockItemContainer.height - height) / 2)
+    }
+
+    Item {
+        id: persistentMoveHandle
+        z: 7
+        anchors.fill: parent
+        visible: dockItemContainer.persistentMoveHandleVisible
+        Accessible.ignored: true
+
+        PunchiMenuComponents.PunchiMenuItemHighlight {
+            anchors.fill: parent
+            anchors.margins: Kirigami.Units.smallSpacing
+            hovered: mouseArea.containsMouse
+            selected: true
+            focused: mouseArea.activeFocus
+            pressed: mouseArea.pressed
+            motionEnabled: Kirigami.Units.longDuration > 0
+        }
+
+        RowLayout {
+            anchors.centerIn: parent
+            width: Math.min(implicitWidth, parent.width
+                - Kirigami.Units.smallSpacing * 2)
+            spacing: Kirigami.Units.smallSpacing
+
+            Kirigami.Icon {
+                Layout.preferredWidth: dockItemContainer.verticalPanelMode
+                    ? Math.max(18, Math.round(dockItemContainer.iconSize * 0.56))
+                    : Math.min(dockItemContainer.iconSize,
+                        Math.max(16, persistentMoveHandle.height
+                            - Kirigami.Units.smallSpacing * 3))
+                Layout.preferredHeight: Layout.preferredWidth
+                source: "window-duplicate"
+                Accessible.ignored: true
+            }
+
+            Controls.Label {
+                Layout.fillWidth: true
+                visible: !dockItemContainer.verticalPanelMode
+                text: dockItemContainer.localizedItemName
+                elide: Text.ElideRight
+                maximumLineCount: 1
+            }
+
+            Kirigami.Icon {
+                Layout.preferredWidth: Math.max(14,
+                    Math.round(dockItemContainer.iconSize * 0.34))
+                Layout.preferredHeight: Layout.preferredWidth
+                source: "transform-move"
+                color: Kirigami.Theme.textColor
+                Accessible.ignored: true
+            }
+        }
     }
 
     Rectangle {
@@ -1060,6 +1124,7 @@ Item {
         ThemedSeparator {
             visible: dockItemContainer.separatorItem
                 && dockItemContainer.separatorVisibleSetting
+                && !dockItemContainer.persistentMoveHandleVisible
             anchors.centerIn: parent
             theme: dockItemContainer.customSeparatorEnabled
                 ? dockItemContainer.separatorTheme : ({})
@@ -1293,13 +1358,19 @@ Item {
         activeFocusOnTab: true
         preventStealing: dockItemContainer.persistentReorderSource
         cursorShape: dockItemContainer.persistentReorderSource
-            ? Qt.ClosedHandCursor : Qt.ArrowCursor
+            ? Qt.ClosedHandCursor
+            : (dockItemContainer.persistentDirectReorderEnabled
+                ? Qt.OpenHandCursor : Qt.ArrowCursor)
         Accessible.role: (dockItemContainer.separatorItem || dockItemContainer.spacerItem)
                 && !dockItemContainer.persistentReorderEnabled
             ? Accessible.StaticText : Accessible.Button
         Accessible.name: dockItemContainer.localizedItemName
         // qmllint disable unqualified
         Accessible.description: {
+            if (dockItemContainer.persistentMoveHandleVisible) {
+                return i18nc("@info:accessible",
+                    "Drag to move the open applications section. Use an arrow key to move it one position, or Escape to cancel.")
+            }
             if (dockItemContainer.externalDropState === "activationPending") {
                 return i18nc("@info:accessible", "Keep holding to bring %1 to the front",
                     dockItemContainer.localizedItemName)
@@ -1407,6 +1478,22 @@ Item {
 
         onPressed: function(mouse) {
             if (mouse.button === Qt.LeftButton
+                    && dockItemContainer.persistentDirectReorderEnabled
+                    && !dockItemContainer.persistentReorderActive) {
+                dockItemContainer.persistentReorderPressStarted(
+                    dockItemContainer)
+                dockItemContainer.persistentReorderStarted(
+                    dockItemContainer.persistentModelIndex,
+                    dockItemContainer)
+                if (dockItemContainer.persistentReorderSource) {
+                    dockItemContainer.suppressClickAfterReorder = true
+                    mouse.accepted = true
+                    mouseArea.forceActiveFocus(Qt.MouseFocusReason)
+                    dockItemContainer.persistentReorderMoved(mouse.x, mouse.y)
+                }
+                return
+            }
+            if (mouse.button === Qt.LeftButton
                     && dockItemContainer.persistentPointerReorderEnabled
                     && !dockItemContainer.persistentReorderActive) {
                 dockItemContainer.persistentReorderPressStarted(
@@ -1419,6 +1506,7 @@ Item {
 
         onPressAndHold: function(mouse) {
             if (mouse.button !== Qt.LeftButton
+                    || dockItemContainer.persistentDirectReorderEnabled
                     || !dockItemContainer.persistentPointerReorderEnabled
                     || dockItemContainer.persistentReorderActive) {
                 return
@@ -1468,6 +1556,12 @@ Item {
         Keys.onReturnPressed: if (!dockItemContainer.separatorItem && !dockItemContainer.spacerItem) dockItemContainer.itemClicked(dockItemContainer.itemCommand)
         Keys.onSpacePressed: if (!dockItemContainer.separatorItem && !dockItemContainer.spacerItem) dockItemContainer.itemClicked(dockItemContainer.itemCommand)
         Keys.onPressed: function(event) {
+            if (dockItemContainer.persistentMoveHandleVisible
+                    && event.key === Qt.Key_Escape) {
+                dockItemContainer.persistentMoveModeCanceled()
+                event.accepted = true
+                return
+            }
             if (dockItemContainer.persistentReorderSource
                     && event.key === Qt.Key_Escape) {
                 dockItemContainer.suppressClickAfterReorder = true
@@ -1477,7 +1571,9 @@ Item {
             }
             const reorderModifiers = Qt.ControlModifier | Qt.ShiftModifier
             if (dockItemContainer.persistentReorderEnabled
-                    && event.modifiers === reorderModifiers) {
+                    && (event.modifiers === reorderModifiers
+                        || (dockItemContainer.persistentMoveHandleVisible
+                            && event.modifiers === Qt.NoModifier))) {
                 const previousKey = dockItemContainer.verticalPanelMode
                     ? Qt.Key_Up : Qt.Key_Left
                 const nextKey = dockItemContainer.verticalPanelMode

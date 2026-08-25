@@ -78,7 +78,8 @@ void runtimeMessageHandler(QtMsgType type, const QMessageLogContext &context, co
             || (category == QLatin1StringView("org.kde.plasma.libtaskmanager")
                 && message == QLatin1StringView("Failed to determine whether virtual desktop navigation wrapping is enabled:  \"The name org.kde.KWin was not provided by any .service files\""))
             || (category == QLatin1StringView("default")
-                && message == QLatin1StringView("This plugin does not support setting window masks")));
+                && (message == QLatin1StringView("This plugin does not support setting window masks")
+                    || message == QLatin1StringView("This plugin does not support propagateSizeHints()"))));
 
         if (s_captureRuntimeMessages && !expectedOffscreenDiagnostic) {
             const QString file = QString::fromUtf8(context.file ? context.file : "unknown");
@@ -194,6 +195,9 @@ struct LoadResult {
     bool preferredMatchesFull = false;
     bool fullRepresentationItemLoaded = false;
     bool dockItemsControllerAvailable = false;
+    bool dynamicMoveBridgeAvailable = false;
+    bool dynamicMoveRequestAccepted = false;
+    bool dynamicMoveModeActivated = false;
     int dockItemCount = -1;
     QString pluginName;
     QString launchError;
@@ -296,6 +300,12 @@ private Q_SLOTS:
             QVERIFY2(result.fullRepresentationItemLoaded, "The full representation item was not instantiated");
             QVERIFY2(result.dockItemsControllerAvailable, "The dock items controller is unavailable");
             QVERIFY2(result.dockItemCount > 0, "A clean first run did not load the default dock items");
+            QVERIFY2(result.dynamicMoveBridgeAvailable,
+                     "The open-applications move bridge is unavailable");
+            QVERIFY2(result.dynamicMoveRequestAccepted,
+                     "The open-applications move request was rejected");
+            QVERIFY2(result.dynamicMoveModeActivated,
+                     "The open-applications move mode did not activate after the popup turn");
             QVERIFY2(result.appletDestroyed, "The applet survived its explicit teardown");
             QVERIFY2(result.quickItemDestroyed, "The AppletQuickItem survived applet teardown");
             QVERIFY2(result.runtimeMessages.isEmpty(), qPrintable(result.runtimeMessages.join(QLatin1Char('\n'))));
@@ -362,6 +372,34 @@ private:
                         } else {
                             result.dockItemCount = dockItems.toList().size();
                         }
+                    }
+
+                    QObject *rootObject = item;
+                    if (rootObject->objectName()
+                        != QLatin1StringView("punchiDockRoot")) {
+                        rootObject = item->findChild<QObject *>(
+                            QStringLiteral("punchiDockRoot"));
+                    }
+                    QObject *representationObject = fullRepresentationItem;
+                    if (representationObject->objectName()
+                        != QLatin1StringView("punchiDockFullRepresentation")) {
+                        representationObject = fullRepresentationItem->findChild<QObject *>(
+                            QStringLiteral("punchiDockFullRepresentation"));
+                    }
+                    result.dynamicMoveBridgeAvailable = rootObject
+                        && representationObject;
+                    if (result.dynamicMoveBridgeAvailable) {
+                        QVariant accepted;
+                        const bool invoked = QMetaObject::invokeMethod(
+                            rootObject,
+                            "requestDynamicApplicationsMoveMode",
+                            Q_RETURN_ARG(QVariant, accepted));
+                        result.dynamicMoveRequestAccepted = invoked
+                            && accepted.toBool();
+                        drainDeferredEvents();
+                        result.dynamicMoveModeActivated = representationObject
+                            ->property("dynamicApplicationsMoveModeActive")
+                            .toBool();
                     }
                 }
             }

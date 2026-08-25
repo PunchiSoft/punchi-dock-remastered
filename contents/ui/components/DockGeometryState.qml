@@ -24,6 +24,7 @@ QtObject {
     property int visibleTaskCount: 0
     property int overflowTaskCount: 0
     property int totalDynamicGroups: 0
+    property bool dynamicApplicationsMoveModeActive: false
     property rect availableScreenRect: Qt.rect(0, 0, 800, 640)
     property var floatingAnchor: null
     property int floatingScreenEdge: PlasmaCore.Types.LeftEdge
@@ -173,6 +174,11 @@ QtObject {
         root.dockShowLabels ? effectiveIconSize * 1.85 : 0))
     readonly property int panelItemHeight: Math.ceil(effectiveIconSize + 12
         + root.dockLabelAreaHeight)
+    readonly property int dynamicApplicationsMoveHandleExtent: Math.ceil(
+        root.verticalPanel ? root.panelItemHeight
+            : Math.max(root.effectiveIconSize
+                + Kirigami.Units.smallSpacing * 2,
+                root.effectiveIconSize * 3.6))
     readonly property int panelHoverCrossAxisExtent: Math.ceil(root.horizontalPanel
         ? (effectiveIconSize * root.panelHoverScale) + 12 + root.dockLabelAreaHeight
         : Math.max(panelItemWidth, (effectiveIconSize * root.panelHoverScale) + 12))
@@ -214,6 +220,10 @@ QtObject {
 
     function panelMainAxisExtentForDockItem(item) {
         const itemType = item && item.type ? String(item.type) : "app"
+        if (itemType === "dynamic-applications"
+                && root.dynamicApplicationsMoveModeActive) {
+            return root.dynamicApplicationsMoveHandleExtent
+        }
         if (itemType === "separator" || itemType === "dynamic-applications") {
             return 10
         }

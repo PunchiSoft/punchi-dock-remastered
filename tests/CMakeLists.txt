@@ -411,6 +411,14 @@ punchi_add_qml_test(
     dock_folder_view_context_test.qml
 )
 punchi_add_qml_test(
+    dock_dynamic_applications_context_test
+    dock_dynamic_applications_context_test.qml
+)
+punchi_add_qml_test(
+    dynamic_applications_move_geometry_test
+    dynamic_applications_move_geometry_test.qml
+)
+punchi_add_qml_test(
     popup_spacing_metrics_test
     popup_spacing_metrics_test.qml
 )
