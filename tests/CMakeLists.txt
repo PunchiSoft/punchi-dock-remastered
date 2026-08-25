@@ -427,6 +427,10 @@ punchi_add_qml_test(
     dock_item_launcher_drop_state_test.qml
 )
 punchi_add_qml_test(
+    dock_item_reorder_group_opacity_test
+    dock_item_reorder_group_opacity_test.qml
+)
+punchi_add_qml_test(
     item_action_editor_drop_test
     item_action_editor_drop_test.qml
 )

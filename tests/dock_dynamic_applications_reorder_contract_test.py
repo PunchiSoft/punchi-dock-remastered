@@ -241,6 +241,17 @@ require(
     "An active reorder must follow the pointer, freeze hover, and show insertion feedback.",
 )
 require(
+    "property bool persistentReorderGroupMember: false" in DOCK_ITEM
+    and "|| dockItemContainer.persistentReorderGroupMember) ? 0.28 : 1.0)"
+    in DOCK_ITEM
+    and "property bool persistentDragMovesDynamicApplications: false" in MAIN
+    and 'items[index].type === "dynamic-applications"' in MAIN
+    and MAIN.count("persistentReorderGroupMember:") == 2
+    and MAIN.count("dockLayout.persistentDragMovesDynamicApplications") == 2,
+    "Dragging the open-applications marker must dim every dynamic task and "
+    "the overflow item with the same opacity as a persistent reorder source.",
+)
+require(
     'objectName: "dockReorderDragProxy"' in DRAG_LAYER
     and "x: root.pointerPosition.x - width / 2" in DRAG_LAYER
     and "y: root.pointerPosition.y - height / 2" in DRAG_LAYER

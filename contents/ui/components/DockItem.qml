@@ -81,6 +81,7 @@ Item {
     property bool persistentMoveHandleVisible: false
     property bool persistentReorderActive: false
     property bool persistentReorderSource: false
+    property bool persistentReorderGroupMember: false
     property bool persistentReorderTarget: false
     property bool persistentReorderInsertAfter: false
     property int persistentModelIndex: -1
@@ -697,7 +698,9 @@ Item {
                     ? mediaCurrentMainAxisLength + 12
                     : (visualAreaHeight + labelAreaHeight)))))
         : (visualAreaHeight + labelAreaHeight)
-    opacity: entryOpacity * (persistentReorderSource ? 0.28 : 1.0)
+    opacity: dockItemContainer.entryOpacity
+        * ((dockItemContainer.persistentReorderSource
+            || dockItemContainer.persistentReorderGroupMember) ? 0.28 : 1.0)
 
     Behavior on x {
         enabled: dockItemContainer.positionAnimationReady

@@ -1921,6 +1921,7 @@ PlasmoidItem {
                     Qt.point(0, 0)
                 property string persistentDragIconName:
                     "application-x-executable"
+                property bool persistentDragMovesDynamicApplications: false
                 readonly property bool persistentDragActive:
                     persistentDragSourceIndex >= 0
                 readonly property bool persistentMoveModeActive:
@@ -1936,6 +1937,7 @@ PlasmoidItem {
                     persistentDragSourceItem = null
                     persistentDragPointerPosition = Qt.point(0, 0)
                     persistentDragIconName = "application-x-executable"
+                    persistentDragMovesDynamicApplications = false
                     persistentMoveModeIndex = -1
                 }
 
@@ -1987,6 +1989,8 @@ PlasmoidItem {
                     persistentDragSourceItem = sourceItem
                     persistentDragIconName
                         = root.dockItemReorderIconName(items[index])
+                    persistentDragMovesDynamicApplications
+                        = items[index].type === "dynamic-applications"
                     return persistentDragExpectedItemText.length > 0
                 }
 
@@ -2501,6 +2505,8 @@ PlasmoidItem {
                             dockLayout.effectiveHoverAnimationMode
                         persistentReorderActive:
                             dockLayout.persistentDragActive
+                        persistentReorderGroupMember:
+                            dockLayout.persistentDragMovesDynamicApplications
                         // qmllint enable unqualified
                         dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                         clickEffect: dockConfig.dockClickEffect
@@ -2666,6 +2672,8 @@ PlasmoidItem {
                         dockLayout.effectiveHoverAnimationMode
                     persistentReorderActive:
                         dockLayout.persistentDragActive
+                    persistentReorderGroupMember:
+                        dockLayout.persistentDragMovesDynamicApplications
                     dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                     clickEffect: dockConfig.dockClickEffect
                     windowMinimizeEffect: dockConfig.dockWindowMinimizeEffect
