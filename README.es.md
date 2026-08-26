@@ -134,10 +134,10 @@ Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actu
 
 El árbol de fuentes contiene un módulo QML nativo en C++. Instalar directamente el directorio del repositorio con `kpackagetool6` no compila ese módulo.
 
-Comprueba el entorno de desarrollo local antes de instalar o cambiar paquetes:
+Los desarrolladores pueden comprobar el entorno de validación estricto con:
 
 ```bash
-scripts/check-build-environment.sh
+scripts-dev/check-build-environment.sh
 ```
 
 El comprobador informa la distribución, arquitectura y versiones de Plasma, CMake y `qmllint`. Qt 6.11 es el perfil principal de lint y Qt 6.8 dispone de un perfil de compatibilidad separado porque sus diagnósticos difieren. `qmllint` es una herramienta de desarrollo, no una dependencia de ejecución para quien instala un `.plasmoid` precompilado compatible; un fallo de lint con Qt 6.8 por sí solo no demuestra que el dock no pueda ejecutarse en ese sistema.
@@ -161,21 +161,29 @@ distribución para Qt 6, KF6, Plasma, PipeWire, ECM, CMake, gettext y ZIP. El
 wrapper Debian fue validado en Debian 13 con Qt 6.8.2; el flujo de compilación,
 instalación, arranque y funcionamiento de Kubuntu fue validado en Plasma 6.6.4.
 
-Compila el módulo nativo y crea el artefacto utilizando el script maestro de setup:
+Para una instalación local normal desde el código fuente, ejecuta:
 
 ```bash
-scripts/setup.sh
+./scripts-user/setup.sh
 ```
 
-Or para generación automática no interactiva del paquete universal:
+Sin argumentos se abre el menú interactivo para usuarios. Su acción de
+compilación e instalación compila el módulo nativo para el sistema actual con
+`BUILD_TESTING=OFF`, crea un paquete local, lo instala y ofrece reiniciar
+Plasma. No ejecuta `qmllint` ni CTest. Para crear el paquete sin instalar ni
+reiniciar Plasma, usa:
 
 ```bash
-scripts/setup-universal.sh
+./scripts-user/setup.sh --build-only
 ```
 
 ```text
-dist/punchi-dock-remastered-<versión>-<distribución>-<arquitectura>.plasmoid
+dist/punchi-dock-remastered-<versión>-<distribución>-<arquitectura>-local-build.plasmoid
 ```
+
+El artefacto `local-build` pertenece a la máquina que lo compiló y no es una
+release universal oficial. `scripts-user/setup-universal.sh` solamente instala un
+`.plasmoid` existente; no compila el código fuente.
 
 La release 0.9.7.42 de GitHub ofrece
 `punchi-dock-remastered-0.9.7.42-fedora44-x86_64.plasmoid`. Los artefactos
@@ -186,37 +194,39 @@ No instales un artefacto identificado para otra distribución.
 El flujo Debian 13 fue comprobado por separado de Debian 14/testing. Kubuntu
 registra un baseline local independiente y superó compilación, instalación,
 arranque y validación funcional del usuario en Plasma 6.6.4. Consulta
-[scripts/README.es.md](scripts/README.es.md) para conocer las opciones de cada setup y
-distinguir artefactos públicos, instalación local y validación limpia.
+[scripts-user/README.es.md](scripts-user/README.es.md) para el flujo normal de instalación
+y [scripts-dev/README.es.md](scripts-dev/README.es.md) para las comprobaciones
+estrictas de desarrollo.
 
 Define `PACKAGE_BUILD_TYPE` o `STRIP_BIN` solo cuando un flujo de desarrollo necesite reemplazarlos explícitamente. No uses `PACKAGE_OUTPUT_FILE` para poner una etiqueta Debian a un binario Fedora ni uses compilación cruzada para publicar el módulo QML nativo.
 
-Para compilar, instalar y reiniciar Plasma durante una prueba local en Fedora:
+Para compilar, instalar y reiniciar Plasma durante una prueba estricta en Fedora:
 
 ```bash
-scripts/setup-fedora.sh --local-test
+scripts-dev/distro/fedora-setup.sh --local-test
 ```
 
-En una instalación limpia de Kubuntu, prepara las dependencias APT oficiales y
-crea el paquete nativo con:
+En un entorno de desarrollo Fedora o Debian 13 soportado, prepara las
+dependencias oficiales de la distribución con:
 
 ```bash
-scripts/setup-kubuntu.sh --yes
+scripts-dev/setup.sh --dependencies-only
 ```
 
-Añade `--local-test` para instalar el resultado y reiniciar Plasma Shell. El
-script debe ejecutarse como usuario del escritorio; solicita `sudo` solo para
-APT.
+Después usa `scripts-dev/setup.sh --local-test` para ejecutar la compilación
+estricta, instalar el resultado y reiniciar Plasma Shell. El script debe
+ejecutarse como usuario del escritorio; solicita `sudo` solo cuando DNF o APT
+necesita instalar paquetes.
 
 Este script ejecuta las comprobaciones de empaquetado y CTest, actualiza el plasmoide local, reinicia Plasma Shell y escribe diagnósticos de inicio filtrados en `debug.log`. Como reinicia el shell del escritorio, úsalo después de un cambio coherente y no tras guardar cada archivo.
 
 Antes de publicar una versión, reproduce el paquete desde un árbol fuente temporal limpio:
 
 ```bash
-scripts/validar-empaquetado-limpio.sh
+scripts-dev/validar-empaquetado-limpio.sh
 ```
 
-Para iteración visual rápida, `scripts/watch-plasmoidviewer.sh` puede reconstruir y reabrir `plasmoidviewer` al detectar cambios. No sustituye la prueba final dentro del panel o dock real de Plasma.
+Para iteración visual rápida, `scripts-dev/watch-plasmoidviewer.sh` puede reconstruir y reabrir `plasmoidviewer` al detectar cambios. No sustituye la prueba final dentro del panel o dock real de Plasma.
 
 ## Estructura del proyecto
 
@@ -224,7 +234,8 @@ Para iteración visual rápida, `scripts/watch-plasmoidviewer.sh` puede reconstr
 - `contents/ui/components/`: componentes reutilizables de la interfaz QML.
 - `contents/code/`: lógica JavaScript compartida y valores predeterminados.
 - `src/`: módulo nativo de integración QML en C++.
-- `scripts/`: herramientas de empaquetado y pruebas locales.
+- `scripts-user/`: flujo normal de compilación e instalación para usuarios.
+- `scripts-dev/`: pruebas estrictas, empaquetado y herramientas de mantenimiento.
 - `metadata.json`: metadata KPackage y compatibilidad declarada con Plasma.
 
 Las notas internas de desarrollo y los registros de auditoría se excluyen deliberadamente del repositorio público y del paquete distribuido.

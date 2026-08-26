@@ -2,8 +2,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PUBLIC_LIB_DIR="$PROJECT_ROOT/scripts-user/lib"
 
 cd "$PROJECT_ROOT"
 
@@ -30,7 +30,9 @@ if ! command -v kpackagetool6 >/dev/null 2>&1; then
 fi
 
 install_current_package() {
-    PACKAGE_OUTPUT_FILE="$PACKAGE_FILE" "$SCRIPTS_DIR/lib/package-plasmoid.sh"
+    PUNCHI_PACKAGE_VALIDATION_MODE=full \
+        PACKAGE_OUTPUT_FILE="$PACKAGE_FILE" \
+        "$PUBLIC_LIB_DIR/package-plasmoid.sh"
     if ! kpackagetool6 --type Plasma/Applet -u "$PACKAGE_FILE" 2>/dev/null; then
         kpackagetool6 --type Plasma/Applet -i "$PACKAGE_FILE"
     fi

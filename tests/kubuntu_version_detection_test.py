@@ -11,9 +11,9 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SETUP_SCRIPT = PROJECT_ROOT / "scripts" / "distro" / "fedora-setup.sh"
-SETUP_WRAPPER = PROJECT_ROOT / "scripts" / "setup.sh"
-SHELL_HELPER = PROJECT_ROOT / "scripts" / "lib" / "plasma-version.sh"
+SETUP_SCRIPT = PROJECT_ROOT / "scripts-dev" / "distro" / "fedora-setup.sh"
+SETUP_WRAPPER = PROJECT_ROOT / "scripts-dev" / "setup.sh"
+SHELL_HELPER = PROJECT_ROOT / "scripts-dev" / "lib" / "plasma-version.sh"
 
 
 class PlasmaVersionDetectionTest(unittest.TestCase):

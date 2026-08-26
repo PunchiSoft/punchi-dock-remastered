@@ -4,13 +4,14 @@ set -euo pipefail
 LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$(cd "$LIB_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
+PUBLIC_LIB_DIR="$PROJECT_ROOT/scripts-user/lib"
 
 # shellcheck source=plasma-version.sh
 source "$LIB_DIR/plasma-version.sh"
 # shellcheck source=local-package-install.sh
-source "$LIB_DIR/local-package-install.sh"
+source "$PUBLIC_LIB_DIR/local-package-install.sh"
 # shellcheck source=plasma-runtime-diagnostics.sh
-source "$LIB_DIR/plasma-runtime-diagnostics.sh"
+source "$PUBLIC_LIB_DIR/plasma-runtime-diagnostics.sh"
 
 # shellcheck disable=SC1091
 source /etc/os-release
@@ -95,7 +96,10 @@ restart_plasma_shell() {
     return 1
 }
 
-PUNCHI_LOCAL_TEST=1 PACKAGE_OUTPUT_FILE="$ZIP_FILE" "$LIB_DIR/package-plasmoid.sh"
+PUNCHI_LOCAL_TEST=1 \
+    PUNCHI_PACKAGE_VALIDATION_MODE=full \
+    PACKAGE_OUTPUT_FILE="$ZIP_FILE" \
+    "$PUBLIC_LIB_DIR/package-plasmoid.sh"
 
 echo "==> [1/3] Installing the local test package"
 punchi_install_local_package "$ZIP_FILE" "$INSTALL_DIR" "$DATA_ROOT" "$PLUGIN_ID"

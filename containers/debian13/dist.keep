@@ -1,0 +1,1 @@
+Docker creates the writable artifact directory from this build-only marker.

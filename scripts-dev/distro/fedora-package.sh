@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
+PUBLIC_SCRIPTS_DIR="$PROJECT_ROOT/scripts-user"
 
 if [[ ! -r /etc/os-release ]]; then
     echo "Error: the distribution could not be identified from /etc/os-release." >&2
@@ -35,4 +36,5 @@ export QMLLINT_BASELINE_FILE="${QMLLINT_BASELINE_FILE:-$SCRIPTS_DIR/qmllint-base
 export QMLLINT_BIN="${QMLLINT_BIN:-/usr/lib64/qt6/bin/qmllint}"
 export PUNCHI_PACKAGE_CORE=1
 
-exec "$SCRIPTS_DIR/lib/package-plasmoid.sh"
+export PUNCHI_PACKAGE_VALIDATION_MODE=full
+exec "$PUBLIC_SCRIPTS_DIR/lib/package-plasmoid.sh"

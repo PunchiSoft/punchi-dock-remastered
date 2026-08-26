@@ -4,8 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# shellcheck source=../scripts/lib/qmllint-baseline.sh
-source "$PROJECT_ROOT/scripts/lib/qmllint-baseline.sh"
+# shellcheck source=../scripts-dev/lib/qmllint-baseline.sh
+source "$PROJECT_ROOT/scripts-dev/lib/qmllint-baseline.sh"
 
 fail() {
     printf 'FAIL: %s\n' "$*" >&2

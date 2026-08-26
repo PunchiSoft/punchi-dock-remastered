@@ -32,7 +32,7 @@ __pycache__/
 Thumbs.db
 
 # Capturas locales usadas para diagnosticar scripts
-/scripts/*.bmp
+/scripts-user/*.bmp
 
 # Directorios de pruebas locales descartables
 /test/

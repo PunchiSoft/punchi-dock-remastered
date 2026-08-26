@@ -6,8 +6,8 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TEMP_ROOT="$(mktemp -d)"
 trap 'rm -rf "$TEMP_ROOT"' EXIT
 
-# shellcheck source=../scripts/lib/plasma-runtime-diagnostics.sh
-source "$PROJECT_ROOT/scripts/lib/plasma-runtime-diagnostics.sh"
+# shellcheck source=../scripts-user/lib/plasma-runtime-diagnostics.sh
+source "$PROJECT_ROOT/scripts-user/lib/plasma-runtime-diagnostics.sh"
 
 fail() {
     printf 'FAIL: %s\n' "$*" >&2
@@ -93,12 +93,12 @@ set -e
     || fail "an invalid PID was not rejected before journalctl"
 
 installer_scripts=(
-    "$PROJECT_ROOT/scripts/lib/install-local-test.sh"
-    "$PROJECT_ROOT/scripts/setup-universal.sh"
-    "$PROJECT_ROOT/scripts/dev/instalar-plasmoide.sh"
+    "$PROJECT_ROOT/scripts-dev/lib/install-local-test.sh"
+    "$PROJECT_ROOT/scripts-user/setup-universal.sh"
+    "$PROJECT_ROOT/scripts-dev/instalar-plasmoide.sh"
 )
 for installer_script in "${installer_scripts[@]}"; do
-    grep -q 'source "$LIB_DIR/plasma-runtime-diagnostics.sh"' \
+    grep -Eq 'source .*plasma-runtime-diagnostics\.sh' \
         "$installer_script" \
         || fail "$installer_script does not use the shared diagnostics helper"
     grep -q 'restart_started_at="$(date --iso-8601=seconds)"' \

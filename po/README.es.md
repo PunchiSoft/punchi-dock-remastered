@@ -16,7 +16,7 @@ plasma_applet_org.kde.plasma.punchi-dock-remastered
 Actualiza la plantilla POT y todos los catálogos PO existentes con:
 
 ```bash
-scripts/update-translations.sh
+scripts-dev/update-translations.sh
 ```
 
 Antes de confirmar un catálogo, verifícalo con:

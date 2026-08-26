@@ -2,8 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CLEAN_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/punchi-package-test.XXXXXX")"
 
 cleanup() {
@@ -26,7 +25,9 @@ if find "$CLEAN_ROOT/contents" -name "*.so" -print -quit | grep -q .; then
     exit 1
 fi
 
-chmod +x "$CLEAN_ROOT/scripts/lib/package-plasmoid.sh"
-BUILD_DIR="$CLEAN_ROOT/build" "$CLEAN_ROOT/scripts/lib/package-plasmoid.sh"
+chmod +x "$CLEAN_ROOT/scripts-user/lib/package-plasmoid.sh"
+PUNCHI_PACKAGE_VALIDATION_MODE=full \
+    BUILD_DIR="$CLEAN_ROOT/build" \
+    "$CLEAN_ROOT/scripts-user/lib/package-plasmoid.sh"
 
 echo "Clean-source packaging validation passed"

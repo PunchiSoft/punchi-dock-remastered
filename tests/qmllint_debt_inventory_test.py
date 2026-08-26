@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = PROJECT_ROOT / "scripts" / "qmllint_debt_inventory.py"
+SCRIPT_PATH = PROJECT_ROOT / "scripts-dev" / "qmllint_debt_inventory.py"
 SPEC = importlib.util.spec_from_file_location("qmllint_debt_inventory", SCRIPT_PATH)
 if SPEC is None or SPEC.loader is None:
     raise RuntimeError(f"Cannot load {SCRIPT_PATH}")

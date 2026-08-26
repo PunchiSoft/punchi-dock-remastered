@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Master Setup, Build & Install Assistant for Punchi Dock Remastered
+# Developer Setup, Build & Validation Assistant for Punchi Dock Remastered
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -57,7 +57,7 @@ msg_en() {
     case "$key" in
         help)
             cat <<'EOF'
-Usage: scripts/setup.sh [options | path_to_package.plasmoid]
+Usage: scripts-dev/setup.sh [options | path_to_package.plasmoid]
 
 Master interactive and CLI assistant for packaging, testing and installing
 Punchi Dock Remastered. Automatically detects the host distribution
@@ -78,10 +78,10 @@ CLI Options:
   -h, --help          Show this help.
 
 Examples:
-  ./scripts/setup.sh                                # Interactive menu mode
-  ./scripts/setup.sh --local-test                   # Quick local test mode
-  ./scripts/setup.sh --clean-install                # Force clean reinstall
-  ./scripts/setup.sh dist/my-package.plasmoid       # Direct .plasmoid install
+  ./scripts-dev/setup.sh                            # Interactive menu mode
+  ./scripts-dev/setup.sh --local-test               # Quick local test mode
+  ./scripts-dev/setup.sh --clean-install            # Force clean reinstall
+  ./scripts-dev/setup.sh dist/my-package.plasmoid   # Direct .plasmoid install
 EOF
             ;;
         err_root)        echo "Error: Run this script as the Plasma desktop user, NOT with sudo." >&2
@@ -89,12 +89,12 @@ EOF
         err_no_osrel)    echo "Error: Could not identify the distribution from /etc/os-release." >&2 ;;
         err_unsup_deb)   echo "Error: Unsupported Debian version for building: ${1:-unknown}." >&2
                          echo "Supported build environments: Debian 13 (Trixie) or Fedora." >&2
-                         echo "To install a prebuilt .plasmoid use: ./scripts/setup-universal.sh" >&2 ;;
+                         echo "To install a prebuilt .plasmoid use: ./scripts-user/setup-universal.sh" >&2 ;;
         warn_unsup_dist) echo "Notice: This distribution (${1:-unknown}) is not an official C++ build environment." >&2
                          echo "Supported build environments: Fedora and Debian 13." >&2
-                         echo "To install a prebuilt .plasmoid, use: ./scripts/setup-universal.sh" >&2 ;;
+                         echo "To install a prebuilt .plasmoid, use: ./scripts-user/setup-universal.sh" >&2 ;;
         err_no_profile)  echo "Error: Cannot build natively on this system (${1:-unknown})." >&2
-                         echo "Use: ./scripts/setup-universal.sh <path/to/package.plasmoid> to install." >&2 ;;
+                         echo "Use: ./scripts-user/setup-universal.sh <path/to/package.plasmoid> to install." >&2 ;;
         err_no_cli_prof) echo "Error: No build profile exists for the distribution: ${1:-unknown}." >&2 ;;
         banner)          echo "=========================================================="
                          echo "   Punchi Dock Remastered - Master Setup Assistant        "
@@ -127,18 +127,18 @@ EOF
             echo ""
             echo "CLI Quick Reference"
             echo "=================="
-            echo "  ./scripts/setup.sh                    Interactive menu (this screen)"
-            echo "  ./scripts/setup.sh --local-test       Build, install and test locally"
-            echo "  ./scripts/setup.sh --clean-install    Force remove + full rebuild + install"
-            echo "  ./scripts/setup.sh --dependencies-only  Check/install build dependencies"
-            echo "  ./scripts/setup.sh --uninstall        Remove the plasmoid from Plasma"
-            echo "  ./scripts/setup.sh --dry-run          Preview commands without executing"
-            echo "  ./scripts/setup.sh --yes              Auto-accept package manager prompts"
-            echo "  ./scripts/setup.sh --help             Show full help with all options"
-            echo "  ./scripts/setup.sh <file.plasmoid>    Install a prebuilt package directly"
+            echo "  ./scripts-dev/setup.sh                    Interactive menu (this screen)"
+            echo "  ./scripts-dev/setup.sh --local-test       Build, install and test locally"
+            echo "  ./scripts-dev/setup.sh --clean-install    Force remove + full rebuild + install"
+            echo "  ./scripts-dev/setup.sh --dependencies-only  Check/install build dependencies"
+            echo "  ./scripts-dev/setup.sh --uninstall        Remove the plasmoid from Plasma"
+            echo "  ./scripts-dev/setup.sh --dry-run          Preview commands without executing"
+            echo "  ./scripts-dev/setup.sh --yes              Auto-accept package manager prompts"
+            echo "  ./scripts-dev/setup.sh --help             Show full help with all options"
+            echo "  ./scripts-dev/setup.sh <file.plasmoid>    Install a prebuilt package directly"
             echo ""
             echo "Logs: docs/logs/<distro>/setup-<distro>-latest.log"
-            echo "Docs: scripts/README.md | scripts/README.es.md"
+            echo "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
             echo "" ;;
     esac
 }
@@ -149,7 +149,7 @@ msg_es() {
     case "$key" in
         help)
             cat <<'EOF'
-Uso: scripts/setup.sh [opciones | ruta_al_paquete.plasmoid]
+Uso: scripts-dev/setup.sh [opciones | ruta_al_paquete.plasmoid]
 
 Asistente maestro interactivo y CLI para empaquetar, probar e instalar
 Punchi Dock Remastered. Detecta automáticamente la distribución anfitriona
@@ -170,10 +170,10 @@ Opciones CLI:
   -h, --help          Muestra esta ayuda.
 
 Ejemplos:
-  ./scripts/setup.sh                                # Modo menú interactivo
-  ./scripts/setup.sh --local-test                   # Modo prueba rápida local
-  ./scripts/setup.sh --clean-install                # Reinstalación limpia forzada
-  ./scripts/setup.sh dist/mi-paquete.plasmoid      # Instalación directa de .plasmoid
+  ./scripts-dev/setup.sh                            # Modo menú interactivo
+  ./scripts-dev/setup.sh --local-test               # Modo prueba rápida local
+  ./scripts-dev/setup.sh --clean-install            # Reinstalación limpia forzada
+  ./scripts-dev/setup.sh dist/mi-paquete.plasmoid  # Instalación directa de .plasmoid
 EOF
             ;;
         err_root)        echo "Error: Ejecuta este script como el usuario de escritorio Plasma, NO con sudo." >&2
@@ -181,12 +181,12 @@ EOF
         err_no_osrel)    echo "Error: No se pudo identificar la distribución desde /etc/os-release." >&2 ;;
         err_unsup_deb)   echo "Error: Versión de Debian no soportada para compilación: ${1:-unknown}." >&2
                          echo "El entorno de compilación soportado es Debian 13 (Trixie) o Fedora." >&2
-                         echo "Para instalar un .plasmoid ya precompilado usa: ./scripts/setup-universal.sh" >&2 ;;
+                         echo "Para instalar un .plasmoid ya precompilado usa: ./scripts-user/setup-universal.sh" >&2 ;;
         warn_unsup_dist) echo "Aviso: Esta distribución (${1:-unknown}) no es un entorno oficial de compilación C++." >&2
                          echo "Entornos de compilación soportados: Fedora y Debian 13." >&2
-                         echo "Si deseas instalar un .plasmoid precompilado, usa: ./scripts/setup-universal.sh" >&2 ;;
+                         echo "Si deseas instalar un .plasmoid precompilado, usa: ./scripts-user/setup-universal.sh" >&2 ;;
         err_no_profile)  echo "Error: No se puede compilar nativamente en este sistema (${1:-unknown})." >&2
-                         echo "Usa: ./scripts/setup-universal.sh <ruta/al/paquete.plasmoid> para instalar." >&2 ;;
+                         echo "Usa: ./scripts-user/setup-universal.sh <ruta/al/paquete.plasmoid> para instalar." >&2 ;;
         err_no_cli_prof) echo "Error: No existe perfil de compilación para la distribución: ${1:-unknown}." >&2 ;;
         banner)          echo "=========================================================="
                          echo "   Punchi Dock Remastered - Asistente Maestro de Setup    "
@@ -219,18 +219,18 @@ EOF
             echo ""
             echo "Referencia Rápida de Comandos CLI"
             echo "=================================="
-            echo "  ./scripts/setup.sh                    Menú interactivo (esta pantalla)"
-            echo "  ./scripts/setup.sh --local-test       Compilar, instalar y probar localmente"
-            echo "  ./scripts/setup.sh --clean-install    Forzar eliminación + recompilar + instalar"
-            echo "  ./scripts/setup.sh --dependencies-only  Verificar/instalar dependencias"
-            echo "  ./scripts/setup.sh --uninstall        Desinstalar el plasmoide de Plasma"
-            echo "  ./scripts/setup.sh --dry-run          Previsualizar comandos sin ejecutar"
-            echo "  ./scripts/setup.sh --yes              Aceptar automáticamente gestor de paquetes"
-            echo "  ./scripts/setup.sh --help             Mostrar ayuda completa con todas las opciones"
-            echo "  ./scripts/setup.sh <archivo.plasmoid> Instalar un paquete precompilado directamente"
+            echo "  ./scripts-dev/setup.sh                    Menú interactivo (esta pantalla)"
+            echo "  ./scripts-dev/setup.sh --local-test       Compilar, instalar y probar localmente"
+            echo "  ./scripts-dev/setup.sh --clean-install    Forzar eliminación + recompilar + instalar"
+            echo "  ./scripts-dev/setup.sh --dependencies-only  Verificar/instalar dependencias"
+            echo "  ./scripts-dev/setup.sh --uninstall        Desinstalar el plasmoide de Plasma"
+            echo "  ./scripts-dev/setup.sh --dry-run          Previsualizar comandos sin ejecutar"
+            echo "  ./scripts-dev/setup.sh --yes              Aceptar automáticamente gestor de paquetes"
+            echo "  ./scripts-dev/setup.sh --help             Mostrar ayuda completa con todas las opciones"
+            echo "  ./scripts-dev/setup.sh <archivo.plasmoid> Instalar un paquete precompilado directamente"
             echo ""
             echo "Logs: docs/logs/<distro>/setup-<distro>-latest.log"
-            echo "Docs: scripts/README.md | scripts/README.es.md"
+            echo "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
             echo "" ;;
     esac
 }
@@ -348,6 +348,11 @@ _punchi_clean_install() {
         rm -rf "$build_dir"
         echo "==> Build cache cleared: $build_dir"
     fi
+    local xdg_cache_dir="${XDG_CACHE_HOME:-$HOME/.cache}/punchi-dock-remastered"
+    if [[ -d "$xdg_cache_dir" ]]; then
+        rm -rf "$xdg_cache_dir"
+        echo "==> XDG build cache cleared: $xdg_cache_dir"
+    fi
 
     # Step 3: Rebuild and install via --local-test
     PUNCHI_LOG_DIR="${PUNCHI_LOG_DIR:-$PROJECT_ROOT/docs/logs/$DETECTED_PROFILE}"
@@ -405,7 +410,7 @@ fi
 # 2. Direct .plasmoid file (Works on ANY distribution)
 # ---------------------------------------------------------------------------
 if [[ "${1:-}" == *.plasmoid ]]; then
-    exec "$SCRIPT_DIR/setup-universal.sh" "$1"
+    exec "$PROJECT_ROOT/scripts-user/setup-universal.sh" "$1"
 fi
 
 # ---------------------------------------------------------------------------
@@ -448,7 +453,7 @@ if (( $# == 0 )); then
             punchi_run_setup_with_log "$DETECTED_PROFILE" "$SETUP_EXEC" --local-test
             ;;
         3)
-            exec "$SCRIPT_DIR/dev/instalar-plasmoide.sh"
+            exec "$SCRIPT_DIR/instalar-plasmoide.sh"
             ;;
         4)
             if [[ -z "$DETECTED_PROFILE" ]]; then

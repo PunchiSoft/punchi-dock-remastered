@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
+PUBLIC_SCRIPTS_DIR="$PROJECT_ROOT/scripts-user"
 
 if [[ ! -r /etc/os-release ]]; then
     echo "Error: the distribution could not be identified from /etc/os-release." >&2
@@ -21,7 +22,7 @@ fi
 
 if (( is_debian13 == 0 )) && [[ "${ALLOW_UNSUPPORTED_BUILD_HOST:-0}" != "1" ]]; then
     echo "Error: this package profile requires Debian 13/trixie (detected: ${PRETTY_NAME:-unknown})." >&2
-    echo "Use scripts/setup-debian14-testing.sh on Debian 14/testing." >&2
+    echo "Use the matching developer profile for Debian 14/testing." >&2
     exit 1
 fi
 
@@ -45,8 +46,9 @@ export PUNCHI_PACKAGE_CORE=1
 if [[ ! -f "$QMLLINT_BASELINE_FILE" && "${QMLLINT_RECORD_BASELINE:-0}" != "1" ]]; then
     echo "Error: the Debian 13 qmllint baseline is missing: $QMLLINT_BASELINE_FILE" >&2
     echo "The Fedora baseline is not reused because Qt diagnostics can differ." >&2
-    echo "First calibration: QMLLINT_RECORD_BASELINE=1 scripts/setup-debian13.sh" >&2
+    echo "First calibration: QMLLINT_RECORD_BASELINE=1 scripts-dev/distro/debian13-package.sh" >&2
     exit 1
 fi
 
-exec "$SCRIPTS_DIR/lib/package-plasmoid.sh"
+export PUNCHI_PACKAGE_VALIDATION_MODE=full
+exec "$PUBLIC_SCRIPTS_DIR/lib/package-plasmoid.sh"

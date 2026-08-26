@@ -6,13 +6,21 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TEMP_ROOT="$(mktemp -d)"
 trap 'rm -rf "$TEMP_ROOT"' EXIT
 
-# shellcheck source=../scripts/lib/local-package-install.sh
-source "$PROJECT_ROOT/scripts/lib/local-package-install.sh"
+# shellcheck source=../scripts-user/lib/local-package-install.sh
+source "$PROJECT_ROOT/scripts-user/lib/local-package-install.sh"
 
 fail() {
     printf 'FAIL: %s\n' "$*" >&2
     exit 1
 }
+
+set +e
+punchi_remove_local_directory "$TEMP_ROOT/outside" "$TEMP_ROOT/data" \
+    >"$TEMP_ROOT/removal-guard.log" 2>&1
+unsafe_removal_status=$?
+set -e
+[[ "$unsafe_removal_status" == "1" ]] \
+    || fail "the local removal helper accepted a path outside its data root"
 
 mkdir -p "$TEMP_ROOT/bin" "$TEMP_ROOT/data"
 package_file="$TEMP_ROOT/punchi-local-test.plasmoid"

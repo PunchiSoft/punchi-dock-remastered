@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+punchi_remove_local_directory() {
+    local target="${1:?directory target is required}"
+    local data_root="${2:?data root is required}"
+
+    if [[ -z "$data_root" || "$data_root" == "/" || "$target" != "$data_root"/* ]]; then
+        echo "Refusing to remove a directory outside the local data root: $target" >&2
+        return 1
+    fi
+    rm -rf -- "$target"
+}
+
 punchi_install_local_package() {
     local package_file="${1:?package file is required}"
     local install_dir="${2:?installation directory is required}"
@@ -24,7 +35,7 @@ punchi_install_local_package() {
 
     if (( update_succeeded == 0 )); then
         if ! kpackagetool6 --type Plasma/Applet -i "$package_file"; then
-            cmake -E remove_directory "$install_dir"
+            punchi_remove_local_directory "$install_dir" "$data_root"
             if [[ -n "$backup_dir" && -d "$backup_dir" && ! -e "$install_dir" ]]; then
                 mv "$backup_dir" "$install_dir"
             fi
@@ -80,6 +91,6 @@ EOF
     )
 
     if [[ -n "$backup_dir" ]]; then
-        cmake -E remove_directory "$backup_dir"
+        punchi_remove_local_directory "$backup_dir" "$data_root"
     fi
 }

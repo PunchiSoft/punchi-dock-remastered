@@ -266,6 +266,21 @@ add_test(
     COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/plasma_runtime_diagnostics_test.sh
 )
 
+add_test(
+    NAME universal_package_selection_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/universal_package_selection_test.sh
+)
+
+add_test(
+    NAME user_setup_contract_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/user_setup_contract_test.sh
+)
+
+add_test(
+    NAME plasma_shell_control_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/plasma_shell_control_test.sh
+)
+
 add_executable(pipewirebackend_probe EXCLUDE_FROM_ALL
     pipewirebackend_probe.cpp
     ${CMAKE_SOURCE_DIR}/src/pipewireaudiobackend.cpp
@@ -360,7 +375,7 @@ function(punchi_add_qml_test test_name qml_file)
             -input ${CMAKE_CURRENT_SOURCE_DIR}/${qml_file}
     )
     set_tests_properties(${test_name} PROPERTIES
-        ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_CONTROLS_STYLE=org.kde.desktop"
         FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
     )
 endfunction()
@@ -430,9 +445,15 @@ punchi_add_qml_test(
     dock_item_reorder_group_opacity_test
     dock_item_reorder_group_opacity_test.qml
 )
-punchi_add_qml_test(
-    item_action_editor_drop_test
-    item_action_editor_drop_test.qml
+add_test(
+    NAME item_action_editor_drop_test
+    COMMAND ${CMAKE_COMMAND}
+        -DTEST_RUNNER=$<TARGET_FILE:punchi_qmltestrunner>
+        -DTEST_INPUT=${CMAKE_CURRENT_SOURCE_DIR}/item_action_editor_drop_test.qml
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/run_qml_test_with_optional_i18n_warning.cmake
+)
+set_tests_properties(item_action_editor_drop_test PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_CONTROLS_STYLE=org.kde.desktop"
 )
 punchi_add_qml_test(
     themed_separator_lifecycle_test

@@ -6,8 +6,8 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TEMP_ROOT="$(mktemp -d)"
 trap 'rm -rf "$TEMP_ROOT"' EXIT
 
-# shellcheck source=../scripts/lib/setup-logging.sh
-source "$PROJECT_ROOT/scripts/lib/setup-logging.sh"
+# shellcheck source=../scripts-dev/lib/setup-logging.sh
+source "$PROJECT_ROOT/scripts-dev/lib/setup-logging.sh"
 
 fail() {
     printf 'FAIL: %s\n' "$*" >&2

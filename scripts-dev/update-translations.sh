@@ -2,8 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TRANSLATION_DOMAIN="plasma_applet_org.kde.plasma.punchi-dock-remastered"
 PO_DIR="$PROJECT_ROOT/po"
 POT_FILE="$PO_DIR/$TRANSLATION_DOMAIN.pot"

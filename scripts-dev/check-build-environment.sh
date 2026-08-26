@@ -4,7 +4,7 @@ set -euo pipefail
 
 show_help() {
     cat <<'EOF'
-Usage: scripts/check-build-environment.sh
+Usage: scripts-dev/check-build-environment.sh
 
 Reports the local Plasma, Qt/QML lint, build-tool, distribution, and
 architecture versions used to build Punchi Dock Remastered.

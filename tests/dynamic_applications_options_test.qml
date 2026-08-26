@@ -8,6 +8,7 @@ TestCase {
 
     name: "DynamicApplicationsOptions"
     when: windowShown
+    property var hostWindowUnderTest: null
 
     SignalSpy {
         id: formChangedSpy
@@ -34,15 +35,26 @@ TestCase {
     }
 
     function init() {
-        // The isolated runner has no KDE icon provider for this hidden editor icon.
-        ignoreWarning(/QML IconImage: Cannot open: .*application-x-executable/)
         failOnWarning(/.?/)
         formChangedSpy.clear()
+    }
+
+    function cleanup() {
+        formChangedSpy.target = null
+        if (hostWindowUnderTest) {
+            const hostWindow = hostWindowUnderTest
+            hostWindowUnderTest = null
+            hostWindow.close()
+            wait(0)
+            hostWindow.destroy()
+            wait(0)
+        }
     }
 
     function test_keyboardTogglesSeparatorWithoutLosingAnchorMode() {
         const hostWindow = createTemporaryObject(windowComponent, testCase)
         verify(hostWindow !== null)
+        hostWindowUnderTest = hostWindow
         tryCompare(hostWindow, "visible", true)
         const panel = hostWindow.panel
         wait(0)

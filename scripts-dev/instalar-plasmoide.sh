@@ -3,17 +3,17 @@
 
 set -euo pipefail
 
-DEV_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SCRIPTS_DIR="$(cd "$DEV_DIR/.." && pwd)"
-PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
-LIB_DIR="$SCRIPTS_DIR/lib"
+DEV_SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$DEV_SCRIPTS_DIR/.." && pwd)"
+DEV_LIB_DIR="$DEV_SCRIPTS_DIR/lib"
+PUBLIC_LIB_DIR="$PROJECT_ROOT/scripts-user/lib"
 
 # shellcheck source=../lib/plasma-version.sh
-source "$LIB_DIR/plasma-version.sh"
+source "$DEV_LIB_DIR/plasma-version.sh"
 # shellcheck source=../lib/local-package-install.sh
-source "$LIB_DIR/local-package-install.sh"
+source "$PUBLIC_LIB_DIR/local-package-install.sh"
 # shellcheck source=../lib/plasma-runtime-diagnostics.sh
-source "$LIB_DIR/plasma-runtime-diagnostics.sh"
+source "$PUBLIC_LIB_DIR/plasma-runtime-diagnostics.sh"
 
 PLUGIN_ID="org.kde.plasma.punchi-dock-remastered"
 DATA_ROOT="$(qtpaths6 --writable-path GenericDataLocation)"
@@ -146,7 +146,7 @@ if [[ $# -gt 0 ]]; then
 else
     if [[ ${#packages[@]} -eq 0 ]]; then
         echo "Error: No se encontraron paquetes .plasmoid en '$DIST_DIR'." >&2
-        echo "Ejecuta primero un script de compilación (ej: ./scripts/setup-fedora.sh o ./scripts/setup-debian13.sh)." >&2
+        echo "Ejecuta primero ./scripts-dev/setup.sh para crear un paquete de desarrollo." >&2
         exit 1
     fi
 

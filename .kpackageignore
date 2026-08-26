@@ -6,11 +6,16 @@
 /Documents/
 /bitacora/
 /kde-sdk/
+/containers/
 /po/
+/scripts-user/
+/scripts-dev/
 /.agents/
 /.gemini/
 /.git/
 /.github/
+/.dockerignore
+/docker-bake.hcl
 /Images/
 
 # Código fuente C++ (ya se compila, no se distribuye)

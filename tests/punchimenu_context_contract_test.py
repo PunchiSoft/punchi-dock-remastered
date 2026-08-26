@@ -179,10 +179,10 @@ def main() -> int:
         PROJECT_ROOT / "src/CMakeLists.txt"
     ).read_text(encoding="utf-8")
     fedora_setup_source = (
-        PROJECT_ROOT / "scripts/distro/fedora-setup.sh"
+        PROJECT_ROOT / "scripts-dev/distro/fedora-setup.sh"
     ).read_text(encoding="utf-8")
     debian_setup_source = (
-        PROJECT_ROOT / "scripts/distro/debian13-setup.sh"
+        PROJECT_ROOT / "scripts-dev/distro/debian13-setup.sh"
     ).read_text(encoding="utf-8")
     session_controller_source = (
         PROJECT_ROOT / "src/sessionactionscontroller.cpp"

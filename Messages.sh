@@ -23,6 +23,11 @@ mapfile -d '' qml_sources < <(
 mapfile -d '' cpp_sources < <(
     find src -type f \( -name '*.cpp' -o -name '*.h' \) -print0 | sort -z
 )
+shell_sources=(
+    scripts-user/setup.sh
+    scripts-user/setup-universal.sh
+    scripts-user/lib/plasma-shell-control.sh
+)
 
 common_options=(
     --from-code=UTF-8
@@ -61,9 +66,26 @@ common_options=(
     --output="$TEMP_DIR/cpp.pot" \
     "${cpp_sources[@]}"
 
+"$XGETTEXT_BIN" \
+    --from-code=UTF-8 \
+    --package-name="Punchi Dock Remastered" \
+    --package-version="0.9.7.42" \
+    --msgid-bugs-address="https://github.com/PunchiSoft/punchi-dock-remastered/issues" \
+    --copyright-holder="Punchi Dock Contributors" \
+    --add-comments=TRANSLATORS \
+    --keyword=punchi_gettext:1 \
+    --keyword=punchi_gettext_line:1 \
+    --keyword=punchi_gettext_format:1 \
+    --language=Shell \
+    --output="$TEMP_DIR/shell.pot" \
+    "${shell_sources[@]}"
+
 extracted_templates=("$TEMP_DIR/qml.pot")
 if [[ -f "$TEMP_DIR/cpp.pot" ]]; then
     extracted_templates+=("$TEMP_DIR/cpp.pot")
+fi
+if [[ -f "$TEMP_DIR/shell.pot" ]]; then
+    extracted_templates+=("$TEMP_DIR/shell.pot")
 fi
 
 msgcat \

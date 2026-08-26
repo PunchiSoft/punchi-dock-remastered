@@ -145,10 +145,10 @@ Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loa
 
 The source tree contains a native C++ QML module. Installing the repository directory directly with `kpackagetool6` does not compile that module.
 
-Check the local development environment before installing or changing packages:
+Developers can inspect the strict validation environment with:
 
 ```bash
-scripts/check-build-environment.sh
+scripts-dev/check-build-environment.sh
 ```
 
 The checker reports the distribution, architecture, Plasma, CMake, and `qmllint` versions. Qt 6.11 is the primary lint profile and Qt 6.8 has a separate compatibility profile because their diagnostics differ. `qmllint` is a development tool, not a runtime dependency for users installing a matching prebuilt `.plasmoid`; a Qt 6.8 lint failure alone does not prove that the dock cannot run on that system.
@@ -172,21 +172,29 @@ Plasma, PipeWire, ECM, CMake, gettext, and ZIP development packages. The Debian
 wrapper was validated on Debian 13 with Qt 6.8.2; the Kubuntu source-build,
 installation, startup, and functional flow was validated on Plasma 6.6.4.
 
-Build the native module and create the artifact using the master setup script:
+For a normal local installation from source, run:
 
 ```bash
-scripts/setup.sh
+./scripts-user/setup.sh
 ```
 
-Or for automated non-interactive universal package generation:
+Running without arguments opens the interactive user menu. Its build-and-install
+action compiles the native module for the current system with
+`BUILD_TESTING=OFF`, creates a local package, installs it, and offers to restart
+Plasma. It does not execute `qmllint` or CTest. To create the package without
+installing or restarting Plasma, use:
 
 ```bash
-scripts/setup-universal.sh
+./scripts-user/setup.sh --build-only
 ```
 
 ```text
-dist/punchi-dock-remastered-<version>-<distribution>-<architecture>.plasmoid
+dist/punchi-dock-remastered-<version>-<distribution>-<architecture>-local-build.plasmoid
 ```
+
+The local-build artifact is for the machine that compiled it and is not an
+official universal release. `scripts-user/setup-universal.sh` only installs an
+existing `.plasmoid`; it does not compile source code.
 
 The 0.9.7.42 GitHub release provides
 `punchi-dock-remastered-0.9.7.42-fedora44-x86_64.plasmoid`. Universal artifacts
@@ -197,36 +205,37 @@ Never install an artifact labeled for a different distribution.
 The Debian 13 workflow was verified separately from Debian 14/testing. Kubuntu
 records an independent local baseline and was verified through native build,
 installation, startup, and user functional testing on Plasma 6.6.4. See
-[scripts/README.md](scripts/README.md) for the setup options and the distinction
-between public artifacts, local installation, and clean-source validation.
+[scripts-user/README.md](scripts-user/README.md) for the normal installation flow and
+[scripts-dev/README.md](scripts-dev/README.md) for strict development checks.
 
 Set `PACKAGE_BUILD_TYPE` or `STRIP_BIN` only when a development workflow requires an explicit override. Never use `PACKAGE_OUTPUT_FILE` to label a Fedora binary as Debian, and do not cross-compile the native QML module for publication on another distribution.
 
-To build, install, and restart Plasma for a local Fedora development test:
+To build, install, and restart Plasma for a strict Fedora development test:
 
 ```bash
-scripts/setup-fedora.sh --local-test
+scripts-dev/distro/fedora-setup.sh --local-test
 ```
 
-On a clean Kubuntu installation, prepare the official APT dependencies and
-create the native package with:
+On a supported Fedora or Debian 13 development host, prepare the official
+distribution dependencies with:
 
 ```bash
-scripts/setup-kubuntu.sh --yes
+scripts-dev/setup.sh --dependencies-only
 ```
 
-Add `--local-test` to install the result and restart Plasma Shell. Run this
-script as the desktop user; it requests `sudo` only for APT.
+Then use `scripts-dev/setup.sh --local-test` to run the strict build, install
+the result, and restart Plasma Shell. Run the script as the desktop user; it
+requests `sudo` only when DNF or APT needs to install packages.
 
 This script runs the packaging checks and CTest, upgrades the local plasmoid, restarts Plasma Shell, and writes filtered startup diagnostics to `debug.log`. Because it restarts the desktop shell, use it after a coherent change rather than on every file save.
 
 Before publishing a release, reproduce the package from a clean temporary source tree:
 
 ```bash
-scripts/validar-empaquetado-limpio.sh
+scripts-dev/validar-empaquetado-limpio.sh
 ```
 
-For rapid visual iteration, `scripts/watch-plasmoidviewer.sh` can rebuild and reopen `plasmoidviewer` when files change. It does not replace a final test in the real Plasma panel or dock.
+For rapid visual iteration, `scripts-dev/watch-plasmoidviewer.sh` can rebuild and reopen `plasmoidviewer` when files change. It does not replace a final test in the real Plasma panel or dock.
 
 ## Project Structure
 
@@ -234,7 +243,8 @@ For rapid visual iteration, `scripts/watch-plasmoidviewer.sh` can rebuild and re
 - `contents/ui/components/`: reusable QML interface components.
 - `contents/code/`: shared JavaScript logic and defaults.
 - `src/`: native C++ QML integration module.
-- `scripts/`: packaging and local testing tools.
+- `scripts-user/`: normal user build and installation flow.
+- `scripts-dev/`: strict testing, packaging, and maintenance tools.
 - `metadata.json`: KPackage metadata and Plasma compatibility declaration.
 
 Internal development notes and audit logs are intentionally excluded from the public repository and release package.

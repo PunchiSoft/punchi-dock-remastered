@@ -16,7 +16,7 @@ plasma_applet_org.kde.plasma.punchi-dock-remastered
 Update the POT template and every existing PO catalog with:
 
 ```bash
-scripts/update-translations.sh
+scripts-dev/update-translations.sh
 ```
 
 Before committing a catalog, verify it with:

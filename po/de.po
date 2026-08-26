@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-24 21:21-0400\n"
+"POT-Creation-Date: 2026-08-25 16:11-0400\n"
 "PO-Revision-Date: 2026-07-26 04:24-0400\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,6 +17,42 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: scripts-user/setup.sh:55
+msgid "     Punchi Dock Remastered - Setup Assistant             "
+msgstr "     Punchi Dock Remastered - Einrichtungsassistent       "
+
+#: scripts-user/setup-universal.sh:107
+msgid "  Punchi Dock Remastered - Package Installer             "
+msgstr "  Punchi Dock Remastered - Paketinstallation             "
+
+#: scripts-user/setup.sh:60
+msgid "  [1] Build and install locally"
+msgstr "  [1] Lokal erstellen und installieren"
+
+#: scripts-user/setup.sh:61
+msgid "  [2] Build .plasmoid package only (no install)"
+msgstr "  [2] Nur .plasmoid-Paket erstellen (nicht installieren)"
+
+#: scripts-user/setup.sh:62
+msgid "  [3] Install an existing .plasmoid package"
+msgstr "  [3] Vorhandenes .plasmoid-Paket installieren"
+
+#: scripts-user/setup.sh:63
+msgid "  [4] Uninstall the plasmoid from this system"
+msgstr "  [4] Plasmoid von diesem System deinstallieren"
+
+#: scripts-user/setup.sh:64
+msgid "  [5] Restart Plasma Shell only"
+msgstr "  [5] Nur Plasma Shell neu starten"
+
+#: scripts-user/setup.sh:65
+msgid "  [6] Help (show CLI options)"
+msgstr "  [6] Hilfe (Befehlszeilenoptionen anzeigen)"
+
+#: scripts-user/setup.sh:66
+msgid "  [7] Exit"
+msgstr "  [7] Beenden"
 
 #: contents/ui/components/CalendarPopup.qml:358
 msgctxt "@title:column calendar week number"
@@ -275,6 +311,30 @@ msgstr "48 Takte"
 #: contents/ui/config/ConfigAudioVisualizer.qml:37
 msgid "8 bars"
 msgstr "8 Takte"
+
+#: scripts-user/setup.sh:72
+msgid "==> Building the native QML module without developer tests..."
+msgstr "==> Natives QML-Modul wird ohne Entwicklertests erstellt ..."
+
+#: scripts-user/setup.sh:74
+msgid "==> Plasmoid uninstalled successfully."
+msgstr "==> Plasmoid erfolgreich deinstalliert."
+
+#: scripts-user/setup.sh:73
+msgid "==> Uninstalling Punchi Dock Remastered..."
+msgstr "==> Punchi Dock Remastered wird deinstalliert ..."
+
+#: scripts-user/setup-universal.sh:113
+msgid "==> [1/3] Installing or updating the plasmoid..."
+msgstr "==> [1/3] Plasmoid wird installiert oder aktualisiert ..."
+
+#: scripts-user/setup-universal.sh:125
+msgid "==> [2/3] Restarting Plasma Shell..."
+msgstr "==> [2/3] Plasma Shell wird neu gestartet ..."
+
+#: scripts-user/setup-universal.sh:130
+msgid "==> [3/3] Collecting startup diagnostics..."
+msgstr "==> [3/3] Startdiagnose wird gesammelt ..."
 
 #: contents/ui/components/DockItemsController.qml:714
 msgctxt "@info:status"
@@ -1603,6 +1663,10 @@ msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
 msgstr "Ausführlich"
 
+#: scripts-user/setup.sh:58
+msgid "Developer tests: disabled"
+msgstr "Entwicklertests: deaktiviert"
+
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:106
 #: contents/ui/components/punchimenu/PunchiMenuCompact.qml:205
 msgctxt "@title:application-category"
@@ -1613,6 +1677,11 @@ msgstr "Entwicklung"
 msgctxt "@title:category"
 msgid "Development"
 msgstr "Entwicklung"
+
+#: scripts-user/setup-universal.sh:143
+#, sh-printf-format
+msgid "Diagnostics saved to: %s\\n"
+msgstr "Diagnose gespeichert unter: %s\\n"
 
 #: contents/ui/config/SeparatorOptions.qml:69
 msgctxt "@item:inlistbox Separator shape"
@@ -1861,6 +1930,78 @@ msgstr "Aktivieren Sie den Audiovisualisierer"
 msgctxt "@info"
 msgid "Enter a new name for %1."
 msgstr "Geben Sie einen neuen Namen für %1 ein."
+
+#: scripts-user/setup.sh:70
+msgid "Enter the path to a .plasmoid package: "
+msgstr "Pfad zu einem .plasmoid-Paket eingeben: "
+
+#: scripts-user/setup.sh:84
+#, sh-printf-format
+msgid "Error: %s\\n"
+msgstr "Fehler: %s\\n"
+
+#: scripts-user/setup.sh:77
+#, sh-printf-format
+msgid "Error: Invalid menu option: '%s'\\n"
+msgstr "Fehler: Ungültige Menüoption: '%s'\\n"
+
+#: scripts-user/setup-universal.sh:133
+#, sh-printf-format
+msgid "Error: Plasma Shell PID %s stopped during startup.\\n"
+msgstr "Fehler: Plasma-Shell-PID %s wurde während des Starts beendet.\\n"
+
+#: scripts-user/lib/plasma-shell-control.sh:71
+msgid "Error: Plasma Shell PID did not change after the restart request."
+msgstr ""
+"Fehler: Die Plasma-Shell-PID hat sich nach der Neustartanforderung nicht "
+"geändert."
+
+#: scripts-user/lib/plasma-shell-control.sh:36
+msgid "Error: Plasma Shell did not stop and the forced restart failed."
+msgstr ""
+"Fehler: Plasma Shell wurde nicht beendet und der erzwungene Neustart ist "
+"fehlgeschlagen."
+
+#: scripts-user/setup-universal.sh:117
+#, sh-printf-format
+msgid "Error: kpackagetool6 did not leave a valid installation in %s\\n"
+msgstr ""
+"Fehler: kpackagetool6 hat keine gültige Installation in %s hinterlassen.\\n"
+
+#: scripts-user/lib/plasma-shell-control.sh:56
+msgid "Error: no supported command is available to start Plasma Shell."
+msgstr ""
+"Fehler: Es ist kein unterstützter Befehl zum Starten von Plasma Shell "
+"verfügbar."
+
+#: scripts-user/setup-universal.sh:101
+#, sh-printf-format
+msgid ""
+"Error: no universal .plasmoid was found in '%s' and no valid package path "
+"was provided.\\n"
+msgstr ""
+"Fehler: In '%s' wurde kein universelles .plasmoid gefunden und kein gültiger "
+"Paketpfad angegeben.\\n"
+
+#: scripts-user/setup-universal.sh:69
+msgid "Error: only one .plasmoid package can be installed at a time."
+msgstr ""
+"Fehler: Es kann nur ein .plasmoid-Paket gleichzeitig installiert werden."
+
+#: scripts-user/setup-universal.sh:84
+#, sh-printf-format
+msgid "Error: required installation command not found: %s\\n"
+msgstr "Fehler: Erforderlicher Installationsbefehl nicht gefunden: %s\\n"
+
+#: scripts-user/lib/plasma-shell-control.sh:22
+msgid "Error: the Plasma Shell user service could not be restarted."
+msgstr ""
+"Fehler: Der Plasma-Shell-Benutzerdienst konnte nicht neu gestartet werden."
+
+#: scripts-user/setup-universal.sh:75
+#, sh-printf-format
+msgid "Error: unknown option or invalid package path: %s\\n"
+msgstr "Fehler: Unbekannte Option oder ungültiger Paketpfad: %s\\n"
 
 #: contents/ui/config/ConfigGeneral.qml:246
 msgid "Estimated panel-safe maximum: %1 px"
@@ -2370,9 +2511,32 @@ msgstr "Indikatordicke:"
 msgid "Individual"
 msgstr "Einzeln"
 
+#: scripts-user/setup-universal.sh:121
+#, sh-printf-format
+msgid "Installation completed in: %s\\n"
+msgstr "Installation abgeschlossen in: %s\\n"
+
+#: scripts-user/setup-universal.sh:147
+msgid "Installation completed without restarting Plasma Shell."
+msgstr "Installation ohne Neustart von Plasma Shell abgeschlossen."
+
+#: scripts-user/setup-universal.sh:110
+#, sh-printf-format
+msgid "Installation directory: %s\\n"
+msgstr "Installationsverzeichnis: %s\\n"
+
+#: scripts-user/setup-universal.sh:141
+msgid "Installation or update completed successfully."
+msgstr "Installation oder Aktualisierung erfolgreich abgeschlossen."
+
 #: contents/ui/config/ConfigAspect.qml:585
 msgid "Installed Punchi Dock theme"
 msgstr "Punchi Dock-Design installiert"
+
+#: scripts-user/setup-universal.sh:142 scripts-user/setup-universal.sh:148
+#, sh-printf-format
+msgid "Installed package: %s\\n"
+msgstr "Installiertes Paket: %s\\n"
 
 #: contents/ui/config/ConfigAspect.qml:564
 msgid "Installed theme:"
@@ -2564,6 +2728,11 @@ msgctxt "@info:status"
 msgid "Loading applications…"
 msgstr "Anwendungen werden geladen…"
 
+#: scripts-user/setup.sh:76
+#, sh-printf-format
+msgid "Local package created without installation: %s\\n"
+msgstr "Lokales Paket ohne Installation erstellt: %s\\n"
+
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:395
 msgid "Location and size"
 msgstr "Position und Größe"
@@ -2578,6 +2747,12 @@ msgstr "Sperren"
 msgctxt "@action:button"
 msgid "Log Out"
 msgstr "Abmelden"
+
+#: scripts-user/setup-universal.sh:149
+msgid "Log out and back in or restart Plasma later to apply the changes."
+msgstr ""
+"Melden Sie sich ab und wieder an oder starten Sie Plasma später neu, um die "
+"Änderungen anzuwenden."
 
 #: contents/ui/config/ConfigMenus.qml:393
 msgid ""
@@ -2999,6 +3174,10 @@ msgstr "Hinweis"
 msgid "Note content"
 msgstr "Inhalt beachten"
 
+#: scripts-user/setup.sh:75
+msgid "Notice: No local installation was found."
+msgstr "Hinweis: Keine lokale Installation gefunden."
+
 #: contents/ui/config/ConfigAudioVisualizer.qml:231
 msgid "Number of audio visualizer bars"
 msgstr "Anzahl der Audiovisualisierungsbalken"
@@ -3178,6 +3357,10 @@ msgstr ""
 "Öffnet oder schließt PunchiMenu unabhängig vom Aktivierungskurzbefehl des "
 "Miniprogramms."
 
+#: scripts-user/setup.sh:78
+msgid "Operation cancelled."
+msgstr "Vorgang abgebrochen."
+
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:203
 msgid ""
 "Organizes applications into continuous category sections with separators."
@@ -3259,6 +3442,23 @@ msgstr ""
 #: contents/ui/config/ConfigAudioVisualizer.qml:56
 msgid "Pixel spectrum"
 msgstr "Pixelspektrum"
+
+#: scripts-user/lib/plasma-shell-control.sh:16
+#, sh-printf-format
+msgid "Plasma Shell PID before restart: %s\\n"
+msgstr "Plasma-Shell-PID vor dem Neustart: %s\\n"
+
+#: scripts-user/setup.sh:71
+msgid ""
+"Plasma Shell restart skipped. Log out and back in or restart Plasma later."
+msgstr ""
+"Neustart von Plasma Shell übersprungen. Melden Sie sich ab und wieder an "
+"oder starten Sie Plasma später neu."
+
+#: scripts-user/lib/plasma-shell-control.sh:65
+#, sh-printf-format
+msgid "Plasma Shell restarted successfully (new PID: %s).\\n"
+msgstr "Plasma Shell erfolgreich neu gestartet (neue PID: %s).\\n"
 
 #: contents/ui/config/components/ColorModeControl.qml:40
 #: contents/ui/config/components/ColorModeControl.qml:65
@@ -3607,6 +3807,23 @@ msgctxt "@action:button"
 msgid "Restart"
 msgstr "Neu starten"
 
+#: scripts-user/setup.sh:68
+msgid "Restart Plasma Shell now to apply the changes? [Y/n]: "
+msgstr "Plasma Shell jetzt neu starten, um die Änderungen anzuwenden? [J/n]: "
+
+#: scripts-user/setup.sh:69
+msgid "Restart Plasma Shell now to finish uninstalling? [Y/n]: "
+msgstr ""
+"Plasma Shell jetzt neu starten, um die Deinstallation abzuschließen? [J/n]: "
+
+#: scripts-user/lib/plasma-shell-control.sh:41
+msgid "Restart method: KDE application control"
+msgstr "Neustartmethode: KDE-Anwendungssteuerung"
+
+#: scripts-user/lib/plasma-shell-control.sh:20
+msgid "Restart method: systemd user service"
+msgstr "Neustartmethode: systemd-Benutzerdienst"
+
 #: contents/ui/components/TaskModelController.qml:897
 msgid "Restore"
 msgstr "Wiederherstellen"
@@ -3741,10 +3958,19 @@ msgstr ""
 msgid "Select a theme"
 msgstr "Wählen Sie ein Thema aus"
 
+#: scripts-user/setup.sh:67
+msgid "Select an option [1-7]: "
+msgstr "Option auswählen [1-7]: "
+
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:220
 msgctxt "@info:accessible"
 msgid "Selected for the new folder"
 msgstr "Für den neuen Ordner ausgewählt"
+
+#: scripts-user/setup-universal.sh:109
+#, sh-printf-format
+msgid "Selected package: %s\\n"
+msgstr "Ausgewähltes Paket: %s\\n"
 
 #: contents/ui/config/AddItemPalette.qml:30
 #: contents/ui/config/ConfigItems.qml:722
@@ -4059,6 +4285,11 @@ msgstr "System"
 #: contents/ui/config/ConfigItems.qml:84
 msgid "System operation failed: %1"
 msgstr "Systemvorgang fehlgeschlagen: %1"
+
+#: scripts-user/setup.sh:57
+#, sh-printf-format
+msgid "System profile: %s\\n"
+msgstr "Systemprofil: %s\\n"
 
 #: contents/ui/config/ConfigGeneral.qml:284
 msgid "Target desktop:"
@@ -4532,6 +4763,124 @@ msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Vom Dock lösen"
 
+#: scripts-user/setup-universal.sh:102
+msgid ""
+"Usage: scripts-user/setup-universal.sh [--no-restart] <path/to/"
+"package.plasmoid>"
+msgstr ""
+"Aufruf: scripts-user/setup-universal.sh [--no-restart] <Pfad/zum/"
+"Paket.plasmoid>"
+
+#: scripts-user/setup-universal.sh:27
+msgid ""
+"Usage: scripts-user/setup-universal.sh [--no-restart] [path/to/"
+"package.plasmoid]\n"
+"\n"
+"Installs or updates Punchi Dock Remastered from an existing .plasmoid "
+"package.\n"
+"Plasma Shell is restarted afterward unless --no-restart is specified.\n"
+"\n"
+"Options:\n"
+"  --no-restart   Install without restarting Plasma Shell.\n"
+"  --lang CODE    Override the detected language (en, es, de, pt_BR).\n"
+"  -h, --help     Show this help.\n"
+"\n"
+"Examples:\n"
+"  scripts-user/setup-"
+"universal.sh                                                      # Select "
+"the newest universal package in dist/\n"
+"  scripts-user/setup-universal.sh --no-"
+"restart                                         # Install without restarting "
+"the desktop\n"
+"  scripts-user/setup-universal.sh dist/punchi-dock-remastered-0.9.7-"
+"universal.plasmoid # Install an explicit package"
+msgstr ""
+"Aufruf: scripts-user/setup-universal.sh [--no-restart] [Pfad/zum/"
+"Paket.plasmoid]\n"
+"\n"
+"Installiert oder aktualisiert Punchi Dock Remastered aus einem "
+"vorhandenen .plasmoid-Paket.\n"
+"Plasma Shell wird danach neu gestartet, sofern --no-restart nicht angegeben "
+"ist.\n"
+"\n"
+"Optionen:\n"
+"  --no-restart   Ohne Neustart von Plasma Shell installieren.\n"
+"  --lang CODE    Erkannte Sprache überschreiben (en, es, de, pt_BR).\n"
+"  -h, --help     Diese Hilfe anzeigen.\n"
+"\n"
+"Beispiele:\n"
+"  scripts-user/setup-"
+"universal.sh                                                      # Neuestes "
+"universelles Paket aus dist/ auswählen\n"
+"  scripts-user/setup-universal.sh --no-"
+"restart                                         # Ohne Neustart der "
+"Arbeitsfläche installieren\n"
+"  scripts-user/setup-universal.sh dist/punchi-dock-remastered-0.9.7-"
+"universal.plasmoid # Bestimmtes Paket installieren"
+
+#: scripts-user/setup.sh:23
+msgid ""
+"Usage: scripts-user/setup.sh [options] [path/to/package.plasmoid]\n"
+"\n"
+"Builds Punchi Dock Remastered for the current Linux system without running\n"
+"developer tests, creates a local .plasmoid package, installs it, and "
+"manages\n"
+"Plasma Shell integration.\n"
+"\n"
+"If run without a primary action, it opens the interactive setup menu.\n"
+"\n"
+"Primary actions (choose only one):\n"
+"  --install         Build and install the plasmoid locally.\n"
+"  --build-only      Build the local package without installing or restarting "
+"Plasma.\n"
+"  --package         Alias for --build-only.\n"
+"  --uninstall       Uninstall the plasmoid from the local Plasma "
+"environment.\n"
+"  --restart-plasma  Restart Plasma Shell on demand.\n"
+"\n"
+"Modifiers:\n"
+"  --no-restart      Skip restarting Plasma Shell after install or "
+"uninstall.\n"
+"  -y, --yes         Automatically confirm a restart prompt.\n"
+"  --lang CODE       Override the detected language (en, es, de, pt_BR).\n"
+"  -h, --help        Show this help.\n"
+"\n"
+"Passing a .plasmoid path installs that existing package without compiling "
+"the\n"
+"source tree. Build dependencies are required only by actions that compile.\n"
+"\n"
+"Developer validation is available separately through scripts-dev/setup.sh."
+msgstr ""
+"Aufruf: scripts-user/setup.sh [Optionen] [Pfad/zum/Paket.plasmoid]\n"
+"\n"
+"Erstellt Punchi Dock Remastered für das aktuelle Linux-System ohne\n"
+"Entwicklertests, erzeugt ein lokales .plasmoid-Paket, installiert es und\n"
+"verwaltet die Integration mit Plasma Shell.\n"
+"\n"
+"Ohne Hauptaktion wird das interaktive Einrichtungsmenü geöffnet.\n"
+"\n"
+"Hauptaktionen (nur eine auswählen):\n"
+"  --install         Plasmoid lokal erstellen und installieren.\n"
+"  --build-only      Lokales Paket ohne Installation oder Plasma-Neustart "
+"erstellen.\n"
+"  --package         Alias für --build-only.\n"
+"  --uninstall       Plasmoid aus der lokalen Plasma-Umgebung "
+"deinstallieren.\n"
+"  --restart-plasma  Plasma Shell bei Bedarf neu starten.\n"
+"\n"
+"Zusatzoptionen:\n"
+"  --no-restart      Plasma Shell nach Installation oder Deinstallation nicht "
+"neu starten.\n"
+"  -y, --yes         Eine Neustartabfrage automatisch bestätigen.\n"
+"  --lang CODE       Erkannte Sprache überschreiben (en, es, de, pt_BR).\n"
+"  -h, --help        Diese Hilfe anzeigen.\n"
+"\n"
+"Ein .plasmoid-Pfad installiert das vorhandene Paket ohne den Quellbaum zu "
+"erstellen.\n"
+"Build-Abhängigkeiten sind nur für Aktionen erforderlich, die kompilieren.\n"
+"\n"
+"Die Entwicklerprüfung ist separat über scripts-dev/setup.sh verfügbar."
+
 #: contents/ui/components/DockItem.qml:1418
 msgctxt "@info:accessible"
 msgid "Use Control+Shift with an arrow key to move this Dock item."
@@ -4639,6 +4988,10 @@ msgstr "Visualisierer:"
 #: contents/ui/config/ConfigMouse.qml:41
 msgid "Wave"
 msgstr "Welle"
+
+#: scripts-user/setup.sh:59
+msgid "What would you like to do?"
+msgstr "Was möchten Sie tun?"
 
 #: contents/ui/config/ConfigMouse.qml:286
 msgid ""

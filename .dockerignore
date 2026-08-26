@@ -1,0 +1,12 @@
+.agents/
+.git/
+.github/
+backup/
+bitacora/
+build/
+dist/
+docs/
+kde-sdk/
+scratch/
+*.log
+*.plasmoid

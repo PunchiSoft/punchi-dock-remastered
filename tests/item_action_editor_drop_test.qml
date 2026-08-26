@@ -49,9 +49,6 @@ TestCase {
     }
 
     function init() {
-        // The isolated runner has no KDE icon provider for the hidden action editor icon.
-        ignoreWarning(/QML IconImage: Cannot open: .*application-x-executable/)
-        failOnWarning(/.?/)
         launcherDroppedSpy.clear()
         addRequestedSpy.clear()
     }

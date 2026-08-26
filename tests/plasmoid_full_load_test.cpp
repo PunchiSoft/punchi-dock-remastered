@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QGuiApplication>
+#include <QIcon>
 #include <QJSValue>
 #include <QMutex>
 #include <QMutexLocker>
@@ -26,6 +27,7 @@
 #include <Plasma/Containment>
 #include <Plasma/Corona>
 #include <Plasma/PluginLoader>
+#include <Plasma/Theme>
 #include <PlasmaQuick/AppletQuickItem>
 
 #include <algorithm>
@@ -73,7 +75,7 @@ void runtimeMessageHandler(QtMsgType type, const QMessageLogContext &context, co
             || (category == QLatin1StringView("qt.qml.propertyCache.append")
                 && message == QLatin1StringView("Member visible of the object PlasmaQuick::Dialog overrides a member of the base object. Consider renaming it or adding final or override specifier"))
             || (category == QLatin1StringView("kf.plasma.quick")
-                && message.startsWith(QLatin1StringView("Couldn't create KWindowShadow for PlasmaQuick::"))
+                && message.startsWith(QLatin1StringView("Couldn't create KWindowShadow for "))
                 && message.endsWith(QLatin1Char(')')))
             || (category == QLatin1StringView("org.kde.plasma.libtaskmanager")
                 && message == QLatin1StringView("Failed to determine whether virtual desktop navigation wrapping is enabled:  \"The name org.kde.KWin was not provided by any .service files\""))
@@ -135,6 +137,20 @@ bool copyFile(const QString &sourcePath, const QString &destinationPath, QString
     }
 
     return true;
+}
+
+bool writeFile(const QString &destinationPath, const QByteArray &contents)
+{
+    if (!QDir().mkpath(QFileInfo(destinationPath).absolutePath())) {
+        return false;
+    }
+
+    QFile destination(destinationPath);
+    if (!destination.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        return false;
+    }
+
+    return destination.write(contents) == contents.size();
 }
 
 bool copyPackageContents(const QString &sourcePath, const QString &destinationPath, QString *error)
@@ -445,10 +461,25 @@ int main(int argc, char **argv)
         qputenv(variable.constData(), QFile::encodeName(path));
     }
 
+    const QString configRoot = QDir(environment.path()).filePath(QStringLiteral("config"));
+    if (!writeFile(QDir(configRoot).filePath(QStringLiteral("plasmarc")),
+                   QByteArrayLiteral("[Theme]\nname=default\n"))
+        || !writeFile(QDir(configRoot).filePath(QStringLiteral("kdeglobals")),
+                      QByteArrayLiteral("[Icons]\nTheme=breeze\n"))) {
+        return 1;
+    }
+
     qputenv("QT_QPA_PLATFORM", "offscreen");
     qputenv("QT_QUICK_BACKEND", "software");
 
     QGuiApplication application(argc, argv);
+    QIcon::setThemeName(QStringLiteral("breeze"));
+    Plasma::Theme isolatedTheme;
+    isolatedTheme.setThemeName(QStringLiteral("default"));
+    if (isolatedTheme.themeName() != QLatin1StringView("default")) {
+        return 1;
+    }
+
     PlasmoidFullLoadTest test(environment.path());
     const int result = QTest::qExec(&test, argc, argv);
     return result;
