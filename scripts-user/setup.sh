@@ -108,19 +108,26 @@ safe_label_component() {
 
 local_platform_label() {
     local distribution_id="linux"
-    local distribution_version="unknown"
+    local distribution_version=""
 
     if [[ -r /etc/os-release ]]; then
         # shellcheck disable=SC1091
         source /etc/os-release
         distribution_id="${ID:-linux}"
-        distribution_version="${VERSION_ID:-unknown}"
+        distribution_version="${VERSION_ID:-}"
     fi
 
-    printf '%s%s-%s\n' \
-        "$(safe_label_component "$distribution_id")" \
-        "$(safe_label_component "$distribution_version")" \
-        "$(safe_label_component "$(uname -m)")"
+    local id_comp=""
+    local ver_comp=""
+    local arch_comp=""
+    id_comp="$(safe_label_component "$distribution_id")"
+    arch_comp="$(safe_label_component "$(uname -m)")"
+    if [[ -n "$distribution_version" && "$distribution_version" != "unknown" ]]; then
+        ver_comp="$(safe_label_component "$distribution_version")"
+        printf '%s%s-%s\n' "$id_comp" "$ver_comp" "$arch_comp"
+    else
+        printf '%s-%s\n' "$id_comp" "$arch_comp"
+    fi
 }
 
 resolve_user_build_dir() {

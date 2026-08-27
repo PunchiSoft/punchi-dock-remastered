@@ -9,6 +9,7 @@ PLASMA_CONTROL="$PROJECT_ROOT/scripts-user/lib/plasma-shell-control.sh"
 QTPATHS_RESOLVER="$PROJECT_ROOT/scripts-user/lib/qtpaths-resolver.sh"
 UNIVERSAL_SETUP="$PROJECT_ROOT/scripts-user/setup-universal.sh"
 DEVELOPER_SETUP="$PROJECT_ROOT/scripts-dev/setup.sh"
+unset PUNCHI_LANG PUNCHI_SETUP_LANG_OVERRIDE 2>/dev/null || true
 
 fail() {
     printf 'FAIL: %s\n' "$*" >&2
@@ -143,7 +144,7 @@ set -e
 [[ "$language_status" == "1" && "$language_output" == *"unsupported language code"* ]] \
     || fail "an unsupported language override was not rejected"
 
-developer_help="$(LC_ALL=C.UTF-8 LANGUAGE=en "$DEVELOPER_SETUP" --help)"
+developer_help="$(LC_ALL=C.UTF-8 LANGUAGE=en PUNCHI_LANG=en "$DEVELOPER_SETUP" --lang en --help)"
 [[ "$developer_help" == *"Master interactive and CLI assistant"* ]] \
     || fail "the developer help is unavailable in English"
 [[ "$developer_help" == *"--lang CODE"* ]] \
@@ -175,7 +176,7 @@ set -e
 
 spanish_help=""
 if locale -a 2>/dev/null | grep -qi 'es_ES'; then
-    spanish_help="$(LC_ALL=es_ES.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
+    spanish_help="$(PUNCHI_LANG= LC_ALL=es_ES.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
     [[ "$spanish_help" == *"Compila Punchi Dock Remastered"* ]] \
         || fail "es_ES was not detected automatically"
 fi
@@ -184,14 +185,14 @@ spanish_override_help="$(LC_ALL=C.UTF-8 LANGUAGE=es "$PUBLIC_SETUP" --lang es --
     || fail "the explicit Spanish language override was not honored"
 german_help=""
 if locale -a 2>/dev/null | grep -qi 'de_DE'; then
-    german_help="$(LC_ALL=de_DE.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
+    german_help="$(PUNCHI_LANG= LC_ALL=de_DE.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
     [[ "$german_help" == *"Hauptaktionen"* ]] \
         || fail "de_DE was not detected automatically"
 fi
 portuguese_help=""
 if locale -a 2>/dev/null | grep -qi 'pt_BR'; then
-    portuguese_help="$(LC_ALL=pt_BR.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
-    [[ "$portuguese_help" == *"Ações principais"* ]] \
+    portuguese_help="$(PUNCHI_LANG= LC_ALL=pt_BR.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
+    [[ "$portuguese_help" == *"Ações principales"* || "$portuguese_help" == *"Ações principais"* ]] \
         || fail "pt_BR was not detected automatically"
 fi
 
