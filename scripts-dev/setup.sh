@@ -20,219 +20,132 @@ trap _punchi_setup_cleanup EXIT INT TERM
 
 # shellcheck source=lib/setup-logging.sh
 source "$SCRIPT_DIR/lib/setup-logging.sh"
+# shellcheck source=../scripts-user/lib/setup-localization.sh
+source "$PROJECT_ROOT/scripts-user/lib/setup-localization.sh"
 
 # ---------------------------------------------------------------------------
-# Locale detection: English (default) and Spanish
-# Override with PUNCHI_LANG=en or PUNCHI_LANG=es
-# ---------------------------------------------------------------------------
-_detect_lang() {
-    if [[ -n "${PUNCHI_LANG:-}" ]]; then
-        echo "$PUNCHI_LANG"
-        return
-    fi
-    local locale="${LC_ALL:-${LC_MESSAGES:-${LANG:-en_US.UTF-8}}}"
-    case "$locale" in
-        es*|ES*) echo "es" ;;
-        *)       echo "en" ;;
-    esac
-}
-
-PUNCHI_UI_LANG="$(_detect_lang)"
-
-# ---------------------------------------------------------------------------
-# Bilingual message catalog
+# Localized developer-assistant messages
 # ---------------------------------------------------------------------------
 msg() {
     local key="$1"
     shift
-    case "${PUNCHI_UI_LANG}" in
-        es) msg_es "$key" "$@" ;;
-        *)  msg_en "$key" "$@" ;;
-    esac
-}
-
-msg_en() {
-    local key="$1"
-    shift
     case "$key" in
         help)
-            cat <<'EOF'
-Usage: scripts-dev/setup.sh [options | path_to_package.plasmoid]
+            punchi_gettext_line 'Usage: scripts-dev/setup.sh [options | path_to_package.plasmoid]
 
 Master interactive and CLI assistant for packaging, testing and installing
 Punchi Dock Remastered. Automatically detects the host distribution
-(Fedora or Debian 13).
+(Fedora, Debian 13, or Arch Linux and supported derivatives).
 
 If run without arguments, it opens the accessible interactive menu.
 
 CLI Options:
   --local-test        Build, install on local Plasma Shell and collect logs.
   --clean-install     Remove existing installation, rebuild and install fresh.
-  --yes               Pass affirmative answer to the package manager (DNF/APT).
+  --yes               Pass affirmative answer to the package manager.
   --skip-dnf          Skip DNF installation on Fedora.
   --skip-apt          Skip APT installation on Debian.
   --skip-update       Skip apt-get update on Debian.
+  --skip-pacman       Skip pacman installation on Arch Linux.
   --dependencies-only Check and install dependencies without building.
   --uninstall         Remove the plasmoid from the local Plasma installation.
   --dry-run           Show planned commands without modifying the system.
+  --lang CODE         Override the detected language (en, es, de, pt_BR).
   -h, --help          Show this help.
 
 Examples:
   ./scripts-dev/setup.sh                            # Interactive menu mode
   ./scripts-dev/setup.sh --local-test               # Quick local test mode
   ./scripts-dev/setup.sh --clean-install            # Force clean reinstall
-  ./scripts-dev/setup.sh dist/my-package.plasmoid   # Direct .plasmoid install
-EOF
+  ./scripts-dev/setup.sh dist/my-package.plasmoid   # Direct .plasmoid install'
             ;;
-        err_root)        echo "Error: Run this script as the Plasma desktop user, NOT with sudo." >&2
-                         echo "The script will request sudo only when DNF or APT need to install packages." >&2 ;;
-        err_no_osrel)    echo "Error: Could not identify the distribution from /etc/os-release." >&2 ;;
-        err_unsup_deb)   echo "Error: Unsupported Debian version for building: ${1:-unknown}." >&2
-                         echo "Supported build environments: Debian 13 (Trixie) or Fedora." >&2
-                         echo "To install a prebuilt .plasmoid use: ./scripts-user/setup-universal.sh" >&2 ;;
-        warn_unsup_dist) echo "Notice: This distribution (${1:-unknown}) is not an official C++ build environment." >&2
-                         echo "Supported build environments: Fedora and Debian 13." >&2
-                         echo "To install a prebuilt .plasmoid, use: ./scripts-user/setup-universal.sh" >&2 ;;
-        err_no_profile)  echo "Error: Cannot build natively on this system (${1:-unknown})." >&2
-                         echo "Use: ./scripts-user/setup-universal.sh <path/to/package.plasmoid> to install." >&2 ;;
-        err_no_cli_prof) echo "Error: No build profile exists for the distribution: ${1:-unknown}." >&2 ;;
-        banner)          echo "=========================================================="
-                         echo "   Punchi Dock Remastered - Master Setup Assistant        "
-                         echo "==========================================================" ;;
-        detected_host)   echo "Detected host: ${1:-unknown} ($(uname -m))" ;;
-        menu_question)   echo "What would you like to do?" ;;
-        menu_opt1)       echo "  [1] Build official release package (Release in dist/)" ;;
-        menu_opt2)       echo "  [2] Build, install and test locally (--local-test)" ;;
-        menu_opt3)       echo "  [3] Install an existing .plasmoid package from dist/" ;;
-        menu_opt4)       echo "  [4] Clean install (remove current + rebuild + install)" ;;
-        menu_opt5)       echo "  [5] Check and install build dependencies only" ;;
-        menu_opt6)       echo "  [6] Uninstall the plasmoid from this system" ;;
-        menu_opt7)       echo "  [7] Help (show CLI commands reference)" ;;
-        menu_opt8)       echo "  [8] Exit" ;;
-        menu_prompt)     printf 'Select an option [1-8]: ' ;;
-        start_release)   echo "==> Starting Release build..." ;;
-        start_local)     echo "==> Starting build and local test..." ;;
-        start_clean)     echo "==> Starting clean install (remove + rebuild + install)..." ;;
-        start_deps)      echo "==> Checking and installing build dependencies..." ;;
-        start_uninstall) echo "==> Uninstalling the plasmoid..." ;;
-        uninstall_done)  echo "==> Plasmoid uninstalled successfully." ;;
-        uninstall_none)  echo "Notice: No local installation found for the plasmoid." ;;
-        clean_removed)   echo "==> Removed existing installation: ${1:-}" ;;
-        start_plasma_restart) echo "==> Restarting Plasma Shell..." ;;
-        restart_done)    echo "==> Plasma Shell restart requested." ;;
-        prompt_restart)  printf 'Would you like to restart Plasma Shell now? [y/N]: ' ;;
-        cancelled)       echo "Operation cancelled." ;;
-        err_invalid_opt) echo "Error: Invalid option: '${1:-}'" >&2 ;;
+        err_root)
+            punchi_gettext_line 'Error: Run this script as the Plasma desktop user, NOT with sudo.' >&2
+            punchi_gettext_line 'The script will request sudo only when the detected package manager needs to install packages.' >&2
+            ;;
+        err_no_osrel)
+            punchi_gettext_line 'Error: Could not identify the distribution from /etc/os-release.' >&2
+            ;;
+        err_unsup_deb)
+            punchi_gettext_format 'Error: Unsupported Debian version for building: %s.\n' "${1:-unknown}" >&2
+            punchi_gettext_line 'Supported build environments: Debian 13 (Trixie), Fedora, or Arch Linux.' >&2
+            punchi_gettext_line 'To install a prebuilt .plasmoid use: ./scripts-user/setup-universal.sh' >&2
+            ;;
+        warn_unsup_dist)
+            punchi_gettext_format 'Notice: This distribution (%s) is not an official C++ build environment.\n' "${1:-unknown}" >&2
+            punchi_gettext_line 'Supported build environments: Fedora, Debian 13, and Arch Linux.' >&2
+            punchi_gettext_line 'To install a prebuilt .plasmoid, use: ./scripts-user/setup-universal.sh' >&2
+            ;;
+        err_no_profile)
+            punchi_gettext_format 'Error: Cannot build natively on this system (%s).\n' "${1:-unknown}" >&2
+            punchi_gettext_line 'Use: ./scripts-user/setup-universal.sh <path/to/package.plasmoid> to install.' >&2
+            ;;
+        err_no_cli_prof)
+            punchi_gettext_format 'Error: No build profile exists for the distribution: %s.\n' "${1:-unknown}" >&2
+            ;;
+        banner)
+            echo "=========================================================="
+            punchi_gettext_line '   Punchi Dock Remastered - Master Setup Assistant        '
+            echo "=========================================================="
+            ;;
+        detected_host)
+            punchi_gettext_format 'Detected host: %s (%s)\n' "${1:-unknown}" "$(uname -m)"
+            ;;
+        menu_question)   punchi_gettext_line 'What would you like to do?' ;;
+        menu_opt1)       punchi_gettext_line '  [1] Build official release package (Release in dist/)' ;;
+        menu_opt2)       punchi_gettext_line '  [2] Build, install and test locally (--local-test)' ;;
+        menu_opt3)       punchi_gettext_line '  [3] Install an existing .plasmoid package from dist/' ;;
+        menu_opt4)       punchi_gettext_line '  [4] Clean install (remove current + rebuild + install)' ;;
+        menu_opt5)       punchi_gettext_line '  [5] Check and install build dependencies only' ;;
+        menu_opt6)       punchi_gettext_line '  [6] Uninstall the plasmoid from this system' ;;
+        menu_opt7)       punchi_gettext_line '  [7] Help (show CLI commands reference)' ;;
+        menu_opt8)       punchi_gettext_line '  [8] Exit' ;;
+        menu_prompt)     punchi_gettext 'Select an option [1-8]: ' ;;
+        start_release)   punchi_gettext_line '==> Starting Release build...' ;;
+        start_local)     punchi_gettext_line '==> Starting build and local test...' ;;
+        start_clean)     punchi_gettext_line '==> Starting clean install (remove + rebuild + install)...' ;;
+        start_deps)      punchi_gettext_line '==> Checking and installing build dependencies...' ;;
+        start_uninstall) punchi_gettext_line '==> Uninstalling the plasmoid...' ;;
+        uninstall_done)  punchi_gettext_line '==> Plasmoid uninstalled successfully.' ;;
+        uninstall_none)  punchi_gettext_line 'Notice: No local installation found for the plasmoid.' ;;
+        clean_removed)   punchi_gettext_format '==> Removed existing installation: %s\n' "${1:-}" ;;
+        start_plasma_restart) punchi_gettext_line '==> Restarting Plasma Shell...' ;;
+        restart_done)    punchi_gettext_line '==> Plasma Shell restart requested.' ;;
+        prompt_restart)  punchi_gettext 'Would you like to restart Plasma Shell now? [y/N]: ' ;;
+        cancelled)       punchi_gettext_line 'Operation cancelled.' ;;
+        err_invalid_opt) punchi_gettext_format 'Error: Invalid option: %s\n' "${1:-}" >&2 ;;
         quick_ref)
             echo ""
-            echo "CLI Quick Reference"
-            echo "=================="
-            echo "  ./scripts-dev/setup.sh                    Interactive menu (this screen)"
-            echo "  ./scripts-dev/setup.sh --local-test       Build, install and test locally"
-            echo "  ./scripts-dev/setup.sh --clean-install    Force remove + full rebuild + install"
-            echo "  ./scripts-dev/setup.sh --dependencies-only  Check/install build dependencies"
-            echo "  ./scripts-dev/setup.sh --uninstall        Remove the plasmoid from Plasma"
-            echo "  ./scripts-dev/setup.sh --dry-run          Preview commands without executing"
-            echo "  ./scripts-dev/setup.sh --yes              Auto-accept package manager prompts"
-            echo "  ./scripts-dev/setup.sh --help             Show full help with all options"
-            echo "  ./scripts-dev/setup.sh <file.plasmoid>    Install a prebuilt package directly"
+            punchi_gettext_line 'CLI Quick Reference
+==================
+  ./scripts-dev/setup.sh                    Interactive menu (this screen)
+  ./scripts-dev/setup.sh --local-test       Build, install and test locally
+  ./scripts-dev/setup.sh --clean-install    Force remove + full rebuild + install
+  ./scripts-dev/setup.sh --dependencies-only  Check/install build dependencies
+  ./scripts-dev/setup.sh --uninstall        Remove the plasmoid from Plasma
+  ./scripts-dev/setup.sh --dry-run          Preview commands without executing
+  ./scripts-dev/setup.sh --yes              Auto-accept package manager prompts
+  ./scripts-dev/setup.sh --help             Show full help with all options
+  ./scripts-dev/setup.sh <file.plasmoid>    Install a prebuilt package directly'
             echo ""
-            echo "Logs: docs/logs/<distro>/setup-<distro>-latest.log"
-            echo "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
-            echo "" ;;
+            punchi_gettext_format 'Logs: docs/logs/%s/setup-%s-latest.log\n' "$DETECTED_PROFILE" "$DETECTED_PROFILE"
+            punchi_gettext_line 'Docs: scripts-dev/README.md | scripts-dev/README.es.md'
+            echo ""
+            ;;
+        *)
+            printf 'Internal error: unknown developer setup message key: %s\n' "$key" >&2
+            return 2
+            ;;
     esac
 }
 
-msg_es() {
-    local key="$1"
-    shift
-    case "$key" in
-        help)
-            cat <<'EOF'
-Uso: scripts-dev/setup.sh [opciones | ruta_al_paquete.plasmoid]
+prepare_setup_arguments() {
+    local -a filtered_arguments=()
 
-Asistente maestro interactivo y CLI para empaquetar, probar e instalar
-Punchi Dock Remastered. Detecta automáticamente la distribución anfitriona
-(Fedora o Debian 13).
-
-Si se ejecuta sin argumentos, abre el menú interactivo accesible.
-
-Opciones CLI:
-  --local-test        Compila, instala en Plasma Shell local y recolecta logs.
-  --clean-install     Elimina instalación existente, recompila e instala limpio.
-  --yes               Pasa respuesta afirmativa al gestor de paquetes (DNF/APT).
-  --skip-dnf          Omite instalación DNF en Fedora.
-  --skip-apt          Omite instalación APT en Debian.
-  --skip-update       Omite apt-get update en Debian.
-  --dependencies-only Verifica e instala dependencias sin compilar.
-  --uninstall         Desinstala el plasmoide de la instalación local de Plasma.
-  --dry-run           Muestra los comandos planificados sin modificar el sistema.
-  -h, --help          Muestra esta ayuda.
-
-Ejemplos:
-  ./scripts-dev/setup.sh                            # Modo menú interactivo
-  ./scripts-dev/setup.sh --local-test               # Modo prueba rápida local
-  ./scripts-dev/setup.sh --clean-install            # Reinstalación limpia forzada
-  ./scripts-dev/setup.sh dist/mi-paquete.plasmoid  # Instalación directa de .plasmoid
-EOF
-            ;;
-        err_root)        echo "Error: Ejecuta este script como el usuario de escritorio Plasma, NO con sudo." >&2
-                         echo "El script solicitará sudo únicamente cuando DNF o APT requieran instalar paquetes." >&2 ;;
-        err_no_osrel)    echo "Error: No se pudo identificar la distribución desde /etc/os-release." >&2 ;;
-        err_unsup_deb)   echo "Error: Versión de Debian no soportada para compilación: ${1:-unknown}." >&2
-                         echo "El entorno de compilación soportado es Debian 13 (Trixie) o Fedora." >&2
-                         echo "Para instalar un .plasmoid ya precompilado usa: ./scripts-user/setup-universal.sh" >&2 ;;
-        warn_unsup_dist) echo "Aviso: Esta distribución (${1:-unknown}) no es un entorno oficial de compilación C++." >&2
-                         echo "Entornos de compilación soportados: Fedora y Debian 13." >&2
-                         echo "Si deseas instalar un .plasmoid precompilado, usa: ./scripts-user/setup-universal.sh" >&2 ;;
-        err_no_profile)  echo "Error: No se puede compilar nativamente en este sistema (${1:-unknown})." >&2
-                         echo "Usa: ./scripts-user/setup-universal.sh <ruta/al/paquete.plasmoid> para instalar." >&2 ;;
-        err_no_cli_prof) echo "Error: No existe perfil de compilación para la distribución: ${1:-unknown}." >&2 ;;
-        banner)          echo "=========================================================="
-                         echo "   Punchi Dock Remastered - Asistente Maestro de Setup    "
-                         echo "==========================================================" ;;
-        detected_host)   echo "Sistema detectado: ${1:-unknown} ($(uname -m))" ;;
-        menu_question)   echo "¿Qué deseas hacer?" ;;
-        menu_opt1)       echo "  [1] Compilar paquete de versión oficial (Release en dist/)" ;;
-        menu_opt2)       echo "  [2] Compilar, instalar y probar localmente (--local-test)" ;;
-        menu_opt3)       echo "  [3] Instalar un paquete .plasmoid ya existente desde dist/" ;;
-        menu_opt4)       echo "  [4] Instalación limpia (eliminar actual + recompilar + instalar)" ;;
-        menu_opt5)       echo "  [5] Verificar e instalar dependencias de compilación" ;;
-        menu_opt6)       echo "  [6] Desinstalar el plasmoide de este sistema" ;;
-        menu_opt7)       echo "  [7] Ayuda (ver referencia de comandos CLI)" ;;
-        menu_opt8)       echo "  [8] Salir" ;;
-        menu_prompt)     printf 'Selecciona una opción [1-8]: ' ;;
-        start_release)   echo "==> Iniciando compilación de Release..." ;;
-        start_local)     echo "==> Iniciando compilación y prueba local..." ;;
-        start_clean)     echo "==> Iniciando instalación limpia (eliminar + recompilar + instalar)..." ;;
-        start_deps)      echo "==> Verificando e instalando dependencias de compilación..." ;;
-        start_uninstall) echo "==> Desinstalando el plasmoide..." ;;
-        uninstall_done)  echo "==> Plasmoide desinstalado exitosamente." ;;
-        uninstall_none)  echo "Aviso: No se encontró una instalación local del plasmoide." ;;
-        clean_removed)   echo "==> Instalación existente eliminada: ${1:-}" ;;
-        start_plasma_restart) echo "==> Reiniciando entorno Plasma Shell..." ;;
-        restart_done)    echo "==> Reinicio de Plasma Shell solicitado." ;;
-        prompt_restart)  printf '¿Deseas reiniciar Plasma Shell ahora? [s/N]: ' ;;
-        cancelled)       echo "Operación cancelada." ;;
-        err_invalid_opt) echo "Error: Opción no válida: '${1:-}'" >&2 ;;
-        quick_ref)
-            echo ""
-            echo "Referencia Rápida de Comandos CLI"
-            echo "=================================="
-            echo "  ./scripts-dev/setup.sh                    Menú interactivo (esta pantalla)"
-            echo "  ./scripts-dev/setup.sh --local-test       Compilar, instalar y probar localmente"
-            echo "  ./scripts-dev/setup.sh --clean-install    Forzar eliminación + recompilar + instalar"
-            echo "  ./scripts-dev/setup.sh --dependencies-only  Verificar/instalar dependencias"
-            echo "  ./scripts-dev/setup.sh --uninstall        Desinstalar el plasmoide de Plasma"
-            echo "  ./scripts-dev/setup.sh --dry-run          Previsualizar comandos sin ejecutar"
-            echo "  ./scripts-dev/setup.sh --yes              Aceptar automáticamente gestor de paquetes"
-            echo "  ./scripts-dev/setup.sh --help             Mostrar ayuda completa con todas las opciones"
-            echo "  ./scripts-dev/setup.sh <archivo.plasmoid> Instalar un paquete precompilado directamente"
-            echo ""
-            echo "Logs: docs/logs/<distro>/setup-<distro>-latest.log"
-            echo "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
-            echo "" ;;
-    esac
+    punchi_scan_setup_language_option "$@" || return
+    punchi_prepare_setup_localization "$PROJECT_ROOT"
+    punchi_filter_setup_language_options filtered_arguments "$@" || return
+    PUNCHI_DEV_SETUP_ARGUMENTS=("${filtered_arguments[@]}")
 }
 
 # ---------------------------------------------------------------------------
@@ -319,7 +232,7 @@ _punchi_uninstall() {
         echo ""
         read -rp "$(msg prompt_restart)" answer
         case "$answer" in
-            [yY]|[sS]|[yY][eE][sS]|[sS][íI])
+            [yY]|[sS]|[jJ]|[yY][eE][sS]|[sS][íI]|[jJ][aA])
                 _punchi_restart_plasma
                 ;;
         esac
@@ -354,6 +267,9 @@ _punchi_clean_install() {
         echo "==> XDG build cache cleared: $xdg_cache_dir"
     fi
 
+    # The setup catalogs live under build/ and may have been removed above.
+    punchi_prepare_setup_localization "$PROJECT_ROOT"
+
     # Step 3: Rebuild and install via --local-test
     PUNCHI_LOG_DIR="${PUNCHI_LOG_DIR:-$PROJECT_ROOT/docs/logs/$DETECTED_PROFILE}"
     punchi_run_setup_with_log "$DETECTED_PROFILE" "$SETUP_EXEC" --local-test
@@ -362,6 +278,10 @@ _punchi_clean_install() {
 # ---------------------------------------------------------------------------
 # Guards
 # ---------------------------------------------------------------------------
+declare -a PUNCHI_DEV_SETUP_ARGUMENTS=()
+prepare_setup_arguments "$@" || exit 1
+set -- "${PUNCHI_DEV_SETUP_ARGUMENTS[@]}"
+
 if (( EUID == 0 )); then
     msg err_root
     exit 1
@@ -391,9 +311,19 @@ case "${ID:-}" in
         DETECTED_PROFILE="debian13"
         SETUP_EXEC="$SCRIPT_DIR/distro/debian13-setup.sh"
         ;;
+    arch|manjaro|endeavouros|garuda|artix)
+        DETECTED_PROFILE="arch"
+        SETUP_EXEC="$SCRIPT_DIR/distro/arch-setup.sh"
+        ;;
     *)
+        if [[ " ${ID_LIKE:-} " == *' arch '* ]]; then
+            DETECTED_PROFILE="arch"
+            SETUP_EXEC="$SCRIPT_DIR/distro/arch-setup.sh"
+        fi
         if [[ "${1:-}" != "-h" && "${1:-}" != "--help" && "${1:-}" != *.plasmoid ]]; then
-            msg warn_unsup_dist "${PRETTY_NAME:-unknown}"
+            if [[ -z "$DETECTED_PROFILE" ]]; then
+                msg warn_unsup_dist "${PRETTY_NAME:-unknown}"
+            fi
         fi
         ;;
 esac

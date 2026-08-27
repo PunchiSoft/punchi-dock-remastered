@@ -247,6 +247,11 @@ add_test(
 )
 
 add_test(
+    NAME arch_dependency_detection_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/arch_dependency_detection_test.sh
+)
+
+add_test(
     NAME qmllint_baseline_path_test
     COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/qmllint_baseline_path_test.sh
 )

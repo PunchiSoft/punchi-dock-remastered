@@ -45,7 +45,27 @@ grep -q 'PUNCHI_PACKAGE_VALIDATION_MODE=full' \
 grep -q 'PUNCHI_PACKAGE_VALIDATION_MODE=full' \
     "$PROJECT_ROOT/scripts-dev/distro/debian13-package.sh" \
     || fail "the Debian developer package does not select full validation"
+grep -q 'PUNCHI_PACKAGE_VALIDATION_MODE=full' \
+    "$PROJECT_ROOT/scripts-dev/distro/arch-package.sh" \
+    || fail "the Arch developer package does not select full validation"
+grep -q 'qmllint-baseline-arch.env' \
+    "$PROJECT_ROOT/scripts-dev/distro/arch-package.sh" \
+    || fail "the Arch developer package does not select its own qmllint baseline"
+grep -q 'package_arch//\[\^a-zA-Z0-9\._-\]/_' \
+    "$PROJECT_ROOT/scripts-dev/distro/arch-package.sh" \
+    || fail "the Arch artifact architecture label is not sanitized"
+grep -q 'arch-setup.sh' "$DEVELOPER_SETUP" \
+    || fail "the developer setup does not dispatch to the Arch profile"
+grep -q 'arch-package.sh' "$PACKAGE_ENGINE" \
+    || fail "the package engine does not dispatch Arch-family hosts"
 [[ -x "$DEVELOPER_SETUP" ]] || fail "the developer setup is not executable"
+grep -q 'source .*setup-localization\.sh' "$DEVELOPER_SETUP" \
+    || fail "the developer setup does not use the shared localization helper"
+if grep -Eq '^(msg_es|msg_en|_detect_lang)\(\)' "$DEVELOPER_SETUP"; then
+    fail "the developer setup still contains an inline language catalog"
+fi
+(( $(grep -c 'punchi_prepare_setup_localization' "$DEVELOPER_SETUP") >= 2 )) \
+    || fail "the developer setup does not restore localization after a clean build"
 grep -q 'source .*plasma-shell-control\.sh' "$PUBLIC_SETUP" \
     || fail "the public setup does not use the shared Plasma controller"
 grep -q 'source .*plasma-shell-control\.sh' "$UNIVERSAL_SETUP" \
@@ -60,6 +80,12 @@ fi
 source "$PUBLIC_SETUP"
 [[ "$(safe_label_component 'fedora 44/x86')" == "fedora_44_x86" ]] \
     || fail "the local artifact label was not sanitized"
+
+filtered_developer_args=()
+punchi_filter_setup_language_options filtered_developer_args \
+    --lang es --dry-run --dependencies-only
+[[ "${filtered_developer_args[*]}" == "--dry-run --dependencies-only" ]] \
+    || fail "the global language option would be forwarded to a distribution profile"
 
 mapfile -t uninstall_commands < <(required_commands_for_action uninstall)
 (( ${#uninstall_commands[@]} == 0 )) \
@@ -91,6 +117,36 @@ set -e
     || fail "--restart-plasma and --no-restart were not rejected"
 [[ "$language_status" == "1" && "$language_output" == *"unsupported language code"* ]] \
     || fail "an unsupported language override was not rejected"
+
+developer_help="$(LC_ALL=C.UTF-8 LANGUAGE=en "$DEVELOPER_SETUP" --help)"
+[[ "$developer_help" == *"Master interactive and CLI assistant"* ]] \
+    || fail "the developer help is unavailable in English"
+[[ "$developer_help" == *"--lang CODE"* ]] \
+    || fail "the developer help does not document the language override"
+developer_spanish_help="$(LC_ALL=C.UTF-8 LANGUAGE=en "$DEVELOPER_SETUP" --lang es --help)"
+[[ "$developer_spanish_help" == *"Opciones CLI"* ]] \
+    || fail "the developer setup did not honor the Spanish language override"
+developer_german_help="$(LC_ALL=C.UTF-8 LANGUAGE=en "$DEVELOPER_SETUP" --lang de --help)"
+[[ "$developer_german_help" == *"CLI-Optionen"* ]] \
+    || fail "the developer setup did not honor the German language override"
+developer_portuguese_help="$(LC_ALL=C.UTF-8 LANGUAGE=en "$DEVELOPER_SETUP" --lang pt_BR --help)"
+[[ "$developer_portuguese_help" == *"Opções da CLI"* ]] \
+    || fail "the developer setup did not honor the Brazilian Portuguese language override"
+developer_environment_help="$(LC_ALL=C.UTF-8 LANGUAGE=en PUNCHI_LANG=de "$DEVELOPER_SETUP" --help)"
+[[ "$developer_environment_help" == *"CLI-Optionen"* ]] \
+    || fail "the developer setup did not honor PUNCHI_LANG"
+arch_spanish_help="$(LC_ALL=C.UTF-8 LANGUAGE=en PUNCHI_LANG=es \
+    "$PROJECT_ROOT/scripts-dev/distro/arch-setup.sh" --help)"
+[[ "$arch_spanish_help" == *"Pasa --noconfirm a pacman"* ]] \
+    || fail "the Arch profile help did not honor the selected setup language"
+
+set +e
+developer_language_output="$("$DEVELOPER_SETUP" --lang xx --help 2>&1)"
+developer_language_status=$?
+set -e
+[[ "$developer_language_status" == "1" \
+    && "$developer_language_output" == *"unsupported language code"* ]] \
+    || fail "the developer setup accepted an unsupported language override"
 
 spanish_help=""
 if locale -a 2>/dev/null | grep -qi 'es_ES'; then

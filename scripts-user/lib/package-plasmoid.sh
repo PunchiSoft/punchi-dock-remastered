@@ -54,9 +54,17 @@ if [[ "${PUNCHI_PACKAGE_CORE:-0}" != "1" ]]; then
             echo "==> Detected profile: Kubuntu/Ubuntu ${VERSION_ID:-unknown}"
             exec "$DEV_SCRIPTS_DIR/distro/kubuntu-package.sh"
             ;;
+        arch|manjaro|endeavouros|garuda|artix)
+            echo "==> Detected profile: Arch family (${PRETTY_NAME:-${ID}})"
+            exec "$DEV_SCRIPTS_DIR/distro/arch-package.sh"
+            ;;
         *)
+            if [[ " ${ID_LIKE:-} " == *' arch '* ]]; then
+                echo "==> Detected profile: Arch family (${PRETTY_NAME:-${ID:-unknown}})"
+                exec "$DEV_SCRIPTS_DIR/distro/arch-package.sh"
+            fi
             echo "Error: no packaging profile exists for distribution: ${ID:-unknown}." >&2
-            echo "Available profiles: Fedora, Debian, and Kubuntu." >&2
+            echo "Available profiles: Fedora, Debian, Kubuntu, and Arch Linux." >&2
             exit 1
             ;;
     esac

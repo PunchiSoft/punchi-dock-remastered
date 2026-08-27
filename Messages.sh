@@ -24,6 +24,8 @@ mapfile -d '' cpp_sources < <(
     find src -type f \( -name '*.cpp' -o -name '*.h' \) -print0 | sort -z
 )
 shell_sources=(
+    scripts-dev/setup.sh
+    scripts-dev/distro/arch-setup.sh
     scripts-user/setup.sh
     scripts-user/setup-universal.sh
     scripts-user/lib/plasma-shell-control.sh
@@ -76,6 +78,10 @@ common_options=(
     --keyword=punchi_gettext:1 \
     --keyword=punchi_gettext_line:1 \
     --keyword=punchi_gettext_format:1 \
+    --keyword=log_line:1 \
+    --keyword=log_format:1 \
+    --keyword=die_line:1 \
+    --keyword=die_format:1 \
     --language=Shell \
     --output="$TEMP_DIR/shell.pot" \
     "${shell_sources[@]}"

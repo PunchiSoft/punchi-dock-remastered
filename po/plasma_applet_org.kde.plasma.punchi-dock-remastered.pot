@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.42\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-26 20:32-0400\n"
+"POT-Creation-Date: 2026-08-26 22:06-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,6 +23,10 @@ msgstr ""
 msgid "     Punchi Dock Remastered - Setup Assistant             "
 msgstr ""
 
+#: scripts-dev/setup.sh:88
+msgid "   Punchi Dock Remastered - Master Setup Assistant        "
+msgstr ""
+
 #: scripts-user/setup-universal.sh:107
 msgid "  Punchi Dock Remastered - Package Installer             "
 msgstr ""
@@ -31,16 +35,36 @@ msgstr ""
 msgid "  [1] Build and install locally"
 msgstr ""
 
+#: scripts-dev/setup.sh:95
+msgid "  [1] Build official release package (Release in dist/)"
+msgstr ""
+
 #: scripts-user/setup.sh:63
 msgid "  [2] Build .plasmoid package only (no install)"
+msgstr ""
+
+#: scripts-dev/setup.sh:96
+msgid "  [2] Build, install and test locally (--local-test)"
 msgstr ""
 
 #: scripts-user/setup.sh:64
 msgid "  [3] Install an existing .plasmoid package"
 msgstr ""
 
+#: scripts-dev/setup.sh:97
+msgid "  [3] Install an existing .plasmoid package from dist/"
+msgstr ""
+
+#: scripts-dev/setup.sh:98
+msgid "  [4] Clean install (remove current + rebuild + install)"
+msgstr ""
+
 #: scripts-user/setup.sh:65
 msgid "  [4] Uninstall the plasmoid from this system"
+msgstr ""
+
+#: scripts-dev/setup.sh:99
+msgid "  [5] Check and install build dependencies only"
 msgstr ""
 
 #: scripts-user/setup.sh:66
@@ -51,11 +75,19 @@ msgstr ""
 msgid "  [6] Check system build dependencies"
 msgstr ""
 
+#: scripts-dev/setup.sh:100
+msgid "  [6] Uninstall the plasmoid from this system"
+msgstr ""
+
+#: scripts-dev/setup.sh:101
+msgid "  [7] Help (show CLI commands reference)"
+msgstr ""
+
 #: scripts-user/setup.sh:68
 msgid "  [7] Help (show CLI options)"
 msgstr ""
 
-#: scripts-user/setup.sh:69
+#: scripts-dev/setup.sh:102 scripts-user/setup.sh:69
 msgid "  [8] Exit"
 msgstr ""
 
@@ -113,7 +145,7 @@ msgstr ""
 msgid "%1 items loaded."
 msgstr ""
 
-#: contents/ui/main.qml:2695
+#: contents/ui/main.qml:2710
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] ""
@@ -269,6 +301,10 @@ msgctxt "@info:accessible"
 msgid "%1. Playing."
 msgstr ""
 
+#: scripts-dev/distro/arch-setup.sh:143
+msgid "--dependencies-only and --local-test cannot be used together"
+msgstr ""
+
 #: contents/ui/config/ConfigPopups.qml:273
 msgid ""
 "100 percent uses the recommended base size. Larger previews keep their "
@@ -309,12 +345,45 @@ msgstr ""
 msgid "==> Building the native QML module without developer tests..."
 msgstr ""
 
-#: scripts-user/setup.sh:77
+#: scripts-dev/setup.sh:107
+msgid "==> Checking and installing build dependencies..."
+msgstr ""
+
+#: scripts-dev/setup.sh:113
+msgid "==> Plasma Shell restart requested."
+msgstr ""
+
+#: scripts-dev/setup.sh:109 scripts-user/setup.sh:77
 msgid "==> Plasmoid uninstalled successfully."
+msgstr ""
+
+#: scripts-dev/setup.sh:111
+#, sh-printf-format
+msgid "==> Removed existing installation: %s\\n"
+msgstr ""
+
+#: scripts-dev/setup.sh:112
+msgid "==> Restarting Plasma Shell..."
+msgstr ""
+
+#: scripts-dev/setup.sh:104
+msgid "==> Starting Release build..."
+msgstr ""
+
+#: scripts-dev/setup.sh:105
+msgid "==> Starting build and local test..."
+msgstr ""
+
+#: scripts-dev/setup.sh:106
+msgid "==> Starting clean install (remove + rebuild + install)..."
 msgstr ""
 
 #: scripts-user/setup.sh:76
 msgid "==> Uninstalling Punchi Dock Remastered..."
+msgstr ""
+
+#: scripts-dev/setup.sh:108
+msgid "==> Uninstalling the plasmoid..."
 msgstr ""
 
 #: scripts-user/setup-universal.sh:113
@@ -517,6 +586,10 @@ msgctxt "@title:category"
 msgid "All Applications"
 msgstr ""
 
+#: scripts-dev/distro/arch-setup.sh:188
+msgid "All Arch build packages are already installed"
+msgstr ""
+
 #: contents/ui/config/ConfigGeneral.qml:262
 msgid "All desktops"
 msgstr ""
@@ -699,6 +772,15 @@ msgstr ""
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionState.qml:344
 msgctxt "@action:button"
 msgid "Apply"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:249
+#, sh-printf-format
+msgid "Arch artifact ready: %s\\n"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:266
+msgid "Arch setup completed"
 msgstr ""
 
 #: contents/ui/config/ConfigMouse.qml:152
@@ -905,6 +987,26 @@ msgstr ""
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:41
 msgctxt "@option:application-order"
 msgid "By categories"
+msgstr ""
+
+#: scripts-dev/setup.sh:119
+msgid ""
+"CLI Quick Reference\n"
+"==================\n"
+"  ./scripts-dev/setup.sh                    Interactive menu (this screen)\n"
+"  ./scripts-dev/setup.sh --local-test       Build, install and test locally\n"
+"  ./scripts-dev/setup.sh --clean-install    Force remove + full rebuild + "
+"install\n"
+"  ./scripts-dev/setup.sh --dependencies-only  Check/install build "
+"dependencies\n"
+"  ./scripts-dev/setup.sh --uninstall        Remove the plasmoid from Plasma\n"
+"  ./scripts-dev/setup.sh --dry-run          Preview commands without "
+"executing\n"
+"  ./scripts-dev/setup.sh --yes              Auto-accept package manager "
+"prompts\n"
+"  ./scripts-dev/setup.sh --help             Show full help with all options\n"
+"  ./scripts-dev/setup.sh <file.plasmoid>    Install a prebuilt package "
+"directly"
 msgstr ""
 
 #: contents/ui/config/ConfigItems.qml:147
@@ -1578,6 +1680,16 @@ msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
 msgstr ""
 
+#: scripts-dev/setup.sh:92
+#, sh-printf-format
+msgid "Detected host: %s (%s)\\n"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:258
+#, sh-printf-format
+msgid "Detected host: %s\\n"
+msgstr ""
+
 #: scripts-user/setup.sh:60
 msgid "Developer tests: disabled"
 msgstr ""
@@ -1594,6 +1706,7 @@ msgid "Development"
 msgstr ""
 
 #: scripts-user/setup-universal.sh:143
+#, sh-printf-format
 msgid "Diagnostics saved to: %s\\n"
 msgstr ""
 
@@ -1700,6 +1813,10 @@ msgstr ""
 msgid "Dock orientation:"
 msgstr ""
 
+#: scripts-dev/setup.sh:132
+msgid "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
+msgstr ""
+
 #: contents/ui/config/ConfigAspect.qml:144
 msgid "Dot"
 msgstr ""
@@ -1723,6 +1840,10 @@ msgstr ""
 #: contents/ui/config/ConfigItems.qml:744
 msgctxt "@info:placeholder"
 msgid "Drop applications here"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:205
+msgid "Dry run: post-install command verification skipped"
 msgstr ""
 
 #: contents/ui/config/ConfigWindows.qml:99
@@ -1834,15 +1955,41 @@ msgstr ""
 msgid "Enter the path to a .plasmoid package: "
 msgstr ""
 
+#: scripts-dev/distro/arch-setup.sh:92 scripts-dev/distro/arch-setup.sh:98
+msgid "Error: "
+msgstr ""
+
 #: scripts-user/setup.sh:89
+#, sh-printf-format
 msgid "Error: %s\\n"
 msgstr ""
 
+#: scripts-dev/setup.sh:80
+#, sh-printf-format
+msgid "Error: Cannot build natively on this system (%s).\\n"
+msgstr ""
+
+#: scripts-dev/setup.sh:67
+msgid "Error: Could not identify the distribution from /etc/os-release."
+msgstr ""
+
 #: scripts-user/setup.sh:81
+#, sh-printf-format
 msgid "Error: Invalid menu option: '%s'\n"
 msgstr ""
 
+#: scripts-dev/setup.sh:116
+#, sh-printf-format
+msgid "Error: Invalid option: %s\\n"
+msgstr ""
+
+#: scripts-dev/setup.sh:84
+#, sh-printf-format
+msgid "Error: No build profile exists for the distribution: %s.\\n"
+msgstr ""
+
 #: scripts-user/setup-universal.sh:133
+#, sh-printf-format
 msgid "Error: Plasma Shell PID %s stopped during startup.\\n"
 msgstr ""
 
@@ -1854,7 +2001,17 @@ msgstr ""
 msgid "Error: Plasma Shell did not stop and the forced restart failed."
 msgstr ""
 
+#: scripts-dev/setup.sh:63
+msgid "Error: Run this script as the Plasma desktop user, NOT with sudo."
+msgstr ""
+
+#: scripts-dev/setup.sh:70
+#, sh-printf-format
+msgid "Error: Unsupported Debian version for building: %s.\\n"
+msgstr ""
+
 #: scripts-user/setup-universal.sh:117
+#, sh-printf-format
 msgid "Error: kpackagetool6 did not leave a valid installation in %s\\n"
 msgstr ""
 
@@ -1863,6 +2020,7 @@ msgid "Error: no supported command is available to start Plasma Shell."
 msgstr ""
 
 #: scripts-user/setup-universal.sh:101
+#, sh-printf-format
 msgid ""
 "Error: no universal .plasmoid was found in '%s' and no valid package path "
 "was provided.\\n"
@@ -1873,6 +2031,7 @@ msgid "Error: only one .plasmoid package can be installed at a time."
 msgstr ""
 
 #: scripts-user/setup-universal.sh:84
+#, sh-printf-format
 msgid "Error: required installation command not found: %s\\n"
 msgstr ""
 
@@ -1881,6 +2040,7 @@ msgid "Error: the Plasma Shell user service could not be restarted."
 msgstr ""
 
 #: scripts-user/setup-universal.sh:75
+#, sh-printf-format
 msgid "Error: unknown option or invalid package path: %s\\n"
 msgstr ""
 
@@ -2368,6 +2528,7 @@ msgid "Individual"
 msgstr ""
 
 #: scripts-user/setup-universal.sh:121
+#, sh-printf-format
 msgid "Installation completed in: %s\\n"
 msgstr ""
 
@@ -2376,6 +2537,7 @@ msgid "Installation completed without restarting Plasma Shell."
 msgstr ""
 
 #: scripts-user/setup-universal.sh:110
+#, sh-printf-format
 msgid "Installation directory: %s\\n"
 msgstr ""
 
@@ -2388,6 +2550,7 @@ msgid "Installed Punchi Dock theme"
 msgstr ""
 
 #: scripts-user/setup-universal.sh:142 scripts-user/setup-universal.sh:148
+#, sh-printf-format
 msgid "Installed package: %s\\n"
 msgstr ""
 
@@ -2574,6 +2737,7 @@ msgid "Loading applications…"
 msgstr ""
 
 #: scripts-user/setup.sh:79
+#, sh-printf-format
 msgid "Local package created without installation: %s\n"
 msgstr ""
 
@@ -2596,8 +2760,12 @@ msgstr ""
 msgid "Log out and back in or restart Plasma later to apply the changes."
 msgstr ""
 
+#: scripts-dev/setup.sh:131
+#, sh-printf-format
+msgid "Logs: docs/logs/%s/setup-%s-latest.log\\n"
+msgstr ""
+
 #: contents/ui/config/ConfigMenus.qml:393
-#, javascript-format
 msgid ""
 "Lower values make the preview-to-menu movement gentler; higher values make "
 "it faster. 100% follows the Plasma theme duration."
@@ -2808,6 +2976,11 @@ msgstr ""
 msgid "Minimize window"
 msgstr ""
 
+#: scripts-dev/distro/arch-setup.sh:192
+#, sh-printf-format
+msgid "Missing pacman packages: %s\\n"
+msgstr ""
+
 #: contents/ui/components/TaskOverflowPopup.qml:66
 msgid "More window groups"
 msgstr ""
@@ -3006,8 +3179,18 @@ msgstr ""
 msgid "Note content"
 msgstr ""
 
+#: scripts-dev/setup.sh:110
+msgid "Notice: No local installation found for the plasmoid."
+msgstr ""
+
 #: scripts-user/setup.sh:78
 msgid "Notice: No local installation was found."
+msgstr ""
+
+#: scripts-dev/setup.sh:75
+#, sh-printf-format
+msgid ""
+"Notice: This distribution (%s) is not an official C++ build environment.\\n"
 msgstr ""
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:231
@@ -3178,7 +3361,7 @@ msgid ""
 "shortcut."
 msgstr ""
 
-#: scripts-user/setup.sh:83
+#: scripts-dev/setup.sh:115 scripts-user/setup.sh:83
 msgid "Operation cancelled."
 msgstr ""
 
@@ -3262,6 +3445,7 @@ msgid "Pixel spectrum"
 msgstr ""
 
 #: scripts-user/lib/plasma-shell-control.sh:16
+#, sh-printf-format
 msgid "Plasma Shell PID before restart: %s\\n"
 msgstr ""
 
@@ -3271,6 +3455,7 @@ msgid ""
 msgstr ""
 
 #: scripts-user/lib/plasma-shell-control.sh:65
+#, sh-printf-format
 msgid "Plasma Shell restarted successfully (new PID: %s).\\n"
 msgstr ""
 
@@ -3601,6 +3786,10 @@ msgstr ""
 msgid "Requests the desktop blur effect for the selected PunchiMenu mode."
 msgstr ""
 
+#: scripts-dev/distro/arch-setup.sh:214
+msgid "Required commands are missing:"
+msgstr ""
+
 #: contents/ui/components/punchimenu/PunchiMenuSessionView.qml:130
 msgctxt "@action:button"
 msgid "Restart"
@@ -3754,7 +3943,7 @@ msgstr ""
 msgid "Select a theme"
 msgstr ""
 
-#: scripts-user/setup.sh:70
+#: scripts-dev/setup.sh:103 scripts-user/setup.sh:70
 msgid "Select an option [1-8]: "
 msgstr ""
 
@@ -3764,6 +3953,7 @@ msgid "Selected for the new folder"
 msgstr ""
 
 #: scripts-user/setup-universal.sh:109
+#, sh-printf-format
 msgid "Selected package: %s\\n"
 msgstr ""
 
@@ -4003,6 +4193,10 @@ msgstr ""
 msgid "Single desktop"
 msgstr ""
 
+#: scripts-dev/distro/arch-setup.sh:182
+msgid "Skipping pacman dependency installation"
+msgstr ""
+
 #: contents/ui/config/components/PopupAnimationSettings.qml:22
 msgid "Slide from the dock"
 msgstr ""
@@ -4053,6 +4247,15 @@ msgstr ""
 msgid "Subtle scale"
 msgstr ""
 
+#: scripts-dev/setup.sh:71
+msgid ""
+"Supported build environments: Debian 13 (Trixie), Fedora, or Arch Linux."
+msgstr ""
+
+#: scripts-dev/setup.sh:76
+msgid "Supported build environments: Fedora, Debian 13, and Arch Linux."
+msgstr ""
+
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:108
 #: contents/ui/components/punchimenu/PunchiMenuCompact.qml:207
 msgctxt "@title:application-category"
@@ -4069,6 +4272,7 @@ msgid "System operation failed: %1"
 msgstr ""
 
 #: scripts-user/setup.sh:58
+#, sh-printf-format
 msgid "System profile: %s\n"
 msgstr ""
 
@@ -4291,6 +4495,12 @@ msgstr ""
 msgid "The root value must be a JSON array."
 msgstr ""
 
+#: scripts-dev/setup.sh:64
+msgid ""
+"The script will request sudo only when the detected package manager needs to "
+"install packages."
+msgstr ""
+
 #: contents/ui/config/ConfigGeneral.qml:322
 msgid "The selected desktop no longer exists. Choose another desktop."
 msgstr ""
@@ -4437,6 +4647,14 @@ msgstr ""
 msgid "Title header:"
 msgstr ""
 
+#: scripts-dev/setup.sh:72
+msgid "To install a prebuilt .plasmoid use: ./scripts-user/setup-universal.sh"
+msgstr ""
+
+#: scripts-dev/setup.sh:77
+msgid "To install a prebuilt .plasmoid, use: ./scripts-user/setup-universal.sh"
+msgstr ""
+
 #: contents/ui/config/ConfigAspect.qml:151
 msgctxt "Indicator position"
 msgid "Top"
@@ -4498,6 +4716,66 @@ msgstr ""
 #: contents/ui/components/DockContextActionsController.qml:272
 msgctxt "@action:context"
 msgid "Unpin from Dock"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:62
+msgid ""
+"Usage: scripts-dev/distro/arch-setup.sh [options]\n"
+"\n"
+"Prepare Arch Linux or a supported Arch-family distribution for Punchi Dock "
+"and\n"
+"create a native package. By default the script creates the artifact without\n"
+"installing it.\n"
+"\n"
+"Options:\n"
+"  --yes               Pass --noconfirm to pacman.\n"
+"  --skip-pacman       Do not run pacman; only verify and build.\n"
+"  --dependencies-only Install and verify dependencies without building.\n"
+"  --local-test        Build, install, restart Plasma Shell, and collect "
+"logs.\n"
+"  --dry-run           Print planned commands without changing the system.\n"
+"  -h, --help          Show this help.\n"
+"\n"
+"Run this script as the desktop user, not with sudo. It requests sudo only "
+"when\n"
+"pacman must install missing packages. Package installation performs a "
+"complete\n"
+"system upgrade because partial upgrades are unsupported on Arch Linux."
+msgstr ""
+
+#: scripts-dev/setup.sh:34
+msgid ""
+"Usage: scripts-dev/setup.sh [options | path_to_package.plasmoid]\n"
+"\n"
+"Master interactive and CLI assistant for packaging, testing and installing\n"
+"Punchi Dock Remastered. Automatically detects the host distribution\n"
+"(Fedora, Debian 13, or Arch Linux and supported derivatives).\n"
+"\n"
+"If run without arguments, it opens the accessible interactive menu.\n"
+"\n"
+"CLI Options:\n"
+"  --local-test        Build, install on local Plasma Shell and collect "
+"logs.\n"
+"  --clean-install     Remove existing installation, rebuild and install "
+"fresh.\n"
+"  --yes               Pass affirmative answer to the package manager.\n"
+"  --skip-dnf          Skip DNF installation on Fedora.\n"
+"  --skip-apt          Skip APT installation on Debian.\n"
+"  --skip-update       Skip apt-get update on Debian.\n"
+"  --skip-pacman       Skip pacman installation on Arch Linux.\n"
+"  --dependencies-only Check and install dependencies without building.\n"
+"  --uninstall         Remove the plasmoid from the local Plasma "
+"installation.\n"
+"  --dry-run           Show planned commands without modifying the system.\n"
+"  --lang CODE         Override the detected language (en, es, de, pt_BR).\n"
+"  -h, --help          Show this help.\n"
+"\n"
+"Examples:\n"
+"  ./scripts-dev/setup.sh                            # Interactive menu mode\n"
+"  ./scripts-dev/setup.sh --local-test               # Quick local test mode\n"
+"  ./scripts-dev/setup.sh --clean-install            # Force clean reinstall\n"
+"  ./scripts-dev/setup.sh dist/my-package.plasmoid   # Direct .plasmoid "
+"install"
 msgstr ""
 
 #: scripts-user/setup-universal.sh:102
@@ -4585,6 +4863,11 @@ msgstr ""
 msgid "Use interactive cursors in the settings window"
 msgstr ""
 
+#: scripts-dev/setup.sh:81
+msgid ""
+"Use: ./scripts-user/setup-universal.sh <path/to/package.plasmoid> to install."
+msgstr ""
+
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:3247
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:2997
 msgctxt "@info:user"
@@ -4669,7 +4952,7 @@ msgstr ""
 msgid "Wave"
 msgstr ""
 
-#: scripts-user/setup.sh:61
+#: scripts-dev/setup.sh:94 scripts-user/setup.sh:61
 msgid "What would you like to do?"
 msgstr ""
 
@@ -4774,6 +5057,10 @@ msgid ""
 "opacity."
 msgstr ""
 
+#: scripts-dev/setup.sh:114
+msgid "Would you like to restart Plasma Shell now? [y/N]: "
+msgstr ""
+
 #: contents/ui/config/AddItemPalette.qml:29
 msgid "Write a quick editable note"
 msgstr ""
@@ -4787,8 +5074,49 @@ msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr ""
 
+#: scripts-dev/distro/arch-setup.sh:148
+msgid "cannot read /etc/os-release"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:216
+msgid "install the missing Arch packages and retry"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:166 scripts-dev/distro/arch-setup.sh:194
+msgid "pacman is required on Arch-family distributions"
+msgstr ""
+
 #: contents/ui/config/components/ActionDialog.qml:89
 #: contents/ui/config/ConfigItems.qml:739
 #: contents/ui/config/ItemActionEditor.qml:39
 msgid "rows"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:164
+msgid "run this script as the Plasma desktop user, not with sudo"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:193
+msgid "sudo is required to install missing pacman packages"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:248
+#, sh-printf-format
+msgid "the build finished without creating the expected artifact: %s\\n"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:236
+msgid "the package version could not be read from metadata.json"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:165
+#, sh-printf-format
+msgid ""
+"this setup script requires Arch Linux or an Arch-family distribution "
+"(detected: %s)\\n"
+msgstr ""
+
+#: scripts-dev/distro/arch-setup.sh:136
+#, sh-printf-format
+msgid "unknown option: %s\\n"
 msgstr ""

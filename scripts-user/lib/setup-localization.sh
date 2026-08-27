@@ -58,21 +58,58 @@ punchi_scan_setup_language_option() {
     done
 }
 
+punchi_filter_setup_language_options() {
+    local destination_name="${1:?destination array name is required}"
+    shift
+
+    if [[ ! "$destination_name" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+        printf 'Error: invalid destination array name: %s\n' "$destination_name" >&2
+        return 2
+    fi
+
+    # shellcheck disable=SC2178
+    local -n destination_ref="$destination_name"
+    destination_ref=()
+
+    while (( $# > 0 )); do
+        case "$1" in
+            --lang)
+                (( $# >= 2 )) || {
+                    echo "Error: --lang requires a language code." >&2
+                    return 1
+                }
+                shift 2
+                ;;
+            --lang=*)
+                shift
+                ;;
+            *)
+                destination_ref+=("$1")
+                shift
+                ;;
+        esac
+    done
+}
+
 punchi_prepare_setup_localization() {
     local project_root="${1:?project root is required}"
+    local explicit_language=0
     local requested=""
     local po_file=""
     local locale_root="$project_root/build/user-local/setup-locale"
     local mo_dir=""
     local mo_file=""
 
+    if [[ -n "${PUNCHI_SETUP_LANG_OVERRIDE:-}" || -n "${PUNCHI_LANG:-}" ]]; then
+        explicit_language=1
+    fi
     requested="${PUNCHI_SETUP_LANG_OVERRIDE:-${PUNCHI_LANG:-${LC_ALL:-${LC_MESSAGES:-${LANG:-en}}}}}"
     PUNCHI_SETUP_LANGUAGE="$(punchi_normalize_setup_language "$requested" 2>/dev/null || printf 'en\n')"
 
     export TEXTDOMAIN="$PUNCHI_SETUP_TRANSLATION_DOMAIN"
     export PUNCHI_LANG="$PUNCHI_SETUP_LANGUAGE"
     export LANGUAGE="$PUNCHI_SETUP_LANGUAGE"
-    if [[ -n "${PUNCHI_SETUP_LANG_OVERRIDE:-}" ]]; then
+    if (( explicit_language == 1 )); then
         unset LC_ALL LC_MESSAGES 2>/dev/null || true
         export LANGUAGE="$PUNCHI_SETUP_LANGUAGE"
         export PUNCHI_LANG="$PUNCHI_SETUP_LANGUAGE"
