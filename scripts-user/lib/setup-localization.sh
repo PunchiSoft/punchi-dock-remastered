@@ -12,6 +12,7 @@ punchi_normalize_setup_language() {
     requested="${requested//-/_}"
 
     case "$requested" in
+        c|c_*|posix) printf 'en\n' ;;
         en|en_*) printf 'en\n' ;;
         es|es_*) printf 'es\n' ;;
         de|de_*) printf 'de\n' ;;
@@ -103,7 +104,7 @@ punchi_prepare_setup_localization() {
     if [[ -n "${PUNCHI_SETUP_LANG_OVERRIDE:-}" || -n "${PUNCHI_LANG:-}" ]]; then
         explicit_language=1
     fi
-    requested="${PUNCHI_SETUP_LANG_OVERRIDE:-${PUNCHI_LANG:-${LC_ALL:-${LC_MESSAGES:-${LANG:-en}}}}}"
+    requested="${PUNCHI_SETUP_LANG_OVERRIDE:-${PUNCHI_LANG:-${LANGUAGE:-${LC_ALL:-${LC_MESSAGES:-${LANG:-en}}}}}}"
     PUNCHI_SETUP_LANGUAGE="$(punchi_normalize_setup_language "$requested" 2>/dev/null || printf 'en\n')"
 
     export TEXTDOMAIN="$PUNCHI_SETUP_TRANSLATION_DOMAIN"

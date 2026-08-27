@@ -15,7 +15,7 @@ fail() {
     exit 1
 }
 
-help_output="$(LC_ALL=en_US.UTF-8 LANGUAGE=en "$PUBLIC_SETUP" --help)"
+help_output="$(LC_ALL=C.UTF-8 LANGUAGE=en PUNCHI_LANG=en "$PUBLIC_SETUP" --lang en --help)"
 help_output_single_line="${help_output//$'\n'/ }"
 [[ "$help_output_single_line" == *"without running developer tests"* ]] \
     || fail "the public help does not state that developer tests are disabled"
@@ -195,7 +195,7 @@ if locale -a 2>/dev/null | grep -qi 'pt_BR'; then
         || fail "pt_BR was not detected automatically"
 fi
 
-menu_output="$(printf '9\n' | LC_ALL=en_US.UTF-8 LANGUAGE=en "$PUBLIC_SETUP")"
+menu_output="$(printf '9\n' | LC_ALL=C.UTF-8 LANGUAGE=en PUNCHI_LANG=en "$PUBLIC_SETUP" --lang en)"
 [[ "$menu_output" == *"What would you like to do?"* ]] \
     || fail "the default interactive menu did not open"
 
