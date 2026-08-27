@@ -41,21 +41,17 @@ if [[ "${PUNCHI_PACKAGE_CORE:-0}" != "1" ]]; then
             exec "$DEV_SCRIPTS_DIR/distro/fedora-package.sh"
             ;;
         debian)
-            if [[ "${VERSION_ID:-}" == "13" || "${VERSION_CODENAME:-}" == "trixie" ]]; then
-                echo "==> Detected profile: Debian 13"
+            if [[ "${VERSION_ID:-}" =~ ^(13|14)$ || "${VERSION_CODENAME:-}" =~ ^(trixie|forky|sid)$ ]]; then
+                echo "==> Detected profile: Debian (${VERSION_CODENAME:-${VERSION_ID:-unknown}})"
                 exec "$DEV_SCRIPTS_DIR/distro/debian13-package.sh"
             fi
-            if [[ "${VERSION_ID:-}" == "14" || "${VERSION_CODENAME:-}" == "forky" ]]; then
-                echo "==> Detected profile: Debian 14/testing"
-                exec "$DEV_SCRIPTS_DIR/distro/debian14-testing-package.sh"
-            fi
             echo "Error: unsupported Debian release: ${PRETTY_NAME:-unknown}." >&2
-            echo "Use an explicit setup script matching the Debian release." >&2
+            echo "Supported Debian releases: Debian 13 (Trixie), Debian 14 (Forky/Sid)." >&2
             exit 1
             ;;
-        ubuntu)
-            echo "==> Detected profile: Kubuntu/Ubuntu ${VERSION_ID:-unknown}"
-            exec "$DEV_SCRIPTS_DIR/distro/kubuntu-package.sh"
+        ubuntu|kubuntu|mint|pop)
+            echo "==> Detected profile: Debian/Ubuntu family (${PRETTY_NAME:-${ID}})"
+            exec "$DEV_SCRIPTS_DIR/distro/debian13-package.sh"
             ;;
         arch|manjaro|endeavouros|garuda|artix)
             echo "==> Detected profile: Arch family (${PRETTY_NAME:-${ID}})"
