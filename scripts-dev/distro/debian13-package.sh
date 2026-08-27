@@ -16,13 +16,12 @@ source /etc/os-release
 
 is_debian13=0
 if [[ "${ID:-}" == "debian" ]] \
-    && { [[ "${VERSION_ID:-}" == "13" ]] || [[ "${VERSION_CODENAME:-}" == "trixie" ]]; }; then
+    && { [[ "${VERSION_ID:-}" =~ ^(13|14)$ ]] || [[ "${VERSION_CODENAME:-}" =~ ^(trixie|forky|sid)$ ]]; }; then
     is_debian13=1
 fi
 
 if (( is_debian13 == 0 )) && [[ "${ALLOW_UNSUPPORTED_BUILD_HOST:-0}" != "1" ]]; then
-    echo "Error: this package profile requires Debian 13/trixie (detected: ${PRETTY_NAME:-unknown})." >&2
-    echo "Use the matching developer profile for Debian 14/testing." >&2
+    echo "Error: this package profile requires Debian 13/trixie or Debian 14 (forky/sid) (detected: ${PRETTY_NAME:-unknown})." >&2
     exit 1
 fi
 

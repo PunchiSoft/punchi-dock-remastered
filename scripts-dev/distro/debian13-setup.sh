@@ -157,8 +157,8 @@ load_os_release() {
 validate_host() {
     (( EUID != 0 )) || die "run this script as the Plasma desktop user, not with sudo"
     [[ "${ID:-}" == "debian" ]] \
-        && { [[ "${VERSION_ID:-}" == "13" ]] || [[ "${VERSION_CODENAME:-}" == "trixie" ]]; } \
-        || die "this setup script requires Debian 13/trixie (detected: ${PRETTY_NAME:-unknown})"
+        && { [[ "${VERSION_ID:-}" =~ ^(13|14)$ ]] || [[ "${VERSION_CODENAME:-}" =~ ^(trixie|forky|sid)$ ]]; } \
+        || die "this setup script requires Debian 13 (trixie) or Debian 14 (forky/sid) (detected: ${PRETTY_NAME:-unknown})"
     command -v dpkg-query >/dev/null 2>&1 || die "dpkg-query is required on Debian"
 }
 
