@@ -1,3 +1,106 @@
+## [0.9.7.50] - 2026-08-27
+
+### Agregado
+
+- Asistentes separados para usuarios y desarrollo en `scripts-user/` y
+  `scripts-dev/`, con deteccion de Fedora, Arch Linux, Debian y Ubuntu,
+  aislamiento de builds por plataforma y seleccion segura del artefacto.
+- Perfil estricto de desarrollo para Arch Linux, infraestructura reproducible
+  de Debian 13 y resolucion compartida de `qtpaths` para Qt 6.
+- Configuracion interactiva y por CLI del paralelismo de compilacion, con
+  reduccion automatica de concurrencia en equipos con memoria limitada.
+- README principales en aleman y portugues brasileno, junto con instrucciones
+  de dependencias y compilacion actualizadas para cada distribucion.
+
+### Cambiado
+
+- Fedora 44 permanece como objetivo del paquete nativo y Debian 13 como host
+  oficial del build universal; Debian 14/sid y la familia Ubuntu reutilizan el
+  perfil binario compatible de Debian en lugar de una ruta inexistente.
+- Los asistentes aceptan locales `C`, `C.UTF-8` y `POSIX`, respetan la
+  seleccion explicita de idioma y comprueban las herramientas de shaders de
+  Qt 6 entre las dependencias de compilacion.
+
+### Corregido
+
+- PunchiMenu Pantalla Completa usa flags de ventana gestionados por KWin y ya
+  no depende de `BypassWindowManagerHint`, mejorando foco, desactivacion y
+  capturas de puntero en Wayland.
+- El reordenamiento persistente cancela mediante watchdog cualquier arrastre
+  huerfano que pierda movimiento del puntero o foco de ventana.
+- Los asistentes ya no mezclan caches de distribuciones, no dependen de un
+  locale `en_US` instalado y pueden ofrecer instalacion interactiva de
+  dependencias faltantes sin ejecutarla de forma implicita.
+
+### Validacion
+
+- Suite CTest aprobada al 100 % (67/67 pruebas) en el build Fedora 44 de
+  publicacion.
+- `qmllint` 6.11.1: 0 advertencias en `total`, `unqualified`,
+  `missing-property`, `layout` e `import`, igual al baseline Fedora.
+- Catalogos `es`, `de` y `pt_BR` completos con 1075 mensajes traducidos por
+  idioma, sin entradas vacias ni difusas y aprobados mediante
+  `msgfmt --check --check-format`.
+- Artefacto Fedora 44 `x86_64` creado y auditado estructuralmente; la prueba de
+  instalacion y actualizacion en Plasma real permanece separada.
+
+## [0.9.7.49] - 2026-08-25
+
+### Corregido
+
+- La distancia configurada en 0 % para popups y menus vuelve a conservarse
+  como distancia visual cero; la compensacion de la sombra tematica ya no
+  introduce un hueco adicional respecto del panel.
+- La geometria corregida se aplica tanto a los bordes horizontales como a los
+  verticales y conserva las distancias positivas existentes.
+
+### Validacion
+
+- Se ampliaron el contrato de superficies y la prueba QML de posicionamiento
+  para cubrir distancia cero y separaciones positivas.
+
+## [0.9.7.48] - 2026-08-24
+
+### Agregado
+
+- Accion contextual `Mover la seccion de aplicaciones abiertas` en las tareas
+  dinamicas, con un control temporal que permite arrastrar el bloque completo
+  sin convertir las ventanas en elementos persistentes.
+- Movimiento accesible mediante flechas mientras el control esta visible y
+  conservacion de `Ctrl+Shift` mas flechas fuera de ese modo.
+- Geometria dedicada para el control en paneles horizontales y verticales,
+  junto con cobertura runtime del puente entre el applet y su representacion.
+
+### Corregido
+
+- El modo de movimiento cruza ahora el limite de `fullRepresentation` mediante
+  un puente con ciclo de vida explicito y se activa despues de cerrar el menu
+  contextual.
+- Al mover el marcador se atenuan conjuntamente las tareas visibles y el item
+  de desbordamiento, comunicando que se desplaza toda la seccion dinamica.
+
+### Validacion
+
+- La accion y el movimiento de la seccion fueron confirmados por el usuario en
+  una sesion real de Plasma.
+- Las pruebas cubren accion contextual, geometria, carga integral y restauracion
+  de opacidad al finalizar o cancelar el movimiento.
+
+## [0.9.7.47] - 2026-08-24
+
+### Corregido
+
+- La pagina Elementos vuelve a cargar correctamente los items predeterminados
+  cuando la configuracion no contiene un `dockItemsJson` persistido, sin
+  confundir ese caso con el arreglo vacio explicito `[]`.
+- PunchiMenu Compacto alinea la region de blur con la superficie tematica
+  efectiva y excluye la proyeccion exterior de la sombra.
+
+### Validacion
+
+- Se anadio una prueba QML dedicada al contrato de carga predeterminada y se
+  amplio el contrato de contexto de PunchiMenu para la geometria de blur.
+
 ## [0.9.7.46] - 2026-08-24
 
 ### Agregado
