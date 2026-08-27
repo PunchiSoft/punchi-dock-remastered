@@ -126,9 +126,46 @@ Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actu
 
 ## Compilar desde fuentes
 
-Para quien desee compilar el plasmoide directamente en su equipo, el repositorio incluye asistentes automatizados listos para usar según la necesidad:
+El plasmoide contiene un módulo nativo en C++ para integrarse con Plasma 6, PipeWire y el sistema de tareas. Se puede compilar fácilmente en cualquier distribución moderna con Plasma 6.
 
-### 1. Asistente para usuarios (Rápido y Seguro, sin tests)
+### Dependencias de compilación por distribución
+
+El asistente `setup.sh` comprueba e informa automáticamente los paquetes faltantes en tu sistema, pero si prefieres instalarlos manualmente:
+
+#### Fedora / RHEL / Nobara
+```bash
+sudo dnf install \
+    gcc-c++ cmake extra-cmake-modules \
+    qt6-qtbase-devel qt6-qtdeclarative-devel \
+    plasma-workspace-devel pipewire-devel \
+    kf6-kconfig-devel kf6-ki18n-devel kf6-kio-devel \
+    gettext zip unzip
+```
+
+#### Arch Linux / Manjaro / EndeavourOS
+```bash
+sudo pacman -S --needed \
+    base-devel cmake extra-cmake-modules \
+    qt6-base qt6-declarative \
+    plasma-workspace pipewire \
+    kconfig ki18n kio kservice
+```
+
+#### Debian 13 (Trixie) / Kubuntu / Ubuntu
+```bash
+sudo apt update && sudo apt install \
+    build-essential cmake extra-cmake-modules \
+    qt6-base-dev qt6-declarative-dev \
+    libplasma-dev libpipewire-0.3-dev \
+    libkf6config-dev libkf6i18n-dev libkf6kio-dev \
+    gettext zip unzip
+```
+
+### Asistentes de compilación incluidos
+
+El repositorio incluye asistentes automatizados listos para usar según la necesidad:
+
+#### 1. Asistente para usuarios (Rápido y Seguro, sin tests)
 
 Diseñado para compilar e instalar localmente en segundos sin ejecutar comprobaciones de desarrollo:
 

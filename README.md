@@ -137,9 +137,46 @@ Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loa
 
 ## Build from Source
 
-For those who wish to compile the plasmoide directly on their system, the repository provides dedicated automated assistants:
+The plasmoid contains a native C++ module for KDE Plasma 6, PipeWire, and task integration. It can be easily built on any modern Linux distribution with Plasma 6.
 
-### 1. User Assistant (Fast & Safe, without tests)
+### Build Dependencies by Distribution
+
+The `setup.sh` assistant automatically detects and reports any missing packages, but you can also install them manually:
+
+#### Fedora / RHEL / Nobara
+```bash
+sudo dnf install \
+    gcc-c++ cmake extra-cmake-modules \
+    qt6-qtbase-devel qt6-qtdeclarative-devel \
+    plasma-workspace-devel pipewire-devel \
+    kf6-kconfig-devel kf6-ki18n-devel kf6-kio-devel \
+    gettext zip unzip
+```
+
+#### Arch Linux / Manjaro / EndeavourOS
+```bash
+sudo pacman -S --needed \
+    base-devel cmake extra-cmake-modules \
+    qt6-base qt6-declarative \
+    plasma-workspace pipewire \
+    kconfig ki18n kio kservice
+```
+
+#### Debian 13 (Trixie) / Kubuntu / Ubuntu
+```bash
+sudo apt update && sudo apt install \
+    build-essential cmake extra-cmake-modules \
+    qt6-base-dev qt6-declarative-dev \
+    libplasma-dev libpipewire-0.3-dev \
+    libkf6config-dev libkf6i18n-dev libkf6kio-dev \
+    gettext zip unzip
+```
+
+### Included Build Assistants
+
+The repository provides automated assistants tailored for different needs:
+
+#### 1. User Assistant (Fast & Safe, without tests)
 
 Designed to build and install locally in seconds without running developer test suites:
 
