@@ -105,139 +105,88 @@ contribution requirements.
 ## Requirements
 
 - KDE Plasma 6 or later.
-- Wayland is the primary supported session.
+- Wayland session recommended (secondary X11 support).
 - PipeWire is required by the optional audio visualizer.
-- Fedora 44 `x86_64` is the primary prebuilt release target. Debian 13 has a separate validated build, installation, and startup flow; its complete functional review remains in progress.
-- Kubuntu has a locally validated source-build and installation profile for Plasma 6.6.4. The native module must still be compiled on the Kubuntu host; this does not make another distribution's artifact compatible.
-- Community users report successful operation on additional current Linux distributions with Plasma 6. These reports indicate broader compatibility, but they are not yet equivalent to a project-validated distribution profile.
-- Source builds require CMake 3.22+, a C++20 compiler, Qt 6.6+, ECM/KF6 6.0+, Plasma 6.0+, and PipeWire development files, all supplied as one coherent distribution stack.
-- Native binaries inside each `.plasmoid` are not universal: use the artifact labeled for the distribution where it was built.
-
-Compatibility therefore distinguishes Fedora as the primary release target,
-Debian as a separately validated profile, Kubuntu as a validated native
-source-build profile, and other distributions as community-reported. A current
-distribution can often build and run Punchi Dock without project changes, but
-it still needs a compatible source build and lint baseline. Do not mix
-repositories or replace the system Qt/KDE stack solely to meet these versions.
+- **Official Primary Reference Distribution**: Fedora 44 `x86_64` with KDE Plasma 6+.
+- **Official Universal Package**: Compiled on Debian 13 (Trixie) with binary C shims (`compat/`), allowing direct installation and execution across multiple modern Linux distributions with Plasma 6 (Fedora, Arch Linux, Debian, Kubuntu, and derivatives).
+- **Building Locally from Source**:
+  - Requires CMake 3.22+, a C++20 compiler, Qt 6.6+, ECM/KF6 6.0+, Plasma 6.0+, and PipeWire development files (provided by your distribution repositories).
+  - Automated assistants are provided with and without tests to build and install in a single step.
 
 ## Install a Release Package
 
-End users should install a prebuilt `.plasmoid` release for the supported target platform. Development packages and a compiler are not required.
+End users can directly install an official prebuilt `.plasmoid` package (either distribution-specific or the universal release) without needing compilers or development tools.
 
-The current packaged release target is Fedora 44+ `x86_64` with KDE Plasma 6 or later.
-
-On Fedora, `kpackagetool6` is provided by `kf6-kpackage` and is normally already available on a Plasma installation:
+To install or update using the universal setup helper:
 
 ```bash
-sudo dnf install kf6-kpackage
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-0.9.7.42-fedora44-x86_64.plasmoid
+./scripts-user/setup-universal.sh path/to/package.plasmoid
 ```
 
-To update an existing installation:
+Or manually using `kpackagetool6`:
 
 ```bash
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-0.9.7.42-fedora44-x86_64.plasmoid
+# Initial installation
+kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-<version>-<distribution>-x86_64.plasmoid
+
+# Update existing installation
+kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-<version>-<distribution>-x86_64.plasmoid
 ```
 
 Log out and back in, or restart Plasma Shell, if the updated plasmoid is not loaded immediately.
 
 ## Build from Source
 
-The source tree contains a native C++ QML module. Installing the repository directory directly with `kpackagetool6` does not compile that module.
+For those who wish to compile the plasmoide directly on their system, the repository provides dedicated automated assistants:
 
-Developers can inspect the strict validation environment with:
+### 1. User Assistant (Fast & Safe, without tests)
 
-```bash
-scripts-dev/check-build-environment.sh
-```
-
-The checker reports the distribution, architecture, Plasma, CMake, and `qmllint` versions. Qt 6.11 is the primary lint profile and Qt 6.8 has a separate compatibility profile because their diagnostics differ. `qmllint` is a development tool, not a runtime dependency for users installing a matching prebuilt `.plasmoid`; a Qt 6.8 lint failure alone does not prove that the dock cannot run on that system.
-
-Use the Qt 6, KF6, and Plasma development packages supplied by the distribution. Do not replace the system Qt stack with a standalone Qt 6.11 installation merely to match the primary lint profile, because the native module must be compiled against a coherent distribution stack.
-
-On Fedora 44+, install the build dependencies:
-
-```bash
-sudo dnf install \
-    binutils cmake gcc-c++ ninja-build extra-cmake-modules \
-    qt6-qtdeclarative-devel \
-    kf6-kconfig-devel kf6-kcoreaddons-devel kf6-kglobalaccel-devel kf6-kio-devel kf6-kjobwidgets-devel \
-    kf6-kservice-devel kf6-kwindowsystem-devel libplasma-devel plasma-workspace-devel \
-    pipewire-devel gettext \
-    zip unzip
-```
-
-On Debian, Kubuntu, or Arch Linux, install the equivalent distribution-provided Qt 6, KF6,
-Plasma, PipeWire, ECM, CMake, gettext, and ZIP development packages (or let `scripts-user/setup.sh` or `scripts-dev/setup.sh` detect and verify them automatically).
-
-For a normal local installation from source, run:
+Designed to build and install locally in seconds without running developer test suites:
 
 ```bash
 ./scripts-user/setup.sh
 ```
 
-Running without arguments opens the interactive user menu. Its build-and-install
-action compiles the native module for the current system with
-`BUILD_TESTING=OFF`, creates a local package, installs it, and offers to restart
-Plasma. It does not execute `qmllint` or CTest. It includes interactive build
-concurrency configuration (Safe Mode with 1 core for virtual machines or <= 4 GB RAM,
-Balanced Mode, Fast Mode, or Custom parallel jobs). You can also control jobs via CLI
-with `-j/--jobs/--parallel N` (e.g., `./scripts-user/setup.sh --install -j 1`).
-
-To create the package without installing or restarting Plasma, use:
+- Configures CMake with `BUILD_TESTING=OFF` (skips `qmllint` and CTest).
+- Automatically detects your distribution (Fedora, Arch Linux, Debian, Kubuntu, and derivatives) and verifies required packages.
+- Features interactive **build concurrency & RAM safety configuration** (Safe Mode with 1 core for virtual machines or <= 4 GB RAM, Balanced Mode, Fast Mode, or Custom parallel jobs).
+- Supports direct non-interactive CLI commands:
 
 ```bash
-./scripts-user/setup.sh --build-only
+# Build and install locally with safe concurrency (1 job for low-memory environments)
+./scripts-user/setup.sh --install -j 1
+
+# Create the local .plasmoid package only using 4 parallel jobs
+./scripts-user/setup.sh --build-only --jobs 4
+
+# Uninstall the plasmoid from the current desktop
+./scripts-user/setup.sh --uninstall
 ```
 
-```text
-dist/punchi-dock-remastered-<version>-<distribution>-<architecture>-local-build.plasmoid
-```
+The output package is placed in `dist/punchi-dock-remastered-<version>-<distro>-<arch>-local-build.plasmoid`. See [scripts-user/README.md](scripts-user/README.md) for full details.
 
-The local-build artifact is for the machine that compiled it and is not an
-official universal release. `scripts-user/setup-universal.sh` only installs an
-existing `.plasmoid`; it does not compile source code.
+### 2. Developer Master Assistant (Strict validation with tests)
 
-The 0.9.7.42 GitHub release provides
-`punchi-dock-remastered-0.9.7.42-fedora44-x86_64.plasmoid`. Universal artifacts
-are published separately only after their Debian 13 build and
-cross-distribution validation are complete.
-Never install an artifact labeled for a different distribution.
-
-The Debian 13 workflow was verified separately from Debian 14/testing. Kubuntu
-records an independent local baseline and was verified through native build,
-installation, startup, and user functional testing on Plasma 6.6.4. See
-[scripts-user/README.md](scripts-user/README.md) for the normal installation flow and
-[scripts-dev/README.md](scripts-dev/README.md) for strict development checks.
-
-Set `PACKAGE_BUILD_TYPE` or `STRIP_BIN` only when a development workflow requires an explicit override. Never use `PACKAGE_OUTPUT_FILE` to label a Fedora binary as Debian, and do not cross-compile the native QML module for publication on another distribution.
-
-To build, install, and restart Plasma for a strict Fedora development test:
+Designed for developers and contributors who want full codebase validation:
 
 ```bash
-scripts-dev/distro/fedora-setup.sh --local-test
+./scripts-dev/setup.sh
 ```
 
-On a supported Fedora or Debian 13 development host, prepare the official
-distribution dependencies with:
+- Runs `qmllint` static code checks according to the distribution baseline.
+- Configures CMake with `BUILD_TESTING=ON` and runs the complete 67-test CTest suite (architecture contracts, shaders, lifecycle, Plasma integration, and native backend).
+- Supports CLI options such as:
 
 ```bash
-scripts-dev/setup.sh --dependencies-only
+./scripts-dev/setup.sh --local-test           # Build, run all tests, and install to local Plasma
+./scripts-dev/setup.sh --local-test -j 1      # Safe mode (1 core) for virtual machines / low RAM
+./scripts-dev/setup.sh --local-test --jobs 8 # Fast mode with 8 parallel jobs
+./scripts-dev/setup.sh --clean-install         # Clean reinstall from scratch
+./scripts-dev/setup.sh --dependencies-only    # Install official distribution build dependencies
+./scripts-dev/setup.sh --lang en --help       # Help in English (also supports es, de, pt_BR)
 ```
 
-Then use `scripts-dev/setup.sh --local-test` to run the strict build, install
-the result, and restart Plasma Shell. Run the script as the desktop user; it
-requests `sudo` only when DNF or APT needs to install packages.
-
-This script runs the packaging checks and CTest, upgrades the local plasmoid, restarts Plasma Shell, and writes filtered startup diagnostics to `debug.log`. Because it restarts the desktop shell, use it after a coherent change rather than on every file save.
-
-Before publishing a release, reproduce the package from a clean temporary source tree:
-
-```bash
-scripts-dev/validar-empaquetado-limpio.sh
-```
-
-For rapid visual iteration, `scripts-dev/watch-plasmoidviewer.sh` can rebuild and reopen `plasmoidviewer` when files change. It does not replace a final test in the real Plasma panel or dock.
+See [scripts-dev/README.md](scripts-dev/README.md) for additional developer tools (`check-build-environment.sh`, `update-translations.sh`, `validar-empaquetado-limpio.sh`).
 
 ## Project Structure
 
