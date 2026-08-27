@@ -3074,11 +3074,7 @@ def main() -> int:
     if x11_popup_flags not in main_source or wayland_dialog_flags not in main_source:
         print("main.qml: PunchiMenu normal lacks separate X11 and Wayland flags", file=sys.stderr)
         passed = False
-    fullscreen_panel_type = (
-        "type: openedFromPanel\n"
-        "                ? PlasmaCore.Dialog.Normal\n"
-        "                : PlasmaCore.Dialog.OnScreenDisplay"
-    )
+    fullscreen_panel_type = "type: PlasmaCore.Dialog.Normal"
     fullscreen_panel_flags = (
         "flags: openedFromPanel\n"
         "                ? Qt.Window | Qt.FramelessWindowHint"
@@ -3087,8 +3083,7 @@ def main() -> int:
         "? Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint"
     )
     fullscreen_wayland_flags = (
-        ": Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint\n"
-        "                        | Qt.BypassWindowManagerHint"
+        ": Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint"
     )
     if ("property bool openedFromPanel: false" not in main_source
             or "punchiMenuDialogInstance.openedFromPanel = root.inPanel" not in main_source

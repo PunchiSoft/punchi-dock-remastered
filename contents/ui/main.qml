@@ -632,15 +632,12 @@ PlasmoidItem {
             readonly property bool isX11Session: KWindowSystem.isPlatformX11
             property bool openedFromPanel: false
             location: PlasmaCore.Types.Floating
-            type: openedFromPanel
-                ? PlasmaCore.Dialog.Normal
-                : PlasmaCore.Dialog.OnScreenDisplay
+            type: PlasmaCore.Dialog.Normal
             flags: openedFromPanel
                 ? Qt.Window | Qt.FramelessWindowHint
                 : isX11Session
                     ? Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
                     : Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
-                        | Qt.BypassWindowManagerHint
             backgroundHints: PlasmaCore.Dialog.NoBackground
             x: 0
             y: 0
