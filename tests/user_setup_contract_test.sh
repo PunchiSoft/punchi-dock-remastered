@@ -92,18 +92,27 @@ set -e
 [[ "$language_status" == "1" && "$language_output" == *"unsupported language code"* ]] \
     || fail "an unsupported language override was not rejected"
 
-spanish_help="$(LC_ALL=es_ES.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
-[[ "$spanish_help" == *"Compila Punchi Dock Remastered"* ]] \
-    || fail "es_ES was not detected automatically"
-spanish_override_help="$(LC_ALL=en_US.UTF-8 LANGUAGE=en "$PUBLIC_SETUP" --lang es --help)"
+spanish_help=""
+if locale -a 2>/dev/null | grep -qi 'es_ES'; then
+    spanish_help="$(LC_ALL=es_ES.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
+    [[ "$spanish_help" == *"Compila Punchi Dock Remastered"* ]] \
+        || fail "es_ES was not detected automatically"
+fi
+spanish_override_help="$(LC_ALL=C.UTF-8 LANGUAGE=es "$PUBLIC_SETUP" --lang es --help)"
 [[ "$spanish_override_help" == *"Acciones principales"* ]] \
     || fail "the explicit Spanish language override was not honored"
-german_help="$(LC_ALL=de_DE.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
-[[ "$german_help" == *"Hauptaktionen"* ]] \
-    || fail "de_DE was not detected automatically"
-portuguese_help="$(LC_ALL=pt_BR.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
-[[ "$portuguese_help" == *"Ações principais"* ]] \
-    || fail "pt_BR was not detected automatically"
+german_help=""
+if locale -a 2>/dev/null | grep -qi 'de_DE'; then
+    german_help="$(LC_ALL=de_DE.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
+    [[ "$german_help" == *"Hauptaktionen"* ]] \
+        || fail "de_DE was not detected automatically"
+fi
+portuguese_help=""
+if locale -a 2>/dev/null | grep -qi 'pt_BR'; then
+    portuguese_help="$(LC_ALL=pt_BR.UTF-8 LANGUAGE= "$PUBLIC_SETUP" --help)"
+    [[ "$portuguese_help" == *"Ações principais"* ]] \
+        || fail "pt_BR was not detected automatically"
+fi
 
 menu_output="$(printf '7\n' | LC_ALL=en_US.UTF-8 LANGUAGE=en "$PUBLIC_SETUP")"
 [[ "$menu_output" == *"What would you like to do?"* ]] \

@@ -72,6 +72,11 @@ punchi_prepare_setup_localization() {
     export TEXTDOMAIN="$PUNCHI_SETUP_TRANSLATION_DOMAIN"
     export PUNCHI_LANG="$PUNCHI_SETUP_LANGUAGE"
     export LANGUAGE="$PUNCHI_SETUP_LANGUAGE"
+    if [[ -n "${PUNCHI_SETUP_LANG_OVERRIDE:-}" ]]; then
+        unset LC_ALL LC_MESSAGES 2>/dev/null || true
+        export LANGUAGE="$PUNCHI_SETUP_LANGUAGE"
+        export PUNCHI_LANG="$PUNCHI_SETUP_LANGUAGE"
+    fi
     PUNCHI_SETUP_LOCALE_READY=0
 
     if [[ "$PUNCHI_SETUP_LANGUAGE" == "en" ]]; then
