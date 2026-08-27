@@ -162,6 +162,7 @@ punchi_user_missing_dependencies() {
                 extra-cmake-modules
                 qt6-base
                 qt6-declarative
+                qt6-shadertools
                 plasma-workspace
                 pipewire
                 kconfig
@@ -175,10 +176,8 @@ punchi_user_missing_dependencies() {
                 fi
             done
             if (( ${#missing[@]} > 0 )); then
-                printf 'distro:arch
-'
-                printf '%s
-' "${missing[@]}"
+                printf 'distro:arch\n'
+                printf '%s\n' "${missing[@]}"
             fi
             ;;
         *debian*|*ubuntu*|*kubuntu*|*pop*|*mint*)
@@ -188,6 +187,7 @@ punchi_user_missing_dependencies() {
                 extra-cmake-modules
                 qt6-base-dev
                 qt6-declarative-dev
+                qt6-shader-baker
                 libplasma-dev
                 libpipewire-0.3-dev
                 libkf6config-dev
@@ -200,10 +200,8 @@ punchi_user_missing_dependencies() {
                 fi
             done
             if (( ${#missing[@]} > 0 )); then
-                printf 'distro:debian
-'
-                printf '%s
-' "${missing[@]}"
+                printf 'distro:debian\n'
+                printf '%s\n' "${missing[@]}"
             fi
             ;;
         *fedora*|*rhel*|*nobara*|*centos*)
@@ -213,6 +211,7 @@ punchi_user_missing_dependencies() {
                 extra-cmake-modules
                 qt6-qtbase-devel
                 qt6-qtdeclarative-devel
+                qt6-qtshadertools
                 plasma-workspace-devel
                 pipewire-devel
                 kf6-kconfig-devel
@@ -225,10 +224,8 @@ punchi_user_missing_dependencies() {
                 fi
             done
             if (( ${#missing[@]} > 0 )); then
-                printf 'distro:fedora
-'
-                printf '%s
-' "${missing[@]}"
+                printf 'distro:fedora\n'
+                printf '%s\n' "${missing[@]}"
             fi
             ;;
     esac
@@ -251,20 +248,46 @@ punchi_check_and_report_dependencies() {
         echo "  - $pkg" >&2
     done
     echo "" >&2
-    echo "To install the missing dependencies on your system, run:" >&2
 
+    local install_cmd=""
     case "$distro_type" in
         distro:arch)
-            echo "  sudo pacman -S --needed ${missing_pkgs[*]}" >&2
+            install_cmd="sudo pacman -S --needed ${missing_pkgs[*]}"
             ;;
         distro:debian)
-            echo "  sudo apt-get update && sudo apt-get install ${missing_pkgs[*]}" >&2
+            install_cmd="sudo apt-get update && sudo apt-get install ${missing_pkgs[*]}"
             ;;
         distro:fedora)
-            echo "  sudo dnf install ${missing_pkgs[*]}" >&2
+            install_cmd="sudo dnf install ${missing_pkgs[*]}"
             ;;
     esac
-    echo "" >&2
+
+    if [[ -n "$install_cmd" ]] && [[ -t 0 ]]; then
+        echo "To install missing packages automatically with sudo:" >&2
+        echo "  $install_cmd" >&2
+        echo "" >&2
+        local answer=""
+        read -r -p "¿Deseas instalar las dependencias faltantes ahora con sudo? [S/n]: " answer || true
+        case "${answer:-s}" in
+            s|S|y|Y|si|Si|yes|Yes|"")
+                echo "==> Installing build dependencies with sudo..." >&2
+                if eval "$install_cmd"; then
+                    echo "==> Dependencies successfully installed." >&2
+                    return 0
+                else
+                    echo "Error: Failed to install dependencies." >&2
+                    return 1
+                fi
+                ;;
+            *)
+                echo "Skipping automatic installation. Please install the packages manually." >&2
+                ;;
+        esac
+    else
+        echo "To install the missing dependencies on your system, run:" >&2
+        echo "  $install_cmd" >&2
+        echo "" >&2
+    fi
 }
 
 required_commands_for_action() {

@@ -127,7 +127,7 @@ O assistente `setup.sh` detecta e informa automaticamente os pacotes ausentes, m
 ```bash
 sudo dnf install \
     gcc-c++ cmake extra-cmake-modules \
-    qt6-qtbase-devel qt6-qtdeclarative-devel \
+    qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtshadertools \
     plasma-workspace-devel pipewire-devel \
     kf6-kconfig-devel kf6-ki18n-devel kf6-kio-devel \
     gettext zip unzip
@@ -137,7 +137,7 @@ sudo dnf install \
 ```bash
 sudo pacman -S --needed \
     base-devel cmake extra-cmake-modules \
-    qt6-base qt6-declarative \
+    qt6-base qt6-declarative qt6-shadertools \
     plasma-workspace pipewire \
     kconfig ki18n kio kservice
 ```
@@ -146,7 +146,7 @@ sudo pacman -S --needed \
 ```bash
 sudo apt update && sudo apt install \
     build-essential cmake extra-cmake-modules \
-    qt6-base-dev qt6-declarative-dev \
+    qt6-base-dev qt6-declarative-dev qt6-shader-baker \
     libplasma-dev libpipewire-0.3-dev \
     libkf6config-dev libkf6i18n-dev libkf6kio-dev \
     gettext zip unzip
