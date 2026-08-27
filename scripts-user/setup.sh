@@ -12,6 +12,8 @@ PLUGIN_ID="org.kde.plasma.punchi-dock-remastered"
 source "$LIB_DIR/setup-localization.sh"
 # shellcheck source=lib/plasma-shell-control.sh
 source "$LIB_DIR/plasma-shell-control.sh"
+# shellcheck source=lib/qtpaths-resolver.sh
+source "$LIB_DIR/qtpaths-resolver.sh"
 
 ACTION=""
 ACTION_OPTION=""
@@ -91,11 +93,7 @@ die() {
 }
 
 resolve_data_root() {
-    if command -v qtpaths6 >/dev/null 2>&1; then
-        qtpaths6 --writable-path GenericDataLocation
-    else
-        printf '%s\n' "$HOME/.local/share"
-    fi
+    punchi_qt6_writable_data_root "$HOME/.local/share"
 }
 
 safe_label_component() {

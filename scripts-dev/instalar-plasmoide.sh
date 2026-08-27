@@ -14,9 +14,11 @@ source "$DEV_LIB_DIR/plasma-version.sh"
 source "$PUBLIC_LIB_DIR/local-package-install.sh"
 # shellcheck source=../lib/plasma-runtime-diagnostics.sh
 source "$PUBLIC_LIB_DIR/plasma-runtime-diagnostics.sh"
+# shellcheck source=../lib/qtpaths-resolver.sh
+source "$PUBLIC_LIB_DIR/qtpaths-resolver.sh"
 
 PLUGIN_ID="org.kde.plasma.punchi-dock-remastered"
-DATA_ROOT="$(qtpaths6 --writable-path GenericDataLocation)"
+DATA_ROOT="$(punchi_qt6_writable_data_root "$HOME/.local/share")"
 INSTALL_DIR="$DATA_ROOT/plasma/plasmoids/$PLUGIN_ID"
 DEBUG_LOG="$PROJECT_ROOT/debug.log"
 DIST_DIR="$PROJECT_ROOT/dist"

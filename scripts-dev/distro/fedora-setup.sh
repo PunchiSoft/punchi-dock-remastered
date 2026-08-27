@@ -45,12 +45,14 @@ REQUIRED_COMMANDS=(
     msgattrib
     msgfmt
     pkg-config
-    qtpaths6
     readelf
     strip
     unzip
     zip
 )
+
+# shellcheck source=../../scripts-user/lib/qtpaths-resolver.sh
+source "$PROJECT_ROOT/scripts-user/lib/qtpaths-resolver.sh"
 
 usage() {
     cat <<'EOF'
@@ -180,6 +182,7 @@ verify_commands() {
     for command_name in "${REQUIRED_COMMANDS[@]}"; do
         command -v "$command_name" >/dev/null 2>&1 || missing+=("$command_name")
     done
+    punchi_find_qtpaths6 >/dev/null 2>&1 || missing+=(qtpaths6)
 
     if (( ${#missing[@]} > 0 )); then
         printf 'Required commands are missing:\n' >&2

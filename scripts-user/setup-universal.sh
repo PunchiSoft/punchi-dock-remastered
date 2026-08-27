@@ -17,6 +17,8 @@ source "$LIB_DIR/plasma-runtime-diagnostics.sh"
 source "$LIB_DIR/universal-package-selection.sh"
 # shellcheck source=lib/plasma-shell-control.sh
 source "$LIB_DIR/plasma-shell-control.sh"
+# shellcheck source=lib/qtpaths-resolver.sh
+source "$LIB_DIR/qtpaths-resolver.sh"
 
 PLUGIN_ID="org.kde.plasma.punchi-dock-remastered"
 DEBUG_LOG="$PROJECT_ROOT/debug.log"
@@ -86,11 +88,7 @@ for required_command in kpackagetool6; do
     fi
 done
 
-if command -v qtpaths6 >/dev/null 2>&1; then
-    DATA_ROOT="$(qtpaths6 --writable-path GenericDataLocation)"
-else
-    DATA_ROOT="$HOME/.local/share"
-fi
+DATA_ROOT="$(punchi_qt6_writable_data_root "$HOME/.local/share")"
 INSTALL_DIR="$DATA_ROOT/plasma/plasmoids/$PLUGIN_ID"
 
 # Select the package to install.

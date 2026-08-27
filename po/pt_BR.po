@@ -18,75 +18,75 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: scripts-user/setup.sh:56
+#: scripts-user/setup.sh:58
 msgid "     Punchi Dock Remastered - Setup Assistant             "
 msgstr "     Punchi Dock Remastered - Assistente de instalação    "
 
-#: scripts-dev/setup.sh:88
+#: scripts-dev/setup.sh:90
 msgid "   Punchi Dock Remastered - Master Setup Assistant        "
 msgstr "   Punchi Dock Remastered - Assistente mestre de configuração "
 
-#: scripts-user/setup-universal.sh:107
+#: scripts-user/setup-universal.sh:105
 msgid "  Punchi Dock Remastered - Package Installer             "
 msgstr "  Punchi Dock Remastered - Instalador de pacotes         "
 
-#: scripts-user/setup.sh:62
+#: scripts-user/setup.sh:64
 msgid "  [1] Build and install locally"
 msgstr "  [1] Compilar e instalar localmente"
 
-#: scripts-dev/setup.sh:95
+#: scripts-dev/setup.sh:97
 msgid "  [1] Build official release package (Release in dist/)"
 msgstr "  [1] Compilar pacote oficial de versão (Release em dist/)"
 
-#: scripts-user/setup.sh:63
+#: scripts-user/setup.sh:65
 msgid "  [2] Build .plasmoid package only (no install)"
 msgstr "  [2] Criar apenas o pacote .plasmoid (sem instalar)"
 
-#: scripts-dev/setup.sh:96
+#: scripts-dev/setup.sh:98
 msgid "  [2] Build, install and test locally (--local-test)"
 msgstr "  [2] Compilar, instalar e testar localmente (--local-test)"
 
-#: scripts-user/setup.sh:64
+#: scripts-user/setup.sh:66
 msgid "  [3] Install an existing .plasmoid package"
 msgstr "  [3] Instalar um pacote .plasmoid existente"
 
-#: scripts-dev/setup.sh:97
+#: scripts-dev/setup.sh:99
 msgid "  [3] Install an existing .plasmoid package from dist/"
 msgstr "  [3] Instalar um pacote .plasmoid existente de dist/"
 
-#: scripts-dev/setup.sh:98
+#: scripts-dev/setup.sh:100
 msgid "  [4] Clean install (remove current + rebuild + install)"
 msgstr "  [4] Instalação limpa (remover + recompilar + instalar)"
 
-#: scripts-user/setup.sh:65
+#: scripts-user/setup.sh:67
 msgid "  [4] Uninstall the plasmoid from this system"
 msgstr "  [4] Desinstalar o plasmoide deste sistema"
 
-#: scripts-dev/setup.sh:99
+#: scripts-dev/setup.sh:101
 msgid "  [5] Check and install build dependencies only"
 msgstr "  [5] Verificar e instalar somente dependências de compilação"
 
-#: scripts-user/setup.sh:66
+#: scripts-user/setup.sh:68
 msgid "  [5] Restart Plasma Shell only"
 msgstr "  [5] Reiniciar somente o Plasma Shell"
 
-#: scripts-user/setup.sh:67
+#: scripts-user/setup.sh:69
 msgid "  [6] Check system build dependencies"
 msgstr "  [6] Verificar dependências de compilação do sistema"
 
-#: scripts-dev/setup.sh:100
+#: scripts-dev/setup.sh:102
 msgid "  [6] Uninstall the plasmoid from this system"
 msgstr "  [6] Desinstalar o plasmoide deste sistema"
 
-#: scripts-dev/setup.sh:101
+#: scripts-dev/setup.sh:103
 msgid "  [7] Help (show CLI commands reference)"
 msgstr "  [7] Ajuda (mostrar referência de comandos da CLI)"
 
-#: scripts-user/setup.sh:68
+#: scripts-user/setup.sh:70
 msgid "  [7] Help (show CLI options)"
 msgstr "  [7] Ajuda (mostrar opções da CLI)"
 
-#: scripts-dev/setup.sh:102 scripts-user/setup.sh:69
+#: scripts-dev/setup.sh:104 scripts-user/setup.sh:71
 msgid "  [8] Exit"
 msgstr "  [8] Sair"
 
@@ -302,7 +302,7 @@ msgctxt "@info:accessible"
 msgid "%1. Playing."
 msgstr "%1. Reproduzindo."
 
-#: scripts-dev/distro/arch-setup.sh:143
+#: scripts-dev/distro/arch-setup.sh:144
 msgid "--dependencies-only and --local-test cannot be used together"
 msgstr "--dependencies-only e --local-test não podem ser usados juntos"
 
@@ -346,60 +346,60 @@ msgstr "48 barras"
 msgid "8 bars"
 msgstr "8 barras"
 
-#: scripts-user/setup.sh:75
+#: scripts-user/setup.sh:77
 msgid "==> Building the native QML module without developer tests..."
 msgstr "==> Compilando o módulo QML nativo sem testes de desenvolvimento..."
 
-#: scripts-dev/setup.sh:107
+#: scripts-dev/setup.sh:109
 msgid "==> Checking and installing build dependencies..."
 msgstr "==> Verificando e instalando dependências de compilação..."
 
-#: scripts-dev/setup.sh:113
+#: scripts-dev/setup.sh:115
 msgid "==> Plasma Shell restart requested."
 msgstr "==> Reinicialização do Plasma Shell solicitada."
 
-#: scripts-dev/setup.sh:109 scripts-user/setup.sh:77
+#: scripts-dev/setup.sh:111 scripts-user/setup.sh:79
 msgid "==> Plasmoid uninstalled successfully."
 msgstr "==> Plasmoide desinstalado com sucesso."
 
-#: scripts-dev/setup.sh:111
+#: scripts-dev/setup.sh:113
 #, sh-printf-format
 msgid "==> Removed existing installation: %s\\n"
 msgstr "==> Instalação existente removida: %s\\n"
 
-#: scripts-dev/setup.sh:112
+#: scripts-dev/setup.sh:114
 msgid "==> Restarting Plasma Shell..."
 msgstr "==> Reiniciando o Plasma Shell..."
 
-#: scripts-dev/setup.sh:104
+#: scripts-dev/setup.sh:106
 msgid "==> Starting Release build..."
 msgstr "==> Iniciando compilação Release..."
 
-#: scripts-dev/setup.sh:105
+#: scripts-dev/setup.sh:107
 msgid "==> Starting build and local test..."
 msgstr "==> Iniciando compilação e teste local..."
 
-#: scripts-dev/setup.sh:106
+#: scripts-dev/setup.sh:108
 msgid "==> Starting clean install (remove + rebuild + install)..."
 msgstr "==> Iniciando instalação limpa (remover + recompilar + instalar)..."
 
-#: scripts-user/setup.sh:76
+#: scripts-user/setup.sh:78
 msgid "==> Uninstalling Punchi Dock Remastered..."
 msgstr "==> Desinstalando o Punchi Dock Remastered..."
 
-#: scripts-dev/setup.sh:108
+#: scripts-dev/setup.sh:110
 msgid "==> Uninstalling the plasmoid..."
 msgstr "==> Desinstalando o plasmoide..."
 
-#: scripts-user/setup-universal.sh:113
+#: scripts-user/setup-universal.sh:111
 msgid "==> [1/3] Installing or updating the plasmoid..."
 msgstr "==> [1/3] Instalando ou atualizando o plasmoide..."
 
-#: scripts-user/setup-universal.sh:125
+#: scripts-user/setup-universal.sh:123
 msgid "==> [2/3] Restarting Plasma Shell..."
 msgstr "==> [2/3] Reiniciando o Plasma Shell..."
 
-#: scripts-user/setup-universal.sh:130
+#: scripts-user/setup-universal.sh:128
 msgid "==> [3/3] Collecting startup diagnostics..."
 msgstr "==> [3/3] Coletando diagnósticos de inicialização..."
 
@@ -604,7 +604,7 @@ msgctxt "@title:category"
 msgid "All Applications"
 msgstr "Todos os aplicativos"
 
-#: scripts-dev/distro/arch-setup.sh:188
+#: scripts-dev/distro/arch-setup.sh:189
 msgid "All Arch build packages are already installed"
 msgstr "Todos os pacotes de compilação do Arch já estão instalados"
 
@@ -802,12 +802,12 @@ msgctxt "@action:button"
 msgid "Apply"
 msgstr "Aplicar"
 
-#: scripts-dev/distro/arch-setup.sh:249
+#: scripts-dev/distro/arch-setup.sh:251
 #, sh-printf-format
 msgid "Arch artifact ready: %s\\n"
 msgstr "Artefato do Arch pronto: %s\\n"
 
-#: scripts-dev/distro/arch-setup.sh:266
+#: scripts-dev/distro/arch-setup.sh:268
 msgid "Arch setup completed"
 msgstr "Configuração do Arch concluída"
 
@@ -1024,7 +1024,7 @@ msgctxt "@option:application-order"
 msgid "By categories"
 msgstr "Por categorias"
 
-#: scripts-dev/setup.sh:119
+#: scripts-dev/setup.sh:121
 msgid ""
 "CLI Quick Reference\n"
 "==================\n"
@@ -1769,17 +1769,17 @@ msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
 msgstr "Detalhado"
 
-#: scripts-dev/setup.sh:92
+#: scripts-dev/setup.sh:94
 #, sh-printf-format
 msgid "Detected host: %s (%s)\\n"
 msgstr "Sistema detectado: %s (%s)\\n"
 
-#: scripts-dev/distro/arch-setup.sh:258
+#: scripts-dev/distro/arch-setup.sh:260
 #, sh-printf-format
 msgid "Detected host: %s\\n"
 msgstr "Sistema detectado: %s\\n"
 
-#: scripts-user/setup.sh:60
+#: scripts-user/setup.sh:62
 msgid "Developer tests: disabled"
 msgstr "Testes de desenvolvimento: desativados"
 
@@ -1794,7 +1794,7 @@ msgctxt "@title:category"
 msgid "Development"
 msgstr "Desenvolvimento"
 
-#: scripts-user/setup-universal.sh:143
+#: scripts-user/setup-universal.sh:141
 #, sh-printf-format
 msgid "Diagnostics saved to: %s\\n"
 msgstr "Diagnósticos salvos em: %s\\n"
@@ -1906,7 +1906,7 @@ msgstr "Orientação da doca"
 msgid "Dock orientation:"
 msgstr "Orientação da doca:"
 
-#: scripts-dev/setup.sh:132
+#: scripts-dev/setup.sh:134
 msgid "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
 msgstr "Documentação: scripts-dev/README.md | scripts-dev/README.es.md"
 
@@ -1937,7 +1937,7 @@ msgctxt "@info:placeholder"
 msgid "Drop applications here"
 msgstr "Soltar aplicativos aqui"
 
-#: scripts-dev/distro/arch-setup.sh:205
+#: scripts-dev/distro/arch-setup.sh:206
 msgid "Dry run: post-install command verification skipped"
 msgstr "Simulação: verificação de comandos após a instalação ignorada"
 
@@ -2054,44 +2054,44 @@ msgctxt "@info"
 msgid "Enter a new name for %1."
 msgstr "Digite um novo nome para %1."
 
-#: scripts-user/setup.sh:73
+#: scripts-user/setup.sh:75
 msgid "Enter the path to a .plasmoid package: "
 msgstr "Informe o caminho para um pacote .plasmoid: "
 
-#: scripts-dev/distro/arch-setup.sh:92 scripts-dev/distro/arch-setup.sh:98
+#: scripts-dev/distro/arch-setup.sh:93 scripts-dev/distro/arch-setup.sh:99
 msgid "Error: "
 msgstr "Erro: "
 
-#: scripts-user/setup.sh:89
+#: scripts-user/setup.sh:91
 #, sh-printf-format
 msgid "Error: %s\\n"
 msgstr "Erro: %s\\n"
 
-#: scripts-dev/setup.sh:80
+#: scripts-dev/setup.sh:82
 #, sh-printf-format
 msgid "Error: Cannot build natively on this system (%s).\\n"
 msgstr "Erro: Não é possível compilar nativamente neste sistema (%s).\\n"
 
-#: scripts-dev/setup.sh:67
+#: scripts-dev/setup.sh:69
 msgid "Error: Could not identify the distribution from /etc/os-release."
 msgstr "Erro: Não foi possível identificar a distribuição em /etc/os-release."
 
-#: scripts-user/setup.sh:81
+#: scripts-user/setup.sh:83
 #, sh-printf-format
 msgid "Error: Invalid menu option: '%s'\n"
 msgstr "Erro: opção de menu inválida: '%s'\n"
 
-#: scripts-dev/setup.sh:116
+#: scripts-dev/setup.sh:118
 #, sh-printf-format
 msgid "Error: Invalid option: %s\\n"
 msgstr "Erro: Opção inválida: %s\\n"
 
-#: scripts-dev/setup.sh:84
+#: scripts-dev/setup.sh:86
 #, sh-printf-format
 msgid "Error: No build profile exists for the distribution: %s.\\n"
 msgstr "Erro: Não existe perfil de compilação para a distribuição: %s.\\n"
 
-#: scripts-user/setup-universal.sh:133
+#: scripts-user/setup-universal.sh:131
 #, sh-printf-format
 msgid "Error: Plasma Shell PID %s stopped during startup.\\n"
 msgstr "Erro: o PID %s do Plasma Shell parou durante a inicialização.\\n"
@@ -2105,18 +2105,18 @@ msgstr ""
 msgid "Error: Plasma Shell did not stop and the forced restart failed."
 msgstr "Erro: o Plasma Shell não parou e a reinicialização forçada falhou."
 
-#: scripts-dev/setup.sh:63
+#: scripts-dev/setup.sh:65
 msgid "Error: Run this script as the Plasma desktop user, NOT with sudo."
 msgstr ""
 "Erro: Execute este script como usuário da área de trabalho Plasma, NÃO com "
 "sudo."
 
-#: scripts-dev/setup.sh:70
+#: scripts-dev/setup.sh:72
 #, sh-printf-format
 msgid "Error: Unsupported Debian version for building: %s.\\n"
 msgstr "Erro: Versão do Debian não compatível para compilação: %s.\\n"
 
-#: scripts-user/setup-universal.sh:117
+#: scripts-user/setup-universal.sh:115
 #, sh-printf-format
 msgid "Error: kpackagetool6 did not leave a valid installation in %s\\n"
 msgstr "Erro: o kpackagetool6 não deixou uma instalação válida em %s\\n"
@@ -2126,7 +2126,7 @@ msgid "Error: no supported command is available to start Plasma Shell."
 msgstr ""
 "Erro: nenhum comando compatível está disponível para iniciar o Plasma Shell."
 
-#: scripts-user/setup-universal.sh:101
+#: scripts-user/setup-universal.sh:99
 #, sh-printf-format
 msgid ""
 "Error: no universal .plasmoid was found in '%s' and no valid package path "
@@ -2135,11 +2135,11 @@ msgstr ""
 "Erro: nenhum .plasmoid universal foi encontrado em '%s' e nenhum caminho de "
 "pacote válido foi informado.\\n"
 
-#: scripts-user/setup-universal.sh:69
+#: scripts-user/setup-universal.sh:71
 msgid "Error: only one .plasmoid package can be installed at a time."
 msgstr "Erro: somente um pacote .plasmoid pode ser instalado por vez."
 
-#: scripts-user/setup-universal.sh:84
+#: scripts-user/setup-universal.sh:86
 #, sh-printf-format
 msgid "Error: required installation command not found: %s\\n"
 msgstr "Erro: comando de instalação obrigatório não encontrado: %s\\n"
@@ -2148,7 +2148,7 @@ msgstr "Erro: comando de instalação obrigatório não encontrado: %s\\n"
 msgid "Error: the Plasma Shell user service could not be restarted."
 msgstr "Erro: não foi possível reiniciar o serviço de usuário do Plasma Shell."
 
-#: scripts-user/setup-universal.sh:75
+#: scripts-user/setup-universal.sh:77
 #, sh-printf-format
 msgid "Error: unknown option or invalid package path: %s\\n"
 msgstr "Erro: opção desconhecida ou caminho de pacote inválido: %s\\n"
@@ -2659,21 +2659,21 @@ msgstr "Espessura do indicador:"
 msgid "Individual"
 msgstr "Individual"
 
-#: scripts-user/setup-universal.sh:121
+#: scripts-user/setup-universal.sh:119
 #, sh-printf-format
 msgid "Installation completed in: %s\\n"
 msgstr "Instalação concluída em: %s\\n"
 
-#: scripts-user/setup-universal.sh:147
+#: scripts-user/setup-universal.sh:145
 msgid "Installation completed without restarting Plasma Shell."
 msgstr "Instalação concluída sem reiniciar o Plasma Shell."
 
-#: scripts-user/setup-universal.sh:110
+#: scripts-user/setup-universal.sh:108
 #, sh-printf-format
 msgid "Installation directory: %s\\n"
 msgstr "Diretório de instalação: %s\\n"
 
-#: scripts-user/setup-universal.sh:141
+#: scripts-user/setup-universal.sh:139
 msgid "Installation or update completed successfully."
 msgstr "Instalação ou atualização concluída com sucesso."
 
@@ -2681,7 +2681,7 @@ msgstr "Instalação ou atualização concluída com sucesso."
 msgid "Installed Punchi Dock theme"
 msgstr "Tema Punchi Dock instalado"
 
-#: scripts-user/setup-universal.sh:142 scripts-user/setup-universal.sh:148
+#: scripts-user/setup-universal.sh:140 scripts-user/setup-universal.sh:146
 #, sh-printf-format
 msgid "Installed package: %s\\n"
 msgstr "Pacote instalado: %s\\n"
@@ -2876,7 +2876,7 @@ msgctxt "@info:status"
 msgid "Loading applications…"
 msgstr "Carregando aplicativos…"
 
-#: scripts-user/setup.sh:79
+#: scripts-user/setup.sh:81
 #, sh-printf-format
 msgid "Local package created without installation: %s\n"
 msgstr "Pacote local criado sem instalação: %s\n"
@@ -2896,13 +2896,13 @@ msgctxt "@action:button"
 msgid "Log Out"
 msgstr "Encerrar sessão"
 
-#: scripts-user/setup-universal.sh:149
+#: scripts-user/setup-universal.sh:147
 msgid "Log out and back in or restart Plasma later to apply the changes."
 msgstr ""
 "Encerre a sessão e entre novamente ou reinicie o Plasma mais tarde para "
 "aplicar as alterações."
 
-#: scripts-dev/setup.sh:131
+#: scripts-dev/setup.sh:133
 #, sh-printf-format
 msgid "Logs: docs/logs/%s/setup-%s-latest.log\\n"
 msgstr "Registros: docs/logs/%s/setup-%s-latest.log\\n"
@@ -3128,7 +3128,7 @@ msgstr "Minimizar"
 msgid "Minimize window"
 msgstr "Minimizar janela"
 
-#: scripts-dev/distro/arch-setup.sh:192
+#: scripts-dev/distro/arch-setup.sh:193
 #, sh-printf-format
 msgid "Missing pacman packages: %s\\n"
 msgstr "Pacotes do pacman ausentes: %s\\n"
@@ -3333,15 +3333,15 @@ msgstr "Nota"
 msgid "Note content"
 msgstr "Conteúdo da nota"
 
-#: scripts-dev/setup.sh:110
+#: scripts-dev/setup.sh:112
 msgid "Notice: No local installation found for the plasmoid."
 msgstr "Aviso: Nenhuma instalação local do plasmoide foi encontrada."
 
-#: scripts-user/setup.sh:78
+#: scripts-user/setup.sh:80
 msgid "Notice: No local installation was found."
 msgstr "Aviso: nenhuma instalação local foi encontrada."
 
-#: scripts-dev/setup.sh:75
+#: scripts-dev/setup.sh:77
 #, sh-printf-format
 msgid ""
 "Notice: This distribution (%s) is not an official C++ build environment.\\n"
@@ -3527,7 +3527,7 @@ msgid ""
 msgstr ""
 "Abre ou fecha o PunchiMenu independentemente do atalho de ativação do widget."
 
-#: scripts-dev/setup.sh:115 scripts-user/setup.sh:83
+#: scripts-dev/setup.sh:117 scripts-user/setup.sh:85
 msgid "Operation cancelled."
 msgstr "Operação cancelada."
 
@@ -3618,7 +3618,7 @@ msgstr "Espectro de pixels"
 msgid "Plasma Shell PID before restart: %s\\n"
 msgstr "PID do Plasma Shell antes da reinicialização: %s\\n"
 
-#: scripts-user/setup.sh:74
+#: scripts-user/setup.sh:76
 msgid ""
 "Plasma Shell restart skipped. Log out and back in or restart Plasma later."
 msgstr ""
@@ -3970,7 +3970,7 @@ msgstr ""
 "Solicita o efeito de desfoque da área de trabalho para o modo selecionado do "
 "PunchiMenu."
 
-#: scripts-dev/distro/arch-setup.sh:214
+#: scripts-dev/distro/arch-setup.sh:216
 msgid "Required commands are missing:"
 msgstr "Comandos obrigatórios ausentes:"
 
@@ -3979,11 +3979,11 @@ msgctxt "@action:button"
 msgid "Restart"
 msgstr "Reiniciar"
 
-#: scripts-user/setup.sh:71
+#: scripts-user/setup.sh:73
 msgid "Restart Plasma Shell now to apply the changes? [Y/n]: "
 msgstr "Reiniciar o Plasma Shell agora para aplicar as alterações? [S/n]: "
 
-#: scripts-user/setup.sh:72
+#: scripts-user/setup.sh:74
 msgid "Restart Plasma Shell now to finish uninstalling? [Y/n]: "
 msgstr "Reiniciar o Plasma Shell agora para concluir a desinstalação? [S/n]: "
 
@@ -4129,7 +4129,7 @@ msgstr ""
 msgid "Select a theme"
 msgstr "Selecione um tema"
 
-#: scripts-dev/setup.sh:103 scripts-user/setup.sh:70
+#: scripts-dev/setup.sh:105 scripts-user/setup.sh:72
 msgid "Select an option [1-8]: "
 msgstr "Selecione uma opção [1-8]: "
 
@@ -4138,7 +4138,7 @@ msgctxt "@info:accessible"
 msgid "Selected for the new folder"
 msgstr "Selecionado para a nova pasta"
 
-#: scripts-user/setup-universal.sh:109
+#: scripts-user/setup-universal.sh:107
 #, sh-printf-format
 msgid "Selected package: %s\\n"
 msgstr "Pacote selecionado: %s\\n"
@@ -4391,7 +4391,7 @@ msgstr "Solteiro"
 msgid "Single desktop"
 msgstr "Área de trabalho única"
 
-#: scripts-dev/distro/arch-setup.sh:182
+#: scripts-dev/distro/arch-setup.sh:183
 msgid "Skipping pacman dependency installation"
 msgstr "Ignorando a instalação de dependências pelo pacman"
 
@@ -4445,14 +4445,14 @@ msgstr "Estrela"
 msgid "Subtle scale"
 msgstr "Escala sutil"
 
-#: scripts-dev/setup.sh:71
+#: scripts-dev/setup.sh:73
 msgid ""
 "Supported build environments: Debian 13 (Trixie), Fedora, or Arch Linux."
 msgstr ""
 "Ambientes de compilação compatíveis: Debian 13 (Trixie), Fedora ou Arch "
 "Linux."
 
-#: scripts-dev/setup.sh:76
+#: scripts-dev/setup.sh:78
 msgid "Supported build environments: Fedora, Debian 13, and Arch Linux."
 msgstr "Ambientes de compilação compatíveis: Fedora, Debian 13 e Arch Linux."
 
@@ -4471,7 +4471,7 @@ msgstr "Sistema"
 msgid "System operation failed: %1"
 msgstr "Falha na operação do sistema: %1"
 
-#: scripts-user/setup.sh:58
+#: scripts-user/setup.sh:60
 #, sh-printf-format
 msgid "System profile: %s\n"
 msgstr "Perfil do sistema: %s\n"
@@ -4712,7 +4712,7 @@ msgstr "A ação solicitada do aplicativo não pôde ser concluída."
 msgid "The root value must be a JSON array."
 msgstr "O valor raiz deve ser uma matriz JSON."
 
-#: scripts-dev/setup.sh:64
+#: scripts-dev/setup.sh:66
 msgid ""
 "The script will request sudo only when the detected package manager needs to "
 "install packages."
@@ -4880,13 +4880,13 @@ msgstr "Escala de texto de tempo:"
 msgid "Title header:"
 msgstr "Cabeçalho do título:"
 
-#: scripts-dev/setup.sh:72
+#: scripts-dev/setup.sh:74
 msgid "To install a prebuilt .plasmoid use: ./scripts-user/setup-universal.sh"
 msgstr ""
 "Para instalar um .plasmoid pré-compilado use: ./scripts-user/setup-"
 "universal.sh"
 
-#: scripts-dev/setup.sh:77
+#: scripts-dev/setup.sh:79
 msgid "To install a prebuilt .plasmoid, use: ./scripts-user/setup-universal.sh"
 msgstr ""
 "Para instalar um .plasmoid pré-compilado, use: ./scripts-user/setup-"
@@ -4955,7 +4955,7 @@ msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Desafixar do Dock"
 
-#: scripts-dev/distro/arch-setup.sh:62
+#: scripts-dev/distro/arch-setup.sh:63
 msgid ""
 "Usage: scripts-dev/distro/arch-setup.sh [options]\n"
 "\n"
@@ -5003,7 +5003,7 @@ msgstr ""
 "completa do sistema porque o Arch Linux não oferece suporte a atualizações "
 "parciais."
 
-#: scripts-dev/setup.sh:34
+#: scripts-dev/setup.sh:36
 msgid ""
 "Usage: scripts-dev/setup.sh [options | path_to_package.plasmoid]\n"
 "\n"
@@ -5073,7 +5073,7 @@ msgstr ""
 "  ./scripts-dev/setup.sh dist/meu-pacote.plasmoid   # Instalação direta "
 "de .plasmoid"
 
-#: scripts-user/setup-universal.sh:102
+#: scripts-user/setup-universal.sh:100
 msgid ""
 "Usage: scripts-user/setup-universal.sh [--no-restart] <path/to/"
 "package.plasmoid>"
@@ -5081,7 +5081,7 @@ msgstr ""
 "Uso: scripts-user/setup-universal.sh [--no-restart] <caminho/do/"
 "pacote.plasmoid>"
 
-#: scripts-user/setup-universal.sh:27
+#: scripts-user/setup-universal.sh:29
 msgid ""
 "Usage: scripts-user/setup-universal.sh [--no-restart] [path/to/"
 "package.plasmoid]\n"
@@ -5128,7 +5128,7 @@ msgstr ""
 "  scripts-user/setup-universal.sh dist/punchi-dock-remastered-0.9.7-"
 "universal.plasmoid # Instalar um pacote específico"
 
-#: scripts-user/setup.sh:23
+#: scripts-user/setup.sh:25
 msgid ""
 "Usage: scripts-user/setup.sh [options] [path/to/package.plasmoid]\n"
 "\n"
@@ -5216,7 +5216,7 @@ msgstr "Usar desfoque do fundo quando disponível"
 msgid "Use interactive cursors in the settings window"
 msgstr "Use cursores interativos na janela de configurações"
 
-#: scripts-dev/setup.sh:81
+#: scripts-dev/setup.sh:83
 msgid ""
 "Use: ./scripts-user/setup-universal.sh <path/to/package.plasmoid> to install."
 msgstr ""
@@ -5311,7 +5311,7 @@ msgstr "Visualizador:"
 msgid "Wave"
 msgstr "Onda"
 
-#: scripts-dev/setup.sh:94 scripts-user/setup.sh:61
+#: scripts-dev/setup.sh:96 scripts-user/setup.sh:63
 msgid "What would you like to do?"
 msgstr "O que você deseja fazer?"
 
@@ -5427,7 +5427,7 @@ msgid ""
 msgstr ""
 "Sem desfoque, o fundo depende do tema Plasma e da opacidade selecionada."
 
-#: scripts-dev/setup.sh:114
+#: scripts-dev/setup.sh:116
 msgid "Would you like to restart Plasma Shell now? [y/N]: "
 msgstr "Deseja reiniciar o Plasma Shell agora? [s/N]: "
 
@@ -5444,15 +5444,15 @@ msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Você pode abrir até %1 arquivos locais de uma vez."
 
-#: scripts-dev/distro/arch-setup.sh:148
+#: scripts-dev/distro/arch-setup.sh:149
 msgid "cannot read /etc/os-release"
 msgstr "não foi possível ler /etc/os-release"
 
-#: scripts-dev/distro/arch-setup.sh:216
+#: scripts-dev/distro/arch-setup.sh:218
 msgid "install the missing Arch packages and retry"
 msgstr "instale os pacotes ausentes do Arch e tente novamente"
 
-#: scripts-dev/distro/arch-setup.sh:166 scripts-dev/distro/arch-setup.sh:194
+#: scripts-dev/distro/arch-setup.sh:167 scripts-dev/distro/arch-setup.sh:195
 msgid "pacman is required on Arch-family distributions"
 msgstr "o pacman é obrigatório em distribuições da família Arch"
 
@@ -5462,25 +5462,25 @@ msgstr "o pacman é obrigatório em distribuições da família Arch"
 msgid "rows"
 msgstr "linhas"
 
-#: scripts-dev/distro/arch-setup.sh:164
+#: scripts-dev/distro/arch-setup.sh:165
 msgid "run this script as the Plasma desktop user, not with sudo"
 msgstr ""
 "execute este script como usuário da área de trabalho Plasma, não com sudo"
 
-#: scripts-dev/distro/arch-setup.sh:193
+#: scripts-dev/distro/arch-setup.sh:194
 msgid "sudo is required to install missing pacman packages"
 msgstr "sudo é obrigatório para instalar pacotes ausentes pelo pacman"
 
-#: scripts-dev/distro/arch-setup.sh:248
+#: scripts-dev/distro/arch-setup.sh:250
 #, sh-printf-format
 msgid "the build finished without creating the expected artifact: %s\\n"
 msgstr "a compilação terminou sem criar o artefato esperado: %s\\n"
 
-#: scripts-dev/distro/arch-setup.sh:236
+#: scripts-dev/distro/arch-setup.sh:238
 msgid "the package version could not be read from metadata.json"
 msgstr "não foi possível ler a versão do pacote em metadata.json"
 
-#: scripts-dev/distro/arch-setup.sh:165
+#: scripts-dev/distro/arch-setup.sh:166
 #, sh-printf-format
 msgid ""
 "this setup script requires Arch Linux or an Arch-family distribution "
@@ -5489,7 +5489,7 @@ msgstr ""
 "este script de configuração requer Arch Linux ou uma distribuição da família "
 "Arch (detectada: %s)\\n"
 
-#: scripts-dev/distro/arch-setup.sh:136
+#: scripts-dev/distro/arch-setup.sh:137
 #, sh-printf-format
 msgid "unknown option: %s\\n"
 msgstr "opção desconhecida: %s\\n"

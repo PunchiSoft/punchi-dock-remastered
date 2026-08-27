@@ -6,6 +6,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PUBLIC_SETUP="$PROJECT_ROOT/scripts-user/setup.sh"
 PACKAGE_ENGINE="$PROJECT_ROOT/scripts-user/lib/package-plasmoid.sh"
 PLASMA_CONTROL="$PROJECT_ROOT/scripts-user/lib/plasma-shell-control.sh"
+QTPATHS_RESOLVER="$PROJECT_ROOT/scripts-user/lib/qtpaths-resolver.sh"
 UNIVERSAL_SETUP="$PROJECT_ROOT/scripts-user/setup-universal.sh"
 DEVELOPER_SETUP="$PROJECT_ROOT/scripts-dev/setup.sh"
 
@@ -75,6 +76,26 @@ if grep -Eq '^(do_restart_plasma|restart_plasma_shell)\(\)' \
     fail "a public entry point duplicates Plasma restart logic"
 fi
 [[ -r "$PLASMA_CONTROL" ]] || fail "the shared Plasma controller is missing"
+[[ -r "$QTPATHS_RESOLVER" ]] || fail "the shared Qt 6 qtpaths resolver is missing"
+for qtpaths_consumer in \
+    "$PUBLIC_SETUP" \
+    "$UNIVERSAL_SETUP" \
+    "$DEVELOPER_SETUP" \
+    "$PROJECT_ROOT/scripts-dev/lib/install-local-test.sh" \
+    "$PROJECT_ROOT/scripts-dev/instalar-plasmoide.sh"; do
+    grep -q 'source .*qtpaths-resolver\.sh' "$qtpaths_consumer" \
+        || fail "a setup entry point does not use the shared Qt 6 resolver: $qtpaths_consumer"
+    if grep -Eq '(^|[[:space:]"$])qtpaths6[[:space:]]+--writable-path' "$qtpaths_consumer"; then
+        fail "a setup entry point still invokes qtpaths6 directly: $qtpaths_consumer"
+    fi
+done
+for distro_setup in \
+    "$PROJECT_ROOT/scripts-dev/distro/arch-setup.sh" \
+    "$PROJECT_ROOT/scripts-dev/distro/debian13-setup.sh" \
+    "$PROJECT_ROOT/scripts-dev/distro/fedora-setup.sh"; do
+    grep -q 'punchi_find_qtpaths6' "$distro_setup" \
+        || fail "a distribution profile still verifies only the bare qtpaths6 command: $distro_setup"
+done
 
 # shellcheck source=../scripts-user/setup.sh
 source "$PUBLIC_SETUP"

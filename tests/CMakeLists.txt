@@ -282,6 +282,11 @@ add_test(
 )
 
 add_test(
+    NAME qtpaths_resolver_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/qtpaths_resolver_test.sh
+)
+
+add_test(
     NAME plasma_shell_control_test
     COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/plasma_shell_control_test.sh
 )

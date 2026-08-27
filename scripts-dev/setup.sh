@@ -22,6 +22,8 @@ trap _punchi_setup_cleanup EXIT INT TERM
 source "$SCRIPT_DIR/lib/setup-logging.sh"
 # shellcheck source=../scripts-user/lib/setup-localization.sh
 source "$PROJECT_ROOT/scripts-user/lib/setup-localization.sh"
+# shellcheck source=../scripts-user/lib/qtpaths-resolver.sh
+source "$PROJECT_ROOT/scripts-user/lib/qtpaths-resolver.sh"
 
 # ---------------------------------------------------------------------------
 # Localized developer-assistant messages
@@ -154,7 +156,7 @@ prepare_setup_arguments() {
 _punchi_resolve_install_dir() {
     local plugin_id="org.kde.plasma.punchi-dock-remastered"
     local data_root=""
-    data_root="$(qtpaths6 --writable-path GenericDataLocation 2>/dev/null || echo "$HOME/.local/share")"
+    data_root="$(punchi_qt6_writable_data_root "$HOME/.local/share")"
     echo "$data_root/plasma/plasmoids/$plugin_id"
 }
 
