@@ -14,6 +14,8 @@ source "$LIB_DIR/setup-localization.sh"
 source "$LIB_DIR/plasma-shell-control.sh"
 # shellcheck source=lib/qtpaths-resolver.sh
 source "$LIB_DIR/qtpaths-resolver.sh"
+# shellcheck source=lib/build-concurrency.sh
+source "$LIB_DIR/build-concurrency.sh"
 
 ACTION=""
 ACTION_OPTION=""
@@ -39,6 +41,8 @@ Primary actions (choose only one):
   --restart-plasma  Restart Plasma Shell on demand.
 
 Modifiers:
+  -j, --jobs N      Set the number of parallel build jobs (e.g. -j 1 for safe mode).
+  --parallel N      Alias for --jobs.
   --no-restart      Skip restarting Plasma Shell after install or uninstall.
   -y, --yes         Automatically confirm a restart prompt.
   --lang CODE       Override the detected language (en, es, de, pt_BR).
@@ -57,8 +61,9 @@ message() {
         banner)          echo "=========================================================="
                          punchi_gettext_line "     Punchi Dock Remastered - Setup Assistant             "
                          echo "==========================================================" ;;
-        system_profile)  punchi_gettext_format 'System profile: %s
-' "${1:-unknown}" ;;
+        system_profile)  punchi_gettext_format 'System profile: %s\n' "${1:-unknown}" ;;
+        ram_info)        punchi_gettext_format 'Detected RAM: %s | CPU Cores: %s\n' "${1:-unknown}" "${2:-unknown}" ;;
+        concurrency_info) punchi_gettext_format 'Active build concurrency: %s\n' "${1:-unknown}" ;;
         dev_disabled)    punchi_gettext_line 'Developer tests: disabled' ;;
         menu_title)      punchi_gettext_line 'What would you like to do?' ;;
         menu_opt1)       punchi_gettext_line '  [1] Build and install locally' ;;
@@ -66,10 +71,11 @@ message() {
         menu_opt3)       punchi_gettext_line '  [3] Install an existing .plasmoid package' ;;
         menu_opt4)       punchi_gettext_line '  [4] Uninstall the plasmoid from this system' ;;
         menu_opt5)       punchi_gettext_line '  [5] Restart Plasma Shell only' ;;
-        menu_opt6)       punchi_gettext_line '  [6] Check system build dependencies' ;;
-        menu_opt7)       punchi_gettext_line '  [7] Help (show CLI options)' ;;
-        menu_opt8)       punchi_gettext_line '  [8] Exit' ;;
-        menu_prompt)     punchi_gettext 'Select an option [1-8]: ' ;;
+        menu_opt6)       punchi_gettext_line '  [6] Configure build concurrency (Safe / Balanced / Custom)' ;;
+        menu_opt7)       punchi_gettext_line '  [7] Check system build dependencies' ;;
+        menu_opt8)       punchi_gettext_line '  [8] Help (show CLI options)' ;;
+        menu_opt9)       punchi_gettext_line '  [9] Exit' ;;
+        menu_prompt)     punchi_gettext 'Select an option [1-9]: ' ;;
         prompt_restart)  punchi_gettext 'Restart Plasma Shell now to apply the changes? [Y/n]: ' ;;
         prompt_uninstall_restart) punchi_gettext 'Restart Plasma Shell now to finish uninstalling? [Y/n]: ' ;;
         prompt_package)  punchi_gettext 'Enter the path to a .plasmoid package: ' ;;
@@ -78,10 +84,8 @@ message() {
         start_uninstall) punchi_gettext_line '==> Uninstalling Punchi Dock Remastered...' ;;
         uninstall_done)  punchi_gettext_line '==> Plasmoid uninstalled successfully.' ;;
         uninstall_none)  punchi_gettext_line 'Notice: No local installation was found.' ;;
-        build_only_done) punchi_gettext_format 'Local package created without installation: %s
-' "${1:-}" ;;
-        invalid_choice)  punchi_gettext_format "Error: Invalid menu option: '%s'
-" "${1:-}" >&2 ;;
+        build_only_done) punchi_gettext_format 'Local package created without installation: %s\n' "${1:-}" ;;
+        invalid_choice)  punchi_gettext_format "Error: Invalid menu option: '%s'\n" "${1:-}" >&2 ;;
         cancelled)       punchi_gettext_line 'Operation cancelled.' ;;
         *)               echo "Internal error: unknown message key: $key" >&2; return 2 ;;
     esac
@@ -466,6 +470,15 @@ parse_args() {
             --lang=*)
                 shift
                 ;;
+            -j|--jobs|--parallel)
+                (( $# >= 2 )) || die "$1 requires a positive integer argument"
+                punchi_set_concurrency_level "$2" || die "invalid number of parallel jobs: $2"
+                shift 2
+                ;;
+            -j=*|--jobs=*|--parallel=*)
+                punchi_set_concurrency_level "${1#*=}" || die "invalid number of parallel jobs: ${1#*=}"
+                shift
+                ;;
             -h|--help)
                 show_help
                 exit 0
@@ -492,12 +505,23 @@ interactive_menu() {
     local choice=""
     local package_file=""
     local target_package=""
+    local ram_mb=""
+    local ram_display=""
+    local cpu_cores=""
+    local current_jobs=""
 
     platform_label="$(local_platform_label)"
+    ram_mb="$(punchi_detect_total_ram_mb)"
+    ram_display="$(punchi_format_ram_display "$ram_mb")"
+    cpu_cores="$(punchi_detect_cpu_cores)"
+
     while true; do
+        current_jobs="$(punchi_get_concurrency_level)"
         echo ""
         message banner
         message system_profile "$platform_label"
+        message ram_info "$ram_display" "$cpu_cores"
+        message concurrency_info "$(punchi_concurrency_profile_label "$current_jobs")"
         message dev_disabled
         echo ""
         message menu_title
@@ -509,6 +533,7 @@ interactive_menu() {
         message menu_opt6
         message menu_opt7
         message menu_opt8
+        message menu_opt9
         echo ""
         message menu_prompt
 
@@ -549,14 +574,17 @@ interactive_menu() {
                 break
                 ;;
             6)
-                echo ""
-                punchi_check_and_report_dependencies
+                punchi_configure_build_concurrency_interactive
                 ;;
             7)
                 echo ""
+                punchi_check_and_report_dependencies
+                ;;
+            8)
+                echo ""
                 show_help
                 ;;
-            8|[qQ])
+            9|[qQ])
                 message cancelled
                 break
                 ;;

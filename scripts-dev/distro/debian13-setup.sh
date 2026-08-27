@@ -58,6 +58,8 @@ REQUIRED_COMMANDS=(
 
 # shellcheck source=../../scripts-user/lib/qtpaths-resolver.sh
 source "$PROJECT_ROOT/scripts-user/lib/qtpaths-resolver.sh"
+# shellcheck source=../../scripts-user/lib/build-concurrency.sh
+source "$PROJECT_ROOT/scripts-user/lib/build-concurrency.sh"
 
 usage() {
     cat <<'EOF'
@@ -67,6 +69,8 @@ Prepare Debian 13/trixie for Punchi Dock and create a native package. By
 default the script creates the public artifact without installing it.
 
 Options:
+  -j, --jobs N        Set parallel build and test jobs count (e.g. -j 1 for safe mode).
+  --parallel N        Alias for --jobs.
   --yes               Pass --yes to apt-get.
   --skip-update       Skip apt-get update when package metadata is current.
   --skip-apt          Do not run apt-get; only verify and build.
@@ -101,6 +105,14 @@ run_command() {
 parse_args() {
     while (( $# > 0 )); do
         case "$1" in
+            -j|--jobs|--parallel)
+                (( $# >= 2 )) || die "$1 requires a positive integer argument"
+                punchi_set_concurrency_level "$2" || die "invalid number of parallel jobs: $2"
+                shift
+                ;;
+            -j=*|--jobs=*|--parallel=*)
+                punchi_set_concurrency_level "${1#*=}" || die "invalid number of parallel jobs: ${1#*=}"
+                ;;
             --yes)
                 ASSUME_YES=1
                 ;;

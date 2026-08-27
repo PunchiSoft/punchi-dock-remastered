@@ -58,6 +58,8 @@ REQUIRED_COMMANDS=(
 source "$PROJECT_ROOT/scripts-user/lib/setup-localization.sh"
 # shellcheck source=../../scripts-user/lib/qtpaths-resolver.sh
 source "$PROJECT_ROOT/scripts-user/lib/qtpaths-resolver.sh"
+# shellcheck source=../../scripts-user/lib/build-concurrency.sh
+source "$PROJECT_ROOT/scripts-user/lib/build-concurrency.sh"
 
 usage() {
     punchi_gettext_line 'Usage: scripts-dev/distro/arch-setup.sh [options]
@@ -67,6 +69,8 @@ create a native package. By default the script creates the artifact without
 installing it.
 
 Options:
+  -j, --jobs N        Set parallel build and test jobs count (e.g. -j 1 for safe mode).
+  --parallel N        Alias for --jobs.
   --yes               Pass --noconfirm to pacman.
   --skip-pacman       Do not run pacman; only verify and build.
   --dependencies-only Install and verify dependencies without building.
@@ -113,6 +117,14 @@ run_command() {
 parse_args() {
     while (( $# > 0 )); do
         case "$1" in
+            -j|--jobs|--parallel)
+                (( $# >= 2 )) || die_line "$1 requires a positive integer argument"
+                punchi_set_concurrency_level "$2" || die_format 'invalid number of parallel jobs: %s\n' "$2"
+                shift
+                ;;
+            -j=*|--jobs=*|--parallel=*)
+                punchi_set_concurrency_level "${1#*=}" || die_format 'invalid number of parallel jobs: %s\n' "${1#*=}"
+                ;;
             --yes)
                 ASSUME_YES=1
                 ;;

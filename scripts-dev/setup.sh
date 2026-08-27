@@ -24,6 +24,8 @@ source "$SCRIPT_DIR/lib/setup-logging.sh"
 source "$PROJECT_ROOT/scripts-user/lib/setup-localization.sh"
 # shellcheck source=../scripts-user/lib/qtpaths-resolver.sh
 source "$PROJECT_ROOT/scripts-user/lib/qtpaths-resolver.sh"
+# shellcheck source=../scripts-user/lib/build-concurrency.sh
+source "$PROJECT_ROOT/scripts-user/lib/build-concurrency.sh"
 
 # ---------------------------------------------------------------------------
 # Localized developer-assistant messages
@@ -42,6 +44,8 @@ Punchi Dock Remastered. Automatically detects the host distribution
 If run without arguments, it opens the accessible interactive menu.
 
 CLI Options:
+  -j, --jobs N        Set parallel build and test jobs count (e.g. -j 1 for safe mode).
+  --parallel N        Alias for --jobs.
   --local-test        Build, install on local Plasma Shell and collect logs.
   --clean-install     Remove existing installation, rebuild and install fresh.
   --yes               Pass affirmative answer to the package manager.
@@ -93,16 +97,23 @@ Examples:
         detected_host)
             punchi_gettext_format 'Detected host: %s (%s)\n' "${1:-unknown}" "$(uname -m)"
             ;;
+        ram_info)
+            punchi_gettext_format 'Detected RAM: %s | CPU Cores: %s\n' "${1:-unknown}" "${2:-unknown}"
+            ;;
+        concurrency_info)
+            punchi_gettext_format 'Active build concurrency: %s\n' "${1:-unknown}"
+            ;;
         menu_question)   punchi_gettext_line 'What would you like to do?' ;;
         menu_opt1)       punchi_gettext_line '  [1] Build official release package (Release in dist/)' ;;
         menu_opt2)       punchi_gettext_line '  [2] Build, install and test locally (--local-test)' ;;
         menu_opt3)       punchi_gettext_line '  [3] Install an existing .plasmoid package from dist/' ;;
         menu_opt4)       punchi_gettext_line '  [4] Clean install (remove current + rebuild + install)' ;;
         menu_opt5)       punchi_gettext_line '  [5] Check and install build dependencies only' ;;
-        menu_opt6)       punchi_gettext_line '  [6] Uninstall the plasmoid from this system' ;;
-        menu_opt7)       punchi_gettext_line '  [7] Help (show CLI commands reference)' ;;
-        menu_opt8)       punchi_gettext_line '  [8] Exit' ;;
-        menu_prompt)     punchi_gettext 'Select an option [1-8]: ' ;;
+        menu_opt6)       punchi_gettext_line '  [6] Configure build concurrency (Safe / Balanced / Custom)' ;;
+        menu_opt7)       punchi_gettext_line '  [7] Uninstall the plasmoid from this system' ;;
+        menu_opt8)       punchi_gettext_line '  [8] Help (show CLI commands reference)' ;;
+        menu_opt9)       punchi_gettext_line '  [9] Exit' ;;
+        menu_prompt)     punchi_gettext 'Select an option [1-9]: ' ;;
         start_release)   punchi_gettext_line '==> Starting Release build...' ;;
         start_local)     punchi_gettext_line '==> Starting build and local test...' ;;
         start_clean)     punchi_gettext_line '==> Starting clean install (remove + rebuild + install)...' ;;
@@ -143,11 +154,41 @@ Examples:
 
 prepare_setup_arguments() {
     local -a filtered_arguments=()
+    local -a remaining_arguments=()
 
     punchi_scan_setup_language_option "$@" || return
     punchi_prepare_setup_localization "$PROJECT_ROOT"
     punchi_filter_setup_language_options filtered_arguments "$@" || return
-    PUNCHI_DEV_SETUP_ARGUMENTS=("${filtered_arguments[@]}")
+
+    while (( ${#filtered_arguments[@]} > 0 )); do
+        case "${filtered_arguments[0]}" in
+            -j|--jobs|--parallel)
+                if (( ${#filtered_arguments[@]} < 2 )); then
+                    printf 'Error: %s requires a positive integer argument\n' "${filtered_arguments[0]}" >&2
+                    return 1
+                fi
+                punchi_set_concurrency_level "${filtered_arguments[1]}" || {
+                    printf 'Error: invalid number of parallel jobs: %s\n' "${filtered_arguments[1]}" >&2
+                    return 1
+                }
+                filtered_arguments=("${filtered_arguments[@]:2}")
+                ;;
+            -j=*|--jobs=*|--parallel=*)
+                local val="${filtered_arguments[0]#*=}"
+                punchi_set_concurrency_level "$val" || {
+                    printf 'Error: invalid number of parallel jobs: %s\n' "$val" >&2
+                    return 1
+                }
+                filtered_arguments=("${filtered_arguments[@]:1}")
+                ;;
+            *)
+                remaining_arguments+=("${filtered_arguments[0]}")
+                filtered_arguments=("${filtered_arguments[@]:1}")
+                ;;
+        esac
+    done
+
+    PUNCHI_DEV_SETUP_ARGUMENTS=("${remaining_arguments[@]}")
 }
 
 # ---------------------------------------------------------------------------
@@ -350,75 +391,93 @@ fi
 # ---------------------------------------------------------------------------
 if (( $# == 0 )); then
     interactive_mode=1
-    msg banner
-    msg detected_host "${PRETTY_NAME:-$ID}"
-    echo ""
-    msg menu_question
-    msg menu_opt1
-    msg menu_opt2
-    msg menu_opt3
-    msg menu_opt4
-    msg menu_opt5
-    msg menu_opt6
-    msg menu_opt7
-    msg menu_opt8
-    echo ""
-    read -rp "$(msg menu_prompt)" choice
+    ram_mb="$(punchi_detect_total_ram_mb)"
+    ram_display="$(punchi_format_ram_display "$ram_mb")"
+    cpu_cores="$(punchi_detect_cpu_cores)"
 
-    case "$choice" in
-        1)
-            if [[ -z "$DETECTED_PROFILE" ]]; then
-                msg err_no_profile "${PRETTY_NAME:-unknown}"
-                exit 1
-            fi
-            msg start_release
-            PUNCHI_LOG_DIR="${PUNCHI_LOG_DIR:-$PROJECT_ROOT/docs/logs/$DETECTED_PROFILE}"
-            punchi_run_setup_with_log "$DETECTED_PROFILE" "$SETUP_EXEC"
-            ;;
-        2)
-            if [[ -z "$DETECTED_PROFILE" ]]; then
-                msg err_no_profile "${PRETTY_NAME:-unknown}"
-                exit 1
-            fi
-            msg start_local
-            PUNCHI_LOG_DIR="${PUNCHI_LOG_DIR:-$PROJECT_ROOT/docs/logs/$DETECTED_PROFILE}"
-            punchi_run_setup_with_log "$DETECTED_PROFILE" "$SETUP_EXEC" --local-test
-            ;;
-        3)
-            exec "$SCRIPT_DIR/instalar-plasmoide.sh"
-            ;;
-        4)
-            if [[ -z "$DETECTED_PROFILE" ]]; then
-                msg err_no_profile "${PRETTY_NAME:-unknown}"
-                exit 1
-            fi
-            msg start_clean
-            _punchi_clean_install
-            ;;
-        5)
-            if [[ -z "$DETECTED_PROFILE" ]]; then
-                msg err_no_profile "${PRETTY_NAME:-unknown}"
-                exit 1
-            fi
-            msg start_deps
-            PUNCHI_LOG_DIR="${PUNCHI_LOG_DIR:-$PROJECT_ROOT/docs/logs/$DETECTED_PROFILE}"
-            punchi_run_setup_with_log "$DETECTED_PROFILE" "$SETUP_EXEC" --dependencies-only
-            ;;
-        6)
-            _punchi_uninstall
-            ;;
-        7)
-            msg quick_ref
-            ;;
-        8)
-            msg cancelled
-            exit 0
-            ;;
-        *)
-            msg err_invalid_opt "$choice"
-            exit 1
-            ;;
-    esac
+    while true; do
+        current_jobs="$(punchi_get_concurrency_level)"
+        echo ""
+        msg banner
+        msg detected_host "${PRETTY_NAME:-$ID}"
+        msg ram_info "$ram_display" "$cpu_cores"
+        msg concurrency_info "$(punchi_concurrency_profile_label "$current_jobs")"
+        echo ""
+        msg menu_question
+        msg menu_opt1
+        msg menu_opt2
+        msg menu_opt3
+        msg menu_opt4
+        msg menu_opt5
+        msg menu_opt6
+        msg menu_opt7
+        msg menu_opt8
+        msg menu_opt9
+        echo ""
+        read -rp "$(msg menu_prompt)" choice
+
+        case "$choice" in
+            1)
+                if [[ -z "$DETECTED_PROFILE" ]]; then
+                    msg err_no_profile "${PRETTY_NAME:-unknown}"
+                    exit 1
+                fi
+                msg start_release
+                PUNCHI_LOG_DIR="${PUNCHI_LOG_DIR:-$PROJECT_ROOT/docs/logs/$DETECTED_PROFILE}"
+                punchi_run_setup_with_log "$DETECTED_PROFILE" "$SETUP_EXEC"
+                break
+                ;;
+            2)
+                if [[ -z "$DETECTED_PROFILE" ]]; then
+                    msg err_no_profile "${PRETTY_NAME:-unknown}"
+                    exit 1
+                fi
+                msg start_local
+                PUNCHI_LOG_DIR="${PUNCHI_LOG_DIR:-$PROJECT_ROOT/docs/logs/$DETECTED_PROFILE}"
+                punchi_run_setup_with_log "$DETECTED_PROFILE" "$SETUP_EXEC" --local-test
+                break
+                ;;
+            3)
+                exec "$SCRIPT_DIR/instalar-plasmoide.sh"
+                ;;
+            4)
+                if [[ -z "$DETECTED_PROFILE" ]]; then
+                    msg err_no_profile "${PRETTY_NAME:-unknown}"
+                    exit 1
+                fi
+                msg start_clean
+                _punchi_clean_install
+                break
+                ;;
+            5)
+                if [[ -z "$DETECTED_PROFILE" ]]; then
+                    msg err_no_profile "${PRETTY_NAME:-unknown}"
+                    exit 1
+                fi
+                msg start_deps
+                PUNCHI_LOG_DIR="${PUNCHI_LOG_DIR:-$PROJECT_ROOT/docs/logs/$DETECTED_PROFILE}"
+                punchi_run_setup_with_log "$DETECTED_PROFILE" "$SETUP_EXEC" --dependencies-only
+                break
+                ;;
+            6)
+                punchi_configure_build_concurrency_interactive
+                ;;
+            7)
+                _punchi_uninstall
+                break
+                ;;
+            8)
+                msg quick_ref
+                ;;
+            9|[qQ])
+                msg cancelled
+                exit 0
+                ;;
+            *)
+                msg err_invalid_opt "$choice"
+                ;;
+        esac
+    done
 else
     # ---------------------------------------------------------------------------
     # 4. Direct CLI mode with flags

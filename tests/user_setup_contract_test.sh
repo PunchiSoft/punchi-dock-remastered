@@ -77,6 +77,8 @@ if grep -Eq '^(do_restart_plasma|restart_plasma_shell)\(\)' \
 fi
 [[ -r "$PLASMA_CONTROL" ]] || fail "the shared Plasma controller is missing"
 [[ -r "$QTPATHS_RESOLVER" ]] || fail "the shared Qt 6 qtpaths resolver is missing"
+BUILD_CONCURRENCY="$PROJECT_ROOT/scripts-user/lib/build-concurrency.sh"
+[[ -r "$BUILD_CONCURRENCY" ]] || fail "the shared build concurrency helper is missing"
 for qtpaths_consumer in \
     "$PUBLIC_SETUP" \
     "$UNIVERSAL_SETUP" \
@@ -95,6 +97,8 @@ for distro_setup in \
     "$PROJECT_ROOT/scripts-dev/distro/fedora-setup.sh"; do
     grep -q 'punchi_find_qtpaths6' "$distro_setup" \
         || fail "a distribution profile still verifies only the bare qtpaths6 command: $distro_setup"
+    grep -q 'source .*build-concurrency\.sh' "$distro_setup" \
+        || fail "a distribution profile does not source the build concurrency helper: $distro_setup"
 done
 
 # shellcheck source=../scripts-user/setup.sh
@@ -191,7 +195,7 @@ if locale -a 2>/dev/null | grep -qi 'pt_BR'; then
         || fail "pt_BR was not detected automatically"
 fi
 
-menu_output="$(printf '7\n' | LC_ALL=en_US.UTF-8 LANGUAGE=en "$PUBLIC_SETUP")"
+menu_output="$(printf '9\n' | LC_ALL=en_US.UTF-8 LANGUAGE=en "$PUBLIC_SETUP")"
 [[ "$menu_output" == *"What would you like to do?"* ]] \
     || fail "the default interactive menu did not open"
 

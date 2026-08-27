@@ -6,6 +6,9 @@ SCRIPTS_DIR="$(cd "$LIB_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
 DEV_SCRIPTS_DIR="$PROJECT_ROOT/scripts-dev"
 
+# shellcheck source=build-concurrency.sh
+source "$LIB_DIR/build-concurrency.sh"
+
 if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
     cat <<'EOF'
 Usage: scripts-user/lib/package-plasmoid.sh
@@ -263,9 +266,11 @@ env \
     cmake -S "$PROJECT_ROOT" -B "$BUILD_DIR" \
     -DBUILD_TESTING="$build_testing" \
     -DCMAKE_BUILD_TYPE="$PACKAGE_BUILD_TYPE"
-cmake --build "$BUILD_DIR" --parallel
+parallel_jobs="$(punchi_get_concurrency_level)"
+echo "Build concurrency: $(punchi_concurrency_profile_label "$parallel_jobs")"
+cmake --build "$BUILD_DIR" --parallel "$parallel_jobs"
 if [[ "$PACKAGE_VALIDATION_MODE" == "full" ]]; then
-    ctest --test-dir "$BUILD_DIR" --output-on-failure
+    ctest --test-dir "$BUILD_DIR" --parallel "$parallel_jobs" --output-on-failure
 fi
 
 echo "==> Assembling a clean package tree"

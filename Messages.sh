@@ -29,6 +29,7 @@ shell_sources=(
     scripts-user/setup.sh
     scripts-user/setup-universal.sh
     scripts-user/lib/plasma-shell-control.sh
+    scripts-user/lib/build-concurrency.sh
 )
 
 common_options=(

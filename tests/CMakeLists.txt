@@ -287,6 +287,11 @@ add_test(
 )
 
 add_test(
+    NAME build_concurrency_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/build_concurrency_test.sh
+)
+
+add_test(
     NAME plasma_shell_control_test
     COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/plasma_shell_control_test.sh
 )

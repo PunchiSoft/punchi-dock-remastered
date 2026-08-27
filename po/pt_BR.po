@@ -18,11 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: scripts-user/setup.sh:58
+#: scripts-user/lib/build-concurrency.sh:162
+msgid "     Build Concurrency & Memory Configuration           "
+msgstr "     Configuração de concorrência e memória de compilação "
+
+#: scripts-user/setup.sh:62
 msgid "     Punchi Dock Remastered - Setup Assistant             "
 msgstr "     Punchi Dock Remastered - Assistente de instalação    "
 
-#: scripts-dev/setup.sh:90
+#: scripts-dev/setup.sh:94
 msgid "   Punchi Dock Remastered - Master Setup Assistant        "
 msgstr "   Punchi Dock Remastered - Assistente mestre de configuração "
 
@@ -30,65 +34,93 @@ msgstr "   Punchi Dock Remastered - Assistente mestre de configuração "
 msgid "  Punchi Dock Remastered - Package Installer             "
 msgstr "  Punchi Dock Remastered - Instalador de pacotes         "
 
-#: scripts-user/setup.sh:64
+#: scripts-user/setup.sh:69
 msgid "  [1] Build and install locally"
 msgstr "  [1] Compilar e instalar localmente"
 
-#: scripts-dev/setup.sh:97
+#: scripts-dev/setup.sh:107
 msgid "  [1] Build official release package (Release in dist/)"
 msgstr "  [1] Compilar pacote oficial de versão (Release em dist/)"
 
-#: scripts-user/setup.sh:65
+#: scripts-user/lib/build-concurrency.sh:177
+msgid "  [1] Safe Mode (1 core) - Maximum stability for VMs or <= 4 GB RAM"
+msgstr ""
+"  [1] Modo Seguro (1 núcleo) - Estabilidade máxima para VMs ou <= 4 GB RAM"
+
+#: scripts-user/lib/build-concurrency.sh:178
+msgid "  [2] Balanced Mode (2 cores) - Fast and stable for general usage"
+msgstr "  [2] Modo Equilibrado (2 núcleos) - Rápido e estável para uso geral"
+
+#: scripts-user/setup.sh:70
 msgid "  [2] Build .plasmoid package only (no install)"
 msgstr "  [2] Criar apenas o pacote .plasmoid (sem instalar)"
 
-#: scripts-dev/setup.sh:98
+#: scripts-dev/setup.sh:108
 msgid "  [2] Build, install and test locally (--local-test)"
 msgstr "  [2] Compilar, instalar e testar localmente (--local-test)"
 
-#: scripts-user/setup.sh:66
+#: scripts-user/lib/build-concurrency.sh:179
+#, sh-printf-format
+msgid "  [3] Fast Mode (%s cores) - Use all available CPU cores\\n"
+msgstr "  [3] Modo Rápido (%s núcleos) - Usar todos os núcleos de CPU disponíveis\\n"
+
+#: scripts-user/setup.sh:71
 msgid "  [3] Install an existing .plasmoid package"
 msgstr "  [3] Instalar um pacote .plasmoid existente"
 
-#: scripts-dev/setup.sh:99
+#: scripts-dev/setup.sh:109
 msgid "  [3] Install an existing .plasmoid package from dist/"
 msgstr "  [3] Instalar um pacote .plasmoid existente de dist/"
 
-#: scripts-dev/setup.sh:100
+#: scripts-dev/setup.sh:110
 msgid "  [4] Clean install (remove current + rebuild + install)"
 msgstr "  [4] Instalação limpa (remover + recompilar + instalar)"
 
-#: scripts-user/setup.sh:67
+#: scripts-user/lib/build-concurrency.sh:180
+msgid "  [4] Custom (enter specific number of parallel jobs)"
+msgstr "  [4] Personalizado (inserir número específico de tarefas paralelas)"
+
+#: scripts-user/setup.sh:72
 msgid "  [4] Uninstall the plasmoid from this system"
 msgstr "  [4] Desinstalar o plasmoide deste sistema"
 
-#: scripts-dev/setup.sh:101
+#: scripts-user/lib/build-concurrency.sh:181
+msgid "  [5] Back to main menu"
+msgstr "  [5] Voltar ao menu principal"
+
+#: scripts-dev/setup.sh:111
 msgid "  [5] Check and install build dependencies only"
 msgstr "  [5] Verificar e instalar somente dependências de compilação"
 
-#: scripts-user/setup.sh:68
+#: scripts-user/setup.sh:73
 msgid "  [5] Restart Plasma Shell only"
 msgstr "  [5] Reiniciar somente o Plasma Shell"
 
-#: scripts-user/setup.sh:69
-msgid "  [6] Check system build dependencies"
-msgstr "  [6] Verificar dependências de compilação do sistema"
+#: scripts-dev/setup.sh:112 scripts-user/setup.sh:74
+msgid "  [6] Configure build concurrency (Safe / Balanced / Custom)"
+msgstr ""
+"  [6] Configurar concorrência de compilação (Seguro / Equilibrado / "
+"Personalizado)"
 
-#: scripts-dev/setup.sh:102
-msgid "  [6] Uninstall the plasmoid from this system"
-msgstr "  [6] Desinstalar o plasmoide deste sistema"
+#: scripts-user/setup.sh:75
+msgid "  [7] Check system build dependencies"
+msgstr "  [7] Verificar dependências de compilação do sistema"
 
-#: scripts-dev/setup.sh:103
-msgid "  [7] Help (show CLI commands reference)"
-msgstr "  [7] Ajuda (mostrar referência de comandos da CLI)"
+#: scripts-dev/setup.sh:113
+msgid "  [7] Uninstall the plasmoid from this system"
+msgstr "  [7] Desinstalar o plasmoide deste sistema"
 
-#: scripts-user/setup.sh:70
-msgid "  [7] Help (show CLI options)"
-msgstr "  [7] Ajuda (mostrar opções da CLI)"
+#: scripts-dev/setup.sh:114
+msgid "  [8] Help (show CLI commands reference)"
+msgstr "  [8] Ajuda (mostrar referência de comandos da CLI)"
 
-#: scripts-dev/setup.sh:104 scripts-user/setup.sh:71
-msgid "  [8] Exit"
-msgstr "  [8] Sair"
+#: scripts-user/setup.sh:76
+msgid "  [8] Help (show CLI options)"
+msgstr "  [8] Ajuda (mostrar opções da CLI)"
+
+#: scripts-dev/setup.sh:115 scripts-user/setup.sh:77
+msgid "  [9] Exit"
+msgstr "  [9] Sair"
 
 #: contents/ui/components/CalendarPopup.qml:358
 msgctxt "@title:column calendar week number"
@@ -302,9 +334,13 @@ msgctxt "@info:accessible"
 msgid "%1. Playing."
 msgstr "%1. Reproduzindo."
 
-#: scripts-dev/distro/arch-setup.sh:144
+#: scripts-dev/distro/arch-setup.sh:156
 msgid "--dependencies-only and --local-test cannot be used together"
 msgstr "--dependencies-only e --local-test não podem ser usados juntos"
+
+#: scripts-user/lib/build-concurrency.sh:120
+msgid "1 core"
+msgstr "1 núcleo"
 
 #: contents/ui/config/ConfigPopups.qml:273
 msgid ""
@@ -330,6 +366,10 @@ msgstr "12 barras"
 msgid "16 bars"
 msgstr "16 barras"
 
+#: scripts-user/lib/build-concurrency.sh:126
+msgid "2 cores"
+msgstr "2 núcleos"
+
 #: contents/ui/config/ConfigAudioVisualizer.qml:40
 msgid "24 bars"
 msgstr "24 barras"
@@ -346,48 +386,66 @@ msgstr "48 barras"
 msgid "8 bars"
 msgstr "8 barras"
 
-#: scripts-user/setup.sh:77
+#: scripts-user/setup.sh:83
 msgid "==> Building the native QML module without developer tests..."
 msgstr "==> Compilando o módulo QML nativo sem testes de desenvolvimento..."
 
-#: scripts-dev/setup.sh:109
+#: scripts-dev/setup.sh:120
 msgid "==> Checking and installing build dependencies..."
 msgstr "==> Verificando e instalando dependências de compilação..."
 
-#: scripts-dev/setup.sh:115
+#: scripts-user/lib/build-concurrency.sh:236
+#, sh-printf-format
+msgid "==> Concurrency set to: %s cores (Custom)\\n"
+msgstr "==> Concorrência definida para: %s núcleos (Personalizado)\\n"
+
+#: scripts-user/lib/build-concurrency.sh:211
+msgid "==> Concurrency set to: Balanced Mode (2 cores)"
+msgstr "==> Concorrência definida para: Modo Equilibrado (2 núcleos)"
+
+#: scripts-user/lib/build-concurrency.sh:220
+#, sh-printf-format
+msgid "==> Concurrency set to: Fast Mode (%s cores)\\n"
+msgstr "==> Concorrência definida para: Modo Rápido (%s núcleos)\\n"
+
+#: scripts-user/lib/build-concurrency.sh:202
+msgid "==> Concurrency set to: Safe Mode (1 core)"
+msgstr "==> Concorrência definida para: Modo Seguro (1 núcleo)"
+
+#: scripts-dev/setup.sh:126
 msgid "==> Plasma Shell restart requested."
 msgstr "==> Reinicialização do Plasma Shell solicitada."
 
-#: scripts-dev/setup.sh:111 scripts-user/setup.sh:79
+#: scripts-dev/setup.sh:122 scripts-user/setup.sh:85
 msgid "==> Plasmoid uninstalled successfully."
 msgstr "==> Plasmoide desinstalado com sucesso."
 
-#: scripts-dev/setup.sh:113
+#: scripts-dev/setup.sh:124
 #, sh-printf-format
 msgid "==> Removed existing installation: %s\\n"
 msgstr "==> Instalação existente removida: %s\\n"
 
-#: scripts-dev/setup.sh:114
+#: scripts-dev/setup.sh:125
 msgid "==> Restarting Plasma Shell..."
 msgstr "==> Reiniciando o Plasma Shell..."
 
-#: scripts-dev/setup.sh:106
+#: scripts-dev/setup.sh:117
 msgid "==> Starting Release build..."
 msgstr "==> Iniciando compilação Release..."
 
-#: scripts-dev/setup.sh:107
+#: scripts-dev/setup.sh:118
 msgid "==> Starting build and local test..."
 msgstr "==> Iniciando compilação e teste local..."
 
-#: scripts-dev/setup.sh:108
+#: scripts-dev/setup.sh:119
 msgid "==> Starting clean install (remove + rebuild + install)..."
 msgstr "==> Iniciando instalação limpa (remover + recompilar + instalar)..."
 
-#: scripts-user/setup.sh:78
+#: scripts-user/setup.sh:84
 msgid "==> Uninstalling Punchi Dock Remastered..."
 msgstr "==> Desinstalando o Punchi Dock Remastered..."
 
-#: scripts-dev/setup.sh:110
+#: scripts-dev/setup.sh:121
 msgid "==> Uninstalling the plasmoid..."
 msgstr "==> Desinstalando o plasmoide..."
 
@@ -441,6 +499,11 @@ msgid ""
 msgstr ""
 "Os aplicativos ativos não mostram visualizações instantâneas ou pop-ups de "
 "janelas agrupadas."
+
+#: scripts-dev/setup.sh:104 scripts-user/setup.sh:66
+#, sh-printf-format
+msgid "Active build concurrency: %s\\n"
+msgstr "Concorrência de compilação ativa: %s\\n"
 
 #: contents/ui/components/TaskWindowsPopup.qml:116
 #: contents/ui/components/TaskWindowsPopup.qml:136
@@ -604,7 +667,7 @@ msgctxt "@title:category"
 msgid "All Applications"
 msgstr "Todos os aplicativos"
 
-#: scripts-dev/distro/arch-setup.sh:189
+#: scripts-dev/distro/arch-setup.sh:201
 msgid "All Arch build packages are already installed"
 msgstr "Todos os pacotes de compilação do Arch já estão instalados"
 
@@ -802,12 +865,12 @@ msgctxt "@action:button"
 msgid "Apply"
 msgstr "Aplicar"
 
-#: scripts-dev/distro/arch-setup.sh:251
+#: scripts-dev/distro/arch-setup.sh:263
 #, sh-printf-format
 msgid "Arch artifact ready: %s\\n"
 msgstr "Artefato do Arch pronto: %s\\n"
 
-#: scripts-dev/distro/arch-setup.sh:268
+#: scripts-dev/distro/arch-setup.sh:280
 msgid "Arch setup completed"
 msgstr "Configuração do Arch concluída"
 
@@ -990,6 +1053,10 @@ msgstr "Escala do emblema:"
 msgid "Badge:"
 msgstr "Emblema:"
 
+#: scripts-user/lib/build-concurrency.sh:126
+msgid "Balanced Mode"
+msgstr "Modo Equilibrado"
+
 #: contents/ui/config/ConfigAspect.qml:150
 msgctxt "Indicator position"
 msgid "Bottom"
@@ -1024,7 +1091,7 @@ msgctxt "@option:application-order"
 msgid "By categories"
 msgstr "Por categorias"
 
-#: scripts-dev/setup.sh:121
+#: scripts-dev/setup.sh:132
 msgid ""
 "CLI Quick Reference\n"
 "==================\n"
@@ -1637,6 +1704,11 @@ msgstr "Criar pasta de aplicativos"
 msgid "Current color: %1"
 msgstr "Cor atual: %1"
 
+#: scripts-user/lib/build-concurrency.sh:169
+#, sh-printf-format
+msgid "Current concurrency: %s\\n"
+msgstr "Concorrência atual: %s\\n"
+
 #: contents/ui/config/ConfigGeneral.qml:334
 msgctxt "@info:status <b> marks the current dock mode"
 msgid ""
@@ -1672,6 +1744,10 @@ msgstr ""
 msgctxt "@info:accessibility"
 msgid "Current icon: %1"
 msgstr "Ícone atual: %1"
+
+#: scripts-user/lib/build-concurrency.sh:138
+msgid "Custom"
+msgstr "Personalizado"
 
 #: contents/ui/config/ConfigMenus.qml:42
 msgctxt "@item:inlistbox Context menu size"
@@ -1769,17 +1845,22 @@ msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
 msgstr "Detalhado"
 
-#: scripts-dev/setup.sh:94
+#: scripts-dev/setup.sh:101 scripts-user/setup.sh:65
+#, sh-printf-format
+msgid "Detected RAM: %s | CPU Cores: %s\\n"
+msgstr "RAM detectada: %s | Núcleos de CPU: %s\\n"
+
+#: scripts-dev/setup.sh:98
 #, sh-printf-format
 msgid "Detected host: %s (%s)\\n"
 msgstr "Sistema detectado: %s (%s)\\n"
 
-#: scripts-dev/distro/arch-setup.sh:260
+#: scripts-dev/distro/arch-setup.sh:272
 #, sh-printf-format
 msgid "Detected host: %s\\n"
 msgstr "Sistema detectado: %s\\n"
 
-#: scripts-user/setup.sh:62
+#: scripts-user/setup.sh:67
 msgid "Developer tests: disabled"
 msgstr "Testes de desenvolvimento: desativados"
 
@@ -1906,7 +1987,7 @@ msgstr "Orientação da doca"
 msgid "Dock orientation:"
 msgstr "Orientação da doca:"
 
-#: scripts-dev/setup.sh:134
+#: scripts-dev/setup.sh:145
 msgid "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
 msgstr "Documentação: scripts-dev/README.md | scripts-dev/README.es.md"
 
@@ -1937,7 +2018,7 @@ msgctxt "@info:placeholder"
 msgid "Drop applications here"
 msgstr "Soltar aplicativos aqui"
 
-#: scripts-dev/distro/arch-setup.sh:206
+#: scripts-dev/distro/arch-setup.sh:218
 msgid "Dry run: post-install command verification skipped"
 msgstr "Simulação: verificação de comandos após a instalação ignorada"
 
@@ -2054,39 +2135,54 @@ msgctxt "@info"
 msgid "Enter a new name for %1."
 msgstr "Digite um novo nome para %1."
 
-#: scripts-user/setup.sh:75
+#: scripts-user/lib/build-concurrency.sh:228
+msgid "Enter number of parallel jobs [1-64]: "
+msgstr "Insira o número de tarefas paralelas [1-64]: "
+
+#: scripts-user/setup.sh:81
 msgid "Enter the path to a .plasmoid package: "
 msgstr "Informe o caminho para um pacote .plasmoid: "
 
-#: scripts-dev/distro/arch-setup.sh:93 scripts-dev/distro/arch-setup.sh:99
+#: scripts-dev/distro/arch-setup.sh:97 scripts-dev/distro/arch-setup.sh:103
 msgid "Error: "
 msgstr "Erro: "
 
-#: scripts-user/setup.sh:91
+#: scripts-user/setup.sh:95
 #, sh-printf-format
 msgid "Error: %s\\n"
 msgstr "Erro: %s\\n"
 
-#: scripts-dev/setup.sh:82
+#: scripts-dev/setup.sh:86
 #, sh-printf-format
 msgid "Error: Cannot build natively on this system (%s).\\n"
 msgstr "Erro: Não é possível compilar nativamente neste sistema (%s).\\n"
 
-#: scripts-dev/setup.sh:69
+#: scripts-dev/setup.sh:73
 msgid "Error: Could not identify the distribution from /etc/os-release."
 msgstr "Erro: Não foi possível identificar a distribuição em /etc/os-release."
 
-#: scripts-user/setup.sh:83
+#: scripts-user/setup.sh:88
 #, sh-printf-format
-msgid "Error: Invalid menu option: '%s'\n"
-msgstr "Erro: opção de menu inválida: '%s'\n"
+msgid "Error: Invalid menu option: '%s'\\n"
+msgstr "Erro: Opção de menu inválida: '%s'\\n"
 
-#: scripts-dev/setup.sh:118
+#: scripts-user/lib/build-concurrency.sh:243
+msgid ""
+"Error: Invalid number of jobs. Please enter an integer between 1 and 64."
+msgstr ""
+"Erro: Número de tarefas inválido. Insira um número inteiro entre 1 e 64."
+
+#: scripts-dev/setup.sh:129
 #, sh-printf-format
 msgid "Error: Invalid option: %s\\n"
 msgstr "Erro: Opção inválida: %s\\n"
 
-#: scripts-dev/setup.sh:86
+#: scripts-user/lib/build-concurrency.sh:254
+#, sh-printf-format
+msgid "Error: Invalid option: '%s'\\n"
+msgstr "Erro: Opção inválida: '%s'\\n"
+
+#: scripts-dev/setup.sh:90
 #, sh-printf-format
 msgid "Error: No build profile exists for the distribution: %s.\\n"
 msgstr "Erro: Não existe perfil de compilação para a distribuição: %s.\\n"
@@ -2105,13 +2201,13 @@ msgstr ""
 msgid "Error: Plasma Shell did not stop and the forced restart failed."
 msgstr "Erro: o Plasma Shell não parou e a reinicialização forçada falhou."
 
-#: scripts-dev/setup.sh:65
+#: scripts-dev/setup.sh:69
 msgid "Error: Run this script as the Plasma desktop user, NOT with sudo."
 msgstr ""
 "Erro: Execute este script como usuário da área de trabalho Plasma, NÃO com "
 "sudo."
 
-#: scripts-dev/setup.sh:72
+#: scripts-dev/setup.sh:76
 #, sh-printf-format
 msgid "Error: Unsupported Debian version for building: %s.\\n"
 msgstr "Erro: Versão do Debian não compatível para compilação: %s.\\n"
@@ -2176,6 +2272,10 @@ msgstr "Desaparecer"
 #: contents/ui/config/ConfigFiles.qml:214
 msgid "Failed to read file."
 msgstr "Falha ao ler o arquivo."
+
+#: scripts-user/lib/build-concurrency.sh:132
+msgid "Fast Mode"
+msgstr "Modo Rápido"
 
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:2839
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:3050
@@ -2876,10 +2976,10 @@ msgctxt "@info:status"
 msgid "Loading applications…"
 msgstr "Carregando aplicativos…"
 
-#: scripts-user/setup.sh:81
+#: scripts-user/setup.sh:87
 #, sh-printf-format
-msgid "Local package created without installation: %s\n"
-msgstr "Pacote local criado sem instalação: %s\n"
+msgid "Local package created without installation: %s\\n"
+msgstr "Pacote local criado sem instalação: %s\\n"
 
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:395
 msgid "Location and size"
@@ -2902,7 +3002,7 @@ msgstr ""
 "Encerre a sessão e entre novamente ou reinicie o Plasma mais tarde para "
 "aplicar as alterações."
 
-#: scripts-dev/setup.sh:133
+#: scripts-dev/setup.sh:144
 #, sh-printf-format
 msgid "Logs: docs/logs/%s/setup-%s-latest.log\\n"
 msgstr "Registros: docs/logs/%s/setup-%s-latest.log\\n"
@@ -3128,7 +3228,7 @@ msgstr "Minimizar"
 msgid "Minimize window"
 msgstr "Minimizar janela"
 
-#: scripts-dev/distro/arch-setup.sh:193
+#: scripts-dev/distro/arch-setup.sh:205
 #, sh-printf-format
 msgid "Missing pacman packages: %s\\n"
 msgstr "Pacotes do pacman ausentes: %s\\n"
@@ -3333,15 +3433,15 @@ msgstr "Nota"
 msgid "Note content"
 msgstr "Conteúdo da nota"
 
-#: scripts-dev/setup.sh:112
+#: scripts-dev/setup.sh:123
 msgid "Notice: No local installation found for the plasmoid."
 msgstr "Aviso: Nenhuma instalação local do plasmoide foi encontrada."
 
-#: scripts-user/setup.sh:80
+#: scripts-user/setup.sh:86
 msgid "Notice: No local installation was found."
 msgstr "Aviso: nenhuma instalação local foi encontrada."
 
-#: scripts-dev/setup.sh:77
+#: scripts-dev/setup.sh:81
 #, sh-printf-format
 msgid ""
 "Notice: This distribution (%s) is not an official C++ build environment.\\n"
@@ -3527,7 +3627,7 @@ msgid ""
 msgstr ""
 "Abre ou fecha o PunchiMenu independentemente do atalho de ativação do widget."
 
-#: scripts-dev/setup.sh:117 scripts-user/setup.sh:85
+#: scripts-dev/setup.sh:128 scripts-user/setup.sh:89
 msgid "Operation cancelled."
 msgstr "Operação cancelada."
 
@@ -3618,7 +3718,7 @@ msgstr "Espectro de pixels"
 msgid "Plasma Shell PID before restart: %s\\n"
 msgstr "PID do Plasma Shell antes da reinicialização: %s\\n"
 
-#: scripts-user/setup.sh:76
+#: scripts-user/setup.sh:82
 msgid ""
 "Plasma Shell restart skipped. Log out and back in or restart Plasma later."
 msgstr ""
@@ -3970,7 +4070,7 @@ msgstr ""
 "Solicita o efeito de desfoque da área de trabalho para o modo selecionado do "
 "PunchiMenu."
 
-#: scripts-dev/distro/arch-setup.sh:216
+#: scripts-dev/distro/arch-setup.sh:228
 msgid "Required commands are missing:"
 msgstr "Comandos obrigatórios ausentes:"
 
@@ -3979,11 +4079,11 @@ msgctxt "@action:button"
 msgid "Restart"
 msgstr "Reiniciar"
 
-#: scripts-user/setup.sh:73
+#: scripts-user/setup.sh:79
 msgid "Restart Plasma Shell now to apply the changes? [Y/n]: "
 msgstr "Reiniciar o Plasma Shell agora para aplicar as alterações? [S/n]: "
 
-#: scripts-user/setup.sh:74
+#: scripts-user/setup.sh:80
 msgid "Restart Plasma Shell now to finish uninstalling? [Y/n]: "
 msgstr "Reiniciar o Plasma Shell agora para concluir a desinstalação? [S/n]: "
 
@@ -4053,6 +4153,10 @@ msgstr "Quadrado arredondado"
 #: contents/ui/config/ConfigMenus.qml:141
 msgid "Row height:"
 msgstr "Altura da linha:"
+
+#: scripts-user/lib/build-concurrency.sh:120
+msgid "Safe Mode"
+msgstr "Modo Seguro"
 
 #: contents/ui/components/NotePopup.qml:149
 msgid "Save note"
@@ -4125,13 +4229,21 @@ msgstr ""
 "Selecione Automático para controlar o reprodutor ativo ou escolha um "
 "aplicativo multimídia instalado."
 
+#: scripts-user/lib/build-concurrency.sh:176
+msgid "Select a performance profile:"
+msgstr "Selecione um perfil de desempenho:"
+
 #: contents/ui/config/ConfigAspect.qml:583
 msgid "Select a theme"
 msgstr "Selecione um tema"
 
-#: scripts-dev/setup.sh:105 scripts-user/setup.sh:72
-msgid "Select an option [1-8]: "
-msgstr "Selecione uma opção [1-8]: "
+#: scripts-user/lib/build-concurrency.sh:192
+msgid "Select an option [1-5]: "
+msgstr "Selecione uma opção [1-5]: "
+
+#: scripts-dev/setup.sh:116 scripts-user/setup.sh:78
+msgid "Select an option [1-9]: "
+msgstr "Selecione uma opção [1-9]: "
 
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:220
 msgctxt "@info:accessible"
@@ -4391,7 +4503,7 @@ msgstr "Solteiro"
 msgid "Single desktop"
 msgstr "Área de trabalho única"
 
-#: scripts-dev/distro/arch-setup.sh:183
+#: scripts-dev/distro/arch-setup.sh:195
 msgid "Skipping pacman dependency installation"
 msgstr "Ignorando a instalação de dependências pelo pacman"
 
@@ -4445,14 +4557,14 @@ msgstr "Estrela"
 msgid "Subtle scale"
 msgstr "Escala sutil"
 
-#: scripts-dev/setup.sh:73
+#: scripts-dev/setup.sh:77
 msgid ""
 "Supported build environments: Debian 13 (Trixie), Fedora, or Arch Linux."
 msgstr ""
 "Ambientes de compilação compatíveis: Debian 13 (Trixie), Fedora ou Arch "
 "Linux."
 
-#: scripts-dev/setup.sh:78
+#: scripts-dev/setup.sh:82
 msgid "Supported build environments: Fedora, Debian 13, and Arch Linux."
 msgstr "Ambientes de compilação compatíveis: Fedora, Debian 13 e Arch Linux."
 
@@ -4471,10 +4583,10 @@ msgstr "Sistema"
 msgid "System operation failed: %1"
 msgstr "Falha na operação do sistema: %1"
 
-#: scripts-user/setup.sh:60
+#: scripts-user/setup.sh:64
 #, sh-printf-format
-msgid "System profile: %s\n"
-msgstr "Perfil do sistema: %s\n"
+msgid "System profile: %s\\n"
+msgstr "Perfil do sistema: %s\\n"
 
 #: contents/ui/config/ConfigGeneral.qml:284
 msgid "Target desktop:"
@@ -4712,7 +4824,7 @@ msgstr "A ação solicitada do aplicativo não pôde ser concluída."
 msgid "The root value must be a JSON array."
 msgstr "O valor raiz deve ser uma matriz JSON."
 
-#: scripts-dev/setup.sh:66
+#: scripts-dev/setup.sh:70
 msgid ""
 "The script will request sudo only when the detected package manager needs to "
 "install packages."
@@ -4880,13 +4992,13 @@ msgstr "Escala de texto de tempo:"
 msgid "Title header:"
 msgstr "Cabeçalho do título:"
 
-#: scripts-dev/setup.sh:74
+#: scripts-dev/setup.sh:78
 msgid "To install a prebuilt .plasmoid use: ./scripts-user/setup-universal.sh"
 msgstr ""
 "Para instalar um .plasmoid pré-compilado use: ./scripts-user/setup-"
 "universal.sh"
 
-#: scripts-dev/setup.sh:79
+#: scripts-dev/setup.sh:83
 msgid "To install a prebuilt .plasmoid, use: ./scripts-user/setup-universal.sh"
 msgstr ""
 "Para instalar um .plasmoid pré-compilado, use: ./scripts-user/setup-"
@@ -4909,6 +5021,11 @@ msgstr "Superior direita"
 #: contents/ui/config/ConfigGeneral.qml:63
 msgid "Top to bottom"
 msgstr "De cima para baixo"
+
+#: scripts-user/lib/build-concurrency.sh:168
+#, sh-printf-format
+msgid "Total system RAM: %s | CPU Cores: %s\\n"
+msgstr "RAM total do sistema: %s | Núcleos de CPU: %s\\n"
 
 #: contents/ui/config/components/MediaPlayerDialog.qml:221
 msgid "Track information visibility"
@@ -4955,7 +5072,7 @@ msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Desafixar do Dock"
 
-#: scripts-dev/distro/arch-setup.sh:63
+#: scripts-dev/distro/arch-setup.sh:65
 msgid ""
 "Usage: scripts-dev/distro/arch-setup.sh [options]\n"
 "\n"
@@ -4965,6 +5082,9 @@ msgid ""
 "installing it.\n"
 "\n"
 "Options:\n"
+"  -j, --jobs N        Set parallel build and test jobs count (e.g. -j 1 for "
+"safe mode).\n"
+"  --parallel N        Alias for --jobs.\n"
 "  --yes               Pass --noconfirm to pacman.\n"
 "  --skip-pacman       Do not run pacman; only verify and build.\n"
 "  --dependencies-only Install and verify dependencies without building.\n"
@@ -4981,29 +5101,24 @@ msgid ""
 msgstr ""
 "Uso: scripts-dev/distro/arch-setup.sh [opções]\n"
 "\n"
-"Prepara o Arch Linux ou uma distribuição compatível da família Arch para o "
-"Punchi Dock e\n"
-"cria um pacote nativo. Por padrão, o script cria o artefato sem\n"
-"instalá-lo.\n"
+"Prepara o Arch Linux ou uma distribuição da família Arch para o Punchi Dock e\n"
+"cria um pacote nativo. Por padrão, o script cria o artefato sem instalá-lo.\n"
 "\n"
 "Opções:\n"
+"  -j, --jobs N        Define o número de tarefas de compilação e teste em paralelo (ex: -j 1 para modo seguro).\n"
+"  --parallel N        Alias para --jobs.\n"
 "  --yes               Passa --noconfirm para o pacman.\n"
 "  --skip-pacman       Não executa o pacman; apenas verifica e compila.\n"
 "  --dependencies-only Instala e verifica dependências sem compilar.\n"
-"  --local-test        Compila, instala, reinicia o Plasma Shell e coleta "
-"registros.\n"
-"  --dry-run           Mostra os comandos planejados sem modificar o "
-"sistema.\n"
+"  --local-test        Compila, instala, reinicia o Plasma Shell e coleta registros.\n"
+"  --dry-run           Exibe comandos planejados sem modificar o sistema.\n"
 "  -h, --help          Mostra esta ajuda.\n"
 "\n"
-"Execute este script como usuário da área de trabalho, não com sudo. Ele "
-"solicita sudo somente quando\n"
-"o pacman precisa instalar pacotes ausentes. A instalação de pacotes executa "
-"uma atualização\n"
-"completa do sistema porque o Arch Linux não oferece suporte a atualizações "
-"parciais."
+"Execute este script como usuário do desktop, não com sudo. Ele solicita sudo apenas quando\n"
+"o pacman precisa instalar pacotes ausentes. A instalação de pacotes executa uma atualização\n"
+"completa do sistema porque atualizações parciais não são suportadas no Arch Linux."
 
-#: scripts-dev/setup.sh:36
+#: scripts-dev/setup.sh:38
 msgid ""
 "Usage: scripts-dev/setup.sh [options | path_to_package.plasmoid]\n"
 "\n"
@@ -5014,6 +5129,9 @@ msgid ""
 "If run without arguments, it opens the accessible interactive menu.\n"
 "\n"
 "CLI Options:\n"
+"  -j, --jobs N        Set parallel build and test jobs count (e.g. -j 1 for "
+"safe mode).\n"
+"  --parallel N        Alias for --jobs.\n"
 "  --local-test        Build, install on local Plasma Shell and collect "
 "logs.\n"
 "  --clean-install     Remove existing installation, rebuild and install "
@@ -5037,41 +5155,35 @@ msgid ""
 "  ./scripts-dev/setup.sh dist/my-package.plasmoid   # Direct .plasmoid "
 "install"
 msgstr ""
-"Uso: scripts-dev/setup.sh [opções | caminho_para_o_pacote.plasmoid]\n"
+"Uso: scripts-dev/setup.sh [opções | caminho_para_pacote.plasmoid]\n"
 "\n"
-"Assistente mestre interativo e de linha de comando para empacotar, testar e "
-"instalar\n"
-"o Punchi Dock Remastered. Detecta automaticamente a distribuição do sistema\n"
-"(Fedora, Debian 13 ou Arch Linux e derivados compatíveis).\n"
+"Assistente mestre interativo e CLI para empacotar, testar e instalar o\n"
+"Punchi Dock Remastered. Detecta automaticamente a distribuição host\n"
+"(Fedora, Debian 13 ou Arch Linux e derivados suportados).\n"
 "\n"
-"Quando executado sem argumentos, abre o menu interativo acessível.\n"
+"Se executado sem argumentos, abre o menu interativo acessível.\n"
 "\n"
 "Opções da CLI:\n"
-"  --local-test        Compila, instala no Plasma Shell local e coleta "
-"registros.\n"
-"  --clean-install     Remove a instalação existente, recompila e instala do "
-"zero.\n"
-"  --yes               Responde afirmativamente ao gerenciador de pacotes.\n"
-"  --skip-dnf          Ignora a instalação por DNF no Fedora.\n"
-"  --skip-apt          Ignora a instalação por APT no Debian.\n"
-"  --skip-update       Ignora apt-get update no Debian.\n"
-"  --skip-pacman       Ignora a instalação pelo pacman no Arch Linux.\n"
+"  -j, --jobs N        Define o número de tarefas de compilação e teste em paralelo (ex: -j 1 para modo seguro).\n"
+"  --parallel N        Alias para --jobs.\n"
+"  --local-test        Compila, instala no Plasma Shell local e coleta logs.\n"
+"  --clean-install     Remove a instalação existente, recompila e instala do zero.\n"
+"  --yes               Passa resposta afirmativa ao gerenciador de pacotes.\n"
+"  --skip-dnf          Pula a instalação do DNF no Fedora.\n"
+"  --skip-apt          Pula a instalação do APT no Debian.\n"
+"  --skip-update       Pula o apt-get update no Debian.\n"
+"  --skip-pacman       Pula a instalação do pacman no Arch Linux.\n"
 "  --dependencies-only Verifica e instala dependências sem compilar.\n"
-"  --uninstall         Desinstala o plasmoide da instalação local do Plasma.\n"
-"  --dry-run           Mostra os comandos planejados sem modificar o "
-"sistema.\n"
+"  --uninstall         Remove o plasmoide da instalação local do Plasma.\n"
+"  --dry-run           Exibe comandos planejados sem modificar o sistema.\n"
 "  --lang CÓDIGO       Substitui o idioma detectado (en, es, de, pt_BR).\n"
 "  -h, --help          Mostra esta ajuda.\n"
 "\n"
 "Exemplos:\n"
-"  ./scripts-dev/setup.sh                            # Modo de menu "
-"interativo\n"
-"  ./scripts-dev/setup.sh --local-test               # Modo de teste local "
-"rápido\n"
-"  ./scripts-dev/setup.sh --clean-install            # Forçar reinstalação "
-"limpa\n"
-"  ./scripts-dev/setup.sh dist/meu-pacote.plasmoid   # Instalação direta "
-"de .plasmoid"
+"  ./scripts-dev/setup.sh                            # Modo de menu interativo\n"
+"  ./scripts-dev/setup.sh --local-test               # Modo de teste local rápido\n"
+"  ./scripts-dev/setup.sh --clean-install            # Forçar reinstalação limpa\n"
+"  ./scripts-dev/setup.sh dist/meu-pacote.plasmoid   # Instalação direta de .plasmoid"
 
 #: scripts-user/setup-universal.sh:100
 msgid ""
@@ -5128,7 +5240,7 @@ msgstr ""
 "  scripts-user/setup-universal.sh dist/punchi-dock-remastered-0.9.7-"
 "universal.plasmoid # Instalar um pacote específico"
 
-#: scripts-user/setup.sh:25
+#: scripts-user/setup.sh:27
 msgid ""
 "Usage: scripts-user/setup.sh [options] [path/to/package.plasmoid]\n"
 "\n"
@@ -5151,6 +5263,9 @@ msgid ""
 "  --restart-plasma  Restart Plasma Shell on demand.\n"
 "\n"
 "Modifiers:\n"
+"  -j, --jobs N      Set the number of parallel build jobs (e.g. -j 1 for "
+"safe mode).\n"
+"  --parallel N      Alias for --jobs.\n"
 "  --no-restart      Skip restarting Plasma Shell after install or "
 "uninstall.\n"
 "  -y, --yes         Automatically confirm a restart prompt.\n"
@@ -5166,37 +5281,31 @@ msgstr ""
 "Uso: scripts-user/setup.sh [opções] [caminho/para/pacote.plasmoid]\n"
 "\n"
 "Compila o Punchi Dock Remastered para o sistema Linux atual sem executar\n"
-"testes de desenvolvedor, cria um pacote .plasmoid local, instala-o e "
-"gerencia\n"
+"testes de desenvolvedor, cria um pacote .plasmoid local, o instala e gerencia\n"
 "a integração com o Plasma Shell.\n"
 "\n"
-"Se executado sem uma ação principal, abre o menu de instalação interativo.\n"
+"Se executado sem uma ação principal, abre o menu interativo de configuração.\n"
 "\n"
 "Ações principais (escolha apenas uma):\n"
-"  --install         Compilar e instalar o plasmoide localmente.\n"
-"  --build-only      Criar apenas o pacote local sem instalar ou reiniciar o "
-"Plasma.\n"
+"  --install         Compila e instala o plasmoide localmente.\n"
+"  --build-only      Compila o pacote local sem instalar ou reiniciar o Plasma.\n"
 "  --package         Alias para --build-only.\n"
-"  --check-deps      Verificar as dependências de compilação para a "
-"distribuição atual.\n"
-"  --uninstall       Desinstalar o plasmoide do ambiente local do Plasma.\n"
-"  --restart-plasma  Reiniciar o Plasma Shell sob demanda.\n"
+"  --check-deps      Verifica as dependências de compilação para a distribuição atual.\n"
+"  --uninstall       Desinstala o plasmoide do ambiente local do Plasma.\n"
+"  --restart-plasma  Reinicia o Plasma Shell sob demanda.\n"
 "\n"
 "Modificadores:\n"
-"  --no-restart      Ignorar a reinicialização do Plasma Shell após instalar "
-"ou desinstalar.\n"
-"  -y, --yes         Confirmar automaticamente a solicitação de "
-"reinicialização.\n"
-"  --lang CODE       Sobrescrever o idioma detectado (en, es, de, pt_BR).\n"
-"  -h, --help        Mostrar esta ajuda.\n"
+"  -j, --jobs N      Define o número de tarefas de compilação em paralelo (ex: -j 1 para modo seguro).\n"
+"  --parallel N      Alias para --jobs.\n"
+"  --no-restart      Pula o reinício do Plasma Shell após instalar ou desinstalar.\n"
+"  -y, --yes         Confirma automaticamente a solicitação de reinício.\n"
+"  --lang CÓDIGO     Substitui o idioma detectado (en, es, de, pt_BR).\n"
+"  -h, --help        Mostra esta ajuda.\n"
 "\n"
-"Ao passar o caminho de um .plasmoid existente, instala esse pacote sem "
-"compilar\n"
-"a árvore de código fonte. As dependências de compilação são necessárias "
-"apenas para ações que compilam.\n"
+"Passar um caminho .plasmoid instala esse pacote existente sem compilar a\n"
+"árvore de fontes. Dependências de compilação só são necessárias para ações que compilam.\n"
 "\n"
-"A validação de desenvolvedores está disponível separadamente em scripts-dev/"
-"setup.sh."
+"A validação de desenvolvedor está disponível separadamente em scripts-dev/setup.sh."
 
 #: contents/ui/components/DockItem.qml:1418
 msgctxt "@info:accessible"
@@ -5216,7 +5325,7 @@ msgstr "Usar desfoque do fundo quando disponível"
 msgid "Use interactive cursors in the settings window"
 msgstr "Use cursores interativos na janela de configurações"
 
-#: scripts-dev/setup.sh:83
+#: scripts-dev/setup.sh:87
 msgid ""
 "Use: ./scripts-user/setup-universal.sh <path/to/package.plasmoid> to install."
 msgstr ""
@@ -5311,7 +5420,7 @@ msgstr "Visualizador:"
 msgid "Wave"
 msgstr "Onda"
 
-#: scripts-dev/setup.sh:96 scripts-user/setup.sh:63
+#: scripts-dev/setup.sh:106 scripts-user/setup.sh:68
 msgid "What would you like to do?"
 msgstr "O que você deseja fazer?"
 
@@ -5427,7 +5536,7 @@ msgid ""
 msgstr ""
 "Sem desfoque, o fundo depende do tema Plasma e da opacidade selecionada."
 
-#: scripts-dev/setup.sh:116
+#: scripts-dev/setup.sh:127
 msgid "Would you like to restart Plasma Shell now? [y/N]: "
 msgstr "Deseja reiniciar o Plasma Shell agora? [s/N]: "
 
@@ -5444,15 +5553,25 @@ msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Você pode abrir até %1 arquivos locais de uma vez."
 
-#: scripts-dev/distro/arch-setup.sh:149
+#: scripts-dev/distro/arch-setup.sh:161
 msgid "cannot read /etc/os-release"
 msgstr "não foi possível ler /etc/os-release"
 
-#: scripts-dev/distro/arch-setup.sh:218
+#: scripts-user/lib/build-concurrency.sh:132
+#: scripts-user/lib/build-concurrency.sh:138
+msgid "cores"
+msgstr "núcleos"
+
+#: scripts-dev/distro/arch-setup.sh:230
 msgid "install the missing Arch packages and retry"
 msgstr "instale os pacotes ausentes do Arch e tente novamente"
 
-#: scripts-dev/distro/arch-setup.sh:167 scripts-dev/distro/arch-setup.sh:195
+#: scripts-dev/distro/arch-setup.sh:122 scripts-dev/distro/arch-setup.sh:126
+#, sh-printf-format
+msgid "invalid number of parallel jobs: %s\\n"
+msgstr "número de tarefas paralelas inválido: %s\\n"
+
+#: scripts-dev/distro/arch-setup.sh:179 scripts-dev/distro/arch-setup.sh:207
 msgid "pacman is required on Arch-family distributions"
 msgstr "o pacman é obrigatório em distribuições da família Arch"
 
@@ -5462,25 +5581,25 @@ msgstr "o pacman é obrigatório em distribuições da família Arch"
 msgid "rows"
 msgstr "linhas"
 
-#: scripts-dev/distro/arch-setup.sh:165
+#: scripts-dev/distro/arch-setup.sh:177
 msgid "run this script as the Plasma desktop user, not with sudo"
 msgstr ""
 "execute este script como usuário da área de trabalho Plasma, não com sudo"
 
-#: scripts-dev/distro/arch-setup.sh:194
+#: scripts-dev/distro/arch-setup.sh:206
 msgid "sudo is required to install missing pacman packages"
 msgstr "sudo é obrigatório para instalar pacotes ausentes pelo pacman"
 
-#: scripts-dev/distro/arch-setup.sh:250
+#: scripts-dev/distro/arch-setup.sh:262
 #, sh-printf-format
 msgid "the build finished without creating the expected artifact: %s\\n"
 msgstr "a compilação terminou sem criar o artefato esperado: %s\\n"
 
-#: scripts-dev/distro/arch-setup.sh:238
+#: scripts-dev/distro/arch-setup.sh:250
 msgid "the package version could not be read from metadata.json"
 msgstr "não foi possível ler a versão do pacote em metadata.json"
 
-#: scripts-dev/distro/arch-setup.sh:166
+#: scripts-dev/distro/arch-setup.sh:178
 #, sh-printf-format
 msgid ""
 "this setup script requires Arch Linux or an Arch-family distribution "
@@ -5489,7 +5608,7 @@ msgstr ""
 "este script de configuração requer Arch Linux ou uma distribuição da família "
 "Arch (detectada: %s)\\n"
 
-#: scripts-dev/distro/arch-setup.sh:137
+#: scripts-dev/distro/arch-setup.sh:149
 #, sh-printf-format
 msgid "unknown option: %s\\n"
 msgstr "opção desconhecida: %s\\n"
