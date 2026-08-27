@@ -1930,7 +1930,19 @@ PlasmoidItem {
                     persistentDragActive ? "none"
                         : dockConfig.dockHoverAnimation
 
+                Timer {
+                    id: persistentDragWatchdogTimer
+                    interval: 3000
+                    repeat: false
+                    onTriggered: {
+                        if (dockLayout.persistentDragActive) {
+                            dockLayout.cancelPersistentDrag()
+                        }
+                    }
+                }
+
                 function cancelPersistentDrag() {
+                    persistentDragWatchdogTimer.stop()
                     persistentDragSourceIndex = -1
                     persistentDragTargetIndex = -1
                     persistentDragExpectedItemText = ""
@@ -1991,6 +2003,7 @@ PlasmoidItem {
                         = root.dockItemReorderIconName(items[index])
                     persistentDragMovesDynamicApplications
                         = items[index].type === "dynamic-applications"
+                    persistentDragWatchdogTimer.restart()
                     return persistentDragExpectedItemText.length > 0
                 }
 
@@ -1999,6 +2012,7 @@ PlasmoidItem {
                             || sourceItem !== persistentDragSourceItem) {
                         return
                     }
+                    persistentDragWatchdogTimer.restart()
                     const point = sourceItem.mapToItem(dockLayout, x, y)
                     persistentDragPointerPosition
                         = sourceItem.mapToItem(dockWrapper, x, y)
@@ -2035,6 +2049,7 @@ PlasmoidItem {
                     if (!persistentDragActive) {
                         return
                     }
+                    persistentDragWatchdogTimer.stop()
                     const sourceIndex = persistentDragSourceIndex
                     const targetIndex = persistentDragTargetIndex
                     const expectedItemText = persistentDragExpectedItemText
