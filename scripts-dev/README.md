@@ -20,6 +20,8 @@ Common commands:
 
 ```bash
 ./scripts-dev/setup.sh --local-test
+./scripts-dev/setup.sh --local-test -j 1       # Safe mode for VMs / limited RAM
+./scripts-dev/setup.sh --local-test --jobs 8  # Fast mode with 8 parallel jobs
 ./scripts-dev/setup.sh --clean-install
 ./scripts-dev/setup.sh --dependencies-only
 ./scripts-dev/setup.sh --lang es --help

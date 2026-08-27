@@ -13,7 +13,9 @@ El menú interactivo permite:
 - **Crear solo el paquete `.plasmoid`** (sin instalar);
 - **Instalar un paquete existente** desde `dist/` o una ruta personalizada;
 - **Desinstalar** el plasmoide limpiamente del escritorio;
-- **Reiniciar Plasma Shell** bajo demanda.
+- **Reiniciar Plasma Shell** bajo demanda;
+- **Configurar concurrencia de compilación y memoria** (Modo Seguro de 1 núcleo para máquinas virtuales o <= 4 GB de RAM, Balanceado, Rápido o Personalizado);
+- **Verificar dependencias de compilación del sistema**.
 
 Configura CMake con `BUILD_TESTING=OFF` y no ejecuta `qmllint` ni CTest. Esas comprobaciones pertenecen al flujo separado para desarrolladores bajo `scripts-dev/`.
 
@@ -25,15 +27,18 @@ También se puede ejecutar sin interacción mediante flags:
 # Compilar e instalar localmente sin reiniciar Plasma Shell
 ./scripts-user/setup.sh --install --no-restart
 
-# Crear solo el paquete .plasmoid local
-./scripts-user/setup.sh --build-only
+# Compilar e instalar limitando a 1 núcleo (Modo Seguro para MV o poca RAM)
+./scripts-user/setup.sh --install -j 1
+
+# Crear solo el paquete .plasmoid local usando 4 hilos en paralelo
+./scripts-user/setup.sh --build-only --jobs 4
 
 # Desinstalar el plasmoide del escritorio actual
 ./scripts-user/setup.sh --uninstall
 ```
 
 Solo se puede elegir una acción principal por ejecución. Los modificadores
-como `--no-restart` y `--yes` pueden combinarse con una acción aplicable. El
+como `-j/--jobs/--parallel N`, `--no-restart` y `--yes` pueden combinarse con una acción aplicable. El
 asistente detecta automáticamente `es`, `de` y `pt_BR` desde el locale del
 sistema, con inglés como respaldo. Se puede forzar un idioma con
 `--lang es`, `--lang de`, `--lang pt_BR` o `--lang en`. Las traducciones se

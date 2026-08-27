@@ -13,7 +13,9 @@ The interactive menu lets you:
 - **Build the `.plasmoid` package only** (without installing);
 - **Install an existing package** from `dist/` or a custom path;
 - **Uninstall** the plasmoid cleanly from your desktop;
-- **Restart Plasma Shell** on demand.
+- **Restart Plasma Shell** on demand;
+- **Configure build concurrency & RAM safety** (Safe Mode for VMs / low-RAM systems, Balanced, Fast, or Custom parallel jobs);
+- **Check system build dependencies**.
 
 It configures CMake with `BUILD_TESTING=OFF` and does not run `qmllint` or CTest. Those checks belong to the separate developer workflow under `scripts-dev/`.
 
@@ -25,15 +27,18 @@ You can also run non-interactively with CLI flags:
 # Build and install locally without restarting Plasma Shell
 ./scripts-user/setup.sh --install --no-restart
 
-# Create the local .plasmoid package only
-./scripts-user/setup.sh --build-only
+# Build and install locally with safe concurrency (1 job for low-memory environments)
+./scripts-user/setup.sh --install -j 1
+
+# Create the local .plasmoid package using 4 parallel jobs
+./scripts-user/setup.sh --build-only --jobs 4
 
 # Uninstall the plasmoid from the current desktop
 ./scripts-user/setup.sh --uninstall
 ```
 
-Choose only one primary action per invocation. Modifiers such as `--no-restart`
-and `--yes` can be combined with an applicable action. The assistant detects
+Choose only one primary action per invocation. Modifiers such as `-j/--jobs/--parallel N`,
+`--no-restart`, and `--yes` can be combined with an applicable action. The assistant detects
 `es`, `de`, and `pt_BR` automatically from the system locale, with English as
 the fallback. Use `--lang es`, `--lang de`, `--lang pt_BR`, or `--lang en` to
 override it. Translations remain in the project's PO catalogs instead of being

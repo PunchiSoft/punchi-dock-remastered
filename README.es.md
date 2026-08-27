@@ -156,10 +156,8 @@ sudo dnf install \
     zip unzip
 ```
 
-En Debian o Kubuntu deben instalarse los paquetes de desarrollo de la propia
-distribución para Qt 6, KF6, Plasma, PipeWire, ECM, CMake, gettext y ZIP. El
-wrapper Debian fue validado en Debian 13 con Qt 6.8.2; el flujo de compilación,
-instalación, arranque y funcionamiento de Kubuntu fue validado en Plasma 6.6.4.
+En Debian, Kubuntu o Arch Linux deben instalarse los paquetes de desarrollo de la propia
+distribución para Qt 6, KF6, Plasma, PipeWire, ECM, CMake, gettext y ZIP (o dejar que `scripts-user/setup.sh` o `scripts-dev/setup.sh` los detecte y verifique automáticamente).
 
 Para una instalación local normal desde el código fuente, ejecuta:
 
@@ -170,8 +168,12 @@ Para una instalación local normal desde el código fuente, ejecuta:
 Sin argumentos se abre el menú interactivo para usuarios. Su acción de
 compilación e instalación compila el módulo nativo para el sistema actual con
 `BUILD_TESTING=OFF`, crea un paquete local, lo instala y ofrece reiniciar
-Plasma. No ejecuta `qmllint` ni CTest. Para crear el paquete sin instalar ni
-reiniciar Plasma, usa:
+Plasma. No ejecuta `qmllint` ni CTest. Incluye configuración interactiva de
+concurrencia y memoria (Modo Seguro de 1 núcleo para máquinas virtuales o <= 4 GB de RAM,
+Modo Balanceado, Modo Rápido o Personalizado). También se puede controlar la concurrencia
+desde CLI con `-j/--jobs/--parallel N` (ejemplo: `./scripts-user/setup.sh --install -j 1`).
+
+Para crear el paquete sin instalar ni reiniciar Plasma, usa:
 
 ```bash
 ./scripts-user/setup.sh --build-only

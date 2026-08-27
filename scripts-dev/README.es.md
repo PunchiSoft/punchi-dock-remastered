@@ -20,6 +20,8 @@ Comandos comunes:
 
 ```bash
 ./scripts-dev/setup.sh --local-test
+./scripts-dev/setup.sh --local-test -j 1       # Modo seguro para máquinas virtuales o poca RAM
+./scripts-dev/setup.sh --local-test --jobs 8  # Modo rápido con 8 hilos en paralelo
 ./scripts-dev/setup.sh --clean-install
 ./scripts-dev/setup.sh --dependencies-only
 ./scripts-dev/setup.sh --lang es --help
