@@ -1,3 +1,14 @@
+## [0.9.7.51] - 2026-08-28
+
+### Agregado
+
+- Soporte de personalización individual de apariencia para separadores en elementos de dock y marcador de aplicaciones abiertas, permitiendo alternar entre el tema del dock y valores específicos por elemento.
+
+### Corregido
+
+- Corrección del bloqueo y ciclo de retroalimentación en los controles deslizantes (Grosor, Largo, Opacidad) de la ventana de configuración del separador al interactuar con el cursor.
+- Protección durante el arrastre activo (`pressed` guard) para evitar que la sincronización del modelo interrumpa el gesto de arrastre de Qt Quick Controls.
+
 ## [0.9.7.50] - 2026-08-27
 
 ### Agregado
