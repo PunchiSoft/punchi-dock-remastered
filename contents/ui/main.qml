@@ -532,6 +532,8 @@ PlasmoidItem {
         totalDynamicGroups: taskController.totalDynamicGroups
         dynamicApplicationsMoveModeActive:
             root.dynamicApplicationsMoveModeActive
+        customSeparatorEnabled: dockConfig.customDockSeparatorActive
+        separatorTheme: dockConfig.customDockSeparatorTheme
         availableScreenRect: root.availableScreenRect
         floatingAnchor: root.floatingDockAnchor
         hostHeight: root.height
@@ -2329,6 +2331,9 @@ PlasmoidItem {
                         separatorLengthRatioSetting: dockItemDelegate.modelData.separatorLengthRatio === undefined ? 0.72 : dockItemDelegate.modelData.separatorLengthRatio
                         separatorOpacitySetting: dockItemDelegate.modelData.separatorOpacity === undefined ? 0.34 : dockItemDelegate.modelData.separatorOpacity
                         separatorGlowSetting: dockItemDelegate.modelData.separatorGlowEnabled === true
+                        separatorAppearanceSourceSetting:
+                            ConfigItemsJS.normalizedSeparatorAppearanceSource(
+                                dockItemDelegate.modelData)
                         separatorVisibleSetting:
                             dockItemDelegate.modelData.showSeparator !== false
                         iconName: dockItemDelegate.modelData.type === "trash" && dockItemDelegate.modelData.showState !== false

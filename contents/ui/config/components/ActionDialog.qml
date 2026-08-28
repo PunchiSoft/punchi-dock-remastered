@@ -35,6 +35,8 @@ Controls.Dialog {
     property alias actionIconText: actionEditor.actionIconText
     property alias actionCommandText: actionEditor.actionCommandText
     property alias spacerSizeValue: itemEditor.spacerSizeValue
+    readonly property string separatorAppearanceSourceValue:
+        itemEditor.separatorAppearanceSourceValue
     readonly property string separatorStyleValue: itemEditor.separatorStyleValue
     readonly property real separatorThicknessValue: itemEditor.separatorThicknessValue
     readonly property real separatorLengthRatioValue: itemEditor.separatorLengthRatioValue
@@ -131,6 +133,10 @@ Controls.Dialog {
 
     function setSeparatorStyleValue(value) {
         itemEditor.setSeparatorStyleValue(value)
+    }
+
+    function setSeparatorAppearanceSourceValue(value) {
+        itemEditor.setSeparatorAppearanceSourceValue(value)
     }
 
     function setSeparatorThicknessValue(value) {

@@ -1,5 +1,22 @@
 find_package(Qt6 6.6 REQUIRED COMPONENTS QuickTest Test)
 find_package(PlasmaQuick 6.0 REQUIRED)
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+
+add_test(
+    NAME cmake_install_contract_test
+    COMMAND ${Python3_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake_install_contract_test.py
+)
+
+add_test(
+    NAME cmake_setup_contract_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/cmake_setup_contract_test.sh
+)
+set_tests_properties(
+    cmake_install_contract_test
+    cmake_setup_contract_test
+    PROPERTIES TIMEOUT 15
+)
 
 add_executable(spectrumanalyzer_test
     spectrumanalyzer_test.cpp
@@ -367,7 +384,7 @@ add_test(
 )
 set_tests_properties(plasmoid_full_load_test PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
-    TIMEOUT 60
+    TIMEOUT 30
 )
 
 add_executable(punchi_qmltestrunner punchi_qmltestrunner.cpp)
@@ -392,6 +409,7 @@ function(punchi_add_qml_test test_name qml_file)
     set_tests_properties(${test_name} PROPERTIES
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_CONTROLS_STYLE=org.kde.desktop"
         FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+        TIMEOUT 30
     )
 endfunction()
 
@@ -469,8 +487,13 @@ add_test(
 )
 set_tests_properties(item_action_editor_drop_test PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_CONTROLS_STYLE=org.kde.desktop"
+    TIMEOUT 30
 )
 punchi_add_qml_test(
     themed_separator_lifecycle_test
     themed_separator_lifecycle_test.qml
+)
+punchi_add_qml_test(
+    separator_appearance_source_test
+    separator_appearance_source_test.qml
 )

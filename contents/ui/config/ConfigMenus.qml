@@ -390,6 +390,7 @@ Item {
         }
 
         Controls.Label {
+            // xgettext:no-javascript-format
             text: i18n("Lower values make the preview-to-menu movement gentler; higher values make it faster. 100% follows the Plasma theme duration.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true

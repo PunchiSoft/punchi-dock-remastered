@@ -21,6 +21,8 @@ GridLayout {
     readonly property string containerLayoutValue: containerLayout.currentValue || "grid"
     property alias containerLayoutIndex: containerLayout.currentIndex
     property alias spacerSizeValue: spacerSize.value
+    readonly property string separatorAppearanceSourceValue:
+        separatorOptions.separatorAppearanceSourceValue
     readonly property string separatorStyleValue: separatorOptions.separatorStyleValue
     readonly property real separatorThicknessValue: separatorOptions.separatorThicknessValue
     readonly property real separatorLengthRatioValue: separatorOptions.separatorLengthRatioValue
@@ -89,6 +91,15 @@ GridLayout {
         root.separatorControlsSyncing = true
         try {
             separatorOptions.setSeparatorStyleValue(value)
+        } finally {
+            root.separatorControlsSyncing = false
+        }
+    }
+
+    function setSeparatorAppearanceSourceValue(value) {
+        root.separatorControlsSyncing = true
+        try {
+            separatorOptions.setSeparatorAppearanceSourceValue(value)
         } finally {
             root.separatorControlsSyncing = false
         }

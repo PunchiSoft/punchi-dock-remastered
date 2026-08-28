@@ -55,6 +55,7 @@ function refreshItemForm() {
         actionDialog.actionsEnabledChecked = false
         actionDialog.containerLayoutIndex = 0
         actionDialog.setSeparatorVisibleChecked(true)
+        actionDialog.setSeparatorAppearanceSourceValue("theme")
         return
     }
 
@@ -93,6 +94,8 @@ function refreshItemForm() {
     var requestedSeparatorStyle = item.separatorStyle === "pill"
         ? "capsule"
         : (item.separatorStyle || "line")
+    actionDialog.setSeparatorAppearanceSourceValue(
+        ConfigItemsJS.normalizedSeparatorAppearanceSource(item))
     actionDialog.setSeparatorStyleValue(requestedSeparatorStyle)
     actionDialog.setSeparatorThicknessValue(
         item.separatorThickness === undefined ? 2 : item.separatorThickness)
@@ -145,6 +148,8 @@ function applyItemForm(force) {
     item.type = item.type || "app"
 
     if (item.type === "dynamic-applications") {
+        item.separatorAppearanceSource
+            = actionDialog.separatorAppearanceSourceValue
         item.showSeparator = actionDialog.separatorVisibleChecked
         if (actionDialog.separatorStyleValue.length > 0) {
             item.separatorStyle = actionDialog.separatorStyleValue
@@ -155,6 +160,8 @@ function applyItemForm(force) {
         item.separatorGlowEnabled = actionDialog.separatorGlowEnabled
         ConfigItemsJS.pruneDynamicApplications(item)
     } else if (item.type === "separator") {
+        item.separatorAppearanceSource
+            = actionDialog.separatorAppearanceSourceValue
         if (actionDialog.separatorStyleValue.length > 0) {
             item.separatorStyle = actionDialog.separatorStyleValue
         }

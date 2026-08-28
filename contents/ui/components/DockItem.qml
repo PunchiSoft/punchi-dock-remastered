@@ -7,6 +7,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.extras as PlasmaExtras
 import "../../code/dockDropState.js" as DockDropState
+import "../../code/separatorAppearance.js" as SeparatorAppearance
 import "punchimenu" as PunchiMenuComponents
 
 Item {
@@ -24,6 +25,7 @@ Item {
     property real separatorOpacitySetting: 0.34
     property bool separatorGlowSetting: false
     property bool separatorVisibleSetting: true
+    property string separatorAppearanceSourceSetting: "theme"
 
     readonly property string effectiveIndicatorPosition:
         indicatorPosition === "top" ? "top" : "bottom"
@@ -428,6 +430,18 @@ Item {
     property real externalDropActivationProgress: 0
     property bool customSeparatorEnabled: false
     property var separatorTheme: ({})
+    readonly property var effectiveSeparatorAppearance:
+        SeparatorAppearance.resolvedAppearance(
+            separatorAppearanceSourceSetting,
+            {
+                "separatorStyle": separatorStyleSetting,
+                "separatorThickness": separatorThicknessSetting,
+                "separatorLengthRatio": separatorLengthRatioSetting,
+                "separatorOpacity": separatorOpacitySetting,
+                "separatorGlowEnabled": separatorGlowSetting
+            },
+            customSeparatorEnabled,
+            separatorTheme)
     readonly property Item taskGeometryItem: taskGeometryProxy
     readonly property bool containsMouse: mouseArea.containsMouse
     readonly property bool separatorItem: itemType === "separator"
@@ -455,28 +469,25 @@ Item {
         return false
     }
     readonly property bool showAnyTooltip: false
-    readonly property real requestedSeparatorThickness: customSeparatorEnabled
-        ? Number(separatorTheme.thickness || 2)
-        : 2
+    readonly property real requestedSeparatorThickness:
+        Number(effectiveSeparatorAppearance.thickness)
     readonly property real separatorThickness: Math.min(iconSize,
         requestedSeparatorThickness)
-    readonly property var separatorGlow: separatorTheme.glow || ({})
-    readonly property real requestedSeparatorGlowSize: customSeparatorEnabled
-        ? Math.max(0, Number(separatorGlow.size || 0))
-        : 0
+    readonly property real requestedSeparatorGlowSize:
+        Math.max(0, Number(effectiveSeparatorAppearance.glowSize || 0))
     readonly property real separatorGlowSize: Math.min(
         requestedSeparatorGlowSize,
         Math.max(0, (iconSize - separatorThickness) / 2))
     readonly property real separatorBodyLengthLimit: Math.max(
         separatorThickness, iconSize - (separatorGlowSize * 2))
-    readonly property real separatorLength: customSeparatorEnabled
-        ? (String(separatorTheme.style || "line") === "dot"
+    readonly property real separatorLength:
+        String(effectiveSeparatorAppearance.style || "line") === "dot"
             ? separatorThickness
             : Math.min(separatorBodyLengthLimit,
                 Math.max(separatorThickness,
                     Math.round(iconSize
-                        * Number(separatorTheme.lengthRatio || 0.72)))))
-        : Math.max(20, Math.round(iconSize * 0.72))
+                        * Number(effectiveSeparatorAppearance.lengthRatio
+                            || 0.72))))
     Timer {
         id: clockTimer
         interval: 1000
@@ -1134,11 +1145,11 @@ Item {
             verticalPanel: dockItemContainer.verticalPanelMode
             availableLength: dockItemContainer.verticalPanelMode
                 ? visualArea.width : visualArea.height
-            style: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.style ? dockItemContainer.separatorTheme.style : dockItemContainer.separatorStyleSetting
-            thickness: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.thickness ? dockItemContainer.separatorTheme.thickness : dockItemContainer.separatorThicknessSetting
-            lengthRatio: dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorTheme.lengthRatio ? dockItemContainer.separatorTheme.lengthRatio : dockItemContainer.separatorLengthRatioSetting
-            customOpacity: dockItemContainer.separatorOpacitySetting
-            glowEnabled: dockItemContainer.separatorGlowSetting || (dockItemContainer.customSeparatorEnabled && dockItemContainer.separatorGlowSize > 0)
+            style: dockItemContainer.effectiveSeparatorAppearance.style
+            thickness: dockItemContainer.effectiveSeparatorAppearance.thickness
+            lengthRatio: dockItemContainer.effectiveSeparatorAppearance.lengthRatio
+            customOpacity: dockItemContainer.effectiveSeparatorAppearance.opacity
+            glowEnabled: dockItemContainer.effectiveSeparatorAppearance.glowEnabled
         }
 
         TaskIndicator {

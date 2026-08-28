@@ -1,6 +1,7 @@
 import QtQuick
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
+import "../../code/separatorAppearance.js" as SeparatorAppearance
 
 QtObject {
     id: root
@@ -25,6 +26,8 @@ QtObject {
     property int overflowTaskCount: 0
     property int totalDynamicGroups: 0
     property bool dynamicApplicationsMoveModeActive: false
+    property bool customSeparatorEnabled: false
+    property var separatorTheme: ({})
     property rect availableScreenRect: Qt.rect(0, 0, 800, 640)
     property var floatingAnchor: null
     property int floatingScreenEdge: PlasmaCore.Types.LeftEdge
@@ -225,7 +228,10 @@ QtObject {
             return root.dynamicApplicationsMoveHandleExtent
         }
         if (itemType === "separator" || itemType === "dynamic-applications") {
-            return 10
+            const appearance = SeparatorAppearance.resolvedAppearance(
+                SeparatorAppearance.sourceForItem(item), item,
+                root.customSeparatorEnabled, root.separatorTheme)
+            return Math.max(10, Math.ceil(appearance.thickness + 4))
         }
         if (itemType === "spacer") {
             return Math.max(12, effectiveIconSize * 0.5)

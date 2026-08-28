@@ -50,4 +50,14 @@ TestCase {
         compare(geometry.panelMainAxisExtentForDockItem(
             geometry.dockItems[1]), geometry.panelItemHeight)
     }
+
+    function test_itemThicknessControlsReservedExtent() {
+        const customizedMarker = {
+            "type": "dynamic-applications",
+            "separatorAppearanceSource": "item",
+            "separatorThickness": 16
+        }
+
+        compare(geometry.panelMainAxisExtentForDockItem(customizedMarker), 20)
+    }
 }

@@ -1,4 +1,5 @@
 .pragma library
+.import "../../../code/separatorAppearance.js" as SeparatorAppearance
 
 function clone(value) {
     return JSON.parse(JSON.stringify(value))
@@ -443,6 +444,7 @@ function removeKeys(item, keys) {
 }
 
 function pruneSeparatorAppearance(item) {
+    item.separatorAppearanceSource = SeparatorAppearance.sourceForItem(item)
     var requestedStyle = item.separatorStyle === "pill"
         ? "capsule"
         : String(item.separatorStyle || "line")
@@ -457,6 +459,10 @@ function pruneSeparatorAppearance(item) {
     item.separatorLengthRatio = Math.max(0.20, Math.min(1.0, Number(item.separatorLengthRatio === undefined ? 0.72 : item.separatorLengthRatio)))
     item.separatorOpacity = Math.max(0.10, Math.min(1.0, Number(item.separatorOpacity === undefined ? 0.34 : item.separatorOpacity)))
     item.separatorGlowEnabled = item.separatorGlowEnabled === true
+}
+
+function normalizedSeparatorAppearanceSource(item) {
+    return SeparatorAppearance.sourceForItem(item)
 }
 
 function pruneSeparator(item) {

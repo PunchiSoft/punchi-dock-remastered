@@ -64,14 +64,24 @@ TestCase {
         const checkbox = findChild(
             panel, "dynamicApplicationsSeparatorVisibleCheckBox")
         const options = findChild(panel, "dynamicApplicationsSeparatorOptions")
+        const appearanceSource = findChild(
+            panel, "separatorAppearanceSourceCombo")
+        const appearanceControls = findChild(
+            panel, "separatorAppearanceControls")
         verify(checkbox !== null)
         verify(options !== null)
+        verify(appearanceSource !== null)
+        verify(appearanceControls !== null)
         verify(checkbox.visible)
         verify(checkbox.checked)
         verify(options.visible)
         verify(options.enabled)
+        compare(panel.separatorAppearanceSourceValue, "theme")
+        verify(!appearanceControls.enabled)
 
         formChangedSpy.target = panel
+        panel.setSeparatorAppearanceSourceValue("item")
+        verify(appearanceControls.enabled)
         panel.setSeparatorStyleValue("diamond")
         panel.setSeparatorThicknessValue(4)
         panel.setSeparatorVisibleChecked(false)
@@ -87,6 +97,27 @@ TestCase {
         tryCompare(checkbox, "checked", false)
         compare(panel.separatorVisibleChecked, false)
         compare(options.enabled, false)
+        verify(formChangedSpy.count > 0)
+    }
+
+    function test_keyboardSelectsPerItemAppearance() {
+        const hostWindow = createTemporaryObject(windowComponent, testCase)
+        verify(hostWindow !== null)
+        hostWindowUnderTest = hostWindow
+        tryCompare(hostWindow, "visible", true)
+        const panel = hostWindow.panel
+        const appearanceSource = findChild(
+            panel, "separatorAppearanceSourceCombo")
+        verify(appearanceSource !== null)
+        compare(panel.separatorAppearanceSourceValue, "theme")
+
+        formChangedSpy.target = panel
+        wait(0)
+        appearanceSource.forceActiveFocus(Qt.TabFocusReason)
+        tryVerify(function() { return appearanceSource.activeFocus })
+        keyClick(Qt.Key_Down)
+
+        tryCompare(panel, "separatorAppearanceSourceValue", "item")
         verify(formChangedSpy.count > 0)
     }
 }

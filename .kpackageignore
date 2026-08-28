@@ -1,5 +1,7 @@
 # Directorios de desarrollo interno (NO deben ir en el plasmoide)
 /build/
+/build-cmake*/
+/.cache/
 /dist/
 /backup/
 /docs/
@@ -10,6 +12,7 @@
 /po/
 /scripts-user/
 /scripts-dev/
+/scripts-cmake/
 /.agents/
 /.gemini/
 /.git/

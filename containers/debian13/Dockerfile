@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LC_ALL=C.UTF-8
 
 RUN apt-get update \
-    && apt-get install --yes --no-install-recommends ca-certificates sudo \
+    && apt-get install --yes --no-install-recommends ca-certificates sudo locales-all \
     && rm -rf /var/lib/apt/lists/*
 
 RUN useradd --create-home --shell /bin/bash punchi-builder \
@@ -16,6 +16,7 @@ RUN useradd --create-home --shell /bin/bash punchi-builder \
     && chmod 0440 /etc/sudoers.d/punchi-builder-apt
 
 WORKDIR /workspace
+RUN chown punchi-builder:punchi-builder /workspace
 COPY --chown=punchi-builder:punchi-builder scripts-user/ ./scripts-user/
 COPY --chown=punchi-builder:punchi-builder scripts-dev/ ./scripts-dev/
 

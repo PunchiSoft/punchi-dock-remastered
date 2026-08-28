@@ -78,6 +78,7 @@ TestCase {
         compare(item.separatorLengthRatio, 0.20)
         compare(item.separatorOpacity, 1.0)
         compare(item.separatorGlowEnabled, true)
+        compare(item.separatorAppearanceSource, "item")
         verify(Object.keys(item).indexOf("command") < 0)
     }
 
@@ -90,6 +91,21 @@ TestCase {
         ConfigItems.pruneDynamicApplications(item)
 
         verify(Object.keys(item).indexOf("showSeparator") < 0)
+        compare(item.separatorAppearanceSource, "theme")
+    }
+
+    function test_explicitThemeSourceSurvivesStoredLocalValues() {
+        const item = {
+            "type": "dynamic-applications",
+            "separatorAppearanceSource": "theme",
+            "separatorStyle": "star",
+            "separatorThickness": 8
+        }
+
+        ConfigItems.pruneDynamicApplications(item)
+
+        compare(item.separatorAppearanceSource, "theme")
+        compare(ConfigItems.normalizedSeparatorAppearanceSource(item), "theme")
     }
 
     function test_removingMarkerRequiresConfirmationAndDisablesActiveTasks() {

@@ -159,11 +159,21 @@ target_link_libraries(punchidockintegration
         PW::KWorkspace
 )
 
-install(TARGETS punchidockintegration ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
-
-ecm_finalize_qml_module(punchidockintegration
-    DESTINATION ${KDE_INSTALL_QMLDIR}
-)
+if(PUNCHI_EMBED_QML_MODULE_IN_KPACKAGE)
+    install(
+        TARGETS punchidockintegration
+        LIBRARY DESTINATION
+            "${PUNCHI_PLASMOID_INSTALL_DIR}/contents/ui/org/punchi/dock"
+    )
+    ecm_finalize_qml_module(punchidockintegration
+        DESTINATION "${PUNCHI_PLASMOID_INSTALL_DIR}/contents/ui"
+    )
+else()
+    install(TARGETS punchidockintegration ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+    ecm_finalize_qml_module(punchidockintegration
+        DESTINATION ${KDE_INSTALL_QMLDIR}
+    )
+endif()
 
 set(
     PUNCHI_PACKAGE_QML_MODULE_DIR

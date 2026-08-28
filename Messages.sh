@@ -24,6 +24,7 @@ mapfile -d '' cpp_sources < <(
     find src -type f \( -name '*.cpp' -o -name '*.h' \) -print0 | sort -z
 )
 shell_sources=(
+    scripts-cmake/setup.sh
     scripts-dev/setup.sh
     scripts-dev/distro/arch-setup.sh
     scripts-user/setup.sh
@@ -79,6 +80,8 @@ common_options=(
     --keyword=punchi_gettext:1 \
     --keyword=punchi_gettext_line:1 \
     --keyword=punchi_gettext_format:1 \
+    --keyword=punchi_gettext_styled_line:3 \
+    --keyword=punchi_gettext_styled_format:3 \
     --keyword=log_line:1 \
     --keyword=log_format:1 \
     --keyword=die_line:1 \

@@ -1,5 +1,8 @@
 # Build y distribuciones
 /build/
+/build-cmake*/
+/build-timeout-review/
+/.cache/
 /dist/
 *.plasmoid
 

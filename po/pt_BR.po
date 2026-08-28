@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-27 03:50-0400\n"
+"POT-Creation-Date: 2026-08-28 18:28-0400\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -30,6 +30,76 @@ msgstr "     Punchi Dock Remastered - Assistente de instalação    "
 msgid "   Punchi Dock Remastered - Master Setup Assistant        "
 msgstr "   Punchi Dock Remastered - Assistente mestre de configuração "
 
+#: scripts-cmake/setup.sh:253
+msgid "  - A C++20 compiler (c++ or the compiler selected with CXX)."
+msgstr "  - Um compilador C++20 (c++ ou o compilador selecionado com CXX)."
+
+#: scripts-cmake/setup.sh:197
+msgid "  - A C++20 compiler such as GCC or Clang."
+msgstr "  - Um compilador C++20 como GCC ou Clang."
+
+#: scripts-cmake/setup.sh:252
+msgid "  - CMake 3.22 or newer (cmake)."
+msgstr "  - CMake 3.22 ou mais recente (cmake)."
+
+#: scripts-cmake/setup.sh:196
+msgid "  - CMake 3.22 or newer."
+msgstr "  - CMake 3.22 ou mais recente."
+
+#: scripts-cmake/setup.sh:198
+msgid "  - Extra CMake Modules 6.0 or newer."
+msgstr "  - Extra CMake Modules 6.0 ou mais recente."
+
+#: scripts-cmake/setup.sh:256
+msgid "  - Gettext catalog merger (msgmerge)."
+msgstr "  - Mesclador de catálogos Gettext (msgmerge)."
+
+#: scripts-cmake/setup.sh:255
+msgid "  - Gettext message compiler (msgfmt)."
+msgstr "  - Compilador de mensagens Gettext (msgfmt)."
+
+#: scripts-cmake/setup.sh:200
+msgid ""
+"  - KDE Frameworks 6 development files for Config, CoreAddons, GlobalAccel, "
+"I18n, JobWidgets, KIO, Service, and WindowSystem."
+msgstr ""
+"  - Arquivos de desenvolvimento do KDE Frameworks 6 para Config, CoreAddons, "
+"GlobalAccel, I18n, JobWidgets, KIO, Service e WindowSystem."
+
+#: scripts-cmake/setup.sh:202
+msgid "  - PipeWire development files and pkg-config."
+msgstr "  - Arquivos de desenvolvimento do PipeWire e pkg-config."
+
+#: scripts-cmake/setup.sh:259
+msgid "  - PipeWire development metadata (libpipewire-0.3)."
+msgstr "  - Metadados de desenvolvimento do PipeWire (libpipewire-0.3)."
+
+#: scripts-cmake/setup.sh:201
+msgid "  - Plasma 6 and LibKWorkspace development files."
+msgstr "  - Arquivos de desenvolvimento do Plasma 6 e LibKWorkspace."
+
+#: scripts-cmake/setup.sh:199
+msgid "  - Qt 6.6 development files for Core, DBus, Gui, Qml, and Quick."
+msgstr ""
+"  - Arquivos de desenvolvimento do Qt 6.6 para Core, DBus, Gui, Qml e Quick."
+
+#: scripts-cmake/setup.sh:203
+msgid "  - Qt Shader Baker (qsb) and Gettext tools."
+msgstr "  - Qt Shader Baker (qsb) e ferramentas Gettext."
+
+#: scripts-cmake/setup.sh:258
+msgid "  - Qt Shader Baker (qsb)."
+msgstr "  - Qt Shader Baker (qsb)."
+
+#: scripts-cmake/setup.sh:257
+msgid "  - The bounded command runner from GNU Coreutils (timeout)."
+msgstr ""
+"  - O executor de comandos com limite de tempo do GNU Coreutils (timeout)."
+
+#: scripts-cmake/setup.sh:254
+msgid "  - pkg-config."
+msgstr "  - pkg-config."
+
 #: scripts-user/setup-universal.sh:105
 msgid "  Punchi Dock Remastered - Package Installer             "
 msgstr "  Punchi Dock Remastered - Instalador de pacotes         "
@@ -41,6 +111,10 @@ msgstr "  [1] Compilar e instalar localmente"
 #: scripts-dev/setup.sh:107
 msgid "  [1] Build official release package (Release in dist/)"
 msgstr "  [1] Compilar pacote oficial de versão (Release em dist/)"
+
+#: scripts-cmake/setup.sh:380
+msgid "  [1] Check requirements again"
+msgstr "  [1] Verificar os requisitos novamente"
 
 #: scripts-user/lib/build-concurrency.sh:177
 msgid "  [1] Safe Mode (1 core) - Maximum stability for VMs or <= 4 GB RAM"
@@ -59,6 +133,10 @@ msgstr "  [2] Criar apenas o pacote .plasmoid (sem instalar)"
 msgid "  [2] Build, install and test locally (--local-test)"
 msgstr "  [2] Compilar, instalar e testar localmente (--local-test)"
 
+#: scripts-cmake/setup.sh:381
+msgid "  [2] Configure and build"
+msgstr "  [2] Configurar e compilar"
+
 #: scripts-user/lib/build-concurrency.sh:179
 #, sh-printf-format
 msgid "  [3] Fast Mode (%s cores) - Use all available CPU cores\\n"
@@ -73,9 +151,17 @@ msgstr "  [3] Instalar um pacote .plasmoid existente"
 msgid "  [3] Install an existing .plasmoid package from dist/"
 msgstr "  [3] Instalar um pacote .plasmoid existente de dist/"
 
+#: scripts-cmake/setup.sh:382
+msgid "  [3] Install the current compiled build"
+msgstr "  [3] Instalar a compilação atual"
+
 #: scripts-dev/setup.sh:110
 msgid "  [4] Clean install (remove current + rebuild + install)"
 msgstr "  [4] Instalação limpa (remover + recompilar + instalar)"
+
+#: scripts-cmake/setup.sh:383
+msgid "  [4] Configure, build, and install"
+msgstr "  [4] Configurar, compilar e instalar"
 
 #: scripts-user/lib/build-concurrency.sh:180
 msgid "  [4] Custom (enter specific number of parallel jobs)"
@@ -93,6 +179,10 @@ msgstr "  [5] Voltar ao menu principal"
 msgid "  [5] Check and install build dependencies only"
 msgstr "  [5] Verificar e instalar somente dependências de compilação"
 
+#: scripts-cmake/setup.sh:384
+msgid "  [5] Inspect the installation in temporary staging"
+msgstr "  [5] Inspecionar a instalação em staging temporário"
+
 #: scripts-user/setup.sh:73
 msgid "  [5] Restart Plasma Shell only"
 msgstr "  [5] Reiniciar somente o Plasma Shell"
@@ -103,9 +193,17 @@ msgstr ""
 "  [6] Configurar concorrência de compilação (Seguro / Equilibrado / "
 "Personalizado)"
 
+#: scripts-cmake/setup.sh:385
+msgid "  [6] Restart Plasma Shell"
+msgstr "  [6] Reiniciar o Plasma Shell"
+
 #: scripts-user/setup.sh:75
 msgid "  [7] Check system build dependencies"
 msgstr "  [7] Verificar dependências de compilação do sistema"
+
+#: scripts-cmake/setup.sh:386
+msgid "  [7] Exit"
+msgstr "  [7] Sair"
 
 #: scripts-dev/setup.sh:113
 msgid "  [7] Uninstall the plasmoid from this system"
@@ -155,12 +253,12 @@ msgctxt "@info:media"
 msgid "%1 is not running"
 msgstr "%1 não está em execução"
 
-#: contents/ui/components/DockItem.qml:1382
+#: contents/ui/components/DockItem.qml:1393
 msgctxt "@info:accessible"
 msgid "%1 is now in front; release to open the local files"
 msgstr "%1 está agora em primeiro plano; solte para abrir os arquivos locais"
 
-#: contents/ui/components/DockItem.qml:1406
+#: contents/ui/components/DockItem.qml:1417
 msgctxt "@info:accessible"
 msgid "%1 is updated automatically and cannot accept applications"
 msgstr "%1 é atualizado automaticamente e não pode aceitar aplicativos"
@@ -175,11 +273,11 @@ msgstr ""
 "%1 é atualizado automaticamente. Altere a fonte de conteúdo para Manual "
 "antes de adicionar aplicativos."
 
-#: contents/ui/config/code/configItemsFormHelper.js:310
+#: contents/ui/config/code/configItemsFormHelper.js:317
 msgid "%1 items loaded."
 msgstr "%1 itens carregados."
 
-#: contents/ui/main.qml:2707
+#: contents/ui/main.qml:2712
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de janelas adicional"
@@ -198,14 +296,14 @@ msgstr "%1 de %2 caracteres"
 msgid "%1 of %2 items"
 msgstr "%1 de %2 itens"
 
-#: contents/ui/components/DockItem.qml:1428
+#: contents/ui/components/DockItem.qml:1439
 #: contents/ui/components/TaskOverflowPopup.qml:111
 msgid "%1 open window"
 msgid_plural "%1 open windows"
 msgstr[0] "%1 janela aberta"
 msgstr[1] "%1 janelas abertas"
 
-#: contents/ui/components/DockItem.qml:1424
+#: contents/ui/components/DockItem.qml:1435
 msgid "%1 open window. Press M to open media controls."
 msgid_plural "%1 open windows. Press M to open media controls."
 msgstr[0] "%1 janela aberta. Pressione M para abrir os controles de mídia."
@@ -222,7 +320,7 @@ msgstr "%1 pt"
 msgid "%1 px"
 msgstr "%1px"
 
-#: contents/ui/config/components/ActionDialog.qml:90
+#: contents/ui/config/components/ActionDialog.qml:92
 #: contents/ui/config/ConfigItems.qml:740
 #: contents/ui/config/ItemActionEditor.qml:40
 #: contents/ui/config/ItemActionEditor.qml:163
@@ -335,9 +433,18 @@ msgctxt "@info:accessible"
 msgid "%1. Playing."
 msgstr "%1. Reproduzindo."
 
+#: scripts-cmake/setup.sh:124
+#, sh-printf-format
+msgid "%s cannot be combined with another action."
+msgstr "%s não pode ser combinado com outra ação."
+
 #: scripts-dev/distro/arch-setup.sh:156
 msgid "--dependencies-only and --local-test cannot be used together"
 msgstr "--dependencies-only e --local-test não podem ser usados juntos"
+
+#: scripts-cmake/setup.sh:190
+msgid "--no-restart cannot be combined with --yes"
+msgstr "--no-restart não pode ser combinado com --yes"
 
 #: scripts-user/lib/build-concurrency.sh:120
 msgid "1 core"
@@ -472,7 +579,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Foi criado um atalho na área de trabalho para %1."
 
-#: contents/ui/main.qml:1452
+#: contents/ui/main.qml:1454
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr "O local de um arquivo é longo demais para ser aberto com segurança."
@@ -686,6 +793,10 @@ msgstr "Todos os arquivos"
 msgid "All items were permanently removed."
 msgstr "Todos os itens foram removidos permanentemente."
 
+#: scripts-cmake/setup.sh:289
+msgid "All required build dependencies were accepted by CMake."
+msgstr "Todas as dependências de compilação exigidas foram aceitas pelo CMake."
+
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:37
 msgctxt "@option:application-order"
 msgid "Alphabetical"
@@ -752,9 +863,13 @@ msgstr "Aparência e fundo"
 msgid "Appearance sections"
 msgstr "Seções de aparência"
 
+#: contents/ui/config/SeparatorOptions.qml:61
+msgid "Appearance:"
+msgstr "Aparência:"
+
 #: contents/ui/components/AppActionsPopup.qml:95
-#: contents/ui/components/DockItem.qml:1393
-#: contents/ui/components/DockItem.qml:1400
+#: contents/ui/components/DockItem.qml:1404
+#: contents/ui/components/DockItem.qml:1411
 #: contents/ui/components/DockItemsController.qml:675
 #: contents/ui/components/FolderPopup.qml:306
 msgid "Application"
@@ -1058,6 +1173,17 @@ msgstr "Emblema:"
 msgid "Balanced Mode"
 msgstr "Modo Equilibrado"
 
+#: scripts-cmake/setup.sh:244
+msgid ""
+"Basic build tools found. CMake will now verify the development libraries."
+msgstr ""
+"As ferramentas básicas de compilação foram encontradas. O CMake verificará "
+"agora as bibliotecas de desenvolvimento."
+
+#: scripts-cmake/setup.sh:195
+msgid "Before compiling Punchi Dock Remastered, this system needs:"
+msgstr "Antes de compilar o Punchi Dock Remastered, este sistema precisa de:"
+
 #: contents/ui/config/ConfigAspect.qml:150
 msgctxt "Indicator position"
 msgid "Bottom"
@@ -1086,6 +1212,11 @@ msgstr "Saltar"
 #: contents/ui/components/WindowPreviewCard.qml:197
 msgid "Bring window to front"
 msgstr "Traga a janela para frente"
+
+#: scripts-cmake/setup.sh:300
+#, sh-printf-format
+msgid "Building with %s parallel job(s)...\\n"
+msgstr "Compilando com %s tarefa(s) paralela(s)...\\n"
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:41
 msgctxt "@option:application-order"
@@ -1130,6 +1261,27 @@ msgstr ""
 "  ./scripts-dev/setup.sh <arquivo.plasmoid> Instalar diretamente um pacote "
 "pré-compilado"
 
+#: scripts-cmake/setup.sh:379
+msgid "CMake assistant menu:"
+msgstr "Menu do assistente CMake:"
+
+#: scripts-cmake/setup.sh:302
+#, sh-printf-format
+msgid "CMake build completed: %s\\n"
+msgstr "Compilação CMake concluída: %s\\n"
+
+#: scripts-cmake/setup.sh:286
+msgid ""
+"CMake configuration failed. Install the development package named in the "
+"error above and run this assistant again."
+msgstr ""
+"A configuração do CMake falhou. Instale o pacote de desenvolvimento indicado "
+"no erro acima e execute este assistente novamente."
+
+#: scripts-cmake/setup.sh:367
+msgid "CMake installation completed successfully."
+msgstr "Instalação CMake concluída com sucesso."
+
 #: contents/ui/config/ConfigItems.qml:147
 msgid "Calendar color:"
 msgstr "Cor do calendário:"
@@ -1142,7 +1294,7 @@ msgstr "Fonte do calendário:"
 msgid "Calendar popup scale"
 msgstr "Escala pop-up do calendário"
 
-#: contents/ui/components/DockItem.qml:38
+#: contents/ui/components/DockItem.qml:40
 #: contents/ui/config/AddItemPalette.qml:32
 #: contents/ui/config/ConfigItems.qml:139
 msgid "Calendar/Clock"
@@ -1237,7 +1389,12 @@ msgstr ""
 "Altera o tamanho dos ícones na seção reservada de Favoritos nos dois modos "
 "de menu."
 
-#: contents/ui/config/SeparatorOptions.qml:72
+#: scripts-cmake/setup.sh:278
+#, sh-printf-format
+msgid "Checking the complete CMake environment in: %s\\n"
+msgstr "Verificando o ambiente CMake completo em: %s\\n"
+
+#: contents/ui/config/SeparatorOptions.qml:123
 msgctxt "@item:inlistbox Separator shape"
 msgid "Chevron"
 msgstr "Chevron"
@@ -1399,7 +1556,7 @@ msgstr ""
 "Escolha qual aplicativo este item controla. Se ele estiver fechado, use o "
 "botão de reprodução ou a capa do álbum para abri-lo."
 
-#: contents/ui/config/SeparatorOptions.qml:65
+#: contents/ui/config/SeparatorOptions.qml:116
 msgid "Circle"
 msgstr "Círculo"
 
@@ -1881,7 +2038,7 @@ msgstr "Desenvolvimento"
 msgid "Diagnostics saved to: %s\\n"
 msgstr "Diagnósticos salvos em: %s\\n"
 
-#: contents/ui/config/SeparatorOptions.qml:69
+#: contents/ui/config/SeparatorOptions.qml:120
 msgctxt "@item:inlistbox Separator shape"
 msgid "Diamond"
 msgstr "Diamond"
@@ -1988,6 +2145,10 @@ msgstr "Orientação da doca"
 msgid "Dock orientation:"
 msgstr "Orientação da doca:"
 
+#: contents/ui/config/SeparatorOptions.qml:72
+msgid "Dock theme"
+msgstr "Tema do dock"
+
 #: scripts-dev/setup.sh:145
 msgid "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
 msgstr "Documentação: scripts-dev/README.md | scripts-dev/README.es.md"
@@ -1996,7 +2157,7 @@ msgstr "Documentação: scripts-dev/README.md | scripts-dev/README.es.md"
 msgid "Dot"
 msgstr "Ponto"
 
-#: contents/ui/config/SeparatorOptions.qml:71
+#: contents/ui/config/SeparatorOptions.qml:122
 msgctxt "@item:inlistbox Separator shape"
 msgid "Double line"
 msgstr "Double line"
@@ -2005,7 +2166,7 @@ msgstr "Double line"
 msgid "Drag files"
 msgstr "Arrastar arquivos"
 
-#: contents/ui/components/DockItem.qml:1375
+#: contents/ui/components/DockItem.qml:1386
 msgctxt "@info:accessible"
 msgid ""
 "Drag to move the open applications section. Use an arrow key to move it one "
@@ -2119,11 +2280,11 @@ msgstr "Ativar reordenação de itens ao manter pressionado"
 msgid "Enable right-click menu"
 msgstr "Habilitar menu do botão direito"
 
-#: contents/ui/config/SeparatorOptions.qml:201
+#: contents/ui/config/SeparatorOptions.qml:237
 msgid "Enable separator glow effect"
 msgstr "Ativar efeito de brilho do separador"
 
-#: contents/ui/config/SeparatorOptions.qml:195
+#: contents/ui/config/SeparatorOptions.qml:231
 msgid "Enable subtle glow effect"
 msgstr "Ativar efeito de brilho sutil"
 
@@ -2148,7 +2309,7 @@ msgstr "Informe o caminho para um pacote .plasmoid: "
 msgid "Error: "
 msgstr "Erro: "
 
-#: scripts-user/setup.sh:95
+#: scripts-cmake/setup.sh:116 scripts-user/setup.sh:95
 #, sh-printf-format
 msgid "Error: %s\\n"
 msgstr "Erro: %s\\n"
@@ -2257,6 +2418,10 @@ msgstr "Máximo estimado de segurança do painel: %1 px"
 #: contents/ui/components/TaskModelController.qml:926
 msgid "Exit full screen"
 msgstr "Sair da tela inteira"
+
+#: scripts-cmake/setup.sh:397
+msgid "Exiting the CMake assistant."
+msgstr "Saindo do assistente CMake."
 
 #: contents/ui/config/ConfigFileToolbar.qml:55
 msgid "Export..."
@@ -2760,6 +2925,12 @@ msgstr "Espessura do indicador:"
 msgid "Individual"
 msgstr "Individual"
 
+#: scripts-cmake/setup.sh:262
+msgid "Install the missing development packages and run this assistant again."
+msgstr ""
+"Instale os pacotes de desenvolvimento ausentes e execute este assistente "
+"novamente."
+
 #: scripts-user/setup-universal.sh:119
 #, sh-printf-format
 msgid "Installation completed in: %s\\n"
@@ -2791,6 +2962,11 @@ msgstr "Pacote instalado: %s\\n"
 msgid "Installed theme:"
 msgstr "Tema instalado:"
 
+#: scripts-cmake/setup.sh:365
+#, sh-printf-format
+msgid "Installing the current build for this user under: %s\\n"
+msgstr "Instalando a compilação atual para este usuário em: %s\\n"
+
 #: contents/ui/config/components/PopupAnimationSettings.qml:97
 msgid "Intensity:"
 msgstr "Intensidade:"
@@ -2809,6 +2985,10 @@ msgstr "Internet"
 #: contents/ui/config/ConfigFiles.qml:90
 msgid "Invalid JSON: %1"
 msgstr "JSON inválido: %1"
+
+#: scripts-cmake/setup.sh:398
+msgid "Invalid option. Select a number from 1 to 7."
+msgstr "Opção inválida. Selecione um número de 1 a 7."
 
 #: contents/ui/config/components/TimedDialog.qml:125
 msgid "Item height:"
@@ -2855,7 +3035,7 @@ msgstr "Arquivos de tema JSON"
 msgid "Keep above"
 msgstr "Mantenha-se acima"
 
-#: contents/ui/components/DockItem.qml:1378
+#: contents/ui/components/DockItem.qml:1389
 msgctxt "@info:accessible"
 msgid "Keep holding to bring %1 to the front"
 msgstr "Continue segurando para trazer %1 para o primeiro plano"
@@ -2920,7 +3100,7 @@ msgstr "Esquerda"
 msgid "Left to right"
 msgstr "Da esquerda para a direita"
 
-#: contents/ui/config/SeparatorOptions.qml:119
+#: contents/ui/config/SeparatorOptions.qml:165
 msgid "Length:"
 msgstr "Comprimento:"
 
@@ -2940,7 +3120,7 @@ msgstr ""
 "rolando."
 
 #: contents/ui/config/ConfigAspect.qml:143
-#: contents/ui/config/SeparatorOptions.qml:64
+#: contents/ui/config/SeparatorOptions.qml:115
 msgid "Line"
 msgstr "Linha"
 
@@ -3008,7 +3188,8 @@ msgstr ""
 msgid "Logs: docs/logs/%s/setup-%s-latest.log\\n"
 msgstr "Registros: docs/logs/%s/setup-%s-latest.log\\n"
 
-#: contents/ui/config/ConfigMenus.qml:393
+#: contents/ui/config/ConfigMenus.qml:394
+#, no-javascript-format
 msgid ""
 "Lower values make the preview-to-menu movement gentler; higher values make "
 "it faster. 100% follows the Plasma theme duration."
@@ -3166,7 +3347,7 @@ msgstr "Opções do menu"
 msgid "Menu actions:"
 msgstr "Ações do menu:"
 
-#: contents/ui/config/ConfigMenus.qml:415
+#: contents/ui/config/ConfigMenus.qml:416
 msgid "Menu animation"
 msgstr "Animação de menu"
 
@@ -3178,7 +3359,7 @@ msgstr "Distância do menu:"
 msgid "Menu entrance:"
 msgstr "Entrada do cardápio:"
 
-#: contents/ui/config/ConfigMenus.qml:406
+#: contents/ui/config/ConfigMenus.qml:407
 msgid ""
 "Menu entries and per-item actions remain configured from the Items section."
 msgstr ""
@@ -3331,6 +3512,13 @@ msgctxt "@info:status"
 msgid "No applications were found in this category."
 msgstr "Nenhum aplicativo foi encontrado nesta categoria."
 
+#: scripts-cmake/setup.sh:362
+msgid ""
+"No compiled native module was found. Build the project before installing it."
+msgstr ""
+"Nenhum módulo nativo compilado foi encontrado. Compile o projeto antes de "
+"instalá-lo."
+
 #: contents/ui/config/ConfigAspect.qml:584
 msgid "No imported themes"
 msgstr "Nenhum tema importado"
@@ -3343,7 +3531,7 @@ msgstr ""
 "Nenhum aplicativo multimídia instalado foi encontrado. A seleção automática "
 "continua disponível."
 
-#: contents/ui/main.qml:1438
+#: contents/ui/main.qml:1440
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "Nenhum arquivo local foi encontrado neste arrastar e soltar."
@@ -3473,7 +3661,7 @@ msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 "Aplica-se somente quando este item do dock inicia um aplicativo fechado."
 
-#: contents/ui/main.qml:1449
+#: contents/ui/main.qml:1451
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Somente arquivos locais podem ser abertos com um aplicativo."
@@ -3542,7 +3730,7 @@ msgstr ""
 "Apenas o fundo do pop-up é alterado; miniaturas, conteúdo das janelas, "
 "controles e texto permanecem totalmente opacos."
 
-#: contents/ui/config/SeparatorOptions.qml:156
+#: contents/ui/config/SeparatorOptions.qml:197
 msgid "Opacity:"
 msgstr "Opacidade:"
 
@@ -3564,7 +3752,7 @@ msgstr "Open application menu & carousel"
 msgid "Open applications"
 msgstr "Aplicativos abertos"
 
-#: contents/ui/components/DockItem.qml:47
+#: contents/ui/components/DockItem.qml:49
 msgctxt "@title"
 msgid "Open applications"
 msgstr "Aplicativos abertos"
@@ -3719,12 +3907,30 @@ msgstr "Espectro de pixels"
 msgid "Plasma Shell PID before restart: %s\\n"
 msgstr "PID do Plasma Shell antes da reinicialização: %s\\n"
 
+#: scripts-cmake/setup.sh:333
+#, sh-printf-format
+msgid "Plasma Shell restart failed with status %s.\\n"
+msgstr "A reinicialização do Plasma Shell falhou com o status %s.\\n"
+
+#: scripts-cmake/setup.sh:341 scripts-cmake/setup.sh:355
+msgid "Plasma Shell restart skipped."
+msgstr "Reinicialização do Plasma Shell ignorada."
+
 #: scripts-user/setup.sh:82
 msgid ""
 "Plasma Shell restart skipped. Log out and back in or restart Plasma later."
 msgstr ""
 "A reinicialização do Plasma Shell foi ignorada. Encerre a sessão e entre "
 "novamente ou reinicie o Plasma mais tarde."
+
+#: scripts-cmake/setup.sh:328
+#, sh-printf-format
+msgid ""
+"Plasma Shell restart timed out after %s seconds; continuing without waiting."
+"\\n"
+msgstr ""
+"A reinicialização do Plasma Shell excedeu o limite de %s segundos; "
+"continuando sem aguardar.\\n"
 
 #: scripts-user/lib/plasma-shell-control.sh:65
 #, sh-printf-format
@@ -3786,12 +3992,12 @@ msgstr "Clicar"
 msgid "Press Enter to search..."
 msgstr "Pressione Enter para pesquisar..."
 
-#: contents/ui/components/DockItem.qml:1432
+#: contents/ui/components/DockItem.qml:1443
 msgctxt "@info:accessible"
 msgid "Press M to open media controls"
 msgstr "Pressione M para abrir os controles de mídia"
 
-#: contents/ui/components/DockItem.qml:1414
+#: contents/ui/components/DockItem.qml:1425
 msgctxt "@info:accessible"
 msgid ""
 "Press and hold to move this Dock item. Use Control+Shift with an arrow key "
@@ -3874,7 +4080,7 @@ msgstr "Punchi Dock não conseguiu armazenar o tema importado."
 msgid "PunchiMenu"
 msgstr "PunchiMenu"
 
-#: contents/ui/components/DockItem.qml:44
+#: contents/ui/components/DockItem.qml:46
 msgctxt "@title"
 msgid "PunchiMenu"
 msgstr "PunchiMenu"
@@ -3927,7 +4133,7 @@ msgstr "Atalho de teclado do PunchiMenu"
 msgid "PunchiMenu panel distance"
 msgstr "Distância do PunchiMenu ao painel"
 
-#: contents/ui/components/DockItem.qml:41
+#: contents/ui/components/DockItem.qml:43
 #: contents/ui/components/DockItemsController.qml:1058
 msgctxt "@title"
 msgid "Quick Note"
@@ -3949,17 +4155,17 @@ msgstr "Opacidade de reflexão:"
 msgid "Reflection:"
 msgstr "Reflexão:"
 
-#: contents/ui/components/DockItem.qml:1397
+#: contents/ui/components/DockItem.qml:1408
 msgctxt "@info:accessible"
 msgid "Release to add %1 to %2"
 msgstr "Solte para adicionar %1 a %2"
 
-#: contents/ui/components/DockItem.qml:1390
+#: contents/ui/components/DockItem.qml:1401
 msgctxt "@info:accessible"
 msgid "Release to insert %1 in the Dock"
 msgstr "Solte para inserir %1 no Dock"
 
-#: contents/ui/components/DockItem.qml:1386
+#: contents/ui/components/DockItem.qml:1397
 msgctxt "@info:accessible"
 msgid "Release to open local files with %1"
 msgstr "Solte para abrir arquivos locais com %1"
@@ -4088,6 +4294,11 @@ msgstr "Reiniciar o Plasma Shell agora para aplicar as alterações? [S/n]: "
 msgid "Restart Plasma Shell now to finish uninstalling? [Y/n]: "
 msgstr "Reiniciar o Plasma Shell agora para concluir a desinstalação? [S/n]: "
 
+#: scripts-cmake/setup.sh:348
+msgid "Restart Plasma Shell now to load the installed build? [Y/n]: "
+msgstr ""
+"Reiniciar o Plasma Shell agora para carregar a compilação instalada? [S/n]: "
+
 #: scripts-user/lib/plasma-shell-control.sh:41
 msgid "Restart method: KDE application control"
 msgstr "Método de reinicialização: controle de aplicativos do KDE"
@@ -4138,12 +4349,12 @@ msgstr "Da direita para a esquerda"
 msgid "Right-click commands"
 msgstr "Comandos de clique com o botão direito"
 
-#: contents/ui/config/SeparatorOptions.qml:70
+#: contents/ui/config/SeparatorOptions.qml:121
 msgctxt "@item:inlistbox Separator shape"
 msgid "Ring"
 msgstr "Anel"
 
-#: contents/ui/config/SeparatorOptions.qml:67
+#: contents/ui/config/SeparatorOptions.qml:118
 msgid "Rounded pill"
 msgstr "Pílula arredondada"
 
@@ -4242,6 +4453,10 @@ msgstr "Selecione um tema"
 msgid "Select an option [1-5]: "
 msgstr "Selecione uma opção [1-5]: "
 
+#: scripts-cmake/setup.sh:387
+msgid "Select an option [1-7]: "
+msgstr "Selecione uma opção [1-7]: "
+
 #: scripts-dev/setup.sh:116 scripts-user/setup.sh:78
 msgid "Select an option [1-9]: "
 msgstr "Selecione uma opção [1-9]: "
@@ -4261,19 +4476,23 @@ msgstr "Pacote selecionado: %s\\n"
 msgid "Separator"
 msgstr "Separador"
 
-#: contents/ui/config/SeparatorOptions.qml:144
+#: contents/ui/config/SeparatorOptions.qml:80
+msgid "Separator appearance source"
+msgstr "Origem da aparência do separador"
+
+#: contents/ui/config/SeparatorOptions.qml:185
 msgid "Separator length ratio"
 msgstr "Razão de comprimento do separador"
 
-#: contents/ui/config/SeparatorOptions.qml:181
+#: contents/ui/config/SeparatorOptions.qml:217
 msgid "Separator opacity"
 msgstr "Opacidade do separador"
 
-#: contents/ui/config/SeparatorOptions.qml:107
+#: contents/ui/config/SeparatorOptions.qml:153
 msgid "Separator thickness"
 msgstr "Espessura do separador"
 
-#: contents/ui/config/SeparatorOptions.qml:43
+#: contents/ui/config/SeparatorOptions.qml:90
 msgid ""
 "Separators help group items on your dock. Shape, size, and glow adapt "
 "automatically to your Plasma theme."
@@ -4295,7 +4514,7 @@ msgstr "Configurações"
 msgid "Settings cursor:"
 msgstr "Cursor de configurações:"
 
-#: contents/ui/config/SeparatorOptions.qml:54
+#: contents/ui/config/SeparatorOptions.qml:105
 msgid "Shape:"
 msgstr "Forma:"
 
@@ -4400,7 +4619,7 @@ msgstr "Mostrar setas de navegação de páginas"
 msgid "Show reflections below dock items"
 msgstr "Mostrar reflexões abaixo dos itens de encaixe"
 
-#: contents/ui/config/ItemEditorPanel.qml:354
+#: contents/ui/config/ItemEditorPanel.qml:365
 msgid "Show separator"
 msgstr "Mostrar separador"
 
@@ -4546,11 +4765,11 @@ msgstr "Apenas espectro, sem fundo"
 msgid "Speed:"
 msgstr "Velocidade:"
 
-#: contents/ui/config/SeparatorOptions.qml:66
+#: contents/ui/config/SeparatorOptions.qml:117
 msgid "Square"
 msgstr "Quadrado"
 
-#: contents/ui/config/SeparatorOptions.qml:68
+#: contents/ui/config/SeparatorOptions.qml:119
 msgid "Star"
 msgstr "Estrela"
 
@@ -4739,18 +4958,26 @@ msgid ""
 msgstr ""
 "A configuração do dock é muito grande. O tamanho máximo suportado é 1 MiB."
 
-#: contents/ui/main.qml:1446
+#: contents/ui/config/SeparatorOptions.qml:91
+msgid ""
+"The dock theme controls this separator. Choose This separator to edit its "
+"appearance here."
+msgstr ""
+"O tema do dock controla este separador. Escolha “Este separador” para editar "
+"a aparência dele aqui."
+
+#: contents/ui/main.qml:1448
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "O arrastar e soltar contém um local de arquivo inválido."
 
-#: contents/ui/main.qml:1455
+#: contents/ui/main.qml:1457
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
 "A lista de arquivos soltos é grande demais para ser aberta com segurança."
 
-#: contents/ui/main.qml:1460
+#: contents/ui/main.qml:1462
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Os arquivos soltos não puderam ser abertos."
@@ -4769,6 +4996,12 @@ msgstr "Não foi possível aplicar a alteração da pasta. Tente novamente."
 #: src/systemdiscovery.cpp:432
 msgid "The folder location is invalid."
 msgstr "O local da pasta é inválido."
+
+#: scripts-cmake/setup.sh:248
+msgid "The following required tools or development files were not found:"
+msgstr ""
+"As seguintes ferramentas ou arquivos de desenvolvimento exigidos não foram "
+"encontrados:"
 
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:240
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:429
@@ -4904,7 +5137,7 @@ msgctxt "@info"
 msgid "There are no available folders for this application."
 msgstr "Não há pastas disponíveis para este aplicativo."
 
-#: contents/ui/config/SeparatorOptions.qml:82
+#: contents/ui/config/SeparatorOptions.qml:133
 msgid "Thickness:"
 msgstr "Espessura:"
 
@@ -4917,7 +5150,7 @@ msgstr "Fino"
 msgid "This action cannot be undone."
 msgstr "Esta ação não pode ser desfeita."
 
-#: contents/ui/main.qml:1458
+#: contents/ui/main.qml:1460
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -4929,7 +5162,7 @@ msgctxt "@info:status"
 msgid "This application could not be resolved safely."
 msgstr "Este aplicativo não pôde ser resolvido com segurança."
 
-#: contents/ui/components/DockItem.qml:1410
+#: contents/ui/components/DockItem.qml:1421
 msgctxt "@info:accessible"
 msgid "This file drop cannot be accepted"
 msgstr "Este arrastar e soltar de arquivos não pode ser aceito"
@@ -4957,6 +5190,10 @@ msgstr ""
 "Preencher espaço livre no painel estiver ativo, o Punchi Dock usa "
 "automaticamente a capacidade disponível do painel. Grupos adicionais "
 "permanecem disponíveis no item excedente."
+
+#: contents/ui/config/SeparatorOptions.qml:73
+msgid "This separator"
+msgstr "Este separador"
 
 #: contents/ui/config/components/MediaPlayerDialog.qml:289
 msgid "This setting applies only to this media item."
@@ -5036,7 +5273,7 @@ msgstr "Visibilidade das informações da faixa"
 msgid "Track information:"
 msgstr "Informações da faixa:"
 
-#: contents/ui/components/DockItem.qml:34
+#: contents/ui/components/DockItem.qml:36
 #: contents/ui/components/TrashContextPopup.qml:61
 #: contents/ui/config/AddItemPalette.qml:34
 msgid "Trash"
@@ -5072,6 +5309,67 @@ msgstr "Desfazer alteração da pasta"
 msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Desafixar do Dock"
+
+#: scripts-cmake/setup.sh:91
+msgid ""
+"Usage: scripts-cmake/setup.sh [action] [options]\n"
+"\n"
+"Checks the native build requirements, configures CMake for a per-user "
+"prefix,\n"
+"and provides an interactive menu when no action is specified.\n"
+"\n"
+"Actions (choose only one):\n"
+"  --check             Check tools and configure CMake without compiling.\n"
+"  --build             Configure and compile the native module.\n"
+"  --install           Install the current compiled build for this user.\n"
+"  --build-install     Configure, compile, and install for this user.\n"
+"  --inspect           Inspect the configured installation in temporary "
+"staging.\n"
+"  --restart-plasma    Restart Plasma Shell without compiling or installing.\n"
+"\n"
+"Options:\n"
+"  -j, --jobs N        Number of parallel build jobs (default: 1).\n"
+"  --no-restart        Do not ask to restart Plasma Shell after "
+"installation.\n"
+"  -y, --yes           Restart Plasma Shell after installation without "
+"prompting.\n"
+"  --lang CODE         Select en, es, de, or pt_BR for assistant messages.\n"
+"  -h, --help          Show this help.\n"
+"\n"
+"This assistant does not install system packages, use a package manager, "
+"create\n"
+"a .plasmoid artifact, or run the developer validation suite."
+msgstr ""
+"Uso: scripts-cmake/setup.sh [ação] [opções]\n"
+"\n"
+"Verifica os requisitos da compilação nativa, configura o CMake com um "
+"prefixo por usuário\n"
+"e fornece um menu interativo quando nenhuma ação é especificada.\n"
+"\n"
+"Ações (escolha apenas uma):\n"
+"  --check             Verificar ferramentas e configurar o CMake sem "
+"compilar.\n"
+"  --build             Configurar e compilar o módulo nativo.\n"
+"  --install           Instalar a compilação atual para este usuário.\n"
+"  --build-install     Configurar, compilar e instalar para este usuário.\n"
+"  --inspect           Inspecionar a instalação configurada em staging "
+"temporário.\n"
+"  --restart-plasma    Reiniciar o Plasma Shell sem compilar ou instalar.\n"
+"\n"
+"Opções:\n"
+"  -j, --jobs N        Número de tarefas paralelas de compilação (padrão: "
+"1).\n"
+"  --no-restart        Não perguntar sobre reiniciar o Plasma Shell após a "
+"instalação.\n"
+"  -y, --yes           Reiniciar o Plasma Shell após a instalação sem "
+"perguntar.\n"
+"  --lang CÓDIGO       Selecionar en, es, de ou pt_BR para as mensagens do "
+"assistente.\n"
+"  -h, --help          Mostrar esta ajuda.\n"
+"\n"
+"Este assistente não instala pacotes do sistema, não usa um gerenciador de "
+"pacotes, não cria\n"
+"um artefato .plasmoid nem executa a suíte de validação para desenvolvedores."
 
 #: scripts-dev/distro/arch-setup.sh:65
 msgid ""
@@ -5328,7 +5626,7 @@ msgstr ""
 "A validação de desenvolvedor está disponível separadamente em scripts-dev/"
 "setup.sh."
 
-#: contents/ui/components/DockItem.qml:1418
+#: contents/ui/components/DockItem.qml:1429
 msgctxt "@info:accessible"
 msgid "Use Control+Shift with an arrow key to move this Dock item."
 msgstr "Use Ctrl+Shift com uma tecla de seta para mover este item do dock."
@@ -5345,6 +5643,13 @@ msgstr "Usar desfoque do fundo quando disponível"
 #: contents/ui/config/ConfigMouse.qml:255
 msgid "Use interactive cursors in the settings window"
 msgstr "Use cursores interativos na janela de configurações"
+
+#: scripts-cmake/setup.sh:204
+msgid ""
+"Use the matching development packages supplied by your Linux distribution."
+msgstr ""
+"Use os pacotes de desenvolvimento correspondentes fornecidos pela sua "
+"distribuição Linux."
 
 #: scripts-dev/setup.sh:87
 msgid ""
@@ -5569,7 +5874,7 @@ msgstr "Escreva uma nota editável rápida"
 msgid "Write a quick note"
 msgstr "Escreva uma nota rápida"
 
-#: contents/ui/main.qml:1442
+#: contents/ui/main.qml:1444
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Você pode abrir até %1 arquivos locais de uma vez."
@@ -5596,7 +5901,7 @@ msgstr "número de tarefas paralelas inválido: %s\\n"
 msgid "pacman is required on Arch-family distributions"
 msgstr "o pacman é obrigatório em distribuições da família Arch"
 
-#: contents/ui/config/components/ActionDialog.qml:89
+#: contents/ui/config/components/ActionDialog.qml:91
 #: contents/ui/config/ConfigItems.qml:739
 #: contents/ui/config/ItemActionEditor.qml:39
 msgid "rows"
@@ -5611,14 +5916,34 @@ msgstr ""
 msgid "sudo is required to install missing pacman packages"
 msgstr "sudo é obrigatório para instalar pacotes ausentes pelo pacman"
 
+#: scripts-cmake/setup.sh:186
+msgid "the Plasma restart timeout must be a positive number of seconds"
+msgstr ""
+"o limite de tempo da reinicialização do Plasma deve ser um número positivo "
+"de segundos"
+
 #: scripts-dev/distro/arch-setup.sh:262
 #, sh-printf-format
 msgid "the build finished without creating the expected artifact: %s\\n"
 msgstr "a compilação terminou sem criar o artefato esperado: %s\\n"
 
+#: scripts-cmake/setup.sh:157
+msgid "the jobs option requires a positive integer"
+msgstr "a opção de tarefas exige um número inteiro positivo"
+
 #: scripts-dev/distro/arch-setup.sh:250
 msgid "the package version could not be read from metadata.json"
 msgstr "não foi possível ler a versão do pacote em metadata.json"
+
+#: scripts-cmake/setup.sh:184
+msgid "the parallel job count must be a positive integer"
+msgstr "a quantidade de tarefas paralelas deve ser um número inteiro positivo"
+
+#: scripts-cmake/setup.sh:188
+msgid "the per-user installation prefix must be an absolute path other than /"
+msgstr ""
+"o prefixo de instalação por usuário deve ser um caminho absoluto diferente "
+"de /"
 
 #: scripts-dev/distro/arch-setup.sh:178
 #, sh-printf-format
@@ -5628,6 +5953,11 @@ msgid ""
 msgstr ""
 "este script de configuração requer Arch Linux ou uma distribuição da família "
 "Arch (detectada: %s)\\n"
+
+#: scripts-cmake/setup.sh:178
+#, sh-printf-format
+msgid "unknown option: %s"
+msgstr "opção desconhecida: %s"
 
 #: scripts-dev/distro/arch-setup.sh:149
 #, sh-printf-format
