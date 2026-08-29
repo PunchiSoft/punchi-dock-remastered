@@ -1,3 +1,12 @@
+## [0.9.7.52] - 2026-08-29
+
+### Corregido
+
+- Estabilización del dimensionamiento de PunchiMenu en modo Normal: cálculo de dimensiones basado en el monitor activo y su área disponible (`availableScreenRect`) en lugar del ancho combinado de escritorios virtuales (`Screen.desktopAvailableWidth`).
+- Aplicación diferida de cambios de tamaño: los ajustes de porcentaje de ancho y alto se guardan de inmediato y se aplican en la siguiente apertura del menú (`applyConfiguredDimensions`), evitando geometrías irregulares mientras permanece abierto.
+- Guía contextual traducible en la configuración de PunchiMenu informando que los cambios de tamaño se aplicarán al volver a abrir el menú.
+- Cobertura de pruebas unitarias y de contrato para el estado de tamaño de PunchiMenu Normal y preservación de aserciones independientes de la localización del entorno de pruebas.
+
 ## [0.9.7.51] - 2026-08-28
 
 ### Agregado
