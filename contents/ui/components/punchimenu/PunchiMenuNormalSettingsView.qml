@@ -544,6 +544,12 @@ PunchiMenuSettingsBase {
                                 normalHeightSlider.value))
                         }
                     }
+
+                    PlasmaComponents.Label {
+                        Layout.fillWidth: true
+                        wrapMode: Text.WordWrap
+                        text: i18n("Size changes are applied the next time PunchiMenu opens.")
+                    }
                 }
 
                 PlasmaComponents.Button {

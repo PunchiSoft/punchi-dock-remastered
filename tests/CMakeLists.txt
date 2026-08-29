@@ -400,6 +400,10 @@ if(TARGET KF6::I18nQml)
     )
 endif()
 
+set(PUNCHI_QML_TEST_ENVIRONMENT
+    "LANGUAGE=en;QT_QPA_PLATFORM=offscreen;QT_QUICK_CONTROLS_STYLE=org.kde.desktop"
+)
+
 function(punchi_add_qml_test test_name qml_file)
     add_test(
         NAME ${test_name}
@@ -407,7 +411,7 @@ function(punchi_add_qml_test test_name qml_file)
             -input ${CMAKE_CURRENT_SOURCE_DIR}/${qml_file}
     )
     set_tests_properties(${test_name} PROPERTIES
-        ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_CONTROLS_STYLE=org.kde.desktop"
+        ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT}"
         FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
         TIMEOUT 30
     )
@@ -424,6 +428,10 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     punchimenu_mapped_surface_geometry_test
     punchimenu_mapped_surface_geometry_test.qml
+)
+punchi_add_qml_test(
+    punchimenu_normal_size_state_test
+    punchimenu_normal_size_state_test.qml
 )
 punchi_add_qml_test(task_popup_surface_test task_popup_surface_test.qml)
 punchi_add_qml_test(
@@ -486,7 +494,7 @@ add_test(
         -P ${CMAKE_CURRENT_SOURCE_DIR}/run_qml_test_with_optional_i18n_warning.cmake
 )
 set_tests_properties(item_action_editor_drop_test PROPERTIES
-    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_CONTROLS_STYLE=org.kde.desktop"
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT}"
     TIMEOUT 30
 )
 punchi_add_qml_test(

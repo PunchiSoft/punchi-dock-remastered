@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.42\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-28 18:28-0400\n"
+"POT-Creation-Date: 2026-08-29 09:45-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -268,7 +268,7 @@ msgstr ""
 msgid "%1 items loaded."
 msgstr ""
 
-#: contents/ui/main.qml:2712
+#: contents/ui/main.qml:2716
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] ""
@@ -566,7 +566,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr ""
 
-#: contents/ui/main.qml:1454
+#: contents/ui/main.qml:1458
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr ""
@@ -3360,7 +3360,7 @@ msgid ""
 "available."
 msgstr ""
 
-#: contents/ui/main.qml:1440
+#: contents/ui/main.qml:1444
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr ""
@@ -3488,7 +3488,7 @@ msgstr ""
 msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 
-#: contents/ui/main.qml:1451
+#: contents/ui/main.qml:1455
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr ""
@@ -3576,7 +3576,7 @@ msgid "Open applications"
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:401
-#: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:553
+#: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:559
 msgctxt "@action:button"
 msgid "Open mode and icon settings…"
 msgstr ""
@@ -4505,6 +4505,10 @@ msgstr ""
 msgid "Single desktop"
 msgstr ""
 
+#: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:551
+msgid "Size changes are applied the next time PunchiMenu opens."
+msgstr ""
+
 #: scripts-dev/distro/arch-setup.sh:195
 msgid "Skipping pacman dependency installation"
 msgstr ""
@@ -4738,17 +4742,17 @@ msgid ""
 "appearance here."
 msgstr ""
 
-#: contents/ui/main.qml:1448
+#: contents/ui/main.qml:1452
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr ""
 
-#: contents/ui/main.qml:1457
+#: contents/ui/main.qml:1461
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
 
-#: contents/ui/main.qml:1462
+#: contents/ui/main.qml:1466
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr ""
@@ -4903,7 +4907,7 @@ msgstr ""
 msgid "This action cannot be undone."
 msgstr ""
 
-#: contents/ui/main.qml:1460
+#: contents/ui/main.qml:1464
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -5445,7 +5449,7 @@ msgstr ""
 msgid "Write a quick note"
 msgstr ""
 
-#: contents/ui/main.qml:1444
+#: contents/ui/main.qml:1448
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr ""

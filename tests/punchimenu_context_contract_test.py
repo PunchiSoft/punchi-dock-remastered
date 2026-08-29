@@ -131,6 +131,10 @@ def main() -> int:
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuNormalPlacement.qml"
     ).read_text(encoding="utf-8")
+    normal_size_state_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuNormalSizeState.qml"
+    ).read_text(encoding="utf-8")
     category_pill_source = (
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuCategoryPill.qml"
@@ -2791,38 +2795,58 @@ def main() -> int:
         ),
         (
             main_source,
-            "readonly property real reportedAvailableWidth: Math.max(",
-            "pre-show screen geometry fallback",
+            "readonly property real activeScreenWidth: {",
+            "active-monitor width projection",
         ),
         (
             main_source,
-            "minimumContentWidth + screenMargin",
-            "non-empty initial dialog width",
+            "availableWidth: Number(root.availableScreenRect.width || 0)",
+            "active-monitor available width",
         ),
         (
-            main_source,
-            "minimumContentHeight + screenMargin",
-            "non-empty initial dialog height",
+            normal_size_state_source,
+            "Math.min(\n            activeScreenDimension, reportedAvailableDimension)",
+            "available-area size cap",
         ),
         (
             main_source,
             "Layout.minimumWidth: punchiMenuNormalDialog.desiredContentWidth",
-            "native panel dialog minimum width",
+            "captured native dialog minimum width",
+        ),
+        (
+            main_source,
+            "Layout.preferredWidth: punchiMenuNormalDialog.desiredContentWidth",
+            "captured native dialog preferred width",
         ),
         (
             main_source,
             "Layout.maximumWidth: punchiMenuNormalDialog.desiredContentWidth",
-            "native panel dialog fixed width",
+            "captured native dialog maximum width",
         ),
         (
             main_source,
             "Layout.minimumHeight: punchiMenuNormalDialog.desiredContentHeight",
-            "native panel dialog minimum height",
+            "captured native dialog minimum height",
+        ),
+        (
+            main_source,
+            "Layout.preferredHeight: punchiMenuNormalDialog.desiredContentHeight",
+            "captured native dialog preferred height",
         ),
         (
             main_source,
             "Layout.maximumHeight: punchiMenuNormalDialog.desiredContentHeight",
-            "native panel dialog fixed height",
+            "captured native dialog maximum height",
+        ),
+        (
+            normal_size_state_source,
+            "function applyConfiguredDimensions()",
+            "deferred Normal menu pixel snapshot",
+        ),
+        (
+            main_source,
+            "normalSizeState.applyConfiguredDimensions()\n                positionAtAnchor()",
+            "pixel snapshot before Normal menu positioning",
         ),
         (
             category_pill_source,
@@ -2837,6 +2861,40 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+
+    for forbidden_live_dimension_handler in (
+        "function onConfiguredPunchiMenuNormalWidthPercentChanged()",
+        "function onConfiguredPunchiMenuNormalHeightPercentChanged()",
+    ):
+        if forbidden_live_dimension_handler in main_source:
+            print(
+                "PunchiMenu Normal deferred sizing: configuration changes "
+                "must not resize the open dialog: "
+                + forbidden_live_dimension_handler,
+                file=sys.stderr,
+            )
+            passed = False
+
+    for forbidden_virtual_desktop_dimension in (
+        "Screen.desktopAvailableWidth",
+        "Screen.desktopAvailableHeight",
+    ):
+        if forbidden_virtual_desktop_dimension in main_source:
+            print(
+                "PunchiMenu Normal sizing: virtual-desktop dimensions must "
+                "not determine an active-monitor popup: "
+                + forbidden_virtual_desktop_dimension,
+                file=sys.stderr,
+            )
+            passed = False
+
+    if 'i18n("Size changes are applied the next time PunchiMenu opens.")' \
+            not in normal_settings_view_source:
+        print(
+            "PunchiMenu Normal deferred sizing: missing translated user guidance",
+            file=sys.stderr,
+        )
+        passed = False
     if "visualParent: root.punchiMenuAnchorItem || root" in main_source \
             or 'visualParent: root.configuredPunchiMenuNormalPlacementMode === "centered"' \
             in main_source:

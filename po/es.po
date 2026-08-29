@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-28 18:28-0400\n"
+"POT-Creation-Date: 2026-08-29 09:45-0400\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Spanish\n"
@@ -276,7 +276,7 @@ msgstr ""
 msgid "%1 items loaded."
 msgstr "%1 elementos cargados."
 
-#: contents/ui/main.qml:2712
+#: contents/ui/main.qml:2716
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de ventanas más"
@@ -579,7 +579,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Se creó un acceso directo de escritorio para %1."
 
-#: contents/ui/main.qml:1454
+#: contents/ui/main.qml:1458
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr ""
@@ -3564,7 +3564,7 @@ msgstr ""
 "No se encontraron aplicaciones multimedia instaladas. La selección "
 "automática sigue disponible."
 
-#: contents/ui/main.qml:1440
+#: contents/ui/main.qml:1444
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "No se encontraron archivos locales en este arrastre."
@@ -3698,7 +3698,7 @@ msgstr ""
 "cerrada.Solo se aplica cuando este elemento del dock inicia una aplicación "
 "cerrada."
 
-#: contents/ui/main.qml:1451
+#: contents/ui/main.qml:1455
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Solo se pueden abrir archivos locales con una aplicación."
@@ -3797,7 +3797,7 @@ msgid "Open applications"
 msgstr "Aplicaciones abiertas"
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:401
-#: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:553
+#: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:559
 msgctxt "@action:button"
 msgid "Open mode and icon settings…"
 msgstr "Abrir configuración de modo e icono…"
@@ -4767,6 +4767,11 @@ msgstr "Individual"
 msgid "Single desktop"
 msgstr "Un solo escritorio"
 
+#: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:551
+msgid "Size changes are applied the next time PunchiMenu opens."
+msgstr ""
+"Los cambios de tamaño se aplican la próxima vez que se abra PunchiMenu."
+
 #: scripts-dev/distro/arch-setup.sh:195
 msgid "Skipping pacman dependency installation"
 msgstr "Se omite la instalación de dependencias mediante pacman"
@@ -5014,12 +5019,12 @@ msgstr ""
 "El tema del dock controla este separador. Elige «Este separador» para editar "
 "aquí su apariencia."
 
-#: contents/ui/main.qml:1448
+#: contents/ui/main.qml:1452
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "El arrastre contiene una ubicación de archivo local no válida."
 
-#: contents/ui/main.qml:1457
+#: contents/ui/main.qml:1461
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
@@ -5027,7 +5032,7 @@ msgstr ""
 "seguridad.La lista de archivos arrastrados es demasiado grande para abrirla "
 "de forma segura."
 
-#: contents/ui/main.qml:1462
+#: contents/ui/main.qml:1466
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "No se pudieron abrir los archivos arrastrados."
@@ -5200,7 +5205,7 @@ msgstr "Delgado"
 msgid "This action cannot be undone."
 msgstr "Esta acción no se puede deshacer."
 
-#: contents/ui/main.qml:1460
+#: contents/ui/main.qml:1464
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -5934,7 +5939,7 @@ msgstr "Escribir una nota rápida editable"
 msgid "Write a quick note"
 msgstr "Escribir una nota rápida"
 
-#: contents/ui/main.qml:1444
+#: contents/ui/main.qml:1448
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Puede abrir hasta %1 archivos locales a la vez."

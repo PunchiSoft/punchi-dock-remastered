@@ -768,34 +768,43 @@ PlasmoidItem {
                 Kirigami.Units.gridUnit * 22
             readonly property int minimumContentHeight:
                 Kirigami.Units.gridUnit * 16
-            readonly property real reportedAvailableWidth: Math.max(
-                Number(Screen.desktopAvailableWidth || 0),
-                Number(Screen.width || 0))
-            readonly property real reportedAvailableHeight: Math.max(
-                Number(Screen.desktopAvailableHeight || 0),
-                Number(Screen.height || 0))
-            readonly property int safeScreenWidth: reportedAvailableWidth > 1
-                ? Math.round(reportedAvailableWidth)
-                : minimumContentWidth + screenMargin
-                    + Kirigami.Units.largeSpacing * 2
-            readonly property int safeScreenHeight: reportedAvailableHeight > 1
-                ? Math.round(reportedAvailableHeight)
-                : minimumContentHeight + screenMargin
-                    + Kirigami.Units.largeSpacing * 2
-            readonly property int usableScreenWidth: Math.max(1,
-                safeScreenWidth - screenMargin)
-            readonly property int usableScreenHeight: Math.max(1,
-                safeScreenHeight - screenMargin)
-            readonly property int desiredContentWidth: Math.min(
-                Math.max(1, usableScreenWidth - Kirigami.Units.largeSpacing * 2),
-                Math.max(minimumContentWidth,
-                    Math.round(safeScreenWidth
-                        * root.configuredPunchiMenuNormalWidthPercent / 100)))
-            readonly property int desiredContentHeight: Math.min(
-                Math.max(1, usableScreenHeight - Kirigami.Units.largeSpacing * 2),
-                Math.max(minimumContentHeight,
-                    Math.round(safeScreenHeight
-                        * root.configuredPunchiMenuNormalHeightPercent / 100)))
+            readonly property real activeScreenWidth: {
+                const containment = Plasmoid.containment
+                const geometry = containment
+                    ? containment.screenGeometry : null
+                const geometryWidth = Number(geometry ? geometry.width : 0)
+                return Number.isFinite(geometryWidth) && geometryWidth > 1
+                    ? geometryWidth : Number(Screen.width || 0)
+            }
+            readonly property real activeScreenHeight: {
+                const containment = Plasmoid.containment
+                const geometry = containment
+                    ? containment.screenGeometry : null
+                const geometryHeight = Number(geometry ? geometry.height : 0)
+                return Number.isFinite(geometryHeight) && geometryHeight > 1
+                    ? geometryHeight : Number(Screen.height || 0)
+            }
+            readonly property PunchiMenuNormalSizeState normalSizeState:
+                PunchiMenuNormalSizeState {
+                    configuredWidthPercent:
+                        root.configuredPunchiMenuNormalWidthPercent
+                    configuredHeightPercent:
+                        root.configuredPunchiMenuNormalHeightPercent
+                    screenWidth: punchiMenuNormalDialog.activeScreenWidth
+                    screenHeight: punchiMenuNormalDialog.activeScreenHeight
+                    availableWidth: Number(root.availableScreenRect.width || 0)
+                    availableHeight: Number(root.availableScreenRect.height || 0)
+                    screenMargin: punchiMenuNormalDialog.screenMargin
+                    contentMargin: Kirigami.Units.largeSpacing
+                    minimumContentWidth:
+                        punchiMenuNormalDialog.minimumContentWidth
+                    minimumContentHeight:
+                        punchiMenuNormalDialog.minimumContentHeight
+                }
+            readonly property int desiredContentWidth:
+                normalSizeState.appliedContentWidth
+            readonly property int desiredContentHeight:
+                normalSizeState.appliedContentHeight
 
             // The normal menu is a lazily created component whose owner ids
             // remain available in the plasmoid runtime context.
@@ -890,12 +899,6 @@ PlasmoidItem {
                 function onConfiguredPunchiMenuNormalPlacementModeChanged() {
                     punchiMenuNormalDialog.scheduleReposition()
                 }
-                function onConfiguredPunchiMenuNormalWidthPercentChanged() {
-                    punchiMenuNormalDialog.scheduleReposition()
-                }
-                function onConfiguredPunchiMenuNormalHeightPercentChanged() {
-                    punchiMenuNormalDialog.scheduleReposition()
-                }
                 function onConfiguredPunchiMenuNormalPanelGapChanged() {
                     punchiMenuNormalDialog.scheduleReposition()
                 }
@@ -941,6 +944,7 @@ PlasmoidItem {
                 internalCloseRequested = false
                 lastExternalHideTimestamp = -1
                 opacity = 0
+                normalSizeState.applyConfiguredDimensions()
                 positionAtAnchor()
                 visible = true
                 Qt.callLater(finishOpening)

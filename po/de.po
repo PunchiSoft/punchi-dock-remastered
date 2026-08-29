@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-08-28 18:28-0400\n"
+"POT-Creation-Date: 2026-08-29 09:45-0400\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: German\n"
@@ -279,7 +279,7 @@ msgstr ""
 msgid "%1 items loaded."
 msgstr "%1 Elemente geladen."
 
-#: contents/ui/main.qml:2712
+#: contents/ui/main.qml:2716
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 weitere Fenstergruppe"
@@ -589,7 +589,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Eine Desktop-Verknüpfung für %1 wurde erstellt."
 
-#: contents/ui/main.qml:1454
+#: contents/ui/main.qml:1458
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr "Ein Dateipfad ist zu lang, um ihn sicher zu öffnen."
@@ -3565,7 +3565,7 @@ msgstr ""
 "Es wurden keine installierten Multimedia-Anwendungen gefunden. Die "
 "automatische Auswahl bleibt verfügbar."
 
-#: contents/ui/main.qml:1440
+#: contents/ui/main.qml:1444
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "In diesem Ablegevorgang wurden keine lokalen Dateien gefunden."
@@ -3695,7 +3695,7 @@ msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 "Gilt nur, wenn dieses Dock-Element eine geschlossene Anwendung startet."
 
-#: contents/ui/main.qml:1451
+#: contents/ui/main.qml:1455
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Mit einer Anwendung können nur lokale Dateien geöffnet werden."
@@ -3791,7 +3791,7 @@ msgid "Open applications"
 msgstr "Geöffnete Anwendungen"
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:401
-#: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:553
+#: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:559
 msgctxt "@action:button"
 msgid "Open mode and icon settings…"
 msgstr "Einstellungen für Modus und Symbol öffnen…"
@@ -4761,6 +4761,11 @@ msgstr "Single"
 msgid "Single desktop"
 msgstr "Einzelner Desktop"
 
+#: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:551
+msgid "Size changes are applied the next time PunchiMenu opens."
+msgstr ""
+"Größenänderungen werden beim nächsten Öffnen von PunchiMenu angewendet."
+
 #: scripts-dev/distro/arch-setup.sh:195
 msgid "Skipping pacman dependency installation"
 msgstr "Installation der Abhängigkeiten mit pacman wird übersprungen"
@@ -5010,17 +5015,17 @@ msgstr ""
 "Das Dock-Design steuert diesen Trenner. Wählen Sie „Dieser Trenner“, um sein "
 "Erscheinungsbild hier zu bearbeiten."
 
-#: contents/ui/main.qml:1448
+#: contents/ui/main.qml:1452
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "Der Ablegevorgang enthält einen ungültigen lokalen Dateipfad."
 
-#: contents/ui/main.qml:1457
+#: contents/ui/main.qml:1461
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr "Die Liste der abgelegten Dateien ist zu groß, um sie sicher zu öffnen."
 
-#: contents/ui/main.qml:1462
+#: contents/ui/main.qml:1466
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Die abgelegten Dateien konnten nicht geöffnet werden."
@@ -5197,7 +5202,7 @@ msgstr "Dünn"
 msgid "This action cannot be undone."
 msgstr "Diese Aktion kann nicht rückgängig gemacht werden."
 
-#: contents/ui/main.qml:1460
+#: contents/ui/main.qml:1464
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -5937,7 +5942,7 @@ msgstr "Schreiben Sie eine schnell bearbeitbare Notiz"
 msgid "Write a quick note"
 msgstr "Schreiben Sie eine kurze Notiz"
 
-#: contents/ui/main.qml:1444
+#: contents/ui/main.qml:1448
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Sie können bis zu %1 lokale Dateien gleichzeitig öffnen."
