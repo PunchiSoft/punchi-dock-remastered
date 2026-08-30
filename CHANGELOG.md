@@ -1,3 +1,23 @@
+## [0.9.7.53] - 2026-08-30
+
+### Corregido
+
+- El desplazamiento vertical de aplicaciones agrupadas por categorías en
+  PunchiMenu Normal y Pantalla completa sigue ahora la sensibilidad configurada
+  por el sistema mediante el controlador estándar de Kirigami.
+- Las ruedas de alta resolución y los paneles táctiles conservan deltas finos
+  sin aplicar un multiplicador global a otros menús, carruseles o superficies.
+
+### Validación
+
+- La respuesta fue confirmada por el usuario en Plasma real como más rápida y
+  fluida.
+- Suite CTest aprobada al 100 % (71/71 pruebas), incluida la carga integral del
+  plasmoide y el contrato específico de desplazamiento por categorías.
+- `qmllint` 6.11.1 permanece en 0 para `total`, `unqualified`,
+  `missing-property`, `layout` e `import`.
+- Catálogos `es`, `de` y `pt_BR` completos, sin entradas vacías ni difusas.
+
 ## [0.9.7.52] - 2026-08-29
 
 ### Corregido

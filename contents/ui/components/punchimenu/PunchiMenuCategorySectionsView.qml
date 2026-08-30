@@ -374,6 +374,11 @@ FocusScope {
         keyNavigationEnabled: false
         activeFocusOnTab: false
 
+        Kirigami.WheelHandler {
+            id: sectionWheelHandler
+            target: sectionList
+        }
+
         Controls.ScrollBar.vertical: Controls.ScrollBar {
             id: sectionScrollBar
             policy: sectionList.contentHeight > sectionList.height

@@ -1778,6 +1778,34 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    category_wheel_contract = (
+        "Kirigami.WheelHandler {",
+        "id: sectionWheelHandler",
+        "target: sectionList",
+    )
+    for marker in category_wheel_contract:
+        if marker not in category_sections_source:
+            print(
+                "PunchiMenu category wheel: missing system scrolling "
+                f"contract: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    if category_sections_source.count("Kirigami.WheelHandler {") != 1:
+        print(
+            "PunchiMenu category wheel: the shared category view needs "
+            "exactly one wheel handler",
+            file=sys.stderr,
+        )
+        passed = False
+    for marker in ("verticalStepSize:", "horizontalStepSize:"):
+        if marker in category_sections_source:
+            print(
+                "PunchiMenu category wheel: step size must remain owned by "
+                f"the system, found override: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
     if "Controls.RadioButton {" in fullscreen_settings_view_source:
         print(
             "PunchiMenu category grouping: Fullscreen must use its mapped "
