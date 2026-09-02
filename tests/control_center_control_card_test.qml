@@ -17,6 +17,16 @@ TestCase {
         signalName: "valueModified"
     }
 
+    SignalSpy {
+        id: secondaryActionSpy
+        signalName: "secondaryActionTriggered"
+    }
+
+    SignalSpy {
+        id: navigationSpy
+        signalName: "navigationRequested"
+    }
+
     Component {
         id: windowComponent
 
@@ -36,6 +46,17 @@ TestCase {
                 iconName: "audio-volume-high"
                 value: 35
                 controlAvailable: true
+                secondaryActionVisible: true
+                secondaryActionEnabled: true
+                secondaryActionCheckable: true
+                secondaryActionChecked: true
+                secondaryActionIconName: "view-visible"
+                secondaryActionName: "Hide Plasma volume indicator"
+                secondaryActionDescription:
+                    "Changes the volume indicator throughout Plasma"
+                navigationActionVisible: true
+                navigationActionEnabled: true
+                navigationActionName: "Manage audio devices and applications"
             }
         }
     }
@@ -43,10 +64,14 @@ TestCase {
     function init() {
         failOnWarning(/.?/)
         valueSpy.clear()
+        secondaryActionSpy.clear()
+        navigationSpy.clear()
     }
 
     function cleanup() {
         valueSpy.target = null
+        secondaryActionSpy.target = null
+        navigationSpy.target = null
         if (hostWindowUnderTest) {
             const hostWindow = hostWindowUnderTest
             hostWindowUnderTest = null
@@ -55,6 +80,50 @@ TestCase {
             hostWindow.destroy()
             wait(0)
         }
+    }
+
+    function test_navigationActionIsDiscoverableAndKeyboardAccessible() {
+        const hostWindow = createTemporaryObject(windowComponent, testCase)
+        verify(hostWindow !== null)
+        hostWindowUnderTest = hostWindow
+        tryCompare(hostWindow, "visible", true)
+
+        const card = hostWindow.card
+        const action = findChild(card, "controlCenterNavigationActionButton")
+        verify(action !== null)
+        compare(action.visible, true)
+        compare(action.enabled, true)
+        compare(action.Accessible.name,
+            "Manage audio devices and applications")
+
+        navigationSpy.target = card
+        action.forceActiveFocus(Qt.TabFocusReason)
+        tryVerify(function() { return action.activeFocus })
+        keyClick(Qt.Key_Space)
+        tryCompare(navigationSpy, "count", 1)
+    }
+
+    function test_secondaryActionIsCheckableAccessibleAndClickable() {
+        const hostWindow = createTemporaryObject(windowComponent, testCase)
+        verify(hostWindow !== null)
+        hostWindowUnderTest = hostWindow
+        tryCompare(hostWindow, "visible", true)
+
+        const card = hostWindow.card
+        const action = findChild(card, "controlCenterSecondaryActionButton")
+        verify(action !== null)
+        compare(action.visible, true)
+        compare(action.enabled, true)
+        compare(action.checkable, true)
+        compare(action.checked, true)
+        compare(action.icon.name, "view-visible")
+        compare(action.Accessible.name, "Hide Plasma volume indicator")
+        compare(action.Accessible.description,
+            "Changes the volume indicator throughout Plasma")
+
+        secondaryActionSpy.target = card
+        mouseClick(action, action.width / 2, action.height / 2)
+        tryCompare(secondaryActionSpy, "count", 1)
     }
 
     function test_sliderIsAccessibleAndEmitsUserChanges() {

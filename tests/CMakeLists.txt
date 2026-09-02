@@ -56,6 +56,24 @@ add_test(
     COMMAND controlcenternightlightadapter_test
 )
 
+add_executable(controlcentervolumeosdadapter_test
+    controlcentervolumeosdadapter_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/controlcentervolumeosdadapter.cpp
+)
+
+target_include_directories(controlcentervolumeosdadapter_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(controlcentervolumeosdadapter_test PRIVATE
+    Qt6::Core
+    Qt6::Qml
+    Qt6::Test
+    KF6::ConfigCore
+)
+
+add_test(
+    NAME controlcentervolumeosdadapter_test
+    COMMAND controlcentervolumeosdadapter_test
+)
+
 add_executable(applicationcategoryclassifier_test
     applicationcategoryclassifier_test.cpp
     ${CMAKE_SOURCE_DIR}/src/applicationcategoryclassifier.cpp
@@ -484,6 +502,10 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     control_center_bluetooth_page_test
     control_center_bluetooth_page_test.qml
+)
+punchi_add_qml_test(
+    control_center_audio_page_test
+    control_center_audio_page_test.qml
 )
 punchi_add_qml_test(
     popup_visible_gap_placement_test

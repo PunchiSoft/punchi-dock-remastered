@@ -16,10 +16,12 @@ FocusScope {
     required property var controller
     property var themeAdapter: null
     property var nightLightAdapter: null
+    property var volumeOsdAdapter: null
     property bool controlCenterOpen: false
     property string pendingSettingsSection: ""
     property string pendingApplicationAction: ""
     property string currentPage: "home"
+    property bool showVirtualAudioDevices: false
 
     readonly property bool motionEnabled: Kirigami.Units.longDuration > 0
     readonly property int animOpenDuration:
@@ -46,6 +48,7 @@ FocusScope {
     readonly property ControlCenterNetworkPage networkPage:
         networkPageLoader.item as ControlCenterNetworkPage
     readonly property var bluetoothPage: bluetoothPageLoader.item
+    readonly property var audioPage: audioPageLoader.item
 
     signal closeFinished()
 
@@ -76,6 +79,14 @@ FocusScope {
         active: root.providersActive
         asynchronous: false
         source: Qt.resolvedUrl("ControlCenterVolumeAdapter.qml")
+        onLoaded: item.showVirtualDevices = root.showVirtualAudioDevices
+    }
+
+    onShowVirtualAudioDevicesChanged: {
+        if (root.volumeAdapter) {
+            root.volumeAdapter.showVirtualDevices =
+                root.showVirtualAudioDevices
+        }
     }
 
     Loader {
@@ -106,6 +117,9 @@ FocusScope {
         currentPage = "home"
         if (root.nightLightAdapter) {
             root.nightLightAdapter.refresh()
+        }
+        if (root.volumeOsdAdapter) {
+            root.volumeOsdAdapter.refresh()
         }
         controlCenterOpen = true
         root.forceActiveFocus()
@@ -142,6 +156,19 @@ FocusScope {
         })
     }
 
+    function showSoundPage() {
+        if (!volumeAdapter) {
+            requestSettings("sound")
+            return
+        }
+        currentPage = "sound"
+        Qt.callLater(function() {
+            if (root.controlCenterOpen && root.audioPage) {
+                root.audioPage.focusFirstControl()
+            }
+        })
+    }
+
     function showHomePage() {
         currentPage = "home"
         Qt.callLater(function() {
@@ -155,7 +182,8 @@ FocusScope {
         if (passwordSurface.active) {
             passwordSurface.closeAndClear()
         } else if (currentPage === "network"
-                || currentPage === "bluetooth") {
+                || currentPage === "bluetooth"
+                || currentPage === "sound") {
             showHomePage()
         } else {
             forceClose()
@@ -197,6 +225,12 @@ FocusScope {
         if (!root.nightLightAdapter
                 || !root.nightLightAdapter.toggleEnabled()) {
             requestSettings("nightlight")
+        }
+    }
+
+    function toggleVolumeOsd() {
+        if (root.volumeOsdAdapter) {
+            root.volumeOsdAdapter.toggleOsd()
         }
     }
 
@@ -339,6 +373,8 @@ FocusScope {
                             ? i18nc("@info", "Choose and manage a Wi-Fi connection")
                             : root.currentPage === "bluetooth"
                                 ? i18nc("@info", "Connect and manage paired Bluetooth devices")
+                                : root.currentPage === "sound"
+                                    ? i18nc("@info", "Manage audio devices and application volumes")
                                 : i18nc("@info", "Quick access to system status and settings")
                         // qmllint enable unqualified
                         opacity: 0.72
@@ -363,7 +399,8 @@ FocusScope {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 currentIndex: root.currentPage === "network" ? 1
-                    : root.currentPage === "bluetooth" ? 2 : 0
+                    : root.currentPage === "bluetooth" ? 2
+                    : root.currentPage === "sound" ? 3 : 0
 
                 ControlCenterHomePage {
                     id: homePage
@@ -373,6 +410,7 @@ FocusScope {
                     bluetoothAdapter: root.bluetoothAdapter
                     themeAdapter: root.themeAdapter
                     nightLightAdapter: root.nightLightAdapter
+                    volumeOsdAdapter: root.volumeOsdAdapter
                     notificationModel: notificationHistory
                     unreadNotificationCount: root.unreadNotificationCount
                     expiredNotificationCount:
@@ -383,9 +421,11 @@ FocusScope {
                     motionEnabled: root.motionEnabled
                     onNetworkRequested: root.showNetworkPage()
                     onBluetoothRequested: root.showBluetoothPage()
+                    onSoundRequested: root.showSoundPage()
                     onDoNotDisturbRequested: root.toggleDoNotDisturb()
                     onThemeToggleRequested: root.toggleTheme()
                     onNightLightToggleRequested: root.toggleNightLight()
+                    onVolumeOsdToggleRequested: root.toggleVolumeOsd()
                     onNightLightStrengthPreviewRequested: function(strength) {
                         root.previewNightLightStrength(strength)
                     }
@@ -434,6 +474,27 @@ FocusScope {
                             onBackRequested: root.showHomePage()
                             onSettingsRequested: function(section) {
                                 root.requestSettings(section)
+                            }
+                        }
+                    }
+                }
+
+                Loader {
+                    id: audioPageLoader
+                    active: root.currentPage === "sound"
+                        && root.volumeAdapter !== null
+                    asynchronous: false
+                    sourceComponent: Component {
+                        ControlCenterAudioPage {
+                            adapter: root.volumeAdapter
+                            showVirtualDevices:
+                                root.showVirtualAudioDevices
+                            onBackRequested: root.showHomePage()
+                            onSettingsRequested: function(section) {
+                                root.requestSettings(section)
+                            }
+                            onShowVirtualDevicesToggled: function(enabled) {
+                                root.showVirtualAudioDevices = enabled
                             }
                         }
                     }

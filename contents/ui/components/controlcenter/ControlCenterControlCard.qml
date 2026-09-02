@@ -16,10 +16,24 @@ FocusScope {
     property bool controlAvailable: false
     property bool iconActionEnabled: false
     property string iconActionName: title
+    property bool secondaryActionVisible: false
+    property bool secondaryActionEnabled: true
+    property bool secondaryActionCheckable: false
+    property bool secondaryActionChecked: false
+    property string secondaryActionIconName: ""
+    property string secondaryActionName: ""
+    property string secondaryActionDescription: ""
+    property bool navigationActionVisible: false
+    property bool navigationActionEnabled: true
+    property string navigationActionIconName: Application.layoutDirection === Qt.RightToLeft
+        ? "go-previous-symbolic" : "go-next-symbolic"
+    property string navigationActionName: ""
     property string settingsActionName: i18nc("@action:button", "Open settings") // qmllint disable unqualified
 
     signal valueModified(real value)
     signal iconActionTriggered()
+    signal secondaryActionTriggered()
+    signal navigationRequested()
     signal settingsRequested()
 
     objectName: "controlCenterControlCard"
@@ -52,6 +66,13 @@ FocusScope {
                 enabled: root.iconActionEnabled && root.controlAvailable
                 Accessible.name: text
                 onClicked: root.iconActionTriggered()
+
+                Controls.ToolTip.visible: hovered && text.length > 0
+                Controls.ToolTip.text: text
+
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
+                }
             }
 
             Controls.Label {
@@ -70,12 +91,61 @@ FocusScope {
             }
 
             PlasmaComponents.ToolButton {
+                id: navigationButton
+
+                objectName: "controlCenterNavigationActionButton"
+                visible: root.navigationActionVisible
+                enabled: root.navigationActionEnabled
+                icon.name: root.navigationActionIconName
+                text: root.navigationActionName
+                display: PlasmaComponents.AbstractButton.IconOnly
+                Accessible.name: text
+                onClicked: root.navigationRequested()
+
+                Controls.ToolTip.visible: hovered && text.length > 0
+                Controls.ToolTip.text: text
+
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
+                }
+            }
+
+            PlasmaComponents.ToolButton {
+                id: secondaryActionButton
+                objectName: "controlCenterSecondaryActionButton"
+                visible: root.secondaryActionVisible
+                enabled: root.secondaryActionEnabled
+                checkable: root.secondaryActionCheckable
+                checked: root.secondaryActionChecked
+                icon.name: root.secondaryActionIconName
+                text: root.secondaryActionName
+                display: PlasmaComponents.AbstractButton.IconOnly
+                Accessible.name: text
+                Accessible.description: root.secondaryActionDescription
+                onClicked: root.secondaryActionTriggered()
+
+                Controls.ToolTip.visible: hovered && text.length > 0
+                Controls.ToolTip.text: text
+
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
+                }
+            }
+
+            PlasmaComponents.ToolButton {
                 id: settingsButton
                 icon.name: "configure"
                 text: root.settingsActionName
                 display: PlasmaComponents.AbstractButton.IconOnly
                 Accessible.name: text
                 onClicked: root.settingsRequested()
+
+                Controls.ToolTip.visible: hovered && text.length > 0
+                Controls.ToolTip.text: text
+
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
+                }
             }
         }
 

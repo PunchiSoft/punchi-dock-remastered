@@ -7,6 +7,7 @@ PUBLIC_SETUP="$PROJECT_ROOT/scripts-user/setup.sh"
 PACKAGE_ENGINE="$PROJECT_ROOT/scripts-user/lib/package-plasmoid.sh"
 PLASMA_CONTROL="$PROJECT_ROOT/scripts-user/lib/plasma-shell-control.sh"
 QTPATHS_RESOLVER="$PROJECT_ROOT/scripts-user/lib/qtpaths-resolver.sh"
+TERMINAL_UI="$PROJECT_ROOT/scripts-user/lib/setup-terminal-ui.sh"
 UNIVERSAL_SETUP="$PROJECT_ROOT/scripts-user/setup-universal.sh"
 DEVELOPER_SETUP="$PROJECT_ROOT/scripts-dev/setup.sh"
 unset PUNCHI_LANG PUNCHI_SETUP_LANG_OVERRIDE 2>/dev/null || true
@@ -80,6 +81,9 @@ fi
 [[ -r "$QTPATHS_RESOLVER" ]] || fail "the shared Qt 6 qtpaths resolver is missing"
 BUILD_CONCURRENCY="$PROJECT_ROOT/scripts-user/lib/build-concurrency.sh"
 [[ -r "$BUILD_CONCURRENCY" ]] || fail "the shared build concurrency helper is missing"
+[[ -r "$TERMINAL_UI" ]] || fail "the public setup terminal UI helper is missing"
+grep -q 'source .*setup-terminal-ui\.sh' "$PUBLIC_SETUP" \
+    || fail "the public setup does not use the shared terminal UI helper"
 for qtpaths_consumer in \
     "$PUBLIC_SETUP" \
     "$UNIVERSAL_SETUP" \
@@ -106,6 +110,71 @@ done
 source "$PUBLIC_SETUP"
 [[ "$(safe_label_component 'fedora 44/x86')" == "fedora_44_x86" ]] \
     || fail "the local artifact label was not sanitized"
+[[ "$(project_version)" == "$(awk -F '"' '/"Version"[[:space:]]*:/ { print $4; exit }' "$PROJECT_ROOT/metadata.json")" ]] \
+    || fail "the setup header version does not follow metadata.json"
+[[ -n "$(system_display_name)" ]] \
+    || fail "the setup header did not detect a display name for the host system"
+
+unset NO_COLOR
+TERM=xterm-256color
+punchi_ui_terminal_allows_color \
+    || fail "a regular terminal type does not allow semantic setup colors"
+NO_COLOR=""
+if punchi_ui_terminal_allows_color; then
+    fail "NO_COLOR does not disable semantic setup colors when set to an empty value"
+fi
+unset NO_COLOR
+TERM=dumb
+if punchi_ui_terminal_allows_color; then
+    fail "TERM=dumb does not disable semantic setup colors"
+fi
+TERM=xterm-256color
+
+unicode_ui_output="$({
+    punchi_ui_terminal_supports_unicode() { return 0; }
+    punchi_ui_terminal_supports_color() { return 1; }
+    punchi_ui_render_header 1 \
+        'Punchi Dock Remastered · Setup' \
+        'Version 0.9.7.53 | Test Linux | test-arch' \
+        'RAM 8.0 GiB | CPU cores 4 | Build jobs 2'
+    punchi_ui_render_phase 1 1 3 success Environment Completed 'Test Linux | test-arch'
+})"
+[[ "$unicode_ui_output" == *"╭"* && "$unicode_ui_output" == *"Punchi Dock Remastered · Setup"* ]] \
+    || fail "the interactive setup header does not render its Unicode frame"
+[[ "$unicode_ui_output" == *"[1/3] ✓ Environment: Completed"* ]] \
+    || fail "the setup phase output does not provide a non-color status label"
+[[ "$unicode_ui_output" != *$'\033['* ]] \
+    || fail "the forced colorless setup preview contains ANSI sequences"
+
+build_flow_output="$({
+    punchi_ui_terminal_supports_unicode() { return 0; }
+    punchi_ui_terminal_supports_color() { return 1; }
+    system_display_name() { printf 'Test Linux\n'; }
+    uname() { printf 'test-arch\n'; }
+    punchi_check_and_report_dependencies() { printf 'Dependencies inspected.\n' >&2; }
+    do_build_package() { printf '%s/dist/test-package.plasmoid\n' "$PROJECT_ROOT"; }
+    run_build_package_flow
+} 2>&1)"
+[[ "$build_flow_output" == *"[1/3] ✓ Environment: Completed — Test Linux | test-arch"* ]] \
+    || fail "the build flow does not complete environment detection"
+[[ "$build_flow_output" == *"[2/3] ● Dependency check: In progress"* \
+    && "$build_flow_output" == *"[2/3] ✓ Dependency check: Reviewed"* ]] \
+    || fail "the build flow does not expose the dependency check transition"
+[[ "$build_flow_output" == *"[3/3] ● Build package: In progress"* \
+    && "$build_flow_output" == *"[3/3] ✓ Build package: Completed — dist/test-package.plasmoid"* ]] \
+    || fail "the build flow does not expose real package construction states"
+
+warning_flow_output="$({
+    punchi_ui_terminal_supports_unicode() { return 0; }
+    punchi_ui_terminal_supports_color() { return 1; }
+    system_display_name() { printf 'Test Linux\n'; }
+    uname() { printf 'test-arch\n'; }
+    punchi_check_and_report_dependencies() { return 1; }
+    do_build_package() { printf '%s/dist/test-package.plasmoid\n' "$PROJECT_ROOT"; }
+    run_build_package_flow
+} 2>&1)"
+[[ "$warning_flow_output" == *"[2/3] ! Dependency check: Needs attention"* ]] \
+    || fail "the build flow does not expose a non-color dependency warning"
 
 filtered_developer_args=()
 punchi_filter_setup_language_options filtered_developer_args \
@@ -199,6 +268,17 @@ fi
 menu_output="$(printf '9\n' | LC_ALL=C.UTF-8 LANGUAGE=en PUNCHI_LANG=en "$PUBLIC_SETUP" --lang en)"
 [[ "$menu_output" == *"What would you like to do?"* ]] \
     || fail "the default interactive menu did not open"
+[[ "$menu_output" == *"Punchi Dock Remastered - Setup"* ]] \
+    || fail "the redirected setup menu does not provide a plain-text title"
+[[ "$menu_output" == *"Version $(project_version)"* && "$menu_output" == *"$(uname -m)"* ]] \
+    || fail "the setup header does not report the current version and architecture"
+[[ "$menu_output" == *"Primary actions"* \
+    && "$menu_output" == *"Maintenance"* \
+    && "$menu_output" == *"Settings and help"* \
+    && "$menu_output" == *"(Recommended)"* ]] \
+    || fail "the public menu does not expose the approved visual hierarchy"
+[[ "$menu_output" != *$'\033['* ]] \
+    || fail "redirected setup menu output contains ANSI color sequences"
 
 set +e
 invalid_output="$(

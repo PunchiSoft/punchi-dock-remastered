@@ -1,3 +1,24 @@
+## [0.9.7.55] - 2026-09-02
+
+### Agregado
+
+- Submenú completo de gestión de audio en el Centro de control con soporte para
+  selección de dispositivos de salida/entrada y volumen de aplicaciones.
+- Conmutador dedicado de notificación OSD de volumen de Plasma vía KConfig
+  (`plasmaparc`) en la tarjeta de Sonido.
+- Iconografía dinámica reactiva al nivel del deslizador de volumen de audio
+  (`audio-volume-low`, `audio-volume-medium`, `audio-volume-high` y
+  `audio-volume-muted`) y detección automática de auriculares (`audio-headphones`).
+- Botón de navegación hacia el submenú de audio con icono universal de ecualizador
+  (`view-media-equalizer`).
+
+### Corregido
+
+- Ajuste geométrico simétrico del botón de configuración en la baldosa de
+  Intensidad de Luz nocturna (`Kirigami.Units.largeSpacing` y estilo `flat`).
+- Unificación de interacción con cursor interactivo (`PointingHandCursor`) y
+  tooltips descriptivos en todos los botones de acción de las tarjetas del Centro de control.
+
 ## [0.9.7.54] - 2026-09-01
 
 ### Agregado

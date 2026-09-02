@@ -470,6 +470,9 @@ PlasmoidItem {
     Punchi.ControlCenterNightLightAdapter {
         id: controlCenterNightLightAdapter
     }
+    Punchi.ControlCenterVolumeOsdAdapter {
+        id: controlCenterVolumeOsdAdapter
+    }
     readonly property var systemDiscoveryService: systemDiscovery
     readonly property var punchiMenuLayoutControllerService: punchiMenuLayoutController
     property var punchiMenuApplicationCatalog: []
@@ -755,6 +758,7 @@ PlasmoidItem {
                 controller: controlCenterController
                 themeAdapter: controlCenterThemeAdapter
                 nightLightAdapter: controlCenterNightLightAdapter
+                volumeOsdAdapter: controlCenterVolumeOsdAdapter
                 onCloseFinished: controlCenterDialog.closeImmediately()
             }
         }

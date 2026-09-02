@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54">
-    <img src="https://img.shields.io/badge/release-v0.9.7.54-4caf50" alt="Versão v0.9.7.54">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55">
+    <img src="https://img.shields.io/badge/release-v0.9.7.55-4caf50" alt="Versão v0.9.7.55">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0--or--later-blue" alt="Licença GPL-3.0-or-later">
@@ -23,14 +23,15 @@ Punchi Dock Remastered é um dock inicializador nativo e interface de tarefas pa
 Este repositório é uma reescrita modular do [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). O projeto prepara atualmente seu caminho rumo à versão estável 1.0.
 
 A versão atual é
-[v0.9.7.54](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54).
+[v0.9.7.55](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55).
 
-## Novidades na versão 0.9.7.54
+## Novidades na versão 0.9.7.55
 
-- **Primeira fase do Centro de Controle em tela cheia**: Item persistente de instância única no dock com trilho direito adaptável, fundo compartilhado com o PunchiMenu, acessos rápidos para Wi-Fi e Bluetooth, controles de brilho e volume, Não Perturbe, alternância de tema claro/escuro, ajuste ao vivo da temperatura de Luz Noturna (6500 K a 1000 K) e histórico de notificações.
-- **100% Validado**: Suite CTest completa aprovada (83/83), incluindo contratos do Centro de Controle, carga offscreen completa, conversão de Luz Noturna e catálogos de tradução completos (`es`, `de`, `pt_BR`).
+- **Submenu de áudio no Centro de Controle e iconografia dinâmica**: Página dedicada para seleção de dispositivos de saída/entrada e controle de volume por aplicativo, ondas sonoras dinâmicas acompanhando o controle deslizante de volume, detecção automática de fones de ouvido e botão com ícone universal de equalizador (`view-media-equalizer`).
+- **Alternador de OSD de volume do Plasma**: Integração nativa com KConfig (`plasmaparc`) para ligar ou desligar a notificação visual de volume na tela.
+- **Interações unificadas e geometria simétrica**: Cursor de mão interativo e dicas de contexto em todos os cartões, além de margens simétricas nos controles de Luz Noturna.
 
-Consulte o [registro de alterações da 0.9.7.54](CHANGELOG.md#09754---2026-09-01) para ver as notas detalhadas de lançamento e a validação executada.
+Consulte o [registro de alterações da 0.9.7.55](CHANGELOG.md#09755---2026-09-02) para ver as notas detalhadas de lançamento e a validação executada.
 
 ## Capturas de Tela
 

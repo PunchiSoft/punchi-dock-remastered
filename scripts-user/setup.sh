@@ -16,6 +16,8 @@ source "$LIB_DIR/plasma-shell-control.sh"
 source "$LIB_DIR/qtpaths-resolver.sh"
 # shellcheck source=lib/build-concurrency.sh
 source "$LIB_DIR/build-concurrency.sh"
+# shellcheck source=lib/setup-terminal-ui.sh
+source "$LIB_DIR/setup-terminal-ui.sh"
 
 ACTION=""
 ACTION_OPTION=""
@@ -58,15 +60,11 @@ message() {
     local key="$1"
     shift || true
     case "$key" in
-        banner)          echo "=========================================================="
-                         punchi_gettext_line "     Punchi Dock Remastered - Setup Assistant             "
-                         echo "==========================================================" ;;
-        system_profile)  punchi_gettext_format 'System profile: %s\n' "${1:-unknown}" ;;
-        ram_info)        punchi_gettext_format 'Detected RAM: %s | CPU Cores: %s\n' "${1:-unknown}" "${2:-unknown}" ;;
-        concurrency_info) punchi_gettext_format 'Active build concurrency: %s\n' "${1:-unknown}" ;;
-        dev_disabled)    punchi_gettext_line 'Developer tests: disabled' ;;
         menu_title)      punchi_gettext_line 'What would you like to do?' ;;
-        menu_opt1)       punchi_gettext_line '  [1] Build and install locally' ;;
+        menu_primary)    punchi_ui_write_styled_line heading 1 "$(punchi_gettext 'Primary actions')" ;;
+        menu_maintenance) punchi_ui_write_styled_line heading 1 "$(punchi_gettext 'Maintenance')" ;;
+        menu_settings)   punchi_ui_write_styled_line heading 1 "$(punchi_gettext 'Settings and help')" ;;
+        menu_opt1)       punchi_ui_write_styled_line success 1 "$(punchi_gettext '  [1] Build and install locally (Recommended)')" ;;
         menu_opt2)       punchi_gettext_line '  [2] Build .plasmoid package only (no install)' ;;
         menu_opt3)       punchi_gettext_line '  [3] Install an existing .plasmoid package' ;;
         menu_opt4)       punchi_gettext_line '  [4] Uninstall the plasmoid from this system' ;;
@@ -104,6 +102,47 @@ safe_label_component() {
     local value="${1:-unknown}"
     value="${value//[^[:alnum:]._-]/_}"
     printf '%s\n' "${value:-unknown}"
+}
+
+project_version() {
+    awk -F '"' '/"Version"[[:space:]]*:/ { print $4; exit }' "$PROJECT_ROOT/metadata.json"
+}
+
+system_display_name() {
+    local distribution_name="Linux"
+    if [[ -r /etc/os-release ]]; then
+        # shellcheck disable=SC1091
+        source /etc/os-release
+        distribution_name="${PRETTY_NAME:-${NAME:-${ID:-Linux}}}"
+    fi
+    punchi_ui_sanitize_text "$distribution_name"
+}
+
+show_setup_header() {
+    local package_version=""
+    local distribution_name=""
+    local architecture=""
+    local ram_display=""
+    local cpu_cores=""
+    local current_jobs=""
+    local environment_line=""
+    local resources_line=""
+
+    package_version="$(project_version)"
+    distribution_name="$(system_display_name)"
+    architecture="$(uname -m)"
+    ram_display="$(punchi_format_ram_display "$(punchi_detect_total_ram_mb)")"
+    cpu_cores="$(punchi_detect_cpu_cores)"
+    current_jobs="$(punchi_get_concurrency_level)"
+    environment_line="$(punchi_gettext_format 'Version %s | %s | %s' \
+        "${package_version:-unknown}" "$distribution_name" "$architecture")"
+    resources_line="$(punchi_gettext_format 'RAM %s | CPU cores %s | Build jobs %s' \
+        "$ram_display" "$cpu_cores" "$current_jobs")"
+
+    punchi_ui_render_header 1 \
+        "$(punchi_gettext 'Punchi Dock Remastered · Setup')" \
+        "$environment_line" \
+        "$resources_line"
 }
 
 local_platform_label() {
@@ -329,12 +368,13 @@ require_action_commands() {
 }
 
 do_build_package() {
+    local check_dependencies="${1:-1}"
     local package_version=""
     local platform_label=""
     local package_file=""
     local target_build_dir=""
 
-    package_version="$(awk -F '"' '/"Version"[[:space:]]*:/ { print $4; exit }' "$PROJECT_ROOT/metadata.json")"
+    package_version="$(project_version)"
     [[ -n "$package_version" ]] || die "the package version could not be read from metadata.json"
 
     platform_label="$(local_platform_label)"
@@ -351,7 +391,9 @@ do_build_package() {
         fi
     fi
 
-    punchi_check_and_report_dependencies || true
+    if (( check_dependencies == 1 )); then
+        punchi_check_and_report_dependencies || true
+    fi
 
     message start_build >&2
     printf 'Package output: %s
@@ -369,6 +411,44 @@ do_build_package() {
     [[ -f "$package_file" ]] || die "the build completed without creating the expected package: $package_file"
     printf '%s
 ' "$package_file"
+}
+
+run_build_package_flow() {
+    local package_file=""
+    local platform_detail=""
+    local package_detail=""
+    local total=3
+
+    platform_detail="$(system_display_name) | $(uname -m)"
+    punchi_ui_render_phase 2 1 "$total" success \
+        "$(punchi_gettext 'Environment')" \
+        "$(punchi_gettext 'Completed')" \
+        "$platform_detail"
+
+    punchi_ui_render_phase 2 2 "$total" active \
+        "$(punchi_gettext 'Dependency check')" \
+        "$(punchi_gettext 'In progress')"
+    if punchi_check_and_report_dependencies; then
+        punchi_ui_render_phase 2 2 "$total" success \
+            "$(punchi_gettext 'Dependency check')" \
+            "$(punchi_gettext 'Reviewed')"
+    else
+        punchi_ui_render_phase 2 2 "$total" warning \
+            "$(punchi_gettext 'Dependency check')" \
+            "$(punchi_gettext 'Needs attention')"
+    fi
+
+    punchi_ui_render_phase 2 3 "$total" active \
+        "$(punchi_gettext 'Build package')" \
+        "$(punchi_gettext 'In progress')"
+    package_file="$(do_build_package 0)"
+    package_detail="${package_file#"$PROJECT_ROOT/"}"
+    punchi_ui_render_phase 2 3 "$total" success \
+        "$(punchi_gettext 'Build package')" \
+        "$(punchi_gettext 'Completed')" \
+        "$package_detail"
+
+    printf '%s\n' "$package_file"
 }
 
 ask_restart_plasma() {
@@ -531,35 +611,26 @@ parse_args() {
 }
 
 interactive_menu() {
-    local platform_label=""
     local choice=""
     local package_file=""
     local target_package=""
-    local ram_mb=""
-    local ram_display=""
-    local cpu_cores=""
-    local current_jobs=""
-
-    platform_label="$(local_platform_label)"
-    ram_mb="$(punchi_detect_total_ram_mb)"
-    ram_display="$(punchi_format_ram_display "$ram_mb")"
-    cpu_cores="$(punchi_detect_cpu_cores)"
 
     while true; do
-        current_jobs="$(punchi_get_concurrency_level)"
         echo ""
-        message banner
-        message system_profile "$platform_label"
-        message ram_info "$ram_display" "$cpu_cores"
-        message concurrency_info "$(punchi_concurrency_profile_label "$current_jobs")"
-        message dev_disabled
+        show_setup_header
         echo ""
         message menu_title
+        echo ""
+        message menu_primary
         message menu_opt1
         message menu_opt2
         message menu_opt3
+        echo ""
+        message menu_maintenance
         message menu_opt4
         message menu_opt5
+        echo ""
+        message menu_settings
         message menu_opt6
         message menu_opt7
         message menu_opt8
@@ -571,13 +642,13 @@ interactive_menu() {
         case "$choice" in
             1)
                 require_action_commands install
-                package_file="$(do_build_package)"
+                package_file="$(run_build_package_flow)"
                 do_install_package "$package_file" 1
                 break
                 ;;
             2)
                 require_action_commands build_only
-                package_file="$(do_build_package)"
+                package_file="$(run_build_package_flow)"
                 echo ""
                 message build_only_done "$package_file"
                 break
@@ -638,15 +709,17 @@ main() {
         return 0
     fi
 
+    show_setup_header
+    echo ""
     require_action_commands "$ACTION"
     case "$ACTION" in
         build_only)
-            package_file="$(do_build_package)"
+            package_file="$(run_build_package_flow)"
             echo ""
             message build_only_done "$package_file"
             ;;
         install)
-            package_file="$(do_build_package)"
+            package_file="$(run_build_package_flow)"
             do_install_package "$package_file" 0
             ;;
         check_deps)

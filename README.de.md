@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54">
-    <img src="https://img.shields.io/badge/release-v0.9.7.54-4caf50" alt="Version v0.9.7.54">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55">
+    <img src="https://img.shields.io/badge/release-v0.9.7.55-4caf50" alt="Version v0.9.7.55">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/lizenz-GPL--3.0--or--later-blue" alt="Lizenz GPL-3.0-or-later">
@@ -23,14 +23,15 @@ Punchi Dock Remastered ist ein natives Starter-Dock und eine Aufgabenleiste für
 Dieses Repository ist ein modularer Rewrite des ursprünglichen [Punchi Dock Plasmoids](https://github.com/PunchiSoft/punchi-dock-plasmoid). Das Projekt bereitet derzeit seinen Weg zur stabilen Version 1.0 vor.
 
 Die aktuelle Version ist
-[v0.9.7.54](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54).
+[v0.9.7.55](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55).
 
-## Neuigkeiten in Version 0.9.7.54
+## Neuigkeiten in Version 0.9.7.55
 
-- **Erste Phase des Vollbild-Kontrollzentrums**: Dauerhaftes Singleton-Dock-Element mit anpassbarer rechter Leiste, gemeinsamem Vollbild-Hintergrund mit PunchiMenu, Schnellzugriff auf WLAN und Bluetooth, Helligkeits- und Lautstärkereglern, Nicht stören, Umschaltung zwischen hellem/dunklem Design, Live-Anpassung der Nachtlicht-Farbtemperatur (6500 K bis 1000 K) und Benachrichtigungsverlauf.
-- **100 % validiert**: Vollständige CTest-Suite bestanden (83/83) inklusive Kontrollzentrum-Verträgen, Offscreen-Gesamttests, Nachtlicht-Umrechnung und vollständigen Übersetzungskatalogen (`es`, `de`, `pt_BR`).
+- **Audio-Untermenü im Kontrollzentrum und dynamische Gerätesymbole**: Dedizierte Seite zur Verwaltung von Audio-Ausgabe-/Eingabegeräten und App-Lautstärken, dynamische Schallwellen-Symbole passend zur Schiebereglerposition, automatische Kopfhörererkennung und universelles Equalizer-Symbol (`view-media-equalizer`).
+- **Plasma-Lautstärke-OSD-Schalter**: Integrierte KConfig-Steuerung (`plasmaparc`) zur Anzeige oder Ausblendung der globalen KDE-Lautstärkeleiste.
+- **Einheitliche Interaktionen und symmetrische Geometrie**: Zeigehand-Mauszeiger und Tooltips auf allen Karten sowie symmetrischer Rand für die Nachtlicht-Einstellungen.
 
-Siehe das [Änderungsprotokoll für 0.9.7.54](CHANGELOG.md#09754---2026-09-01) für detaillierte Versionshinweise und die durchgeführte Validierung.
+Siehe das [Änderungsprotokoll für 0.9.7.55](CHANGELOG.md#09755---2026-09-02) für detaillierte Versionshinweise und die durchgeführte Validierung.
 
 ## Screenshots
 

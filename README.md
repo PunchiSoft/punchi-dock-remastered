@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54">
-    <img src="https://img.shields.io/badge/release-v0.9.7.54-4caf50" alt="Release v0.9.7.54">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55">
+    <img src="https://img.shields.io/badge/release-v0.9.7.55-4caf50" alt="Release v0.9.7.55">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,14 +23,15 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7.54](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54).
+[v0.9.7.55](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55).
 
-## What's New in 0.9.7.54
+## What's New in 0.9.7.55
 
-- **Initial Fullscreen Control Center**: Persistent single-instance dock item with an adaptable right rail, shared fullscreen backdrop with PunchiMenu, quick Wi-Fi and Bluetooth subpages with inline actions, display brightness and audio volume sliders, Do Not Disturb, Light/Dark theme toggle, live Night Light color temperature control (6500K to 1000K), and notification history.
-- **100% Validated**: Full CTest suite passed (83/83) including offscreen load, Control Center contracts, Night Light intensity mapping, and complete translations (`es`, `de`, `pt_BR`).
+- **Control Center Audio Submenu & Dynamic Device Icons**: Dedicated audio management page for output/input device selection and application volume streams, responsive sound wave icons reflecting the volume slider level, automatic headphone detection, and universal equalizer fader icon for submenu navigation.
+- **Plasma Volume OSD Toggle**: Integrated native KConfig switch to control global volume on-screen display visibility.
+- **Unified Interactions & Night Light Geometry**: Pointing hand cursor with informative tooltips across all control cards, and refined symmetric geometry for Night Light intensity settings.
 
-See the [0.9.7.54 changelog](CHANGELOG.md#09754---2026-09-01) for detailed release
+See the [0.9.7.55 changelog](CHANGELOG.md#09755---2026-09-02) for detailed release
 notes and the validation performed for this version.
 
 ## Screenshots

@@ -36,7 +36,7 @@ Rectangle {
     RowLayout {
         anchors.fill: parent
         anchors.leftMargin: Kirigami.Units.largeSpacing
-        anchors.rightMargin: Kirigami.Units.smallSpacing
+        anchors.rightMargin: Kirigami.Units.largeSpacing
         spacing: Kirigami.Units.mediumSpacing
 
         Kirigami.Icon {
@@ -95,6 +95,7 @@ Rectangle {
             text: root.settingsActionName
             icon.name: "configure"
             display: PlasmaComponents.AbstractButton.IconOnly
+            flat: true
             Accessible.name: text
             onClicked: root.settingsRequested()
 

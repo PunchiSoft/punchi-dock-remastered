@@ -300,6 +300,36 @@ Module {
         Method { name: "toggleMode"; type: "bool"; lineNumber: 32 }
     }
     Component {
+        file: "controlcentervolumeosdadapter.h"
+        lineNumber: 11
+        name: "ControlCenterVolumeOsdAdapter"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/ControlCenterVolumeOsdAdapter 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "osdVisible"
+            type: "bool"
+            read: "osdVisible"
+            notify: "stateChanged"
+            index: 0
+            lineNumber: 15
+            isReadonly: true
+        }
+        Property {
+            name: "writable"
+            type: "bool"
+            read: "writable"
+            notify: "stateChanged"
+            index: 1
+            lineNumber: 16
+            isReadonly: true
+        }
+        Signal { name: "stateChanged"; lineNumber: 29 }
+        Method { name: "toggleOsd"; type: "bool"; lineNumber: 25 }
+        Method { name: "refresh"; lineNumber: 26 }
+    }
+    Component {
         file: "dockitemspersistenceadapter.h"
         lineNumber: 13
         name: "DockItemsPersistenceAdapter"

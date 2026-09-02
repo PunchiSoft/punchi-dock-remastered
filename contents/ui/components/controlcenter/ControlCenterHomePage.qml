@@ -17,6 +17,7 @@ FocusScope {
     property var bluetoothAdapter: null
     property var themeAdapter: null
     property var nightLightAdapter: null
+    property var volumeOsdAdapter: null
     property var notificationModel: null
     property int unreadNotificationCount: 0
     property int expiredNotificationCount: 0
@@ -35,6 +36,8 @@ FocusScope {
     signal nightLightStrengthPreviewRequested(int strength)
     signal nightLightStrengthPreviewStopped()
     signal nightLightStrengthModified(int strength)
+    signal volumeOsdToggleRequested()
+    signal soundRequested()
     signal notificationCloseRequested(int index)
     signal clearNotificationsRequested()
     signal settingsRequested(string section)
@@ -171,8 +174,9 @@ FocusScope {
                     objectName: "controlCenterVolumeCard"
                     Layout.fillWidth: true
                     title: i18nc("@title", "Sound") // qmllint disable unqualified
-                    iconName: root.volumeAdapter && root.volumeAdapter.muted
-                        ? "audio-volume-muted" : "audio-volume-high"
+                    iconName: root.volumeAdapter
+                        ? root.volumeAdapter.deviceIconName
+                        : "audio-volume-high"
                     value: root.volumeAdapter ? root.volumeAdapter.value : 0
                     controlAvailable: root.volumeAdapter
                         ? root.volumeAdapter.available : false
@@ -181,6 +185,30 @@ FocusScope {
                         && root.volumeAdapter.muted
                         ? i18nc("@action:button", "Unmute") // qmllint disable unqualified
                         : i18nc("@action:button", "Mute") // qmllint disable unqualified
+                    secondaryActionVisible: root.volumeOsdAdapter !== null
+                    secondaryActionEnabled: !!root.volumeOsdAdapter
+                        && root.volumeOsdAdapter.writable
+                    secondaryActionCheckable: true
+                    secondaryActionChecked: root.volumeOsdAdapter
+                        ? root.volumeOsdAdapter.osdVisible : false
+                    secondaryActionIconName: volumeCard.secondaryActionChecked
+                        ? "view-visible" : "view-hidden"
+                    secondaryActionName: volumeCard.secondaryActionChecked
+                        ? i18nc("@action:button", "Hide Plasma volume indicator") // qmllint disable unqualified
+                        : i18nc("@action:button", "Show Plasma volume indicator") // qmllint disable unqualified
+                    // The translation helper is supplied by the plasmoid context.
+                    // qmllint disable unqualified
+                    secondaryActionDescription: i18nc(
+                        "@info:accessibility",
+                        "Changes the volume indicator for all Plasma controls and multimedia keys")
+                    // qmllint enable unqualified
+                    navigationActionVisible: true
+                    navigationActionEnabled: root.volumeAdapter !== null
+                    navigationActionIconName: "view-media-equalizer"
+                    // qmllint disable unqualified
+                    navigationActionName: i18nc(
+                        "@action:button", "Manage audio devices and applications")
+                    // qmllint enable unqualified
                     settingsActionName: i18nc("@action:button", "Open sound settings") // qmllint disable unqualified
                     onValueModified: function(value) {
                         if (root.volumeAdapter) {
@@ -192,6 +220,9 @@ FocusScope {
                             root.volumeAdapter.toggleMuted()
                         }
                     }
+                    onSecondaryActionTriggered:
+                        root.volumeOsdToggleRequested()
+                    onNavigationRequested: root.soundRequested()
                     onSettingsRequested: root.settingsRequested("sound")
                 }
             }

@@ -39,6 +39,8 @@ target_sources(punchidockintegration PRIVATE
     controlcenternightlightadapter.h
     controlcenterthemeadapter.cpp
     controlcenterthemeadapter.h
+    controlcentervolumeosdadapter.cpp
+    controlcentervolumeosdadapter.h
     desktopshortcutwriter.cpp
     desktopshortcutwriter.h
     desktoplauncherresolver.cpp

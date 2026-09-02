@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54">
-    <img src="https://img.shields.io/badge/release-v0.9.7.54-4caf50" alt="Versión v0.9.7.54">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55">
+    <img src="https://img.shields.io/badge/release-v0.9.7.55-4caf50" alt="Versión v0.9.7.55">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -23,14 +23,15 @@ Punchi Dock Remastered es un dock nativo de lanzadores e interfaz de tareas para
 Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). Actualmente el proyecto prepara su camino hacia la versión estable 1.0.
 
 La versión actual es
-[v0.9.7.54](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54).
+[v0.9.7.55](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55).
 
-## Novedades de la versión 0.9.7.54
+## Novedades de la versión 0.9.7.55
 
-- **Primera fase del Centro de control en pantalla completa**: Ítem persistente y de instancia única del dock con rail derecho adaptable, fondo compartido con PunchiMenu, accesos rápidos a Wi-Fi y Bluetooth, controles de brillo y volumen, modo No molestar, alternancia de tema claro/oscuro, ajuste en vivo de temperatura de Luz nocturna (6500K a 1000K) e historial de notificaciones.
-- **100% Validado**: Suite CTest completa aprobada (83/83), incluyendo contratos del Centro de control, carga integral offscreen, conversión de Luz nocturna y catálogos de traducción completos (`es`, `de`, `pt_BR`).
+- **Submenú de audio en el Centro de control e iconografía dinámica**: Página dedicada a la gestión de salidas/entradas de audio y volumen de aplicaciones individuales, ondas dinámicas en el icono del parlante según el nivel del deslizador, detección de auriculares y botón con icono universal de ecualizador (`view-media-equalizer`).
+- **Conmutador de OSD de volumen de Plasma**: Control directo vía KConfig (`plasmaparc`) para activar o desactivar la barra central de volumen de KDE.
+- **Interacciones unificadas y geometría simétrica**: Cursor tipo mano interactiva y tooltips informativos en todas las tarjetas, junto con margen simétrico en la baldosa de Intensidad de Luz nocturna.
 
-Consulta el [changelog de la versión 0.9.7.54](CHANGELOG.md#09754---2026-09-01) para
+Consulta el [changelog de la versión 0.9.7.55](CHANGELOG.md#09755---2026-09-02) para
 conocer las notas detalladas del lanzamiento y la validación realizada.
 
 ## Capturas

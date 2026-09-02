@@ -69,6 +69,9 @@ THEME_ADAPTER = (
 NIGHT_LIGHT_ADAPTER = (
     ROOT / "src/controlcenternightlightadapter.cpp"
 ).read_text(encoding="utf-8")
+VOLUME_OSD_ADAPTER = (
+    ROOT / "src/controlcentervolumeosdadapter.cpp"
+).read_text(encoding="utf-8")
 VOLUME_ADAPTER = (
     ROOT / "contents/ui/components/controlcenter/ControlCenterVolumeAdapter.qml"
 ).read_text(encoding="utf-8")
@@ -89,6 +92,12 @@ BLUETOOTH_PAGE = (
 ).read_text(encoding="utf-8")
 PAGE_HEADER = (
     ROOT / "contents/ui/components/controlcenter/ControlCenterPageHeader.qml"
+).read_text(encoding="utf-8")
+AUDIO_PAGE = (
+    ROOT / "contents/ui/components/controlcenter/ControlCenterAudioPage.qml"
+).read_text(encoding="utf-8")
+AUDIO_ITEM = (
+    ROOT / "contents/ui/components/controlcenter/ControlCenterAudioItem.qml"
 ).read_text(encoding="utf-8")
 BLUETOOTH_DELEGATE = (
     ROOT / "contents/ui/components/controlcenter/ControlCenterBluetoothDelegate.qml"
@@ -357,6 +366,52 @@ require(
     and "sink.volume =" in VOLUME_ADAPTER
     and "sink.muted =" in VOLUME_ADAPTER,
     "The volume adapter must control the preferred Plasma audio sink.",
+)
+require(
+    "PlasmaVolume.SinkModel" in VOLUME_ADAPTER
+    and "PlasmaVolume.SourceModel" in VOLUME_ADAPTER
+    and "PlasmaVolume.SinkInputModel" in VOLUME_ADAPTER
+    and "PlasmaVolume.SourceOutputModel" in VOLUME_ADAPTER
+    and "PlasmaVolume.PulseObjectFilterModel" in VOLUME_ADAPTER
+    and "PlasmaVolume.ListItemMenu" in VOLUME_ADAPTER
+    and "PlasmaVolume.GlobalConfig" in VOLUME_ADAPTER
+    and "PlasmaVolume.GlobalService.globalMuteSinks()" in VOLUME_ADAPTER
+    and "PlasmaVolume.GlobalService.globalMuteSources()" in VOLUME_ADAPTER
+    and "function openItemOptions" in VOLUME_ADAPTER,
+    "The deferred audio adapter must follow plasma-pa's device, stream, and menu contract.",
+)
+require(
+    'currentPage = "sound"' in OVERLAY
+    and "ControlCenterAudioPage" in OVERLAY
+    and "onSoundRequested: root.showSoundPage()" in OVERLAY
+    and 'Controls.TabButton {' in AUDIO_PAGE
+    and 'i18nc("@title:tab", "Devices")' in AUDIO_PAGE
+    and 'i18nc("@title:tab", "Applications")' in AUDIO_PAGE
+    and "root.adapter.outputDevicesModel" in AUDIO_PAGE
+    and "root.adapter.inputDevicesModel" in AUDIO_PAGE
+    and "root.adapter.playbackStreamsModel" in AUDIO_PAGE
+    and "root.adapter.recordingStreamsModel" in AUDIO_PAGE
+    and "ControlCenterAudioItem" in AUDIO_PAGE
+    and "setDefaultDevice" in AUDIO_ITEM
+    and "toggleObjectMuted" in AUDIO_ITEM
+    and "setObjectValue" in AUDIO_ITEM
+    and "openItemOptions" in AUDIO_ITEM
+    and 'objectName: "controlCenterNavigationActionButton"' in CONTROL_CARD,
+    "Sound must open an accessible internal Devices/Applications page with native interactions.",
+)
+require(
+    'KSharedConfig::openConfig(QStringLiteral("plasmaparc"))'
+    in VOLUME_OSD_ADAPTER
+    and 's_volumeOsdKey = "VolumeOsd"' in VOLUME_OSD_ADAPTER
+    and 'group.writeEntry(s_volumeOsdKey, updatedVisibility, KConfig::Notify)'
+    in VOLUME_OSD_ADAPTER
+    and "KConfigWatcher::configChanged" in VOLUME_OSD_ADAPTER
+    and '"MuteOsd"' not in VOLUME_OSD_ADAPTER
+    and 'secondaryActionIconName: volumeCard.secondaryActionChecked'
+    in HOME_PAGE
+    and '? "view-visible" : "view-hidden"' in HOME_PAGE
+    and 'onVolumeOsdToggleRequested: root.toggleVolumeOsd()' in OVERLAY,
+    "The Sound card must toggle only Plasma's global volume OSD through KConfig.",
 )
 require(
     "Brightness.ScreenBrightnessControl" in BRIGHTNESS_ADAPTER
