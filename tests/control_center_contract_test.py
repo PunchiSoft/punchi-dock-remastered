@@ -377,6 +377,7 @@ require(
     and "PlasmaVolume.GlobalConfig" in VOLUME_ADAPTER
     and "PlasmaVolume.GlobalService.globalMuteSinks()" in VOLUME_ADAPTER
     and "PlasmaVolume.GlobalService.globalMuteSources()" in VOLUME_ADAPTER
+    and "globalConfig.save()" in VOLUME_ADAPTER
     and "function openItemOptions" in VOLUME_ADAPTER,
     "The deferred audio adapter must follow plasma-pa's device, stream, and menu contract.",
 )

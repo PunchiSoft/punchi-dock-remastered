@@ -15,12 +15,22 @@ FocusScope {
     required property var adapter
     property bool showVirtualDevices: false
 
-    readonly property int deviceCount:
+    readonly property int outputDeviceCount:
         modelCount(adapter.outputDevicesModel)
-        + modelCount(adapter.inputDevicesModel)
-    readonly property int applicationCount:
+    readonly property int inputDeviceCount:
+        modelCount(adapter.inputDevicesModel)
+    readonly property int playbackStreamCount:
         modelCount(adapter.playbackStreamsModel)
-        + modelCount(adapter.recordingStreamsModel)
+    readonly property int recordingStreamCount:
+        modelCount(adapter.recordingStreamsModel)
+    readonly property int deviceCount:
+        outputDeviceCount + inputDeviceCount
+    readonly property int applicationCount:
+        playbackStreamCount + recordingStreamCount
+    readonly property bool deviceSectionsVisible:
+        outputDeviceCount > 1 || inputDeviceCount > 1
+    readonly property bool applicationSectionsVisible:
+        playbackStreamCount > 1 || recordingStreamCount > 1
 
     signal backRequested()
     signal settingsRequested(string section)
@@ -189,6 +199,11 @@ FocusScope {
                     objectName: "controlCenterAudioDevicesView"
                     clip: true
                     contentWidth: availableWidth
+                    Accessible.role: Accessible.List
+                    // qmllint disable unqualified
+                    Accessible.name: i18nc(
+                        "@info:accessibility", "Audio devices")
+                    // qmllint enable unqualified
 
                     ColumnLayout {
                         width: devicesScroll.availableWidth
@@ -196,6 +211,8 @@ FocusScope {
 
                         PlasmaExtras.ListSectionHeader {
                             Layout.fillWidth: true
+                            visible: root.outputDeviceCount > 0
+                                && root.deviceSectionsVisible
                             text: i18nc("@title:group", "Output Devices") // qmllint disable unqualified
                         }
 
@@ -214,12 +231,17 @@ FocusScope {
                                 description: defaultDevice
                                     ? i18nc("@info:status", "Default output") // qmllint disable unqualified
                                     : ""
-                                defaultSelectorVisible: true
+                                routingModel:
+                                    root.adapter.outputDevicesModel
+                                defaultSelectorVisible:
+                                    root.deviceSectionsVisible
                             }
                         }
 
                         PlasmaExtras.ListSectionHeader {
                             Layout.fillWidth: true
+                            visible: root.inputDeviceCount > 0
+                                && root.deviceSectionsVisible
                             text: i18nc("@title:group", "Input Devices") // qmllint disable unqualified
                         }
 
@@ -239,7 +261,10 @@ FocusScope {
                                 description: defaultDevice
                                     ? i18nc("@info:status", "Default input") // qmllint disable unqualified
                                     : ""
-                                defaultSelectorVisible: true
+                                routingModel:
+                                    root.adapter.inputDevicesModel
+                                defaultSelectorVisible:
+                                    root.deviceSectionsVisible
                             }
                         }
 
@@ -265,6 +290,11 @@ FocusScope {
                     objectName: "controlCenterAudioApplicationsView"
                     clip: true
                     contentWidth: availableWidth
+                    Accessible.role: Accessible.List
+                    // qmllint disable unqualified
+                    Accessible.name: i18nc(
+                        "@info:accessibility", "Application audio streams")
+                    // qmllint enable unqualified
 
                     ColumnLayout {
                         width: applicationsScroll.availableWidth
@@ -272,6 +302,8 @@ FocusScope {
 
                         PlasmaExtras.ListSectionHeader {
                             Layout.fillWidth: true
+                            visible: root.playbackStreamCount > 0
+                                && root.applicationSectionsVisible
                             text: i18nc("@title:group", "Playing Audio") // qmllint disable unqualified
                         }
 
@@ -295,6 +327,8 @@ FocusScope {
 
                         PlasmaExtras.ListSectionHeader {
                             Layout.fillWidth: true
+                            visible: root.recordingStreamCount > 0
+                                && root.applicationSectionsVisible
                             text: i18nc("@title:group", "Recording Audio") // qmllint disable unqualified
                         }
 

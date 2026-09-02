@@ -189,6 +189,7 @@ QtObject {
             return false
         }
         globalConfig.raiseMaximumVolume = Boolean(enabled)
+        globalConfig.save()
         return true
     }
 
