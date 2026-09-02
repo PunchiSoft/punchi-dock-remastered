@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.42">
-    <img src="https://img.shields.io/badge/release-v0.9.7.42-4caf50" alt="Versión v0.9.7.42">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54">
+    <img src="https://img.shields.io/badge/release-v0.9.7.54-4caf50" alt="Versión v0.9.7.54">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -23,14 +23,14 @@ Punchi Dock Remastered es un dock nativo de lanzadores e interfaz de tareas para
 Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). Actualmente el proyecto prepara su camino hacia la versión estable 1.0.
 
 La versión actual es
-[v0.9.7.42](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.42).
+[v0.9.7.54](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54).
 
-## Novedades de la versión 0.9.7.42
+## Novedades de la versión 0.9.7.54
 
-- **Cinemática de Apertura y Cierre Suave en PunchiMenu**: Brote elástico de superficie (*Spring Reveal*) con escala dinámica (`0.88 ──► 1.00`), desplazamiento vertical anclado y desvanecimiento suave de salida (*Fade Out*) tanto en Modo Normal como en Modo Compacto.
-- **100% Validado**: Suite CTest completa aprobada (38/38) y catálogos de traducción al 100%.
+- **Primera fase del Centro de control en pantalla completa**: Ítem persistente y de instancia única del dock con rail derecho adaptable, fondo compartido con PunchiMenu, accesos rápidos a Wi-Fi y Bluetooth, controles de brillo y volumen, modo No molestar, alternancia de tema claro/oscuro, ajuste en vivo de temperatura de Luz nocturna (6500K a 1000K) e historial de notificaciones.
+- **100% Validado**: Suite CTest completa aprobada (83/83), incluyendo contratos del Centro de control, carga integral offscreen, conversión de Luz nocturna y catálogos de traducción completos (`es`, `de`, `pt_BR`).
 
-Consulta el [changelog de la versión 0.9.7.42](CHANGELOG.md#09742---2026-08-17) para
+Consulta el [changelog de la versión 0.9.7.54](CHANGELOG.md#09754---2026-09-01) para
 conocer las notas detalladas del lanzamiento y la validación realizada.
 
 ## Capturas
@@ -68,6 +68,7 @@ conocer las notas detalladas del lanzamiento y la validación realizada.
   búsqueda, categorías, favoritos, carpetas de aplicaciones con nombre,
   ocultación selectiva, operación por teclado, atajo global y acciones de
   sesión nativas. Compacto queda reservado para una versión futura.
+- Centro de control en pantalla completa con accesos directos para Wi-Fi y Bluetooth, controles de brillo y volumen, No molestar, tema claro/oscuro, temperatura de Luz nocturna con previsualización en vivo e historial de notificaciones.
 - Visualizador de audio PipeWire opcional con seis estilos, colores dinámicos o del tema Plasma y hasta 48 elementos visuales.
 - Popups adaptados al tema de Plasma con animaciones de apertura configurables,
   distancia adaptativa respecto del dock, transiciones fluidas entre miniaturas

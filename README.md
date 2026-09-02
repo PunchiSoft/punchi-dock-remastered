@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.42">
-    <img src="https://img.shields.io/badge/release-v0.9.7.42-4caf50" alt="Release v0.9.7.42">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54">
+    <img src="https://img.shields.io/badge/release-v0.9.7.54-4caf50" alt="Release v0.9.7.54">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,14 +23,14 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7.42](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.42).
+[v0.9.7.54](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54).
 
-## What's New in 0.9.7.42
+## What's New in 0.9.7.54
 
-- **Cinematic Menu Spring Reveal & Graceful Close**: Elastic surface spring reveal with dynamic scale (`0.88 ──► 1.00`), anchored slide transitions, and smooth deferred fade out upon closing for both Normal and Compact PunchiMenu modes.
-- **100% Validated**: Full CTest suite passed (38/38) and complete translation catalogs.
+- **Initial Fullscreen Control Center**: Persistent single-instance dock item with an adaptable right rail, shared fullscreen backdrop with PunchiMenu, quick Wi-Fi and Bluetooth subpages with inline actions, display brightness and audio volume sliders, Do Not Disturb, Light/Dark theme toggle, live Night Light color temperature control (6500K to 1000K), and notification history.
+- **100% Validated**: Full CTest suite passed (83/83) including offscreen load, Control Center contracts, Night Light intensity mapping, and complete translations (`es`, `de`, `pt_BR`).
 
-See the [0.9.7.42 changelog](CHANGELOG.md#09742---2026-08-17) for detailed release
+See the [0.9.7.54 changelog](CHANGELOG.md#09754---2026-09-01) for detailed release
 notes and the validation performed for this version.
 
 ## Screenshots
@@ -79,6 +79,7 @@ contribution requirements.
   search, categories, favorites, named application folders, selective hiding,
   keyboard operation, a global shortcut, and native session actions. Compact
   remains reserved for a future version.
+- Fullscreen Control Center with quick Wi-Fi and Bluetooth connections, display brightness and audio volume controls, Do Not Disturb, Light/Dark theme toggle, live Night Light temperature adjustment, and persistent notification history.
 - Optional PipeWire audio visualizer with six styles, dynamic or Plasma-themed colors, and up to 48 visual elements.
 - Plasma-themed popups with configurable opening animations, adaptive
   theme-aware distance from the dock, smooth preview-to-menu transitions, and

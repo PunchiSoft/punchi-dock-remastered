@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.42">
-    <img src="https://img.shields.io/badge/release-v0.9.7.42-4caf50" alt="Versão v0.9.7.42">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54">
+    <img src="https://img.shields.io/badge/release-v0.9.7.54-4caf50" alt="Versão v0.9.7.54">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0--or--later-blue" alt="Licença GPL-3.0-or-later">
@@ -23,14 +23,14 @@ Punchi Dock Remastered é um dock inicializador nativo e interface de tarefas pa
 Este repositório é uma reescrita modular do [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). O projeto prepara atualmente seu caminho rumo à versão estável 1.0.
 
 A versão atual é
-[v0.9.7.42](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.42).
+[v0.9.7.54](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54).
 
-## Novidades na versão 0.9.7.42
+## Novidades na versão 0.9.7.54
 
-- **Abertura Cinemática e Fechamento Suave no PunchiMenu**: Revelação elástica de superfície (*Spring Reveal*) com escala dinâmica (`0.88 ──► 1.00`), transições ancoradas de deslizamento e desvanecimento suave de saída (*Fade Out*) nos modos Normal e Compacto.
-- **100% Validado**: Suite completa CTest aprovada (38/38) e catálogos de tradução completos.
+- **Primeira fase do Centro de Controle em tela cheia**: Item persistente de instância única no dock com trilho direito adaptável, fundo compartilhado com o PunchiMenu, acessos rápidos para Wi-Fi e Bluetooth, controles de brilho e volume, Não Perturbe, alternância de tema claro/escuro, ajuste ao vivo da temperatura de Luz Noturna (6500 K a 1000 K) e histórico de notificações.
+- **100% Validado**: Suite CTest completa aprovada (83/83), incluindo contratos do Centro de Controle, carga offscreen completa, conversão de Luz Noturna e catálogos de tradução completos (`es`, `de`, `pt_BR`).
 
-Consulte o [registro de alterações da 0.9.7.42](CHANGELOG.md#09742---2026-08-17) para ver as notas detalhadas de lançamento e a validação executada.
+Consulte o [registro de alterações da 0.9.7.54](CHANGELOG.md#09754---2026-09-01) para ver as notas detalhadas de lançamento e a validação executada.
 
 ## Capturas de Tela
 
@@ -70,6 +70,7 @@ Consulte o [guia de tradução](po/README.md) para diretrizes sobre os catálogo
 - Cartões de janelas, miniaturas em tempo real e controles de janelas agrupadas (escolha entre cartões, miniaturas ao vivo ou sem popup de prévia).
 - Pastas configuráveis com visualizações em grade, lista e detalhes, alternância direta pelo menu de contexto e arrastar e soltar de inicializadores do PunchiMenu ou da área de trabalho, notas rápidas, lixeira, separadores e calendário.
 - Lançador de aplicativos PunchiMenu com apresentações Normal e Tela Cheia, pesquisa, categorias, favoritos, pastas nomeadas, ocultação seletiva, navegação por teclado e atalho global.
+- Centro de Controle em tela cheia com conexões rápidas para Wi-Fi e Bluetooth, controles de brilho e volume, Não Perturbe, alternância de tema claro/escuro, ajuste ao vivo de Luz Noturna e histórico de notificações.
 - Visualizador de áudio PipeWire opcional com seis estilos, cores dinâmicas ou do tema Plasma e até 48 elementos visuais.
 - Popups com tema Plasma, animações configuráveis, distância adaptativa ao dock e transições suaves.
 - Ações nativas de aplicativos e janelas nos menus de contexto de inicializadores fixados e tarefas dinâmicas.

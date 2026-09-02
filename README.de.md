@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.42">
-    <img src="https://img.shields.io/badge/release-v0.9.7.42-4caf50" alt="Version v0.9.7.42">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54">
+    <img src="https://img.shields.io/badge/release-v0.9.7.54-4caf50" alt="Version v0.9.7.54">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/lizenz-GPL--3.0--or--later-blue" alt="Lizenz GPL-3.0-or-later">
@@ -23,14 +23,14 @@ Punchi Dock Remastered ist ein natives Starter-Dock und eine Aufgabenleiste für
 Dieses Repository ist ein modularer Rewrite des ursprünglichen [Punchi Dock Plasmoids](https://github.com/PunchiSoft/punchi-dock-plasmoid). Das Projekt bereitet derzeit seinen Weg zur stabilen Version 1.0 vor.
 
 Die aktuelle Version ist
-[v0.9.7.42](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.42).
+[v0.9.7.54](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.54).
 
-## Neuigkeiten in Version 0.9.7.42
+## Neuigkeiten in Version 0.9.7.54
 
-- **Kinematische PunchiMenu-Aktivierung & sanftes Schließen**: Elastische Oberflächen-Animation (*Spring Reveal*) mit dynamischer Skalierung (`0.88 ──► 1.00`), verankerte Folienübergänge und sanftes Ausblenden (*Fade Out*) im Normal- und Kompaktmodus.
-- **100 % validiert**: Vollständige CTest-Suite bestanden (38/38) und vollständige Übersetzungskataloge.
+- **Erste Phase des Vollbild-Kontrollzentrums**: Dauerhaftes Singleton-Dock-Element mit anpassbarer rechter Leiste, gemeinsamem Vollbild-Hintergrund mit PunchiMenu, Schnellzugriff auf WLAN und Bluetooth, Helligkeits- und Lautstärkereglern, Nicht stören, Umschaltung zwischen hellem/dunklem Design, Live-Anpassung der Nachtlicht-Farbtemperatur (6500 K bis 1000 K) und Benachrichtigungsverlauf.
+- **100 % validiert**: Vollständige CTest-Suite bestanden (83/83) inklusive Kontrollzentrum-Verträgen, Offscreen-Gesamttests, Nachtlicht-Umrechnung und vollständigen Übersetzungskatalogen (`es`, `de`, `pt_BR`).
 
-Siehe das [Änderungsprotokoll für 0.9.7.42](CHANGELOG.md#09742---2026-08-17) für detaillierte Versionshinweise und die durchgeführte Validierung.
+Siehe das [Änderungsprotokoll für 0.9.7.54](CHANGELOG.md#09754---2026-09-01) für detaillierte Versionshinweise und die durchgeführte Validierung.
 
 ## Screenshots
 
@@ -70,6 +70,7 @@ Siehe den [Leitfaden für Übersetzungen](po/README.md) für Katalogrichtlinien 
 - Fensterkarten, Live-Vorschauen und gruppierte Fenstersteuerungen (Auswahl zwischen Karten, Live-Vorschauen oder reiner Menüanzeige).
 - Konfigurierbare Ordner mit Raster-, Listen- und Detailansicht, direktem Umschalten aus dem Kontextmenü sowie Drag-and-Drop von Startern aus PunchiMenu oder vom Schreibtisch, Notizen, Papierkorb, Trennlinien und Kalender.
 - PunchiMenu-Anwendungsstarter mit Normal- und Vollbilddarstellung, Suche, Kategorien, Favoriten, Ordnern, selektivem Ausblenden, Tastaturbedienung und globalem Tastaturkürzel.
+- Vollbild-Kontrollzentrum mit Schnellverbindungen für WLAN und Bluetooth, Helligkeits- und Lautstärkesteuerung, Nicht stören, Hell-/Dunkel-Umschaltung, Live-Nachtlicht-Einstellung und persistentem Benachrichtigungsverlauf.
 - Optionaler PipeWire-Audio-Visualisierer mit sechs Stilen, dynamischen oder Plasma-Farben und bis zu 48 visuellen Elementen.
 - Plasma-angepasste Popups mit konfigurierbaren Animationen, anpassbarem Abstand und fließenden Übergängen.
 - Native Anwendungs- und Fensteraktionen in Kontextmenüs.
