@@ -37,6 +37,25 @@ target_link_libraries(commandclassification_test PRIVATE Qt6::Core KF6::CoreAddo
 
 add_test(NAME commandclassification_test COMMAND commandclassification_test)
 
+add_executable(controlcenternightlightadapter_test
+    controlcenternightlightadapter_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/controlcenternightlightadapter.cpp
+)
+
+target_include_directories(controlcenternightlightadapter_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(controlcenternightlightadapter_test PRIVATE
+    Qt6::Core
+    Qt6::DBus
+    Qt6::Qml
+    Qt6::Test
+    KF6::ConfigCore
+)
+
+add_test(
+    NAME controlcenternightlightadapter_test
+    COMMAND controlcenternightlightadapter_test
+)
+
 add_executable(applicationcategoryclassifier_test
     applicationcategoryclassifier_test.cpp
     ${CMAKE_SOURCE_DIR}/src/applicationcategoryclassifier.cpp
@@ -171,6 +190,11 @@ find_program(PYTHON3_EXECUTABLE python3 REQUIRED)
 add_test(
     NAME punchimenu_context_contract_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/punchimenu_context_contract_test.py
+)
+
+add_test(
+    NAME control_center_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/control_center_contract_test.py
 )
 
 add_test(
@@ -420,6 +444,46 @@ endfunction()
 punchi_add_qml_test(
     popup_coordinator_state_test
     popup_coordinator_state_test.qml
+)
+punchi_add_qml_test(
+    control_center_shortcut_tile_test
+    control_center_shortcut_tile_test.qml
+)
+punchi_add_qml_test(
+    control_center_controller_test
+    control_center_controller_test.qml
+)
+punchi_add_qml_test(
+    control_center_control_card_test
+    control_center_control_card_test.qml
+)
+punchi_add_qml_test(
+    control_center_overlay_layout_test
+    control_center_overlay_layout_test.qml
+)
+punchi_add_qml_test(
+    control_center_notification_delegate_test
+    control_center_notification_delegate_test.qml
+)
+punchi_add_qml_test(
+    control_center_expandable_section_test
+    control_center_expandable_section_test.qml
+)
+punchi_add_qml_test(
+    control_center_home_notifications_expansion_test
+    control_center_home_notifications_expansion_test.qml
+)
+punchi_add_qml_test(
+    control_center_brightness_role_names_test
+    control_center_brightness_role_names_test.qml
+)
+punchi_add_qml_test(
+    control_center_network_page_test
+    control_center_network_page_test.qml
+)
+punchi_add_qml_test(
+    control_center_bluetooth_page_test
+    control_center_bluetooth_page_test.qml
 )
 punchi_add_qml_test(
     popup_visible_gap_placement_test

@@ -280,6 +280,9 @@ function itemTitle(item, translate) {
     if (item.type === "media") {
         return defaultName(item.name, "Media player", translate)
     }
+    if (item.type === "control-center") {
+        return defaultName(item.name, "Control Center", translate)
+    }
     return defaultName(item.name, "Application", translate)
 }
 
@@ -311,6 +314,9 @@ function itemTypeTitle(type, translate) {
     if (type === "media") {
         return translate("Media player")
     }
+    if (type === "control-center") {
+        return translate("Control Center")
+    }
     return translate("Application")
 }
 
@@ -340,6 +346,9 @@ function itemSubtitle(item, translate, translatePlural) {
         return item.defaultPlayerName
             ? String(item.defaultPlayerName)
             : translate("Automatically select the active player")
+    }
+    if (item.type === "control-center") {
+        return translate("System controls and notifications")
     }
     if (item.type === "dynamic-applications") {
         return translate("Choose where open apps appear")
@@ -380,6 +389,9 @@ function itemIcon(item) {
     }
     if (item.type === "media") {
         return "emblem-music-symbolic"
+    }
+    if (item.type === "control-center") {
+        return item.icon || "preferences-system"
     }
     return item.icon || "application-x-executable"
 }
@@ -572,6 +584,16 @@ function pruneMedia(item) {
     if (item.openPlayerMinimized !== true) {
         delete item.openPlayerMinimized
     }
+}
+
+function pruneControlCenter(item) {
+    removeKeys(item, [
+        "command", "apps", "actions", "actionsEnabled", "storageId", "appId",
+        "description"
+    ])
+    item.type = "control-center"
+    item.name = "Control Center"
+    item.icon = "preferences-system"
 }
 
 function normalizedPunchiMenuGridIconScalePercent(value) {
@@ -1009,6 +1031,13 @@ function newItem(type, defaultTrashEmptySound) {
             "type": "media",
             "name": "Media player",
             "icon": "emblem-music-symbolic"
+        }
+    }
+    if (type === "control-center") {
+        return {
+            "type": "control-center",
+            "name": "Control Center",
+            "icon": "preferences-system"
         }
     }
     if (type === "folder") {

@@ -349,6 +349,9 @@ function setMediaAutoCollapseDelaySeconds(seconds) {
 }
 
 function selectedConfigureTitle() {
+    if (selectedItemType === "control-center") {
+        return i18n("Control Center item")
+    }
     if (selectedItemType === "punchimenu") {
         return i18n("Configure PunchiMenu")
     }
@@ -383,7 +386,7 @@ function selectedConfigureTitle() {
 }
 
 function canConfigureSelectedItem() {
-    return selectedIndex >= 0
+    return selectedIndex >= 0 && selectedItemType !== "control-center"
 }
 
 function configureSelectedItem() {
@@ -417,6 +420,12 @@ function addItem(type) {
     if (type === "punchimenu" && hasItemType("punchimenu")) {
         mainView.showStatus(
             i18n("Only one PunchiMenu item can be added."),
+            Kirigami.MessageType.Information)
+        return
+    }
+    if (type === "control-center" && hasItemType("control-center")) {
+        mainView.showStatus(
+            i18n("Only one Control Center item can be added."),
             Kirigami.MessageType.Information)
         return
     }

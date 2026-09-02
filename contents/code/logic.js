@@ -6,7 +6,9 @@
 const maximumDockItemsJsonLength = 1024 * 1024
 const maximumDockItemCount = 512
 
-const singletonDockItemTypes = ["media", "punchimenu", "dynamic-applications"]
+const singletonDockItemTypes = [
+    "media", "punchimenu", "control-center", "dynamic-applications"
+]
 
 function duplicateSingletonType(items) {
     var seenTypes = {}

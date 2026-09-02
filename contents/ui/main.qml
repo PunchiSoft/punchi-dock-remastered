@@ -9,6 +9,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.kwindowsystem
 import "org/punchi/dock" as Punchi
 import "components"
+import "components/controlcenter"
 import "components/punchimenu"
 import "config/code/configItems.js" as ConfigItemsJS
 
@@ -25,7 +26,10 @@ PlasmoidItem {
     onExpandedChanged: {
         // A dock hosted in a panel owns its popups and must never expose its
         // full representation through Plasma's generic activation lifecycle.
-        if (root.inPanel && root.configuredPunchiMenuItem && root.expanded) {
+        if (root.inPanel
+                && (root.configuredPunchiMenuItem
+                    || root.configuredControlCenterItem)
+                && root.expanded) {
             root.expanded = false
         }
     }
@@ -143,6 +147,20 @@ PlasmoidItem {
     readonly property var configuredPunchiMenuItem: configuredPunchiMenuItemIndex >= 0
         ? (dockItemsController.dockItems || [])[configuredPunchiMenuItemIndex]
         : null
+    readonly property int configuredControlCenterItemIndex: {
+        const items = dockItemsController.dockItems || []
+        for (let index = 0; index < items.length; index++) {
+            if (items[index] && items[index].type === "control-center") {
+                return index
+            }
+        }
+        return -1
+    }
+    readonly property var configuredControlCenterItem:
+        configuredControlCenterItemIndex >= 0
+            ? (dockItemsController.dockItems
+                || [])[configuredControlCenterItemIndex]
+            : null
     readonly property real configuredPunchiMenuGridIconScale: {
         const requestedPercent = Number(configuredPunchiMenuItem
             ? configuredPunchiMenuItem.gridIconScalePercent
@@ -399,6 +417,9 @@ PlasmoidItem {
         if (type === "punchimenu") {
             return "start-here-kde"
         }
+        if (type === "control-center") {
+            return "preferences-system"
+        }
         return "application-x-executable"
     }
 
@@ -438,6 +459,16 @@ PlasmoidItem {
         onOperationFailed: function(operation, message) {
             console.warn("Punchi Dock:", operation, message)
         }
+    }
+    ControlCenterController {
+        id: controlCenterController
+        applicationLauncher: systemDiscovery
+    }
+    Punchi.ControlCenterThemeAdapter {
+        id: controlCenterThemeAdapter
+    }
+    Punchi.ControlCenterNightLightAdapter {
+        id: controlCenterNightLightAdapter
     }
     readonly property var systemDiscoveryService: systemDiscovery
     readonly property var punchiMenuLayoutControllerService: punchiMenuLayoutController
@@ -578,6 +609,10 @@ PlasmoidItem {
     property var punchiMenuAnchorItem: null
 
     function togglePunchiMenu(anchorItem) {
+        if (controlCenterDialogInstance
+                && controlCenterDialogInstance.visible) {
+            controlCenterDialogInstance.closeImmediately()
+        }
         if (anchorItem && typeof anchorItem.mapToGlobal === "function") {
             root.punchiMenuAnchorItem = anchorItem
         }
@@ -622,6 +657,106 @@ PlasmoidItem {
             }
         } else {
             punchiMenuDialogInstance.openWithReveal()
+        }
+    }
+
+    property var controlCenterDialogInstance: null
+    property var controlCenterAnchorItem: null
+
+    function toggleControlCenter(anchorItem) {
+        if (punchiMenuDialogInstance && punchiMenuDialogInstance.visible) {
+            punchiMenuDialogInstance.closeImmediately()
+        }
+        if (anchorItem && typeof anchorItem.mapToGlobal === "function") {
+            root.controlCenterAnchorItem = anchorItem
+        }
+        if (!controlCenterDialogInstance) {
+            controlCenterDialogInstance
+                = controlCenterFullscreenDialogComponent.createObject(root)
+            if (!controlCenterDialogInstance) {
+                return
+            }
+        }
+
+        if (controlCenterDialogInstance.openedFromPanel !== undefined) {
+            controlCenterDialogInstance.openedFromPanel = root.inPanel
+        }
+        if (controlCenterDialogInstance.visible) {
+            controlCenterDialogInstance.closeWithFade()
+        } else {
+            controlCenterDialogInstance.openWithReveal()
+        }
+    }
+
+    Component {
+        id: controlCenterFullscreenDialogComponent
+
+        PlasmaCore.Dialog {
+            id: controlCenterDialog
+
+            readonly property bool isX11Session: KWindowSystem.isPlatformX11
+            property bool openedFromPanel: false
+
+            objectName: "controlCenterFullscreenDialog"
+            location: PlasmaCore.Types.Floating
+            type: PlasmaCore.Dialog.Normal
+            flags: openedFromPanel
+                ? Qt.Window | Qt.FramelessWindowHint
+                : isX11Session
+                    ? Qt.Window | Qt.FramelessWindowHint
+                        | Qt.WindowStaysOnTopHint
+                    : Qt.Window | Qt.FramelessWindowHint
+                        | Qt.WindowStaysOnTopHint
+            backgroundHints: PlasmaCore.Dialog.NoBackground
+            x: 0
+            y: 0
+            width: Screen.width
+            height: Screen.height
+            hideOnWindowDeactivate: true
+            visible: false
+            opacity: 0
+
+            function openWithReveal() {
+                opacity = 1
+                visible = true
+                requestActivate()
+                controlCenterOverlay.openOverlay()
+                if (KWindowSystem.isPlatformX11) {
+                    Qt.callLater(function() {
+                        if (controlCenterDialog.visible) {
+                            controlCenterDialog.requestActivate()
+                            controlCenterOverlay.forceActiveFocus()
+                        }
+                    })
+                }
+            }
+
+            function closeWithFade() {
+                controlCenterOverlay.forceClose()
+            }
+
+            function closeImmediately() {
+                controlCenterOverlay.resetOverlay()
+                opacity = 0
+                visible = false
+            }
+
+            onVisibleChanged: {
+                if (!visible) {
+                    controlCenterOverlay.resetOverlay()
+                    opacity = 0
+                }
+            }
+
+            mainItem: ControlCenterOverlay {
+                id: controlCenterOverlay
+                width: Screen.width
+                height: Screen.height
+                controller: controlCenterController
+                themeAdapter: controlCenterThemeAdapter
+                nightLightAdapter: controlCenterNightLightAdapter
+                onCloseFinished: controlCenterDialog.closeImmediately()
+            }
         }
     }
 
@@ -1348,6 +1483,15 @@ PlasmoidItem {
         }
     }
 
+    function invalidateControlCenterInstance() {
+        if (!configuredControlCenterItem && controlCenterDialogInstance) {
+            controlCenterDialogInstance.closeImmediately()
+            controlCenterDialogInstance.destroy()
+            controlCenterDialogInstance = null
+            controlCenterAnchorItem = null
+        }
+    }
+
     function synchronizePunchiMenuLayoutController() {
         punchiMenuLayoutController.layoutDocument
             = dockItemsController.punchiMenuApplicationLayout()
@@ -1366,6 +1510,7 @@ PlasmoidItem {
         onConfigurationChanged: {
             root.synchronizePunchiMenuLayoutController()
             root.invalidatePunchiMenuInstance()
+            root.invalidateControlCenterInstance()
         }
     }
     PunchiMenuFavoritesController {
@@ -2358,6 +2503,10 @@ PlasmoidItem {
                             || (trashMenuDialog.visible && trashMenuDialog.placementAnchor === dockItemDelegate)
                             || (appActionsDialog.visible && appActionsDialog.placementAnchor === dockItemDelegate)
                             || (root.punchiMenuDialogInstance && root.punchiMenuDialogInstance.visible && root.punchiMenuAnchorItem === dockItemDelegate)
+                            || (root.controlCenterDialogInstance
+                                && root.controlCenterDialogInstance.visible
+                                && root.controlCenterAnchorItem
+                                    === dockItemDelegate)
                         // qmllint enable unqualified
                         supportsContextMenu: dockContextActionsController.itemHasContextMenu(dockItemDelegate.modelData, taskState.rows, "pinned")
                         mediaHoverControlsEnabled: dockConfig.mediaControlsOnHover && taskState.count > 0
@@ -2390,11 +2539,18 @@ PlasmoidItem {
                         Component.onCompleted: {
                             if (dockItemDelegate.modelData.type === "punchimenu") {
                                 root.punchiMenuAnchorItem = dockItemDelegate
+                            } else if (dockItemDelegate.modelData.type
+                                    === "control-center") {
+                                root.controlCenterAnchorItem = dockItemDelegate
                             }
                         }
                         Component.onDestruction: {
                             if (root.punchiMenuAnchorItem === dockItemDelegate) {
                                 root.punchiMenuAnchorItem = null
+                            }
+                            if (root.controlCenterAnchorItem
+                                    === dockItemDelegate) {
+                                root.controlCenterAnchorItem = null
                             }
                         }
                         // qmllint enable unqualified
@@ -2418,6 +2574,10 @@ PlasmoidItem {
                             } else if (dockItemDelegate.modelData.type === "punchimenu") {
                                 popupCoordinator.closeAllPopups(null)
                                 root.togglePunchiMenu(dockItemDelegate)
+                            } else if (dockItemDelegate.modelData.type
+                                    === "control-center") {
+                                popupCoordinator.closeAllPopups(null)
+                                root.toggleControlCenter(dockItemDelegate)
                             } else {
                                 popupCoordinator.closeAllPopups(null)
                                 dockItemsController.handleDockItemActivation(dockItemDelegate.modelData, dockItemDelegate)

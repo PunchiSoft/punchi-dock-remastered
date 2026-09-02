@@ -4,9 +4,15 @@ set -euo pipefail
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TRANSLATION_DOMAIN="plasma_applet_org.kde.plasma.punchi-dock-remastered"
 POT_FILE="$PROJECT_ROOT/po/$TRANSLATION_DOMAIN.pot"
+PACKAGE_VERSION="$(awk -F '"' '/"Version"[[:space:]]*:/ { print $4; exit }' "$PROJECT_ROOT/metadata.json")"
 
 if [[ ! -f "$POT_FILE" ]]; then
     echo "Required translation template is missing: $POT_FILE" >&2
+    exit 1
+fi
+
+if ! grep -Fq "Project-Id-Version: Punchi Dock Remastered $PACKAGE_VERSION" "$POT_FILE"; then
+    echo "The translation template version does not match metadata.json." >&2
     exit 1
 fi
 

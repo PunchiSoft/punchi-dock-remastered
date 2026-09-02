@@ -148,6 +148,158 @@ Module {
         Method { name: "reapply"; lineNumber: 49 }
     }
     Component {
+        file: "controlcenternightlightadapter.h"
+        lineNumber: 14
+        name: "ControlCenterNightLightAdapter"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/ControlCenterNightLightAdapter 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "available"
+            type: "bool"
+            read: "available"
+            notify: "stateChanged"
+            index: 0
+            lineNumber: 18
+            isReadonly: true
+        }
+        Property {
+            name: "configured"
+            type: "bool"
+            read: "configured"
+            notify: "stateChanged"
+            index: 1
+            lineNumber: 19
+            isReadonly: true
+        }
+        Property {
+            name: "running"
+            type: "bool"
+            read: "running"
+            notify: "stateChanged"
+            index: 2
+            lineNumber: 20
+            isReadonly: true
+        }
+        Property {
+            name: "inhibited"
+            type: "bool"
+            read: "inhibited"
+            notify: "stateChanged"
+            index: 3
+            lineNumber: 21
+            isReadonly: true
+        }
+        Property {
+            name: "ownsInhibition"
+            type: "bool"
+            read: "ownsInhibition"
+            notify: "stateChanged"
+            index: 4
+            lineNumber: 22
+            isReadonly: true
+        }
+        Property {
+            name: "busy"
+            type: "bool"
+            read: "busy"
+            notify: "stateChanged"
+            index: 5
+            lineNumber: 23
+            isReadonly: true
+        }
+        Property {
+            name: "strength"
+            type: "int"
+            read: "strength"
+            notify: "stateChanged"
+            index: 6
+            lineNumber: 24
+            isReadonly: true
+        }
+        Signal { name: "stateChanged"; lineNumber: 49 }
+        Method {
+            name: "handlePropertiesChanged"
+            lineNumber: 52
+            Parameter { name: "interfaceName"; type: "QString" }
+            Parameter { name: "changedProperties"; type: "QVariantMap" }
+            Parameter { name: "invalidatedProperties"; type: "QStringList" }
+        }
+        Method { name: "toggleEnabled"; type: "bool"; lineNumber: 38 }
+        Method { name: "toggleSuspended"; type: "bool"; lineNumber: 39 }
+        Method {
+            name: "previewStrength"
+            type: "bool"
+            lineNumber: 40
+            Parameter { name: "strength"; type: "int" }
+        }
+        Method {
+            name: "setStrength"
+            type: "bool"
+            lineNumber: 41
+            Parameter { name: "strength"; type: "int" }
+        }
+        Method { name: "stopPreview"; lineNumber: 42 }
+        Method { name: "refresh"; lineNumber: 43 }
+    }
+    Component {
+        file: "controlcenterthemeadapter.h"
+        lineNumber: 13
+        name: "ControlCenterThemeAdapter"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/ControlCenterThemeAdapter 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "available"
+            type: "bool"
+            read: "available"
+            notify: "stateChanged"
+            index: 0
+            lineNumber: 17
+            isReadonly: true
+        }
+        Property {
+            name: "darkMode"
+            type: "bool"
+            read: "darkMode"
+            notify: "stateChanged"
+            index: 1
+            lineNumber: 18
+            isReadonly: true
+        }
+        Property {
+            name: "busy"
+            type: "bool"
+            read: "busy"
+            notify: "stateChanged"
+            index: 2
+            lineNumber: 19
+            isReadonly: true
+        }
+        Property {
+            name: "lightThemeId"
+            type: "QString"
+            read: "lightThemeId"
+            notify: "stateChanged"
+            index: 3
+            lineNumber: 20
+            isReadonly: true
+        }
+        Property {
+            name: "darkThemeId"
+            type: "QString"
+            read: "darkThemeId"
+            notify: "stateChanged"
+            index: 4
+            lineNumber: 21
+            isReadonly: true
+        }
+        Signal { name: "stateChanged"; lineNumber: 35 }
+        Method { name: "toggleMode"; type: "bool"; lineNumber: 32 }
+    }
+    Component {
         file: "dockitemspersistenceadapter.h"
         lineNumber: 13
         name: "DockItemsPersistenceAdapter"

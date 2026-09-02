@@ -82,7 +82,11 @@ KCM.SimpleKCM {
             if (duplicateSingleton.length > 0) {
                 statusLabel.text = duplicateSingleton === "punchimenu"
                     ? i18n("Only one PunchiMenu item is allowed in the dock configuration.") // qmllint disable unqualified
-                    : i18n("Only one media player item is allowed in the dock configuration.") // qmllint disable unqualified
+                    : (duplicateSingleton === "control-center"
+                        ? i18n("Only one Control Center item is allowed in the dock configuration.") // qmllint disable unqualified
+                        : (duplicateSingleton === "dynamic-applications"
+                            ? i18n("Only one open applications item is allowed in the dock configuration.") // qmllint disable unqualified
+                            : i18n("Only one media player item is allowed in the dock configuration."))) // qmllint disable unqualified
                 statusLabel.type = Kirigami.MessageType.Error
                 return false
             }

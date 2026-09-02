@@ -147,7 +147,9 @@ function applyItemForm(force) {
     var item = nextItems[selectedIndex]
     item.type = item.type || "app"
 
-    if (item.type === "dynamic-applications") {
+    if (item.type === "control-center") {
+        ConfigItemsJS.pruneControlCenter(item)
+    } else if (item.type === "dynamic-applications") {
         item.separatorAppearanceSource
             = actionDialog.separatorAppearanceSourceValue
         item.showSeparator = actionDialog.separatorVisibleChecked

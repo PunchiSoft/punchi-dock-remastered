@@ -1,3 +1,42 @@
+## [0.9.7.54] - 2026-09-01
+
+### Agregado
+
+- Primera fase del Centro de control fullscreen como ítem persistente y de
+  instancia única del dock, con rail derecho adaptable y fondo compartido con
+  PunchiMenu.
+- Accesos internos para redes Wi-Fi y dispositivos Bluetooth, con búsqueda,
+  conexión, desconexión, contraseña efímera y degradación hacia los KCM
+  oficiales cuando el proveedor no está disponible.
+- Controles directos de brillo, volumen, silencio, No molestar, tema
+  claro/oscuro y Luz nocturna, además de accesos a Actualizaciones y
+  Calculadora y un espacio reservado para Captura de pantalla.
+- Historial de notificaciones siempre visible, con conteo no leído, cierre
+  individual, limpieza de expiradas y acceso a su configuración.
+- Ajuste de intensidad de Luz nocturna de 0 a 100 %, convertido al rango
+  oficial de KWin de 6500 a 1000 K con previsualización durante el arrastre.
+
+### Cambiado
+
+- Las acciones circulares del Centro de control usan un diámetro compacto de
+  tres unidades de cuadrícula, iconografía mediana y estados temáticos más
+  sutiles.
+- Luz nocturna alterna directamente entre «Siempre activadas» y «Siempre
+  desactivadas»; la programación avanzada permanece disponible mediante su
+  botón de configuración.
+
+### Validación
+
+- Suite CTest aprobada al 100 % (83/83 pruebas) en el árbol de trabajo,
+  incluida carga integral offscreen, contratos del Centro de control y
+  conversión de intensidad de Luz nocturna.
+- `qmllint` 6.11.1 permanece en 0 para `total`, `unqualified`,
+  `missing-property`, `layout` e `import`.
+- Catálogos `es`, `de` y `pt_BR` completos, sin entradas vacías ni difusas y
+  validados mediante `msgfmt --check --check-format`.
+- Revisión preventiva de seguridad apta: integraciones locales mediante APIs
+  KDE, KConfig y D-Bus, sin shell, red, telemetría ni datos personales.
+
 ## [0.9.7.53] - 2026-08-30
 
 ### Corregido

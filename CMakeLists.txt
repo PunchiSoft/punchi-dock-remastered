@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(punchi-dock-remastered VERSION 0.9.7.53 LANGUAGES CXX)
+project(punchi-dock-remastered VERSION 0.9.7.54 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,7 +16,7 @@ include(ECMQmlModule)
 include(CTest)
 
 find_package(Qt6 6.6 REQUIRED COMPONENTS Core DBus Gui Qml Quick)
-find_package(KF6 6.0 REQUIRED COMPONENTS Config CoreAddons GlobalAccel I18n JobWidgets KIO Service WindowSystem)
+find_package(KF6 6.0 REQUIRED COMPONENTS Config CoreAddons GlobalAccel I18n JobWidgets KIO Package Service WindowSystem)
 find_package(Plasma 6.0 REQUIRED)
 find_package(LibKWorkspace REQUIRED)
 find_package(PkgConfig REQUIRED)

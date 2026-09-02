@@ -87,6 +87,9 @@ def main() -> int:
     overlay_source = (
         PROJECT_ROOT / "contents/ui/components/punchimenu/PunchiMenuOverlay.qml"
     ).read_text(encoding="utf-8")
+    fullscreen_backdrop_source = (
+        PROJECT_ROOT / "contents/ui/components/PunchiFullscreenBackdrop.qml"
+    ).read_text(encoding="utf-8")
     category_sections_source = (
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml"
@@ -2418,13 +2421,23 @@ def main() -> int:
         ),
         (
             overlay_source,
-            "enabled: root.menuOpen && root.backgroundBlurEnabled",
-            "Fullscreen blur switch binding",
+            "blurEnabled: root.backgroundBlurEnabled",
+            "Fullscreen shared-backdrop blur input",
         ),
         (
             overlay_source,
+            "backgroundOpacity: root.safeBackgroundOpacity",
+            "Fullscreen shared-backdrop opacity input",
+        ),
+        (
+            fullscreen_backdrop_source,
+            "enabled: root.active && root.blurEnabled",
+            "Fullscreen shared-backdrop blur switch binding",
+        ),
+        (
+            fullscreen_backdrop_source,
             "opacity: root.safeBackgroundOpacity",
-            "Fullscreen background-only opacity",
+            "Fullscreen shared-backdrop background-only opacity",
         ),
         (
             normal_source,

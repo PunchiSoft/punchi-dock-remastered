@@ -5,6 +5,12 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TRANSLATION_DOMAIN="plasma_applet_org.kde.plasma.punchi-dock-remastered"
 OUTPUT_DIR="${podir:-$PROJECT_ROOT/po}"
 XGETTEXT_BIN="${XGETTEXT:-xgettext}"
+PACKAGE_VERSION="$(awk -F '"' '/"Version"[[:space:]]*:/ { print $4; exit }' "$PROJECT_ROOT/metadata.json")"
+
+if [[ -z "$PACKAGE_VERSION" ]]; then
+    echo "Package version could not be read from metadata.json." >&2
+    exit 1
+fi
 
 if ! command -v "$XGETTEXT_BIN" >/dev/null 2>&1; then
     echo "Required command not found: $XGETTEXT_BIN" >&2
@@ -36,7 +42,7 @@ shell_sources=(
 common_options=(
     --from-code=UTF-8
     --package-name="Punchi Dock Remastered"
-    --package-version="0.9.7.42"
+    --package-version="$PACKAGE_VERSION"
     --msgid-bugs-address="https://github.com/PunchiSoft/punchi-dock-remastered/issues"
     --copyright-holder="Punchi Dock Contributors"
     --add-comments=TRANSLATORS
@@ -73,7 +79,7 @@ common_options=(
 "$XGETTEXT_BIN" \
     --from-code=UTF-8 \
     --package-name="Punchi Dock Remastered" \
-    --package-version="0.9.7.42" \
+    --package-version="$PACKAGE_VERSION" \
     --msgid-bugs-address="https://github.com/PunchiSoft/punchi-dock-remastered/issues" \
     --copyright-holder="Punchi Dock Contributors" \
     --add-comments=TRANSLATORS \

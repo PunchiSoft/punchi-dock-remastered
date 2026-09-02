@@ -24,6 +24,7 @@ ColumnLayout {
     Repeater {
         model: [
             { "type": "punchimenu", "title": i18n("PunchiMenu"), "description": i18n("Open application menu & carousel"), "icon": "start-here-kde" },
+            { "type": "control-center", "title": i18n("Control Center"), "description": i18n("Open system controls and notifications"), "icon": "preferences-system" },
             { "type": "app", "title": i18n("Dock item"), "description": i18n("Add an app or container item"), "icon": "application-x-executable" },
             { "type": "dynamic-applications", "title": i18n("Open applications"), "description": i18n("Choose where open apps appear"), "icon": "window-duplicate" },
             { "type": "note", "title": i18n("Note"), "description": i18n("Write a quick editable note"), "icon": "knotes" },
@@ -43,6 +44,8 @@ ColumnLayout {
             Layout.maximumHeight: Layout.preferredHeight
             enabled: (modelData.type !== "media" || !root.controller.hasItemType("media"))
                 && (modelData.type !== "punchimenu" || !root.controller.hasItemType("punchimenu"))
+                && (modelData.type !== "control-center"
+                    || !root.controller.hasItemType("control-center"))
                 && (modelData.type !== "dynamic-applications"
                     || !root.controller.hasItemType("dynamic-applications"))
             onClicked: root.addRequested(modelData.type)
@@ -97,6 +100,9 @@ ColumnLayout {
                 }
                 if (modelData.type === "dynamic-applications") {
                     return i18n("Only one open applications item can be added.")
+                }
+                if (modelData.type === "control-center") {
+                    return i18n("Only one Control Center item can be added.")
                 }
                 return i18n("Only one media player item can be added.")
             }

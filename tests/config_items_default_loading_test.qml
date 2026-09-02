@@ -17,6 +17,7 @@ TestCase {
     property int pendingRemovalIndex: -1
     property bool cfg_showActiveTasks: true
     property string defaultTrashEmptySound: ""
+    property string selectedItemType: "app"
 
     QtObject {
         id: dynamicApplicationsRemovalDialog
@@ -54,6 +55,7 @@ TestCase {
         selectedIndex = -1
         pendingRemovalIndex = -1
         cfg_showActiveTasks = true
+        selectedItemType = "app"
         dynamicApplicationsRemovalDialog.openCount = 0
     }
 
@@ -121,5 +123,18 @@ TestCase {
         compare(items.length, 1)
         compare(items[0].type, "dynamic-applications")
         verify(cfg_showActiveTasks)
+    }
+
+    function test_addingControlCenterCreatesCanonicalSingletonItem() {
+        items = []
+
+        WorkflowHelper.addItem("control-center")
+
+        compare(items.length, 1)
+        compare(items[0].type, "control-center")
+        compare(items[0].name, "Control Center")
+        compare(items[0].icon, "preferences-system")
+        selectedItemType = items[0].type
+        verify(!WorkflowHelper.canConfigureSelectedItem())
     }
 }

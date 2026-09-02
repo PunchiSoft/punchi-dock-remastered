@@ -79,8 +79,12 @@ void runtimeMessageHandler(QtMsgType type, const QMessageLogContext &context, co
                 && message.endsWith(QLatin1Char(')')))
             || (category == QLatin1StringView("org.kde.plasma.libtaskmanager")
                 && message == QLatin1StringView("Failed to determine whether virtual desktop navigation wrapping is enabled:  \"The name org.kde.KWin was not provided by any .service files\""))
+            || (category == QLatin1StringView("org.kde.applets.brightness")
+                && message == QLatin1StringView("D-Bus service not available: \"org.kde.ScreenBrightness\""))
             || (category == QLatin1StringView("default")
                 && (message == QLatin1StringView("This plugin does not support setting window masks")
+                    || message == QLatin1StringView("This plugin does not support raise()")
+                    || message == QLatin1StringView("This plugin does not support setting window opacity")
                     || message == QLatin1StringView("This plugin does not support propagateSizeHints()"))));
 
         if (s_captureRuntimeMessages && !expectedOffscreenDiagnostic) {
@@ -214,6 +218,12 @@ struct LoadResult {
     bool dynamicMoveBridgeAvailable = false;
     bool dynamicMoveRequestAccepted = false;
     bool dynamicMoveModeActivated = false;
+    bool controlCenterDialogCreated = false;
+    bool controlCenterOverlayCreated = false;
+    bool controlCenterDialogOpened = false;
+    bool controlCenterBluetoothPageOpened = false;
+    bool controlCenterBluetoothEscapeReturnedHome = false;
+    bool controlCenterDialogClosed = false;
     int dockItemCount = -1;
     QString pluginName;
     QString launchError;
@@ -322,6 +332,18 @@ private Q_SLOTS:
                      "The open-applications move request was rejected");
             QVERIFY2(result.dynamicMoveModeActivated,
                      "The open-applications move mode did not activate after the popup turn");
+            QVERIFY2(result.controlCenterDialogCreated,
+                     "The Control Center full-screen dialog was not created");
+            QVERIFY2(result.controlCenterOverlayCreated,
+                     "The Control Center overlay was not instantiated");
+            QVERIFY2(result.controlCenterDialogOpened,
+                     "The Control Center full-screen dialog did not open");
+            QVERIFY2(result.controlCenterBluetoothPageOpened,
+                     "The Control Center Bluetooth page did not load");
+            QVERIFY2(result.controlCenterBluetoothEscapeReturnedHome,
+                     "Escape did not return from Bluetooth to the Control Center home page");
+            QVERIFY2(result.controlCenterDialogClosed,
+                     "The Control Center full-screen dialog did not close cleanly");
             QVERIFY2(result.appletDestroyed, "The applet survived its explicit teardown");
             QVERIFY2(result.quickItemDestroyed, "The AppletQuickItem survived applet teardown");
             QVERIFY2(result.runtimeMessages.isEmpty(), qPrintable(result.runtimeMessages.join(QLatin1Char('\n'))));
@@ -416,6 +438,60 @@ private:
                         result.dynamicMoveModeActivated = representationObject
                             ->property("dynamicApplicationsMoveModeActive")
                             .toBool();
+                    }
+
+                    if (rootObject) {
+                        const bool invoked = QMetaObject::invokeMethod(
+                            rootObject,
+                            "toggleControlCenter",
+                            Q_ARG(QVariant, QVariant()));
+                        drainDeferredEvents();
+
+                        const QVariant dialogValue = rootObject->property(
+                            "controlCenterDialogInstance");
+                        QObject *dialog = qvariant_cast<QObject *>(dialogValue);
+                        if (!dialog && dialogValue.canConvert<QJSValue>()) {
+                            dialog = dialogValue.value<QJSValue>().toQObject();
+                        }
+                        result.controlCenterDialogCreated = dialog
+                            && dialog->objectName()
+                                == QLatin1StringView("controlCenterFullscreenDialog");
+                        result.controlCenterOverlayCreated = dialog
+                            && dialog->findChild<QObject *>(
+                                QStringLiteral("controlCenterOverlay"));
+                        result.controlCenterDialogOpened = invoked && dialog
+                            && dialog->property("visible").toBool();
+
+                        QObject *controlCenterOverlay = dialog
+                            ? dialog->findChild<QObject *>(
+                                QStringLiteral("controlCenterOverlay"))
+                            : nullptr;
+                        if (controlCenterOverlay) {
+                            const bool bluetoothInvoked = QMetaObject::invokeMethod(
+                                controlCenterOverlay,
+                                "showBluetoothPage");
+                            drainDeferredEvents();
+                            result.controlCenterBluetoothPageOpened = bluetoothInvoked
+                                && controlCenterOverlay->property("currentPage").toString()
+                                    == QLatin1StringView("bluetooth");
+
+                            const bool escapeInvoked = QMetaObject::invokeMethod(
+                                controlCenterOverlay,
+                                "handleEscape");
+                            drainDeferredEvents();
+                            result.controlCenterBluetoothEscapeReturnedHome = escapeInvoked
+                                && controlCenterOverlay->property("currentPage").toString()
+                                    == QLatin1StringView("home");
+                        }
+
+                        if (dialog) {
+                            const bool closeInvoked = QMetaObject::invokeMethod(
+                                dialog,
+                                "closeImmediately");
+                            drainDeferredEvents();
+                            result.controlCenterDialogClosed = closeInvoked
+                                && !dialog->property("visible").toBool();
+                        }
                     }
                 }
             }

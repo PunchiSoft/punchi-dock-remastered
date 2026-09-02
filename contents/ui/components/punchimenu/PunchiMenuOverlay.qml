@@ -6,6 +6,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.core as PlasmaCore
 import "../../org/punchi/dock" as Punchi
+import ".." as Components
 
 // qmllint disable import
 // qmllint disable unqualified
@@ -326,13 +327,6 @@ FocusScope {
         favorites: root.favorites
         hiddenApplicationIds: root.hiddenApplicationIds
         applicationCatalog: root.applicationCatalog
-    }
-
-    Punchi.BlurBehindController {
-        id: nativeBlurController
-        window: root.Window.window
-        fullWindow: true
-        enabled: root.menuOpen && root.backgroundBlurEnabled
     }
 
     KCoreAddons.KUser {
@@ -1755,29 +1749,16 @@ FocusScope {
         }
     }
 
-    Item {
+    Components.PunchiFullscreenBackdrop {
         id: backdropContainer
         anchors.fill: parent
-        opacity: root.menuOpen ? 1.0 : 0.0
-
-        Behavior on opacity {
-            enabled: root.motionEnabled
-            NumberAnimation {
-                duration: root.menuOpen ? root.animOpenDuration : root.animCloseDuration
-                easing.type: root.menuOpen ? Easing.OutCubic : Easing.InQuad
-            }
-        }
-
-        Rectangle {
-            anchors.fill: parent
-            color: Kirigami.Theme.backgroundColor
-            opacity: root.safeBackgroundOpacity
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: root.forceClose()
-        }
+        active: root.menuOpen
+        blurEnabled: root.backgroundBlurEnabled
+        backgroundOpacity: root.safeBackgroundOpacity
+        motionEnabled: root.motionEnabled
+        openDuration: root.animOpenDuration
+        closeDuration: root.animCloseDuration
+        onClicked: root.forceClose()
     }
 
     PlasmaComponents.ToolButton {

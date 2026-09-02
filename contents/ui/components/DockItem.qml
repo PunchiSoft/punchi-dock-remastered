@@ -45,6 +45,10 @@ Item {
         if (itemType === "punchimenu" && (itemName === "PunchiMenu" || !itemName)) {
             return i18nc("@title", "PunchiMenu")
         }
+        if (itemType === "control-center"
+                && (itemName === "Control Center" || !itemName)) {
+            return i18nc("@title", "Control Center")
+        }
         if (itemType === "dynamic-applications") {
             return i18nc("@title", "Open applications")
         }
@@ -455,6 +459,7 @@ Item {
         || itemType === "app"
         || itemType === "folder"
         || itemType === "punchimenu"
+        || itemType === "control-center"
         || itemType === "note"
         || itemType === "calendar"
         || itemType === "trash"
