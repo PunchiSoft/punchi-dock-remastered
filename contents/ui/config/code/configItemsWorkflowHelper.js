@@ -204,6 +204,38 @@ function openPunchiMenuDialog(index) {
     punchiMenuDialog.open()
 }
 
+function openControlCenterDialog(index) {
+    if (index !== undefined && index >= 0 && index < items.length) {
+        selectItem(index)
+    }
+
+    var item = selectedItem()
+    if (!item || item.type !== "control-center") {
+        return
+    }
+
+    controlCenterDialog.controlCenterMode =
+        ConfigItemsJS.normalizedControlCenterMode(item.controlCenterMode)
+    controlCenterDialog.open()
+}
+
+function setControlCenterMode(mode) {
+    if (selectedIndex < 0 || selectedIndex >= items.length) {
+        return
+    }
+
+    var nextItems = clone(items)
+    var item = nextItems[selectedIndex]
+    if (!item || item.type !== "control-center") {
+        return
+    }
+
+    item.controlCenterMode = ConfigItemsJS.normalizedControlCenterMode(mode)
+    ConfigItemsJS.pruneControlCenter(item)
+    setItems(nextItems)
+    controlCenterDialog.controlCenterMode = item.controlCenterMode
+}
+
 function setPunchiMenuIcon(iconName) {
     if (selectedIndex < 0 || selectedIndex >= items.length) {
         return
@@ -386,14 +418,16 @@ function selectedConfigureTitle() {
 }
 
 function canConfigureSelectedItem() {
-    return selectedIndex >= 0 && selectedItemType !== "control-center"
+    return selectedIndex >= 0
 }
 
 function configureSelectedItem() {
     if (!canConfigureSelectedItem()) {
         return
     }
-    if (selectedItemType === "punchimenu") {
+    if (selectedItemType === "control-center") {
+        openControlCenterDialog(selectedIndex)
+    } else if (selectedItemType === "punchimenu") {
         openPunchiMenuDialog(selectedIndex)
     } else if (selectedItemType === "media") {
         openMediaPlayerDialog(selectedIndex)

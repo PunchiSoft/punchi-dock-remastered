@@ -7,15 +7,22 @@ import "ControlCenterLayoutMetrics.js" as LayoutMetrics
 Item {
     id: root
 
+    property bool floatingMode: false
+    property real referenceWidth: parent ? parent.width : 0
+    property real referenceHeight: parent ? parent.height : 0
     readonly property real edgeMargin:
         LayoutMetrics.edgeMargin(Kirigami.Units.gridUnit)
 
     anchors.top: parent.top
     anchors.right: parent.right
-    anchors.topMargin: root.edgeMargin
-    anchors.rightMargin: root.edgeMargin
-    width: LayoutMetrics.availableWidth(
-        parent.width, Kirigami.Units.gridUnit)
-    height: LayoutMetrics.availableHeight(
-        parent.height, Kirigami.Units.gridUnit)
+    anchors.topMargin: root.floatingMode ? 0 : root.edgeMargin
+    anchors.rightMargin: root.floatingMode ? 0 : root.edgeMargin
+    width: root.floatingMode && parent
+        ? parent.width
+        : LayoutMetrics.availableWidth(
+            root.referenceWidth, Kirigami.Units.gridUnit)
+    height: root.floatingMode && parent
+        ? parent.height
+        : LayoutMetrics.availableHeight(
+            root.referenceHeight, Kirigami.Units.gridUnit)
 }

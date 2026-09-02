@@ -8,7 +8,9 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.notificationmanager as NotificationManager
 import org.kde.plasma.components as PlasmaComponents
+import org.kde.ksvg as KSvg
 import ".." as Components
+import "../punchimenu" as PunchiMenuComponents
 
 FocusScope {
     id: root
@@ -17,6 +19,14 @@ FocusScope {
     property var themeAdapter: null
     property var nightLightAdapter: null
     property var volumeOsdAdapter: null
+    property string presentationMode: "fullScreen"
+    property real viewportWidth: width
+    property real viewportHeight: height
+    property real themeFrameLeftMargin: 0
+    property real themeFrameTopMargin: 0
+    property real themeFrameRightMargin: 0
+    property real themeFrameBottomMargin: 0
+    property real floatingBackgroundOpacity: 0.75
     property bool controlCenterOpen: false
     property string pendingSettingsSection: ""
     property string pendingApplicationAction: ""
@@ -24,6 +34,25 @@ FocusScope {
     property bool showVirtualAudioDevices: false
 
     readonly property bool motionEnabled: Kirigami.Units.longDuration > 0
+    readonly property bool floatingMode: presentationMode === "floating"
+    readonly property real safeFloatingBackgroundOpacity: {
+        const requestedOpacity = Number(floatingBackgroundOpacity)
+        return Number.isFinite(requestedOpacity)
+            ? Math.max(0.50, Math.min(1.0, requestedOpacity))
+            : 0.75
+    }
+    readonly property real nativeFrameThickness: 2
+    readonly property real themeFrameOverlapLeft: Math.max(0,
+        finiteNonNegative(themeFrameLeftMargin) - nativeFrameThickness)
+    readonly property real themeFrameOverlapTop: Math.max(0,
+        finiteNonNegative(themeFrameTopMargin) - nativeFrameThickness)
+    readonly property real themeFrameOverlapRight: Math.max(0,
+        finiteNonNegative(themeFrameRightMargin) - nativeFrameThickness)
+    readonly property real themeFrameOverlapBottom: Math.max(0,
+        finiteNonNegative(themeFrameBottomMargin) - nativeFrameThickness)
+    readonly property var backgroundBlurMaskSource: floatingBackground
+    readonly property point backgroundBlurMaskOffset:
+        mappedSurfaceGeometry.backgroundMaskOffset
     readonly property int animOpenDuration:
         Math.round(Kirigami.Units.longDuration * 1.1)
     readonly property int animCloseDuration: motionEnabled
@@ -53,7 +82,8 @@ FocusScope {
     signal closeFinished()
 
     objectName: "controlCenterOverlay"
-    visible: controlCenterOpen || fullscreenBackdrop.opacity > 0.01
+    visible: controlCenterOpen || mainContent.opacity > 0.01
+        || fullscreenBackdrop.opacity > 0.01
     enabled: controlCenterOpen
     Keys.onEscapePressed: handleEscape()
 
@@ -72,6 +102,12 @@ FocusScope {
 
     NotificationManager.Settings {
         id: notificationSettings
+    }
+
+    function finiteNonNegative(value) {
+        const numericValue = Number(value)
+        return Number.isFinite(numericValue)
+            ? Math.max(0, numericValue) : 0
     }
 
     Loader {
@@ -310,7 +346,7 @@ FocusScope {
     Components.PunchiFullscreenBackdrop {
         id: fullscreenBackdrop
         anchors.fill: parent
-        active: root.controlCenterOpen
+        active: root.controlCenterOpen && !root.floatingMode
         blurEnabled: true
         backgroundOpacity: 0.50
         motionEnabled: root.motionEnabled
@@ -322,9 +358,30 @@ FocusScope {
     ControlCenterRightRail {
         id: mainContent
         objectName: "controlCenterMainContent"
+        floatingMode: root.floatingMode
+        referenceWidth: root.viewportWidth
+        referenceHeight: root.viewportHeight
         opacity: root.controlCenterOpen ? 1.0 : 0.0
-        scale: root.controlCenterOpen ? 1.0 : 0.97
-        transformOrigin: Item.Center
+
+        transform: Translate {
+            id: surfaceTranslation
+
+            x: root.motionEnabled && !root.controlCenterOpen
+                ? Math.max(Kirigami.Units.gridUnit * 4,
+                    Math.min(mainContent.width * 0.14,
+                        Kirigami.Units.gridUnit * 6))
+                : 0
+
+            Behavior on x {
+                enabled: root.motionEnabled
+                NumberAnimation {
+                    duration: root.controlCenterOpen
+                        ? root.animOpenDuration : root.animCloseDuration
+                    easing.type: root.controlCenterOpen
+                        ? Easing.OutCubic : Easing.InCubic
+                }
+            }
+        }
 
         Behavior on opacity {
             enabled: root.motionEnabled
@@ -336,18 +393,38 @@ FocusScope {
             }
         }
 
-        Behavior on scale {
-            enabled: root.motionEnabled
-            NumberAnimation {
-                duration: root.controlCenterOpen
-                    ? root.animOpenDuration : root.animCloseDuration
-                easing.type: root.controlCenterOpen
-                    ? Easing.OutCubic : Easing.InCubic
-            }
+        KSvg.FrameSvgItem {
+            id: floatingBackground
+
+            anchors.fill: parent
+            anchors.leftMargin: -root.themeFrameOverlapLeft
+            anchors.topMargin: -root.themeFrameOverlapTop
+            anchors.rightMargin: -root.themeFrameOverlapRight
+            anchors.bottomMargin: -root.themeFrameOverlapBottom
+            imagePath: "widgets/background"
+            opacity: root.safeFloatingBackgroundOpacity
+            visible: root.floatingMode
+            Accessible.ignored: true
         }
 
         ColumnLayout {
             anchors.fill: parent
+            anchors.leftMargin: root.floatingMode
+                ? floatingBackground.margins.left
+                    + Kirigami.Units.largeSpacing
+                : 0
+            anchors.topMargin: root.floatingMode
+                ? floatingBackground.margins.top
+                    + Kirigami.Units.largeSpacing
+                : 0
+            anchors.rightMargin: root.floatingMode
+                ? floatingBackground.margins.right
+                    + Kirigami.Units.largeSpacing
+                : 0
+            anchors.bottomMargin: root.floatingMode
+                ? floatingBackground.margins.bottom
+                    + Kirigami.Units.largeSpacing
+                : 0
             spacing: Kirigami.Units.largeSpacing
 
             RowLayout {
@@ -501,6 +578,20 @@ FocusScope {
                 }
             }
         }
+    }
+
+    PunchiMenuComponents.PunchiMenuMappedSurfaceGeometry {
+        id: mappedSurfaceGeometry
+
+        targetItem: root
+        surfaceItem: mainContent
+        backgroundItem: floatingBackground
+        translationX: surfaceTranslation.x
+        translationY: surfaceTranslation.y
+        leftInset: floatingBackground.inset.left
+        topInset: floatingBackground.inset.top
+        rightInset: floatingBackground.inset.right
+        bottomInset: floatingBackground.inset.bottom
     }
 
     Connections {

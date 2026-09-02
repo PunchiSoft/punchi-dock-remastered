@@ -11,6 +11,8 @@
 #include <QGuiApplication>
 #include <QIcon>
 #include <QJSValue>
+#include <QQmlContext>
+#include <QQmlEngine>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QPointer>
@@ -224,6 +226,11 @@ struct LoadResult {
     bool controlCenterBluetoothPageOpened = false;
     bool controlCenterBluetoothEscapeReturnedHome = false;
     bool controlCenterDialogClosed = false;
+    bool controlCenterModeChanged = false;
+    bool controlCenterFloatingDialogCreated = false;
+    bool controlCenterFloatingOverlayCreated = false;
+    bool controlCenterFloatingDialogOpened = false;
+    bool controlCenterFloatingDialogClosed = false;
     int dockItemCount = -1;
     QString pluginName;
     QString launchError;
@@ -344,6 +351,16 @@ private Q_SLOTS:
                      "Escape did not return from Bluetooth to the Control Center home page");
             QVERIFY2(result.controlCenterDialogClosed,
                      "The Control Center full-screen dialog did not close cleanly");
+            QVERIFY2(result.controlCenterModeChanged,
+                     "The Control Center mode did not change reactively");
+            QVERIFY2(result.controlCenterFloatingDialogCreated,
+                     "The Control Center floating dialog was not created");
+            QVERIFY2(result.controlCenterFloatingOverlayCreated,
+                     "The Control Center floating overlay was not instantiated");
+            QVERIFY2(result.controlCenterFloatingDialogOpened,
+                     "The Control Center floating dialog did not open");
+            QVERIFY2(result.controlCenterFloatingDialogClosed,
+                     "The Control Center floating dialog did not close cleanly");
             QVERIFY2(result.appletDestroyed, "The applet survived its explicit teardown");
             QVERIFY2(result.quickItemDestroyed, "The AppletQuickItem survived applet teardown");
             QVERIFY2(result.runtimeMessages.isEmpty(), qPrintable(result.runtimeMessages.join(QLatin1Char('\n'))));
@@ -491,6 +508,94 @@ private:
                             drainDeferredEvents();
                             result.controlCenterDialogClosed = closeInvoked
                                 && !dialog->property("visible").toBool();
+                        }
+
+                        QQmlContext *controllerContext = controller
+                            ? QQmlEngine::contextForObject(controller) : nullptr;
+                        QQmlEngine *controllerEngine = controllerContext
+                            ? controllerContext->engine() : nullptr;
+                        if (controller && controllerEngine) {
+                            const QVariant currentItemsValue = controller->property(
+                                "dockItems");
+                            QJSValue currentItems = currentItemsValue.canConvert<QJSValue>()
+                                ? currentItemsValue.value<QJSValue>()
+                                : controllerEngine->toScriptValue(
+                                      currentItemsValue.toList());
+                            const int currentLength = currentItems
+                                .property(QStringLiteral("length")).toInt();
+                            QJSValue nextItems = controllerEngine->newArray(
+                                static_cast<uint>(currentLength + 1));
+                            for (int index = 0; index < currentLength; ++index) {
+                                nextItems.setProperty(index,
+                                    currentItems.property(index));
+                            }
+                            QJSValue controlCenterItem = controllerEngine->newObject();
+                            controlCenterItem.setProperty(
+                                QStringLiteral("type"),
+                                QStringLiteral("control-center"));
+                            controlCenterItem.setProperty(
+                                QStringLiteral("name"),
+                                QStringLiteral("Control Center"));
+                            controlCenterItem.setProperty(
+                                QStringLiteral("controlCenterMode"),
+                                QStringLiteral("fullScreen"));
+                            nextItems.setProperty(currentLength, controlCenterItem);
+                            controller->setProperty(
+                                "dockItems", QVariant::fromValue(nextItems));
+                            drainDeferredEvents();
+                        }
+
+                        QVariant modeChanged;
+                        const bool modeChangeInvoked = controller
+                            && QMetaObject::invokeMethod(
+                                controller,
+                                "setControlCenterMode",
+                                Q_RETURN_ARG(QVariant, modeChanged),
+                                Q_ARG(QVariant, QStringLiteral("floating")));
+                        result.controlCenterModeChanged = modeChangeInvoked
+                            && modeChanged.toBool();
+                        if (modeChangeInvoked && modeChanged.toBool()) {
+                            drainDeferredEvents();
+                        }
+
+                        const bool floatingInvoked = QMetaObject::invokeMethod(
+                            rootObject,
+                            "toggleControlCenter",
+                            Q_ARG(QVariant, QVariant()));
+                        drainDeferredEvents();
+
+                        const QVariant floatingDialogValue = rootObject->property(
+                            "controlCenterDialogInstance");
+                        QObject *floatingDialog = qvariant_cast<QObject *>(
+                            floatingDialogValue);
+                        if (!floatingDialog
+                            && floatingDialogValue.canConvert<QJSValue>()) {
+                            floatingDialog = floatingDialogValue.value<QJSValue>()
+                                                 .toQObject();
+                        }
+                        QObject *floatingOverlay = floatingDialog
+                            ? floatingDialog->findChild<QObject *>(
+                                  QStringLiteral("controlCenterOverlay"))
+                            : nullptr;
+                        result.controlCenterFloatingDialogCreated = floatingDialog
+                            && floatingDialog->objectName()
+                                == QLatin1StringView("controlCenterFloatingDialog");
+                        result.controlCenterFloatingOverlayCreated = floatingOverlay
+                            && floatingOverlay->property("presentationMode").toString()
+                                == QLatin1StringView("floating")
+                            && floatingDialog->property("desiredContentWidth").toInt() > 0
+                            && floatingDialog->property("desiredContentHeight").toInt() > 0;
+                        result.controlCenterFloatingDialogOpened = floatingInvoked
+                            && floatingDialog
+                            && floatingDialog->property("visible").toBool();
+
+                        if (floatingDialog) {
+                            const bool closeInvoked = QMetaObject::invokeMethod(
+                                floatingDialog,
+                                "closeImmediately");
+                            drainDeferredEvents();
+                            result.controlCenterFloatingDialogClosed = closeInvoked
+                                && !floatingDialog->property("visible").toBool();
                         }
                     }
                 }

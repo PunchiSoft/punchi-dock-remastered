@@ -161,6 +161,11 @@ PlasmoidItem {
             ? (dockItemsController.dockItems
                 || [])[configuredControlCenterItemIndex]
             : null
+    readonly property string configuredControlCenterMode:
+        ConfigItemsJS.normalizedControlCenterMode(
+            configuredControlCenterItem
+                ? configuredControlCenterItem.controlCenterMode
+                : "fullScreen")
     readonly property real configuredPunchiMenuGridIconScale: {
         const requestedPercent = Number(configuredPunchiMenuItem
             ? configuredPunchiMenuItem.gridIconScalePercent
@@ -673,9 +678,26 @@ PlasmoidItem {
         if (anchorItem && typeof anchorItem.mapToGlobal === "function") {
             root.controlCenterAnchorItem = anchorItem
         }
+        const requestedMode = root.configuredControlCenterMode
+        if (controlCenterDialogInstance
+                && controlCenterDialogInstance.controlCenterMode
+                    !== requestedMode) {
+            controlCenterDialogInstance.closeImmediately()
+            controlCenterDialogInstance.destroy()
+            controlCenterDialogInstance = null
+        }
+        if (requestedMode === "floating" && anchorItem
+                && controlCenterDialogInstance
+                && typeof controlCenterDialogInstance.consumeRecentExternalHide
+                    === "function"
+                && controlCenterDialogInstance.consumeRecentExternalHide()) {
+            return
+        }
         if (!controlCenterDialogInstance) {
-            controlCenterDialogInstance
-                = controlCenterFullscreenDialogComponent.createObject(root)
+            const component = requestedMode === "floating"
+                ? controlCenterFloatingDialogComponent
+                : controlCenterFullscreenDialogComponent
+            controlCenterDialogInstance = component.createObject(root)
             if (!controlCenterDialogInstance) {
                 return
             }
@@ -697,6 +719,7 @@ PlasmoidItem {
         PlasmaCore.Dialog {
             id: controlCenterDialog
 
+            readonly property string controlCenterMode: "fullScreen"
             readonly property bool isX11Session: KWindowSystem.isPlatformX11
             property bool openedFromPanel: false
 
@@ -759,7 +782,206 @@ PlasmoidItem {
                 themeAdapter: controlCenterThemeAdapter
                 nightLightAdapter: controlCenterNightLightAdapter
                 volumeOsdAdapter: controlCenterVolumeOsdAdapter
+                presentationMode: controlCenterDialog.controlCenterMode
+                viewportWidth: Screen.width
+                viewportHeight: Screen.height
                 onCloseFinished: controlCenterDialog.closeImmediately()
+            }
+        }
+    }
+
+    Component {
+        id: controlCenterFloatingDialogComponent
+
+        PlasmaCore.Dialog {
+            id: controlCenterFloatingDialog
+
+            readonly property string controlCenterMode: "floating"
+            readonly property bool isX11Session: KWindowSystem.isPlatformX11
+            property bool openedFromPanel: false
+            property bool internalCloseRequested: false
+            property double lastExternalHideTimestamp: -1
+            readonly property rect activeScreenGeometry:
+                Plasmoid.containment
+                    && Plasmoid.containment.screenGeometry
+                    ? Plasmoid.containment.screenGeometry
+                    : Qt.rect(0, 0, Screen.width, Screen.height)
+            readonly property ControlCenterFloatingGeometry floatingGeometry:
+                ControlCenterFloatingGeometry {
+                    screenGeometry:
+                        controlCenterFloatingDialog.activeScreenGeometry
+                    availableScreenRect: root.availableScreenRect
+                    gridUnit: Kirigami.Units.gridUnit
+                }
+            readonly property int desiredContentWidth:
+                floatingGeometry.contentWidth
+            readonly property int desiredContentHeight:
+                floatingGeometry.contentHeight
+
+            objectName: "controlCenterFloatingDialog"
+            visualParent: null
+            location: PlasmaCore.Types.Floating
+            type: PlasmaCore.Dialog.PopupMenu
+            flags: isX11Session
+                ? Qt.Popup | Qt.FramelessWindowHint
+                : Qt.Dialog | Qt.FramelessWindowHint
+                    | Qt.WindowStaysOnTopHint
+            backgroundHints: PlasmaCore.Dialog.NoBackground
+            hideOnWindowDeactivate: true
+            visible: false
+            opacity: 0
+
+            readonly property Punchi.BlurBehindController floatingBlurController:
+                Punchi.BlurBehindController {
+                    window: controlCenterFloatingDialog
+                    fullWindow: false
+                    maskSource: controlCenterFloatingOverlay.backgroundBlurMaskSource
+                    useMaskSourceInsets: true
+                    maskOffset: controlCenterFloatingOverlay.backgroundBlurMaskOffset
+                    enabled: controlCenterFloatingDialog.visible
+                        && controlCenterFloatingOverlay.controlCenterOpen
+                }
+
+            function themeFrameMargin(side) {
+                const nativeMargins = margins
+                const requestedMargin = nativeMargins
+                    ? Number(nativeMargins[side]) : 0
+                return Number.isFinite(requestedMargin)
+                    ? Math.max(0, requestedMargin) : 0
+            }
+
+            function positionAtTopRight() {
+                const targetPosition = floatingGeometry.positionFor(
+                    width, height)
+                x = targetPosition.x
+                y = targetPosition.y
+            }
+
+            function scheduleReposition() {
+                if (visible) {
+                    Qt.callLater(positionAtTopRight)
+                }
+            }
+
+            onWidthChanged: scheduleReposition()
+            onHeightChanged: scheduleReposition()
+            onActiveScreenGeometryChanged: scheduleReposition()
+            onDesiredContentWidthChanged: scheduleReposition()
+            onDesiredContentHeightChanged: scheduleReposition()
+
+            readonly property Connections geometryConnections: Connections {
+                target: root
+
+                function onAvailableScreenRectChanged() {
+                    controlCenterFloatingDialog.scheduleReposition()
+                }
+            }
+
+            function consumeRecentExternalHide() {
+                const hideTimestamp = lastExternalHideTimestamp
+                lastExternalHideTimestamp = -1
+                if (hideTimestamp < 0) {
+                    return false
+                }
+                const elapsed = Date.now() - hideTimestamp
+                // QtStyleHints exposes this property at runtime, but qmllint
+                // resolves Qt.styleHints as a generic QObject.
+                // qmllint disable missing-property
+                const guardInterval = Math.max(1,
+                    Qt.styleHints.mouseDoubleClickInterval)
+                // qmllint enable missing-property
+                return elapsed >= 0 && elapsed <= guardInterval
+            }
+
+            function finishOpening() {
+                if (!visible) {
+                    return
+                }
+                positionAtTopRight()
+                requestActivate()
+                controlCenterFloatingOverlay.openOverlay()
+                Qt.callLater(function() {
+                    if (controlCenterFloatingDialog.visible) {
+                        controlCenterFloatingDialog.floatingBlurController.reapply()
+                        controlCenterFloatingDialog.requestActivate()
+                    }
+                })
+            }
+
+            function openWithReveal() {
+                internalCloseRequested = false
+                lastExternalHideTimestamp = -1
+                positionAtTopRight()
+                opacity = 1
+                visible = true
+                Qt.callLater(finishOpening)
+            }
+
+            function closeWithFade() {
+                if (!visible) {
+                    return
+                }
+                internalCloseRequested = true
+                controlCenterFloatingOverlay.forceClose()
+            }
+
+            function closeImmediately() {
+                internalCloseRequested = true
+                lastExternalHideTimestamp = -1
+                controlCenterFloatingOverlay.resetOverlay()
+                opacity = 0
+                visible = false
+                Qt.callLater(function() {
+                    controlCenterFloatingDialog.internalCloseRequested = false
+                })
+            }
+
+            onVisibleChanged: {
+                if (!visible) {
+                    if (!internalCloseRequested) {
+                        lastExternalHideTimestamp = Date.now()
+                    }
+                    controlCenterFloatingOverlay.resetOverlay()
+                    opacity = 0
+                }
+            }
+
+            mainItem: ControlCenterOverlay {
+                id: controlCenterFloatingOverlay
+
+                width: controlCenterFloatingDialog.desiredContentWidth
+                height: controlCenterFloatingDialog.desiredContentHeight
+                Layout.minimumWidth:
+                    controlCenterFloatingDialog.desiredContentWidth
+                Layout.preferredWidth:
+                    controlCenterFloatingDialog.desiredContentWidth
+                Layout.maximumWidth:
+                    controlCenterFloatingDialog.desiredContentWidth
+                Layout.minimumHeight:
+                    controlCenterFloatingDialog.desiredContentHeight
+                Layout.preferredHeight:
+                    controlCenterFloatingDialog.desiredContentHeight
+                Layout.maximumHeight:
+                    controlCenterFloatingDialog.desiredContentHeight
+                controller: controlCenterController
+                themeAdapter: controlCenterThemeAdapter
+                nightLightAdapter: controlCenterNightLightAdapter
+                volumeOsdAdapter: controlCenterVolumeOsdAdapter
+                presentationMode: controlCenterFloatingDialog.controlCenterMode
+                viewportWidth:
+                    controlCenterFloatingDialog.floatingGeometry.referenceWidth
+                viewportHeight:
+                    controlCenterFloatingDialog.floatingGeometry.referenceHeight
+                themeFrameLeftMargin:
+                    controlCenterFloatingDialog.themeFrameMargin("left")
+                themeFrameTopMargin:
+                    controlCenterFloatingDialog.themeFrameMargin("top")
+                themeFrameRightMargin:
+                    controlCenterFloatingDialog.themeFrameMargin("right")
+                themeFrameBottomMargin:
+                    controlCenterFloatingDialog.themeFrameMargin("bottom")
+                onCloseFinished:
+                    controlCenterFloatingDialog.closeImmediately()
             }
         }
     }
@@ -1488,7 +1710,10 @@ PlasmoidItem {
     }
 
     function invalidateControlCenterInstance() {
-        if (!configuredControlCenterItem && controlCenterDialogInstance) {
+        if (controlCenterDialogInstance
+                && (!configuredControlCenterItem
+                    || controlCenterDialogInstance.controlCenterMode
+                        !== root.configuredControlCenterMode)) {
             controlCenterDialogInstance.closeImmediately()
             controlCenterDialogInstance.destroy()
             controlCenterDialogInstance = null

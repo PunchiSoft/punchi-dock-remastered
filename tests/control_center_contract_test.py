@@ -35,8 +35,18 @@ RIGHT_RAIL = (
 LAYOUT_METRICS = (
     ROOT / "contents/ui/components/controlcenter/ControlCenterLayoutMetrics.js"
 ).read_text(encoding="utf-8")
+FLOATING_GEOMETRY = (
+    ROOT
+    / "contents/ui/components/controlcenter/ControlCenterFloatingGeometry.qml"
+).read_text(encoding="utf-8")
+CONTROL_CENTER_DIALOG = (
+    ROOT / "contents/ui/config/components/ControlCenterDialog.qml"
+).read_text(encoding="utf-8")
 CONTROLLER = (
     ROOT / "contents/ui/components/ControlCenterController.qml"
+).read_text(encoding="utf-8")
+DOCK_ITEMS_CONTROLLER = (
+    ROOT / "contents/ui/components/DockItemsController.qml"
 ).read_text(encoding="utf-8")
 HOME_PAGE = (
     ROOT / "contents/ui/components/controlcenter/ControlCenterHomePage.qml"
@@ -130,14 +140,34 @@ require(
     "The configuration layer must create and preserve a canonical item.",
 )
 require(
+    "function normalizedControlCenterMode(value)" in CONFIG_ITEMS
+    and '["fullScreen", "floating"]' in CONFIG_ITEMS
+    and '"controlCenterMode": "fullScreen"' in CONFIG_ITEMS
+    and "function openControlCenterDialog(index)" in WORKFLOW
+    and "function setControlCenterMode(mode)" in WORKFLOW
+    and 'selectedItemType === "control-center"' in WORKFLOW
+    and 'objectName: "controlCenterModeCombo"' in CONTROL_CENTER_DIALOG,
+    "The item editor must expose a closed, per-item Control Center mode.",
+)
+require(
+    "function setControlCenterMode(mode)" in DOCK_ITEMS_CONTROLLER
+    and "ConfigItemsJS.normalizedControlCenterMode(mode)"
+    in DOCK_ITEMS_CONTROLLER
+    and "root.syncDockItemsConfiguration()" in DOCK_ITEMS_CONTROLLER,
+    "Control Center mode changes must persist through the reactive dock controller.",
+)
+require(
     'itemType === "control-center"' in DOCK_ITEM
     and 'i18nc("@title", "Control Center")' in DOCK_ITEM,
     "The dock delegate must expose an interactive and localized item.",
 )
 require(
     "function toggleControlCenter(anchorItem)" in MAIN
-    and "controlCenterFullscreenDialogComponent.createObject(root)" in MAIN
+    and "controlCenterFloatingDialogComponent" in MAIN
+    and "controlCenterFullscreenDialogComponent" in MAIN
+    and "component.createObject(root)" in MAIN
     and 'objectName: "controlCenterFullscreenDialog"' in MAIN
+    and 'objectName: "controlCenterFloatingDialog"' in MAIN
     and "location: PlasmaCore.Types.Floating" in MAIN
     and "width: Screen.width" in MAIN
     and "height: Screen.height" in MAIN
@@ -145,6 +175,32 @@ require(
     and "function closeWithFade()" in MAIN
     and "function closeImmediately()" in MAIN,
     "The click path must own a lazy full-screen Plasma dialog lifecycle.",
+)
+require(
+    "Punchi.BlurBehindController" in MAIN
+    and "maskSource: controlCenterFloatingOverlay.backgroundBlurMaskSource"
+    in MAIN
+    and "useMaskSourceInsets: true" in MAIN
+    and "maskOffset: controlCenterFloatingOverlay.backgroundBlurMaskOffset"
+    in MAIN
+    and 'imagePath: "widgets/background"' in OVERLAY
+    and "PunchiMenuComponents.PunchiMenuMappedSurfaceGeometry" in OVERLAY,
+    "Floating mode must reuse the themed PunchiMenu mask and inset blur contract.",
+)
+require(
+    "function positionFor(windowWidth, windowHeight)" in FLOATING_GEOMETRY
+    and "LayoutMetrics.availableWidth(" in FLOATING_GEOMETRY
+    and "LayoutMetrics.availableHeight(" in FLOATING_GEOMETRY
+    and "absoluteAvailableRect" in FLOATING_GEOMETRY,
+    "Floating mode must derive its size from the full-screen rail and active screen.",
+)
+require(
+    "transform: Translate" in OVERLAY
+    and "Behavior on x" in OVERLAY
+    and "Easing.OutCubic" in OVERLAY
+    and "root.motionEnabled" in OVERLAY
+    and "Behavior on scale" not in OVERLAY,
+    "Both Control Center modes must share a reduced-motion-aware right-to-left transition.",
 )
 require(
     "Punchi.BlurBehindController" in BACKDROP
@@ -471,8 +527,8 @@ require(
     and "ControlCenterRightRail" in OVERLAY
     and "anchors.top: parent.top" in RIGHT_RAIL
     and "anchors.right: parent.right" in RIGHT_RAIL
-    and "anchors.topMargin: root.edgeMargin" in RIGHT_RAIL
-    and "anchors.rightMargin: root.edgeMargin" in RIGHT_RAIL
+    and "anchors.topMargin: root.floatingMode ? 0 : root.edgeMargin" in RIGHT_RAIL
+    and "anchors.rightMargin: root.floatingMode ? 0 : root.edgeMargin" in RIGHT_RAIL
     and "LayoutMetrics.availableWidth(" in RIGHT_RAIL
     and "LayoutMetrics.availableHeight(" in RIGHT_RAIL
     and "function edgeMargin(gridUnit)" in LAYOUT_METRICS

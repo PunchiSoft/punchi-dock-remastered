@@ -586,6 +586,14 @@ function pruneMedia(item) {
     }
 }
 
+function normalizedControlCenterMode(value) {
+    var availableModes = ["fullScreen", "floating"]
+    var requestedMode = String(value || "fullScreen")
+    return availableModes.indexOf(requestedMode) >= 0
+        ? requestedMode
+        : "fullScreen"
+}
+
 function pruneControlCenter(item) {
     removeKeys(item, [
         "command", "apps", "actions", "actionsEnabled", "storageId", "appId",
@@ -594,6 +602,8 @@ function pruneControlCenter(item) {
     item.type = "control-center"
     item.name = "Control Center"
     item.icon = "preferences-system"
+    item.controlCenterMode = normalizedControlCenterMode(
+        item.controlCenterMode)
 }
 
 function normalizedPunchiMenuGridIconScalePercent(value) {
@@ -1037,7 +1047,8 @@ function newItem(type, defaultTrashEmptySound) {
         return {
             "type": "control-center",
             "name": "Control Center",
-            "icon": "preferences-system"
+            "icon": "preferences-system",
+            "controlCenterMode": "fullScreen"
         }
     }
     if (type === "folder") {

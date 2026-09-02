@@ -363,6 +363,49 @@ Item {
         return -1
     }
 
+    function controlCenterItemIndex(items) {
+        const source = items instanceof Array ? items : []
+        for (let index = 0; index < source.length; index++) {
+            if (source[index] && source[index].type === "control-center") {
+                return index
+            }
+        }
+        return -1
+    }
+
+    function setControlCenterMode(mode) {
+        const itemIndex = root.controlCenterItemIndex(root.dockItems)
+        if (itemIndex < 0) {
+            return false
+        }
+        const nextItem = root.clonedJsonObject(root.dockItems[itemIndex])
+        if (nextItem === null) {
+            return false
+        }
+        nextItem.controlCenterMode =
+            ConfigItemsJS.normalizedControlCenterMode(mode)
+        ConfigItemsJS.pruneControlCenter(nextItem)
+
+        const currentText = root.canonicalJsonText(root.dockItems[itemIndex])
+        const nextText = root.canonicalJsonText(nextItem)
+        if (nextText.length === 0) {
+            return false
+        }
+        if (currentText === nextText) {
+            return true
+        }
+
+        const previousItems = root.dockItems
+        const nextItems = root.dockItems.slice()
+        nextItems[itemIndex] = nextItem
+        root.dockItems = nextItems
+        if (!root.syncDockItemsConfiguration()) {
+            root.dockItems = previousItems
+            return false
+        }
+        return true
+    }
+
     function setPunchiMenuValue(fieldName, value) {
         const allowedFields = {
             "menuMode": true,

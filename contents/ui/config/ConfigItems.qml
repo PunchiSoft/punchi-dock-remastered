@@ -522,7 +522,11 @@ KCM.SimpleKCM {
 
     function openPunchiMenuDialog(index) { WorkflowHelper.openPunchiMenuDialog(index) }
 
+    function openControlCenterDialog(index) { WorkflowHelper.openControlCenterDialog(index) }
+
     function setPunchiMenuMode(mode) { WorkflowHelper.setPunchiMenuMode(mode) }
+
+    function setControlCenterMode(mode) { WorkflowHelper.setControlCenterMode(mode) }
 
     function setPunchiMenuIcon(iconName) { WorkflowHelper.setPunchiMenuIcon(iconName) }
 
@@ -832,6 +836,16 @@ KCM.SimpleKCM {
         onMenuModeSelected: function(mode) { page.setPunchiMenuMode(mode) }
         onIconPickerRequested:
             page.openIconPicker("punchimenu")
+    }
+
+    ControlCenterDialog {
+        id: controlCenterDialog
+        width: Math.min(page.width - Kirigami.Units.largeSpacing * 2,
+            Kirigami.Units.gridUnit * 24)
+        selectorWidth: layoutMetrics.selectorWidth
+        onControlCenterModeSelected: function(mode) {
+            page.setControlCenterMode(mode)
+        }
     }
 
     Controls.TextField {
