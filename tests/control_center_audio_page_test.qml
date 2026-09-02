@@ -75,6 +75,35 @@ TestCase {
         }
     }
 
+    Component {
+        id: realAdapterComponent
+
+        ControlCenter.ControlCenterVolumeAdapter {}
+    }
+
+    Component {
+        id: realAudioPageWindowComponent
+
+        Window {
+            id: realHostWindow
+            width: 640
+            height: 700
+            visible: true
+
+            property alias page: realAudioPage
+
+            ControlCenter.ControlCenterVolumeAdapter {
+                id: realAdapter
+            }
+
+            ControlCenter.ControlCenterAudioPage {
+                id: realAudioPage
+                anchors.fill: parent
+                adapter: realAdapter
+            }
+        }
+    }
+
     function init() {
         failOnWarning(/.?/)
         backSpy.clear()
@@ -151,5 +180,33 @@ TestCase {
         tryCompare(hostWindow.fakeAdapter, "raiseMaximumChanges", 1)
         compare(hostWindow.fakeAdapter.raiseMaximumVolume, true)
         compare(checkBox.checked, true)
+    }
+
+    function test_privatePlasmaPaTypesInstantiateWhenAvailable() {
+        const adapter = createTemporaryObject(realAdapterComponent, testCase)
+        verify(adapter !== null)
+        verify(adapter.normalVolume > 0)
+        verify(adapter.outputDevicesModel !== null)
+        verify(adapter.inputDevicesModel !== null)
+        verify(adapter.playbackStreamsModel !== null)
+        verify(adapter.recordingStreamsModel !== null)
+        verify(adapter.cardModel !== null)
+        verify(adapter.sinkItemType !== adapter.sourceItemType)
+        verify(adapter.maximumPercentage >= 100)
+        adapter.destroy()
+    }
+
+    function test_realPlasmaPaModelsPopulateThePage() {
+        const hostWindow = createTemporaryObject(
+            realAudioPageWindowComponent, testCase)
+        verify(hostWindow !== null)
+        hostWindowUnderTest = hostWindow
+        tryCompare(hostWindow, "visible", true)
+        verify(hostWindow.page.deviceCount >= 0)
+        verify(hostWindow.page.applicationCount >= 0)
+        if (hostWindow.page.deviceCount > 0) {
+            verify(findChild(
+                hostWindow.page, "controlCenterAudioItem") !== null)
+        }
     }
 }
