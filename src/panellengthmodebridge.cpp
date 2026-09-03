@@ -9,6 +9,10 @@
 namespace
 {
 QHash<uint, int> reportedModes;
+QHash<uint, int> reportedFloatingModes;
+QHash<uint, int> reportedVisibilityModes;
+QHash<uint, int> reportedAlignments;
+QHash<uint, int> reportedThicknesses;
 QList<QPointer<PanelLengthModeBridge>> bridges;
 
 void notifyBridges(uint containmentId)
@@ -20,6 +24,10 @@ void notifyBridges(uint containmentId)
         }
         if ((*it)->containmentId() == containmentId) {
             (*it)->notifyPanelLengthModeChanged();
+            (*it)->notifyPanelFloatingModeChanged();
+            (*it)->notifyPanelVisibilityModeChanged();
+            (*it)->notifyPanelAlignmentChanged();
+            (*it)->notifyPanelThicknessChanged();
         }
         ++it;
     }
@@ -50,6 +58,10 @@ void PanelLengthModeBridge::setContainmentId(uint containmentId)
     m_containmentId = containmentId;
     Q_EMIT containmentIdChanged();
     Q_EMIT panelLengthModeChanged();
+    Q_EMIT panelFloatingModeChanged();
+    Q_EMIT panelVisibilityModeChanged();
+    Q_EMIT panelAlignmentChanged();
+    Q_EMIT panelThicknessChanged();
 }
 
 int PanelLengthModeBridge::panelLengthMode() const
@@ -80,7 +92,119 @@ void PanelLengthModeBridge::setReportedPanelLengthMode(int panelLengthMode)
     notifyBridges(m_containmentId);
 }
 
+int PanelLengthModeBridge::panelFloatingMode() const
+{
+    return reportedFloatingModes.value(m_containmentId, -1);
+}
+
+int PanelLengthModeBridge::reportedPanelFloatingMode() const
+{
+    return m_reportedPanelFloatingMode;
+}
+
+void PanelLengthModeBridge::setReportedPanelFloatingMode(int floatingMode)
+{
+    if (m_reportedPanelFloatingMode == floatingMode) {
+        return;
+    }
+    m_reportedPanelFloatingMode = floatingMode;
+    if (m_containmentId == 0 || reportedFloatingModes.value(m_containmentId, -1) == floatingMode) {
+        return;
+    }
+    reportedFloatingModes.insert(m_containmentId, floatingMode);
+    notifyBridges(m_containmentId);
+}
+
+int PanelLengthModeBridge::panelVisibilityMode() const
+{
+    return reportedVisibilityModes.value(m_containmentId, -1);
+}
+
+int PanelLengthModeBridge::reportedPanelVisibilityMode() const
+{
+    return m_reportedPanelVisibilityMode;
+}
+
+void PanelLengthModeBridge::setReportedPanelVisibilityMode(int visibilityMode)
+{
+    if (m_reportedPanelVisibilityMode == visibilityMode) {
+        return;
+    }
+    m_reportedPanelVisibilityMode = visibilityMode;
+    if (m_containmentId == 0 || reportedVisibilityModes.value(m_containmentId, -1) == visibilityMode) {
+        return;
+    }
+    reportedVisibilityModes.insert(m_containmentId, visibilityMode);
+    notifyBridges(m_containmentId);
+}
+
 void PanelLengthModeBridge::notifyPanelLengthModeChanged()
 {
     Q_EMIT panelLengthModeChanged();
+}
+
+void PanelLengthModeBridge::notifyPanelFloatingModeChanged()
+{
+    Q_EMIT panelFloatingModeChanged();
+}
+
+void PanelLengthModeBridge::notifyPanelVisibilityModeChanged()
+{
+    Q_EMIT panelVisibilityModeChanged();
+}
+
+int PanelLengthModeBridge::panelAlignment() const
+{
+    return reportedAlignments.value(m_containmentId, -1);
+}
+
+int PanelLengthModeBridge::reportedPanelAlignment() const
+{
+    return m_reportedPanelAlignment;
+}
+
+void PanelLengthModeBridge::setReportedPanelAlignment(int alignment)
+{
+    if (m_reportedPanelAlignment == alignment) {
+        return;
+    }
+    m_reportedPanelAlignment = alignment;
+    if (m_containmentId == 0 || reportedAlignments.value(m_containmentId, -1) == alignment) {
+        return;
+    }
+    reportedAlignments.insert(m_containmentId, alignment);
+    notifyBridges(m_containmentId);
+}
+
+void PanelLengthModeBridge::notifyPanelAlignmentChanged()
+{
+    Q_EMIT panelAlignmentChanged();
+}
+
+int PanelLengthModeBridge::panelThickness() const
+{
+    return reportedThicknesses.value(m_containmentId, 0);
+}
+
+int PanelLengthModeBridge::reportedPanelThickness() const
+{
+    return m_reportedPanelThickness;
+}
+
+void PanelLengthModeBridge::setReportedPanelThickness(int thickness)
+{
+    if (m_reportedPanelThickness == thickness) {
+        return;
+    }
+    m_reportedPanelThickness = thickness;
+    if (m_containmentId == 0 || reportedThicknesses.value(m_containmentId, 0) == thickness) {
+        return;
+    }
+    reportedThicknesses.insert(m_containmentId, thickness);
+    notifyBridges(m_containmentId);
+}
+
+void PanelLengthModeBridge::notifyPanelThicknessChanged()
+{
+    Q_EMIT panelThicknessChanged();
 }

@@ -39,10 +39,19 @@
       <default>true</default>
     </entry>
     <entry name="panelLengthMode" type="String">
-      <default>content</default>
+      <default>system</default>
     </entry>
     <entry name="panelAlignmentMode" type="String">
-      <default>start</default>
+      <default>system</default>
+    </entry>
+    <entry name="panelFloatingMode" type="String">
+      <default>system</default>
+    </entry>
+    <entry name="panelVisibilityMode" type="String">
+      <default>system</default>
+    </entry>
+    <entry name="panelThickness" type="Int">
+      <default>0</default>
     </entry>
   </group>
   <group name="Appearance">

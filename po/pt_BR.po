@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-02 04:10-0400\n"
+"POT-Creation-Date: 2026-09-02 19:54-0400\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -279,7 +279,7 @@ msgstr ""
 msgid "%1 items loaded."
 msgstr "%1 itens carregados."
 
-#: contents/ui/main.qml:3105
+#: contents/ui/main.qml:3247
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de janelas adicional"
@@ -618,7 +618,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Foi criado um atalho na área de trabalho para %1."
 
-#: contents/ui/main.qml:1832
+#: contents/ui/main.qml:1969
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr "O local de um arquivo é longo demais para ser aberto com segurança."
@@ -794,7 +794,7 @@ msgstr ""
 msgid "Adjusts the indicator thickness between 2 and 10 pixels."
 msgstr "Ajusta a espessura do indicador entre 2 e 10 pixels."
 
-#: contents/ui/config/ConfigGeneral.qml:223
+#: contents/ui/config/ConfigGeneral.qml:405
 msgid "Adjusts the spacing between dock icons from 0 to 24 pixels."
 msgstr "Ajusta o espaçamento entre os ícones do dock de 0 a 24 pixels."
 
@@ -823,7 +823,7 @@ msgstr "Todos os aplicativos"
 msgid "All Arch build packages are already installed"
 msgstr "Todos os pacotes de compilação do Arch já estão instalados"
 
-#: contents/ui/config/ConfigGeneral.qml:262
+#: contents/ui/config/ConfigGeneral.qml:444
 msgid "All desktops"
 msgstr "Todos os desktops"
 
@@ -859,6 +859,10 @@ msgstr ""
 msgctxt "@option:media-track-information"
 msgid "Always show"
 msgstr "Sempre mostrar"
+
+#: contents/ui/config/ConfigGeneral.qml:92
+msgid "Always visible"
+msgstr "Sempre visível"
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:222
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:243
@@ -910,6 +914,10 @@ msgstr "Seções de aparência"
 #: contents/ui/config/SeparatorOptions.qml:61
 msgid "Appearance:"
 msgstr "Aparência:"
+
+#: contents/ui/config/ConfigGeneral.qml:88
+msgid "Applets only"
+msgstr "Apenas miniaplicativos"
 
 #: contents/ui/components/AppActionsPopup.qml:95
 #: contents/ui/components/DockItem.qml:1409
@@ -1119,6 +1127,10 @@ msgstr "Movimento rítmico do visualizador de áudio"
 msgid "Audio visualizer style"
 msgstr "Estilo de visualizador de áudio"
 
+#: contents/ui/config/ConfigGeneral.qml:93
+msgid "Auto hide"
+msgstr "Ocultar automaticamente"
+
 #: contents/ui/config/components/TimedDialog.qml:91
 #: contents/ui/config/components/TimedDialog.qml:94
 #: contents/ui/config/components/TimedDialog.qml:117
@@ -1287,6 +1299,10 @@ msgctxt "@info"
 msgid "Bluetooth is turned off"
 msgstr "O Bluetooth está desligado"
 
+#: contents/ui/config/ConfigGeneral.qml:80
+msgid "Bottom"
+msgstr "Abaixo"
+
 #: contents/ui/config/ConfigAspect.qml:150
 msgctxt "Indicator position"
 msgid "Bottom"
@@ -1301,7 +1317,6 @@ msgid "Bottom right"
 msgstr "Inferior direita"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:65
-#: contents/ui/config/ConfigGeneral.qml:65
 msgid "Bottom to top"
 msgstr "De baixo para cima"
 
@@ -1461,10 +1476,13 @@ msgid "Category:"
 msgstr "Categoria:"
 
 #: contents/ui/config/ConfigAspect.qml:158
-#: contents/ui/config/ConfigGeneral.qml:64
-#: contents/ui/config/ConfigGeneral.qml:68
 msgid "Center"
 msgstr "Centro"
+
+#: contents/ui/config/ConfigGeneral.qml:79
+#: contents/ui/config/ConfigGeneral.qml:83
+msgid "Center (Recommended)"
+msgstr "Centro (Recomendado)"
 
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:35
 msgctxt "@option:punchimenu-placement"
@@ -2085,7 +2103,7 @@ msgstr "Cor atual: %1"
 msgid "Current concurrency: %s\\n"
 msgstr "Concorrência atual: %s\\n"
 
-#: contents/ui/config/ConfigGeneral.qml:334
+#: contents/ui/config/ConfigGeneral.qml:516
 msgctxt "@info:status <b> marks the current dock mode"
 msgid ""
 "Current dock state: <b>Floating mode</b>.<br>Panel-only sizing and "
@@ -2094,7 +2112,7 @@ msgstr ""
 "Estado atual do dock: <b>Modo flutuante</b>.<br>As opções de dimensionamento "
 "e integração somente do painel não estão disponíveis."
 
-#: contents/ui/config/ConfigGeneral.qml:337
+#: contents/ui/config/ConfigGeneral.qml:519
 msgctxt "@info:status <b> marks the current dock mode"
 msgid ""
 "Current dock state: <b>Horizontal panel</b>.<br>Fill free panel space is "
@@ -2105,7 +2123,7 @@ msgstr ""
 "no painel está ativo apenas quando o painel Plasma está definido como "
 "Preencher disponível; caso contrário, o Punchi Dock permanece compacto."
 
-#: contents/ui/config/ConfigGeneral.qml:336
+#: contents/ui/config/ConfigGeneral.qml:518
 msgctxt "@info:status <b> marks the current dock mode"
 msgid ""
 "Current dock state: <b>Vertical panel</b>.<br>Fill free panel space is "
@@ -2121,7 +2139,7 @@ msgctxt "@info:accessibility"
 msgid "Current icon: %1"
 msgstr "Ícone atual: %1"
 
-#: scripts-user/lib/build-concurrency.sh:138
+#: contents/ui/config/ConfigGeneral.qml:75
 msgid "Custom"
 msgstr "Personalizado"
 
@@ -2217,11 +2235,11 @@ msgstr "Verificação de dependências"
 msgid "Description:"
 msgstr "Descrição:"
 
-#: contents/ui/config/ConfigGeneral.qml:79
+#: contents/ui/config/ConfigGeneral.qml:105
 msgid "Desktop %1"
 msgstr "Área de Trabalho %1"
 
-#: contents/ui/config/ConfigGeneral.qml:252
+#: contents/ui/config/ConfigGeneral.qml:434
 msgid "Desktop visibility:"
 msgstr "Visibilidade da área de trabalho:"
 
@@ -2276,6 +2294,10 @@ msgstr "Diagnósticos salvos em: %s\\n"
 msgctxt "@item:inlistbox Separator shape"
 msgid "Diamond"
 msgstr "Diamond"
+
+#: contents/ui/config/ConfigGeneral.qml:87
+msgid "Disabled"
+msgstr "Desativado"
 
 #: contents/ui/components/WindowPreviewCard.qml:47
 msgctxt "@info Window live preview state"
@@ -2413,6 +2435,10 @@ msgstr "Tema do dock"
 #: scripts-dev/setup.sh:145
 msgid "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
 msgstr "Documentação: scripts-dev/README.md | scripts-dev/README.es.md"
+
+#: contents/ui/config/ConfigGeneral.qml:94
+msgid "Dodge windows (Recommended)"
+msgstr "Desviar das janelas (Recomendado)"
 
 #: contents/ui/config/ConfigAspect.qml:144
 msgid "Dot"
@@ -2687,7 +2713,7 @@ msgstr "Erro: não foi possível reiniciar o serviço de usuário do Plasma Shel
 msgid "Error: unknown option or invalid package path: %s\\n"
 msgstr "Erro: opção desconhecida ou caminho de pacote inválido: %s\\n"
 
-#: contents/ui/config/ConfigGeneral.qml:246
+#: contents/ui/config/ConfigGeneral.qml:428
 msgid "Estimated panel-safe maximum: %1 px"
 msgstr "Máximo estimado de segurança do painel: %1 px"
 
@@ -2734,13 +2760,17 @@ msgstr "Escala dos ícones dos Favoritos:"
 msgid "Files"
 msgstr "Arquivos"
 
-#: contents/ui/config/ConfigGeneral.qml:59
-msgid "Fill free panel space"
-msgstr "Preencha o espaço livre do painel"
+#: contents/ui/config/ConfigGeneral.qml:74
+msgid "Fill height"
+msgstr "Preencher altura"
 
-#: contents/ui/config/ConfigGeneral.qml:58
-msgid "Fit content"
-msgstr "Ajustar conteúdo"
+#: contents/ui/config/ConfigGeneral.qml:74
+msgid "Fill width"
+msgstr "Preencher largura"
+
+#: contents/ui/config/ConfigGeneral.qml:73
+msgid "Fit content (Recommended)"
+msgstr "Ajustar ao conteúdo (Recomendado)"
 
 #: contents/ui/config/components/ControlCenterDialog.qml:23
 msgctxt "@option:control-center-mode"
@@ -2755,7 +2785,7 @@ msgstr "Reordenação do dock flutuante:"
 msgid "Floating capsules"
 msgstr "Cápsulas flutuantes"
 
-#: contents/ui/config/ConfigGeneral.qml:186
+#: contents/ui/config/ConfigGeneral.qml:368
 msgid "Floating icon size:"
 msgstr "Tamanho do ícone flutuante:"
 
@@ -3078,14 +3108,6 @@ msgstr "Oculte os nomes dos itens para usar reflexos de ícones."
 msgid "Horizontal"
 msgstr "Horizontais"
 
-#: contents/ui/config/ConfigGeneral.qml:175
-msgid "Horizontal alignment"
-msgstr "Alinhamento horizontal"
-
-#: contents/ui/config/ConfigGeneral.qml:163
-msgid "Horizontal alignment:"
-msgstr "Alinhamento horizontal:"
-
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:215
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:231
 #: contents/ui/config/ConfigMouse.qml:88
@@ -3136,11 +3158,11 @@ msgstr "Os reflexos dos ícones não estão disponíveis em painéis verticais."
 msgid "Icon size:"
 msgstr "Tamanho do ícone:"
 
-#: contents/ui/config/ConfigGeneral.qml:222
+#: contents/ui/config/ConfigGeneral.qml:404
 msgid "Icon spacing"
 msgstr "Espaçamento dos ícones"
 
-#: contents/ui/config/ConfigGeneral.qml:212
+#: contents/ui/config/ConfigGeneral.qml:394
 msgid "Icon spacing:"
 msgstr "Espaçamento dos ícones:"
 
@@ -3431,14 +3453,14 @@ msgstr "Ação personalizada"
 msgid "Layout profile:"
 msgstr "Perfil de layout:"
 
+#: contents/ui/config/ConfigGeneral.qml:82
+msgid "Left"
+msgstr "Esquerda"
+
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:27
 msgctxt "@option:close-button-position"
 msgid "Left"
 msgstr "Esquerda"
-
-#: contents/ui/config/ConfigGeneral.qml:67
-msgid "Left to right"
-msgstr "Da esquerda para a direita"
 
 #: contents/ui/config/SeparatorOptions.qml:165
 msgid "Length:"
@@ -3453,7 +3475,7 @@ msgstr "Modo claro e escuro"
 msgid "Limit menu rows"
 msgstr "Limitar linhas do menu"
 
-#: contents/ui/config/ConfigGeneral.qml:240
+#: contents/ui/config/ConfigGeneral.qml:422
 msgid "Limit:"
 msgstr "Limite:"
 
@@ -3977,7 +3999,7 @@ msgstr ""
 "Nenhum aplicativo multimídia instalado foi encontrado. A seleção automática "
 "continua disponível."
 
-#: contents/ui/main.qml:1818
+#: contents/ui/main.qml:1955
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "Nenhum arquivo local foi encontrado neste arrastar e soltar."
@@ -4000,7 +4022,7 @@ msgstr "Nenhuma notificação"
 msgid "No sound player or usable sound was found."
 msgstr "Nenhum reprodutor de som ou som utilizável foi encontrado."
 
-#: contents/ui/config/ConfigGeneral.qml:321
+#: contents/ui/config/ConfigGeneral.qml:503
 msgid "No virtual desktops were found."
 msgstr "Nenhum desktop virtual foi encontrado."
 
@@ -4159,7 +4181,7 @@ msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 "Aplica-se somente quando este item do dock inicia um aplicativo fechado."
 
-#: contents/ui/main.qml:1829
+#: contents/ui/main.qml:1966
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Somente arquivos locais podem ser abertos com um aplicativo."
@@ -4424,22 +4446,62 @@ msgctxt "@info"
 msgid "Pair a device with the official Bluetooth wizard."
 msgstr "Emparelhe um dispositivo com o assistente oficial de Bluetooth."
 
+#: contents/ui/config/ConfigGeneral.qml:237
+msgid "Panel alignment"
+msgstr "Alinhamento do painel"
+
+#: contents/ui/config/ConfigGeneral.qml:207
+msgid "Panel alignment:"
+msgstr "Alinhamento do painel:"
+
+#: contents/ui/config/ConfigGeneral.qml:89
+msgid "Panel and applets (Recommended)"
+msgstr "Painel e miniaplicativos (Recomendado)"
+
 #: contents/ui/components/punchimenu/PunchiMenuCompactSettingsView.qml:105
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:445
 msgid "Panel distance:"
 msgstr "Distância do painel:"
 
-#: contents/ui/config/ConfigGeneral.qml:186
+#: contents/ui/config/ConfigGeneral.qml:277
+msgid "Panel floating mode"
+msgstr "Modo flutuante do painel"
+
+#: contents/ui/config/ConfigGeneral.qml:247
+msgid "Panel floating mode:"
+msgstr "Modo flutuante do painel:"
+
+#: contents/ui/config/ConfigGeneral.qml:197
+#: contents/ui/config/ConfigGeneral.qml:357
+msgid "Panel height"
+msgstr "Altura do painel"
+
+#: contents/ui/config/ConfigGeneral.qml:167
+#: contents/ui/config/ConfigGeneral.qml:336
+msgid "Panel height:"
+msgstr "Altura do painel:"
+
+#: contents/ui/config/ConfigGeneral.qml:368
 msgid "Panel icon size:"
 msgstr "Tamanho do ícone do painel:"
 
-#: contents/ui/config/ConfigGeneral.qml:152
-msgid "Panel length"
-msgstr "Comprimento do painel"
+#: contents/ui/config/ConfigGeneral.qml:326
+msgid "Panel visibility"
+msgstr "Visibilidade do painel"
 
-#: contents/ui/config/ConfigGeneral.qml:140
-msgid "Panel length:"
-msgstr "Comprimento do painel:"
+#: contents/ui/config/ConfigGeneral.qml:287
+msgid "Panel visibility:"
+msgstr "Visibilidade do painel:"
+
+#: contents/ui/config/ConfigGeneral.qml:197
+#: contents/ui/config/ConfigGeneral.qml:357
+msgid "Panel width"
+msgstr "Largura do painel"
+
+#: contents/ui/config/ConfigGeneral.qml:167
+#: contents/ui/config/ConfigGeneral.qml:336
+msgid "Panel width:"
+msgstr "Largura do painel:"
 
 #: contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml:67
 msgctxt "@label"
@@ -4972,14 +5034,14 @@ msgstr "Revisado"
 msgid "Rhythmic movement:"
 msgstr "Movimento rítmico:"
 
+#: contents/ui/config/ConfigGeneral.qml:84
+msgid "Right"
+msgstr "Direita"
+
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:23
 msgctxt "@option:close-button-position"
 msgid "Right"
 msgstr "Direita"
-
-#: contents/ui/config/ConfigGeneral.qml:69
-msgid "Right to left"
-msgstr "Da direita para a esquerda"
 
 #: contents/ui/config/ConfigItems.qml:732
 msgid "Right-click commands"
@@ -5385,7 +5447,7 @@ msgstr "Desligar"
 msgid "Single"
 msgstr "Solteiro"
 
-#: contents/ui/config/ConfigGeneral.qml:263
+#: contents/ui/config/ConfigGeneral.qml:445
 msgid "Single desktop"
 msgstr "Área de trabalho única"
 
@@ -5496,7 +5558,7 @@ msgstr "Sistema"
 msgid "System operation failed: %1"
 msgstr "Falha na operação do sistema: %1"
 
-#: contents/ui/config/ConfigGeneral.qml:284
+#: contents/ui/config/ConfigGeneral.qml:466
 msgid "Target desktop:"
 msgstr "Área de trabalho de destino:"
 
@@ -5654,18 +5716,18 @@ msgstr ""
 "O tema do dock controla este separador. Escolha “Este separador” para editar "
 "a aparência dele aqui."
 
-#: contents/ui/main.qml:1826
+#: contents/ui/main.qml:1963
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "O arrastar e soltar contém um local de arquivo inválido."
 
-#: contents/ui/main.qml:1835
+#: contents/ui/main.qml:1972
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
 "A lista de arquivos soltos é grande demais para ser aberta com segurança."
 
-#: contents/ui/main.qml:1840
+#: contents/ui/main.qml:1977
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Os arquivos soltos não puderam ser abertos."
@@ -5718,7 +5780,7 @@ msgstr ""
 "A porcentagem se adapta às métricas do Plasma. Ela afeta apenas os pop-ups "
 "de pastas e é limitada a uma distância máxima segura."
 
-#: contents/ui/config/ConfigGeneral.qml:247
+#: contents/ui/config/ConfigGeneral.qml:429
 msgid ""
 "The real panel thickness is not available in this view, so a safe fallback "
 "limit is being used."
@@ -5759,7 +5821,7 @@ msgstr ""
 "O script solicitará sudo somente quando o gerenciador de pacotes detectado "
 "precisar instalar pacotes."
 
-#: contents/ui/config/ConfigGeneral.qml:322
+#: contents/ui/config/ConfigGeneral.qml:504
 msgid "The selected desktop no longer exists. Choose another desktop."
 msgstr ""
 "A área de trabalho selecionada não existe mais. Escolha outra área de "
@@ -5843,7 +5905,7 @@ msgstr "Fino"
 msgid "This action cannot be undone."
 msgstr "Esta ação não pode ser desfeita."
 
-#: contents/ui/main.qml:1838
+#: contents/ui/main.qml:1975
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -5935,6 +5997,10 @@ msgstr ""
 "Para instalar um .plasmoid pré-compilado, use: ./scripts-user/setup-"
 "universal.sh"
 
+#: contents/ui/config/ConfigGeneral.qml:78
+msgid "Top"
+msgstr "Acima"
+
 #: contents/ui/config/ConfigAspect.qml:151
 msgctxt "Indicator position"
 msgid "Top"
@@ -5949,7 +6015,6 @@ msgid "Top right"
 msgstr "Superior direita"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:66
-#: contents/ui/config/ConfigGeneral.qml:63
 msgid "Top to bottom"
 msgstr "De cima para baixo"
 
@@ -6442,14 +6507,6 @@ msgstr "Versão %s | %s | %s"
 msgid "Vertical"
 msgstr "Verticais"
 
-#: contents/ui/config/ConfigGeneral.qml:175
-msgid "Vertical alignment"
-msgstr "Alinhamento vertical"
-
-#: contents/ui/config/ConfigGeneral.qml:163
-msgid "Vertical alignment:"
-msgstr "Alinhamento vertical:"
-
 #: contents/ui/config/ConfigWindows.qml:64
 msgid ""
 "Vertical panels remain supported, but advanced visual tuning is currently "
@@ -6650,6 +6707,10 @@ msgstr ""
 msgid "Windows"
 msgstr "Janelas"
 
+#: contents/ui/config/ConfigGeneral.qml:95
+msgid "Windows go below"
+msgstr "Janelas cobrem o painel"
+
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:139
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:123
 msgid ""
@@ -6670,7 +6731,7 @@ msgstr "Escreva uma nota editável rápida"
 msgid "Write a quick note"
 msgstr "Escreva uma nota rápida"
 
-#: contents/ui/main.qml:1822
+#: contents/ui/main.qml:1959
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Você pode abrir até %1 arquivos locais de uma vez."

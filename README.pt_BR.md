@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55">
-    <img src="https://img.shields.io/badge/release-v0.9.7.55-4caf50" alt="Versão v0.9.7.55">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.56">
+    <img src="https://img.shields.io/badge/release-v0.9.7.56-4caf50" alt="Versão v0.9.7.56">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0--or--later-blue" alt="Licença GPL-3.0-or-later">
@@ -23,15 +23,15 @@ Punchi Dock Remastered é um dock inicializador nativo e interface de tarefas pa
 Este repositório é uma reescrita modular do [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). O projeto prepara atualmente seu caminho rumo à versão estável 1.0.
 
 A versão atual é
-[v0.9.7.55](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55).
+[v0.9.7.56](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.56).
 
-## Novidades na versão 0.9.7.55
+## Novidades na versão 0.9.7.56
 
-- **Submenu de áudio no Centro de Controle e iconografia dinâmica**: Página dedicada para seleção de dispositivos de saída/entrada e controle de volume por aplicativo, ondas sonoras dinâmicas acompanhando o controle deslizante de volume, detecção automática de fones de ouvido e botão com ícone universal de equalizador (`view-media-equalizer`).
-- **Alternador de OSD de volume do Plasma**: Integração nativa com KConfig (`plasmaparc`) para ligar ou desligar a notificação visual de volume na tela.
-- **Interações unificadas e geometria simétrica**: Cursor de mão interativo e dicas de contexto em todos os cartões, além de margens simétricas nos controles de Luz Noturna.
+- **Integração total com painéis do Plasma 6**: Controles diretos nas Preferências da Punchi Dock para modo de comprimento (*Ajustar ao conteúdo* ou *Preencher*), alinhamento (*Esquerda/Cima*, *Centro*, *Direita/Baixo*), modo flutuante (*Painel e miniaplicativos*, *Apenas miniaplicativos*, *Desativado*), visibilidade (*Desviar de janelas*, *Sempre visível*, *Ocultar automaticamente*, *Janelas vão por baixo*) e altura/espessura do painel (`SpinBox` de 24 px a 256 px).
+- **Ponte de memória compartilhada em C++**: Sincronização em tempo real das propriedades e geometria do painel entre instâncias via `PanelLengthModeBridge`.
+- **Dimensionamento adaptativo e prevenção de cortes**: Cálculo físico automático de folga baseado na altura do painel e no fator de zoom ativo para evitar cortes nos ícones.
 
-Consulte o [registro de alterações da 0.9.7.55](CHANGELOG.md#09755---2026-09-02) para ver as notas detalhadas de lançamento e a validação executada.
+Consulte o [registro de alterações da 0.9.7.56](CHANGELOG.md#09756---2026-09-02) para ver as notas detalhadas de lançamento e a validação executada.
 
 ## Capturas de Tela
 

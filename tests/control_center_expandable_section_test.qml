@@ -87,8 +87,8 @@ TestCase {
 
         section.expanded = false
         tryCompare(section, "expansionProgress", 0, 500)
-        compare(section.visible, false)
-        compare(section.animationRunning, false)
+        tryCompare(section, "visible", false, 500)
+        tryCompare(section, "animationRunning", false, 500)
 
         section.expanded = true
         tryCompare(section, "expansionProgress", 1, 500)

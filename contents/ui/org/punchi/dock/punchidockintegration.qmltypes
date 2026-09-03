@@ -831,8 +831,80 @@ Module {
             index: 3
             lineNumber: 16
         }
-        Signal { name: "containmentIdChanged"; lineNumber: 31 }
-        Signal { name: "panelLengthModeChanged"; lineNumber: 32 }
+        Property {
+            name: "panelFloatingMode"
+            type: "int"
+            read: "panelFloatingMode"
+            notify: "panelFloatingModeChanged"
+            index: 4
+            lineNumber: 17
+            isReadonly: true
+        }
+        Property {
+            name: "reportedPanelFloatingMode"
+            type: "int"
+            read: "reportedPanelFloatingMode"
+            write: "setReportedPanelFloatingMode"
+            index: 5
+            lineNumber: 18
+        }
+        Property {
+            name: "panelVisibilityMode"
+            type: "int"
+            read: "panelVisibilityMode"
+            notify: "panelVisibilityModeChanged"
+            index: 6
+            lineNumber: 19
+            isReadonly: true
+        }
+        Property {
+            name: "reportedPanelVisibilityMode"
+            type: "int"
+            read: "reportedPanelVisibilityMode"
+            write: "setReportedPanelVisibilityMode"
+            index: 7
+            lineNumber: 20
+        }
+        Property {
+            name: "panelAlignment"
+            type: "int"
+            read: "panelAlignment"
+            notify: "panelAlignmentChanged"
+            index: 8
+            lineNumber: 21
+            isReadonly: true
+        }
+        Property {
+            name: "reportedPanelAlignment"
+            type: "int"
+            read: "reportedPanelAlignment"
+            write: "setReportedPanelAlignment"
+            index: 9
+            lineNumber: 22
+        }
+        Property {
+            name: "panelThickness"
+            type: "int"
+            read: "panelThickness"
+            notify: "panelThicknessChanged"
+            index: 10
+            lineNumber: 23
+            isReadonly: true
+        }
+        Property {
+            name: "reportedPanelThickness"
+            type: "int"
+            read: "reportedPanelThickness"
+            write: "setReportedPanelThickness"
+            index: 11
+            lineNumber: 24
+        }
+        Signal { name: "containmentIdChanged"; lineNumber: 35 }
+        Signal { name: "panelLengthModeChanged"; lineNumber: 36 }
+        Signal { name: "panelFloatingModeChanged"; lineNumber: 37 }
+        Signal { name: "panelVisibilityModeChanged"; lineNumber: 38 }
+        Signal { name: "panelAlignmentChanged"; lineNumber: 39 }
+        Signal { name: "panelThicknessChanged"; lineNumber: 40 }
     }
     Component {
         file: "punchimenulayoutcontroller.h"

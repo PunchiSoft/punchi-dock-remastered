@@ -1,3 +1,21 @@
+## [0.9.7.56] - 2026-09-02
+
+### Agregado
+
+- Control integral del panel nativo de Plasma 6 directamente desde las Preferencias de Punchi Dock:
+  - Selector de modo de longitud (*Ajustar al contenido* o *Rellenar anchura/altura*).
+  - Selector de alineación (*Izquierda/Arriba*, *Centro*, *Derecha/Abajo*).
+  - Selector de modo flotante (*Panel y miniaplicaciones*, *Solo miniaplicaciones*, *Desactivado*).
+  - Selector de visibilidad (*Esquivar ventanas*, *Siempre visible*, *Ocultar automáticamente*, *Las ventanas van por detrás*).
+  - Selector de altura/grosor del panel (`SpinBox` de 24 px a 256 px en pasos de 2 px con sincronización bidireccional inmediata en tiempo real).
+- Puente C++ `PanelLengthModeBridge` para compartir y sincronizar en memoria propiedades de geometría, longitud, alineación, modo flotante, visibilidad y grosor entre `main.qml` y el diálogo de configuración.
+- Cálculo adaptativo de límite seguro para tamaño de iconos en modo panel según la altura activa del panel y el factor de zoom en hover (`hoverScale`), previniendo recortes visuales sin sacrificar espacio.
+
+### Corregido
+
+- Corrección visual de los `ComboBox` de longitud y alineación en `ConfigGeneral.qml`, eliminando evaluaciones iniciales inválidas de `indexOfValue` y asegurando que muestren su valor activo desde el primer milisegundo de apertura.
+- Ajuste de holgura física en `DockGeometryState.qml` y `ConfigGeneral.qml` para permitir iconos de 32 px en paneles de 64 px con zoom de 1.65x sin recorte.
+
 ## [0.9.7.55] - 2026-09-02
 
 ### Agregado

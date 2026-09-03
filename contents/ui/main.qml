@@ -557,8 +557,27 @@ PlasmoidItem {
             const spacing = Number(Plasmoid.configuration.iconSpacing)
             return Number.isFinite(spacing) ? spacing : 8
         }
-        configuredPanelLengthMode: String(Plasmoid.configuration.panelLengthMode || "fit")
-        configuredPanelAlignmentMode: String(Plasmoid.configuration.panelAlignmentMode || "start")
+        configuredPanelLengthMode: {
+            if (root.configuredPanelLengthMode !== "system") {
+                return root.configuredPanelLengthMode
+            }
+            if (dockGeometry.detectedPanelLengthMode === 0) {
+                return "fill"
+            }
+            return "content"
+        }
+        configuredPanelAlignmentMode: {
+            if (root.configuredPanelAlignmentMode !== "system") {
+                return root.configuredPanelAlignmentMode
+            }
+            if (dockGeometry.detectedPanelAlignment === 1) {
+                return "center"
+            }
+            if (dockGeometry.detectedPanelAlignment === 2) {
+                return "end"
+            }
+            return "start"
+        }
         panelHoverScale: dockConfig.panelHoverScale
         folderPopupDistancePercent: dockConfig.folderPopupDistancePercent
         contextMenuDistancePercent: dockConfig.contextMenuDistancePercent
@@ -585,6 +604,124 @@ PlasmoidItem {
     Punchi.PanelLengthModeBridge {
         containmentId: Plasmoid.containment ? Plasmoid.containment.id : 0
         reportedPanelLengthMode: dockGeometry.detectedPanelLengthMode
+        reportedPanelFloatingMode: dockGeometry.detectedPanelFloatingMode
+        reportedPanelVisibilityMode: dockGeometry.detectedPanelVisibilityMode
+        reportedPanelAlignment: dockGeometry.detectedPanelAlignment
+        reportedPanelThickness: dockGeometry.detectedPanelThickness
+    }
+    readonly property int configuredPanelThickness: Number(Plasmoid.configuration.panelThickness || 0)
+    onConfiguredPanelThicknessChanged: applyConfiguredPanelThickness()
+
+    function applyConfiguredPanelThickness() {
+        if (!root.inPanel || !root.Window.window) {
+            return
+        }
+        const thickness = root.configuredPanelThickness
+        if (thickness <= 0) {
+            return
+        }
+        try {
+            root.Window.window.thickness = thickness
+        } catch (error) {
+            // Guard against custom shells
+        }
+    }
+    readonly property string configuredPanelLengthMode: String(Plasmoid.configuration.panelLengthMode || "system")
+    onConfiguredPanelLengthModeChanged: applyConfiguredPanelLengthMode()
+
+    function applyConfiguredPanelLengthMode() {
+        if (!root.inPanel || !root.Window.window) {
+            return
+        }
+        const mode = root.configuredPanelLengthMode
+        if (mode === "system") {
+            return
+        }
+        try {
+            if (mode === "fill" || mode === "fillAvailable") {
+                root.Window.window.lengthMode = 0
+            } else if (mode === "content" || mode === "fitContent") {
+                root.Window.window.lengthMode = 1
+            } else if (mode === "custom") {
+                root.Window.window.lengthMode = 2
+            }
+        } catch (error) {
+            // Guard against custom shells
+        }
+    }
+
+    readonly property string configuredPanelAlignmentMode: String(Plasmoid.configuration.panelAlignmentMode || "system")
+    onConfiguredPanelAlignmentModeChanged: applyConfiguredPanelAlignmentMode()
+
+    function applyConfiguredPanelAlignmentMode() {
+        if (!root.inPanel || !root.Window.window) {
+            return
+        }
+        const mode = root.configuredPanelAlignmentMode
+        if (mode === "system") {
+            return
+        }
+        try {
+            if (mode === "start") {
+                root.Window.window.alignment = Qt.AlignLeft
+            } else if (mode === "center") {
+                root.Window.window.alignment = Qt.AlignCenter
+            } else if (mode === "end") {
+                root.Window.window.alignment = Qt.AlignRight
+            }
+        } catch (error) {
+            // Guard against custom shells
+        }
+    }
+    readonly property string configuredPanelFloatingMode: String(Plasmoid.configuration.panelFloatingMode || "system")
+    onConfiguredPanelFloatingModeChanged: applyConfiguredPanelFloatingMode()
+
+    function applyConfiguredPanelFloatingMode() {
+        if (!root.inPanel || !root.Window.window) {
+            return
+        }
+        const mode = root.configuredPanelFloatingMode
+        if (mode === "system") {
+            return
+        }
+        try {
+            if (mode === "disabled") {
+                root.Window.window.floating = false
+                root.Window.window.floatingApplets = false
+            } else if (mode === "appletsOnly") {
+                root.Window.window.floating = false
+                root.Window.window.floatingApplets = true
+            } else if (mode === "panelAndApplets") {
+                root.Window.window.floating = true
+            }
+        } catch (error) {
+            // Guard against custom shells
+        }
+    }
+    readonly property string configuredPanelVisibilityMode: String(Plasmoid.configuration.panelVisibilityMode || "system")
+    onConfiguredPanelVisibilityModeChanged: applyConfiguredPanelVisibilityMode()
+
+    function applyConfiguredPanelVisibilityMode() {
+        if (!root.inPanel || !root.Window.window) {
+            return
+        }
+        const mode = root.configuredPanelVisibilityMode
+        if (mode === "system") {
+            return
+        }
+        try {
+            if (mode === "alwaysVisible") {
+                root.Window.window.visibilityMode = 0
+            } else if (mode === "autoHide") {
+                root.Window.window.visibilityMode = 1
+            } else if (mode === "dodgeWindows") {
+                root.Window.window.visibilityMode = 2
+            } else if (mode === "windowsGoBelow") {
+                root.Window.window.visibilityMode = 3
+            }
+        } catch (error) {
+            // Guard against custom shells
+        }
     }
     Punchi.TaskGeometryOwnershipBridge {
         id: taskGeometryOwnership
@@ -1932,6 +2069,11 @@ PlasmoidItem {
             systemDiscovery.requestApplicationCatalog()
         })
         Qt.callLater(root.synchronizePunchiMenuLayoutController)
+        Qt.callLater(root.applyConfiguredPanelLengthMode)
+        Qt.callLater(root.applyConfiguredPanelAlignmentMode)
+        Qt.callLater(root.applyConfiguredPanelFloatingMode)
+        Qt.callLater(root.applyConfiguredPanelVisibilityMode)
+        Qt.callLater(root.applyConfiguredPanelThickness)
     }
 
     Timer {

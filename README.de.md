@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55">
-    <img src="https://img.shields.io/badge/release-v0.9.7.55-4caf50" alt="Version v0.9.7.55">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.56">
+    <img src="https://img.shields.io/badge/release-v0.9.7.56-4caf50" alt="Version v0.9.7.56">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/lizenz-GPL--3.0--or--later-blue" alt="Lizenz GPL-3.0-or-later">
@@ -23,15 +23,15 @@ Punchi Dock Remastered ist ein natives Starter-Dock und eine Aufgabenleiste für
 Dieses Repository ist ein modularer Rewrite des ursprünglichen [Punchi Dock Plasmoids](https://github.com/PunchiSoft/punchi-dock-plasmoid). Das Projekt bereitet derzeit seinen Weg zur stabilen Version 1.0 vor.
 
 Die aktuelle Version ist
-[v0.9.7.55](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.55).
+[v0.9.7.56](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.56).
 
-## Neuigkeiten in Version 0.9.7.55
+## Neuigkeiten in Version 0.9.7.56
 
-- **Audio-Untermenü im Kontrollzentrum und dynamische Gerätesymbole**: Dedizierte Seite zur Verwaltung von Audio-Ausgabe-/Eingabegeräten und App-Lautstärken, dynamische Schallwellen-Symbole passend zur Schiebereglerposition, automatische Kopfhörererkennung und universelles Equalizer-Symbol (`view-media-equalizer`).
-- **Plasma-Lautstärke-OSD-Schalter**: Integrierte KConfig-Steuerung (`plasmaparc`) zur Anzeige oder Ausblendung der globalen KDE-Lautstärkeleiste.
-- **Einheitliche Interaktionen und symmetrische Geometrie**: Zeigehand-Mauszeiger und Tooltips auf allen Karten sowie symmetrischer Rand für die Nachtlicht-Einstellungen.
+- **Umfassende Integration des Plasma 6-Panels**: Direkte Steuerung in den Punchi Dock-Einstellungen für Panel-Längenmodus (*An Inhalt anpassen* oder *Ausfüllen*), Ausrichtung (*Links/Oben*, *Mitte*, *Rechts/Unten*), Schwebemodus (*Panel und Miniprogramme*, *Nur Miniprogramme*, *Deaktiviert*), Sichtbarkeit (*Fenstern ausweichen*, *Immer sichtbar*, *Automatisch ausblenden*, *Fenster im Hintergrund*) und Panelhöhe/-dicke (`SpinBox` von 24 px bis 256 px).
+- **C++ Shared Memory Bridge**: Echtzeitsynchronisation von Panelgeometrie und Eigenschaften über `PanelLengthModeBridge`.
+- **Adaptive Symbolskalierung ohne Beschneidung**: Automatische mathematische Berechnung des Sicherheitslimits für Symbolgrößen basierend auf Panelhöhe und aktivem Hover-Zoom.
 
-Siehe das [Änderungsprotokoll für 0.9.7.55](CHANGELOG.md#09755---2026-09-02) für detaillierte Versionshinweise und die durchgeführte Validierung.
+Siehe das [Änderungsprotokoll für 0.9.7.56](CHANGELOG.md#09756---2026-09-02) für detaillierte Versionshinweise und die durchgeführte Validierung.
 
 ## Screenshots
 

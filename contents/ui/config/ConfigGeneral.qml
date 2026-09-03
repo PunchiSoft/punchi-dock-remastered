@@ -23,8 +23,11 @@ KCM.SimpleKCM {
     property alias cfg_iconSpacing: iconSpacingSlider.value
     property string cfg_virtualDesktopMode: "all"
     property string cfg_targetVirtualDesktop: ""
-    property string cfg_panelLengthMode: "content"
-    property string cfg_panelAlignmentMode: "start"
+    property string cfg_panelLengthMode: "system"
+    property string cfg_panelAlignmentMode: "system"
+    property string cfg_panelFloatingMode: "system"
+    property string cfg_panelVisibilityMode: "system"
+    property int cfg_panelThickness: 0
     readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
@@ -34,6 +37,9 @@ KCM.SimpleKCM {
     // generated QML type metadata does not declare width/height.
     // qmllint disable missing-property
     readonly property int detectedPanelThickness: {
+        if (panelLengthModeBridge.panelThickness > 0) {
+            return panelLengthModeBridge.panelThickness
+        }
         try {
             var containment = Plasmoid.containment
             if (!containment) {
@@ -49,24 +55,44 @@ KCM.SimpleKCM {
         }
     }
     // qmllint enable missing-property
-    readonly property int panelCrossAxisPadding: verticalPanel ? 20 : 24
-    readonly property int safePanelIconSizeMax: detectedPanelThickness > 0
-        ? Math.max(32, detectedPanelThickness - panelCrossAxisPadding - 12)
-        : 96
-    readonly property bool flexiblePanelLengthAvailable: inPanel
-    readonly property var panelLengthOptions: [
-        { "text": i18n("Fit content"), "value": "content" }, // qmllint disable unqualified
-        { "text": i18n("Fill free panel space"), "value": "fill" } // qmllint disable unqualified
-    ]
+    readonly property real currentHoverScale: {
+        const scale = Number(Plasmoid.configuration.hoverScale || 1.65)
+        return Number.isFinite(scale) && scale >= 1.0 ? scale : 1.65
+    }
+    readonly property int safePanelIconSizeMax: {
+        if (detectedPanelThickness <= 0) {
+            return 96
+        }
+        const headroom = 10
+        const availableHeight = Math.max(24, detectedPanelThickness - headroom)
+        const calculatedMax = Math.floor(availableHeight / currentHoverScale)
+        return Math.max(24, Math.min(96, calculatedMax))
+    }
     // qmllint disable unqualified
+    readonly property var panelLengthOptions: [
+        { "text": i18n("Fit content (Recommended)"), "value": "content" },
+        { "text": verticalPanel ? i18n("Fill height") : i18n("Fill width"), "value": "fill" },
+        { "text": i18n("Custom"), "value": "custom" }
+    ]
     readonly property var panelAlignmentOptions: verticalPanel ? [
-        { "text": i18n("Top to bottom"), "value": "start" },
-        { "text": i18n("Center"), "value": "center" },
-        { "text": i18n("Bottom to top"), "value": "end" }
+        { "text": i18n("Top"), "value": "start" },
+        { "text": i18n("Center (Recommended)"), "value": "center" },
+        { "text": i18n("Bottom"), "value": "end" }
     ] : [
-        { "text": i18n("Left to right"), "value": "start" },
-        { "text": i18n("Center"), "value": "center" },
-        { "text": i18n("Right to left"), "value": "end" }
+        { "text": i18n("Left"), "value": "start" },
+        { "text": i18n("Center (Recommended)"), "value": "center" },
+        { "text": i18n("Right"), "value": "end" }
+    ]
+    readonly property var panelFloatingOptions: [
+        { "text": i18n("Disabled"), "value": "disabled" },
+        { "text": i18n("Applets only"), "value": "appletsOnly" },
+        { "text": i18n("Panel and applets (Recommended)"), "value": "panelAndApplets" }
+    ]
+    readonly property var panelVisibilityOptions: [
+        { "text": i18n("Always visible"), "value": "alwaysVisible" },
+        { "text": i18n("Auto hide"), "value": "autoHide" },
+        { "text": i18n("Dodge windows (Recommended)"), "value": "dodgeWindows" },
+        { "text": i18n("Windows go below"), "value": "windowsGoBelow" }
     ]
     // qmllint enable unqualified
     readonly property var virtualDesktopModel: {
@@ -135,9 +161,10 @@ KCM.SimpleKCM {
         Kirigami.FormLayout {
             Layout.fillWidth: true
 
+            // qmllint disable unqualified
             RowLayout {
-                visible: page.flexiblePanelLengthAvailable
-                Kirigami.FormData.label: i18n("Panel length:") // qmllint disable unqualified
+                visible: page.inPanel
+                Kirigami.FormData.label: page.verticalPanel ? i18n("Panel height:") : i18n("Panel width:")
                 Layout.maximumWidth: page.contentWidthHint
 
                 Controls.ComboBox {
@@ -147,9 +174,27 @@ KCM.SimpleKCM {
                     textRole: "text"
                     valueRole: "value"
                     model: page.panelLengthOptions
-                    currentIndex: Math.max(0, indexOfValue(page.cfg_panelLengthMode))
+                    currentIndex: {
+                        const cfg = page.cfg_panelLengthMode
+                        if (cfg === "fill" || cfg === "fillAvailable") {
+                            return 1
+                        }
+                        if (cfg === "custom") {
+                            return 2
+                        }
+                        if (cfg === "content" || cfg === "fitContent" || cfg === "fit") {
+                            return 0
+                        }
+                        if (panelLengthModeBridge.panelLengthMode === 0) {
+                            return 1
+                        }
+                        if (panelLengthModeBridge.panelLengthMode === 2) {
+                            return 2
+                        }
+                        return 0
+                    }
                     onActivated: page.cfg_panelLengthMode = currentValue
-                    Accessible.name: i18n("Panel length") // qmllint disable unqualified
+                    Accessible.name: page.verticalPanel ? i18n("Panel height") : i18n("Panel width")
 
                     ConfigCursorBehavior {
                         cursorEnabled: page.interactiveCursorEnabled
@@ -157,10 +202,9 @@ KCM.SimpleKCM {
                 }
             }
 
-            // qmllint disable unqualified
             RowLayout {
-                visible: page.inPanel && panelLengthModeBridge.fillAvailable
-                Kirigami.FormData.label: page.verticalPanel ? i18n("Vertical alignment:") : i18n("Horizontal alignment:")
+                visible: page.inPanel
+                Kirigami.FormData.label: i18n("Panel alignment:")
                 Layout.maximumWidth: page.contentWidthHint
 
                 Controls.ComboBox {
@@ -170,9 +214,147 @@ KCM.SimpleKCM {
                     textRole: "text"
                     valueRole: "value"
                     model: page.panelAlignmentOptions
-                    currentIndex: Math.max(0, indexOfValue(page.cfg_panelAlignmentMode))
+                    currentIndex: {
+                        const cfg = page.cfg_panelAlignmentMode
+                        if (cfg === "start" || cfg === "left" || cfg === "top") {
+                            return 0
+                        }
+                        if (cfg === "end" || cfg === "right" || cfg === "bottom") {
+                            return 2
+                        }
+                        if (cfg === "center") {
+                            return 1
+                        }
+                        if (panelLengthModeBridge.panelAlignment === 0) {
+                            return 0
+                        }
+                        if (panelLengthModeBridge.panelAlignment === 2) {
+                            return 2
+                        }
+                        return 1
+                    }
                     onActivated: page.cfg_panelAlignmentMode = currentValue
-                    Accessible.name: page.verticalPanel ? i18n("Vertical alignment") : i18n("Horizontal alignment")
+                    Accessible.name: i18n("Panel alignment")
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                    }
+                }
+            }
+
+            RowLayout {
+                visible: page.inPanel
+                Kirigami.FormData.label: i18n("Panel floating mode:")
+                Layout.maximumWidth: page.contentWidthHint
+
+                Controls.ComboBox {
+                    id: panelFloatingModeCombo
+                    Layout.preferredWidth: page.selectorWidthHint
+                    Layout.maximumWidth: page.selectorWidthHint
+                    textRole: "text"
+                    valueRole: "value"
+                    model: page.panelFloatingOptions
+                    currentIndex: {
+                        const cfg = page.cfg_panelFloatingMode
+                        if (cfg === "disabled") {
+                            return 0
+                        }
+                        if (cfg === "appletsOnly") {
+                            return 1
+                        }
+                        if (cfg === "panelAndApplets") {
+                            return 2
+                        }
+                        if (panelLengthModeBridge.panelFloatingMode === 0) {
+                            return 0
+                        }
+                        if (panelLengthModeBridge.panelFloatingMode === 1) {
+                            return 1
+                        }
+                        return 2
+                    }
+                    onActivated: page.cfg_panelFloatingMode = currentValue
+                    Accessible.name: i18n("Panel floating mode")
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                    }
+                }
+            }
+
+            RowLayout {
+                visible: page.inPanel
+                Kirigami.FormData.label: i18n("Panel visibility:")
+                Layout.maximumWidth: page.contentWidthHint
+
+                Controls.ComboBox {
+                    id: panelVisibilityModeCombo
+                    Layout.preferredWidth: page.selectorWidthHint
+                    Layout.maximumWidth: page.selectorWidthHint
+                    textRole: "text"
+                    valueRole: "value"
+                    model: page.panelVisibilityOptions
+                    currentIndex: {
+                        const cfg = page.cfg_panelVisibilityMode
+                        if (cfg === "alwaysVisible") {
+                            return 0
+                        }
+                        if (cfg === "autoHide") {
+                            return 1
+                        }
+                        if (cfg === "dodgeWindows") {
+                            return 2
+                        }
+                        if (cfg === "windowsGoBelow") {
+                            return 3
+                        }
+                        if (panelLengthModeBridge.panelVisibilityMode === 0) {
+                            return 0
+                        }
+                        if (panelLengthModeBridge.panelVisibilityMode === 1) {
+                            return 1
+                        }
+                        if (panelLengthModeBridge.panelVisibilityMode === 2) {
+                            return 2
+                        }
+                        if (panelLengthModeBridge.panelVisibilityMode === 3) {
+                            return 3
+                        }
+                        return 0
+                    }
+                    onActivated: page.cfg_panelVisibilityMode = currentValue
+                    Accessible.name: i18n("Panel visibility")
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                    }
+                }
+            }
+
+            RowLayout {
+                visible: page.inPanel
+                Kirigami.FormData.label: page.verticalPanel ? i18n("Panel width:") : i18n("Panel height:")
+                Layout.maximumWidth: page.contentWidthHint
+
+                Controls.SpinBox {
+                    id: panelThicknessSpinBox
+                    Layout.preferredWidth: page.selectorWidthHint
+                    Layout.maximumWidth: page.selectorWidthHint
+                    from: 24
+                    to: 256
+                    stepSize: 2
+                    editable: true
+                    value: page.cfg_panelThickness > 0
+                        ? page.cfg_panelThickness
+                        : (page.detectedPanelThickness > 0 ? page.detectedPanelThickness : 64)
+                    onValueModified: page.cfg_panelThickness = value
+                    textFromValue: function(value) {
+                        return value + " px"
+                    }
+                    valueFromText: function(text) {
+                        return parseInt(text, 10) || 24
+                    }
+                    Accessible.name: page.verticalPanel ? i18n("Panel width") : i18n("Panel height")
 
                     ConfigCursorBehavior {
                         cursorEnabled: page.interactiveCursorEnabled
@@ -188,7 +370,7 @@ KCM.SimpleKCM {
 
                 Controls.Slider {
                     id: iconSizeSlider
-                    from: 32
+                    from: 24
                     to: page.inPanel ? page.safePanelIconSizeMax : 96
                     stepSize: 2
                     Layout.fillWidth: true

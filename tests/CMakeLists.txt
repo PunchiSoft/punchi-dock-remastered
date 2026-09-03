@@ -125,6 +125,16 @@ target_link_libraries(taskgeometryownershipbridge_test PRIVATE Qt6::Core Qt6::Qm
 
 add_test(NAME taskgeometryownershipbridge_test COMMAND taskgeometryownershipbridge_test)
 
+add_executable(panellengthmodebridge_test
+    panellengthmodebridge_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/panellengthmodebridge.cpp
+)
+
+target_include_directories(panellengthmodebridge_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(panellengthmodebridge_test PRIVATE Qt6::Core Qt6::Qml)
+
+add_test(NAME panellengthmodebridge_test COMMAND panellengthmodebridge_test)
+
 add_executable(punchimenulayoutmodel_test
     punchimenulayoutmodel_test.cpp
     ${CMAKE_SOURCE_DIR}/src/applicationcategoryclassifier.cpp

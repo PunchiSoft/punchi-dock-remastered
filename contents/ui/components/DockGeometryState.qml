@@ -90,6 +90,7 @@ QtObject {
     readonly property bool rightPanel: effectivePanelLocation === PlasmaCore.Types.RightEdge
 
     readonly property int detectedPanelLengthMode: {
+        const _trigger = root.panelStateTrigger
         try {
             if (!root.inPanel || !root.panelWindow
                     || typeof root.panelWindow["lengthMode"] === "undefined") {
@@ -97,6 +98,82 @@ QtObject {
             }
             const lengthMode = Number(root.panelWindow["lengthMode"])
             return Number.isFinite(lengthMode) ? lengthMode : -1
+        } catch (error) {
+            return -1
+        }
+    }
+    property int panelStateTrigger: 0
+    readonly property Connections panelStateConnections: Connections {
+        target: root.panelWindow
+        ignoreUnknownSignals: true
+        function onFloatingChanged() {
+            root.panelStateTrigger++
+        }
+        function onFloatingAppletsChanged() {
+            root.panelStateTrigger++
+        }
+        function onVisibilityModeChanged() {
+            root.panelStateTrigger++
+        }
+        function onLengthModeChanged() {
+            root.panelStateTrigger++
+        }
+        function onAlignmentChanged() {
+            root.panelStateTrigger++
+        }
+        function onThicknessChanged() {
+            root.panelStateTrigger++
+        }
+    }
+    readonly property int detectedPanelFloatingMode: {
+        const _trigger = root.panelStateTrigger
+        try {
+            if (!root.inPanel || !root.panelWindow
+                    || typeof root.panelWindow["floating"] === "undefined") {
+                return -1
+            }
+            if (Boolean(root.panelWindow["floating"])) {
+                return 2
+            }
+            if (Boolean(root.panelWindow["floatingApplets"])) {
+                return 1
+            }
+            return 0
+        } catch (error) {
+            return -1
+        }
+    }
+    readonly property int detectedPanelVisibilityMode: {
+        const _trigger = root.panelStateTrigger
+        try {
+            if (!root.inPanel || !root.panelWindow
+                    || typeof root.panelWindow["visibilityMode"] === "undefined") {
+                return -1
+            }
+            const mode = Number(root.panelWindow["visibilityMode"])
+            return !isNaN(mode) && mode >= 0 ? mode : -1
+        } catch (error) {
+            return -1
+        }
+    }
+    readonly property int detectedPanelAlignment: {
+        const _trigger = root.panelStateTrigger
+        try {
+            if (!root.inPanel || !root.panelWindow
+                    || typeof root.panelWindow["alignment"] === "undefined") {
+                return -1
+            }
+            const align = root.panelWindow["alignment"]
+            if (align === Qt.AlignLeft || align === Qt.AlignTop) {
+                return 0
+            }
+            if (align === Qt.AlignCenter || align === Qt.AlignHCenter || align === Qt.AlignVCenter) {
+                return 1
+            }
+            if (align === Qt.AlignRight || align === Qt.AlignBottom) {
+                return 2
+            }
+            return -1
         } catch (error) {
             return -1
         }
@@ -140,7 +217,15 @@ QtObject {
     readonly property int contextMenuGap:
         root.popupGapForPercent(root.contextMenuDistancePercent)
     readonly property int detectedPanelThickness: {
+        const _trigger = root.panelStateTrigger
         try {
+            if (root.inPanel && root.panelWindow
+                    && typeof root.panelWindow["thickness"] !== "undefined") {
+                const th = Number(root.panelWindow["thickness"])
+                if (Number.isFinite(th) && th > 0) {
+                    return th
+                }
+            }
             if (!root.containment) {
                 return 0
             }
@@ -156,12 +241,10 @@ QtObject {
     readonly property int panelCrossAxisPadding: root.verticalPanel
         ? (dockBackgroundHorizontalPadding * 2)
         : (dockBackgroundVerticalPadding * 2)
-    readonly property int effectivePanelIconLimit: detectedPanelThickness > 0
-        ? Math.max(32, detectedPanelThickness - panelCrossAxisPadding - 12)
-        : Math.max(32, root.configuredIconSize)
     readonly property int effectivePanelBaseIconLimit: detectedPanelThickness > 0
-        ? Math.max(24, Math.floor(effectivePanelIconLimit / root.panelHoverScale))
-        : Math.max(32, root.configuredIconSize)
+        ? Math.max(24, Math.floor((detectedPanelThickness - 10) / Math.max(1.0, root.panelHoverScale)))
+        : Math.max(24, root.configuredIconSize)
+    readonly property int effectivePanelIconLimit: effectivePanelBaseIconLimit
     readonly property int effectiveIconSize: root.inPanel
         ? Math.min(root.configuredIconSize, effectivePanelBaseIconLimit)
         : root.configuredIconSize
