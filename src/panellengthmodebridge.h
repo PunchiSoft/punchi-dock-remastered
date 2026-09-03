@@ -22,6 +22,8 @@ class PanelLengthModeBridge : public QObject
     Q_PROPERTY(int reportedPanelAlignment READ reportedPanelAlignment WRITE setReportedPanelAlignment)
     Q_PROPERTY(int panelThickness READ panelThickness NOTIFY panelThicknessChanged)
     Q_PROPERTY(int reportedPanelThickness READ reportedPanelThickness WRITE setReportedPanelThickness)
+    Q_PROPERTY(int panelOpacityMode READ panelOpacityMode NOTIFY panelOpacityModeChanged)
+    Q_PROPERTY(int reportedPanelOpacityMode READ reportedPanelOpacityMode WRITE setReportedPanelOpacityMode)
 
 public:
     explicit PanelLengthModeBridge(QObject *parent = nullptr);
@@ -45,11 +47,15 @@ public:
     int panelThickness() const;
     int reportedPanelThickness() const;
     void setReportedPanelThickness(int thickness);
+    int panelOpacityMode() const;
+    int reportedPanelOpacityMode() const;
+    void setReportedPanelOpacityMode(int opacityMode);
     void notifyPanelLengthModeChanged();
     void notifyPanelFloatingModeChanged();
     void notifyPanelVisibilityModeChanged();
     void notifyPanelAlignmentChanged();
     void notifyPanelThicknessChanged();
+    void notifyPanelOpacityModeChanged();
 
 Q_SIGNALS:
     void containmentIdChanged();
@@ -58,6 +64,7 @@ Q_SIGNALS:
     void panelVisibilityModeChanged();
     void panelAlignmentChanged();
     void panelThicknessChanged();
+    void panelOpacityModeChanged();
 
 private:
     uint m_containmentId = 0;
@@ -66,4 +73,5 @@ private:
     int m_reportedPanelVisibilityMode = -1;
     int m_reportedPanelAlignment = -1;
     int m_reportedPanelThickness = 0;
+    int m_reportedPanelOpacityMode = -1;
 };

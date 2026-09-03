@@ -608,6 +608,30 @@ PlasmoidItem {
         reportedPanelVisibilityMode: dockGeometry.detectedPanelVisibilityMode
         reportedPanelAlignment: dockGeometry.detectedPanelAlignment
         reportedPanelThickness: dockGeometry.detectedPanelThickness
+        reportedPanelOpacityMode: dockGeometry.detectedPanelOpacityMode
+    }
+    readonly property string configuredPanelOpacityMode: String(Plasmoid.configuration.panelOpacityMode || "system")
+    onConfiguredPanelOpacityModeChanged: applyConfiguredPanelOpacityMode()
+
+    function applyConfiguredPanelOpacityMode() {
+        if (!root.inPanel || !root.Window.window) {
+            return
+        }
+        const mode = root.configuredPanelOpacityMode
+        if (mode === "system") {
+            return
+        }
+        try {
+            if (mode === "adaptive") {
+                root.Window.window.opacityMode = 0
+            } else if (mode === "opaque") {
+                root.Window.window.opacityMode = 1
+            } else if (mode === "translucent") {
+                root.Window.window.opacityMode = 2
+            }
+        } catch (error) {
+            // Guard against custom shells
+        }
     }
     readonly property int configuredPanelThickness: Number(Plasmoid.configuration.panelThickness || 0)
     onConfiguredPanelThicknessChanged: applyConfiguredPanelThickness()
@@ -2074,6 +2098,7 @@ PlasmoidItem {
         Qt.callLater(root.applyConfiguredPanelFloatingMode)
         Qt.callLater(root.applyConfiguredPanelVisibilityMode)
         Qt.callLater(root.applyConfiguredPanelThickness)
+        Qt.callLater(root.applyConfiguredPanelOpacityMode)
     }
 
     Timer {

@@ -28,6 +28,7 @@ KCM.SimpleKCM {
     property string cfg_panelFloatingMode: "system"
     property string cfg_panelVisibilityMode: "system"
     property int cfg_panelThickness: 0
+    property string cfg_panelOpacityMode: "system"
     readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
@@ -93,6 +94,11 @@ KCM.SimpleKCM {
         { "text": i18n("Auto hide"), "value": "autoHide" },
         { "text": i18n("Dodge windows (Recommended)"), "value": "dodgeWindows" },
         { "text": i18n("Windows go below"), "value": "windowsGoBelow" }
+    ]
+    readonly property var panelOpacityOptions: [
+        { "text": i18n("Adaptive"), "value": "adaptive" },
+        { "text": i18n("Opaque"), "value": "opaque" },
+        { "text": i18n("Translucent"), "value": "translucent" }
     ]
     // qmllint enable unqualified
     readonly property var virtualDesktopModel: {
@@ -324,6 +330,49 @@ KCM.SimpleKCM {
                     }
                     onActivated: page.cfg_panelVisibilityMode = currentValue
                     Accessible.name: i18n("Panel visibility")
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                    }
+                }
+            }
+
+            RowLayout {
+                visible: page.inPanel
+                Kirigami.FormData.label: i18n("Panel opacity:")
+                Layout.maximumWidth: page.contentWidthHint
+
+                Controls.ComboBox {
+                    id: panelOpacityModeCombo
+                    Layout.preferredWidth: page.selectorWidthHint
+                    Layout.maximumWidth: page.selectorWidthHint
+                    textRole: "text"
+                    valueRole: "value"
+                    model: page.panelOpacityOptions
+                    currentIndex: {
+                        const cfg = page.cfg_panelOpacityMode
+                        if (cfg === "adaptive") {
+                            return 0
+                        }
+                        if (cfg === "opaque") {
+                            return 1
+                        }
+                        if (cfg === "translucent") {
+                            return 2
+                        }
+                        if (panelLengthModeBridge.panelOpacityMode === 0) {
+                            return 0
+                        }
+                        if (panelLengthModeBridge.panelOpacityMode === 1) {
+                            return 1
+                        }
+                        if (panelLengthModeBridge.panelOpacityMode === 2) {
+                            return 2
+                        }
+                        return 0
+                    }
+                    onActivated: page.cfg_panelOpacityMode = currentValue
+                    Accessible.name: i18n("Panel opacity")
 
                     ConfigCursorBehavior {
                         cursorEnabled: page.interactiveCursorEnabled

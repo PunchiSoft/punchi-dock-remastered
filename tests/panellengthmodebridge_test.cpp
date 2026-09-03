@@ -129,5 +129,24 @@ int main()
     passed &= expect(otherBridge.panelThickness() == 0,
         "isolated containment id has independent thickness");
 
+    // Opacity mode testing
+    passed &= expect(configBridge.panelOpacityMode() == -1,
+        "initial opacity mode is unknown (-1)");
+
+    mainBridge.setReportedPanelOpacityMode(0); // 0: Adaptive
+    passed &= expect(configBridge.panelOpacityMode() == 0,
+        "configBridge receives Adaptive (0) reported by mainBridge");
+
+    mainBridge.setReportedPanelOpacityMode(1); // 1: Opaque
+    passed &= expect(configBridge.panelOpacityMode() == 1,
+        "configBridge updates to Opaque (1) when mainBridge changes");
+
+    mainBridge.setReportedPanelOpacityMode(2); // 2: Translucent
+    passed &= expect(configBridge.panelOpacityMode() == 2,
+        "configBridge updates to Translucent (2) when mainBridge changes");
+
+    passed &= expect(otherBridge.panelOpacityMode() == -1,
+        "isolated containment id has independent opacity mode");
+
     return passed ? 0 : 1;
 }

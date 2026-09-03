@@ -124,6 +124,9 @@ QtObject {
         function onThicknessChanged() {
             root.panelStateTrigger++
         }
+        function onOpacityModeChanged() {
+            root.panelStateTrigger++
+        }
     }
     readonly property int detectedPanelFloatingMode: {
         const _trigger = root.panelStateTrigger
@@ -174,6 +177,19 @@ QtObject {
                 return 2
             }
             return -1
+        } catch (error) {
+            return -1
+        }
+    }
+    readonly property int detectedPanelOpacityMode: {
+        const _trigger = root.panelStateTrigger
+        try {
+            if (!root.inPanel || !root.panelWindow
+                    || typeof root.panelWindow["opacityMode"] === "undefined") {
+                return -1
+            }
+            const mode = Number(root.panelWindow["opacityMode"])
+            return !isNaN(mode) && mode >= 0 ? mode : -1
         } catch (error) {
             return -1
         }

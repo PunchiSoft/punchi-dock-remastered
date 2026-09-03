@@ -13,6 +13,7 @@ QHash<uint, int> reportedFloatingModes;
 QHash<uint, int> reportedVisibilityModes;
 QHash<uint, int> reportedAlignments;
 QHash<uint, int> reportedThicknesses;
+QHash<uint, int> reportedOpacityModes;
 QList<QPointer<PanelLengthModeBridge>> bridges;
 
 void notifyBridges(uint containmentId)
@@ -28,6 +29,7 @@ void notifyBridges(uint containmentId)
             (*it)->notifyPanelVisibilityModeChanged();
             (*it)->notifyPanelAlignmentChanged();
             (*it)->notifyPanelThicknessChanged();
+            (*it)->notifyPanelOpacityModeChanged();
         }
         ++it;
     }
@@ -62,6 +64,7 @@ void PanelLengthModeBridge::setContainmentId(uint containmentId)
     Q_EMIT panelVisibilityModeChanged();
     Q_EMIT panelAlignmentChanged();
     Q_EMIT panelThicknessChanged();
+    Q_EMIT panelOpacityModeChanged();
 }
 
 int PanelLengthModeBridge::panelLengthMode() const
@@ -207,4 +210,32 @@ void PanelLengthModeBridge::setReportedPanelThickness(int thickness)
 void PanelLengthModeBridge::notifyPanelThicknessChanged()
 {
     Q_EMIT panelThicknessChanged();
+}
+
+int PanelLengthModeBridge::panelOpacityMode() const
+{
+    return reportedOpacityModes.value(m_containmentId, -1);
+}
+
+int PanelLengthModeBridge::reportedPanelOpacityMode() const
+{
+    return m_reportedPanelOpacityMode;
+}
+
+void PanelLengthModeBridge::setReportedPanelOpacityMode(int opacityMode)
+{
+    if (m_reportedPanelOpacityMode == opacityMode) {
+        return;
+    }
+    m_reportedPanelOpacityMode = opacityMode;
+    if (m_containmentId == 0 || reportedOpacityModes.value(m_containmentId, -1) == opacityMode) {
+        return;
+    }
+    reportedOpacityModes.insert(m_containmentId, opacityMode);
+    notifyBridges(m_containmentId);
+}
+
+void PanelLengthModeBridge::notifyPanelOpacityModeChanged()
+{
+    Q_EMIT panelOpacityModeChanged();
 }

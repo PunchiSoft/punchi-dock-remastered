@@ -899,12 +899,30 @@ Module {
             index: 11
             lineNumber: 24
         }
+        Property {
+            name: "panelOpacityMode"
+            type: "int"
+            read: "panelOpacityMode"
+            notify: "panelOpacityModeChanged"
+            index: 12
+            lineNumber: 25
+            isReadonly: true
+        }
+        Property {
+            name: "reportedPanelOpacityMode"
+            type: "int"
+            read: "reportedPanelOpacityMode"
+            write: "setReportedPanelOpacityMode"
+            index: 13
+            lineNumber: 26
+        }
         Signal { name: "containmentIdChanged"; lineNumber: 35 }
         Signal { name: "panelLengthModeChanged"; lineNumber: 36 }
         Signal { name: "panelFloatingModeChanged"; lineNumber: 37 }
         Signal { name: "panelVisibilityModeChanged"; lineNumber: 38 }
         Signal { name: "panelAlignmentChanged"; lineNumber: 39 }
         Signal { name: "panelThicknessChanged"; lineNumber: 40 }
+        Signal { name: "panelOpacityModeChanged"; lineNumber: 41 }
     }
     Component {
         file: "punchimenulayoutcontroller.h"

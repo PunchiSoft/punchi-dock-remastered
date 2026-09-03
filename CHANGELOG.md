@@ -1,3 +1,13 @@
+## [0.9.7.57] - 2026-09-02
+
+### Agregado
+
+- Control de Opacidad del panel nativo de Plasma 6 desde Preferencias (`ConfigGeneral.qml`):
+  - Opciones de opacidad nativa: *Adaptable*, *Opaco* y *Transparente*.
+  - Sincronización bidireccional inmediata en tiempo real mediante `PanelLengthModeBridge` (`panelOpacityMode`).
+  - Persistencia de configuración en la clave KConfig `panelOpacityMode`.
+  - Pruebas unitarias completas para el puente de opacidad en `panellengthmodebridge_test.cpp`.
+
 ## [0.9.7.56] - 2026-09-02
 
 ### Agregado

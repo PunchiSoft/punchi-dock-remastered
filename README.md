@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.56">
-    <img src="https://img.shields.io/badge/release-v0.9.7.56-4caf50" alt="Release v0.9.7.56">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.57">
+    <img src="https://img.shields.io/badge/release-v0.9.7.57-4caf50" alt="Release v0.9.7.57">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,15 +23,15 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7.56](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.56).
+[v0.9.7.57](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.57).
 
-## What's New in 0.9.7.56
+## What's New in 0.9.7.57
 
-- **Comprehensive Plasma 6 Panel Integration**: Direct controls inside Punchi Dock Preferences for panel length mode (*Fit content* vs. *Fill*), alignment (*Left/Top*, *Center*, *Right/Bottom*), floating mode (*Panel and applets*, *Applets only*, *Disabled*), visibility (*Dodge windows*, *Always visible*, *Auto-hide*, *Windows go below*), and panel height/thickness (`SpinBox` from 24 px to 256 px).
-- **C++ Shared Memory Bridge**: Real-time cross-instance synchronization of panel geometry and properties via `PanelLengthModeBridge`.
-- **Adaptive Safe Icon Sizing**: Prevents hover magnification clipping through automatic physical headroom calculations linked to panel height and active zoom level.
+- **Native Panel Opacity Control**: Direct selector in Punchi Dock Preferences for Plasma 6 panel opacity (*Adaptive*, *Opaque*, and *Translucent*) with instant real-time synchronization.
+- **Comprehensive Plasma 6 Panel Integration**: Direct controls for panel length mode, alignment, floating mode, visibility, and panel height/thickness (`SpinBox` from 24 px to 256 px).
+- **Adaptive Safe Icon Sizing**: Prevents hover magnification clipping through automatic physical headroom calculations.
 
-See the [0.9.7.56 changelog](CHANGELOG.md#09756---2026-09-02) for detailed release
+See the [0.9.7.57 changelog](CHANGELOG.md#09757---2026-09-02) for detailed release
 notes and the validation performed for this version.
 
 ## Screenshots

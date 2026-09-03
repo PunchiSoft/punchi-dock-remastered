@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.56">
-    <img src="https://img.shields.io/badge/release-v0.9.7.56-4caf50" alt="Version v0.9.7.56">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.57">
+    <img src="https://img.shields.io/badge/release-v0.9.7.57-4caf50" alt="Version v0.9.7.57">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/lizenz-GPL--3.0--or--later-blue" alt="Lizenz GPL-3.0-or-later">
@@ -23,15 +23,16 @@ Punchi Dock Remastered ist ein natives Starter-Dock und eine Aufgabenleiste für
 Dieses Repository ist ein modularer Rewrite des ursprünglichen [Punchi Dock Plasmoids](https://github.com/PunchiSoft/punchi-dock-plasmoid). Das Projekt bereitet derzeit seinen Weg zur stabilen Version 1.0 vor.
 
 Die aktuelle Version ist
-[v0.9.7.56](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.56).
+[v0.9.7.57](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.57).
 
-## Neuigkeiten in Version 0.9.7.56
+## Neuigkeiten in Version 0.9.7.57
 
+- **Natives Leistendeckkraft-Steuerelement**: Direkte Auswahl in den Punchi Dock Einstellungen für die Deckkraft des Plasma 6 Panels (*Anpassbar*, *Undurchsichtig* und *Durchscheinend*) mit sofortiger Echtzeitsynchronisierung.
 - **Umfassende Integration des Plasma 6-Panels**: Direkte Steuerung in den Punchi Dock-Einstellungen für Panel-Längenmodus (*An Inhalt anpassen* oder *Ausfüllen*), Ausrichtung (*Links/Oben*, *Mitte*, *Rechts/Unten*), Schwebemodus (*Panel und Miniprogramme*, *Nur Miniprogramme*, *Deaktiviert*), Sichtbarkeit (*Fenstern ausweichen*, *Immer sichtbar*, *Automatisch ausblenden*, *Fenster im Hintergrund*) und Panelhöhe/-dicke (`SpinBox` von 24 px bis 256 px).
 - **C++ Shared Memory Bridge**: Echtzeitsynchronisation von Panelgeometrie und Eigenschaften über `PanelLengthModeBridge`.
 - **Adaptive Symbolskalierung ohne Beschneidung**: Automatische mathematische Berechnung des Sicherheitslimits für Symbolgrößen basierend auf Panelhöhe und aktivem Hover-Zoom.
 
-Siehe das [Änderungsprotokoll für 0.9.7.56](CHANGELOG.md#09756---2026-09-02) für detaillierte Versionshinweise und die durchgeführte Validierung.
+Siehe das [Änderungsprotokoll für 0.9.7.57](CHANGELOG.md#09757---2026-09-02) für detaillierte Versionshinweise und die durchgeführte Validierung.
 
 ## Screenshots
 

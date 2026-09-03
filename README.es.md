@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.56">
-    <img src="https://img.shields.io/badge/release-v0.9.7.56-4caf50" alt="Versión v0.9.7.56">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.57">
+    <img src="https://img.shields.io/badge/release-v0.9.7.57-4caf50" alt="Versión v0.9.7.57">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -18,21 +18,20 @@
 
 [English](README.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt_BR.md)
 
-Punchi Dock Remastered es un dock nativo de lanzadores e interfaz de tareas para KDE Plasma 6, diseñado principalmente para Wayland. Puede funcionar como dock flotante o integrarse en un panel de Plasma siguiendo el tema activo.
+Punchi Dock Remastered es un dock lanzador nativo e interfaz de tareas para KDE Plasma 6, diseñado principalmente para Wayland. Puede operar como dock flotante o integrarse en un panel de Plasma siguiendo el tema visual activo.
 
-Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). Actualmente el proyecto prepara su camino hacia la versión estable 1.0.
+Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). El proyecto prepara actualmente su camino hacia una versión 1.0 estable.
 
 La versión actual es
-[v0.9.7.56](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.56).
+[v0.9.7.57](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.57).
 
-## Novedades de la versión 0.9.7.56
+## Novedades de la versión 0.9.7.57
 
-- **Integración integral con paneles de Plasma 6**: Control directo desde las Preferencias de Punchi Dock para modo de longitud (*Ajustar al contenido* o *Rellenar*), alineación (*Izquierda/Arriba*, *Centro*, *Derecha/Abajo*), modo flotante (*Panel y miniaplicaciones*, *Solo miniaplicaciones*, *Desactivado*), visibilidad (*Esquivar ventanas*, *Siempre visible*, *Ocultar automáticamente*, *Las ventanas van por detrás*) y altura/grosor del panel (`SpinBox` de 24 px a 256 px).
-- **Puente en memoria compartida C++**: Sincronización en tiempo real de propiedades del panel entre instancias mediante `PanelLengthModeBridge`.
-- **Dimensionamiento adaptativo y prevención de recortes**: Cálculo matemático automático de holgura física según la altura del panel y el factor de zoom en hover para evitar recortes de iconos.
+- **Control nativo de opacidad del panel**: Selector directo en Preferencias de Punchi Dock para opacidad del panel de Plasma 6 (*Adaptable*, *Opaco* y *Transparente*) con sincronización bidireccional inmediata.
+- **Integración integral con paneles de Plasma 6**: Controles directos en Preferencias para modo de longitud (*Ajustar al contenido* o *Rellenar*), alineación (*Izquierda/Arriba*, *Centro*, *Derecha/Abajo*), modo flotante (*Panel y miniaplicaciones*, *Solo miniaplicaciones*, *Desactivado*), visibilidad (*Esquivar ventanas*, *Siempre visible*, *Ocultar automáticamente*, *Las ventanas van por detrás*) y altura/grosor del panel (`SpinBox` de 24 px a 256 px).
+- **Dimensionamiento adaptativo y prevención de cortes**: Cálculo físico de holgura según la altura del panel y el zoom activo.
 
-Consulta el [changelog de la versión 0.9.7.56](CHANGELOG.md#09756---2026-09-02) para
-conocer las notas detalladas del lanzamiento y la validación realizada.
+Consulta el [registro de cambios de 0.9.7.57](CHANGELOG.md#09757---2026-09-02) para ver las notas detalladas de la versión y la validación realizada.
 
 ## Capturas
 
