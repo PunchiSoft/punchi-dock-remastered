@@ -29,6 +29,10 @@ KCM.SimpleKCM {
     property string cfg_panelVisibilityMode: "system"
     property int cfg_panelThickness: 0
     property string cfg_panelOpacityMode: "system"
+    property string cfg_dockThemeMode: "plasma"
+    property bool cfg_unlockPanelIconSizeLimit: false
+    readonly property bool customThemeActiveInPanel: page.inPanel
+        && ((page.cfg_dockThemeMode === "custom") || (String(Plasmoid.configuration.dockThemeMode || "") === "custom"))
     readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
@@ -69,6 +73,16 @@ KCM.SimpleKCM {
         const calculatedMax = Math.floor(availableHeight / currentHoverScale)
         return Math.max(24, Math.min(96, calculatedMax))
     }
+    function calculatedAutoThickness(iconSize) {
+        if (verticalPanel) {
+            return Math.ceil(iconSize + 12)
+        }
+        const scale = page.currentHoverScale
+        const zoomDelta = iconSize * Math.max(0.0, scale - 1.0)
+        const headroom = Math.ceil(zoomDelta + 8)
+        const base = iconSize + 12
+        return base + headroom
+    }
     // qmllint disable unqualified
     readonly property var panelLengthOptions: [
         { "text": i18n("Fit content (Recommended)"), "value": "content" },
@@ -98,7 +112,12 @@ KCM.SimpleKCM {
     readonly property var panelOpacityOptions: [
         { "text": i18n("Adaptive"), "value": "adaptive" },
         { "text": i18n("Opaque"), "value": "opaque" },
-        { "text": i18n("Translucent"), "value": "translucent" }
+        { "text": i18n("Translucent"), "value": "translucent" },
+        { "text": i18n("None (No background)"), "value": "none" }
+    ]
+    readonly property var panelThicknessOptions: [
+        { "text": i18n("Automatic (Recommended)"), "value": "auto" },
+        { "text": i18n("Custom"), "value": "custom" }
     ]
     // qmllint enable unqualified
     readonly property var virtualDesktopModel: {
@@ -349,7 +368,11 @@ KCM.SimpleKCM {
                     textRole: "text"
                     valueRole: "value"
                     model: page.panelOpacityOptions
+                    enabled: !page.customThemeActiveInPanel
                     currentIndex: {
+                        if (page.customThemeActiveInPanel) {
+                            return 3
+                        }
                         const cfg = page.cfg_panelOpacityMode
                         if (cfg === "adaptive") {
                             return 0
@@ -359,6 +382,9 @@ KCM.SimpleKCM {
                         }
                         if (cfg === "translucent") {
                             return 2
+                        }
+                        if (cfg === "none") {
+                            return 3
                         }
                         if (panelLengthModeBridge.panelOpacityMode === 0) {
                             return 0
@@ -378,11 +404,50 @@ KCM.SimpleKCM {
                         cursorEnabled: page.interactiveCursorEnabled
                     }
                 }
+
+                Controls.Label {
+                    visible: page.customThemeActiveInPanel
+                    text: i18n("Controlled by the active custom JSON theme (No background).")
+                    font: Kirigami.Theme.smallFont
+                    color: Kirigami.Theme.disabledTextColor
+                    Layout.fillWidth: true
+                    elide: Text.ElideRight
+                }
             }
 
             RowLayout {
                 visible: page.inPanel
                 Kirigami.FormData.label: page.verticalPanel ? i18n("Panel width:") : i18n("Panel height:")
+                Layout.maximumWidth: page.contentWidthHint
+
+                Controls.ComboBox {
+                    id: panelThicknessModeCombo
+                    Layout.preferredWidth: page.selectorWidthHint
+                    Layout.maximumWidth: page.selectorWidthHint
+                    textRole: "text"
+                    valueRole: "value"
+                    model: page.panelThicknessOptions
+                    currentIndex: page.cfg_panelThickness > 0 ? 1 : 0
+                    onActivated: {
+                        if (currentValue === "auto") {
+                            page.cfg_panelThickness = 0
+                        } else {
+                            page.cfg_panelThickness = page.detectedPanelThickness > 0
+                                ? page.detectedPanelThickness
+                                : 64
+                        }
+                    }
+                    Accessible.name: page.verticalPanel ? i18n("Panel width") : i18n("Panel height")
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                    }
+                }
+            }
+
+            RowLayout {
+                visible: page.inPanel && page.cfg_panelThickness > 0
+                Kirigami.FormData.label: page.verticalPanel ? i18n("Custom width:") : i18n("Custom height:")
                 Layout.maximumWidth: page.contentWidthHint
 
                 Controls.SpinBox {
@@ -393,22 +458,29 @@ KCM.SimpleKCM {
                     to: 256
                     stepSize: 2
                     editable: true
-                    value: page.cfg_panelThickness > 0
-                        ? page.cfg_panelThickness
-                        : (page.detectedPanelThickness > 0 ? page.detectedPanelThickness : 64)
+                    value: page.cfg_panelThickness > 0 ? page.cfg_panelThickness : 64
                     onValueModified: page.cfg_panelThickness = value
                     textFromValue: function(value) {
                         return value + " px"
                     }
                     valueFromText: function(text) {
-                        return parseInt(text, 10) || 24
+                        const parsed = parseInt(text, 10)
+                        return isNaN(parsed) ? 24 : Math.max(24, Math.min(256, parsed))
                     }
-                    Accessible.name: page.verticalPanel ? i18n("Panel width") : i18n("Panel height")
+                    Accessible.name: page.verticalPanel ? i18n("Custom panel width") : i18n("Custom panel height")
 
                     ConfigCursorBehavior {
                         cursorEnabled: page.interactiveCursorEnabled
                     }
                 }
+            }
+
+            Kirigami.InlineMessage {
+                Layout.fillWidth: true
+                Layout.maximumWidth: page.contentWidthHint
+                visible: page.inPanel && page.cfg_panelThickness > 0
+                type: Kirigami.MessageType.Warning
+                text: i18n("Configuring a custom panel size may cause icons to be clipped during wave magnification or create disproportionate margins if the height is not proportional to the icon size.")
             }
             // qmllint enable unqualified
 
@@ -420,7 +492,8 @@ KCM.SimpleKCM {
                 Controls.Slider {
                     id: iconSizeSlider
                     from: 24
-                    to: page.inPanel ? page.safePanelIconSizeMax : 96
+                    to: (page.inPanel && !page.cfg_unlockPanelIconSizeLimit && page.cfg_panelThickness > 0)
+                        ? page.safePanelIconSizeMax : 96
                     stepSize: 2
                     Layout.fillWidth: true
                     Layout.preferredWidth: page.contentWidthHint - 60
@@ -467,15 +540,41 @@ KCM.SimpleKCM {
             }
             // qmllint enable unqualified
 
-            Kirigami.InlineMessage {
-                Kirigami.FormData.label: page.inPanel ? i18n("Limit:") : "" // qmllint disable unqualified
-                Layout.fillWidth: true
+            RowLayout {
+                visible: page.inPanel && page.cfg_panelThickness > 0
+                Kirigami.FormData.label: i18n("Limit:") // qmllint disable unqualified
                 Layout.maximumWidth: page.contentWidthHint
-                visible: page.inPanel
-                type: Kirigami.MessageType.Information
-                text: page.detectedPanelThickness > 0
-                    ? i18n("Estimated panel-safe maximum: %1 px", page.safePanelIconSizeMax) // qmllint disable unqualified
-                    : i18n("The real panel thickness is not available in this view, so a safe fallback limit is being used.") // qmllint disable unqualified
+
+                Controls.Label {
+                    text: page.cfg_unlockPanelIconSizeLimit
+                        ? i18n("Safe limits disabled (up to 96 px)") // qmllint disable unqualified
+                        : (page.cfg_panelThickness === 0
+                            ? i18n("Automatic sizing enabled (panel adapts to icons)") // qmllint disable unqualified
+                            : (page.detectedPanelThickness > 0
+                                ? i18n("Estimated panel-safe maximum: %1 px", page.safePanelIconSizeMax) // qmllint disable unqualified
+                                : i18n("The real panel thickness is not available in this view, so a safe fallback limit is being used."))) // qmllint disable unqualified
+                    color: page.cfg_unlockPanelIconSizeLimit ? Kirigami.Theme.neutralTextColor : Kirigami.Theme.textColor
+                    Layout.fillWidth: true
+                    elide: Text.ElideRight
+                }
+
+                Controls.Button {
+                    text: page.cfg_unlockPanelIconSizeLimit
+                        ? i18n("Restore safe limit") // qmllint disable unqualified
+                        : i18n("Remove safe limits") // qmllint disable unqualified
+                    icon.name: page.cfg_unlockPanelIconSizeLimit ? "lock" : "document-decrypt"
+                    Accessible.name: text
+                    onClicked: {
+                        page.cfg_unlockPanelIconSizeLimit = !page.cfg_unlockPanelIconSizeLimit
+                        if (!page.cfg_unlockPanelIconSizeLimit && iconSizeSlider.value > page.safePanelIconSizeMax) {
+                            iconSizeSlider.value = page.safePanelIconSizeMax
+                        }
+                    }
+
+                    ConfigCursorBehavior {
+                        cursorEnabled: page.interactiveCursorEnabled
+                    }
+                }
             }
 
             // Virtual desktop visibility control.

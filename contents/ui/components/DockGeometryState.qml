@@ -12,6 +12,9 @@ QtObject {
     property bool horizontalPanel: false
     property int panelLocation: PlasmaCore.Types.BottomEdge
     property int configuredIconSize: 48
+    property int configuredPanelThickness: 0
+    property bool unlockPanelIconSizeLimit: false
+    property bool panelAlwaysVisible: false
     property int configuredIconSpacing: 8
     property string configuredPanelLengthMode: "fit"
     property string configuredPanelAlignmentMode: "start"
@@ -28,6 +31,7 @@ QtObject {
     property bool dynamicApplicationsMoveModeActive: false
     property bool customSeparatorEnabled: false
     property var separatorTheme: ({})
+    property real customThemeSurfaceRadius: 0
     property rect availableScreenRect: Qt.rect(0, 0, 800, 640)
     property var floatingAnchor: null
     property int floatingScreenEdge: PlasmaCore.Types.LeftEdge
@@ -43,7 +47,15 @@ QtObject {
         return Math.round(Math.max(0, Math.min(24,
             Number.isFinite(spacing) ? spacing : 8)))
     }
-    readonly property int dockBackgroundHorizontalPadding: 10
+    readonly property int dockBackgroundHorizontalPadding: {
+        const gridUnit = Kirigami.Units.gridUnit > 0 ? Kirigami.Units.gridUnit : 16
+        const smallSpacing = Kirigami.Units.smallSpacing > 0 ? Kirigami.Units.smallSpacing : 4
+        const basePadding = root.inPanel ? (gridUnit + smallSpacing) : 10
+        if (root.inPanel && root.customThemeSurfaceRadius > 0) {
+            return Math.max(basePadding, Math.round(root.customThemeSurfaceRadius + smallSpacing))
+        }
+        return basePadding
+    }
     readonly property int dockBackgroundVerticalPadding: 12
     readonly property int floatingExtraWidth: 48
     readonly property int floatingExtraHeight: 32
@@ -261,7 +273,9 @@ QtObject {
         ? Math.max(24, Math.floor((detectedPanelThickness - 10) / Math.max(1.0, root.panelHoverScale)))
         : Math.max(24, root.configuredIconSize)
     readonly property int effectivePanelIconLimit: effectivePanelBaseIconLimit
-    readonly property int effectiveIconSize: root.inPanel
+    readonly property int effectiveIconSize: (root.inPanel
+        && !root.unlockPanelIconSizeLimit
+        && root.configuredPanelThickness > 0)
         ? Math.min(root.configuredIconSize, effectivePanelBaseIconLimit)
         : root.configuredIconSize
     readonly property int mediaItemMainAxisLength: Math.round(Math.max(120,
@@ -378,11 +392,19 @@ QtObject {
         : Math.ceil((root.verticalPanel
             ? panelHoverCrossAxisExtent
             : panelContentLength) + (dockBackgroundHorizontalPadding * 2))
+    readonly property int panelBaseHeight: Math.ceil(root.verticalPanel
+        ? panelContentLength + (dockBackgroundVerticalPadding * 2)
+        : panelItemHeight + (root.inPanel ? 0 : (dockBackgroundVerticalPadding * 2)))
+    readonly property int panelZoomHeadroom: {
+        if (!root.inPanel || root.panelAlwaysVisible || root.verticalPanel) {
+            return 0
+        }
+        const zoomDelta = effectiveIconSize * Math.max(0.0, root.panelHoverScale - 1.0)
+        return Math.ceil(zoomDelta + 8)
+    }
     readonly property int panelMinimumHeight: root.hiddenByVirtualDesktop
         ? 0
-        : Math.ceil(root.verticalPanel
-            ? panelContentLength + (dockBackgroundVerticalPadding * 2)
-            : panelItemHeight + (root.inPanel ? 0 : (dockBackgroundVerticalPadding * 2)))
+        : panelBaseHeight + panelZoomHeadroom
     readonly property int panelPreferredWidth: root.hiddenByVirtualDesktop ? 0 : panelMinimumWidth
     readonly property int panelPreferredHeight: root.hiddenByVirtualDesktop ? 0 : panelMinimumHeight
     readonly property real panelReflectionAvailableExtent: {

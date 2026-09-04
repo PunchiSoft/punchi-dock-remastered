@@ -181,17 +181,14 @@ def main() -> int:
         folder_popup,
         "Folder popup",
         "dockConfig.folderPopupBackgroundOpacity",
-        "dockGeometry.folderPopupGap",
     )
     assert_widget_surface(
         trash_menu,
         "Trash menu",
-        adaptive_margin_source="dockGeometry.contextMenuGap",
     )
     assert_widget_surface(
         app_actions,
         "Application actions menu",
-        adaptive_margin_source="dockGeometry.contextMenuGap",
     )
     assert_widget_surface(
         note_popup,

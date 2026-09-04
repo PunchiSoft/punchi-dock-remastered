@@ -1,11 +1,14 @@
 import QtQuick
 import org.kde.kirigami as Kirigami
+import org.kde.plasma.core as PlasmaCore
 
 Item {
     id: root
 
     property var theme: ({})
     property bool dockVertical: false
+    property bool inPanel: false
+    property int panelLocation: PlasmaCore.Types.BottomEdge
 
     // Resolve the complete JSON theme through the same bounded multisample
     // profile used by the other custom renderers.

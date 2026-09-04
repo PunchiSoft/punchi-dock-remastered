@@ -27,6 +27,7 @@
 # Binarios compilados
 *.so
 /messages.mo
+/contents/locale/
 __pycache__/
 *.py[cod]
 

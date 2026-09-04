@@ -1,10 +1,13 @@
 import QtQuick
 import QtQuick.Shapes as Shapes
+import org.kde.plasma.core as PlasmaCore
 
 Item {
     id: root
 
     property var theme: ({})
+    property bool inPanel: false
+    property int panelLocation: PlasmaCore.Types.BottomEdge
 
     // Resolve every 2.5D plane, bevel, rim, and shadow through one shared
     // multisampled surface so diagonal joins use a consistent edge profile.

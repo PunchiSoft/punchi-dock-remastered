@@ -335,11 +335,9 @@ Item {
         if (!dialog) {
             return
         }
+        dialog.visualParent = anchor
         if (typeof dialog.placementAnchor !== "undefined") {
             dialog.placementAnchor = anchor
-            dialog.visualParent = null
-        } else {
-            dialog.visualParent = anchor
         }
     }
 

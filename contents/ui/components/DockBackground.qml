@@ -1,6 +1,7 @@
 import QtQuick
 import org.kde.kirigami as Kirigami
 import org.kde.ksvg as KSvg
+import org.kde.plasma.core as PlasmaCore
 
 Item {
     id: backgroundRoot
@@ -20,6 +21,8 @@ Item {
     property bool plasmaBackgroundVisible: true
     property bool customThemeEnabled: false
     property var customTheme: ({})
+    property bool inPanel: false
+    property int panelLocation: PlasmaCore.Types.BottomEdge
 
     readonly property bool customThemeVisible: plasmaBackgroundVisible
         && customThemeEnabled
@@ -77,6 +80,8 @@ Item {
             && backgroundRoot.customTheme.renderer === "flat"
         theme: backgroundRoot.customTheme
         dockVertical: backgroundRoot.dockVertical
+        inPanel: backgroundRoot.inPanel
+        panelLocation: backgroundRoot.panelLocation
     }
 
     ShelfThemeBackground {
@@ -85,6 +90,8 @@ Item {
         visible: backgroundRoot.customThemeVisible
             && backgroundRoot.customTheme.renderer === "shelf"
         theme: backgroundRoot.customTheme
+        inPanel: backgroundRoot.inPanel
+        panelLocation: backgroundRoot.panelLocation
     }
 
     ShapedThemeBackground {
@@ -93,6 +100,8 @@ Item {
         visible: backgroundRoot.customThemeVisible
             && backgroundRoot.customTheme.renderer === "shaped"
         theme: backgroundRoot.customTheme
+        inPanel: backgroundRoot.inPanel
+        panelLocation: backgroundRoot.panelLocation
     }
 
     AudioSpectrumLayer {

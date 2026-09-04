@@ -513,7 +513,7 @@ TestCase {
             return fakeAppActionsDialog.visible
         }, 300)
         compare(fakeAppActionsDialog.placementAnchor, firstAnchor)
-        compare(fakeAppActionsDialog.visualParent, null)
+        compare(fakeAppActionsDialog.visualParent, firstAnchor)
     }
 
     function test_overlayActionsPreserveResolvedPresentation() {

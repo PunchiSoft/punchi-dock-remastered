@@ -538,7 +538,6 @@ KCM.SimpleKCM {
         RowLayout {
             Kirigami.FormData.label: i18n("Background:")
             Layout.maximumWidth: page.contentWidthHint
-            visible: !page.inPanel
 
             Controls.ComboBox {
                 id: dockThemeModeCombo
@@ -563,7 +562,7 @@ KCM.SimpleKCM {
         RowLayout {
             Kirigami.FormData.label: i18n("Installed theme:") // qmllint disable unqualified
             Layout.maximumWidth: page.contentWidthHint
-            visible: !page.inPanel && page.cfg_dockThemeMode === "custom"
+            visible: page.cfg_dockThemeMode === "custom"
 
             Controls.ComboBox {
                 id: dockThemeLibraryCombo
@@ -628,8 +627,7 @@ KCM.SimpleKCM {
         }
 
         Controls.Label {
-            visible: !page.inPanel
-                && page.cfg_dockThemeMode === "custom"
+            visible: page.cfg_dockThemeMode === "custom"
                 && dockThemeRepository.availableThemes.length === 0
             text: i18n("Import a JSON theme to add it to your Punchi Dock Remastered library.") // qmllint disable unqualified
             wrapMode: Text.WordWrap
@@ -640,8 +638,7 @@ KCM.SimpleKCM {
         }
 
         Kirigami.InlineMessage {
-            visible: !page.inPanel
-                && page.cfg_dockThemeMode === "custom"
+            visible: page.cfg_dockThemeMode === "custom"
                 && dockThemeRepository.errorCode.length > 0
             type: Kirigami.MessageType.Error
             text: page.dockThemeErrorText(dockThemeRepository.errorCode)
@@ -650,8 +647,7 @@ KCM.SimpleKCM {
         }
 
         Kirigami.InlineMessage {
-            visible: !page.inPanel
-                && page.cfg_dockThemeMode === "custom"
+            visible: page.cfg_dockThemeMode === "custom"
                 && page.lastThemeDirectoryImport.candidateCount !== undefined
             type: page.lastThemeDirectoryImport.candidateCount === 0
                 ? Kirigami.MessageType.Information
@@ -665,8 +661,15 @@ KCM.SimpleKCM {
         }
 
         Kirigami.InlineMessage {
-            visible: !page.inPanel
-                && page.themeRemovalMessage.length > 0
+            visible: page.inPanel && page.cfg_dockThemeMode === "custom"
+            type: Kirigami.MessageType.Information
+            text: i18n("In panel mode, custom JSON themes automatically set the native panel to \"No background\" so the theme's custom shape, borders, and shadows are fully visible.") // qmllint disable unqualified
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+        }
+
+        Kirigami.InlineMessage {
+            visible: page.themeRemovalMessage.length > 0
             type: Kirigami.MessageType.Positive
             text: page.themeRemovalMessage
             Layout.fillWidth: true

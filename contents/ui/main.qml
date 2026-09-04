@@ -52,7 +52,6 @@ PlasmoidItem {
             onTriggered: dockItemsController.addQuickSeparator()
         },
         PlasmaCore.Action {
-            visible: !root.inPanel
             text: i18n("Plasma theme")
             icon.name: "preferences-desktop-theme-global"
             checkable: true
@@ -60,8 +59,7 @@ PlasmoidItem {
             onTriggered: Plasmoid.configuration.dockThemeMode = "plasma"
         },
         PlasmaCore.Action {
-            visible: !root.inPanel
-                && String(Plasmoid.configuration.dockThemeCustomId || "").length > 0
+            visible: String(Plasmoid.configuration.dockThemeCustomId || "").length > 0
             text: i18n("External JSON theme")
             icon.name: "preferences-desktop-theme-global"
             checkable: true
@@ -535,7 +533,7 @@ PlasmoidItem {
     }
     Punchi.DockThemeRepository {
         id: dockThemeRepository
-        themeId: root.inPanel ? "" : String(Plasmoid.configuration.dockThemeCustomId || "")
+        themeId: String(Plasmoid.configuration.dockThemeCustomId || "")
     }
     DockConfigurationState {
         id: dockConfig
@@ -553,6 +551,9 @@ PlasmoidItem {
         horizontalPanel: root.inPanel ? Plasmoid.formFactor === PlasmaCore.Types.Horizontal : !root.floatingVertical
         panelLocation: root.floatingVertical ? PlasmaCore.Types.LeftEdge : Plasmoid.location
         configuredIconSize: Number(Plasmoid.configuration.iconSize || 48)
+        configuredPanelThickness: root.configuredPanelThickness
+        unlockPanelIconSizeLimit: !!Plasmoid.configuration.unlockPanelIconSizeLimit
+        panelAlwaysVisible: root.panelAlwaysVisible
         configuredIconSpacing: {
             const spacing = Number(Plasmoid.configuration.iconSpacing)
             return Number.isFinite(spacing) ? spacing : 8
@@ -592,6 +593,7 @@ PlasmoidItem {
             root.dynamicApplicationsMoveModeActive
         customSeparatorEnabled: dockConfig.customDockSeparatorActive
         separatorTheme: dockConfig.customDockSeparatorTheme
+        customThemeSurfaceRadius: dockConfig.customThemeSurfaceRadius
         availableScreenRect: root.availableScreenRect
         floatingAnchor: root.floatingDockAnchor
         hostHeight: root.height
@@ -612,13 +614,42 @@ PlasmoidItem {
     }
     readonly property string configuredPanelOpacityMode: String(Plasmoid.configuration.panelOpacityMode || "system")
     onConfiguredPanelOpacityModeChanged: applyConfiguredPanelOpacityMode()
+    readonly property bool customDockThemeActiveForPanel: root.inPanel && dockConfig.customDockThemeActive
+    onCustomDockThemeActiveForPanelChanged: applyConfiguredPanelOpacityMode()
 
+    // Shell window and containment expose backgroundHints and opacityMode at runtime.
+    // qmllint disable missing-property
     function applyConfiguredPanelOpacityMode() {
-        if (!root.inPanel || !root.Window.window) {
+        if (!root.inPanel) {
             return
         }
         const mode = root.configuredPanelOpacityMode
-        if (mode === "system") {
+        const forceNoBackground = mode === "none" || dockConfig.customDockThemeActive
+        const hints = forceNoBackground ? PlasmaCore.Types.NoBackground : PlasmaCore.Types.StandardBackground
+
+        try {
+            if (root.Window.window && typeof root.Window.window["backgroundHints"] !== "undefined") {
+                root.Window.window["backgroundHints"] = hints
+            }
+        } catch (error) {
+            // Guard against read-only window properties
+        }
+        try {
+            var containment = Plasmoid.containment
+            if (containment) {
+                if (typeof containment["backgroundHints"] !== "undefined") {
+                    containment["backgroundHints"] = hints
+                }
+                var containmentPlasmoid = containment["plasmoid"]
+                if (containmentPlasmoid && typeof containmentPlasmoid["backgroundHints"] !== "undefined") {
+                    containmentPlasmoid["backgroundHints"] = hints
+                }
+            }
+        } catch (error) {
+            // Guard against variations in Plasma containment APIs
+        }
+
+        if (!root.Window.window || mode === "system" || mode === "none" || dockConfig.customDockThemeActive) {
             return
         }
         try {
@@ -633,6 +664,7 @@ PlasmoidItem {
             // Guard against custom shells
         }
     }
+    // qmllint enable missing-property
     readonly property int configuredPanelThickness: Number(Plasmoid.configuration.panelThickness || 0)
     onConfiguredPanelThicknessChanged: applyConfiguredPanelThickness()
 
@@ -640,7 +672,12 @@ PlasmoidItem {
         if (!root.inPanel || !root.Window.window) {
             return
         }
-        const thickness = root.configuredPanelThickness
+        const autoThickness = dockGeometry.verticalPanel
+            ? dockGeometry.panelPreferredWidth
+            : dockGeometry.panelPreferredHeight
+        const thickness = root.configuredPanelThickness > 0
+            ? root.configuredPanelThickness
+            : autoThickness
         if (thickness <= 0) {
             return
         }
@@ -648,6 +685,19 @@ PlasmoidItem {
             root.Window.window.thickness = thickness
         } catch (error) {
             // Guard against custom shells
+        }
+    }
+    Connections {
+        target: dockGeometry
+        function onPanelPreferredHeightChanged() {
+            if (root.configuredPanelThickness <= 0 && !dockGeometry.verticalPanel) {
+                root.applyConfiguredPanelThickness()
+            }
+        }
+        function onPanelPreferredWidthChanged() {
+            if (root.configuredPanelThickness <= 0 && dockGeometry.verticalPanel) {
+                root.applyConfiguredPanelThickness()
+            }
         }
     }
     readonly property string configuredPanelLengthMode: String(Plasmoid.configuration.panelLengthMode || "system")
@@ -723,6 +773,18 @@ PlasmoidItem {
         }
     }
     readonly property string configuredPanelVisibilityMode: String(Plasmoid.configuration.panelVisibilityMode || "system")
+    readonly property bool panelAlwaysVisible: {
+        if (!root.inPanel) {
+            return false
+        }
+        if (root.configuredPanelVisibilityMode === "alwaysVisible") {
+            return true
+        }
+        if (root.configuredPanelVisibilityMode === "system") {
+            return dockGeometry.detectedPanelVisibilityMode === 0
+        }
+        return false
+    }
     onConfiguredPanelVisibilityModeChanged: applyConfiguredPanelVisibilityMode()
 
     function applyConfiguredPanelVisibilityMode() {
@@ -2323,7 +2385,63 @@ PlasmoidItem {
 
             DockBackground {
                 id: dockBackground
-                anchors.fill: parent
+                anchors.fill: (!root.inPanel || !dockConfig.customDockThemeActive) ? parent : undefined
+
+                readonly property var activeShadow: dockConfig.customDockThemeActive
+                    && dockThemeRepository.theme && dockThemeRepository.theme.shadow
+                    ? dockThemeRepository.theme.shadow : ({})
+                readonly property real shadowSize: Number(activeShadow.size || 0)
+                readonly property real shadowXOffset: Number(activeShadow.xOffset || 0)
+                readonly property real shadowYOffset: Number(activeShadow.yOffset || 0)
+                readonly property real shadowLeftReserve: shadowSize + Math.max(0, -shadowXOffset)
+                readonly property real shadowRightReserve: shadowSize + Math.max(0, shadowXOffset)
+                readonly property real shadowTopReserve: shadowSize + Math.max(0, -shadowYOffset)
+                readonly property real shadowBottomReserve: shadowSize + Math.max(0, shadowYOffset)
+                readonly property real customThemeVisualVerticalPadding: Math.max(2, Math.round(Kirigami.Units.smallSpacing * 0.5))
+                readonly property real panelHoverExpansion: {
+                    if (!root.inPanel || dockGeometry.panelFillLengthEnabled) {
+                        return 0
+                    }
+                    return Math.round(dockLayout.hoverZoomProgress * (Kirigami.Units.gridUnit + Kirigami.Units.smallSpacing))
+                }
+
+                x: {
+                    if (!root.inPanel || !dockConfig.customDockThemeActive) {
+                        return 0
+                    }
+                    if (dockGeometry.verticalPanel) {
+                        return dockLayout.x - customThemeVisualVerticalPadding - shadowLeftReserve
+                    }
+                    return -Math.round(panelHoverExpansion / 2)
+                }
+                y: {
+                    if (!root.inPanel || !dockConfig.customDockThemeActive) {
+                        return 0
+                    }
+                    if (dockGeometry.verticalPanel) {
+                        return -Math.round(panelHoverExpansion / 2)
+                    }
+                    return dockLayout.y - customThemeVisualVerticalPadding - shadowTopReserve
+                }
+                width: {
+                    if (!root.inPanel || !dockConfig.customDockThemeActive) {
+                        return parent ? parent.width : 0
+                    }
+                    if (dockGeometry.verticalPanel) {
+                        return dockLayout.width + (customThemeVisualVerticalPadding * 2) + shadowLeftReserve + shadowRightReserve
+                    }
+                    return (parent ? parent.width : 0) + panelHoverExpansion
+                }
+                height: {
+                    if (!root.inPanel || !dockConfig.customDockThemeActive) {
+                        return parent ? parent.height : 0
+                    }
+                    if (dockGeometry.verticalPanel) {
+                        return (parent ? parent.height : 0) + panelHoverExpansion
+                    }
+                    return dockLayout.height + (customThemeVisualVerticalPadding * 2) + shadowTopReserve + shadowBottomReserve
+                }
+
                 preferOpaque: !!(Plasmoid.containmentDisplayHints
                     & PlasmaCore.Types.ContainmentPrefersOpaqueBackground)
                     || windowIntersectionController.touchingWindow
@@ -2346,8 +2464,10 @@ PlasmoidItem {
                     || dockConfig.audioSpectrumBackgroundMode === "plasma"
                 customThemeEnabled: dockConfig.customDockThemeActive
                 customTheme: dockThemeRepository.theme
+                inPanel: root.inPanel
+                panelLocation: dockGeometry.effectivePanelLocation
                 // qmllint enable unqualified
-                visible: !root.inPanel
+                visible: !root.inPanel || dockConfig.customDockThemeActive
             }
 
             // qmllint disable unqualified
@@ -2431,7 +2551,10 @@ PlasmoidItem {
                         return Math.round((parent.height - height) / 2)
                     }
                     if (!dockGeometry.verticalPanel) {
-                        return Math.round((parent.height - height) / 2)
+                        if (dockGeometry.panelLocation === PlasmaCore.Types.TopEdge) {
+                            return Kirigami.Units.smallSpacing
+                        }
+                        return parent ? Math.max(0, parent.height - height - Kirigami.Units.smallSpacing) : 0
                     }
                     if (dockGeometry.configuredPanelAlignmentMode === "center") {
                         return Math.round((parent.height - height) / 2)
@@ -2893,11 +3016,11 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === dockItemDelegate)
-                            || (folderPopupDialog.visible && folderPopupDialog.placementAnchor === dockItemDelegate)
+                            || (folderPopupDialog.visible && folderPopupDialog.visualParent === dockItemDelegate)
                             || (calendarPopupDialog.visible && calendarPopupDialog.visualParent === dockItemDelegate)
                             || (notePopupDialog.visible && notePopupDialog.visualParent === dockItemDelegate)
-                            || (trashMenuDialog.visible && trashMenuDialog.placementAnchor === dockItemDelegate)
-                            || (appActionsDialog.visible && appActionsDialog.placementAnchor === dockItemDelegate)
+                            || (trashMenuDialog.visible && trashMenuDialog.visualParent === dockItemDelegate)
+                            || (appActionsDialog.visible && appActionsDialog.visualParent === dockItemDelegate)
                             || (root.punchiMenuDialogInstance && root.punchiMenuDialogInstance.visible && root.punchiMenuAnchorItem === dockItemDelegate)
                             || (root.controlCenterDialogInstance
                                 && root.controlCenterDialogInstance.visible
@@ -3144,11 +3267,11 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === taskDockItemDelegate)
-                            || (folderPopupDialog.visible && folderPopupDialog.placementAnchor === taskDockItemDelegate)
+                            || (folderPopupDialog.visible && folderPopupDialog.visualParent === taskDockItemDelegate)
                             || (calendarPopupDialog.visible && calendarPopupDialog.visualParent === taskDockItemDelegate)
                             || (notePopupDialog.visible && notePopupDialog.visualParent === taskDockItemDelegate)
-                            || (trashMenuDialog.visible && trashMenuDialog.placementAnchor === taskDockItemDelegate)
-                            || (appActionsDialog.visible && appActionsDialog.placementAnchor === taskDockItemDelegate)
+                            || (trashMenuDialog.visible && trashMenuDialog.visualParent === taskDockItemDelegate)
+                            || (appActionsDialog.visible && appActionsDialog.visualParent === taskDockItemDelegate)
                             || (root.punchiMenuDialogInstance && root.punchiMenuDialogInstance.visible && root.punchiMenuAnchorItem === taskDockItemDelegate)
                         // qmllint enable unqualified
                         supportsContextMenu: dockContextActionsController.itemHasContextMenu(modelData, taskData.rows, "dynamic")
@@ -3310,21 +3433,9 @@ PlasmoidItem {
             }
         }
 
-        GuardedPositionedPopupDialog {
+        GuardedPopupDialog {
             id: folderPopupDialog
-            inPanel: root.inPanel
-            panelLocation: dockGeometry.effectivePanelLocation
-            availableScreenRect: root.availableScreenRect
-            screenGeometry: Plasmoid.containment
-                && Plasmoid.containment.screenGeometry
-                ? Plasmoid.containment.screenGeometry
-                : Qt.rect(0, 0, Screen.width, Screen.height)
-            floatingDockAnchor: root.floatingDockAnchor
-            floatingDockSurfaceFrame: dockBackground
-            panelWindow: root.Window.window
-            panelThickness: dockGeometry.detectedPanelThickness
-            popupGap: dockGeometry.folderPopupGap
-            surfaceFrame: folderSurfaceStack
+            location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: true
 
             mainItem: PopupAnimatedContent {
@@ -3398,7 +3509,7 @@ PlasmoidItem {
 
                         onAppContextMenuRequested: function(app) {
                             popupCoordinator.openAppContextMenu(app,
-                                folderPopupDialog.placementAnchor, undefined,
+                                folderPopupDialog.visualParent, undefined,
                                 "folder", -1)
                         }
 
@@ -3451,21 +3562,9 @@ PlasmoidItem {
         }
 
         // Trash context menu popup.
-        GuardedPositionedPopupDialog {
+        GuardedPopupDialog {
             id: trashMenuDialog
-            inPanel: root.inPanel
-            panelLocation: dockGeometry.effectivePanelLocation
-            availableScreenRect: root.availableScreenRect
-            screenGeometry: Plasmoid.containment
-                && Plasmoid.containment.screenGeometry
-                ? Plasmoid.containment.screenGeometry
-                : Qt.rect(0, 0, Screen.width, Screen.height)
-            floatingDockAnchor: root.floatingDockAnchor
-            floatingDockSurfaceFrame: dockBackground
-            panelWindow: root.Window.window
-            panelThickness: dockGeometry.detectedPanelThickness
-            popupGap: dockGeometry.contextMenuGap
-            surfaceFrame: trashSurfaceStack
+            location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: !trashContextContent.confirmationVisible
 
             mainItem: PopupAnimatedContent {
@@ -3525,21 +3624,9 @@ PlasmoidItem {
             }
         }
 
-        GuardedPositionedPopupDialog {
+        GuardedPopupDialog {
             id: appActionsDialog
-            inPanel: root.inPanel
-            panelLocation: dockGeometry.effectivePanelLocation
-            availableScreenRect: root.availableScreenRect
-            screenGeometry: Plasmoid.containment
-                && Plasmoid.containment.screenGeometry
-                ? Plasmoid.containment.screenGeometry
-                : Qt.rect(0, 0, Screen.width, Screen.height)
-            floatingDockAnchor: root.floatingDockAnchor
-            floatingDockSurfaceFrame: dockBackground
-            panelWindow: root.Window.window
-            panelThickness: dockGeometry.detectedPanelThickness
-            popupGap: dockGeometry.contextMenuGap
-            surfaceFrame: appActionsSurfaceStack
+            location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: !popupCoordinator.contextMenuOpening
             onOpenFailed: popupCoordinator.contextMenuOpening = false
 

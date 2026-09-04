@@ -1,10 +1,13 @@
 import QtQuick
 import QtQuick.Shapes as Shapes
+import org.kde.plasma.core as PlasmaCore
 
 Item {
     id: root
 
     property var theme: ({})
+    property bool inPanel: false
+    property int panelLocation: PlasmaCore.Types.BottomEdge
 
     // Resolve the shadow, fill, and border through one shared multisampled
     // surface so every shaped-theme edge receives the same antialiasing pass.

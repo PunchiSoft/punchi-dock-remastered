@@ -22,7 +22,7 @@ def require(condition: bool, message: str) -> None:
 
 dock_layout_start = MAIN.index("GridLayout {\n                id: dockLayout")
 dock_layout_end = MAIN.index(
-    "\n            }\n        }\n\n        GuardedPositionedPopupDialog {\n            id: folderPopupDialog",
+    "\n            }\n        }\n\n        GuardedPopupDialog {\n            id: folderPopupDialog",
     dock_layout_start,
 )
 dock_layout = MAIN[dock_layout_start:dock_layout_end]
@@ -52,11 +52,11 @@ require(
 )
 require(
     "if (!dockGeometry.verticalPanel)" in y_block
-    and "return Math.round((parent.height - height) / 2)" in y_block
+    and "Kirigami.Units.smallSpacing" in y_block
     and "horizontalOuterEdgeInset" not in y_block
     and "panelOnTopEdge" not in y_block
     and "panelOnBottomEdge" not in y_block,
-    "A horizontal panel must center its dock row inside Plasma's allocated height.",
+    "A horizontal panel must anchor its dock row towards the screen edge with Kirigami.Units.smallSpacing.",
 )
 require(
     "panelWindowMappedOrigin" not in dock_layout
@@ -266,6 +266,15 @@ require(
     and "color: Kirigami.Theme.highlightedTextColor" in DOCK_ITEM
     and 'iconName: "view-grid"' in MAIN,
     "The synthetic overflow control must magnify its themed tile and semantic grid icon as one visual.",
+)
+
+DOCK_GEOMETRY = (ROOT / "contents/ui/components/DockGeometryState.qml").read_text()
+require(
+    "customThemeSurfaceRadius" in DOCK_GEOMETRY
+    and "customThemeSurfaceRadius" in DOCK_CONFIGURATION
+    and "dockBackgroundHorizontalPadding" in DOCK_GEOMETRY
+    and "Kirigami.Units.smallSpacing" in DOCK_GEOMETRY,
+    "DockGeometryState must scale its horizontal padding declaratively using Kirigami and customThemeSurfaceRadius.",
 )
 
 print("Dock Wave panel geometry contract: PASS")

@@ -56,18 +56,6 @@ KCM.SimpleKCM {
 
     Kirigami.FormLayout {
 
-        Kirigami.InlineMessage {
-            visible: page.verticalPanel
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            type: Kirigami.MessageType.Information
-            text: i18n("Vertical panels remain supported, but advanced visual tuning is currently focused on horizontal panels.") // qmllint disable unqualified
-        }
-
-        Kirigami.Separator {
-            Kirigami.FormData.isSection: true
-        }
-
         SectionTitle {
             Kirigami.FormData.isSection: true
             text: i18n("Task visibility") // qmllint disable unqualified
@@ -109,7 +97,7 @@ KCM.SimpleKCM {
         }
 
         Controls.Label {
-            text: i18n("This manual limit applies in floating and compact modes. While Fill free panel space is active, Punchi Dock automatically uses the available panel capacity. Additional groups remain available from the overflow item.")
+            text: i18n("Limits the number of dynamic task groups shown directly in the dock. Additional groups that exceed this limit or available space remain accessible from the overflow item.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

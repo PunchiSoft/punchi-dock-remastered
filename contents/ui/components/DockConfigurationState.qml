@@ -224,16 +224,19 @@ QtObject {
         return configuredMode === "custom" ? "custom" : "plasma"
     }
     readonly property string dockThemeCustomId: String(Plasmoid.configuration.dockThemeCustomId || "")
-    readonly property bool customDockThemeActive: !root.inPanel
-        && dockThemeMode === "custom"
+    readonly property bool customDockThemeActive: dockThemeMode === "custom"
         && root.themeRepositoryValid
     readonly property var customDockSeparatorTheme: customDockThemeActive
         && root.theme
         && root.theme.separator
         ? root.theme.separator
         : ({})
-    readonly property bool customDockSeparatorActive: !root.inPanel
-        && String(customDockSeparatorTheme.style || "").length > 0
+    readonly property bool customDockSeparatorActive: String(customDockSeparatorTheme.style || "").length > 0
+    readonly property real customThemeSurfaceRadius: customDockThemeActive
+        && root.theme
+        && root.theme.surface
+        ? Math.max(0, Number(root.theme.surface.radius || 0))
+        : 0
 
     readonly property bool audioSpectrumConfigured: Plasmoid.configuration.audioSpectrumEnabled === true
     readonly property real audioSpectrumIntensity: Math.max(0.1, Math.min(0.6,
