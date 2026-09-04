@@ -41,7 +41,7 @@ GridLayout {
     property string nameLabel: "Name:"
     property string aliasLabel: "Alias:"
     property string descLabel: "Description:"
-    property string aliasPlaceholder: "Press Enter to search..."
+    property string aliasPlaceholder: "Type name or alias... then search"
     property string itemTypeLabel: "Type:"
     property string launchAppText: "Launch app"
     property string containerText: "Container"

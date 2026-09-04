@@ -714,7 +714,7 @@ KCM.SimpleKCM {
         nameLabel: i18n("Name:")
         aliasLabel: i18n("Alias/Quick Search:")
         descLabel: i18n("Description:")
-        aliasPlaceholder: i18n("Press Enter to search...")
+        aliasPlaceholder: i18n("Type name or alias... then search")
         itemTypeLabel: i18n("Type:")
         launchAppText: i18n("Launch app")
         containerText: i18n("Container")

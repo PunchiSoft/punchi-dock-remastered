@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.57">
-    <img src="https://img.shields.io/badge/release-v0.9.7.57-4caf50" alt="Versão v0.9.7.57">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.58">
+    <img src="https://img.shields.io/badge/release-v0.9.7.58-4caf50" alt="Versão v0.9.7.58">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0--or--later-blue" alt="Licença GPL-3.0-or-later">
@@ -23,15 +23,17 @@ Punchi Dock Remastered é um dock inicializador nativo e interface de tarefas pa
 Este repositório é uma reescrita modular do [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). O projeto prepara atualmente seu caminho rumo à versão estável 1.0.
 
 A versão atual é
-[v0.9.7.57](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.57).
+[v0.9.7.58](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.58).
 
-## Novidades na versão 0.9.7.57
+## Novidades na versão 0.9.7.58
 
-- **Controle nativo de opacidade do painel**: Seletor direto nas Preferências da Punchi Dock para opacidade do painel do Plasma 6 (*Adaptável*, *Opaco* e *Translúcido*) com sincronização imediata em tempo real.
-- **Integração total com painéis do Plasma 6**: Controles diretos nas Preferências da Punchi Dock para modo de comprimento (*Ajustar ao conteúdo* ou *Preencher*), alinhamento (*Esquerda/Cima*, *Centro*, *Direita/Baixo*), modo flutuante (*Painel e miniaplicativos*, *Apenas miniaplicativos*, *Desativado*), visibilidade (*Desviar de janelas*, *Sempre visível*, *Ocultar automaticamente*, *Janelas vão por baixo*) e altura/espessura do painel (`SpinBox` de 24 px a 256 px).
-- **Dimensionamento adaptativo e prevenção de cortes**: Cálculo físico automático de folga baseado na altura do painel e no fator de zoom ativo para evitar cortes nos ícones.
+- **Centralização vertical simétrica no painel do Plasma**: O layout de ícones fica perfeitamente centralizado verticalmente no modo de painel nativo do Plasma.
+- **Altura dinâmica pré-calculada para o painel do Plasma**: Fórmula adaptativa sob medida para o modo de tema do Plasma, garantindo geometria ideal sem interferir nos temas JSON.
+- **Limite estrito de zoom no painel**: Limita a ampliação no painel a 65% para evitar cortes nas margens.
+- **Aviso contextual refinado**: Mensagem inline aprimorada nas Preferências do Mouse quando a ampliação ultrapassar 65% no painel.
+- **Marcador de busca aprimorado**: Dica amigável no editor de itens: *"Type name or alias... then search"*.
 
-Consulte o [registro de alterações da 0.9.7.57](CHANGELOG.md#09757---2026-09-02) para ver as notas detalhadas de lançamento e a validação executada.
+Consulte o [registro de alterações da 0.9.7.58](CHANGELOG.md#09758---2026-09-04) para ver as notas detalhadas de lançamento e a validação executada.
 
 ## Capturas de Tela
 

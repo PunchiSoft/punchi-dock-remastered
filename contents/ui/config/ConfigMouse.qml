@@ -30,12 +30,15 @@ KCM.SimpleKCM {
     readonly property bool inPanel:
         Plasmoid.formFactor === PlasmaCore.Types.Horizontal
         || Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    property string cfg_dockThemeMode: "plasma"
+    readonly property bool customThemeActiveInPanel: inPanel
+        && ((cfg_dockThemeMode === "custom") || (String(Plasmoid.configuration.dockThemeMode || "") === "custom"))
     readonly property int hoverEnlargementPercent:
         Math.round((hoverScaleSlider.value - 1.0) * 100)
     readonly property bool hoverEnlargementDisabled:
         hoverEnlargementPercent <= 0
     readonly property bool hoverEnlargementMayBeClipped:
-        inPanel && hoverEnlargementPercent >= 100
+        inPanel && !customThemeActiveInPanel && hoverEnlargementPercent > 65
     readonly property var hoverAnimationOptions: [
         { "text": i18n("None"), "value": "none" }, // qmllint disable unqualified
         { "text": i18n("Wave"), "value": "wave" }, // qmllint disable unqualified
@@ -150,7 +153,7 @@ KCM.SimpleKCM {
             // qmllint disable unqualified
             text: page.hoverEnlargementDisabled
                 ? i18n("At 0%, the hover enlargement animation is disabled.")
-                : i18n("At 100%, hover enlargement may be clipped by the space and margins available in the Plasma panel. Floating mode is not affected.")
+                : i18n("Above 65%, hover enlargement may be clipped by the space and margins available in the Plasma panel. You can use a custom JSON theme to avoid clipping.")
             // qmllint enable unqualified
         }
 

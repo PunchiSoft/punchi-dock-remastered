@@ -1,3 +1,15 @@
+## [0.9.7.58] - 2026-09-04
+
+### Agregado
+
+- Centrado vertical simétrico del layout de iconos en el panel nativo de Plasma en `main.qml`.
+- Altura dinámica precalculada para modo panel con tema de Plasma en `DockGeometryState.qml`:
+  fórmula adaptativa exacta (`Math.round((root.effectiveIconSize * scale) + 9.2 + root.dockLabelAreaHeight)`) que garantiza una altura óptima (ej. 62 px para icono de 32 px con zoom de 65 %) sin alterar el modo de temas JSON.
+- Limitación estricta de la escala de ampliación (hover) al 65 % en modo panel nativo Plasma para evitar recortes contra los márgenes del panel.
+- Advertencia contextual reactiva en Preferencias de Ratón (`ConfigMouse.qml`) cuando el zoom de ampliación excede el 65 % en modo panel con tema Plasma, con mensaje explicativo refinado y ocultamiento automático en temas JSON.
+- Actualización de marcador de búsqueda intuitivo en el editor de elementos de configuración (`ConfigItems.qml`, `ItemEditorPanel.qml` y `ActionDialog.qml`): *"Escriba el nombre o alias... luego buscar"*.
+- Actualización completa de catálogos de localización (`de`, `es`, `pt_BR`) y contratos de prueba.
+
 ## [0.9.7.57] - 2026-09-02
 
 ### Agregado

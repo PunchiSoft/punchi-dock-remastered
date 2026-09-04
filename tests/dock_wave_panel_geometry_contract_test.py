@@ -183,11 +183,11 @@ require(
     "Math.round((hoverScaleSlider.value - 1.0) * 100)" in CONFIG_MOUSE
     and 'text: i18n("%1%", page.hoverEnlargementPercent)' in CONFIG_MOUSE
     and "hoverEnlargementPercent <= 0" in CONFIG_MOUSE
-    and "inPanel && hoverEnlargementPercent >= 100" in CONFIG_MOUSE
+    and "inPanel && !customThemeActiveInPanel && hoverEnlargementPercent > 65" in CONFIG_MOUSE
     and 'i18n("At 0%, the hover enlargement animation is disabled.")'
     in CONFIG_MOUSE
-    and 'i18n("At 100%, hover enlargement may be clipped' in CONFIG_MOUSE,
-    "Hover enlargement must display 0-100 percent and warn at its contextual limits.",
+    and 'i18n("Above 65%, hover enlargement may be clipped' in CONFIG_MOUSE,
+    "Hover enlargement must display 0-100 percent and warn above 65 percent for native Plasma panels.",
 )
 require(
     "Math.max(1.0," in DOCK_CONFIGURATION

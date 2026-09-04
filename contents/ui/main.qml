@@ -594,6 +594,7 @@ PlasmoidItem {
         customSeparatorEnabled: dockConfig.customDockSeparatorActive
         separatorTheme: dockConfig.customDockSeparatorTheme
         customThemeSurfaceRadius: dockConfig.customThemeSurfaceRadius
+        customThemeActive: dockConfig.customDockThemeActive
         availableScreenRect: root.availableScreenRect
         floatingAnchor: root.floatingDockAnchor
         hostHeight: root.height
@@ -2551,10 +2552,13 @@ PlasmoidItem {
                         return Math.round((parent.height - height) / 2)
                     }
                     if (!dockGeometry.verticalPanel) {
-                        if (dockGeometry.panelLocation === PlasmaCore.Types.TopEdge) {
-                            return Kirigami.Units.smallSpacing
+                        if (dockConfig.customDockThemeActive) {
+                            if (dockGeometry.panelLocation === PlasmaCore.Types.TopEdge) {
+                                return Kirigami.Units.smallSpacing
+                            }
+                            return parent ? Math.max(0, parent.height - height - Kirigami.Units.smallSpacing) : 0
                         }
-                        return parent ? Math.max(0, parent.height - height - Kirigami.Units.smallSpacing) : 0
+                        return Math.round((parent.height - height) / 2)
                     }
                     if (dockGeometry.configuredPanelAlignmentMode === "center") {
                         return Math.round((parent.height - height) / 2)
@@ -2933,7 +2937,7 @@ PlasmoidItem {
                         dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                         mediaMotionEnabled: dockConfig.menuAnimationStyle !== "none"
                             && dockConfig.dockHoverAnimation !== "none"
-                        hoverScaleSetting: dockConfig.panelHoverScale
+                        hoverScaleSetting: dockGeometry.effectivePanelHoverScale
                         hoverAnimationMode:
                             dockLayout.effectiveHoverAnimationMode
                         clickEffect: dockConfig.dockClickEffect
@@ -3199,7 +3203,7 @@ PlasmoidItem {
                         inPanel: root.inPanel
                         panelLocation: dockGeometry.effectivePanelLocation
                         iconSize: dockGeometry.effectiveIconSize
-                        hoverScaleSetting: dockConfig.panelHoverScale
+                        hoverScaleSetting: dockGeometry.effectivePanelHoverScale
                         // qmllint disable unqualified
                         hoverAnimationMode:
                             dockLayout.effectiveHoverAnimationMode
@@ -3367,7 +3371,7 @@ PlasmoidItem {
                     inPanel: root.inPanel
                     panelLocation: dockGeometry.effectivePanelLocation
                     iconSize: dockGeometry.effectiveIconSize
-                    hoverScaleSetting: dockConfig.panelHoverScale
+                    hoverScaleSetting: dockGeometry.effectivePanelHoverScale
                     hoverAnimationMode:
                         dockLayout.effectiveHoverAnimationMode
                     persistentReorderActive:

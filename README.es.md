@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.57">
-    <img src="https://img.shields.io/badge/release-v0.9.7.57-4caf50" alt="Versión v0.9.7.57">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.58">
+    <img src="https://img.shields.io/badge/release-v0.9.7.58-4caf50" alt="Versión v0.9.7.58">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -23,15 +23,17 @@ Punchi Dock Remastered es un dock lanzador nativo e interfaz de tareas para KDE 
 Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). El proyecto prepara actualmente su camino hacia una versión 1.0 estable.
 
 La versión actual es
-[v0.9.7.57](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.57).
+[v0.9.7.58](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.58).
 
-## Novedades de la versión 0.9.7.57
+## Novedades de la versión 0.9.7.58
 
-- **Control nativo de opacidad del panel**: Selector directo en Preferencias de Punchi Dock para opacidad del panel de Plasma 6 (*Adaptable*, *Opaco* y *Transparente*) con sincronización bidireccional inmediata.
-- **Integración integral con paneles de Plasma 6**: Controles directos en Preferencias para modo de longitud (*Ajustar al contenido* o *Rellenar*), alineación (*Izquierda/Arriba*, *Centro*, *Derecha/Abajo*), modo flotante (*Panel y miniaplicaciones*, *Solo miniaplicaciones*, *Desactivado*), visibilidad (*Esquivar ventanas*, *Siempre visible*, *Ocultar automáticamente*, *Las ventanas van por detrás*) y altura/grosor del panel (`SpinBox` de 24 px a 256 px).
-- **Dimensionamiento adaptativo y prevención de cortes**: Cálculo físico de holgura según la altura del panel y el zoom activo.
+- **Centrado vertical simétrico en panel Plasma**: Los iconos se centran de forma matemática y visual en el panel nativo de Plasma.
+- **Altura dinámica precalculada para panel Plasma**: Fórmula adaptativa exacta para modo tema Plasma que asegura geometría óptima sin alterar los temas JSON.
+- **Límite estricto de zoom en panel**: Límite del 65 % de zoom en hover para paneles nativos de Plasma evitando recortes en los márgenes.
+- **Advertencia contextual refinada**: Mensaje inline explicativo en Preferencias de Ratón cuando la ampliación supera el 65 % en modo panel.
+- **Marcador de búsqueda mejorado**: Indicador intuitivo en el editor de elementos: *"Escriba el nombre o alias... luego buscar"*.
 
-Consulta el [registro de cambios de 0.9.7.57](CHANGELOG.md#09757---2026-09-02) para ver las notas detalladas de la versión y la validación realizada.
+Consulta el [registro de cambios de 0.9.7.58](CHANGELOG.md#09758---2026-09-04) para ver las notas detalladas de la versión y la validación realizada.
 
 ## Capturas
 

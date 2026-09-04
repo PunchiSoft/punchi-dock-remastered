@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-04 02:44-0400\n"
+"POT-Creation-Date: 2026-09-04 05:00-0400\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: German\n"
@@ -281,7 +281,7 @@ msgstr ""
 msgid "%1 items loaded."
 msgstr "%1 Elemente geladen."
 
-#: contents/ui/main.qml:3395
+#: contents/ui/main.qml:3399
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 weitere Fenstergruppe"
@@ -418,8 +418,8 @@ msgstr "%1 — %2 — %3"
 #: contents/ui/config/ConfigMenus.qml:256
 #: contents/ui/config/ConfigMenus.qml:294
 #: contents/ui/config/ConfigMenus.qml:386
-#: contents/ui/config/ConfigMouse.qml:137
-#: contents/ui/config/ConfigMouse.qml:179
+#: contents/ui/config/ConfigMouse.qml:140
+#: contents/ui/config/ConfigMouse.qml:182
 #: contents/ui/config/ConfigPopups.qml:223
 #: contents/ui/config/ConfigPopups.qml:266
 #: contents/ui/config/ConfigPopups.qml:306
@@ -505,7 +505,7 @@ msgstr ""
 "behalten ihr Seitenverhältnis und werden weiterhin durch den verfügbaren "
 "Bildschirmbereich begrenzt."
 
-#: contents/ui/config/ConfigMouse.qml:186
+#: contents/ui/config/ConfigMouse.qml:189
 msgid ""
 "100% preserves the current timing. Lower values are slower and higher values "
 "are faster."
@@ -628,10 +628,20 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Eine Desktop-Verknüpfung für %1 wurde erstellt."
 
-#: contents/ui/main.qml:2055
+#: contents/ui/main.qml:2056
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr "Ein Dateipfad ist zu lang, um ihn sicher zu öffnen."
+
+#: contents/ui/config/ConfigMouse.qml:156
+msgid ""
+"Above 65%, hover enlargement may be clipped by the space and margins "
+"available in the Plasma panel. You can use a custom JSON theme to avoid "
+"clipping."
+msgstr ""
+"Über 65 % kann die Vergrößerung beim Überfahren durch den verfügbaren Platz "
+"und die Ränder der Plasma-Kontrollleiste abgeschnitten werden. Sie können "
+"ein benutzerdefiniertes JSON-Design verwenden, um dies zu vermeiden."
 
 #: contents/ui/config/ConfigItems.qml:747
 msgid "Action command:"
@@ -779,7 +789,7 @@ msgctxt "@info"
 msgid "Adjust the warmth of the screen filter"
 msgstr "Wärme des Bildschirmfilters anpassen"
 
-#: contents/ui/config/ConfigMouse.qml:126
+#: contents/ui/config/ConfigMouse.qml:129
 msgid "Adjusts additional hover enlargement between 0 and 100 percent."
 msgstr ""
 "Passt die zusätzliche Vergrößerung beim Überfahren zwischen 0 und 100 "
@@ -894,7 +904,7 @@ msgstr ""
 "Animiert das gesamte Anwendungselement einschließlich Hintergrund, Symbol "
 "und Name."
 
-#: contents/ui/config/ConfigMouse.qml:242
+#: contents/ui/config/ConfigMouse.qml:245
 msgid ""
 "Animates the matching dock item when a window is minimized. Lateral ripple "
 "also moves the nearest items."
@@ -977,7 +987,7 @@ msgctxt "@info:status"
 msgid "Application could not be opened: %1"
 msgstr "Die Anwendung konnte nicht geöffnet werden: %1"
 
-#: contents/ui/config/ConfigMouse.qml:276
+#: contents/ui/config/ConfigMouse.qml:279
 msgid "Application file drop:"
 msgstr "Datei-Drop für Anwendungen:"
 
@@ -1078,18 +1088,9 @@ msgstr "Arch-Artefakt bereit: %s\\n"
 msgid "Arch setup completed"
 msgstr "Arch-Einrichtung abgeschlossen"
 
-#: contents/ui/config/ConfigMouse.qml:152
+#: contents/ui/config/ConfigMouse.qml:155
 msgid "At 0%, the hover enlargement animation is disabled."
 msgstr "Bei Auswahl von 0 % wird die Vergrößerungsanimation deaktiviert."
-
-#: contents/ui/config/ConfigMouse.qml:153
-msgid ""
-"At 100%, hover enlargement may be clipped by the space and margins available "
-"in the Plasma panel. Floating mode is not affected."
-msgstr ""
-"Bei 100 % kann die Vergrößerung beim Überfahren durch den verfügbaren Platz "
-"und die Ränder der Plasma-Kontrollleiste abgeschnitten werden. Der "
-"schwebende Modus ist nicht betroffen."
 
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:412
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:436
@@ -1199,7 +1200,7 @@ msgstr "Aktiven Player automatisch auswählen"
 msgid "Available when dock item names are shown."
 msgstr "Available when dock item names are shown."
 
-#: contents/ui/config/ConfigMouse.qml:43
+#: contents/ui/config/ConfigMouse.qml:46
 msgid "Axis zoom"
 msgstr "Achsen-Zoom"
 
@@ -1353,7 +1354,7 @@ msgstr "Von unten nach oben"
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:29
 #: contents/ui/config/components/PopupAnimationSettings.qml:20
-#: contents/ui/config/ConfigMouse.qml:50
+#: contents/ui/config/ConfigMouse.qml:53
 msgid "Bounce"
 msgstr "Hüpfen"
 
@@ -1769,7 +1770,7 @@ msgstr "Suche leeren"
 msgid "Cleared"
 msgstr "Gelöscht"
 
-#: contents/ui/config/ConfigMouse.qml:195
+#: contents/ui/config/ConfigMouse.qml:198
 msgid "Click effect:"
 msgstr "Klickeffekt:"
 
@@ -2099,7 +2100,7 @@ msgstr ""
 "Wird durch das aktive benutzerdefinierte JSON-Design gesteuert (Kein "
 "Hintergrund)."
 
-#: contents/ui/config/ConfigMouse.qml:170
+#: contents/ui/config/ConfigMouse.qml:173
 msgid ""
 "Controls how quickly dock items enter, move, and resize. It does not change "
 "popup or menu animations."
@@ -2380,7 +2381,7 @@ msgctxt "@item:inlistbox Media player hover mode"
 msgid "Disabled"
 msgstr "Deaktiviert"
 
-#: contents/ui/config/ConfigMouse.qml:310
+#: contents/ui/config/ConfigMouse.qml:313
 msgid ""
 "Disabled by default because Plasma uses press and hold to enter widget "
 "editing in floating mode."
@@ -2483,11 +2484,11 @@ msgstr "Abstand der Dock-Kontextmenüs"
 msgid "Dock item"
 msgstr "Dockelement"
 
-#: contents/ui/config/ConfigMouse.qml:169
+#: contents/ui/config/ConfigMouse.qml:172
 msgid "Dock motion speed"
 msgstr "Bewegungsgeschwindigkeit des Docks"
 
-#: contents/ui/config/ConfigMouse.qml:158
+#: contents/ui/config/ConfigMouse.qml:161
 msgid "Dock motion speed:"
 msgstr "Bewegungsgeschwindigkeit des Docks:"
 
@@ -2632,11 +2633,11 @@ msgctxt "@option:check"
 msgid "Enable background blur (BlurBehind)"
 msgstr "Hintergrundunschärfe aktivieren (BlurBehind)"
 
-#: contents/ui/config/ConfigMouse.qml:277
+#: contents/ui/config/ConfigMouse.qml:280
 msgid "Enable file drag and drop onto application icons"
 msgstr "Dateien auf Anwendungssymbole ziehen und dort ablegen"
 
-#: contents/ui/config/ConfigMouse.qml:300
+#: contents/ui/config/ConfigMouse.qml:303
 msgid "Enable press-and-hold item reordering"
 msgstr "Neuanordnung von Elementen durch Gedrückthalten aktivieren"
 
@@ -2859,7 +2860,7 @@ msgctxt "@option:control-center-mode"
 msgid "Floating"
 msgstr "Schwebend"
 
-#: contents/ui/config/ConfigMouse.qml:298
+#: contents/ui/config/ConfigMouse.qml:301
 msgid "Floating Dock reordering:"
 msgstr "Neuanordnung im schwebenden Dock:"
 
@@ -3193,7 +3194,7 @@ msgstr "Horizontal"
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:215
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:231
-#: contents/ui/config/ConfigMouse.qml:88
+#: contents/ui/config/ConfigMouse.qml:91
 msgid "Hover animation:"
 msgstr "Hover-Animation:"
 
@@ -3206,11 +3207,11 @@ msgstr "Hover-Animation:"
 msgid "Hover background:"
 msgstr "Hover-Hintergrund:"
 
-#: contents/ui/config/ConfigMouse.qml:125
+#: contents/ui/config/ConfigMouse.qml:128
 msgid "Hover enlargement"
 msgstr "Vergrößerung beim Überfahren"
 
-#: contents/ui/config/ConfigMouse.qml:113
+#: contents/ui/config/ConfigMouse.qml:116
 msgid "Hover enlargement:"
 msgstr "Vergrößerung beim Überfahren:"
 
@@ -3525,7 +3526,7 @@ msgctxt "@item:inlistbox Context menu size"
 msgid "Large"
 msgstr "Groß"
 
-#: contents/ui/config/ConfigMouse.qml:56
+#: contents/ui/config/ConfigMouse.qml:59
 msgid "Lateral ripple"
 msgstr "Seitliche Welligkeit"
 
@@ -4102,7 +4103,7 @@ msgstr ""
 "Es wurden keine installierten Multimedia-Anwendungen gefunden. Die "
 "automatische Auswahl bleibt verfügbar."
 
-#: contents/ui/main.qml:2041
+#: contents/ui/main.qml:2042
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "In diesem Ablegevorgang wurden keine lokalen Dateien gefunden."
@@ -4132,8 +4133,8 @@ msgstr "Es wurden keine virtuellen Desktops gefunden."
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:26
 #: contents/ui/config/components/PopupAnimationSettings.qml:23
 #: contents/ui/config/ConfigAspect.qml:147
-#: contents/ui/config/ConfigMouse.qml:40 contents/ui/config/ConfigMouse.qml:47
-#: contents/ui/config/ConfigMouse.qml:54 contents/ui/config/ConfigPopups.qml:39
+#: contents/ui/config/ConfigMouse.qml:43 contents/ui/config/ConfigMouse.qml:50
+#: contents/ui/config/ConfigMouse.qml:57 contents/ui/config/ConfigPopups.qml:39
 msgid "None"
 msgstr "Keine"
 
@@ -4288,7 +4289,7 @@ msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 "Gilt nur, wenn dieses Dock-Element eine geschlossene Anwendung startet."
 
-#: contents/ui/main.qml:2052
+#: contents/ui/main.qml:2053
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Mit einer Anwendung können nur lokale Dateien geöffnet werden."
@@ -4765,13 +4766,9 @@ msgstr "Popups"
 msgid "Position is not used with the current indicator shape."
 msgstr "Die Position wird mit der aktuellen Indikatorform nicht verwendet."
 
-#: contents/ui/config/ConfigMouse.qml:49
+#: contents/ui/config/ConfigMouse.qml:52
 msgid "Press"
 msgstr "Drücken Sie"
-
-#: contents/ui/config/ConfigItems.qml:717
-msgid "Press Enter to search..."
-msgstr "Drücken Sie die Eingabetaste, um zu suchen..."
 
 #: contents/ui/components/DockItem.qml:1448
 msgctxt "@info:accessible"
@@ -4851,7 +4848,7 @@ msgstr ""
 "verwendet."
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:28
-#: contents/ui/config/ConfigMouse.qml:44 contents/ui/config/ConfigMouse.qml:48
+#: contents/ui/config/ConfigMouse.qml:47 contents/ui/config/ConfigMouse.qml:51
 msgid "Pulse"
 msgstr "Puls"
 
@@ -5363,7 +5360,7 @@ msgstr "Einstellungen"
 msgid "Settings and help"
 msgstr "Einstellungen und Hilfe"
 
-#: contents/ui/config/ConfigMouse.qml:254
+#: contents/ui/config/ConfigMouse.qml:257
 msgid "Settings cursor:"
 msgstr "Einstellungscursor:"
 
@@ -5579,7 +5576,7 @@ msgctxt "@action:button"
 msgid "Shut Down"
 msgstr "Herunterfahren"
 
-#: contents/ui/config/ConfigMouse.qml:42
+#: contents/ui/config/ConfigMouse.qml:45
 msgid "Single"
 msgstr "Single"
 
@@ -5600,7 +5597,7 @@ msgstr "Installation der Abhängigkeiten mit pacman wird übersprungen"
 msgid "Slide from the dock"
 msgstr "Vom Dock rutschen"
 
-#: contents/ui/config/ConfigMouse.qml:55
+#: contents/ui/config/ConfigMouse.qml:58
 msgid "Slow bounce"
 msgstr "Langsamer Sprung"
 
@@ -5857,17 +5854,17 @@ msgstr ""
 "Das Dock-Design steuert diesen Trenner. Wählen Sie „Dieser Trenner“, um sein "
 "Erscheinungsbild hier zu bearbeiten."
 
-#: contents/ui/main.qml:2049
+#: contents/ui/main.qml:2050
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "Der Ablegevorgang enthält einen ungültigen lokalen Dateipfad."
 
-#: contents/ui/main.qml:2058
+#: contents/ui/main.qml:2059
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr "Die Liste der abgelegten Dateien ist zu groß, um sie sicher zu öffnen."
 
-#: contents/ui/main.qml:2063
+#: contents/ui/main.qml:2064
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Die abgelegten Dateien konnten nicht geöffnet werden."
@@ -6049,7 +6046,7 @@ msgstr "Dünn"
 msgid "This action cannot be undone."
 msgstr "Diese Aktion kann nicht rückgängig gemacht werden."
 
-#: contents/ui/main.qml:2061
+#: contents/ui/main.qml:2062
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -6218,6 +6215,10 @@ msgstr "Nachtlicht einschalten"
 msgctxt "@info"
 msgid "Turn on Wi-Fi to search for networks."
 msgstr "Schalten Sie WLAN ein, um nach Netzwerken zu suchen."
+
+#: contents/ui/config/ConfigItems.qml:717
+msgid "Type name or alias... then search"
+msgstr "Name oder Alias eingeben... dann suchen"
 
 #: contents/ui/config/ConfigItems.qml:718
 msgid "Type:"
@@ -6612,7 +6613,7 @@ msgstr "Verwenden Sie Plasma-Designfarben"
 msgid "Use background blur when available"
 msgstr "Hintergrundunschärfe verwenden, wenn verfügbar"
 
-#: contents/ui/config/ConfigMouse.qml:255
+#: contents/ui/config/ConfigMouse.qml:258
 msgid "Use interactive cursors in the settings window"
 msgstr "Verwenden Sie interaktive Cursor im Einstellungsfenster"
 
@@ -6724,7 +6725,7 @@ msgctxt "@info:accessibility"
 msgid "Volumes can be raised above 100 percent"
 msgstr "Lautstärken können über 100 Prozent erhöht werden"
 
-#: contents/ui/config/ConfigMouse.qml:41
+#: contents/ui/config/ConfigMouse.qml:44
 msgid "Wave"
 msgstr "Welle"
 
@@ -6732,7 +6733,7 @@ msgstr "Welle"
 msgid "What would you like to do?"
 msgstr "Was möchten Sie tun?"
 
-#: contents/ui/config/ConfigMouse.qml:286
+#: contents/ui/config/ConfigMouse.qml:289
 msgid ""
 "When disabled, application icons ignore dragged files. The Trash can still "
 "receive files."
@@ -6740,7 +6741,7 @@ msgstr ""
 "Wenn deaktiviert, ignorieren Anwendungssymbole abgelegte Dateien. Der "
 "Papierkorb kann weiterhin Dateien empfangen."
 
-#: contents/ui/config/ConfigMouse.qml:264
+#: contents/ui/config/ConfigMouse.qml:267
 msgid ""
 "When enabled, text fields use an I-beam cursor while sliders, buttons and "
 "selectors use an interactive pointer."
@@ -6793,7 +6794,7 @@ msgstr ""
 "Fensterindikatoren bleiben sichtbar, wenn der Elementhintergrund "
 "ausgeblendet ist."
 
-#: contents/ui/config/ConfigMouse.qml:219
+#: contents/ui/config/ConfigMouse.qml:222
 msgid "Window minimize effect:"
 msgstr "Fensterminimierungseffekt:"
 
@@ -6878,7 +6879,7 @@ msgstr "Schreiben Sie eine schnell bearbeitbare Notiz"
 msgid "Write a quick note"
 msgstr "Schreiben Sie eine kurze Notiz"
 
-#: contents/ui/main.qml:2045
+#: contents/ui/main.qml:2046
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Sie können bis zu %1 lokale Dateien gleichzeitig öffnen."
