@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.58">
-    <img src="https://img.shields.io/badge/release-v0.9.7.58-4caf50" alt="Version v0.9.7.58">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59">
+    <img src="https://img.shields.io/badge/release-v0.9.7.59-4caf50" alt="Version v0.9.7.59">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/lizenz-GPL--3.0--or--later-blue" alt="Lizenz GPL-3.0-or-later">
@@ -23,17 +23,16 @@ Punchi Dock Remastered ist ein natives Starter-Dock und eine Aufgabenleiste für
 Dieses Repository ist ein modularer Rewrite des ursprünglichen [Punchi Dock Plasmoids](https://github.com/PunchiSoft/punchi-dock-plasmoid). Das Projekt bereitet derzeit seinen Weg zur stabilen Version 1.0 vor.
 
 Die aktuelle Version ist
-[v0.9.7.58](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.58).
+[v0.9.7.59](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59).
 
-## Neuigkeiten in Version 0.9.7.58
+## Neuigkeiten in Version 0.9.7.59
 
-- **Symmetrische vertikale Zentrierung im Plasma-Panel**: Die Symbolanordnung ist im nativen Plasma-Panelmodus vertikal zentriert.
-- **Dynamisch vorberechnete Panelhöhe**: Angepasste adaptive Höhenformel für den Plasma-Designmodus zur optimalen Geometrie ohne Beeinträchtigung der JSON-Designs.
-- **Strikte Begrenzung der Hover-Vergrößerung**: Begrenzt die Vergrößerung im Panel auf 65 %, um ein Abschneiden an den Rändern zu verhindern.
-- **Verfeinerte kontextbezogene Warnung**: Verbesserte Inline-Warnung in den Mauseinstellungen, wenn die Vergrößerung im Panel 65 % überschreitet.
-- **Verbesserter Such-Platzhalter**: Benutzerfreundlicher Hinweis im Element-Editor: *"Type name or alias... then search"*.
+- **Benutzerdefinierter Designordner**: Konfiguration eines externen Designverzeichnisses mit strenger Pfadvalidierung, Ablehnung von Symlinks und Verzeichnisauswahldialog.
+- **Massenlöschung von Designs & Menü**: Optionen zum Löschen des aktiven Designs oder aller installierten Designs mit Bestätigungsdialog und Backend-Bereinigung.
+- **Verfeinerte Design-Einstellungen**: Übersichtliches Layout zur Trennung von Designauswahl, Löschmenü, Importaktion und benutzerdefinierter Ordnerverwaltung.
+- **Sicherheits- & Rechtehärtung**: Sichere Fallbacks für fehlende, nicht eingehängte oder schreibgeschützte Design-Speicherorte.
 
-Siehe das [Änderungsprotokoll für 0.9.7.58](CHANGELOG.md#09758---2026-09-04) für detaillierte Versionshinweise und die durchgeführte Validierung.
+Siehe das [Änderungsprotokoll für 0.9.7.59](CHANGELOG.md#09759---2026-09-06) für detaillierte Versionshinweise und die durchgeführte Validierung.
 
 ## Screenshots
 

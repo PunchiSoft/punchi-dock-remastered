@@ -43,6 +43,8 @@ KCM.SimpleKCM {
     property alias cfg_indicatorThickness: indicatorThicknessSlider.value
     property string cfg_dockThemeMode: "plasma"
     property string cfg_dockThemeCustomId: ""
+    property bool cfg_dockCustomThemeDirectoryEnabled: false
+    property string cfg_dockCustomThemeDirectory: ""
     property string cfg_floatingDockOrientation: "horizontal"
     property string cfg_windowPreviewStyle: "card"
     property alias cfg_windowPreviewScale: popupAppearancePage.cfg_windowPreviewScale
@@ -287,6 +289,26 @@ KCM.SimpleKCM {
         page.syncThemeLibrarySelector()
     }
 
+    function removeAllInstalledThemes() {
+        const count = dockThemeRepository.availableThemes.length
+        if (count === 0 || !dockThemeRepository.removeAllThemes()) {
+            return
+        }
+
+        page.lastThemeDirectoryImport = ({})
+        // qmllint disable unqualified
+        page.themeRemovalMessage = i18np("Theme was deleted. Switched to Plasma theme.",
+            "All %1 themes were deleted. Switched to Plasma theme.", count)
+        // qmllint enable unqualified
+
+        page.cfg_dockThemeCustomId = ""
+        page.cfg_dockThemeMode = "plasma"
+        page.pendingThemeRemovalId = ""
+        page.pendingThemeRemovalName = ""
+        page.pendingThemeRemovalIndex = -1
+        page.syncThemeLibrarySelector()
+    }
+
     // qmllint disable unqualified
     function dockThemeErrorText(errorCode) {
         switch (errorCode) {
@@ -315,8 +337,12 @@ KCM.SimpleKCM {
             return i18n("The selected theme folder could not be read.")
         case "invalidThemeId":
             return i18n("The selected installed theme has an invalid identifier.")
+        case "readOnlyDirectory":
+            return i18n("Punchi Dock cannot import themes here for security reasons: the selected folder is read-only or requires administrator permissions.")
         case "removeFailed":
             return i18n("Punchi Dock could not delete the selected theme.")
+        case "deleteAllFailed":
+            return i18n("Punchi Dock could not delete all themes.")
         default:
             return i18n("The selected file is not a supported Punchi Dock theme.")
         }
@@ -350,6 +376,14 @@ KCM.SimpleKCM {
     onCfg_showWindowCountBadgeChanged: syncIndicatorSelectors()
     onCfg_dockThemeModeChanged: syncDockThemeSelector()
     onCfg_dockThemeCustomIdChanged: syncThemeLibrarySelector()
+    onCfg_dockCustomThemeDirectoryEnabledChanged: {
+        dockThemeRepository.refreshThemes()
+        syncThemeLibrarySelector()
+    }
+    onCfg_dockCustomThemeDirectoryChanged: {
+        dockThemeRepository.refreshThemes()
+        syncThemeLibrarySelector()
+    }
     Component.onCompleted: {
         syncIndicatorSelectors()
         syncDockThemeSelector()
@@ -360,6 +394,8 @@ KCM.SimpleKCM {
     Punchi.DockThemeRepository {
         id: dockThemeRepository
         themeId: page.inPanel ? "" : page.cfg_dockThemeCustomId
+        customThemeDirectoryEnabled: page.cfg_dockCustomThemeDirectoryEnabled
+        customThemeDirectory: page.cfg_dockCustomThemeDirectory
 
         onThemesChanged: page.syncThemeLibrarySelector()
     }
@@ -480,6 +516,71 @@ KCM.SimpleKCM {
             page.pendingThemeRemovalIndex = -1
         }
     }
+
+    Kirigami.PromptDialog {
+        id: removeAllThemesDialog
+        parent: page
+        title: i18nc("@title:window", "Delete All Installed Themes?")
+        subtitle: page.cfg_dockCustomThemeDirectoryEnabled && page.cfg_dockCustomThemeDirectory.length > 0
+            ? i18n("Delete all %1 installed themes permanently from custom folder “%2”? This action cannot be undone.",
+                dockThemeRepository.availableThemes.length, dockThemeRepository.customThemeDirectoryDisplayName)
+            : i18n("Delete all %1 installed themes permanently from the Punchi Dock Remastered theme library? This action cannot be undone.",
+                dockThemeRepository.availableThemes.length)
+        dialogType: Kirigami.PromptDialog.Warning
+        standardButtons: Kirigami.Dialog.NoButton
+        customFooterActions: [
+            Kirigami.Action {
+                text: i18nc("@action:button", "Delete All Themes")
+                icon.name: "edit-delete"
+                onTriggered: removeAllThemesDialog.accept()
+            },
+            Kirigami.Action {
+                text: i18nc("@action:button", "Cancel")
+                icon.name: "dialog-cancel"
+                onTriggered: removeAllThemesDialog.reject()
+            }
+        ]
+        onAccepted: page.removeAllInstalledThemes()
+    }
+
+    Controls.Menu {
+        id: removeThemeMenu
+
+        Controls.MenuItem {
+            text: dockThemeLibraryCombo.currentIndex >= 0
+                ? i18n("Delete “%1”", dockThemeLibraryCombo.currentText)
+                : i18n("Delete selected theme")
+            icon.name: "edit-delete"
+            enabled: dockThemeLibraryCombo.currentIndex >= 0
+                && String(dockThemeLibraryCombo.currentValue || "").length > 0
+            onTriggered: page.requestSelectedThemeRemoval()
+        }
+
+        Controls.MenuSeparator {}
+
+        Controls.MenuItem {
+            text: i18n("Delete all themes (%1)…", dockThemeRepository.availableThemes.length)
+            icon.name: "edit-delete-remove"
+            enabled: dockThemeRepository.availableThemes.length > 0
+            onTriggered: removeAllThemesDialog.open()
+        }
+    }
+
+    QtDialogs.FolderDialog {
+        id: customThemeFolderDialog
+        title: i18n("Choose Custom Themes Folder")
+        currentFolder: page.cfg_dockCustomThemeDirectory.length > 0
+            ? Qt.resolvedUrl(page.cfg_dockCustomThemeDirectory.startsWith("file://")
+                ? page.cfg_dockCustomThemeDirectory
+                : "file://" + page.cfg_dockCustomThemeDirectory)
+            : undefined
+
+        onAccepted: {
+            page.themeRemovalMessage = ""
+            page.cfg_dockCustomThemeDirectory = selectedFolder.toString()
+            page.cfg_dockCustomThemeDirectoryEnabled = true
+        }
+    }
     // qmllint enable unqualified
 
     StackLayout {
@@ -567,9 +668,8 @@ KCM.SimpleKCM {
             Controls.ComboBox {
                 id: dockThemeLibraryCombo
                 Layout.preferredWidth: Math.max(160,
-                    page.selectorWidthHint - importThemeButton.implicitWidth
-                    - removeThemeButton.implicitWidth
-                    - (Kirigami.Units.smallSpacing * 2)
+                    page.selectorWidthHint - removeThemeButton.implicitWidth
+                    - Kirigami.Units.smallSpacing
                 )
                 Layout.maximumWidth: page.selectorWidthHint
                 textRole: "displayName"
@@ -594,6 +694,30 @@ KCM.SimpleKCM {
             }
 
             Controls.Button {
+                id: removeThemeButton
+                text: i18nc("@action:button", "Delete") // qmllint disable unqualified
+                icon.name: "edit-delete-symbolic"
+                display: Controls.AbstractButton.IconOnly
+                enabled: dockThemeRepository.availableThemes.length > 0
+                Accessible.name: i18n("Theme deletion options") // qmllint disable unqualified
+                onClicked: removeThemeMenu.popup(
+                    removeThemeButton, 0, removeThemeButton.height)
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: i18n("Delete theme options…") // qmllint disable unqualified
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Import:") // qmllint disable unqualified
+            Layout.maximumWidth: page.contentWidthHint
+            visible: page.cfg_dockThemeMode === "custom"
+
+            Controls.Button {
                 id: importThemeButton
                 text: i18n("Import…") // qmllint disable unqualified
                 icon.name: "list-add"
@@ -606,19 +730,61 @@ KCM.SimpleKCM {
                     cursorEnabled: page.interactiveCursorEnabled
                 }
             }
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Custom folder:") // qmllint disable unqualified
+            Layout.maximumWidth: page.contentWidthHint
+            visible: page.cfg_dockThemeMode === "custom"
+
+            Controls.CheckBox {
+                id: customThemeFolderCheckBox
+                text: i18n("Use custom folder") // qmllint disable unqualified
+                checked: page.cfg_dockCustomThemeDirectoryEnabled
+                onToggled: page.cfg_dockCustomThemeDirectoryEnabled = checked
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+
+            Controls.TextField {
+                id: customThemeFolderField
+                Layout.fillWidth: true
+                Layout.preferredWidth: Math.max(120,
+                    page.selectorWidthHint - customThemeFolderCheckBox.implicitWidth
+                    - selectCustomThemeFolderButton.implicitWidth
+                    - (Kirigami.Units.smallSpacing * 2)
+                )
+                Layout.maximumWidth: page.selectorWidthHint
+                readOnly: true
+                visible: page.cfg_dockCustomThemeDirectoryEnabled
+                text: dockThemeRepository.customThemeDirectoryDisplayName.length > 0
+                    ? dockThemeRepository.customThemeDirectoryDisplayName
+                    : page.cfg_dockCustomThemeDirectory.length > 0
+                        ? page.cfg_dockCustomThemeDirectory
+                        : i18n("No folder selected") // qmllint disable unqualified
+                placeholderText: i18n("Choose a folder…") // qmllint disable unqualified
+
+                Controls.ToolTip.visible: hovered && page.cfg_dockCustomThemeDirectory.length > 0
+                Controls.ToolTip.text: page.cfg_dockCustomThemeDirectory
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
 
             Controls.Button {
-                id: removeThemeButton
-                text: i18nc("@action:button", "Delete") // qmllint disable unqualified
-                icon.name: "edit-delete-symbolic"
+                id: selectCustomThemeFolderButton
+                icon.name: "list-add"
+                text: "+"
                 display: Controls.AbstractButton.IconOnly
-                enabled: dockThemeLibraryCombo.currentIndex >= 0
-                    && String(dockThemeLibraryCombo.currentValue || "").length > 0
-                Accessible.name: i18n("Delete the selected installed Punchi Dock theme") // qmllint disable unqualified
-                onClicked: page.requestSelectedThemeRemoval()
+                visible: page.cfg_dockCustomThemeDirectoryEnabled
+                Accessible.name: i18n("Select custom themes folder") // qmllint disable unqualified
+                onClicked: customThemeFolderDialog.open()
 
                 Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: text
+                Controls.ToolTip.text: i18n("Select folder…") // qmllint disable unqualified
 
                 ConfigCursorBehavior {
                     cursorEnabled: page.interactiveCursorEnabled

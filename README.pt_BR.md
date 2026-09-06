@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.58">
-    <img src="https://img.shields.io/badge/release-v0.9.7.58-4caf50" alt="Versão v0.9.7.58">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59">
+    <img src="https://img.shields.io/badge/release-v0.9.7.59-4caf50" alt="Versão v0.9.7.59">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0--or--later-blue" alt="Licença GPL-3.0-or-later">
@@ -23,17 +23,16 @@ Punchi Dock Remastered é um dock inicializador nativo e interface de tarefas pa
 Este repositório é uma reescrita modular do [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). O projeto prepara atualmente seu caminho rumo à versão estável 1.0.
 
 A versão atual é
-[v0.9.7.58](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.58).
+[v0.9.7.59](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59).
 
-## Novidades na versão 0.9.7.58
+## Novidades na versão 0.9.7.59
 
-- **Centralização vertical simétrica no painel do Plasma**: O layout de ícones fica perfeitamente centralizado verticalmente no modo de painel nativo do Plasma.
-- **Altura dinâmica pré-calculada para o painel do Plasma**: Fórmula adaptativa sob medida para o modo de tema do Plasma, garantindo geometria ideal sem interferir nos temas JSON.
-- **Limite estrito de zoom no painel**: Limita a ampliação no painel a 65% para evitar cortes nas margens.
-- **Aviso contextual refinado**: Mensagem inline aprimorada nas Preferências do Mouse quando a ampliação ultrapassar 65% no painel.
-- **Marcador de busca aprimorado**: Dica amigável no editor de itens: *"Type name or alias... then search"*.
+- **Pasta personalizada de temas**: Configuração de diretório customizado para temas da dock com validação estrita, rejeição de links simbólicos e diálogo de seleção de pastas.
+- **Exclusão em massa de temas e menu**: Opções para remover o tema selecionado ou apagar todos os temas instalados com diálogo de confirmação e limpeza no backend.
+- **Preferências de temas aprimoradas**: Layout limpo separando seleção de tema, menu de exclusão, ação de importação e gerenciamento de pasta personalizada.
+- **Reforço de segurança e permissões**: Tratamento seguro contra pastas inexistentes, desmontadas ou com permissão apenas de leitura.
 
-Consulte o [registro de alterações da 0.9.7.58](CHANGELOG.md#09758---2026-09-04) para ver as notas detalhadas de lançamento e a validação executada.
+Consulte o [registro de alterações da 0.9.7.59](CHANGELOG.md#09759---2026-09-06) para ver as notas detalhadas de lançamento e a validação executada.
 
 ## Capturas de Tela
 

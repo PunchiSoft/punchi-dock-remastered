@@ -18,6 +18,9 @@ class DockThemeRepository : public QObject
     Q_PROPERTY(QString themeName READ themeName NOTIFY themeChanged)
     Q_PROPERTY(QString errorCode READ errorCode NOTIFY errorCodeChanged)
     Q_PROPERTY(QVariantList availableThemes READ availableThemes NOTIFY themesChanged)
+    Q_PROPERTY(bool customThemeDirectoryEnabled READ customThemeDirectoryEnabled WRITE setCustomThemeDirectoryEnabled NOTIFY customThemeDirectoryEnabledChanged)
+    Q_PROPERTY(QString customThemeDirectory READ customThemeDirectory WRITE setCustomThemeDirectory NOTIFY customThemeDirectoryChanged)
+    Q_PROPERTY(QString customThemeDirectoryDisplayName READ customThemeDirectoryDisplayName NOTIFY customThemeDirectoryChanged)
 
 public:
     explicit DockThemeRepository(QObject *parent = nullptr);
@@ -30,9 +33,16 @@ public:
     QString errorCode() const;
     QVariantList availableThemes() const;
 
+    bool customThemeDirectoryEnabled() const;
+    void setCustomThemeDirectoryEnabled(bool enabled);
+    QString customThemeDirectory() const;
+    void setCustomThemeDirectory(const QString &directory);
+    QString customThemeDirectoryDisplayName() const;
+
     Q_INVOKABLE QString importTheme(const QUrl &sourceUrl);
     Q_INVOKABLE QVariantMap importThemeDirectory(const QUrl &sourceDirectoryUrl);
     Q_INVOKABLE bool removeTheme(const QString &themeId);
+    Q_INVOKABLE bool removeAllThemes();
     Q_INVOKABLE void refreshThemes();
     Q_INVOKABLE void clearError();
 
@@ -41,6 +51,8 @@ Q_SIGNALS:
     void themeChanged();
     void errorCodeChanged();
     void themesChanged();
+    void customThemeDirectoryEnabledChanged();
+    void customThemeDirectoryChanged();
 
 private:
     QString storeTheme(const QVariantMap &theme, bool *created = nullptr);
@@ -56,4 +68,6 @@ private:
     QVariantMap m_theme;
     QString m_errorCode;
     QVariantList m_availableThemes;
+    bool m_customThemeDirectoryEnabled = false;
+    QString m_customThemeDirectory;
 };

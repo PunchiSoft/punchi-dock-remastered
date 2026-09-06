@@ -388,5 +388,59 @@ int main(int argc, char **argv)
             "shaped theme is identified in the managed library");
     }
 
+    DockThemeRepository customRepo;
+    passed &= expect(customRepo.customThemeDirectoryDisplayName().isEmpty(),
+        "display name is empty when no custom directory is configured");
+    customRepo.setCustomThemeDirectory(QStringLiteral("/test/path/my-themes"));
+    passed &= expect(customRepo.customThemeDirectoryDisplayName() == QStringLiteral(".../my-themes"),
+        "display name formats custom directory with .../ prefix");
+
+    QTemporaryDir customDir;
+    if (!customDir.isValid()) {
+        std::cerr << "FAILED: custom directory fixture could not be created\n";
+        return 1;
+    }
+
+    customRepo.setCustomThemeDirectory(customDir.path());
+    customRepo.setCustomThemeDirectoryEnabled(true);
+    passed &= expect(customRepo.availableThemes().isEmpty(),
+        "newly configured custom directory starts empty");
+
+    const QString customImportedId = customRepo.importTheme(QUrl::fromLocalFile(sourcePath));
+    passed &= expect(!customImportedId.isEmpty(),
+        "themes can be imported into the custom themes directory");
+    passed &= expect(customRepo.availableThemes().size() == 1,
+        "custom directory reflects imported theme reactively");
+    passed &= expect(customRepo.valid() && customRepo.themeId() == customImportedId,
+        "importing into custom directory activates the imported theme");
+
+    passed &= expect(customRepo.removeAllThemes(),
+        "removeAllThemes successfully deletes all themes in active directory");
+    passed &= expect(customRepo.availableThemes().isEmpty() && !customRepo.valid() && customRepo.themeId().isEmpty(),
+        "removeAllThemes clears available themes and resets repository state");
+
+    customRepo.setCustomThemeDirectory(QStringLiteral("/unmounted/nonexistent/disk/path"));
+    passed &= expect(customRepo.availableThemes().isEmpty(),
+        "unmounted or missing custom directory gracefully returns no themes without crashing");
+
+    const QString symlinkDir = QDir(temporaryDataHome.path()).filePath(QStringLiteral("symlink-custom-dir"));
+    if (QFile::link(customDir.path(), symlinkDir)) {
+        customRepo.setCustomThemeDirectory(symlinkDir);
+        passed &= expect(customRepo.availableThemes().isEmpty(),
+            "symlink custom directories are strictly rejected");
+    }
+
+    QTemporaryDir readOnlyDir;
+    if (readOnlyDir.isValid()) {
+        QFile::setPermissions(readOnlyDir.path(), QFileDevice::ReadOwner | QFileDevice::ExeOwner);
+        DockThemeRepository readOnlyRepo;
+        readOnlyRepo.setCustomThemeDirectory(readOnlyDir.path());
+        readOnlyRepo.setCustomThemeDirectoryEnabled(true);
+        const QString readOnlyImportResult = readOnlyRepo.importTheme(QUrl::fromLocalFile(sourcePath));
+        passed &= expect(readOnlyImportResult.isEmpty() && readOnlyRepo.errorCode() == QLatin1String("readOnlyDirectory"),
+            "importing into a read-only directory fails with readOnlyDirectory error");
+        QFile::setPermissions(readOnlyDir.path(), QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner);
+    }
+
     return passed ? 0 : 1;
 }

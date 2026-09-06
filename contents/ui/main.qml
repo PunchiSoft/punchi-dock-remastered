@@ -534,6 +534,8 @@ PlasmoidItem {
     Punchi.DockThemeRepository {
         id: dockThemeRepository
         themeId: String(Plasmoid.configuration.dockThemeCustomId || "")
+        customThemeDirectoryEnabled: !!Plasmoid.configuration.dockCustomThemeDirectoryEnabled
+        customThemeDirectory: String(Plasmoid.configuration.dockCustomThemeDirectory || "")
     }
     DockConfigurationState {
         id: dockConfig

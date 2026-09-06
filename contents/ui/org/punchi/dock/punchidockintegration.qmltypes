@@ -474,30 +474,60 @@ Module {
             lineNumber: 20
             isReadonly: true
         }
-        Signal { name: "themeIdChanged"; lineNumber: 40 }
-        Signal { name: "themeChanged"; lineNumber: 41 }
-        Signal { name: "errorCodeChanged"; lineNumber: 42 }
-        Signal { name: "themesChanged"; lineNumber: 43 }
+        Property {
+            name: "customThemeDirectoryEnabled"
+            type: "bool"
+            read: "customThemeDirectoryEnabled"
+            write: "setCustomThemeDirectoryEnabled"
+            notify: "customThemeDirectoryEnabledChanged"
+            index: 6
+            lineNumber: 21
+        }
+        Property {
+            name: "customThemeDirectory"
+            type: "QString"
+            read: "customThemeDirectory"
+            write: "setCustomThemeDirectory"
+            notify: "customThemeDirectoryChanged"
+            index: 7
+            lineNumber: 22
+        }
+        Property {
+            name: "customThemeDirectoryDisplayName"
+            type: "QString"
+            read: "customThemeDirectoryDisplayName"
+            notify: "customThemeDirectoryChanged"
+            index: 8
+            lineNumber: 23
+            isReadonly: true
+        }
+        Signal { name: "themeIdChanged"; lineNumber: 50 }
+        Signal { name: "themeChanged"; lineNumber: 51 }
+        Signal { name: "errorCodeChanged"; lineNumber: 52 }
+        Signal { name: "themesChanged"; lineNumber: 53 }
+        Signal { name: "customThemeDirectoryEnabledChanged"; lineNumber: 54 }
+        Signal { name: "customThemeDirectoryChanged"; lineNumber: 55 }
         Method {
             name: "importTheme"
             type: "QString"
-            lineNumber: 33
+            lineNumber: 42
             Parameter { name: "sourceUrl"; type: "QUrl" }
         }
         Method {
             name: "importThemeDirectory"
             type: "QVariantMap"
-            lineNumber: 34
+            lineNumber: 43
             Parameter { name: "sourceDirectoryUrl"; type: "QUrl" }
         }
         Method {
             name: "removeTheme"
             type: "bool"
-            lineNumber: 35
+            lineNumber: 44
             Parameter { name: "themeId"; type: "QString" }
         }
-        Method { name: "refreshThemes"; lineNumber: 36 }
-        Method { name: "clearError"; lineNumber: 37 }
+        Method { name: "removeAllThemes"; type: "bool"; lineNumber: 45 }
+        Method { name: "refreshThemes"; lineNumber: 46 }
+        Method { name: "clearError"; lineNumber: 47 }
     }
     Component {
         file: "launcherdragcontroller.h"
@@ -916,13 +946,13 @@ Module {
             index: 13
             lineNumber: 26
         }
-        Signal { name: "containmentIdChanged"; lineNumber: 35 }
-        Signal { name: "panelLengthModeChanged"; lineNumber: 36 }
-        Signal { name: "panelFloatingModeChanged"; lineNumber: 37 }
-        Signal { name: "panelVisibilityModeChanged"; lineNumber: 38 }
-        Signal { name: "panelAlignmentChanged"; lineNumber: 39 }
-        Signal { name: "panelThicknessChanged"; lineNumber: 40 }
-        Signal { name: "panelOpacityModeChanged"; lineNumber: 41 }
+        Signal { name: "containmentIdChanged"; lineNumber: 61 }
+        Signal { name: "panelLengthModeChanged"; lineNumber: 62 }
+        Signal { name: "panelFloatingModeChanged"; lineNumber: 63 }
+        Signal { name: "panelVisibilityModeChanged"; lineNumber: 64 }
+        Signal { name: "panelAlignmentChanged"; lineNumber: 65 }
+        Signal { name: "panelThicknessChanged"; lineNumber: 66 }
+        Signal { name: "panelOpacityModeChanged"; lineNumber: 67 }
     }
     Component {
         file: "punchimenulayoutcontroller.h"

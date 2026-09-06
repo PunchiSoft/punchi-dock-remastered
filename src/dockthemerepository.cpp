@@ -143,9 +143,83 @@ QVariantList DockThemeRepository::availableThemes() const
     return m_availableThemes;
 }
 
+bool DockThemeRepository::customThemeDirectoryEnabled() const
+{
+    return m_customThemeDirectoryEnabled;
+}
+
+void DockThemeRepository::setCustomThemeDirectoryEnabled(bool enabled)
+{
+    if (m_customThemeDirectoryEnabled == enabled) {
+        return;
+    }
+
+    m_customThemeDirectoryEnabled = enabled;
+    Q_EMIT customThemeDirectoryEnabledChanged();
+
+    refreshThemes();
+    if (!m_themeId.isEmpty()) {
+        loadTheme(m_themeId);
+    }
+}
+
+QString DockThemeRepository::customThemeDirectory() const
+{
+    return m_customThemeDirectory;
+}
+
+void DockThemeRepository::setCustomThemeDirectory(const QString &directory)
+{
+    QString normalized = directory.trimmed();
+    if (normalized.startsWith(QLatin1String("file://"))) {
+        normalized = QUrl(normalized).toLocalFile();
+    }
+    if (!normalized.isEmpty()) {
+        normalized = QDir::cleanPath(normalized);
+    }
+    if (m_customThemeDirectory == normalized) {
+        return;
+    }
+
+    m_customThemeDirectory = normalized;
+    Q_EMIT customThemeDirectoryChanged();
+
+    if (m_customThemeDirectoryEnabled) {
+        refreshThemes();
+        if (!m_themeId.isEmpty()) {
+            loadTheme(m_themeId);
+        }
+    }
+}
+
+QString DockThemeRepository::customThemeDirectoryDisplayName() const
+{
+    if (m_customThemeDirectory.trimmed().isEmpty()) {
+        return {};
+    }
+    const QString cleanPath = QDir::cleanPath(m_customThemeDirectory.trimmed());
+    const QFileInfo info(cleanPath);
+    const QString folderName = info.fileName();
+    if (folderName.isEmpty()) {
+        return cleanPath;
+    }
+    return QStringLiteral(".../%1").arg(folderName);
+}
+
 QString DockThemeRepository::importTheme(const QUrl &sourceUrl)
 {
     clearError();
+
+    const QString targetRootPath = themesDirectoryPath();
+    if (targetRootPath.isEmpty()) {
+        setErrorCode(QStringLiteral("storageUnavailable"));
+        return {};
+    }
+    const QFileInfo targetRootInfo(targetRootPath);
+    if (targetRootInfo.exists() && !targetRootInfo.isWritable()) {
+        setErrorCode(QStringLiteral("readOnlyDirectory"));
+        return {};
+    }
 
     if (!sourceUrl.isValid() || !sourceUrl.isLocalFile()) {
         setErrorCode(QStringLiteral("invalidSource"));
@@ -206,6 +280,17 @@ QVariantMap DockThemeRepository::importThemeDirectory(const QUrl &sourceDirector
         {QStringLiteral("scanLimitReached"), false},
         {QStringLiteral("selectedThemeId"), QString()},
     };
+
+    const QString targetRootPath = themesDirectoryPath();
+    if (targetRootPath.isEmpty()) {
+        setErrorCode(QStringLiteral("storageUnavailable"));
+        return importResult;
+    }
+    const QFileInfo targetRootInfo(targetRootPath);
+    if (targetRootInfo.exists() && !targetRootInfo.isWritable()) {
+        setErrorCode(QStringLiteral("readOnlyDirectory"));
+        return importResult;
+    }
 
     if (!sourceDirectoryUrl.isValid() || !sourceDirectoryUrl.isLocalFile()) {
         setErrorCode(QStringLiteral("invalidDirectory"));
@@ -338,6 +423,46 @@ bool DockThemeRepository::removeTheme(const QString &themeId)
     return true;
 }
 
+bool DockThemeRepository::removeAllThemes()
+{
+    clearError();
+    const QString rootPath = themesDirectoryPath();
+    if (rootPath.isEmpty()) {
+        setErrorCode(QStringLiteral("storageUnavailable"));
+        return false;
+    }
+
+    const QFileInfo rootInfo(rootPath);
+    if (!rootInfo.exists() || !rootInfo.isDir() || rootInfo.isSymLink()) {
+        setErrorCode(QStringLiteral("storageUnavailable"));
+        return false;
+    }
+    if (!rootInfo.isWritable()) {
+        setErrorCode(QStringLiteral("readOnlyDirectory"));
+        return false;
+    }
+
+    const QFileInfoList themeFiles = managedThemeFiles(rootPath);
+    bool anyFailure = false;
+    for (const QFileInfo &themeInfo : themeFiles) {
+        if (!QFile::remove(themeInfo.absoluteFilePath())) {
+            anyFailure = true;
+        } else {
+            removeEmptyThemeDirectories(themeInfo.absoluteFilePath());
+        }
+    }
+
+    if (anyFailure) {
+        setErrorCode(QStringLiteral("removeFailed"));
+    }
+
+    m_themeId.clear();
+    Q_EMIT themeIdChanged();
+    clearTheme();
+    refreshThemes();
+    return !anyFailure;
+}
+
 void DockThemeRepository::refreshThemes()
 {
     QVariantList availableThemes;
@@ -415,6 +540,17 @@ void DockThemeRepository::clearError()
 
 QString DockThemeRepository::storeTheme(const QVariantMap &theme, bool *created)
 {
+    const QString rootPath = themesDirectoryPath();
+    if (rootPath.isEmpty()) {
+        setErrorCode(QStringLiteral("storageUnavailable"));
+        return {};
+    }
+    const QFileInfo rootInfo(rootPath);
+    if (rootInfo.exists() && !rootInfo.isWritable()) {
+        setErrorCode(QStringLiteral("readOnlyDirectory"));
+        return {};
+    }
+
     const QByteArray normalizedData =
         QJsonDocument::fromVariant(theme).toJson(QJsonDocument::Indented);
     const QString importedThemeId = QString::fromLatin1(
@@ -604,6 +740,16 @@ void DockThemeRepository::setErrorCode(const QString &errorCode)
 
 QString DockThemeRepository::themesDirectoryPath() const
 {
+    if (m_customThemeDirectoryEnabled && !m_customThemeDirectory.trimmed().isEmpty()) {
+        const QString candidate = QDir::cleanPath(m_customThemeDirectory.trimmed());
+        const QFileInfo info(candidate);
+        const QFileInfo parentInfo(info.absolutePath());
+        if (!info.exists() || !info.isDir() || info.isSymLink() || parentInfo.isSymLink()) {
+            return {};
+        }
+        return candidate;
+    }
+
     const QString dataRoot = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
     if (dataRoot.isEmpty()) {
         return {};

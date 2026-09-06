@@ -130,6 +130,12 @@
     <entry name="dockThemeCustomId" type="String">
       <default></default>
     </entry>
+    <entry name="dockCustomThemeDirectoryEnabled" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="dockCustomThemeDirectory" type="String">
+      <default></default>
+    </entry>
     <entry name="floatingDockOrientation" type="String">
       <default>horizontal</default>
     </entry>

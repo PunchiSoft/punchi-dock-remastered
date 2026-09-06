@@ -1,3 +1,19 @@
+## [0.9.7.59] - 2026-09-06
+
+### Agregado
+
+- Soporte para carpeta personalizada de temas externos de Punchi Dock en `DockThemeRepository` y Preferencias (`ConfigAspect.qml`):
+  - Claves KConfig `dockCustomThemeDirectoryEnabled` y `dockCustomThemeDirectory`.
+  - Visualización abreviada elegante (`.../<directorio>`) y tooltip con ruta completa en la interfaz de configuración.
+  - Selector nativo de carpetas (`FolderDialog`).
+  - Validación de seguridad endurecida: rechazo estricto de enlaces simbólicos, protección contra rutas desmontadas o inexistentes y detección de directorios de solo lectura (`readOnlyDirectory`).
+- Menú avanzado de eliminación de temas en Preferencias (`ConfigAspect.qml`):
+  - Opción para eliminar el tema seleccionado actualmente.
+  - Opción para eliminar todos los temas instalados con diálogo de confirmación explícita (`removeAllThemesDialog`).
+  - Método C++ backend `removeAllThemes()` con limpieza segura de subcarpetas vacías y restablecimiento reactivo del estado del repositorio.
+- Cobertura de pruebas unitarias exhaustiva en `dockthemerepository_test.cpp` para el ciclo de vida de carpetas personalizadas, permisos y eliminación masiva.
+- Sincronización completa de catálogos de localización (`de`, `es`, `pt_BR`) y contratos de prueba.
+
 ## [0.9.7.58] - 2026-09-04
 
 ### Agregado

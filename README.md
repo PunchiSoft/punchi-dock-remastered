@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.58">
-    <img src="https://img.shields.io/badge/release-v0.9.7.58-4caf50" alt="Release v0.9.7.58">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59">
+    <img src="https://img.shields.io/badge/release-v0.9.7.59-4caf50" alt="Release v0.9.7.59">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,17 +23,16 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7.58](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.58).
+[v0.9.7.59](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59).
 
-## What's New in 0.9.7.58
+## What's New in 0.9.7.59
 
-- **Symmetric Vertical Centering in Plasma Panel**: Icon layout is perfectly centered vertically in native Plasma panel mode.
-- **Dynamic Precalculated Panel Height**: Tailored adaptive height formula for Plasma theme mode ensuring optimal panel geometry without affecting JSON themes.
-- **Strict Panel Hover Zoom Cap**: Caps hover enlargement to 65% in native Plasma panel mode to prevent clipping against panel margins.
-- **Refined Contextual Warning**: Enhanced inline warning in Mouse Preferences when hover enlargement exceeds 65% in Plasma panel mode.
-- **Enhanced Search Placeholder**: User-friendly search hint in item configuration: *"Type name or alias... then search"*.
+- **Custom Themes Folder**: Configure a custom directory for dock themes with hardened path validation, symlink rejection, and folder selection dialog.
+- **Bulk Theme Deletion & Menu**: Delete the active theme or remove all installed themes with a confirmation dialog and backend cleanup.
+- **Refined Theme Preferences**: Clean layout separating theme selection, deletion menu, import action, and custom folder management.
+- **Security & Permissions Hardening**: Safe fallback for missing, unmounted, or read-only theme storage directories.
 
-See the [0.9.7.58 changelog](CHANGELOG.md#09758---2026-09-04) for detailed release
+See the [0.9.7.59 changelog](CHANGELOG.md#09759---2026-09-06) for detailed release
 notes and the validation performed for this version.
 
 ## Screenshots
