@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-05 22:49-0400\n"
+"POT-Creation-Date: 2026-09-06 07:15-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: German\n"
@@ -750,7 +750,7 @@ msgstr ""
 "Weitere Anwendungen bleiben durch Scrollen verfügbar. Auf schmalen "
 "Bildschirmen reduziert das Popup sicher die Anzahl der Spalten."
 
-#: contents/ui/config/ConfigAspect.qml:934
+#: contents/ui/config/ConfigAspect.qml:931
 msgid "Adds a short decorative reflection below icons in a floating dock."
 msgstr ""
 "Fügt eine kurze dekorative Reflexion unter den Symbolen in einem "
@@ -762,7 +762,7 @@ msgstr ""
 "Fügt einen adaptiven Abstand zwischen Dock-Elementen und ihren Kontextmenüs "
 "hinzu."
 
-#: contents/ui/config/ConfigAspect.qml:933
+#: contents/ui/config/ConfigAspect.qml:930
 msgid ""
 "Adds an adaptive decorative reflection below icons in a horizontal panel."
 msgstr ""
@@ -795,15 +795,15 @@ msgstr ""
 "Passt die zusätzliche Vergrößerung beim Überfahren zwischen 0 und 100 "
 "Prozent an."
 
-#: contents/ui/config/ConfigAspect.qml:1235
+#: contents/ui/config/ConfigAspect.qml:1232
 msgid "Adjusts badge visibility between 60 and 100 percent."
 msgstr "Passt die Sichtbarkeit des Abzeichens zwischen 60 und 100 Prozent an."
 
-#: contents/ui/config/ConfigAspect.qml:959
+#: contents/ui/config/ConfigAspect.qml:956
 msgid "Adjusts how strongly icon reflections appear."
 msgstr "Passt an, wie stark Symbolreflexionen angezeigt werden."
 
-#: contents/ui/config/ConfigAspect.qml:1264
+#: contents/ui/config/ConfigAspect.qml:1261
 msgid "Adjusts the badge scale between 80 and 120 percent of its default size."
 msgstr ""
 "Passt die Skalierung des Abzeichens zwischen 80 und 120 Prozent seiner "
@@ -819,7 +819,7 @@ msgid "Adjusts the folder popup content scale between 50 and 300 percent."
 msgstr ""
 "Passt die Inhaltsskalierung des Ordner-Popups zwischen 50 und 300 Prozent an."
 
-#: contents/ui/config/ConfigAspect.qml:1129
+#: contents/ui/config/ConfigAspect.qml:1126
 msgid "Adjusts the indicator thickness between 2 and 10 pixels."
 msgstr "Passt die Dicke des Indikators zwischen 2 und 10 Pixeln an."
 
@@ -1196,7 +1196,7 @@ msgstr ""
 msgid "Automatically select the active player"
 msgstr "Aktiven Player automatisch auswählen"
 
-#: contents/ui/config/ConfigAspect.qml:898
+#: contents/ui/config/ConfigAspect.qml:895
 msgid "Available when dock item names are shown."
 msgstr "Available when dock item names are shown."
 
@@ -1262,31 +1262,31 @@ msgstr "Hintergrunddeckkraft:"
 msgid "Background:"
 msgstr "Hintergrund:"
 
-#: contents/ui/config/ConfigAspect.qml:1202
+#: contents/ui/config/ConfigAspect.qml:1199
 msgid "Badge color:"
 msgstr "Farbe des Abzeichens:"
 
-#: contents/ui/config/ConfigAspect.qml:1234
+#: contents/ui/config/ConfigAspect.qml:1231
 msgid "Badge opacity"
 msgstr "Deckkraft des Abzeichens"
 
-#: contents/ui/config/ConfigAspect.qml:1222
+#: contents/ui/config/ConfigAspect.qml:1219
 msgid "Badge opacity:"
 msgstr "Deckkraft des Abzeichens:"
 
-#: contents/ui/config/ConfigAspect.qml:1178
+#: contents/ui/config/ConfigAspect.qml:1175
 msgid "Badge position:"
 msgstr "Position des Abzeichens:"
 
-#: contents/ui/config/ConfigAspect.qml:1263
+#: contents/ui/config/ConfigAspect.qml:1260
 msgid "Badge scale"
 msgstr "Skalierung des Abzeichens"
 
-#: contents/ui/config/ConfigAspect.qml:1251
+#: contents/ui/config/ConfigAspect.qml:1248
 msgid "Badge scale:"
 msgstr "Skalierung des Abzeichens:"
 
-#: contents/ui/config/ConfigAspect.qml:1155
+#: contents/ui/config/ConfigAspect.qml:1152
 msgid "Badge:"
 msgstr "Abzeichen:"
 
@@ -1614,7 +1614,7 @@ msgstr "Farbe des Fensteranzahl-Abzeichens auswählen"
 msgid "Choose a folder first."
 msgstr "Wählen Sie zunächst einen Ordner."
 
-#: contents/ui/config/ConfigAspect.qml:767
+#: contents/ui/config/ConfigAspect.qml:764
 msgid "Choose a folder…"
 msgstr "Ordner auswählen…"
 
@@ -1725,7 +1725,13 @@ msgstr ""
 msgid "Choose where open apps appear"
 msgstr "Festlegen, wo geöffnete Anwendungen erscheinen"
 
-#: contents/ui/config/ConfigAspect.qml:725
+#: contents/ui/config/ConfigAspect.qml:719
+msgid "Choose whether to delete the selected theme or all installed themes."
+msgstr ""
+"Wählen Sie, ob Sie das ausgewählte Design oder alle installierten Designs "
+"löschen möchten."
+
+#: contents/ui/config/ConfigAspect.qml:704
 msgid ""
 "Choose whether to import one JSON theme or all JSON themes from a folder."
 msgstr ""
@@ -2220,7 +2226,7 @@ msgstr "Benutzerdefinierte Aktion"
 msgid "Custom color"
 msgstr "Benutzerdefinierte Farbe"
 
-#: contents/ui/config/ConfigAspect.qml:736
+#: contents/ui/config/ConfigAspect.qml:733
 msgid "Custom folder:"
 msgstr "Benutzerdefinierter Ordner:"
 
@@ -2275,11 +2281,6 @@ msgctxt "@info:status"
 msgid "Default output"
 msgstr "Standard-Ausgabe"
 
-#: contents/ui/config/ConfigAspect.qml:698
-msgctxt "@action:button"
-msgid "Delete"
-msgstr "Löschen"
-
 #: contents/ui/config/ConfigAspect.qml:523
 msgctxt "@title:window"
 msgid "Delete All Installed Themes?"
@@ -2331,7 +2332,7 @@ msgstr "Alle Designs löschen (%1)…"
 msgid "Delete selected theme"
 msgstr "Ausgewähltes Design löschen"
 
-#: contents/ui/config/ConfigAspect.qml:707
+#: contents/ui/config/ConfigAspect.qml:724
 msgid "Delete theme options…"
 msgstr "Optionen zum Löschen von Designs…"
 
@@ -2349,6 +2350,11 @@ msgstr "„%1“ löschen"
 msgid "Delete “%1” permanently from the Punchi Dock Remastered theme library?"
 msgstr ""
 "„%1“ dauerhaft aus der Punchi Dock Remastered-Themenbibliothek löschen?"
+
+#: contents/ui/config/ConfigAspect.qml:715
+msgctxt "@action:button"
+msgid "Delete…"
+msgstr "Löschen…"
 
 #: scripts-user/setup.sh:429 scripts-user/setup.sh:433
 #: scripts-user/setup.sh:437
@@ -2441,7 +2447,7 @@ msgstr ""
 "Standardmäßig deaktiviert, da Plasma durch Gedrückthalten im schwebenden "
 "Modus die Widget-Bearbeitung öffnet."
 
-#: contents/ui/config/ConfigAspect.qml:1027
+#: contents/ui/config/ConfigAspect.qml:1024
 msgid "Disables the active-window indicator entirely."
 msgstr "Deaktiviert die Anzeige des aktiven Fensters vollständig."
 
@@ -3236,7 +3242,7 @@ msgctxt "@action:button"
 msgid "Hide hidden applications"
 msgstr "Ausgeblendete Anwendungen verbergen"
 
-#: contents/ui/config/ConfigAspect.qml:980
+#: contents/ui/config/ConfigAspect.qml:977
 msgid "Hide item names to use icon reflections."
 msgstr "Blenden Sie Elementnamen aus, um Symbolreflexionen zu verwenden."
 
@@ -3255,7 +3261,7 @@ msgctxt "@label:listbox"
 msgid "Hover animation:"
 msgstr "Hover-Animation:"
 
-#: contents/ui/config/ConfigAspect.qml:854
+#: contents/ui/config/ConfigAspect.qml:851
 msgid "Hover background:"
 msgstr "Hover-Hintergrund:"
 
@@ -3277,15 +3283,15 @@ msgctxt "@item:inlistbox Window preview information"
 msgid "Icon only"
 msgstr "Nur Symbol"
 
-#: contents/ui/config/ConfigAspect.qml:921
+#: contents/ui/config/ConfigAspect.qml:918
 msgid "Icon reflections"
 msgstr "Symbolreflexionen"
 
-#: contents/ui/config/ConfigAspect.qml:978
+#: contents/ui/config/ConfigAspect.qml:975
 msgid "Icon reflections are not available in vertical panels."
 msgstr "Symbolreflexionen sind in vertikalen Panels nicht verfügbar."
 
-#: contents/ui/config/ConfigAspect.qml:931
+#: contents/ui/config/ConfigAspect.qml:928
 msgid "Icon reflections are unavailable in vertical panels."
 msgstr "Symbolreflexionen sind in vertikalen Panels nicht verfügbar."
 
@@ -3311,7 +3317,7 @@ msgstr "Symbol:"
 msgid "Import JSON Configuration"
 msgstr "JSON-Konfiguration importieren"
 
-#: contents/ui/config/ConfigAspect.qml:724
+#: contents/ui/config/ConfigAspect.qml:703
 msgid "Import Punchi Dock JSON themes"
 msgstr "Importieren Sie Punchi Dock JSON-Designs"
 
@@ -3323,7 +3329,7 @@ msgstr "Importieren Sie das Punchi Dock-Design"
 msgid "Import Punchi Dock Theme Folder"
 msgstr "Importieren Sie den Punchi Dock Theme-Ordner"
 
-#: contents/ui/config/ConfigAspect.qml:798
+#: contents/ui/config/ConfigAspect.qml:795
 msgid "Import a JSON theme to add it to your Punchi Dock Remastered library."
 msgstr ""
 "Importieren Sie ein JSON-Design, um es Ihrer Punchi Dock Remastered-"
@@ -3351,10 +3357,6 @@ msgstr "Importieren Sie ein Punchi Dock JSON-Design"
 msgid "Import..."
 msgstr "Importieren..."
 
-#: contents/ui/config/ConfigAspect.qml:716
-msgid "Import:"
-msgstr "Importieren:"
-
 #: contents/ui/config/ConfigAspect.qml:614
 msgid ""
 "Imported themes are stored in the Punchi Dock Remastered user library and "
@@ -3365,7 +3367,7 @@ msgstr ""
 "gespeichert und gelten derzeit nur für ein Floating Dock. Plasmabildschirme "
 "behalten ihren ursprünglichen Hintergrund."
 
-#: contents/ui/config/ConfigAspect.qml:722
+#: contents/ui/config/ConfigAspect.qml:701
 msgid "Import…"
 msgstr "Importieren…"
 
@@ -3377,7 +3379,7 @@ msgstr ""
 "Im schwebenden Modus bleiben nur das Spektrum und die Dockelemente sichtbar. "
 "Ein Plasma-Panel behält seinen eigenen Hintergrund."
 
-#: contents/ui/config/ConfigAspect.qml:832
+#: contents/ui/config/ConfigAspect.qml:829
 msgid ""
 "In panel mode, custom JSON themes automatically set the native panel to \"No "
 "background\" so the theme's custom shape, borders, and shadows are fully "
@@ -3391,31 +3393,31 @@ msgstr ""
 msgid "In progress"
 msgstr "In Bearbeitung"
 
-#: contents/ui/config/ConfigAspect.qml:998
+#: contents/ui/config/ConfigAspect.qml:995
 msgid "Indicator"
 msgstr "Indikator"
 
-#: contents/ui/config/ConfigAspect.qml:1073
+#: contents/ui/config/ConfigAspect.qml:1070
 msgid "Indicator color:"
 msgstr "Indikatorfarbe:"
 
-#: contents/ui/config/ConfigAspect.qml:1093
+#: contents/ui/config/ConfigAspect.qml:1090
 msgid "Indicator opacity:"
 msgstr "Deckkraft des Indikators:"
 
-#: contents/ui/config/ConfigAspect.qml:1039
+#: contents/ui/config/ConfigAspect.qml:1036
 msgid "Indicator position:"
 msgstr "Anzeigeposition:"
 
-#: contents/ui/config/ConfigAspect.qml:1002
+#: contents/ui/config/ConfigAspect.qml:999
 msgid "Indicator shape:"
 msgstr "Form des Indikators:"
 
-#: contents/ui/config/ConfigAspect.qml:1128
+#: contents/ui/config/ConfigAspect.qml:1125
 msgid "Indicator thickness"
 msgstr "Indikatordicke"
 
-#: contents/ui/config/ConfigAspect.qml:1118
+#: contents/ui/config/ConfigAspect.qml:1115
 msgid "Indicator thickness:"
 msgstr "Indikatordicke:"
 
@@ -3452,7 +3454,7 @@ msgstr "Installationsverzeichnis: %s\\n"
 msgid "Installation or update completed successfully."
 msgstr "Installation oder Aktualisierung erfolgreich abgeschlossen."
 
-#: contents/ui/config/ConfigAspect.qml:684
+#: contents/ui/config/ConfigAspect.qml:681
 msgid "Installed Punchi Dock theme"
 msgstr "Punchi Dock-Design installiert"
 
@@ -3502,7 +3504,7 @@ msgstr "Ungültige Option. Wählen Sie eine Zahl von 1 bis 7."
 msgid "Item height:"
 msgstr "Artikelhöhe:"
 
-#: contents/ui/config/ConfigAspect.qml:849
+#: contents/ui/config/ConfigAspect.qml:846
 msgid "Item highlight"
 msgstr "Artikel-Highlight"
 
@@ -3561,11 +3563,11 @@ msgctxt "@info:status Bluetooth device type"
 msgid "Keyboard"
 msgstr "Tastatur"
 
-#: contents/ui/config/ConfigAspect.qml:879
+#: contents/ui/config/ConfigAspect.qml:876
 msgid "Labels"
 msgstr "Etiketten"
 
-#: contents/ui/config/ConfigAspect.qml:907
+#: contents/ui/config/ConfigAspect.qml:904
 msgid ""
 "Labels use a compact single-line style so the dock can remain readable "
 "without turning every item into a large card."
@@ -3573,7 +3575,7 @@ msgstr ""
 "Etiketten verwenden einen kompakten einzeiligen Stil, sodass das Dock lesbar "
 "bleibt, ohne dass jedes Element zu einer großen Karte wird."
 
-#: contents/ui/config/ConfigAspect.qml:884
+#: contents/ui/config/ConfigAspect.qml:881
 msgid "Labels:"
 msgstr "Etiketten:"
 
@@ -3652,7 +3654,7 @@ msgstr ""
 msgid "Line"
 msgstr "Linie"
 
-#: contents/ui/config/ConfigAspect.qml:1028
+#: contents/ui/config/ConfigAspect.qml:1025
 msgid ""
 "Line, dot, small ring and rounded square can be placed at the top or bottom "
 "edge of the icon."
@@ -3752,6 +3754,10 @@ msgstr "Audiogeräte und Anwendungen verwalten"
 msgctxt "@info"
 msgid "Manage system updates"
 msgstr "Systemaktualisierungen verwalten"
+
+#: contents/ui/config/ConfigAspect.qml:695
+msgid "Manage themes:"
+msgstr "Designs verwalten:"
 
 #: contents/ui/config/ConfigItems.qml:735
 msgid "Manual"
@@ -4147,11 +4153,11 @@ msgctxt "@info"
 msgid "No devices paired"
 msgstr "Keine Geräte gekoppelt"
 
-#: contents/ui/config/ConfigAspect.qml:766
+#: contents/ui/config/ConfigAspect.qml:763
 msgid "No folder selected"
 msgstr "Kein Ordner ausgewählt"
 
-#: contents/ui/config/ConfigAspect.qml:683
+#: contents/ui/config/ConfigAspect.qml:680
 msgid "No imported themes"
 msgstr "Keine importierten Themes"
 
@@ -4822,7 +4828,7 @@ msgstr "Popup-Entfernung:"
 msgid "Popups"
 msgstr "Popups"
 
-#: contents/ui/config/ConfigAspect.qml:1064
+#: contents/ui/config/ConfigAspect.qml:1061
 msgid "Position is not used with the current indicator shape."
 msgstr "Die Position wird mit der aktuellen Indikatorform nicht verwendet."
 
@@ -5027,15 +5033,15 @@ msgctxt "@title:group"
 msgid "Recording Audio"
 msgstr "Audioaufnahme"
 
-#: contents/ui/config/ConfigAspect.qml:958
+#: contents/ui/config/ConfigAspect.qml:955
 msgid "Reflection opacity"
 msgstr "Reflexionsopazität"
 
-#: contents/ui/config/ConfigAspect.qml:947
+#: contents/ui/config/ConfigAspect.qml:944
 msgid "Reflection opacity:"
 msgstr "Reflexionsopazität:"
 
-#: contents/ui/config/ConfigAspect.qml:927
+#: contents/ui/config/ConfigAspect.qml:924
 msgid "Reflection:"
 msgstr "Reflexion:"
 
@@ -5363,7 +5369,7 @@ msgstr ""
 msgid "Select a performance profile:"
 msgstr "Wählen Sie ein Leistungsprofil:"
 
-#: contents/ui/config/ConfigAspect.qml:682
+#: contents/ui/config/ConfigAspect.qml:679
 msgid "Select a theme"
 msgstr "Wählen Sie ein Thema aus"
 
@@ -5379,11 +5385,11 @@ msgstr "Wählen Sie eine Option [1-7]: "
 msgid "Select an option [1-9]: "
 msgstr "Wählen Sie eine Option [1-9]: "
 
-#: contents/ui/config/ConfigAspect.qml:783
+#: contents/ui/config/ConfigAspect.qml:780
 msgid "Select custom themes folder"
 msgstr "Benutzerdefinierten Designordner auswählen"
 
-#: contents/ui/config/ConfigAspect.qml:787
+#: contents/ui/config/ConfigAspect.qml:784
 msgid "Select folder…"
 msgstr "Ordner auswählen…"
 
@@ -5465,7 +5471,7 @@ msgctxt "@action:button"
 msgid "Show Plasma volume indicator"
 msgstr "Plasma-Lautstärkeanzeige anzeigen"
 
-#: contents/ui/config/ConfigAspect.qml:855
+#: contents/ui/config/ConfigAspect.qml:852
 msgid "Show a themed background behind items"
 msgstr "Design-Hintergrund hinter Elementen anzeigen"
 
@@ -5533,7 +5539,7 @@ msgctxt "@action:inmenu"
 msgid "Show in listing"
 msgstr "In Liste anzeigen"
 
-#: contents/ui/config/ConfigAspect.qml:885
+#: contents/ui/config/ConfigAspect.qml:882
 msgid "Show item names in the dock"
 msgstr "Elementnamen im Dock anzeigen"
 
@@ -5550,7 +5556,7 @@ msgstr "Nur Fenster des aktuellen virtuellen Desktops anzeigen"
 msgid "Show page navigation arrows"
 msgstr "Seitennavigationspfeile anzeigen"
 
-#: contents/ui/config/ConfigAspect.qml:928
+#: contents/ui/config/ConfigAspect.qml:925
 msgid "Show reflections below dock items"
 msgstr "Reflexionen unter Dock-Elementen anzeigen"
 
@@ -5568,7 +5574,7 @@ msgstr "Sitzungsaktionen anzeigen"
 msgid "Show shadows on clock and date text"
 msgstr "Zeigen Sie subtile Schatten auf dem Docktext an"
 
-#: contents/ui/config/ConfigAspect.qml:895
+#: contents/ui/config/ConfigAspect.qml:892
 msgid "Show subtle shadows on dock labels"
 msgstr "Zeigen Sie subtile Schatten auf dem Docktext an"
 
@@ -5584,7 +5590,7 @@ msgstr "Zeigen Sie subtile Schatten im Popup-Text an"
 msgid "Show subtle shadows on window preview text"
 msgstr "Zeigen Sie subtile Schatten im Fenstervorschautext an"
 
-#: contents/ui/config/ConfigAspect.qml:1160
+#: contents/ui/config/ConfigAspect.qml:1157
 msgid "Show the number of open windows"
 msgstr "Anzahl der geöffneten Fenster anzeigen"
 
@@ -5618,7 +5624,7 @@ msgstr ""
 "Zeigt Anwendungsnamen in jedem Layout und Befehlsdetails im detaillierten "
 "Layout an."
 
-#: contents/ui/config/ConfigAspect.qml:856
+#: contents/ui/config/ConfigAspect.qml:853
 msgid ""
 "Shows the Plasma highlight background when an item is hovered or its "
 "application is active."
@@ -5797,7 +5803,7 @@ msgstr "Textfarbe:"
 msgid "Text scale:"
 msgstr "Textmaßstab:"
 
-#: contents/ui/config/ConfigAspect.qml:894
+#: contents/ui/config/ConfigAspect.qml:891
 #: contents/ui/config/ConfigFolderPopups.qml:502
 #: contents/ui/config/ConfigMenus.qml:312
 #: contents/ui/config/ConfigPopups.qml:398
@@ -5860,7 +5866,7 @@ msgstr ""
 "gewählte Deckkraft bestimmt, wie viel vom Inhalt hinter dem Menü sichtbar "
 "bleibt."
 
-#: contents/ui/config/ConfigAspect.qml:1169
+#: contents/ui/config/ConfigAspect.qml:1166
 msgid ""
 "The badge appears from two grouped windows and is hidden when window "
 "grouping is disabled."
@@ -6006,7 +6012,7 @@ msgstr ""
 "Die tatsächliche Plattendicke ist in dieser Ansicht nicht verfügbar, daher "
 "wird ein sicherer Fallback-Grenzwert verwendet."
 
-#: contents/ui/config/ConfigAspect.qml:982
+#: contents/ui/config/ConfigAspect.qml:979
 msgid ""
 "The reflection adapts to the available panel thickness and is hidden when "
 "there is not enough space."
@@ -6014,7 +6020,7 @@ msgstr ""
 "Die Spiegelung passt sich der verfügbaren Plattenstärke an und wird "
 "ausgeblendet, wenn nicht genügend Platz vorhanden ist."
 
-#: contents/ui/config/ConfigAspect.qml:983
+#: contents/ui/config/ConfigAspect.qml:980
 msgid ""
 "The reflection is decorative and does not change the size or interaction "
 "area of dock items."
@@ -6104,7 +6110,7 @@ msgstr ""
 msgid "The trash could not be emptied."
 msgstr "Der Papierkorb konnte nicht geleert werden."
 
-#: contents/ui/config/ConfigAspect.qml:702
+#: contents/ui/config/ConfigAspect.qml:718
 msgid "Theme deletion options"
 msgstr "Optionen zum Löschen von Designs"
 
@@ -6703,7 +6709,7 @@ msgstr "Verwenden Sie Plasma-Designfarben"
 msgid "Use background blur when available"
 msgstr "Hintergrundunschärfe verwenden, wenn verfügbar"
 
-#: contents/ui/config/ConfigAspect.qml:742
+#: contents/ui/config/ConfigAspect.qml:739
 msgid "Use custom folder"
 msgstr "Benutzerdefinierten Ordner verwenden"
 
@@ -6878,11 +6884,11 @@ msgstr "Fenster"
 msgid "Window behavior:"
 msgstr "Fensterverhalten:"
 
-#: contents/ui/config/ConfigAspect.qml:1151
+#: contents/ui/config/ConfigAspect.qml:1148
 msgid "Window count badge"
 msgstr "Abzeichen für Fensteranzahl"
 
-#: contents/ui/config/ConfigAspect.qml:864
+#: contents/ui/config/ConfigAspect.qml:861
 msgid "Window indicators remain visible when the item background is hidden."
 msgstr ""
 "Fensterindikatoren bleiben sichtbar, wenn der Elementhintergrund "

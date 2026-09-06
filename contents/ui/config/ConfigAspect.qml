@@ -667,10 +667,7 @@ KCM.SimpleKCM {
 
             Controls.ComboBox {
                 id: dockThemeLibraryCombo
-                Layout.preferredWidth: Math.max(160,
-                    page.selectorWidthHint - removeThemeButton.implicitWidth
-                    - Kirigami.Units.smallSpacing
-                )
+                Layout.preferredWidth: page.selectorWidthHint
                 Layout.maximumWidth: page.selectorWidthHint
                 textRole: "displayName"
                 valueRole: "id"
@@ -692,28 +689,10 @@ KCM.SimpleKCM {
                     cursorEnabled: page.interactiveCursorEnabled
                 }
             }
-
-            Controls.Button {
-                id: removeThemeButton
-                text: i18nc("@action:button", "Delete") // qmllint disable unqualified
-                icon.name: "edit-delete-symbolic"
-                display: Controls.AbstractButton.IconOnly
-                enabled: dockThemeRepository.availableThemes.length > 0
-                Accessible.name: i18n("Theme deletion options") // qmllint disable unqualified
-                onClicked: removeThemeMenu.popup(
-                    removeThemeButton, 0, removeThemeButton.height)
-
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Delete theme options…") // qmllint disable unqualified
-
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
-            }
         }
 
         RowLayout {
-            Kirigami.FormData.label: i18n("Import:") // qmllint disable unqualified
+            Kirigami.FormData.label: i18n("Manage themes:") // qmllint disable unqualified
             Layout.maximumWidth: page.contentWidthHint
             visible: page.cfg_dockThemeMode === "custom"
 
@@ -725,6 +704,24 @@ KCM.SimpleKCM {
                 Accessible.description: i18n("Choose whether to import one JSON theme or all JSON themes from a folder.") // qmllint disable unqualified
                 onClicked: importThemeMenu.popup(
                     importThemeButton, 0, importThemeButton.height)
+
+                ConfigCursorBehavior {
+                    cursorEnabled: page.interactiveCursorEnabled
+                }
+            }
+
+            Controls.Button {
+                id: removeThemeButton
+                text: i18nc("@action:button", "Delete…") // qmllint disable unqualified
+                icon.name: "edit-delete-symbolic"
+                enabled: dockThemeRepository.availableThemes.length > 0
+                Accessible.name: i18n("Theme deletion options") // qmllint disable unqualified
+                Accessible.description: i18n("Choose whether to delete the selected theme or all installed themes.") // qmllint disable unqualified
+                onClicked: removeThemeMenu.popup(
+                    removeThemeButton, 0, removeThemeButton.height)
+
+                Controls.ToolTip.visible: hovered
+                Controls.ToolTip.text: i18n("Delete theme options…") // qmllint disable unqualified
 
                 ConfigCursorBehavior {
                     cursorEnabled: page.interactiveCursorEnabled
