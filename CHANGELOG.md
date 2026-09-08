@@ -1,3 +1,16 @@
+## [0.9.7.60] - 2026-09-08
+
+### Corregido
+
+- Restaurado el funcionamiento de los controles de red Wi-Fi en el Centro de Control (`ControlCenterNetworkAdapter.qml`):
+  - Retirada la asignación estática incompatible `wired: false` sobre `PlasmaNM.MobileProxyModel`, que impedía la compilación e instanciación del componente en Debian 13 y versiones estables de Plasma 6.
+  - Implementada detección y asignación dinámica de `wired` en tiempo de ejecución con protección de excepciones (`try/catch`), garantizando compatibilidad multiplataforma tanto en distribuciones estables (Debian 13, Kubuntu) como en versiones recientes (Fedora, Arch Linux).
+  - Añadida cobertura de contrato en `control_center_contract_test.py` para prevenir regresiones y proteger la guarda dinámica.
+- Limpieza completa de interacción tras cancelación de arrastre en el Dock (`DockItem.qml` y `main.qml`):
+  - Liberación inmediata de captura de puntero (`MouseArea`), restablecimiento de la supresión de clics huérfana y cesión del foco activo hacia el layout neutral.
+  - Mitigación del contorno de foco persistente en el lanzador de PunchiMenu tras gestos interrumpidos o tiempo de espera del watchdog (issue #20).
+- Configuración de plugin de plataforma QPA (`PUNCHI_QML_TEST_PLATFORM`) para ejecución de pruebas QML locales en sesiones activas sin alterar el predeterminado `offscreen`.
+
 ## [0.9.7.59] - 2026-09-06
 
 ### Agregado

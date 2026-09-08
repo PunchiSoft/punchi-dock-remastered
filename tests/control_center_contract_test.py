@@ -493,6 +493,8 @@ require(
 require(
     "PlasmaNM.NetworkModel" in NETWORK_ADAPTER
     and "PlasmaNM.MobileProxyModel" in NETWORK_ADAPTER
+    and "wired: false" not in NETWORK_ADAPTER
+    and '"wired" in mobileProxyModel' in NETWORK_ADAPTER
     and "PlasmaNM.EnabledConnections" in NETWORK_ADAPTER
     and "PlasmaNM.Handler" in NETWORK_ADAPTER
     and "activateConnection" in NETWORK_ADAPTER

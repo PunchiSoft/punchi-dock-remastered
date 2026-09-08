@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59">
-    <img src="https://img.shields.io/badge/release-v0.9.7.59-4caf50" alt="Version v0.9.7.59">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60">
+    <img src="https://img.shields.io/badge/release-v0.9.7.60-4caf50" alt="Version v0.9.7.60">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/lizenz-GPL--3.0--or--later-blue" alt="Lizenz GPL-3.0-or-later">
@@ -23,16 +23,16 @@ Punchi Dock Remastered ist ein natives Starter-Dock und eine Aufgabenleiste für
 Dieses Repository ist ein modularer Rewrite des ursprünglichen [Punchi Dock Plasmoids](https://github.com/PunchiSoft/punchi-dock-plasmoid). Das Projekt bereitet derzeit seinen Weg zur stabilen Version 1.0 vor.
 
 Die aktuelle Version ist
-[v0.9.7.59](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59).
+[v0.9.7.60](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60).
 
-## Neuigkeiten in Version 0.9.7.59
+## Neuigkeiten in Version 0.9.7.60
 
-- **Benutzerdefinierter Designordner**: Konfiguration eines externen Designverzeichnisses mit strenger Pfadvalidierung, Ablehnung von Symlinks und Verzeichnisauswahldialog.
-- **Massenlöschung von Designs & Menü**: Optionen zum Löschen des aktiven Designs oder aller installierten Designs mit Bestätigungsdialog und Backend-Bereinigung.
-- **Verfeinerte Design-Einstellungen**: Übersichtliches Layout zur Trennung von Designauswahl, Löschmenü, Importaktion und benutzerdefinierter Ordnerverwaltung.
-- **Sicherheits- & Rechtehärtung**: Sichere Fallbacks für fehlende, nicht eingehängte oder schreibgeschützte Design-Speicherorte.
+- **WLAN-Steuerung im Kontrollzentrum behoben**: Wiederhergestellte WLAN-Verwaltung mit universeller Kompatibilität für Debian 13, Kubuntu und neuere Plasma 6-Distributionen durch dynamische Funktionserkennung.
+- **Bereinigung bei Drag-Abbruch**: Saubere Freigabe der Mauszeiger-Erfassung, Zurücksetzen der Hover-Koordinaten und Fokusübergabe bei abgebrochenem Neuanordnen.
+- **Behebung von verwaistem Fokus**: Kein dauerhafter Fokusrahmen mehr auf dem Starter-Icon nach unterbrochenen Gesten (Issue #20).
+- **Flexible Testplattform**: Konfigurierbare QPA-Plattformunterstützung für Tests in aktiven Desktop-Umgebungen.
 
-Siehe das [Änderungsprotokoll für 0.9.7.59](CHANGELOG.md#09759---2026-09-06) für detaillierte Versionshinweise und die durchgeführte Validierung.
+Siehe das [Änderungsprotokoll für 0.9.7.60](CHANGELOG.md#09760---2026-09-08) für detaillierte Versionshinweise und die durchgeführte Validierung.
 
 ## Screenshots
 

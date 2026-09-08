@@ -29,8 +29,17 @@ QtObject {
         PlasmaNM.MobileProxyModel {
             sourceModel: root.sourceModel
             showSavedMode: false
-            wired: false
         }
+
+    Component.onCompleted: {
+        try {
+            if ("wired" in mobileProxyModel) {
+                mobileProxyModel.wired = false
+            }
+        } catch (error) {
+            // Guard against variations across PlasmaNM versions
+        }
+    }
 
     function isActivated(network) {
         return network

@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59">
-    <img src="https://img.shields.io/badge/release-v0.9.7.59-4caf50" alt="Versão v0.9.7.59">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60">
+    <img src="https://img.shields.io/badge/release-v0.9.7.60-4caf50" alt="Versão v0.9.7.60">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0--or--later-blue" alt="Licença GPL-3.0-or-later">
@@ -23,16 +23,16 @@ Punchi Dock Remastered é um dock inicializador nativo e interface de tarefas pa
 Este repositório é uma reescrita modular do [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). O projeto prepara atualmente seu caminho rumo à versão estável 1.0.
 
 A versão atual é
-[v0.9.7.59](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59).
+[v0.9.7.60](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60).
 
-## Novidades na versão 0.9.7.59
+## Novidades na versão 0.9.7.60
 
-- **Pasta personalizada de temas**: Configuração de diretório customizado para temas da dock com validação estrita, rejeição de links simbólicos e diálogo de seleção de pastas.
-- **Exclusão em massa de temas e menu**: Opções para remover o tema selecionado ou apagar todos os temas instalados com diálogo de confirmação e limpeza no backend.
-- **Preferências de temas aprimoradas**: Layout limpo separando seleção de tema, menu de exclusão, ação de importação e gerenciamento de pasta personalizada.
-- **Reforço de segurança e permissões**: Tratamento seguro contra pastas inexistentes, desmontadas ou com permissão apenas de leitura.
+- **Correção do Wi-Fi na Central de Controle**: Restaurado o gerenciamento de redes Wi-Fi com compatibilidade universal para Debian 13, Kubuntu e versões recentes do Plasma 6 via detecção dinâmica.
+- **Limpeza de interação após arrasto**: Liberação limpa de captura de ponteiro, redefinição de coordenadas hover e transferência de foco ao cancelar arrastos na dock.
+- **Mitigação de foco persistente**: Removido contorno de foco órfão no inicializador após gestos interrompidos ou expiração do watchdog (issue #20).
+- **Flexibilidade em testes de plataforma**: Suporte configurável a plugins de plataforma QPA para testes em ambientes ativos.
 
-Consulte o [registro de alterações da 0.9.7.59](CHANGELOG.md#09759---2026-09-06) para ver as notas detalhadas de lançamento e a validação executada.
+Consulte o [registro de alterações da 0.9.7.60](CHANGELOG.md#09760---2026-09-08) para ver as notas detalhadas de lançamento e a validação executada.
 
 ## Capturas de Tela
 

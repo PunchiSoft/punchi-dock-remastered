@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59">
-    <img src="https://img.shields.io/badge/release-v0.9.7.59-4caf50" alt="Versión v0.9.7.59">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60">
+    <img src="https://img.shields.io/badge/release-v0.9.7.60-4caf50" alt="Versión v0.9.7.60">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -23,16 +23,16 @@ Punchi Dock Remastered es un dock lanzador nativo e interfaz de tareas para KDE 
 Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). El proyecto prepara actualmente su camino hacia una versión 1.0 estable.
 
 La versión actual es
-[v0.9.7.59](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59).
+[v0.9.7.60](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60).
 
-## Novedades de la versión 0.9.7.59
+## Novedades de la versión 0.9.7.60
 
-- **Carpeta personalizada de temas**: Configuración de directorio personalizado para temas del dock con validación estricta, rechazo de enlaces simbólicos y selector de carpetas.
-- **Eliminación masiva de temas y menú**: Opciones para eliminar el tema activo o borrar todos los temas instalados con diálogo de confirmación y limpieza en el backend.
-- **Preferencias de temas refinadas**: Distribución limpia que separa selección, menú de eliminación, acción de importación y gestión de carpetas personalizadas.
-- **Protección de permisos y seguridad**: Manejo seguro y tolerante ante carpetas inexistentes, desmontadas o con permisos de solo lectura.
+- **Corrección de Wi-Fi en el Centro de Control**: Restaurado el control de redes Wi-Fi con compatibilidad universal para Debian 13, Kubuntu y versiones recientes de Plasma 6 mediante detección dinámica.
+- **Limpieza de interacción tras arrastre**: Liberación limpia de captura de puntero, reseteo de coordenadas hover y cesión de foco al cancelar o interrumpir arrastres en el dock.
+- **Mitigación de foco persistente**: Eliminado el borde de foco huérfano en el lanzador tras gestos interrumpidos o expiración del watchdog (issue #20).
+- **Flexibilidad en pruebas de plataforma**: Soporte configurable para plugin QPA en pruebas QML en entornos de escritorio activos.
 
-Consulta el [registro de cambios de 0.9.7.59](CHANGELOG.md#09759---2026-09-06) para ver las notas detalladas de la versión y la validación realizada.
+Consulta el [registro de cambios de 0.9.7.60](CHANGELOG.md#09760---2026-09-08) para ver las notas detalladas de la versión y la validación realizada.
 
 ## Capturas
 

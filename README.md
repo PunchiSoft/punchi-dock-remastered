@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59">
-    <img src="https://img.shields.io/badge/release-v0.9.7.59-4caf50" alt="Release v0.9.7.59">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60">
+    <img src="https://img.shields.io/badge/release-v0.9.7.60-4caf50" alt="Release v0.9.7.60">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,16 +23,16 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7.59](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.59).
+[v0.9.7.60](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60).
 
-## What's New in 0.9.7.59
+## What's New in 0.9.7.60
 
-- **Custom Themes Folder**: Configure a custom directory for dock themes with hardened path validation, symlink rejection, and folder selection dialog.
-- **Bulk Theme Deletion & Menu**: Delete the active theme or remove all installed themes with a confirmation dialog and backend cleanup.
-- **Refined Theme Preferences**: Clean layout separating theme selection, deletion menu, import action, and custom folder management.
-- **Security & Permissions Hardening**: Safe fallback for missing, unmounted, or read-only theme storage directories.
+- **Control Center Wi-Fi Fix**: Restored Wi-Fi network management with universal compatibility across Debian 13, Kubuntu, and newer Plasma 6 distributions via dynamic feature detection.
+- **Interrupted Gesture Cleanup**: Clean pointer grab release, hover coordinate reset, and focus handoff when drag reorder gestures are cancelled or timed out.
+- **Persistent Focus Mitigation**: Resolved persistent focus outlines on the launcher icon after interrupted gestures (issue #20).
+- **Test Platform Flexibility**: Added configurable QPA platform plugin support for testing in live desktop environments.
 
-See the [0.9.7.59 changelog](CHANGELOG.md#09759---2026-09-06) for detailed release
+See the [0.9.7.60 changelog](CHANGELOG.md#09760---2026-09-08) for detailed release
 notes and the validation performed for this version.
 
 ## Screenshots
