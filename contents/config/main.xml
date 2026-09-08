@@ -18,7 +18,7 @@
       <default></default>
     </entry>
     <entry name="iconSize" type="Int">
-      <default>48</default>
+      <default>32</default>
     </entry>
     <entry name="iconSpacing" type="Int">
       <default>8</default>

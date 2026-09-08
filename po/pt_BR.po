@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-08 05:26-0300\n"
+"POT-Creation-Date: 2026-09-08 10:14-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -250,7 +250,7 @@ msgctxt "@info:status"
 msgid "%1 is already in %2."
 msgstr "%1 já está em %2."
 
-#: contents/ui/components/MediaDockItem.qml:147
+#: contents/ui/components/MediaDockItem.qml:151
 msgctxt "@info:media"
 msgid "%1 is not running"
 msgstr "%1 não está em execução"
@@ -379,17 +379,17 @@ msgctxt "@info:status %1 is the result and %2 is seconds remaining"
 msgid "%1 · %2 s"
 msgstr "%1 · %2 s"
 
-#: contents/ui/components/MediaDockItem.qml:159
+#: contents/ui/components/MediaDockItem.qml:163
 msgctxt "@info:media artist and title"
 msgid "%1 — %2"
 msgstr "%1 — %2"
 
-#: contents/ui/components/MediaDockItem.qml:162
+#: contents/ui/components/MediaDockItem.qml:166
 msgctxt "@info:media title and playback time"
 msgid "%1 — %2"
 msgstr "%1 — %2"
 
-#: contents/ui/components/MediaDockItem.qml:155
+#: contents/ui/components/MediaDockItem.qml:159
 msgctxt "@info:media artist, title and playback time"
 msgid "%1 — %2 — %3"
 msgstr "%1 — %2 — %3"
@@ -462,12 +462,12 @@ msgctxt "@info:accessibility %1 is an audio item, %2 is a percentage"
 msgid "%1, %2 percent"
 msgstr "%1, %2 por cento"
 
-#: contents/ui/components/MediaDockItem.qml:77
+#: contents/ui/components/MediaDockItem.qml:81
 msgctxt "@info:accessible"
 msgid "%1. Paused."
 msgstr "%1. Pausado."
 
-#: contents/ui/components/MediaDockItem.qml:76
+#: contents/ui/components/MediaDockItem.qml:80
 msgctxt "@info:accessible"
 msgid "%1. Playing."
 msgstr "%1. Reproduzindo."
@@ -3766,7 +3766,7 @@ msgid "Media item display mode"
 msgstr "Reprodutor multimídia"
 
 #: contents/ui/components/MediaControlsCard.qml:69
-#: contents/ui/components/MediaDockItem.qml:152
+#: contents/ui/components/MediaDockItem.qml:156
 #: contents/ui/components/MprisReplacementCard.qml:34
 msgid "Media playback"
 msgstr "Reprodução de mídia"
@@ -3775,7 +3775,7 @@ msgstr "Reprodução de mídia"
 msgid "Media player"
 msgstr "Reprodutor multimídia"
 
-#: contents/ui/components/MediaDockItem.qml:89
+#: contents/ui/components/MediaDockItem.qml:93
 msgctxt "@info:accessible"
 msgid "Media player controls"
 msgstr "Controles do reprodutor multimídia"
@@ -4020,7 +4020,7 @@ msgctxt "@action:button"
 msgid "Next page"
 msgstr "Próxima página"
 
-#: contents/ui/components/MediaDockItem.qml:609
+#: contents/ui/components/MediaDockItem.qml:636
 #: contents/ui/components/MediaTransportControls.qml:113
 msgctxt "@action:button"
 msgid "Next track"
@@ -4053,7 +4053,7 @@ msgctxt "@info"
 msgid "No Bluetooth adapters available"
 msgstr "Nenhum adaptador Bluetooth disponível"
 
-#: contents/ui/components/MediaDockItem.qml:78
+#: contents/ui/components/MediaDockItem.qml:82
 msgctxt "@info:accessible"
 msgid "No MPRIS player is active"
 msgstr "Nenhum reprodutor MPRIS está ativo"
@@ -4118,7 +4118,7 @@ msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "Nenhum arquivo local foi encontrado neste arrastar e soltar."
 
-#: contents/ui/components/MediaDockItem.qml:148
+#: contents/ui/components/MediaDockItem.qml:152
 msgctxt "@info:media"
 msgid "No media playing"
 msgstr "Nenhuma mídia em reprodução"
@@ -4642,7 +4642,7 @@ msgctxt "@label"
 msgid "Password"
 msgstr "Senha"
 
-#: contents/ui/components/MediaDockItem.qml:581
+#: contents/ui/components/MediaDockItem.qml:607
 #: contents/ui/components/MediaTransportControls.qml:83
 msgctxt "@action:button"
 msgid "Pause"
@@ -4737,7 +4737,7 @@ msgstr "Cor do Plasma"
 msgid "Plasma theme"
 msgstr "Tema de plasma"
 
-#: contents/ui/components/MediaDockItem.qml:582
+#: contents/ui/components/MediaDockItem.qml:608
 #: contents/ui/components/MediaTransportControls.qml:84
 msgctxt "@action:button"
 msgid "Play"
@@ -4831,7 +4831,7 @@ msgctxt "@action:button"
 msgid "Previous page"
 msgstr "Página anterior"
 
-#: contents/ui/components/MediaDockItem.qml:564
+#: contents/ui/components/MediaDockItem.qml:589
 #: contents/ui/components/MediaTransportControls.qml:68
 msgctxt "@action:button"
 msgid "Previous track"

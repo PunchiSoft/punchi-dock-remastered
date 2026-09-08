@@ -23,6 +23,8 @@
 #include <QTest>
 
 #include <KPluginMetaData>
+#include <KConfigPropertyMap>
+#include <KConfigGroup>
 #include <KPackage/Package>
 #include <KPackage/PackageLoader>
 
@@ -220,6 +222,8 @@ struct LoadResult {
     bool appearanceConfigLoaded = false;
     bool appearanceRemovalFeedbackWorks = false;
     bool panelFlatGeometryValid = false;
+    bool mediaCoverCentered = false;
+    bool initialIconSizeCorrect = false;
     bool dockItemsControllerAvailable = false;
     bool dynamicMoveBridgeAvailable = false;
     bool dynamicMoveRequestAccepted = false;
@@ -338,6 +342,8 @@ private Q_SLOTS:
             QVERIFY2(result.appearanceConfigLoaded, "The appearance configuration was not instantiated");
             QVERIFY2(result.appearanceRemovalFeedbackWorks, "Theme removal feedback did not update reactively");
             QVERIFY2(result.panelFlatGeometryValid, "The flat panel surface did not preserve its visible geometry");
+            QVERIFY2(result.mediaCoverCentered, "The large horizontal media cover was not centered");
+            QVERIFY2(result.initialIconSizeCorrect, "The icon size default or stored override was incorrect");
             QVERIFY2(result.dockItemsControllerAvailable, "The dock items controller is unavailable");
             QVERIFY2(result.dockItemCount > 0, "A clean first run did not load the default dock items");
             QVERIFY2(result.dynamicMoveBridgeAvailable,
@@ -389,6 +395,16 @@ private:
         LoadResult result;
         beginRuntimeMessageCapture();
 
+        // The second instance represents an existing user-selected size.
+        const int expectedIconSize = appletId == 1002U ? 64 : 32;
+        if (appletId == 1002U) {
+            auto stored = m_containment->config().group(QStringLiteral("Applets"))
+                .group(QString::number(appletId)).group(QStringLiteral("Configuration"))
+                .group(QStringLiteral("General"));
+            stored.writeEntry("iconSize", expectedIconSize);
+            stored.sync();
+        }
+
         Plasma::Applet *applet = Plasma::PluginLoader::self()->loadApplet(QString::fromLatin1(s_pluginId), appletId);
         QPointer<Plasma::Applet> appletGuard(applet);
         result.appletLoaded = applet != nullptr;
@@ -396,6 +412,10 @@ private:
         QPointer<PlasmaQuick::AppletQuickItem> itemGuard;
         if (applet) {
             m_containment->addApplet(applet);
+            auto *configuration = applet->configuration();
+            result.initialIconSizeCorrect = configuration
+                && configuration->value(QStringLiteral("iconSize")).toInt() == expectedIconSize
+                && configuration->value(QStringLiteral("iconSizeDefault")).toInt() == 32;
             result.containmentAssigned = applet->containment() == m_containment;
             result.pluginName = applet->pluginName();
             result.launchError = applet->launchErrorMessage();
@@ -406,6 +426,53 @@ private:
             if (item) {
                 QQmlContext *configContext = QQmlEngine::contextForObject(item);
                 if (configContext && configContext->engine()) {
+                    QQmlComponent mediaComponent(configContext->engine(), QUrl::fromLocalFile(
+                        QDir(m_packageRoot).filePath(QStringLiteral("contents/ui/components/MediaDockItem.qml"))));
+                    QQuickWindow mediaWindow;
+                    mediaWindow.resize(600, 300);
+                    std::unique_ptr<QObject> media(mediaComponent.createWithInitialProperties({
+                        {QStringLiteral("width"), 210.0}, {QStringLiteral("height"), 48.0},
+                        {QStringLiteral("iconSize"), 48}, {QStringLiteral("motionEnabled"), false},
+                        {QStringLiteral("textMode"), QStringLiteral("always")}
+                    }, configContext));
+                    auto *mediaItem = qobject_cast<QQuickItem *>(media.get());
+                    auto *cover = media ? media->findChild<QQuickItem *>(QStringLiteral("mediaCoverFrame")) : nullptr;
+                    result.mediaCoverCentered = mediaItem && cover;
+                    if (mediaItem && cover) {
+                        mediaItem->setParentItem(mediaWindow.contentItem());
+                        mediaWindow.show();
+                        for (const int size : {43, 48, 64, 96, 128}) {
+                            media->setProperty("iconSize", size);
+                            mediaItem->setHeight(size);
+                            drainDeferredEvents();
+                            QTest::qWait(30);
+                            const QPointF center = cover->mapToItem(mediaItem, QPointF(cover->width()/2, cover->height()/2));
+                            result.mediaCoverCentered = result.mediaCoverCentered
+                                && qAbs(center.y() - mediaItem->height()/2) < 0.01;
+                            const QPointF origin = cover->mapToItem(mediaItem, QPointF(0, 0));
+                            result.mediaCoverCentered = result.mediaCoverCentered
+                                && qAbs(origin.x() - origin.y()) < 0.01;
+                            mediaItem->setHeight(size + 12);
+                            drainDeferredEvents();
+                            QTest::qWait(30);
+                            const QPointF expandedOrigin = cover->mapToItem(mediaItem, QPointF(0, 0));
+                            result.mediaCoverCentered = result.mediaCoverCentered
+                                && qAbs(expandedOrigin.x() - expandedOrigin.y()) < 0.01
+                                && qAbs(expandedOrigin.x() - origin.x() - 6) < 0.01;
+                        }
+                        for (const int size : {32, 41, 42}) {
+                            media->setProperty("iconSize", size);
+                            mediaItem->setHeight(size);
+                            drainDeferredEvents();
+                            result.mediaCoverCentered = result.mediaCoverCentered && cover->y() == 0
+                                && qAbs(cover->mapToItem(mediaItem, QPointF()).x() - 2) < 0.01;
+                        }
+                        media->setProperty("vertical", true);
+                        media->setProperty("iconSize", 64);
+                        mediaItem->setHeight(240);
+                        drainDeferredEvents();
+                        result.mediaCoverCentered = result.mediaCoverCentered && cover->y() == 0;
+                    }
                     // Exercise the real renderer against the shell's geometry
                     // contract in an isolated window; this is not a KWin test.
                     QQuickWindow panelWindow;

@@ -53,8 +53,12 @@ FocusScope {
     readonly property bool compactMode: displayMode === "compact"
     readonly property bool narrowVerticalLayout: vertical
         && width < Kirigami.Units.gridUnit * 5
+    readonly property bool compactHorizontalLayout: !vertical
+        && (iconSize < 42 || height < 42)
     readonly property bool metadataVisible: normalizedTextMode === "always"
-        || (normalizedTextMode === "automatic" && !narrowVerticalLayout)
+        || (normalizedTextMode === "automatic"
+            && !narrowVerticalLayout
+            && !compactHorizontalLayout)
     readonly property int compactMainAxisLength: iconSize
     readonly property int resolvedMotionSpeedPercent: Math.max(50,
         Math.min(150, Number.isFinite(motionSpeedPercent)
@@ -332,7 +336,7 @@ FocusScope {
         / resolvedMotionSpeedPercent))
 
     Controls.ToolTip {
-        visible: root.vertical && !root.metadataVisible && hoverHandler.hovered
+        visible: !root.metadataVisible && hoverHandler.hovered
         text: root.metadataText
         delay: Kirigami.Units.toolTipDelay
     }
@@ -415,76 +419,93 @@ FocusScope {
         id: mediaLayout
         anchors.fill: parent
         anchors.margins: 2
+        // Match the artwork's vertical breathing room at the leading edge.
+        // Move the layout so text and controls retain their spacing to artwork.
+        anchors.leftMargin: !root.vertical && root.iconSize > 42
+            ? Math.max(2, (root.height - root.coverExtent) / 2) : 2
         visible: opacity > 0.01
         opacity: root.expandedContentOpacity
         columns: root.vertical ? 1 : 2
-        rows: root.vertical ? (root.metadataVisible ? 3 : 2) : 2
+        rows: root.vertical ? (root.metadataVisible ? 3 : 2) : (root.metadataVisible ? 2 : 1)
         rowSpacing: 2
-        columnSpacing: 4
+        columnSpacing: (!root.vertical && !root.metadataVisible) ? 6 : 4
 
-        Rectangle {
-            id: coverFrame
+        Item {
+            id: coverSlot
             Layout.preferredWidth: root.coverExtent
             Layout.preferredHeight: root.coverExtent
             Layout.alignment: Qt.AlignCenter
             Layout.row: 0
             Layout.column: 0
-            Layout.rowSpan: root.vertical ? 1 : 2
-            radius: Math.max(3, Math.round(width * 0.16))
-            color: Kirigami.Theme.backgroundColor
+            Layout.rowSpan: (!root.vertical && root.metadataVisible) ? 2 : 1
 
-            Image {
-                id: artworkSource
-                anchors.fill: parent
-                source: root.artUrl
-                fillMode: Image.PreserveAspectCrop
-                asynchronous: true
-                cache: true
-                visible: status === Image.Ready
-                layer.enabled: visible
-                layer.effect: Effects.MultiEffect {
-                    maskEnabled: true
-                    maskSource: artworkMask
-                }
-            }
+            Rectangle {
+                id: coverFrame
+                objectName: "mediaCoverFrame"
+                width: coverSlot.width
+                height: coverSlot.height
+                // The slot retains the existing layout contract. In the larger
+                // horizontal presentation, center artwork on the visible item,
+                // independently of the text and controls' combined minimum height.
+                y: !root.vertical && root.iconSize > 42
+                    ? (root.height - height) / 2 - mediaLayout.y - coverSlot.y : 0
+                radius: Math.max(3, Math.round(width * 0.16))
+                color: Kirigami.Theme.backgroundColor
 
-            Item {
-                id: artworkMask
-                anchors.fill: parent
-                visible: false
-                layer.enabled: true
-
-                Rectangle {
+                Image {
+                    id: artworkSource
                     anchors.fill: parent
-                    radius: coverFrame.radius
-                    color: "white"
+                    source: root.artUrl
+                    fillMode: Image.PreserveAspectCrop
+                    asynchronous: true
+                    cache: true
+                    visible: status === Image.Ready
+                    layer.enabled: visible
+                    layer.effect: Effects.MultiEffect {
+                        maskEnabled: true
+                        maskSource: artworkMask
+                    }
+                }
+
+                Item {
+                    id: artworkMask
+                    anchors.fill: parent
+                    visible: false
+                    layer.enabled: true
+
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: coverFrame.radius
+                        color: "white"
+                    }
+                }
+
+                Kirigami.Icon {
+                    anchors.centerIn: parent
+                    width: Math.max(16, parent.width * 0.64)
+                    height: width
+                    source: root.defaultPlayerIcon.length > 0
+                        ? root.defaultPlayerIcon
+                        : "emblem-music-symbolic"
+                    fallback: "emblem-music-symbolic"
+                    visible: artworkSource.status !== Image.Ready
+                    isMask: String(source).indexOf("-symbolic") >= 0
+                }
+
+                HoverHandler {
+                    cursorShape: root.launchAvailable && !root.available
+                        ? Qt.PointingHandCursor
+                        : Qt.ArrowCursor
+                }
+
+                TapHandler {
+                    acceptedButtons: Qt.LeftButton
+                    enabled: root.launchAvailable && !root.available
+                    onPressedChanged: root.clickScale = pressed ? 0.94 : 1.0
+                    onTapped: root.launchRequested()
                 }
             }
 
-            Kirigami.Icon {
-                anchors.centerIn: parent
-                width: Math.max(16, parent.width * 0.64)
-                height: width
-                source: root.defaultPlayerIcon.length > 0
-                    ? root.defaultPlayerIcon
-                    : "emblem-music-symbolic"
-                fallback: "emblem-music-symbolic"
-                visible: artworkSource.status !== Image.Ready
-                isMask: String(source).indexOf("-symbolic") >= 0
-            }
-
-            HoverHandler {
-                cursorShape: root.launchAvailable && !root.available
-                    ? Qt.PointingHandCursor
-                    : Qt.ArrowCursor
-            }
-
-            TapHandler {
-                acceptedButtons: Qt.LeftButton
-                enabled: root.launchAvailable && !root.available
-                onPressedChanged: root.clickScale = pressed ? 0.94 : 1.0
-                onTapped: root.launchRequested()
-            }
         }
 
         ColumnLayout {
@@ -497,7 +518,7 @@ FocusScope {
             Layout.row: root.vertical ? 1 : 0
             Layout.column: root.vertical ? 0 : 1
             spacing: 1
-            visible: !root.vertical || root.metadataVisible
+            visible: root.metadataVisible
 
             MarqueeViewport {
                 id: metadataViewport
@@ -549,7 +570,10 @@ FocusScope {
         GridLayout {
             id: transportControls
             Layout.alignment: Qt.AlignCenter
-            Layout.row: root.vertical ? (root.metadataVisible ? 2 : 1) : 1
+            Layout.fillWidth: !root.vertical && !root.metadataVisible
+            Layout.row: root.vertical
+                ? (root.metadataVisible ? 2 : 1)
+                : (root.metadataVisible ? 1 : 0)
             Layout.column: root.vertical ? 0 : 1
             flow: root.vertical ? GridLayout.TopToBottom : GridLayout.LeftToRight
             columns: root.vertical ? 1 : 3
@@ -559,6 +583,7 @@ FocusScope {
 
             PlasmaComponents.ToolButton {
                 id: previousButton
+                Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: root.controlExtent
                 Layout.preferredHeight: root.controlExtent
                 text: i18nc("@action:button", "Previous track")
@@ -575,6 +600,7 @@ FocusScope {
 
             PlasmaComponents.ToolButton {
                 id: playPauseButton
+                Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: root.controlExtent
                 Layout.preferredHeight: root.controlExtent
                 text: root.available && root.controller.playing
@@ -604,6 +630,7 @@ FocusScope {
 
             PlasmaComponents.ToolButton {
                 id: nextButton
+                Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: root.controlExtent
                 Layout.preferredHeight: root.controlExtent
                 text: i18nc("@action:button", "Next track")

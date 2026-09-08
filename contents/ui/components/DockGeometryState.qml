@@ -11,7 +11,7 @@ QtObject {
     property bool verticalPanel: false
     property bool horizontalPanel: false
     property int panelLocation: PlasmaCore.Types.BottomEdge
-    property int configuredIconSize: 48
+    property int configuredIconSize: 32
     property int configuredPanelThickness: 0
     property bool unlockPanelIconSizeLimit: false
     property bool panelAlwaysVisible: false
@@ -327,8 +327,9 @@ QtObject {
         const mode = root.normalizedMediaTextMode(item)
         return mode === "always"
             || (mode === "automatic"
-                && (!root.verticalPanel
-                    || root.effectiveIconSize >= Kirigami.Units.gridUnit * 5))
+                && (root.verticalPanel
+                    ? root.effectiveIconSize >= Kirigami.Units.gridUnit * 5
+                    : root.effectiveIconSize >= 42))
     }
 
     function mediaItemMainAxisLengthForItem(item) {

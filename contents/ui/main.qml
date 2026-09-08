@@ -552,7 +552,7 @@ PlasmoidItem {
         verticalPanel: root.inPanel ? Plasmoid.formFactor === PlasmaCore.Types.Vertical : root.floatingVertical
         horizontalPanel: root.inPanel ? Plasmoid.formFactor === PlasmaCore.Types.Horizontal : !root.floatingVertical
         panelLocation: root.floatingVertical ? PlasmaCore.Types.LeftEdge : Plasmoid.location
-        configuredIconSize: Number(Plasmoid.configuration.iconSize || 48)
+        configuredIconSize: Number(Plasmoid.configuration.iconSize || 32)
         configuredPanelThickness: root.configuredPanelThickness
         unlockPanelIconSizeLimit: !!Plasmoid.configuration.unlockPanelIconSizeLimit
         panelAlwaysVisible: root.panelAlwaysVisible

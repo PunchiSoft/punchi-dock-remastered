@@ -286,5 +286,17 @@ require(
     "root.inPanel && !root.customThemeActive\n                ? plasmaThemeCrossAxisExtent" in DOCK_GEOMETRY,
     "Vertical panel width under Plasma theme must use cross-axis extent without adding external dockBackgroundHorizontalPadding.",
 )
+require(
+    "root.effectiveIconSize >= 42" in DOCK_GEOMETRY,
+    "DockGeometryState must withhold automatic media metadata when horizontal icon size is below 42 px.",
+)
+
+MEDIA_DOCK_ITEM = (ROOT / "contents/ui/components/MediaDockItem.qml").read_text()
+require(
+    "compactHorizontalLayout: !vertical" in MEDIA_DOCK_ITEM
+    and "iconSize < 42" in MEDIA_DOCK_ITEM
+    and "Layout.rowSpan: (!root.vertical && root.metadataVisible) ? 2 : 1" in MEDIA_DOCK_ITEM,
+    "MediaDockItem must switch to a single row with symmetric cover frame alignment when compact.",
+)
 
 print("Dock Wave panel geometry contract: PASS")
