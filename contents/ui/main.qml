@@ -693,12 +693,12 @@ PlasmoidItem {
     Connections {
         target: dockGeometry
         function onPanelPreferredHeightChanged() {
-            if (root.configuredPanelThickness <= 0 && !dockGeometry.verticalPanel) {
+            if (!dockGeometry.verticalPanel) {
                 root.applyConfiguredPanelThickness()
             }
         }
         function onPanelPreferredWidthChanged() {
-            if (root.configuredPanelThickness <= 0 && dockGeometry.verticalPanel) {
+            if (dockGeometry.verticalPanel) {
                 root.applyConfiguredPanelThickness()
             }
         }
@@ -2386,6 +2386,21 @@ PlasmoidItem {
                 }
             }
 
+            PanelFlatThemeBackground {
+                id: panelFlatBackground
+                objectName: "panelFlatThemeBackground"
+                panelWindow: root.Window.window
+                requested: root.inPanel && mainContainer.visible
+                    && dockConfig.customDockThemeActive
+                    && dockThemeRepository.theme.renderer === "flat"
+                    && (!dockConfig.audioSpectrumConfigured
+                        || dockConfig.audioSpectrumBackgroundMode === "plasma")
+                theme: dockThemeRepository.theme
+                dockVertical: dockGeometry.verticalPanel
+                contentReference: dockLayout
+                restingPadding: dockBackground.customThemeVisualVerticalPadding
+            }
+
             DockBackground {
                 id: dockBackground
                 anchors.fill: (!root.inPanel || !dockConfig.customDockThemeActive) ? parent : undefined
@@ -2470,7 +2485,8 @@ PlasmoidItem {
                 inPanel: root.inPanel
                 panelLocation: dockGeometry.effectivePanelLocation
                 // qmllint enable unqualified
-                visible: !root.inPanel || dockConfig.customDockThemeActive
+                visible: (!root.inPanel || dockConfig.customDockThemeActive)
+                    && !panelFlatBackground.aligned
             }
 
             // qmllint disable unqualified

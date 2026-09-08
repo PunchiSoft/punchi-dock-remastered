@@ -17,6 +17,7 @@
 #include <QMutexLocker>
 #include <QPointer>
 #include <QQuickItem>
+#include <QQuickWindow>
 #include <QSet>
 #include <QTemporaryDir>
 #include <QTest>
@@ -218,6 +219,7 @@ struct LoadResult {
     bool fullRepresentationItemLoaded = false;
     bool appearanceConfigLoaded = false;
     bool appearanceRemovalFeedbackWorks = false;
+    bool panelFlatGeometryValid = false;
     bool dockItemsControllerAvailable = false;
     bool dynamicMoveBridgeAvailable = false;
     bool dynamicMoveRequestAccepted = false;
@@ -335,6 +337,7 @@ private Q_SLOTS:
             QVERIFY2(result.fullRepresentationItemLoaded, "The full representation item was not instantiated");
             QVERIFY2(result.appearanceConfigLoaded, "The appearance configuration was not instantiated");
             QVERIFY2(result.appearanceRemovalFeedbackWorks, "Theme removal feedback did not update reactively");
+            QVERIFY2(result.panelFlatGeometryValid, "The flat panel surface did not preserve its visible geometry");
             QVERIFY2(result.dockItemsControllerAvailable, "The dock items controller is unavailable");
             QVERIFY2(result.dockItemCount > 0, "A clean first run did not load the default dock items");
             QVERIFY2(result.dynamicMoveBridgeAvailable,
@@ -403,6 +406,88 @@ private:
             if (item) {
                 QQmlContext *configContext = QQmlEngine::contextForObject(item);
                 if (configContext && configContext->engine()) {
+                    // Exercise the real renderer against the shell's geometry
+                    // contract in an isolated window; this is not a KWin test.
+                    QQuickWindow panelWindow;
+                    QQmlComponent panelComponent(configContext->engine());
+                    panelComponent.setData(R"(
+                        import QtQuick
+                        Item {
+                            width: 1000; height: 90
+                            property var panelMask: null
+                            property real leftShadowMargin: -8
+                            property real rightShadowMargin: -8
+                            property real topShadowMargin: -10
+                            property real bottomShadowMargin: -16
+                        }
+                    )", QUrl());
+                    std::unique_ptr<QObject> panelObject(panelComponent.create());
+                    auto *panelRoot = qobject_cast<QQuickItem *>(panelObject.get());
+                    if (panelRoot) {
+                        panelRoot->setParentItem(panelWindow.contentItem());
+                        QQuickItem rowContainer(panelRoot);
+                        rowContainer.setPosition(QPointF(20, 5));
+                        QQuickItem restingRow(&rowContainer);
+                        restingRow.setPosition(QPointF(7, 24));
+                        restingRow.setSize(QSizeF(500, 36));
+                        QQmlComponent surfaceComponent(configContext->engine(), QUrl::fromLocalFile(
+                            QDir(m_packageRoot).filePath(QStringLiteral("contents/ui/components/PanelFlatThemeBackground.qml"))));
+                        std::unique_ptr<QObject> surface(surfaceComponent.createWithInitialProperties({
+                            {QStringLiteral("requested"), true},
+                            {QStringLiteral("contentReference"), QVariant::fromValue(&restingRow)},
+                            {QStringLiteral("restingPadding"), 2.0},
+                            {QStringLiteral("panelWindow"), QVariant::fromValue(&panelWindow)},
+                            {QStringLiteral("theme"), QVariantMap{
+                                {QStringLiteral("surface"), QVariantMap{{QStringLiteral("color"), QStringLiteral("#20242a")}}},
+                                {QStringLiteral("shadow"), QVariantMap{
+                                    {QStringLiteral("size"), 14}, {QStringLiteral("xOffset"), 3},
+                                    {QStringLiteral("yOffset"), -2}}}}}
+                        }, configContext));
+                        drainDeferredEvents();
+                        QQuickItem *renderer = surface
+                            ? surface->findChild<QQuickItem *>(QStringLiteral("panelFlatThemeRenderer")) : nullptr;
+                        QQuickItem *colorSurface = renderer && !renderer->childItems().isEmpty()
+                            ? renderer->childItems().constFirst() : nullptr;
+                        if (colorSurface) {
+                            const QRectF initial = colorSurface->mapRectToItem(panelWindow.contentItem(),
+                                QRectF(0, 0, colorSurface->width(), colorSurface->height()));
+                            panelRoot->setProperty("topShadowMargin", 0.0);
+                            panelRoot->setProperty("bottomShadowMargin", -26.0);
+                            drainDeferredEvents();
+                            const QRectF attached = colorSurface->mapRectToItem(panelWindow.contentItem(),
+                                QRectF(0, 0, colorSurface->width(), colorSurface->height()));
+                            result.panelFlatGeometryValid = surface->property("hosting").toBool()
+                                && initial == QRectF(8, 27, 984, 40)
+                                && attached == QRectF(8, 27, 984, 40)
+                                && panelRoot->height() == 90;
+                            panelRoot->setHeight(140);
+                            drainDeferredEvents();
+                            const QRectF expanded = colorSurface->mapRectToItem(panelWindow.contentItem(),
+                                QRectF(0, 0, colorSurface->width(), colorSurface->height()));
+                            rowContainer.setY(0);
+                            restingRow.setY(2);
+                            drainDeferredEvents();
+                            const QRectF top = colorSurface->mapRectToItem(panelWindow.contentItem(),
+                                QRectF(0, 0, colorSurface->width(), colorSurface->height()));
+                            surface->setProperty("dockVertical", true);
+                            restingRow.setSize(QSizeF(36, 500));
+                            panelRoot->setWidth(90);
+                            panelRoot->setHeight(1000);
+                            drainDeferredEvents();
+                            const QRectF vertical = colorSurface->mapRectToItem(panelWindow.contentItem(),
+                                QRectF(0, 0, colorSurface->width(), colorSurface->height()));
+                            result.panelFlatGeometryValid = result.panelFlatGeometryValid
+                                && expanded == QRectF(8, 27, 984, 40)
+                                && top == QRectF(8, 0, 984, 40)
+                                && vertical == QRectF(25, 0, 40, 974);
+                            rowContainer.setX(30);
+                            drainDeferredEvents();
+                            const QRectF moved = colorSurface->mapRectToItem(panelWindow.contentItem(),
+                                QRectF(0, 0, colorSurface->width(), colorSurface->height()));
+                            result.panelFlatGeometryValid = result.panelFlatGeometryValid
+                                && moved == QRectF(35, 0, 40, 974);
+                        }
+                    }
                     QQmlComponent appearance(configContext->engine(), QUrl::fromLocalFile(
                         QDir(m_packageRoot).filePath(QStringLiteral("contents/ui/config/ConfigAspect.qml"))));
                     std::unique_ptr<QObject> config(appearance.create(configContext));

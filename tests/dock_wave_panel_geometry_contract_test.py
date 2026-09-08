@@ -276,5 +276,15 @@ require(
     and "Kirigami.Units.smallSpacing" in DOCK_GEOMETRY,
     "DockGeometryState must scale its horizontal padding declaratively using Kirigami and customThemeSurfaceRadius.",
 )
+require(
+    "plasmaThemeCrossAxisMargin" in DOCK_GEOMETRY
+    and "plasmaThemeCrossAxisExtent" in DOCK_GEOMETRY
+    and "plasmaThemeCrossAxisMargin" in DOCK_GEOMETRY,
+    "DockGeometryState must calculate Plasma theme cross-axis extent algorithmically with dynamic margin.",
+)
+require(
+    "root.inPanel && !root.customThemeActive\n                ? plasmaThemeCrossAxisExtent" in DOCK_GEOMETRY,
+    "Vertical panel width under Plasma theme must use cross-axis extent without adding external dockBackgroundHorizontalPadding.",
+)
 
 print("Dock Wave panel geometry contract: PASS")

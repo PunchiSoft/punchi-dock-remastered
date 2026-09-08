@@ -973,6 +973,70 @@ Module {
         Signal { name: "panelOpacityModeChanged"; lineNumber: 67 }
     }
     Component {
+        file: "panelthemesurface.h"
+        lineNumber: 11
+        name: "PanelThemeSurface"
+        accessSemantics: "reference"
+        defaultProperty: "data"
+        parentProperty: "parent"
+        prototype: "QQuickItem"
+        exports: ["org.punchi.dock/PanelThemeSurface 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "panelWindow"
+            type: "QQuickWindow"
+            isPointer: true
+            read: "panelWindow"
+            write: "setPanelWindow"
+            notify: "panelWindowChanged"
+            index: 0
+            lineNumber: 15
+        }
+        Property {
+            name: "requested"
+            type: "bool"
+            read: "requested"
+            write: "setRequested"
+            notify: "requestedChanged"
+            index: 1
+            lineNumber: 16
+        }
+        Property {
+            name: "hosting"
+            type: "bool"
+            read: "hosting"
+            notify: "hostingChanged"
+            index: 2
+            lineNumber: 17
+            isReadonly: true
+        }
+        Property {
+            name: "contentReference"
+            type: "QQuickItem"
+            isPointer: true
+            read: "contentReference"
+            write: "setContentReference"
+            notify: "contentReferenceChanged"
+            index: 3
+            lineNumber: 18
+        }
+        Property {
+            name: "contentGeometry"
+            type: "QRectF"
+            read: "contentGeometry"
+            notify: "contentGeometryChanged"
+            index: 4
+            lineNumber: 19
+            isReadonly: true
+        }
+        Signal { name: "panelWindowChanged"; lineNumber: 34 }
+        Signal { name: "requestedChanged"; lineNumber: 35 }
+        Signal { name: "hostingChanged"; lineNumber: 36 }
+        Signal { name: "contentReferenceChanged"; lineNumber: 37 }
+        Signal { name: "contentGeometryChanged"; lineNumber: 38 }
+        Method { name: "updateHost"; lineNumber: 41 }
+    }
+    Component {
         file: "punchimenulayoutcontroller.h"
         lineNumber: 11
         name: "PunchiMenuLayoutController"

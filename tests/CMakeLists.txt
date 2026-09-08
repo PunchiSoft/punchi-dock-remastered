@@ -135,6 +135,18 @@ target_link_libraries(panellengthmodebridge_test PRIVATE Qt6::Core Qt6::Qml)
 
 add_test(NAME panellengthmodebridge_test COMMAND panellengthmodebridge_test)
 
+add_executable(panelthemesurface_test
+    panelthemesurface_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/panelthemesurface.cpp
+)
+target_include_directories(panelthemesurface_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(panelthemesurface_test PRIVATE Qt6::Quick Qt6::Qml Qt6::Test)
+add_test(NAME panelthemesurface_test COMMAND panelthemesurface_test)
+set_tests_properties(panelthemesurface_test PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 15)
+
 add_executable(punchimenulayoutmodel_test
     punchimenulayoutmodel_test.cpp
     ${CMAKE_SOURCE_DIR}/src/applicationcategoryclassifier.cpp

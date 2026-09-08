@@ -276,8 +276,12 @@ QtObject {
     readonly property real effectivePanelHoverScale: (!root.customThemeActive && root.inPanel)
         ? Math.min(1.65, Math.max(1.0, root.panelHoverScale))
         : Math.max(1.0, root.panelHoverScale)
+    readonly property int plasmaThemeCrossAxisMargin: {
+        return root.effectivePanelHoverScale > 1.01 ? 2 : 4
+    }
+    readonly property int crossAxisBaseMargin: root.customThemeActive ? 10 : plasmaThemeCrossAxisMargin
     readonly property int effectivePanelBaseIconLimit: detectedPanelThickness > 0
-        ? Math.max(24, Math.floor((detectedPanelThickness - 10) / root.effectivePanelHoverScale))
+        ? Math.max(24, Math.round((detectedPanelThickness - crossAxisBaseMargin) / root.effectivePanelHoverScale))
         : Math.max(24, root.configuredIconSize)
     readonly property int effectivePanelIconLimit: effectivePanelBaseIconLimit
     readonly property int effectiveIconSize: (root.inPanel
@@ -394,21 +398,28 @@ QtObject {
         ? panelMinimumContentLength
         : Math.max(root.verticalPanel ? panelItemHeight : panelItemWidth,
             panelCompactContentLength)
-    readonly property int plasmaThemePanelHeight: {
+    readonly property int plasmaThemeCrossAxisExtent: {
+        const iconExtent = root.effectiveIconSize
         const scale = root.effectivePanelHoverScale
-        return Math.round((root.effectiveIconSize * scale) + 9.2 + root.dockLabelAreaHeight)
+        const labelArea = root.horizontalPanel ? root.dockLabelAreaHeight : 0
+        const requiredExtent = Math.round(iconExtent * scale) + plasmaThemeCrossAxisMargin + labelArea
+        if (root.detectedPanelThickness > 0 && Math.abs(requiredExtent - root.detectedPanelThickness) <= 2) {
+            return root.detectedPanelThickness
+        }
+        return requiredExtent
     }
+    readonly property int plasmaThemePanelHeight: plasmaThemeCrossAxisExtent
     readonly property int panelMinimumWidth: root.hiddenByVirtualDesktop
         ? 0
-        : Math.ceil((root.verticalPanel
+        : Math.ceil(root.verticalPanel
             ? (root.inPanel && !root.customThemeActive
-                ? plasmaThemePanelHeight
-                : panelHoverCrossAxisExtent)
-            : panelContentLength) + (dockBackgroundHorizontalPadding * 2))
+                ? plasmaThemeCrossAxisExtent
+                : panelHoverCrossAxisExtent + (root.inPanel ? 0 : (dockBackgroundHorizontalPadding * 2)))
+            : panelContentLength + (dockBackgroundHorizontalPadding * 2))
     readonly property int panelBaseHeight: Math.ceil(root.verticalPanel
         ? panelContentLength + (dockBackgroundVerticalPadding * 2)
         : (root.inPanel && !root.customThemeActive
-            ? plasmaThemePanelHeight
+            ? plasmaThemeCrossAxisExtent
             : panelItemHeight + (root.inPanel ? 0 : (dockBackgroundVerticalPadding * 2))))
     readonly property int panelZoomHeadroom: {
         if (!root.inPanel || root.panelAlwaysVisible || root.verticalPanel || !root.customThemeActive) {
