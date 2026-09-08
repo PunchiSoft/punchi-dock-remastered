@@ -92,6 +92,7 @@ Item {
     property bool persistentReorderInsertAfter: false
     property int persistentModelIndex: -1
     property bool suppressClickAfterReorder: false
+    property bool persistentReorderInteractionResetPending: false
     property bool taskPopupTracksVisualArea: false
     property real entryOpacity: 1.0
     property real entryScale: 1.0
@@ -554,6 +555,13 @@ Item {
         } else {
             mouseArea.forceActiveFocus(Qt.OtherFocusReason)
         }
+    }
+
+    function releasePersistentReorderInteraction() {
+        suppressClickAfterReorder = false
+        resetSelectionPulse()
+        persistentReorderInteractionResetPending = true
+        persistentReorderInteractionResetTimer.restart()
     }
 
     function validateExternalDrop(urls) {
@@ -1367,10 +1375,19 @@ Item {
         }
     }
 
+    Timer {
+        id: persistentReorderInteractionResetTimer
+        interval: 0
+        repeat: false
+        onTriggered:
+            dockItemContainer.persistentReorderInteractionResetPending = false
+    }
+
     MouseArea {
         id: mouseArea
         anchors.fill: parent
         enabled: !dockItemContainer.mediaItem
+            && !dockItemContainer.persistentReorderInteractionResetPending
         hoverEnabled: !dockItemContainer.persistentReorderActive
             && !dockItemContainer.separatorItem
             && !dockItemContainer.spacerItem

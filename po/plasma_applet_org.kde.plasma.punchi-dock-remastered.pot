@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.59\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-08 10:23-0300\n"
+"POT-Creation-Date: 2026-09-08 17:42-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -130,7 +130,6 @@ msgid "  [2] Configure and build"
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:179
-#, sh-printf-format
 msgid "  [3] Fast Mode (%s cores) - Use all available CPU cores\\n"
 msgstr ""
 
@@ -248,12 +247,12 @@ msgctxt "@info:media"
 msgid "%1 is not running"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1398
+#: contents/ui/components/DockItem.qml:1415
 msgctxt "@info:accessible"
 msgid "%1 is now in front; release to open the local files"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1422
+#: contents/ui/components/DockItem.qml:1439
 msgctxt "@info:accessible"
 msgid "%1 is updated automatically and cannot accept applications"
 msgstr ""
@@ -270,7 +269,7 @@ msgstr ""
 msgid "%1 items loaded."
 msgstr ""
 
-#: contents/ui/main.qml:3417
+#: contents/ui/main.qml:3429
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] ""
@@ -289,14 +288,14 @@ msgstr ""
 msgid "%1 of %2 items"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1444
+#: contents/ui/components/DockItem.qml:1461
 #: contents/ui/components/TaskOverflowPopup.qml:111
 msgid "%1 open window"
 msgid_plural "%1 open windows"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/components/DockItem.qml:1440
+#: contents/ui/components/DockItem.qml:1457
 msgid "%1 open window. Press M to open media controls."
 msgid_plural "%1 open windows. Press M to open media controls."
 msgstr[0] ""
@@ -462,7 +461,6 @@ msgid "%1. Playing."
 msgstr ""
 
 #: scripts-cmake/setup.sh:124
-#, sh-printf-format
 msgid "%s cannot be combined with another action."
 msgstr ""
 
@@ -527,7 +525,6 @@ msgid "==> Checking and installing build dependencies..."
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:236
-#, sh-printf-format
 msgid "==> Concurrency set to: %s cores (Custom)\\n"
 msgstr ""
 
@@ -536,7 +533,6 @@ msgid "==> Concurrency set to: Balanced Mode (2 cores)"
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:220
-#, sh-printf-format
 msgid "==> Concurrency set to: Fast Mode (%s cores)\\n"
 msgstr ""
 
@@ -553,7 +549,6 @@ msgid "==> Plasmoid uninstalled successfully."
 msgstr ""
 
 #: scripts-dev/setup.sh:124
-#, sh-printf-format
 msgid "==> Removed existing installation: %s\\n"
 msgstr ""
 
@@ -638,7 +633,6 @@ msgid ""
 msgstr ""
 
 #: scripts-dev/setup.sh:104
-#, sh-printf-format
 msgid "Active build concurrency: %s\\n"
 msgstr ""
 
@@ -898,8 +892,8 @@ msgid "Applets only"
 msgstr ""
 
 #: contents/ui/components/AppActionsPopup.qml:95
-#: contents/ui/components/DockItem.qml:1409
-#: contents/ui/components/DockItem.qml:1416
+#: contents/ui/components/DockItem.qml:1426
+#: contents/ui/components/DockItem.qml:1433
 #: contents/ui/components/DockItemsController.qml:718
 #: contents/ui/components/FolderPopup.qml:306
 msgid "Application"
@@ -1022,7 +1016,6 @@ msgid "Apply"
 msgstr ""
 
 #: scripts-dev/distro/arch-setup.sh:263
-#, sh-printf-format
 msgid "Arch artifact ready: %s\\n"
 msgstr ""
 
@@ -1300,7 +1293,6 @@ msgid "Build package"
 msgstr ""
 
 #: scripts-cmake/setup.sh:300
-#, sh-printf-format
 msgid "Building with %s parallel job(s)...\\n"
 msgstr ""
 
@@ -1334,7 +1326,6 @@ msgid "CMake assistant menu:"
 msgstr ""
 
 #: scripts-cmake/setup.sh:302
-#, sh-printf-format
 msgid "CMake build completed: %s\\n"
 msgstr ""
 
@@ -1468,7 +1459,6 @@ msgid ""
 msgstr ""
 
 #: scripts-cmake/setup.sh:278
-#, sh-printf-format
 msgid "Checking the complete CMake environment in: %s\\n"
 msgstr ""
 
@@ -2036,7 +2026,6 @@ msgid "Current color: %1"
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:169
-#, sh-printf-format
 msgid "Current concurrency: %s\\n"
 msgstr ""
 
@@ -2181,17 +2170,14 @@ msgid "Detailed"
 msgstr ""
 
 #: scripts-dev/setup.sh:101
-#, sh-printf-format
 msgid "Detected RAM: %s | CPU Cores: %s\\n"
 msgstr ""
 
 #: scripts-dev/setup.sh:98
-#, sh-printf-format
 msgid "Detected host: %s (%s)\\n"
 msgstr ""
 
 #: scripts-dev/distro/arch-setup.sh:272
-#, sh-printf-format
 msgid "Detected host: %s\\n"
 msgstr ""
 
@@ -2212,7 +2198,6 @@ msgid "Devices"
 msgstr ""
 
 #: scripts-user/setup-universal.sh:141
-#, sh-printf-format
 msgid "Diagnostics saved to: %s\\n"
 msgstr ""
 
@@ -2374,7 +2359,7 @@ msgstr ""
 msgid "Drag files"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1391
+#: contents/ui/components/DockItem.qml:1408
 msgctxt "@info:accessible"
 msgid ""
 "Drag to move the open applications section. Use an arrow key to move it one "
@@ -2522,12 +2507,10 @@ msgid "Error: "
 msgstr ""
 
 #: scripts-cmake/setup.sh:116 scripts-user/setup.sh:93
-#, sh-printf-format
 msgid "Error: %s\\n"
 msgstr ""
 
 #: scripts-dev/setup.sh:86
-#, sh-printf-format
 msgid "Error: Cannot build natively on this system (%s).\\n"
 msgstr ""
 
@@ -2536,7 +2519,6 @@ msgid "Error: Could not identify the distribution from /etc/os-release."
 msgstr ""
 
 #: scripts-user/setup.sh:86
-#, sh-printf-format
 msgid "Error: Invalid menu option: '%s'\\n"
 msgstr ""
 
@@ -2546,22 +2528,18 @@ msgid ""
 msgstr ""
 
 #: scripts-dev/setup.sh:129
-#, sh-printf-format
 msgid "Error: Invalid option: %s\\n"
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:254
-#, sh-printf-format
 msgid "Error: Invalid option: '%s'\\n"
 msgstr ""
 
 #: scripts-dev/setup.sh:90
-#, sh-printf-format
 msgid "Error: No build profile exists for the distribution: %s.\\n"
 msgstr ""
 
 #: scripts-user/setup-universal.sh:131
-#, sh-printf-format
 msgid "Error: Plasma Shell PID %s stopped during startup.\\n"
 msgstr ""
 
@@ -2578,12 +2556,10 @@ msgid "Error: Run this script as the Plasma desktop user, NOT with sudo."
 msgstr ""
 
 #: scripts-dev/setup.sh:76
-#, sh-printf-format
 msgid "Error: Unsupported Debian version for building: %s.\\n"
 msgstr ""
 
 #: scripts-user/setup-universal.sh:115
-#, sh-printf-format
 msgid "Error: kpackagetool6 did not leave a valid installation in %s\\n"
 msgstr ""
 
@@ -2592,7 +2568,6 @@ msgid "Error: no supported command is available to start Plasma Shell."
 msgstr ""
 
 #: scripts-user/setup-universal.sh:99
-#, sh-printf-format
 msgid ""
 "Error: no universal .plasmoid was found in '%s' and no valid package path "
 "was provided.\\n"
@@ -2603,7 +2578,6 @@ msgid "Error: only one .plasmoid package can be installed at a time."
 msgstr ""
 
 #: scripts-user/setup-universal.sh:86
-#, sh-printf-format
 msgid "Error: required installation command not found: %s\\n"
 msgstr ""
 
@@ -2612,7 +2586,6 @@ msgid "Error: the Plasma Shell user service could not be restarted."
 msgstr ""
 
 #: scripts-user/setup-universal.sh:77
-#, sh-printf-format
 msgid "Error: unknown option or invalid package path: %s\\n"
 msgstr ""
 
@@ -3176,7 +3149,6 @@ msgid "Install the missing development packages and run this assistant again."
 msgstr ""
 
 #: scripts-user/setup-universal.sh:119
-#, sh-printf-format
 msgid "Installation completed in: %s\\n"
 msgstr ""
 
@@ -3185,7 +3157,6 @@ msgid "Installation completed without restarting Plasma Shell."
 msgstr ""
 
 #: scripts-user/setup-universal.sh:108
-#, sh-printf-format
 msgid "Installation directory: %s\\n"
 msgstr ""
 
@@ -3198,7 +3169,6 @@ msgid "Installed Punchi Dock theme"
 msgstr ""
 
 #: scripts-user/setup-universal.sh:140 scripts-user/setup-universal.sh:146
-#, sh-printf-format
 msgid "Installed package: %s\\n"
 msgstr ""
 
@@ -3207,7 +3177,6 @@ msgid "Installed theme:"
 msgstr ""
 
 #: scripts-cmake/setup.sh:365
-#, sh-printf-format
 msgid "Installing the current build for this user under: %s\\n"
 msgstr ""
 
@@ -3284,7 +3253,7 @@ msgstr ""
 msgid "Keep above"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1394
+#: contents/ui/components/DockItem.qml:1411
 msgctxt "@info:accessible"
 msgid "Keep holding to bring %1 to the front"
 msgstr ""
@@ -3416,7 +3385,6 @@ msgid "Loading applications…"
 msgstr ""
 
 #: scripts-user/setup.sh:85
-#, sh-printf-format
 msgid "Local package created without installation: %s\\n"
 msgstr ""
 
@@ -3440,7 +3408,6 @@ msgid "Log out and back in or restart Plasma later to apply the changes."
 msgstr ""
 
 #: scripts-dev/setup.sh:144
-#, sh-printf-format
 msgid "Logs: docs/logs/%s/setup-%s-latest.log\\n"
 msgstr ""
 
@@ -3680,7 +3647,6 @@ msgid "Minimize window"
 msgstr ""
 
 #: scripts-dev/distro/arch-setup.sh:205
-#, sh-printf-format
 msgid "Missing pacman packages: %s\\n"
 msgstr ""
 
@@ -4025,7 +3991,6 @@ msgid "Notice: No local installation was found."
 msgstr ""
 
 #: scripts-dev/setup.sh:81
-#, sh-printf-format
 msgid ""
 "Notice: This distribution (%s) is not an official C++ build environment.\\n"
 msgstr ""
@@ -4473,12 +4438,10 @@ msgid "Pixel spectrum"
 msgstr ""
 
 #: scripts-user/lib/plasma-shell-control.sh:16
-#, sh-printf-format
 msgid "Plasma Shell PID before restart: %s\\n"
 msgstr ""
 
 #: scripts-cmake/setup.sh:333
-#, sh-printf-format
 msgid "Plasma Shell restart failed with status %s.\\n"
 msgstr ""
 
@@ -4492,14 +4455,12 @@ msgid ""
 msgstr ""
 
 #: scripts-cmake/setup.sh:328
-#, sh-printf-format
 msgid ""
 "Plasma Shell restart timed out after %s seconds; continuing without waiting."
 "\\n"
 msgstr ""
 
 #: scripts-user/lib/plasma-shell-control.sh:65
-#, sh-printf-format
 msgid "Plasma Shell restarted successfully (new PID: %s).\\n"
 msgstr ""
 
@@ -4559,12 +4520,12 @@ msgstr ""
 msgid "Press"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1448
+#: contents/ui/components/DockItem.qml:1465
 msgctxt "@info:accessible"
 msgid "Press M to open media controls"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1430
+#: contents/ui/components/DockItem.qml:1447
 msgctxt "@info:accessible"
 msgid ""
 "Press and hold to move this Dock item. Use Control+Shift with an arrow key "
@@ -4720,7 +4681,6 @@ msgid "Quick access to system status and settings"
 msgstr ""
 
 #: scripts-user/setup.sh:139
-#, sh-printf-format
 msgid "RAM %s | CPU cores %s | Build jobs %s"
 msgstr ""
 
@@ -4750,17 +4710,17 @@ msgstr ""
 msgid "Reflection:"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1413
+#: contents/ui/components/DockItem.qml:1430
 msgctxt "@info:accessible"
 msgid "Release to add %1 to %2"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1406
+#: contents/ui/components/DockItem.qml:1423
 msgctxt "@info:accessible"
 msgid "Release to insert %1 in the Dock"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1402
+#: contents/ui/components/DockItem.qml:1419
 msgctxt "@info:accessible"
 msgid "Release to open local files with %1"
 msgstr ""
@@ -5092,7 +5052,6 @@ msgid "Selected for the new folder"
 msgstr ""
 
 #: scripts-user/setup-universal.sh:107
-#, sh-printf-format
 msgid "Selected package: %s\\n"
 msgstr ""
 
@@ -5791,7 +5750,7 @@ msgctxt "@info:status"
 msgid "This application could not be resolved safely."
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1426
+#: contents/ui/components/DockItem.qml:1443
 msgctxt "@info:accessible"
 msgid "This file drop cannot be accepted"
 msgstr ""
@@ -5873,7 +5832,6 @@ msgid "Top to bottom"
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:168
-#, sh-printf-format
 msgid "Total system RAM: %s | CPU Cores: %s\\n"
 msgstr ""
 
@@ -6157,7 +6115,7 @@ msgctxt "@action:button %1 is an audio device name"
 msgid "Use %1 as the default device"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1434
+#: contents/ui/components/DockItem.qml:1451
 msgctxt "@info:accessible"
 msgid "Use Control+Shift with an arrow key to move this Dock item."
 msgstr ""
@@ -6211,7 +6169,6 @@ msgid "Validate"
 msgstr ""
 
 #: scripts-user/setup.sh:137
-#, sh-printf-format
 msgid "Version %s | %s | %s"
 msgstr ""
 
@@ -6265,7 +6222,8 @@ msgctxt "@label"
 msgid "Volume for %1"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterAudioPage.qml:392
+#: contents/ui/components/controlcenter/ControlCenterAudioPage.qml:393
+#, no-javascript-format
 msgctxt "@info"
 msgid "Volumes above 100% can reduce audio quality and cause distortion."
 msgstr ""
@@ -6439,7 +6397,6 @@ msgid "install the missing Arch packages and retry"
 msgstr ""
 
 #: scripts-dev/distro/arch-setup.sh:122 scripts-dev/distro/arch-setup.sh:126
-#, sh-printf-format
 msgid "invalid number of parallel jobs: %s\\n"
 msgstr ""
 
@@ -6466,7 +6423,6 @@ msgid "the Plasma restart timeout must be a positive number of seconds"
 msgstr ""
 
 #: scripts-dev/distro/arch-setup.sh:262
-#, sh-printf-format
 msgid "the build finished without creating the expected artifact: %s\\n"
 msgstr ""
 
@@ -6487,18 +6443,15 @@ msgid "the per-user installation prefix must be an absolute path other than /"
 msgstr ""
 
 #: scripts-dev/distro/arch-setup.sh:178
-#, sh-printf-format
 msgid ""
 "this setup script requires Arch Linux or an Arch-family distribution "
 "(detected: %s)\\n"
 msgstr ""
 
 #: scripts-cmake/setup.sh:178
-#, sh-printf-format
 msgid "unknown option: %s"
 msgstr ""
 
 #: scripts-dev/distro/arch-setup.sh:149
-#, sh-printf-format
 msgid "unknown option: %s\\n"
 msgstr ""

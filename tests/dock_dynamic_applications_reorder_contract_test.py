@@ -272,6 +272,19 @@ require(
     and "dockLayout.cancelPersistentDrag()" in MAIN,
     "An external configuration mutation must cancel an active gesture.",
 )
+require(
+    "const sourceItem = persistentDragSourceItem" in MAIN
+    and "sourceItem.releasePersistentReorderInteraction()" in MAIN
+    and "dockLayout.forceActiveFocus(Qt.OtherFocusReason)" in MAIN
+    and "property bool persistentReorderInteractionResetPending: false"
+    in DOCK_ITEM
+    and "function releasePersistentReorderInteraction()" in DOCK_ITEM
+    and "suppressClickAfterReorder = false" in DOCK_ITEM
+    and "!dockItemContainer.persistentReorderInteractionResetPending"
+    in DOCK_ITEM,
+    "Canceling an interrupted reorder must release the delegate pointer grab, "
+    "clear stale click suppression, and move focus away from dock delegates.",
+)
 
 
 def persistent_visual_index(

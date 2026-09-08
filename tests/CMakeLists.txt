@@ -480,8 +480,11 @@ if(TARGET KF6::I18nQml)
     )
 endif()
 
+set(PUNCHI_QML_TEST_PLATFORM "offscreen" CACHE STRING
+    "Qt platform plugin used by Punchi Dock QML runtime tests"
+)
 set(PUNCHI_QML_TEST_ENVIRONMENT
-    "LANGUAGE=en;QT_QPA_PLATFORM=offscreen;QT_QUICK_CONTROLS_STYLE=org.kde.desktop"
+    "LANGUAGE=en;QT_QPA_PLATFORM=${PUNCHI_QML_TEST_PLATFORM};QT_QUICK_CONTROLS_STYLE=org.kde.desktop"
 )
 
 function(punchi_add_qml_test test_name qml_file)

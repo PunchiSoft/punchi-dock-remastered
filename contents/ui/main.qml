@@ -2632,6 +2632,7 @@ PlasmoidItem {
 
                 function cancelPersistentDrag() {
                     persistentDragWatchdogTimer.stop()
+                    const sourceItem = persistentDragSourceItem
                     persistentDragSourceIndex = -1
                     persistentDragTargetIndex = -1
                     persistentDragExpectedItemText = ""
@@ -2640,6 +2641,17 @@ PlasmoidItem {
                     persistentDragIconName = "application-x-executable"
                     persistentDragMovesDynamicApplications = false
                     persistentMoveModeIndex = -1
+                    hoveredIndex = -1
+                    lastHoveredIndex = -1
+                    mouseOffset = 0.0
+                    lastMouseOffset = 0.0
+                    pointerPrimaryAxis = -1
+                    lastPointerPrimaryAxis = -1
+                    if (sourceItem
+                            && sourceItem.releasePersistentReorderInteraction) {
+                        sourceItem.releasePersistentReorderInteraction()
+                    }
+                    dockLayout.forceActiveFocus(Qt.OtherFocusReason)
                 }
 
                 function enterDynamicApplicationsMoveMode() {

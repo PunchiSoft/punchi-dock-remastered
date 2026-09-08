@@ -389,6 +389,7 @@ FocusScope {
             // qmllint disable unqualified
             text: i18nc(
                 "@info",
+                // xgettext:no-javascript-format
                 "Volumes above 100% can reduce audio quality and cause distortion.")
             // qmllint enable unqualified
         }

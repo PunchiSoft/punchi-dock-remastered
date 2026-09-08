@@ -13,11 +13,13 @@ TestCase {
         id: windowComponent
 
         Window {
+            id: hostWindow
             width: 240
             height: 160
             visible: true
 
             property alias dockItem: dockItem
+            property int itemClickCount: 0
 
             Item {
                 id: layoutStub
@@ -48,6 +50,7 @@ TestCase {
                     iconSize: 48
                     animateEntry: false
                     entryOpacity: 1.0
+                    onItemClicked: hostWindow.itemClickCount += 1
                 }
             }
         }
@@ -74,5 +77,23 @@ TestCase {
 
         dockItem.persistentReorderSource = false
         fuzzyCompare(dockItem.opacity, 1.0, 0.0001)
+    }
+
+    function test_reorderInteractionResetReenablesDirectClick() {
+        const hostWindow = createTemporaryObject(windowComponent, testCase)
+        verify(hostWindow !== null)
+        tryCompare(hostWindow, "visible", true)
+
+        const dockItem = hostWindow.dockItem
+        dockItem.suppressClickAfterReorder = true
+        dockItem.releasePersistentReorderInteraction()
+
+        compare(dockItem.suppressClickAfterReorder, false)
+        compare(dockItem.persistentReorderInteractionResetPending, true)
+        tryCompare(dockItem, "persistentReorderInteractionResetPending", false)
+
+        mouseClick(dockItem, dockItem.width / 2, dockItem.height / 2,
+            Qt.LeftButton)
+        compare(hostWindow.itemClickCount, 1)
     }
 }
