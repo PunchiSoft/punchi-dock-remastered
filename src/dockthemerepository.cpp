@@ -5,6 +5,7 @@
 #include "dockthemevalidator.h"
 
 #include <KLocalizedString>
+#include <KJob>
 
 #include <QCryptographicHash>
 #include <QDir>
@@ -17,9 +18,12 @@
 #include <QStandardPaths>
 
 #include <algorithm>
+#include <utility>
 
 namespace
 {
+QList<QPointer<DockThemeRepository>> repositories;
+
 constexpr auto TranslationDomain = "plasma_applet_org.kde.plasma.punchi-dock-remastered";
 constexpr int maximumDirectoryThemeCount = 256;
 constexpr int maximumDirectoryThemeScanCount = maximumDirectoryThemeCount + 1;
@@ -91,7 +95,40 @@ QFileInfoList managedThemeFiles(const QString &directoryPath)
 DockThemeRepository::DockThemeRepository(QObject *parent)
     : QObject(parent)
 {
+    repositories.append(this);
     refreshThemes();
+}
+
+DockThemeRepository::~DockThemeRepository()
+{
+    if (m_trashJob) {
+        m_trashJob->kill(KJob::Quietly);
+    }
+    if (m_removalBusy) {
+        refreshPeerRepositories();
+    }
+    repositories.removeAll(QPointer<DockThemeRepository>(this));
+}
+
+void DockThemeRepository::refreshPeerRepositories()
+{
+    const QString rootPath = m_removalRoot;
+    for (const auto &repository : std::as_const(repositories)) {
+        if (!repository || repository == this
+            || QFileInfo(repository->themesDirectoryPath()).absoluteFilePath() != rootPath) {
+            continue;
+        }
+        QMetaObject::invokeMethod(repository, [repository, rootPath]() {
+            if (!repository
+                || QFileInfo(repository->themesDirectoryPath()).absoluteFilePath() != rootPath) {
+                return;
+            }
+            repository->refreshThemes();
+            if (!repository->m_themeId.isEmpty()) {
+                repository->loadTheme(repository->m_themeId);
+            }
+        }, Qt::QueuedConnection);
+    }
 }
 
 QString DockThemeRepository::themeId() const
@@ -154,6 +191,7 @@ void DockThemeRepository::setCustomThemeDirectoryEnabled(bool enabled)
         return;
     }
 
+    cancelRemoval();
     m_customThemeDirectoryEnabled = enabled;
     Q_EMIT customThemeDirectoryEnabledChanged();
 
@@ -181,6 +219,7 @@ void DockThemeRepository::setCustomThemeDirectory(const QString &directory)
         return;
     }
 
+    cancelRemoval();
     m_customThemeDirectory = normalized;
     Q_EMIT customThemeDirectoryChanged();
 
@@ -387,82 +426,6 @@ QVariantMap DockThemeRepository::importThemeDirectory(const QUrl &sourceDirector
     return importResult;
 }
 
-bool DockThemeRepository::removeTheme(const QString &themeId)
-{
-    clearError();
-
-    const QString normalizedThemeId = themeId.trimmed().toLower();
-    if (!isValidThemeId(normalizedThemeId)) {
-        setErrorCode(QStringLiteral("invalidThemeId"));
-        return false;
-    }
-
-    const QString themeFilePath = managedThemeFilePath(normalizedThemeId);
-    if (themeFilePath.isEmpty()) {
-        setErrorCode(QStringLiteral("themeNotFound"));
-        return false;
-    }
-
-    const QFileInfo themeInfo(themeFilePath);
-    if (themeInfo.isSymLink() || !themeInfo.isFile()
-        || themeInfo.completeBaseName().toLower() != normalizedThemeId
-        || !QFile::remove(themeFilePath)) {
-        setErrorCode(QStringLiteral("removeFailed"));
-        return false;
-    }
-
-    removeEmptyThemeDirectories(themeFilePath);
-
-    if (m_themeId == normalizedThemeId) {
-        m_themeId.clear();
-        Q_EMIT themeIdChanged();
-        clearTheme();
-    }
-
-    refreshThemes();
-    return true;
-}
-
-bool DockThemeRepository::removeAllThemes()
-{
-    clearError();
-    const QString rootPath = themesDirectoryPath();
-    if (rootPath.isEmpty()) {
-        setErrorCode(QStringLiteral("storageUnavailable"));
-        return false;
-    }
-
-    const QFileInfo rootInfo(rootPath);
-    if (!rootInfo.exists() || !rootInfo.isDir() || rootInfo.isSymLink()) {
-        setErrorCode(QStringLiteral("storageUnavailable"));
-        return false;
-    }
-    if (!rootInfo.isWritable()) {
-        setErrorCode(QStringLiteral("readOnlyDirectory"));
-        return false;
-    }
-
-    const QFileInfoList themeFiles = managedThemeFiles(rootPath);
-    bool anyFailure = false;
-    for (const QFileInfo &themeInfo : themeFiles) {
-        if (!QFile::remove(themeInfo.absoluteFilePath())) {
-            anyFailure = true;
-        } else {
-            removeEmptyThemeDirectories(themeInfo.absoluteFilePath());
-        }
-    }
-
-    if (anyFailure) {
-        setErrorCode(QStringLiteral("removeFailed"));
-    }
-
-    m_themeId.clear();
-    Q_EMIT themeIdChanged();
-    clearTheme();
-    refreshThemes();
-    return !anyFailure;
-}
-
 void DockThemeRepository::refreshThemes()
 {
     QVariantList availableThemes;
@@ -661,32 +624,6 @@ QString DockThemeRepository::managedThemeDirectoryPath(const QVariantMap &theme)
         currentPath = childPath;
     }
     return currentPath;
-}
-
-void DockThemeRepository::removeEmptyThemeDirectories(const QString &filePath)
-{
-    const QString rootPath = QDir::cleanPath(themesDirectoryPath());
-    QString directoryPath = QFileInfo(filePath).absolutePath();
-
-    while (directoryPath.startsWith(rootPath + QLatin1Char('/'))
-        && directoryPath != rootPath) {
-        const QFileInfo directoryInfo(directoryPath);
-        if (directoryInfo.isSymLink()) {
-            return;
-        }
-
-        QDir directory(directoryPath);
-        if (!directory.entryList(
-                QDir::AllEntries | QDir::NoDotAndDotDot).isEmpty()) {
-            return;
-        }
-
-        const QString parentPath = directoryInfo.absolutePath();
-        if (!QDir(parentPath).rmdir(directoryInfo.fileName())) {
-            return;
-        }
-        directoryPath = parentPath;
-    }
 }
 
 bool DockThemeRepository::loadTheme(const QString &themeId)

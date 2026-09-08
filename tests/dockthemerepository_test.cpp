@@ -3,6 +3,10 @@
 #include "dockthemerepository.h"
 
 #include <QCoreApplication>
+#include <KJob>
+#include <QSignalSpy>
+#include <QTimer>
+#include <QTest>
 #include <QDir>
 #include <QDirIterator>
 #include <QFile>
@@ -13,6 +17,47 @@
 
 namespace
 {
+class FakeTrashJob : public KJob
+{
+public:
+    FakeTrashJob(const QString &path, bool fail) : m_path(path), m_fail(fail) { start(); }
+    void start() override {
+        QTimer::singleShot(0, this, [this]() {
+            if (m_fail || !QFile::rename(m_path, m_path + QStringLiteral(".trashed"))) {
+                setError(KJob::UserDefinedError);
+            }
+            emitResult();
+        });
+    }
+private:
+    QString m_path;
+    bool m_fail;
+};
+
+class TestRepository : public DockThemeRepository
+{
+public:
+    bool failTrash = false;
+    QString failId;
+    QList<QUrl> requestedUrls;
+protected:
+    KJob *createTrashJob(const QUrl &url) override {
+        requestedUrls.append(url);
+        return new FakeTrashJob(url.toLocalFile(), failTrash
+            || (!failId.isEmpty() && url.fileName().startsWith(failId)));
+    }
+};
+
+bool removeThemes(TestRepository &repository, const QString &id = {})
+{
+    if (repository.prepareRemoval(id).isEmpty()) {
+        return false;
+    }
+    QSignalSpy finished(&repository, &DockThemeRepository::removalFinished);
+    return repository.confirmRemoval() && finished.wait(5000)
+        && finished.constFirst().at(1).toInt() == 0;
+}
+
 bool expect(bool condition, const char *message)
 {
     if (!condition) {
@@ -81,7 +126,7 @@ int main(int argc, char **argv)
     sourceFile.close();
 
     bool passed = true;
-    DockThemeRepository importer;
+    TestRepository importer;
     const QString themeId = importer.importTheme(QUrl::fromLocalFile(sourcePath));
     passed &= expect(themeId.size() == 16, "import returns a stable identifier");
     passed &= expect(importer.valid(), "imported theme is active");
@@ -302,12 +347,12 @@ int main(int argc, char **argv)
         "batch import processes at most 256 discovered theme files");
 
     const QString importedThemeDirectory = QFileInfo(managedThemePath).absolutePath();
-    passed &= expect(importer.removeTheme(themeId),
+    passed &= expect(removeThemes(importer, themeId),
         "managed theme can be removed by its validated identifier");
     passed &= expect(!QFile::exists(managedThemePath),
         "theme removal deletes the managed JSON file");
-    passed &= expect(!QDir(importedThemeDirectory).exists(),
-        "theme removal cleans its empty named directory");
+    passed &= expect(QDir(importedThemeDirectory).exists(),
+        "theme removal preserves the parent directory for recovery");
     passed &= expect(!importer.valid() && importer.themeId().isEmpty(),
         "removing the active theme clears repository state");
     passed &= expect(std::none_of(
@@ -319,11 +364,11 @@ int main(int argc, char **argv)
         }),
         "removed theme disappears from the reactive library");
 
-    passed &= expect(!importer.removeTheme(QStringLiteral("../../outside"))
-        && importer.errorCode() == QLatin1String("invalidThemeId"),
+    passed &= expect(!removeThemes(importer, QStringLiteral("../../outside"))
+        && importer.errorCode() == QLatin1String("removalChanged"),
         "theme removal rejects traversal identifiers");
-    passed &= expect(!importer.removeTheme(QStringLiteral("ffffffffffffffff"))
-        && importer.errorCode() == QLatin1String("themeNotFound"),
+    passed &= expect(!removeThemes(importer, QStringLiteral("ffffffffffffffff"))
+        && importer.errorCode() == QLatin1String("removalChanged"),
         "theme removal reports an unavailable managed identifier");
 
     const QString linkedThemeId = QStringLiteral("aaaaaaaaaaaaaaaa");
@@ -333,8 +378,8 @@ int main(int argc, char **argv)
         std::cerr << "FAILED: managed theme symlink fixture could not be created\n";
         return 1;
     }
-    passed &= expect(!importer.removeTheme(linkedThemeId)
-        && importer.errorCode() == QLatin1String("themeNotFound")
+    passed &= expect(!removeThemes(importer, linkedThemeId)
+        && importer.errorCode() == QLatin1String("removalChanged")
         && QFile::exists(sourcePath),
         "theme removal ignores symlinks and preserves their targets");
 
@@ -388,7 +433,7 @@ int main(int argc, char **argv)
             "shaped theme is identified in the managed library");
     }
 
-    DockThemeRepository customRepo;
+    TestRepository customRepo;
     passed &= expect(customRepo.customThemeDirectoryDisplayName().isEmpty(),
         "display name is empty when no custom directory is configured");
     customRepo.setCustomThemeDirectory(QStringLiteral("/test/path/my-themes"));
@@ -414,10 +459,83 @@ int main(int argc, char **argv)
     passed &= expect(customRepo.valid() && customRepo.themeId() == customImportedId,
         "importing into custom directory activates the imported theme");
 
-    passed &= expect(customRepo.removeAllThemes(),
+    const QString unrelatedPath = QDir(customDir.path()).filePath(QStringLiteral("personal-data.json"));
+    QFile unrelatedFile(unrelatedPath);
+    if (!unrelatedFile.open(QIODevice::WriteOnly) || unrelatedFile.write("{\"keep\":true}") < 0) {
+        return 1;
+    }
+    unrelatedFile.close();
+    passed &= expect(removeThemes(customRepo),
         "removeAllThemes successfully deletes all themes in active directory");
     passed &= expect(customRepo.availableThemes().isEmpty() && !customRepo.valid() && customRepo.themeId().isEmpty(),
         "removeAllThemes clears available themes and resets repository state");
+    passed &= expect(QFile::exists(unrelatedPath),
+        "removing all themes preserves unrelated JSON files");
+
+    // Confirmation is a snapshot, not permission to rescan and remove new files.
+    QTemporaryDir snapshotDir;
+    TestRepository snapshotRepo;
+    snapshotRepo.setCustomThemeDirectory(snapshotDir.path());
+    snapshotRepo.setCustomThemeDirectoryEnabled(true);
+    const QString snapshotId = snapshotRepo.importTheme(QUrl::fromLocalFile(sourcePath));
+    passed &= expect(snapshotRepo.prepareRemoval().value(QStringLiteral("count")).toInt() == 1,
+        "confirmation contains exactly one validated theme");
+    snapshotRepo.cancelRemoval();
+    passed &= expect(!snapshotRepo.confirmRemoval() && snapshotRepo.requestedUrls.isEmpty(),
+        "cancelling a plan never starts a trash operation");
+
+    snapshotRepo.prepareRemoval();
+    const QString addedPath = QDir(snapshotDir.path()).filePath(QStringLiteral("1111111111111111.json"));
+    passed &= expect(QFile::copy(sourcePath, addedPath), "additional theme fixture is created");
+    passed &= expect(!snapshotRepo.confirmRemoval() && snapshotRepo.requestedUrls.isEmpty(),
+        "a new theme invalidates confirmation without removing any files");
+
+    snapshotRepo.prepareRemoval();
+    snapshotRepo.setCustomThemeDirectory(customDir.path());
+    snapshotRepo.setCustomThemeDirectory(snapshotDir.path());
+    passed &= expect(!snapshotRepo.confirmRemoval(),
+        "switching folders invalidates confirmation even when switching back");
+
+    snapshotRepo.prepareRemoval();
+    QFile changedFile(addedPath);
+    passed &= expect(changedFile.open(QIODevice::Append) && changedFile.write("\n") == 1,
+        "theme content can change while confirmation is open");
+    changedFile.close();
+    passed &= expect(!snapshotRepo.confirmRemoval() && snapshotRepo.requestedUrls.isEmpty(),
+        "changed file content invalidates confirmation");
+
+    // Simulate a failed mount/permission operation while another theme succeeds.
+    snapshotRepo.failId = snapshotId;
+    DockThemeRepository peer;
+    peer.setCustomThemeDirectory(snapshotDir.path());
+    peer.setCustomThemeDirectoryEnabled(true);
+    peer.setThemeId(QStringLiteral("1111111111111111"));
+    snapshotRepo.prepareRemoval();
+    QSignalSpy completed(&snapshotRepo, &DockThemeRepository::removalFinished);
+    passed &= expect(snapshotRepo.confirmRemoval() && snapshotRepo.removalBusy(),
+        "trashing enters an observable asynchronous busy state");
+    passed &= expect(!snapshotRepo.confirmRemoval() && snapshotRepo.prepareRemoval().isEmpty(),
+        "repeated clicks cannot replace or repeat an active operation");
+    passed &= expect(completed.wait(5000), "partial operation completes");
+    passed &= expect(completed.size() == 1 && completed.first().at(0).toInt() == 1
+        && completed.first().at(1).toInt() == 1 && !snapshotRepo.removalBusy(),
+        "partial result reports one success and one failure");
+    passed &= expect(snapshotRepo.valid() && snapshotRepo.themeId() == snapshotId,
+        "failed active theme stays selected and valid");
+    passed &= expect(QTest::qWaitFor([&peer]() { return !peer.valid(); }, 1000),
+        "another runtime repository refreshes without restarting Plasma");
+    passed &= expect(snapshotRepo.availableThemes().size() == 1,
+        "failed themes remain in the library");
+    passed &= expect(QFile::exists(addedPath + QStringLiteral(".trashed")),
+        "successful themes remain recoverable in the fake trash");
+
+    snapshotRepo.failTrash = true;
+    snapshotRepo.prepareRemoval();
+    completed.clear();
+    passed &= expect(snapshotRepo.confirmRemoval() && completed.wait(5000)
+        && completed.first().at(0).toInt() == 0 && completed.first().at(1).toInt() == 1,
+        "an unavailable Trash reports failure without permanent deletion");
+    passed &= expect(snapshotRepo.valid(), "failed trash operation preserves the active theme");
 
     customRepo.setCustomThemeDirectory(QStringLiteral("/unmounted/nonexistent/disk/path"));
     passed &= expect(customRepo.availableThemes().isEmpty(),

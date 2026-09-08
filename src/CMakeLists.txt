@@ -45,6 +45,7 @@ target_sources(punchidockintegration PRIVATE
     desktopshortcutwriter.h
     desktoplauncherresolver.cpp
     desktoplauncherresolver.h
+    dockthemeremoval.cpp
     dockthemerepository.cpp
     dockthemerepository.h
     dockthemevalidator.cpp

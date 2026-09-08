@@ -216,6 +216,8 @@ struct LoadResult {
     bool compactMatchesFull = false;
     bool preferredMatchesFull = false;
     bool fullRepresentationItemLoaded = false;
+    bool appearanceConfigLoaded = false;
+    bool appearanceRemovalFeedbackWorks = false;
     bool dockItemsControllerAvailable = false;
     bool dynamicMoveBridgeAvailable = false;
     bool dynamicMoveRequestAccepted = false;
@@ -331,6 +333,8 @@ private Q_SLOTS:
             QVERIFY2(result.compactMatchesFull, "The compact representation no longer aliases the full representation");
             QVERIFY2(result.preferredMatchesFull, "The preferred representation is not the full representation");
             QVERIFY2(result.fullRepresentationItemLoaded, "The full representation item was not instantiated");
+            QVERIFY2(result.appearanceConfigLoaded, "The appearance configuration was not instantiated");
+            QVERIFY2(result.appearanceRemovalFeedbackWorks, "Theme removal feedback did not update reactively");
             QVERIFY2(result.dockItemsControllerAvailable, "The dock items controller is unavailable");
             QVERIFY2(result.dockItemCount > 0, "A clean first run did not load the default dock items");
             QVERIFY2(result.dynamicMoveBridgeAvailable,
@@ -397,6 +401,27 @@ private:
             itemGuard = item;
             result.quickItemLoaded = item != nullptr;
             if (item) {
+                QQmlContext *configContext = QQmlEngine::contextForObject(item);
+                if (configContext && configContext->engine()) {
+                    QQmlComponent appearance(configContext->engine(), QUrl::fromLocalFile(
+                        QDir(m_packageRoot).filePath(QStringLiteral("contents/ui/config/ConfigAspect.qml"))));
+                    std::unique_ptr<QObject> config(appearance.create(configContext));
+                    result.appearanceConfigLoaded = config != nullptr;
+                    if (config) {
+                        config->setProperty("cfg_dockThemeMode", QStringLiteral("custom"));
+                        const bool failed = QMetaObject::invokeMethod(config.get(), "finishThemeRemoval",
+                            Q_ARG(QVariant, QVariant(0)), Q_ARG(QVariant, QVariant(1)));
+                        const bool warning = config->property("themeRemovalFailed").toBool();
+                        const bool succeeded = QMetaObject::invokeMethod(config.get(), "finishThemeRemoval",
+                            Q_ARG(QVariant, QVariant(1)), Q_ARG(QVariant, QVariant(0)));
+                        result.appearanceRemovalFeedbackWorks = failed && warning && succeeded
+                            && !config->property("themeRemovalFailed").toBool()
+                            && !config->property("themeRemovalMessage").toString().isEmpty();
+                        drainDeferredEvents();
+                    } else {
+                        qWarning().noquote() << appearance.errorString();
+                    }
+                }
                 QQmlComponent *fullRepresentation = item->fullRepresentation();
                 result.fullRepresentationDeclared = fullRepresentation != nullptr;
                 result.compactMatchesFull = item->compactRepresentation() == fullRepresentation;

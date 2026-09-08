@@ -200,12 +200,13 @@ add_test(NAME dockthemevalidator_test COMMAND dockthemevalidator_test)
 
 add_executable(dockthemerepository_test
     dockthemerepository_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/dockthemeremoval.cpp
     ${CMAKE_SOURCE_DIR}/src/dockthemerepository.cpp
     ${CMAKE_SOURCE_DIR}/src/dockthemevalidator.cpp
 )
 
 target_include_directories(dockthemerepository_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(dockthemerepository_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml KF6::I18n)
+target_link_libraries(dockthemerepository_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml Qt6::Test KF6::I18n KF6::KIOCore)
 
 add_test(NAME dockthemerepository_test COMMAND dockthemerepository_test)
 
@@ -404,6 +405,21 @@ add_test(NAME trashintegration_test COMMAND trashintegration_test)
 set_tests_properties(trashintegration_test PROPERTIES SKIP_RETURN_CODE 77)
 
 find_program(PUNCHI_DBUS_RUN_SESSION NAMES dbus-run-session REQUIRED)
+
+add_executable(dockthemetrash_test
+    dockthemetrash_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/dockthemerepository.cpp
+    ${CMAKE_SOURCE_DIR}/src/dockthemeremoval.cpp
+    ${CMAKE_SOURCE_DIR}/src/dockthemevalidator.cpp
+)
+target_include_directories(dockthemetrash_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(dockthemetrash_test PRIVATE
+    Qt6::Core Qt6::Gui Qt6::Qml Qt6::Test KF6::I18n KF6::KIOCore)
+add_test(NAME dockthemetrash_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_theme_trash_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} -- $<TARGET_FILE:dockthemetrash_test>)
+set_tests_properties(dockthemetrash_test PROPERTIES TIMEOUT 30)
+
 
 add_executable(plasmoid_full_load_test plasmoid_full_load_test.cpp)
 add_dependencies(plasmoid_full_load_test

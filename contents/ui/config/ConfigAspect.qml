@@ -119,10 +119,9 @@ KCM.SimpleKCM {
     property alias cfg_audioSpectrumOrigin: audioVisualizerPage.cfg_audioSpectrumOrigin
     property alias cfg_audioSpectrumFlow: audioVisualizerPage.cfg_audioSpectrumFlow
     property var lastThemeDirectoryImport: ({})
-    property string pendingThemeRemovalId: ""
-    property string pendingThemeRemovalName: ""
-    property int pendingThemeRemovalIndex: -1
     property string themeRemovalMessage: ""
+    property bool themeRemovalFailed: false
+    property var pendingThemeRemoval: ({})
 
     readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
@@ -235,77 +234,36 @@ KCM.SimpleKCM {
         }
     }
 
-    function requestSelectedThemeRemoval() {
-        const selectedThemeId = String(
-            dockThemeLibraryCombo.currentValue || "")
-        const selectedThemeIndex = dockThemeLibraryCombo.currentIndex
-        if (dockThemeLibraryCombo.currentIndex < 0
-            || selectedThemeId.length === 0
-            || selectedThemeIndex >= dockThemeRepository.availableThemes.length) {
+    function requestThemeRemoval(allThemes) {
+        if (dockThemeRepository.removalBusy) {
             return
         }
-
-        const selectedTheme =
-            dockThemeRepository.availableThemes[selectedThemeIndex] || ({})
-        page.pendingThemeRemovalId = selectedThemeId
-        page.pendingThemeRemovalName =
-            String(selectedTheme.name || dockThemeLibraryCombo.currentText || "")
-        page.pendingThemeRemovalIndex = selectedThemeIndex
-        removeThemeDialog.open()
+        const selectedId = String(dockThemeLibraryCombo.currentValue || "")
+        if (!allThemes && selectedId.length === 0) {
+            return
+        }
+        page.themeRemovalMessage = ""
+        page.pendingThemeRemoval = dockThemeRepository.prepareRemoval(allThemes ? "" : selectedId)
+        if (Number(page.pendingThemeRemoval.count || 0) > 0) {
+            removeThemeDialog.open()
+        }
     }
 
-    function removePendingTheme() {
-        const removedThemeId = page.pendingThemeRemovalId
-        const removedThemeName = page.pendingThemeRemovalName
-        const previousIndex = page.pendingThemeRemovalIndex
-        if (removedThemeId.length === 0
-            || !dockThemeRepository.removeTheme(removedThemeId)) {
-            return
-        }
-
+    function finishThemeRemoval(movedCount, failedCount) {
         page.lastThemeDirectoryImport = ({})
+        page.themeRemovalFailed = failedCount > 0
         // qmllint disable unqualified
-        page.themeRemovalMessage = i18n("Theme “%1” was deleted.", removedThemeName)
+        page.themeRemovalMessage = i18n("Themes moved to the Trash: %1. Themes that could not be moved: %2.",
+            movedCount, failedCount)
         // qmllint enable unqualified
-
-        if (dockThemeRepository.availableThemes.length === 0) {
+        const activeThemeRemains = dockThemeRepository.availableThemes.some(function(theme) {
+            return String(theme.id || "") === page.cfg_dockThemeCustomId
+        })
+        if (page.cfg_dockThemeCustomId.length > 0 && !activeThemeRemains) {
             page.cfg_dockThemeCustomId = ""
             page.cfg_dockThemeMode = "plasma"
-        } else if (page.cfg_dockThemeCustomId === removedThemeId) {
-            const fallbackIndex = Math.min(
-                Math.max(0, previousIndex),
-                dockThemeRepository.availableThemes.length - 1)
-            const fallbackTheme =
-                dockThemeRepository.availableThemes[fallbackIndex] || ({})
-            page.cfg_dockThemeCustomId = String(fallbackTheme.id || "")
-            if (page.cfg_dockThemeCustomId.length === 0) {
-                page.cfg_dockThemeMode = "plasma"
-            }
         }
-
-        page.pendingThemeRemovalId = ""
-        page.pendingThemeRemovalName = ""
-        page.pendingThemeRemovalIndex = -1
-        page.syncThemeLibrarySelector()
-    }
-
-    function removeAllInstalledThemes() {
-        const count = dockThemeRepository.availableThemes.length
-        if (count === 0 || !dockThemeRepository.removeAllThemes()) {
-            return
-        }
-
-        page.lastThemeDirectoryImport = ({})
-        // qmllint disable unqualified
-        page.themeRemovalMessage = i18np("Theme was deleted. Switched to Plasma theme.",
-            "All %1 themes were deleted. Switched to Plasma theme.", count)
-        // qmllint enable unqualified
-
-        page.cfg_dockThemeCustomId = ""
-        page.cfg_dockThemeMode = "plasma"
-        page.pendingThemeRemovalId = ""
-        page.pendingThemeRemovalName = ""
-        page.pendingThemeRemovalIndex = -1
+        page.pendingThemeRemoval = ({})
         page.syncThemeLibrarySelector()
     }
 
@@ -339,10 +297,8 @@ KCM.SimpleKCM {
             return i18n("The selected installed theme has an invalid identifier.")
         case "readOnlyDirectory":
             return i18n("Punchi Dock cannot import themes here for security reasons: the selected folder is read-only or requires administrator permissions.")
-        case "removeFailed":
-            return i18n("Punchi Dock could not delete the selected theme.")
-        case "deleteAllFailed":
-            return i18n("Punchi Dock could not delete all themes.")
+        case "removalChanged":
+            return i18n("The theme library changed. Review the themes and try again.")
         default:
             return i18n("The selected file is not a supported Punchi Dock theme.")
         }
@@ -391,6 +347,14 @@ KCM.SimpleKCM {
         syncThemeLibrarySelector()
     }
 
+    Punchi.TrashIntegration {
+        id: themeTrash
+        onOperationFailed: function(operation, message) {
+            page.themeRemovalFailed = true
+            page.themeRemovalMessage = message
+        }
+    }
+
     Punchi.DockThemeRepository {
         id: dockThemeRepository
         themeId: page.inPanel ? "" : page.cfg_dockThemeCustomId
@@ -398,6 +362,9 @@ KCM.SimpleKCM {
         customThemeDirectory: page.cfg_dockCustomThemeDirectory
 
         onThemesChanged: page.syncThemeLibrarySelector()
+        onRemovalFinished: function(movedCount, failedCount) {
+            page.finishThemeRemoval(movedCount, failedCount)
+        }
     }
 
     // qmllint disable unqualified
@@ -492,55 +459,29 @@ KCM.SimpleKCM {
     Kirigami.PromptDialog {
         id: removeThemeDialog
         parent: page
-        title: i18nc("@title:window", "Delete Installed Theme?")
-        subtitle: i18n("Delete “%1” permanently from the Punchi Dock Remastered theme library?",
-            page.pendingThemeRemovalName)
+        title: i18np("Move %1 Theme to the Trash?", "Move %1 Themes to the Trash?",
+            Number(page.pendingThemeRemoval.count || 0))
+        subtitle: i18n("Folder: %1\nYou can recover these themes from the Trash. If the active theme is moved, the dock will use the Plasma theme.",
+            String(page.pendingThemeRemoval.directory || ""))
         dialogType: Kirigami.PromptDialog.Warning
         standardButtons: Kirigami.Dialog.NoButton
         customFooterActions: [
-            Kirigami.Action {
-                text: i18nc("@action:button", "Delete Theme")
-                icon.name: "edit-delete"
-                onTriggered: removeThemeDialog.accept()
-            },
             Kirigami.Action {
                 text: i18nc("@action:button", "Cancel")
                 icon.name: "dialog-cancel"
                 onTriggered: removeThemeDialog.reject()
-            }
-        ]
-        onAccepted: page.removePendingTheme()
-        onRejected: {
-            page.pendingThemeRemovalId = ""
-            page.pendingThemeRemovalName = ""
-            page.pendingThemeRemovalIndex = -1
-        }
-    }
-
-    Kirigami.PromptDialog {
-        id: removeAllThemesDialog
-        parent: page
-        title: i18nc("@title:window", "Delete All Installed Themes?")
-        subtitle: page.cfg_dockCustomThemeDirectoryEnabled && page.cfg_dockCustomThemeDirectory.length > 0
-            ? i18n("Delete all %1 installed themes permanently from custom folder “%2”? This action cannot be undone.",
-                dockThemeRepository.availableThemes.length, dockThemeRepository.customThemeDirectoryDisplayName)
-            : i18n("Delete all %1 installed themes permanently from the Punchi Dock Remastered theme library? This action cannot be undone.",
-                dockThemeRepository.availableThemes.length)
-        dialogType: Kirigami.PromptDialog.Warning
-        standardButtons: Kirigami.Dialog.NoButton
-        customFooterActions: [
-            Kirigami.Action {
-                text: i18nc("@action:button", "Delete All Themes")
-                icon.name: "edit-delete"
-                onTriggered: removeAllThemesDialog.accept()
             },
             Kirigami.Action {
-                text: i18nc("@action:button", "Cancel")
-                icon.name: "dialog-cancel"
-                onTriggered: removeAllThemesDialog.reject()
+                text: i18nc("@action:button", "Move to Trash")
+                icon.name: "user-trash"
+                onTriggered: removeThemeDialog.accept()
             }
         ]
-        onAccepted: page.removeAllInstalledThemes()
+        onAccepted: dockThemeRepository.confirmRemoval()
+        onRejected: {
+            dockThemeRepository.cancelRemoval()
+            page.pendingThemeRemoval = ({})
+        }
     }
 
     Controls.Menu {
@@ -548,21 +489,21 @@ KCM.SimpleKCM {
 
         Controls.MenuItem {
             text: dockThemeLibraryCombo.currentIndex >= 0
-                ? i18n("Delete “%1”", dockThemeLibraryCombo.currentText)
-                : i18n("Delete selected theme")
-            icon.name: "edit-delete"
-            enabled: dockThemeLibraryCombo.currentIndex >= 0
+                ? i18n("Move “%1” to the Trash…", dockThemeLibraryCombo.currentText)
+                : i18n("Move selected theme to the Trash…")
+            icon.name: "user-trash"
+            enabled: !dockThemeRepository.removalBusy && dockThemeLibraryCombo.currentIndex >= 0
                 && String(dockThemeLibraryCombo.currentValue || "").length > 0
-            onTriggered: page.requestSelectedThemeRemoval()
+            onTriggered: page.requestThemeRemoval(false)
         }
 
         Controls.MenuSeparator {}
 
         Controls.MenuItem {
-            text: i18n("Delete all themes (%1)…", dockThemeRepository.availableThemes.length)
-            icon.name: "edit-delete-remove"
-            enabled: dockThemeRepository.availableThemes.length > 0
-            onTriggered: removeAllThemesDialog.open()
+            text: i18n("Move all themes to the Trash…")
+            icon.name: "user-trash"
+            enabled: !dockThemeRepository.removalBusy && dockThemeRepository.availableThemes.length > 0
+            onTriggered: page.requestThemeRemoval(true)
         }
     }
 
@@ -573,7 +514,7 @@ KCM.SimpleKCM {
             ? Qt.resolvedUrl(page.cfg_dockCustomThemeDirectory.startsWith("file://")
                 ? page.cfg_dockCustomThemeDirectory
                 : "file://" + page.cfg_dockCustomThemeDirectory)
-            : undefined
+            : ""
 
         onAccepted: {
             page.themeRemovalMessage = ""
@@ -698,6 +639,7 @@ KCM.SimpleKCM {
 
             Controls.Button {
                 id: importThemeButton
+                enabled: !dockThemeRepository.removalBusy
                 text: i18n("Import…") // qmllint disable unqualified
                 icon.name: "list-add"
                 Accessible.name: i18n("Import Punchi Dock JSON themes") // qmllint disable unqualified
@@ -712,16 +654,16 @@ KCM.SimpleKCM {
 
             Controls.Button {
                 id: removeThemeButton
-                text: i18nc("@action:button", "Delete…") // qmllint disable unqualified
-                icon.name: "edit-delete-symbolic"
-                enabled: dockThemeRepository.availableThemes.length > 0
+                text: i18nc("@action:button", "Move to Trash…") // qmllint disable unqualified
+                icon.name: "user-trash"
+                enabled: !dockThemeRepository.removalBusy && dockThemeRepository.availableThemes.length > 0
                 Accessible.name: i18n("Theme deletion options") // qmllint disable unqualified
-                Accessible.description: i18n("Choose whether to delete the selected theme or all installed themes.") // qmllint disable unqualified
+                Accessible.description: i18n("Choose whether to move the selected theme or all installed themes to the Trash.") // qmllint disable unqualified
                 onClicked: removeThemeMenu.popup(
                     removeThemeButton, 0, removeThemeButton.height)
 
                 Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Delete theme options…") // qmllint disable unqualified
+                Controls.ToolTip.text: i18n("Move themes to the Trash…") // qmllint disable unqualified
 
                 ConfigCursorBehavior {
                     cursorEnabled: page.interactiveCursorEnabled
@@ -736,6 +678,7 @@ KCM.SimpleKCM {
 
             Controls.CheckBox {
                 id: customThemeFolderCheckBox
+                enabled: !dockThemeRepository.removalBusy
                 text: i18n("Use custom folder") // qmllint disable unqualified
                 checked: page.cfg_dockCustomThemeDirectoryEnabled
                 onToggled: page.cfg_dockCustomThemeDirectoryEnabled = checked
@@ -773,6 +716,7 @@ KCM.SimpleKCM {
 
             Controls.Button {
                 id: selectCustomThemeFolderButton
+                enabled: !dockThemeRepository.removalBusy
                 icon.name: "list-add"
                 text: "+"
                 display: Controls.AbstractButton.IconOnly
@@ -832,9 +776,16 @@ KCM.SimpleKCM {
         }
 
         Kirigami.InlineMessage {
-            visible: page.themeRemovalMessage.length > 0
-            type: Kirigami.MessageType.Positive
-            text: page.themeRemovalMessage
+            visible: dockThemeRepository.removalBusy || page.themeRemovalMessage.length > 0
+            type: page.themeRemovalFailed ? Kirigami.MessageType.Warning : Kirigami.MessageType.Information
+            text: dockThemeRepository.removalBusy
+                ? i18n("Moving themes to the Trash…") : page.themeRemovalMessage // qmllint disable unqualified
+            actions: Kirigami.Action {
+                text: i18n("Open Trash") // qmllint disable unqualified
+                icon.name: "user-trash"
+                enabled: !dockThemeRepository.removalBusy
+                onTriggered: themeTrash.openTrash()
+            }
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
         }

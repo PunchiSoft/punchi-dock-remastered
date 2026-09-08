@@ -3,6 +3,9 @@
 #pragma once
 
 #include <QObject>
+#include <QPointer>
+
+class KJob;
 #include <QUrl>
 #include <QVariantList>
 #include <QVariantMap>
@@ -12,6 +15,7 @@ class DockThemeRepository : public QObject
 {
     Q_OBJECT
     QML_ELEMENT
+    Q_PROPERTY(bool removalBusy READ removalBusy NOTIFY removalBusyChanged)
     Q_PROPERTY(QString themeId READ themeId WRITE setThemeId NOTIFY themeIdChanged)
     Q_PROPERTY(QVariantMap theme READ theme NOTIFY themeChanged)
     Q_PROPERTY(bool valid READ valid NOTIFY themeChanged)
@@ -24,6 +28,8 @@ class DockThemeRepository : public QObject
 
 public:
     explicit DockThemeRepository(QObject *parent = nullptr);
+    ~DockThemeRepository() override;
+    bool removalBusy() const;
 
     QString themeId() const;
     void setThemeId(const QString &themeId);
@@ -41,12 +47,15 @@ public:
 
     Q_INVOKABLE QString importTheme(const QUrl &sourceUrl);
     Q_INVOKABLE QVariantMap importThemeDirectory(const QUrl &sourceDirectoryUrl);
-    Q_INVOKABLE bool removeTheme(const QString &themeId);
-    Q_INVOKABLE bool removeAllThemes();
+    Q_INVOKABLE QVariantMap prepareRemoval(const QString &themeId = QString());
+    Q_INVOKABLE bool confirmRemoval();
+    Q_INVOKABLE void cancelRemoval();
     Q_INVOKABLE void refreshThemes();
     Q_INVOKABLE void clearError();
 
 Q_SIGNALS:
+    void removalBusyChanged();
+    void removalFinished(int movedCount, int failedCount);
     void themeIdChanged();
     void themeChanged();
     void errorCodeChanged();
@@ -54,15 +63,31 @@ Q_SIGNALS:
     void customThemeDirectoryEnabledChanged();
     void customThemeDirectoryChanged();
 
+protected:
+    // Allows deterministic failure tests without touching the user's Trash.
+    virtual KJob *createTrashJob(const QUrl &url);
+
 private:
+    QVariantList removalInventory() const;
+    void trashNextTheme();
+    void finishRemoval();
+    void refreshPeerRepositories();
     QString storeTheme(const QVariantMap &theme, bool *created = nullptr);
     QString managedThemeFilePath(const QString &themeId) const;
     QString managedThemeDirectoryPath(const QVariantMap &theme) const;
-    void removeEmptyThemeDirectories(const QString &filePath);
     bool loadTheme(const QString &themeId);
     void clearTheme();
     void setErrorCode(const QString &errorCode);
     QString themesDirectoryPath() const;
+
+    bool m_removalBusy = false;
+    QVariantList m_pendingInventory;
+    QVariantList m_pendingRemoval;
+    QString m_removalRoot;
+    int m_removalIndex = 0;
+    int m_movedCount = 0;
+    int m_failedCount = 0;
+    QPointer<KJob> m_trashJob;
 
     QString m_themeId;
     QVariantMap m_theme;
