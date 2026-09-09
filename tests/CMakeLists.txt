@@ -606,6 +606,20 @@ punchi_add_qml_test(
     popup_spacing_metrics_test.qml
 )
 punchi_add_qml_test(
+    plasma_panel_sizing_test
+    plasma_panel_sizing_test.qml
+)
+add_test(
+    NAME native_popup_spacing_test
+    COMMAND ${PUNCHI_DBUS_RUN_SESSION} -- $<TARGET_FILE:punchi_qmltestrunner>
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/native_popup_spacing_test.qml
+)
+set_tests_properties(native_popup_spacing_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PUNCHI_TEST_NATIVE_POPUP=1"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30
+)
+punchi_add_qml_test(
     dock_item_launcher_drop_state_test
     dock_item_launcher_drop_state_test.qml
 )

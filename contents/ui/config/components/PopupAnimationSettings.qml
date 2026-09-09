@@ -13,7 +13,6 @@ Kirigami.FormLayout {
     property alias animationIntensityPercent: intensitySlider.value
     property int contentWidthHint: 420
     property int selectorWidthHint: 240
-    property bool interactiveCursorEnabled: false
 
     readonly property var animationOptions: [
         { "text": i18n("Subtle scale"), "value": "scale" },
@@ -59,9 +58,6 @@ Kirigami.FormLayout {
             }
         }
 
-        ConfigCursorBehavior {
-            cursorEnabled: root.interactiveCursorEnabled
-        }
     }
 
     RowLayout {
@@ -80,10 +76,6 @@ Kirigami.FormLayout {
             Layout.preferredWidth: root.contentWidthHint - 64
             Accessible.name: i18n("Opening animation speed")
 
-            ConfigCursorBehavior {
-                cursorEnabled: root.interactiveCursorEnabled
-                role: "slider"
-            }
         }
 
         Controls.Label {
@@ -109,10 +101,6 @@ Kirigami.FormLayout {
             Layout.preferredWidth: root.contentWidthHint - 64
             Accessible.name: i18n("Opening animation intensity")
 
-            ConfigCursorBehavior {
-                cursorEnabled: root.interactiveCursorEnabled
-                role: "slider"
-            }
         }
 
         Controls.Label {

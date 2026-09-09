@@ -182,14 +182,32 @@ def main() -> int:
         "Folder popup",
         "dockConfig.folderPopupBackgroundOpacity",
     )
+    require(folder_popup, "gap: dockGeometry.folderPopupGap",
+            "Folder popup must consume the configured distance")
+    require(folder_popup, "NativePopupSpacing {",
+            "Folder popup must retain native positioning with a spacing anchor")
+    require(folder_popup, "sourceAnchor: folderPopupDialog.sourceAnchor",
+            "Folder popup must preserve the original launcher identity")
     assert_widget_surface(
         trash_menu,
         "Trash menu",
     )
+    require(trash_menu, "gap: dockGeometry.contextMenuGap",
+            "Trash menu must consume the configured menu distance")
+    require(trash_menu, "NativePopupSpacing {",
+            "Trash menu must retain native positioning with a spacing anchor")
+    require(trash_menu, "sourceAnchor: trashMenuDialog.sourceAnchor",
+            "Trash menu must preserve the original launcher identity")
     assert_widget_surface(
         app_actions,
         "Application actions menu",
     )
+    require(app_actions, "gap: dockGeometry.contextMenuGap",
+            "Application actions menu must consume the configured menu distance")
+    require(app_actions, "NativePopupSpacing {",
+            "Application actions menu must retain native positioning with a spacing anchor")
+    require(app_actions, "sourceAnchor: appActionsDialog.sourceAnchor",
+            "Application actions menu must preserve the original launcher identity")
     assert_widget_surface(
         note_popup,
         "Note popup",

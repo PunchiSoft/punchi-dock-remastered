@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
-import org.kde.plasma.plasmoid
 import "components"
 
 Item {
@@ -28,8 +27,6 @@ Item {
     property alias cfg_windowPreviewAnimationSpeedPercent: windowPreviewAnimationSettings.animationSpeedPercent
     property alias cfg_windowPreviewAnimationIntensity: windowPreviewAnimationSettings.animationIntensityPercent
 
-    readonly property bool interactiveCursorEnabled:
-        !!Plasmoid.configuration.globalMouseCursor
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     // qmllint disable unqualified
@@ -137,9 +134,6 @@ Item {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -174,9 +168,6 @@ Item {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -213,10 +204,6 @@ Item {
                 Accessible.name: i18n("Media card background opacity")
                 Accessible.description: i18n("Only the media card background changes; artwork, controls and text remain fully opaque.")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -256,10 +243,6 @@ Item {
                 Accessible.name: i18n("Window preview scale")
                 Accessible.description: i18n("Adjusts the window preview scale between 100 and 300 percent.")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -296,10 +279,6 @@ Item {
                 Accessible.name: i18n("Window preview background opacity")
                 Accessible.description: i18n("Only the popup background changes; thumbnails, window content, controls and text remain fully opaque.")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -341,9 +320,6 @@ Item {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -377,9 +353,6 @@ Item {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -400,9 +373,6 @@ Item {
             enabled: page.previewStyle !== "none"
             Accessible.description: i18n("Applies to window titles, window details and overflow group labels.")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.SpinBox {
@@ -414,9 +384,6 @@ Item {
             Layout.preferredWidth: page.selectorWidthHint
             Accessible.name: i18n("Maximum visible popup rows")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.Label {
@@ -443,7 +410,6 @@ Item {
             animationIntensityPercent: 100
             contentWidthHint: page.contentWidthHint
             selectorWidthHint: page.selectorWidthHint
-            interactiveCursorEnabled: page.interactiveCursorEnabled
         }
     }
 }

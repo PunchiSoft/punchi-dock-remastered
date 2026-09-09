@@ -20,7 +20,6 @@ KCM.SimpleKCM {
     property alias cfg_showTasksCurrentDesktopOnly: currentDesktopOnlyCheck.checked
     property string cfg_windowGroupingMode: "application"
     property alias cfg_maxDynamicTaskGroups: maxDynamicTaskGroupsSpin.value
-    readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property int contentWidthHint: layoutMetrics.contentWidth
@@ -67,9 +66,6 @@ KCM.SimpleKCM {
             Kirigami.FormData.label: i18n("Tasks:")
             text: i18n("Show active windows in the dock")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.Label {
@@ -91,9 +87,6 @@ KCM.SimpleKCM {
             Layout.preferredWidth: page.selectorWidthHint
             Accessible.name: i18n("Maximum dynamic groups shown in the dock")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.Label {
@@ -112,9 +105,6 @@ KCM.SimpleKCM {
             text: i18n("Show only windows from the current virtual desktop")
             enabled: showActiveTasksCheck.checked
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.Label {
@@ -156,9 +146,6 @@ KCM.SimpleKCM {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 

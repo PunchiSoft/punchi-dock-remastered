@@ -9,6 +9,25 @@
 #include <QQmlEngine>
 #include <QtQuickTest>
 
+namespace {
+QtMessageHandler previousMessageHandler = nullptr;
+
+void nativePopupMessageHandler(QtMsgType type, const QMessageLogContext &context,
+                               const QString &message)
+{
+    // The offscreen plugin cannot apply native masks or raise windows. Keep
+    // this exact allowlist opt-in for the native popup geometry test only.
+    if (type == QtWarningMsg
+        && (message == QLatin1StringView("This plugin does not support setting window masks")
+            || message == QLatin1StringView("This plugin does not support raise()"))) {
+        return;
+    }
+    if (previousMessageHandler) {
+        previousMessageHandler(type, context, message);
+    }
+}
+}
+
 class PunchiQmlTestSetup : public QObject
 {
     Q_OBJECT
@@ -21,8 +40,23 @@ public:
     }
 
 public Q_SLOTS:
+    void allowNativePopupPlatformWarnings()
+    {
+        if (qEnvironmentVariableIntValue("PUNCHI_TEST_NATIVE_POPUP") == 1
+            && qgetenv("QT_QPA_PLATFORM") == "offscreen") {
+            const auto previous = qInstallMessageHandler(nativePopupMessageHandler);
+            if (previous != nativePopupMessageHandler) {
+                previousMessageHandler = previous;
+            }
+        }
+    }
+
     void qmlEngineAvailable(QQmlEngine *engine)
     {
+        if (qEnvironmentVariableIntValue("PUNCHI_TEST_NATIVE_POPUP") == 1) {
+            engine->rootContext()->setContextProperty(
+                QStringLiteral("nativePopupTestSupport"), this);
+        }
 #ifdef PUNCHI_HAS_KLOCALIZED_QML_CONTEXT
         auto *localizedContext = KLocalization::setupLocalizedContext(engine);
 #else

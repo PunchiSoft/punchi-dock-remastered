@@ -2,6 +2,7 @@ import QtQuick
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 import "../../code/separatorAppearance.js" as SeparatorAppearance
+import "../../code/plasmaPanelSizing.js" as PlasmaPanelSizing
 
 QtObject {
     id: root
@@ -39,6 +40,8 @@ QtObject {
     property real hostHeight: 0
     property var panelWindow: null
     property var containment: null
+    property var panelIconGeometries: []
+    property string panelHoverAnimation: "wave"
 
     readonly property PopupSpacingMetrics popupSpacingMetrics:
         PopupSpacingMetrics {}
@@ -273,9 +276,27 @@ QtObject {
     readonly property int panelCrossAxisPadding: root.verticalPanel
         ? (dockBackgroundHorizontalPadding * 2)
         : (dockBackgroundVerticalPadding * 2)
-    readonly property real effectivePanelHoverScale: (!root.customThemeActive && root.inPanel)
-        ? Math.min(1.65, Math.max(1.0, root.panelHoverScale))
-        : Math.max(1.0, root.panelHoverScale)
+    readonly property var plasmaPanelSizing: PlasmaPanelSizing.calculate(
+        root.configuredIconSize, root.panelHoverScale,
+        root.configuredPanelThickness, root.verticalPanel,
+        root.dockShowLabels, Kirigami.Units.smallSpacing * 3)
+    readonly property real effectivePanelHoverScale: {
+        if (root.customThemeActive || !root.inPanel) {
+            return Math.max(1.0, root.panelHoverScale)
+        }
+        let scale = root.plasmaPanelSizing.hoverScale
+        const windowExtent = root.panelWindow ? Number(root.verticalPanel
+            ? root.panelWindow.width : root.panelWindow.height) : 0
+        for (const rect of root.panelIconGeometries) {
+            scale = Math.min(scale, PlasmaPanelSizing.boundedHoverScale(
+                root.plasmaPanelSizing.hoverScale,
+                root.verticalPanel ? rect.width : rect.height,
+                root.verticalPanel ? rect.x + rect.width / 2 : rect.y + rect.height / 2,
+                windowExtent, root.leftPanel || root.topPanel ? 1 : -1,
+                root.panelHoverAnimation))
+        }
+        return scale
+    }
     readonly property int plasmaThemeCrossAxisMargin: {
         return root.effectivePanelHoverScale > 1.01 ? 2 : 4
     }
@@ -284,7 +305,9 @@ QtObject {
         ? Math.max(24, Math.round((detectedPanelThickness - crossAxisBaseMargin) / root.effectivePanelHoverScale))
         : Math.max(24, root.configuredIconSize)
     readonly property int effectivePanelIconLimit: effectivePanelBaseIconLimit
-    readonly property int effectiveIconSize: (root.inPanel
+    readonly property int effectiveIconSize: root.inPanel && !root.customThemeActive
+        ? root.plasmaPanelSizing.iconSize
+        : (root.inPanel
         && !root.unlockPanelIconSizeLimit
         && root.configuredPanelThickness > 0)
         ? Math.min(root.configuredIconSize, effectivePanelBaseIconLimit)
@@ -400,6 +423,9 @@ QtObject {
         : Math.max(root.verticalPanel ? panelItemHeight : panelItemWidth,
             panelCompactContentLength)
     readonly property int plasmaThemeCrossAxisExtent: {
+        if (root.inPanel && !root.customThemeActive) {
+            return root.plasmaPanelSizing.extent
+        }
         const iconExtent = root.effectiveIconSize
         const scale = root.effectivePanelHoverScale
         const labelArea = root.horizontalPanel ? root.dockLabelAreaHeight : 0

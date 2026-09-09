@@ -8,6 +8,7 @@ import org.kde.plasma.plasmoid
 import "../org/punchi/dock" as Punchi
 import org.kde.taskmanager as TaskManager
 import "components"
+import "../../code/plasmaPanelSizing.js" as PlasmaPanelSizing
 
 KCM.SimpleKCM {
     id: page
@@ -33,7 +34,6 @@ KCM.SimpleKCM {
     property bool cfg_unlockPanelIconSizeLimit: false
     readonly property bool customThemeActiveInPanel: page.inPanel
         && ((page.cfg_dockThemeMode === "custom") || (String(Plasmoid.configuration.dockThemeMode || "") === "custom"))
-    readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property int contentWidthHint: layoutMetrics.contentWidth
@@ -73,6 +73,10 @@ KCM.SimpleKCM {
         const calculatedMax = Math.floor(availableHeight / currentHoverScale)
         return Math.max(24, Math.min(96, calculatedMax))
     }
+    readonly property var plasmaPanelSizing: PlasmaPanelSizing.calculate(
+        page.cfg_iconSize, page.currentHoverScale, page.cfg_panelThickness,
+        page.verticalPanel, !!Plasmoid.configuration.showLabels,
+        Kirigami.Units.smallSpacing * 3)
     function calculatedAutoThickness(iconSize) {
         if (verticalPanel) {
             return Math.ceil(iconSize + 12)
@@ -221,9 +225,6 @@ KCM.SimpleKCM {
                     onActivated: page.cfg_panelLengthMode = currentValue
                     Accessible.name: page.verticalPanel ? i18n("Panel height") : i18n("Panel width")
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                    }
                 }
             }
 
@@ -261,9 +262,6 @@ KCM.SimpleKCM {
                     onActivated: page.cfg_panelAlignmentMode = currentValue
                     Accessible.name: i18n("Panel alignment")
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                    }
                 }
             }
 
@@ -301,9 +299,6 @@ KCM.SimpleKCM {
                     onActivated: page.cfg_panelFloatingMode = currentValue
                     Accessible.name: i18n("Panel floating mode")
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                    }
                 }
             }
 
@@ -350,9 +345,6 @@ KCM.SimpleKCM {
                     onActivated: page.cfg_panelVisibilityMode = currentValue
                     Accessible.name: i18n("Panel visibility")
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                    }
                 }
             }
 
@@ -400,9 +392,6 @@ KCM.SimpleKCM {
                     onActivated: page.cfg_panelOpacityMode = currentValue
                     Accessible.name: i18n("Panel opacity")
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                    }
                 }
 
                 Controls.Label {
@@ -439,9 +428,6 @@ KCM.SimpleKCM {
                     }
                     Accessible.name: page.verticalPanel ? i18n("Panel width") : i18n("Panel height")
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                    }
                 }
             }
 
@@ -469,16 +455,13 @@ KCM.SimpleKCM {
                     }
                     Accessible.name: page.verticalPanel ? i18n("Custom panel width") : i18n("Custom panel height")
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                    }
                 }
             }
 
             Kirigami.InlineMessage {
                 Layout.fillWidth: true
                 Layout.maximumWidth: page.contentWidthHint
-                visible: page.inPanel && page.cfg_panelThickness > 0
+                visible: page.customThemeActiveInPanel && page.cfg_panelThickness > 0
                 type: Kirigami.MessageType.Warning
                 text: i18n("Configuring a custom panel size may cause icons to be clipped during wave magnification or create disproportionate margins if the height is not proportional to the icon size.")
             }
@@ -492,16 +475,12 @@ KCM.SimpleKCM {
                 Controls.Slider {
                     id: iconSizeSlider
                     from: 24
-                    to: (page.inPanel && !page.cfg_unlockPanelIconSizeLimit && page.cfg_panelThickness > 0)
+                    to: (page.customThemeActiveInPanel && !page.cfg_unlockPanelIconSizeLimit && page.cfg_panelThickness > 0)
                         ? page.safePanelIconSizeMax : 96
                     stepSize: 2
                     Layout.fillWidth: true
                     Layout.preferredWidth: page.contentWidthHint - 60
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                        role: "slider"
-                    }
                 }
 
                 Controls.Label {
@@ -526,10 +505,6 @@ KCM.SimpleKCM {
                     Accessible.name: i18n("Icon spacing")
                     Accessible.description: i18n("Adjusts the spacing between dock icons from 0 to 24 pixels.")
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                        role: "slider"
-                    }
                 }
 
                 Controls.Label {
@@ -540,8 +515,19 @@ KCM.SimpleKCM {
             }
             // qmllint enable unqualified
 
+            Controls.Label {
+                visible: page.inPanel && !page.customThemeActiveInPanel
+                text: i18n("Effective icon size: %1 px; maximum hover enlargement: %2%", // qmllint disable unqualified
+                    page.plasmaPanelSizing.iconSize,
+                    Math.floor((page.plasmaPanelSizing.hoverScale - 1) * 100 + 0.0001))
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                Layout.maximumWidth: page.contentWidthHint
+                color: Kirigami.Theme.disabledTextColor
+            }
+
             RowLayout {
-                visible: page.inPanel && page.cfg_panelThickness > 0
+                visible: page.customThemeActiveInPanel && page.cfg_panelThickness > 0
                 Kirigami.FormData.label: i18n("Limit:") // qmllint disable unqualified
                 Layout.maximumWidth: page.contentWidthHint
 
@@ -571,9 +557,6 @@ KCM.SimpleKCM {
                         }
                     }
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                    }
                 }
             }
 
@@ -603,9 +586,6 @@ KCM.SimpleKCM {
                         }
                     }
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                    }
                 }
             }
 
@@ -634,9 +614,6 @@ KCM.SimpleKCM {
                         page.cfg_targetVirtualDesktop = currentValue
                     }
 
-                    ConfigCursorBehavior {
-                        cursorEnabled: page.interactiveCursorEnabled
-                    }
                 }
             }
 

@@ -57,8 +57,6 @@ KCM.SimpleKCM {
     property bool cfg_mediaControlsOnHover: false
     property alias cfg_maxPopupRows: popupAppearancePage.cfg_maxPopupRows
     property alias cfg_popupAnimation: folderPopupPage.cfg_popupAnimation
-    // Kept so existing configurations can still be loaded by the KCM.
-    property string cfg_popupAnimationSpeed: "normal"
     property alias cfg_popupAnimationSpeedPercent: folderPopupPage.cfg_popupAnimationSpeedPercent
     property alias cfg_popupAnimationIntensity: folderPopupPage.cfg_popupAnimationIntensity
     property alias cfg_popupTextShadowsEnabled: folderPopupPage.cfg_popupTextShadowsEnabled
@@ -123,7 +121,6 @@ KCM.SimpleKCM {
     property bool themeRemovalFailed: false
     property var pendingThemeRemoval: ({})
 
-    readonly property bool interactiveCursorEnabled: !!Plasmoid.configuration.globalMouseCursor
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
         || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool horizontalPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
@@ -573,7 +570,6 @@ KCM.SimpleKCM {
                 onActivated: page.cfg_floatingDockOrientation = currentValue
                 Accessible.name: i18n("Dock orientation")
 
-                ConfigCursorBehavior { cursorEnabled: page.interactiveCursorEnabled }
             }
         }
 
@@ -594,9 +590,6 @@ KCM.SimpleKCM {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
         // qmllint enable unqualified
@@ -626,9 +619,6 @@ KCM.SimpleKCM {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -647,9 +637,6 @@ KCM.SimpleKCM {
                 onClicked: importThemeMenu.popup(
                     importThemeButton, 0, importThemeButton.height)
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
 
             Controls.Button {
@@ -665,9 +652,6 @@ KCM.SimpleKCM {
                 Controls.ToolTip.visible: hovered
                 Controls.ToolTip.text: i18n("Move themes to the Trash…") // qmllint disable unqualified
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -683,9 +667,6 @@ KCM.SimpleKCM {
                 checked: page.cfg_dockCustomThemeDirectoryEnabled
                 onToggled: page.cfg_dockCustomThemeDirectoryEnabled = checked
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
 
             Controls.TextField {
@@ -709,9 +690,6 @@ KCM.SimpleKCM {
                 Controls.ToolTip.visible: hovered && page.cfg_dockCustomThemeDirectory.length > 0
                 Controls.ToolTip.text: page.cfg_dockCustomThemeDirectory
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
 
             Controls.Button {
@@ -727,9 +705,6 @@ KCM.SimpleKCM {
                 Controls.ToolTip.visible: hovered
                 Controls.ToolTip.text: i18n("Select folder…") // qmllint disable unqualified
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -803,9 +778,6 @@ KCM.SimpleKCM {
             text: i18n("Show a themed background behind items")
             Accessible.description: i18n("Shows the Plasma highlight background when an item is hovered or its application is active.")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.Label {
@@ -832,9 +804,6 @@ KCM.SimpleKCM {
             Kirigami.FormData.label: i18n("Labels:") // qmllint disable unqualified
             text: i18n("Show item names in the dock") // qmllint disable unqualified
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.CheckBox {
@@ -846,9 +815,6 @@ KCM.SimpleKCM {
             Accessible.description: i18n("Available when dock item names are shown.") // qmllint disable unqualified
             onClicked: dockTextShadowPreference.value = checked
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.Label {
@@ -882,9 +848,6 @@ KCM.SimpleKCM {
                     : i18n("Adds a short decorative reflection below icons in a floating dock."))
             // qmllint enable unqualified
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         // qmllint disable unqualified
@@ -906,10 +869,6 @@ KCM.SimpleKCM {
                 Accessible.name: i18n("Reflection opacity")
                 Accessible.description: i18n("Adjusts how strongly icon reflections appear.")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -963,9 +922,6 @@ KCM.SimpleKCM {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -1001,9 +957,6 @@ KCM.SimpleKCM {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -1031,9 +984,6 @@ KCM.SimpleKCM {
                 onColorRequested: indicatorColorDialog.open()
                 onThemeRequested: page.cfg_indicatorColor = ""
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -1049,10 +999,6 @@ KCM.SimpleKCM {
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -1076,10 +1022,6 @@ KCM.SimpleKCM {
                 Accessible.name: i18n("Indicator thickness")
                 Accessible.description: i18n("Adjusts the indicator thickness between 2 and 10 pixels.")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -1107,9 +1049,6 @@ KCM.SimpleKCM {
                 id: showWindowCountBadgeCheck
                 text: i18n("Show the number of open windows")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -1140,9 +1079,6 @@ KCM.SimpleKCM {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -1160,9 +1096,6 @@ KCM.SimpleKCM {
                 onColorRequested: windowCountEmblemColorDialog.open()
                 onThemeRequested: page.cfg_windowCountEmblemColor = ""
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -1182,10 +1115,6 @@ KCM.SimpleKCM {
                 Accessible.name: i18n("Badge opacity")
                 Accessible.description: i18n("Adjusts badge visibility between 60 and 100 percent.")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -1211,10 +1140,6 @@ KCM.SimpleKCM {
                 Accessible.name: i18n("Badge scale")
                 Accessible.description: i18n("Adjusts the badge scale between 80 and 120 percent of its default size.")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {

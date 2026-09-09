@@ -31,6 +31,7 @@ mapfile -d '' cpp_sources < <(
 )
 shell_sources=(
     scripts-cmake/setup.sh
+    scripts-dev/lib/setup-progress.sh
     scripts-dev/setup.sh
     scripts-dev/distro/arch-setup.sh
     scripts-user/setup.sh

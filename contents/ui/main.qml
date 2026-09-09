@@ -2539,6 +2539,48 @@ PlasmoidItem {
 
             GridLayout {
                 id: dockLayout
+                Binding {
+                    target: dockGeometry // qmllint disable unqualified
+                    property: "panelHoverAnimation"
+                    value: dockLayout.effectiveHoverAnimationMode
+                }
+                Binding {
+                    target: dockGeometry // qmllint disable unqualified
+                    property: "panelIconGeometries"
+                    value: {
+                        // Mapping alone does not subscribe to ancestor geometry changes.
+                        let geometryState = 0
+                        for (let item = dockLayout; item; item = item.parent) {
+                            geometryState += item.x + item.y + item.width + item.height
+                                + item.scale + item.rotation + item.transformOrigin
+                        }
+                        const result = []
+                        if (!Number.isFinite(geometryState)) {
+                            return result
+                        }
+                        for (const child of dockLayout.children) {
+                            if (!(child instanceof DockItem)) {
+                                continue
+                            }
+                            const delegate = child as DockItem
+                            if (delegate.mediaItem || delegate.separatorItem || delegate.spacerItem) {
+                                continue
+                            }
+                            const delegateState = delegate.x + delegate.y + delegate.width
+                                + delegate.height + delegate.scale + delegate.rotation
+                                + delegate.transformOrigin
+                            if (!Number.isFinite(delegateState)) {
+                                continue
+                            }
+                            const size = delegate.iconSize
+                            // Measure the resting icon box, before its own zoom/translation.
+                            result.push(delegate.mapToItem(null, Qt.rect(
+                                (delegate.width - size) / 2,
+                                (delegate.visualAreaHeight - size) / 2, size, size)))
+                        }
+                        return result
+                    }
+                }
                 z: 10
                 flow: dockGeometry.verticalPanel ? GridLayout.TopToBottom : GridLayout.LeftToRight
                 columns: dockGeometry.verticalPanel ? 1 : -1
@@ -3050,11 +3092,11 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === dockItemDelegate)
-                            || (folderPopupDialog.visible && folderPopupDialog.visualParent === dockItemDelegate)
+                            || (folderPopupDialog.visible && folderPopupDialog.sourceAnchor === dockItemDelegate)
                             || (calendarPopupDialog.visible && calendarPopupDialog.visualParent === dockItemDelegate)
                             || (notePopupDialog.visible && notePopupDialog.visualParent === dockItemDelegate)
-                            || (trashMenuDialog.visible && trashMenuDialog.visualParent === dockItemDelegate)
-                            || (appActionsDialog.visible && appActionsDialog.visualParent === dockItemDelegate)
+                            || (trashMenuDialog.visible && trashMenuDialog.sourceAnchor === dockItemDelegate)
+                            || (appActionsDialog.visible && appActionsDialog.sourceAnchor === dockItemDelegate)
                             || (root.punchiMenuDialogInstance && root.punchiMenuDialogInstance.visible && root.punchiMenuAnchorItem === dockItemDelegate)
                             || (root.controlCenterDialogInstance
                                 && root.controlCenterDialogInstance.visible
@@ -3301,11 +3343,11 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === taskDockItemDelegate)
-                            || (folderPopupDialog.visible && folderPopupDialog.visualParent === taskDockItemDelegate)
+                            || (folderPopupDialog.visible && folderPopupDialog.sourceAnchor === taskDockItemDelegate)
                             || (calendarPopupDialog.visible && calendarPopupDialog.visualParent === taskDockItemDelegate)
                             || (notePopupDialog.visible && notePopupDialog.visualParent === taskDockItemDelegate)
-                            || (trashMenuDialog.visible && trashMenuDialog.visualParent === taskDockItemDelegate)
-                            || (appActionsDialog.visible && appActionsDialog.visualParent === taskDockItemDelegate)
+                            || (trashMenuDialog.visible && trashMenuDialog.sourceAnchor === taskDockItemDelegate)
+                            || (appActionsDialog.visible && appActionsDialog.sourceAnchor === taskDockItemDelegate)
                             || (root.punchiMenuDialogInstance && root.punchiMenuDialogInstance.visible && root.punchiMenuAnchorItem === taskDockItemDelegate)
                         // qmllint enable unqualified
                         supportsContextMenu: dockContextActionsController.itemHasContextMenu(modelData, taskData.rows, "dynamic")
@@ -3472,6 +3514,19 @@ PlasmoidItem {
             location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: true
 
+            property Item sourceAnchor: null
+            readonly property NativePopupSpacing popupSpacing: NativePopupSpacing {
+                sourceAnchor: folderPopupDialog.sourceAnchor
+                popup: folderPopupDialog
+                gap: dockGeometry.folderPopupGap
+                location: folderPopupDialog.location
+            }
+
+            function setPopupAnchor(anchor) {
+                folderPopupDialog.sourceAnchor = anchor
+                folderPopupDialog.popupSpacing.refreshAnchor()
+            }
+
             mainItem: PopupAnimatedContent {
                 popupVisible: folderPopupDialog.visible
                 // qmllint disable unqualified
@@ -3543,7 +3598,7 @@ PlasmoidItem {
 
                         onAppContextMenuRequested: function(app) {
                             popupCoordinator.openAppContextMenu(app,
-                                folderPopupDialog.visualParent, undefined,
+                                folderPopupDialog.sourceAnchor, undefined,
                                 "folder", -1)
                         }
 
@@ -3600,6 +3655,19 @@ PlasmoidItem {
             id: trashMenuDialog
             location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: !trashContextContent.confirmationVisible
+
+            property Item sourceAnchor: null
+            readonly property NativePopupSpacing popupSpacing: NativePopupSpacing {
+                sourceAnchor: trashMenuDialog.sourceAnchor
+                popup: trashMenuDialog
+                gap: dockGeometry.contextMenuGap
+                location: trashMenuDialog.location
+            }
+
+            function setPopupAnchor(anchor) {
+                trashMenuDialog.sourceAnchor = anchor
+                trashMenuDialog.popupSpacing.refreshAnchor()
+            }
 
             mainItem: PopupAnimatedContent {
                 popupVisible: trashMenuDialog.visible
@@ -3663,6 +3731,19 @@ PlasmoidItem {
             location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: !popupCoordinator.contextMenuOpening
             onOpenFailed: popupCoordinator.contextMenuOpening = false
+
+            property Item sourceAnchor: null
+            readonly property NativePopupSpacing popupSpacing: NativePopupSpacing {
+                sourceAnchor: appActionsDialog.sourceAnchor
+                popup: appActionsDialog
+                gap: dockGeometry.contextMenuGap
+                location: appActionsDialog.location
+            }
+
+            function setPopupAnchor(anchor) {
+                appActionsDialog.sourceAnchor = anchor
+                appActionsDialog.popupSpacing.refreshAnchor()
+            }
 
             mainItem: PopupAnimatedContent {
                 popupVisible: appActionsDialog.visible

@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
-import org.kde.plasma.plasmoid
 import "components"
 
 Item {
@@ -30,8 +29,6 @@ Item {
     property alias cfg_menuAnimationSpeedPercent: menuAnimationSettings.animationSpeedPercent
     property alias cfg_menuAnimationIntensity: menuAnimationSettings.animationIntensityPercent
 
-    readonly property bool interactiveCursorEnabled:
-        !!Plasmoid.configuration.globalMouseCursor
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     // qmllint disable unqualified
@@ -118,9 +115,6 @@ Item {
             Accessible.name: i18n("Context menu size preset")
             onActivated: page.applySizePreset(currentValue)
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.SpinBox {
@@ -132,9 +126,6 @@ Item {
             Layout.preferredWidth: layoutMetrics.selectorWidth
             Accessible.name: i18n("Maximum visible context menu actions")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         RowLayout {
@@ -152,10 +143,6 @@ Item {
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Context menu row height")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -180,10 +167,6 @@ Item {
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Context menu icon size")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -208,10 +191,6 @@ Item {
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Context menu target width")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -246,10 +225,6 @@ Item {
                 Accessible.name: i18n("Dock context menu distance")
                 Accessible.description: i18n("Adds adaptive spacing between dock items and their context menus.")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -284,10 +259,6 @@ Item {
                 Accessible.name: i18n("Context menu background opacity")
                 Accessible.description: i18n("Only the context menu background changes; icons, controls and text remain fully opaque.")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -313,9 +284,6 @@ Item {
             text: i18n("Show subtle shadows on menu text")
             Accessible.description: i18n("Applies to context menu headers, action labels and secondary details.")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.Switch {
@@ -325,9 +293,6 @@ Item {
             Accessible.name: text
             Accessible.description: i18n("Shows the quick item editor action in dock context menus.")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.Switch {
@@ -336,9 +301,6 @@ Item {
             Accessible.name: text
             Accessible.description: i18n("Shows the general Punchi Dock preferences action in dock context menus.")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.ComboBox {
@@ -356,9 +318,6 @@ Item {
                 }
             }
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         RowLayout {
@@ -376,10 +335,6 @@ Item {
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Preview to context menu transition speed")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -420,7 +375,6 @@ Item {
             animationIntensityPercent: 75
             contentWidthHint: page.contentWidthHint
             selectorWidthHint: page.selectorWidthHint
-            interactiveCursorEnabled: page.interactiveCursorEnabled
         }
     }
 }

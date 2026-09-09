@@ -21,7 +21,6 @@ KCM.SimpleKCM {
     property string cfg_clickEffect: "none"
     property string cfg_windowMinimizeEffect: "none"
     property alias cfg_dockMotionSpeedPercent: dockMotionSpeedSlider.value
-    property alias cfg_globalMouseCursor: globalMouseCursorCheck.checked
     property alias cfg_enableAppDragAndDrop: enableAppDragAndDropCheck.checked
     property alias cfg_enableFloatingItemDragReordering:
         enableFloatingItemDragReorderingCheck.checked
@@ -38,7 +37,7 @@ KCM.SimpleKCM {
     readonly property bool hoverEnlargementDisabled:
         hoverEnlargementPercent <= 0
     readonly property bool hoverEnlargementMayBeClipped:
-        inPanel && !customThemeActiveInPanel && hoverEnlargementPercent > 65
+        inPanel && !customThemeActiveInPanel
     readonly property var hoverAnimationOptions: [
         { "text": i18n("None"), "value": "none" }, // qmllint disable unqualified
         { "text": i18n("Wave"), "value": "wave" }, // qmllint disable unqualified
@@ -104,9 +103,6 @@ KCM.SimpleKCM {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.cfg_globalMouseCursor
-                }
             }
         }
 
@@ -129,10 +125,6 @@ KCM.SimpleKCM {
                 Accessible.description: i18n("Adjusts additional hover enlargement between 0 and 100 percent.")
                 // qmllint enable unqualified
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.cfg_globalMouseCursor
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -153,7 +145,7 @@ KCM.SimpleKCM {
             // qmllint disable unqualified
             text: page.hoverEnlargementDisabled
                 ? i18n("At 0%, the hover enlargement animation is disabled.")
-                : i18n("Above 65%, hover enlargement may be clipped by the space and margins available in the Plasma panel. You can use a custom JSON theme to avoid clipping.")
+                : i18n("Plasma panels limit hover enlargement to 65% and reduce it further when the custom panel size requires it.")
             // qmllint enable unqualified
         }
 
@@ -172,10 +164,6 @@ KCM.SimpleKCM {
                 Accessible.name: i18n("Dock motion speed") // qmllint disable unqualified
                 Accessible.description: i18n("Controls how quickly dock items enter, move, and resize. It does not change popup or menu animations.") // qmllint disable unqualified
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.cfg_globalMouseCursor
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -211,9 +199,6 @@ KCM.SimpleKCM {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.cfg_globalMouseCursor
-                }
             }
         }
 
@@ -235,9 +220,6 @@ KCM.SimpleKCM {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.cfg_globalMouseCursor
-                }
             }
         }
 
@@ -251,27 +233,6 @@ KCM.SimpleKCM {
         }
         // qmllint enable unqualified
 
-        // qmllint disable unqualified
-        Controls.CheckBox {
-            id: globalMouseCursorCheck
-            Kirigami.FormData.label: i18n("Settings cursor:")
-            text: i18n("Use interactive cursors in the settings window")
-            Layout.maximumWidth: page.contentWidthHint
-
-            ConfigCursorBehavior {
-                cursorEnabled: page.cfg_globalMouseCursor
-            }
-        }
-
-        Controls.Label {
-            text: i18n("When enabled, text fields use an I-beam cursor while sliders, buttons and selectors use an interactive pointer.")
-            wrapMode: Text.WordWrap
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-            leftPadding: layoutMetrics.helperIndent
-            color: Kirigami.Theme.disabledTextColor
-        }
-        // qmllint enable unqualified
 
         // qmllint disable unqualified
         Controls.CheckBox {
@@ -280,9 +241,6 @@ KCM.SimpleKCM {
             text: i18n("Enable file drag and drop onto application icons")
             Layout.maximumWidth: page.contentWidthHint
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.cfg_globalMouseCursor
-            }
         }
 
         Controls.Label {
@@ -303,9 +261,6 @@ KCM.SimpleKCM {
             text: i18n("Enable press-and-hold item reordering")
             Layout.maximumWidth: page.contentWidthHint
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.cfg_globalMouseCursor
-            }
         }
 
         Controls.Label {

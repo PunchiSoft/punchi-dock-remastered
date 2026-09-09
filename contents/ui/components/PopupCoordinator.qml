@@ -335,6 +335,10 @@ Item {
         if (!dialog) {
             return
         }
+        if (typeof dialog.setPopupAnchor === "function") {
+            dialog.setPopupAnchor(anchor)
+            return
+        }
         dialog.visualParent = anchor
         if (typeof dialog.placementAnchor !== "undefined") {
             dialog.placementAnchor = anchor
@@ -799,7 +803,12 @@ Item {
         }
         const anchor = popupAnchor(targetItem)
         const isTarget = function(dialog) {
-            return !!(dialog && dialog.visible && (dialog.visualParent === targetItem || dialog.visualParent === anchor))
+            if (!dialog || !dialog.visible) {
+                return false
+            }
+            const source = typeof dialog.sourceAnchor !== "undefined"
+                ? dialog.sourceAnchor : dialog.visualParent
+            return source === targetItem || source === anchor
         }
         return isTarget(folderPopupDialogRef)
             || isTarget(calendarPopupDialogRef)

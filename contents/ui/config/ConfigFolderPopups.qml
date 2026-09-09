@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
-import org.kde.plasma.plasmoid
 import "components"
 
 Item {
@@ -43,8 +42,6 @@ Item {
 
     property string activeProfile: "grid"
 
-    readonly property bool interactiveCursorEnabled:
-        !!Plasmoid.configuration.globalMouseCursor
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     readonly property int effectiveFolderPopupDistancePercent: {
@@ -203,10 +200,6 @@ Item {
                 Accessible.name: i18n("Folder popup scale")
                 Accessible.description: i18n("Adjusts the folder popup content scale between 50 and 300 percent.")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -241,10 +234,6 @@ Item {
                 Accessible.name: i18n("Folder popup background opacity")
                 Accessible.description: i18n("Only the folder popup background changes; applications, icons, controls and text remain fully opaque.")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -282,10 +271,6 @@ Item {
                 onMoved: page.cfg_folderPopupDistancePercent =
                     Math.round(value)
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -310,10 +295,6 @@ Item {
             text: i18n("Show folder name header at top of popups")
             Accessible.description: i18n("Displays the folder title header label and close button at the top of the popup.")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-                role: "checkbox"
-            }
         }
 
         Kirigami.Separator {
@@ -337,9 +318,6 @@ Item {
             Accessible.name: i18n("Folder popup layout profile")
             onActivated: page.activeProfile = currentValue
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.Label {
@@ -367,10 +345,6 @@ Item {
                 Layout.preferredWidth: page.contentWidthHint - 60
                 Accessible.name: i18n("Folder popup icon size")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -392,9 +366,6 @@ Item {
             Layout.preferredWidth: page.selectorWidthHint
             Accessible.name: i18n("Maximum visible folder popup columns")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.SpinBox {
@@ -407,9 +378,6 @@ Item {
             Layout.preferredWidth: page.selectorWidthHint
             Accessible.name: i18n("Maximum visible folder popup rows")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.CheckBox {
@@ -420,9 +388,6 @@ Item {
             Accessible.description: i18n("Shows application names in every layout and command details in the detailed layout.")
             onToggled: page.setActiveShowLabels(checked)
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.ComboBox {
@@ -441,9 +406,6 @@ Item {
                 ? String(currentText)
                 : "")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         RowLayout {
@@ -463,10 +425,6 @@ Item {
                 Layout.preferredWidth: page.contentWidthHint - 60
                 Accessible.name: i18n("Folder popup font size")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -503,9 +461,6 @@ Item {
             text: i18n("Show subtle shadows on popup text")
             Accessible.description: i18n("Applies to folder popup labels and note popup titles.")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Kirigami.Separator {
@@ -525,7 +480,6 @@ Item {
             animationIntensityPercent: 100
             contentWidthHint: page.contentWidthHint
             selectorWidthHint: page.selectorWidthHint
-            interactiveCursorEnabled: page.interactiveCursorEnabled
         }
     }
 }

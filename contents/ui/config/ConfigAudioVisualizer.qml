@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
-import org.kde.plasma.plasmoid
 import "components"
 
 Item {
@@ -24,8 +23,6 @@ Item {
     property string cfg_audioSpectrumOrigin: "bottom"
     property string cfg_audioSpectrumFlow: "none"
 
-    readonly property bool interactiveCursorEnabled:
-        !!Plasmoid.configuration.globalMouseCursor
     readonly property bool audioSpectrumUsesAbstractElements:
         page.cfg_audioSpectrumStyle === "cloud"
         || page.cfg_audioSpectrumStyle === "particles"
@@ -109,9 +106,6 @@ Item {
             Kirigami.FormData.label: i18n("Visualizer:")
             text: i18n("Enable the audio visualizer")
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Kirigami.InlineMessage {
@@ -141,9 +135,6 @@ Item {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -174,10 +165,6 @@ Item {
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Audio visualizer intensity")
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                    role: "slider"
-                }
             }
 
             Controls.Label {
@@ -193,9 +180,6 @@ Item {
             text: i18n("Use Plasma theme colors")
             enabled: audioSpectrumCheck.checked
 
-            ConfigCursorBehavior {
-                cursorEnabled: page.interactiveCursorEnabled
-            }
         }
 
         Controls.Label {
@@ -235,9 +219,6 @@ Item {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -260,9 +241,6 @@ Item {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -285,9 +263,6 @@ Item {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
 
@@ -312,9 +287,6 @@ Item {
                     }
                 }
 
-                ConfigCursorBehavior {
-                    cursorEnabled: page.interactiveCursorEnabled
-                }
             }
         }
     }
