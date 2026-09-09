@@ -142,7 +142,7 @@ require(
 require(
     "function normalizedControlCenterMode(value)" in CONFIG_ITEMS
     and '["fullScreen", "floating"]' in CONFIG_ITEMS
-    and '"controlCenterMode": "fullScreen"' in CONFIG_ITEMS
+    and '"controlCenterMode": "floating"' in CONFIG_ITEMS
     and "function openControlCenterDialog(index)" in WORKFLOW
     and "function setControlCenterMode(mode)" in WORKFLOW
     and 'selectedItemType === "control-center"' in WORKFLOW
@@ -271,7 +271,7 @@ require(
 require(
     'objectName: "controlCenterNotificationsSection"' in HOME_PAGE
     and "Layout.fillHeight: true" in HOME_PAGE
-    and "Layout.minimumHeight: Kirigami.Units.gridUnit * 12" in HOME_PAGE
+    and "Layout.minimumHeight: Kirigami.Units.gridUnit * 8" in HOME_PAGE
     and "ControlCenterExpandableSection" not in HOME_PAGE
     and "notificationsExpanded" not in HOME_PAGE
     and "collapseNotifications" not in OVERLAY

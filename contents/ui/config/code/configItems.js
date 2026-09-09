@@ -588,10 +588,10 @@ function pruneMedia(item) {
 
 function normalizedControlCenterMode(value) {
     var availableModes = ["fullScreen", "floating"]
-    var requestedMode = String(value || "fullScreen")
+    var requestedMode = String(value || "floating")
     return availableModes.indexOf(requestedMode) >= 0
         ? requestedMode
-        : "fullScreen"
+        : "floating"
 }
 
 function pruneControlCenter(item) {
@@ -1048,7 +1048,7 @@ function newItem(type, defaultTrashEmptySound) {
             "type": "control-center",
             "name": "Control Center",
             "icon": "preferences-system",
-            "controlCenterMode": "fullScreen"
+            "controlCenterMode": "floating"
         }
     }
     if (type === "folder") {

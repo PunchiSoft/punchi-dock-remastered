@@ -16,6 +16,12 @@ TestCase {
 
     QtObject {
         id: fakeDockItemsController
+        property var dockItems: []
+        property string selectedMode: ""
+        function setControlCenterMode(mode) {
+            selectedMode = mode
+            return true
+        }
     }
 
     Components.DockContextActionsController {
@@ -24,6 +30,11 @@ TestCase {
         dockItemsController: fakeDockItemsController
         showConfigureDockAction: false
         property int moveRequestCount: 0
+        property int configureRequestCount: 0
+        configureDockHandler: function() {
+            configureRequestCount++
+            return true
+        }
         moveDynamicApplicationsHandler: function() {
             moveRequestCount++
             return true
@@ -33,6 +44,40 @@ TestCase {
     function init() {
         failOnWarning(/.?/)
         contextController.moveRequestCount = 0
+        contextController.configureRequestCount = 0
+        contextController.showConfigureDockAction = false
+        fakeDockItemsController.dockItems = []
+        fakeDockItemsController.selectedMode = ""
+    }
+
+    function test_controlCenterOffersModesAndConfiguration() {
+        const item = { "type": "control-center" }
+        fakeDockItemsController.dockItems = [item]
+        verify(contextController.itemHasContextMenu(item, [], "pinned"))
+        let actions = contextController.actionsForItem(item, [], "pinned", 0)
+        compare(actions.length, 1)
+        compare(actions[0].kind, "submenu")
+        compare(actions[0].children.length, 2)
+        compare(actions[0].children[0].checked, true)
+        compare(actions[0].children[1].checked, false)
+        verify(contextController.triggerAction(actions[0].children[1]))
+        compare(fakeDockItemsController.selectedMode, "fullScreen")
+
+        item.controlCenterMode = "fullScreen"
+        contextController.showConfigureDockAction = true
+        actions = contextController.actionsForItem(item, [], "pinned", 0)
+        compare(actions[0].children[0].checked, false)
+        compare(actions[0].children[1].checked, true)
+        verify(contextController.triggerAction(actions[0].children[0]))
+        compare(fakeDockItemsController.selectedMode, "floating")
+        compare(actions[1].kind, "configureDock")
+        verify(contextController.triggerAction(actions[1]))
+        compare(contextController.configureRequestCount, 1)
+
+        fakeDockItemsController.dockItems = [{ "type": "app" }]
+        verify(!contextController.triggerAction(actions[0].children[1]))
+        fakeDockItemsController.dockItems = []
+        verify(!contextController.triggerAction(actions[0].children[0]))
     }
 
     function test_dynamicTaskOffersAndTriggersSectionMove() {

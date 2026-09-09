@@ -12,7 +12,7 @@ Controls.Dialog {
 
     objectName: "controlCenterConfigDialog"
 
-    property string controlCenterMode: "fullScreen"
+    property string controlCenterMode: "floating"
     property real selectorWidth: Kirigami.Units.gridUnit * 16
     readonly property var modeOptions: [
         {
@@ -33,7 +33,7 @@ Controls.Dialog {
                 return index
             }
         }
-        return 0
+        return 1
     }
 
     function synchronizeModeSelection() {

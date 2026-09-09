@@ -1,4 +1,5 @@
 import QtQuick
+import "../config/code/configItems.js" as ConfigItemsJS
 
 QtObject {
     id: root
@@ -61,12 +62,61 @@ QtObject {
         }
     }
 
+    function controlCenterActions(item, persistentIndex) {
+        const mode = ConfigItemsJS.normalizedControlCenterMode(item.controlCenterMode)
+        // Plasma injects translation functions into the applet context.
+        // qmllint disable unqualified
+        const floatingName = i18nc("@option:control-center-mode", "Floating")
+        const fullscreenName = i18nc("@option:control-center-mode", "Full screen")
+        const menuName = i18nc("@title:menu", "Menu mode")
+        // qmllint enable unqualified
+        const actions = [{
+            "name": menuName,
+            "detail": mode === "floating" ? floatingName : fullscreenName,
+            "icon": "view-grid",
+            "kind": "submenu",
+            "enabled": true,
+            "children": [
+                {
+                    "name": floatingName,
+                    "icon": "window-center",
+                    "kind": "setControlCenterMode",
+                    "enabled": true,
+                    "checked": mode === "floating",
+                    "mode": "floating",
+                    "targetIndex": persistentIndex
+                },
+                {
+                    "name": fullscreenName,
+                    "icon": "view-fullscreen",
+                    "kind": "setControlCenterMode",
+                    "enabled": true,
+                    "checked": mode === "fullScreen",
+                    "mode": "fullScreen",
+                    "targetIndex": persistentIndex
+                }
+            ]
+        }]
+        if (root.showConfigureDockAction && typeof root.configureDockHandler === "function") {
+            actions.push({
+                "name": i18nc("@action:context", "Configure Punchi Dock…"), // qmllint disable unqualified
+                "icon": "preferences-system",
+                "kind": "configureDock",
+                "enabled": true
+            })
+        }
+        return actions
+    }
+
     function actionsForItem(item, taskRows, itemOrigin, persistentIndex) {
         if (!item || !root.taskController) {
             return []
         }
 
         const itemType = String(item.type || "app")
+        if (itemType === "control-center" && itemOrigin === "pinned") {
+            return root.controlCenterActions(item, persistentIndex)
+        }
         const actions = []
         const seenNames = {}
         if (itemType === "app" && itemOrigin === "folder") {
@@ -329,7 +379,8 @@ QtObject {
         }
         const itemType = String(item.type || "app")
         if (itemType !== "app") {
-            return (itemOrigin === "pinned" && root.removablePinnedItem(item))
+            return (itemOrigin === "pinned"
+                    && (root.removablePinnedItem(item) || itemType === "control-center"))
                 || (root.showConfigureDockAction && typeof root.configureDockHandler === "function")
         }
         return itemOrigin === "pinned"
@@ -388,6 +439,17 @@ QtObject {
             }
             return root.dockItemsController.setPunchiMenuValue(
                 "menuMode", String(action.mode || "fullScreen"))
+        }
+        if (action.kind === "setControlCenterMode") {
+            const targetIndex = Number(action.targetIndex)
+            const items = root.dockItemsController.dockItems
+            const targetItem = Number.isInteger(targetIndex) && targetIndex >= 0
+                    && targetIndex < items.length ? items[targetIndex] : null
+            if (!targetItem || targetItem.type !== "control-center"
+                    || (action.mode !== "floating" && action.mode !== "fullScreen")) {
+                return false
+            }
+            return root.dockItemsController.setControlCenterMode(action.mode)
         }
         if (action.kind === "setFolderView") {
             return root.dockItemsController.setFolderLayout(

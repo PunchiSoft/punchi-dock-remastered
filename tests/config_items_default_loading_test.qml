@@ -27,7 +27,7 @@ TestCase {
 
     QtObject {
         id: controlCenterDialog
-        property string controlCenterMode: "fullScreen"
+        property string controlCenterMode: "floating"
         property int openCount: 0
         function open() { openCount += 1 }
     }
@@ -64,7 +64,7 @@ TestCase {
         cfg_showActiveTasks = true
         selectedItemType = "app"
         dynamicApplicationsRemovalDialog.openCount = 0
-        controlCenterDialog.controlCenterMode = "fullScreen"
+        controlCenterDialog.controlCenterMode = "floating"
         controlCenterDialog.openCount = 0
     }
 
@@ -143,7 +143,7 @@ TestCase {
         compare(items[0].type, "control-center")
         compare(items[0].name, "Control Center")
         compare(items[0].icon, "preferences-system")
-        compare(items[0].controlCenterMode, "fullScreen")
+        compare(items[0].controlCenterMode, "floating")
         selectedItemType = items[0].type
         verify(WorkflowHelper.canConfigureSelectedItem())
     }
@@ -160,14 +160,19 @@ TestCase {
         WorkflowHelper.openControlCenterDialog()
 
         compare(controlCenterDialog.openCount, 1)
-        compare(controlCenterDialog.controlCenterMode, "fullScreen")
+        compare(controlCenterDialog.controlCenterMode, "floating")
 
         WorkflowHelper.setControlCenterMode("floating")
         compare(items[0].controlCenterMode, "floating")
         compare(controlCenterDialog.controlCenterMode, "floating")
 
-        WorkflowHelper.setControlCenterMode("unsupported")
+        WorkflowHelper.setControlCenterMode("fullScreen")
         compare(items[0].controlCenterMode, "fullScreen")
+        WorkflowHelper.openControlCenterDialog()
         compare(controlCenterDialog.controlCenterMode, "fullScreen")
+
+        WorkflowHelper.setControlCenterMode("unsupported")
+        compare(items[0].controlCenterMode, "floating")
+        compare(controlCenterDialog.controlCenterMode, "floating")
     }
 }

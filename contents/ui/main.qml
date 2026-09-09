@@ -163,7 +163,7 @@ PlasmoidItem {
         ConfigItemsJS.normalizedControlCenterMode(
             configuredControlCenterItem
                 ? configuredControlCenterItem.controlCenterMode
-                : "fullScreen")
+                : "floating")
     readonly property real configuredPunchiMenuGridIconScale: {
         const requestedPercent = Number(configuredPunchiMenuItem
             ? configuredPunchiMenuItem.gridIconScalePercent

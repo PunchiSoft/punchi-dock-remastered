@@ -22,9 +22,10 @@ QtObject {
     readonly property int contentWidth: root.boundedDimension(
         LayoutMetrics.availableWidth(root.referenceWidth, root.gridUnit),
         root.absoluteAvailableRect.width)
+    // Keep equal vertical screen margins regardless of panel reservations.
     readonly property int contentHeight: root.boundedDimension(
         LayoutMetrics.availableHeight(root.referenceHeight, root.gridUnit),
-        root.absoluteAvailableRect.height)
+        root.referenceHeight)
 
     function finiteNumber(value, fallback) {
         const numericValue = Number(value)
@@ -71,17 +72,19 @@ QtObject {
 
     function positionFor(windowWidth, windowHeight) {
         const available = root.absoluteAvailableRect
+        const verticalBounds = root.validRect(root.screenGeometry)
+            ? root.screenGeometry : available
         const margin = Math.max(0, root.finiteNumber(root.edgeMargin, 0))
         const width = Math.max(1, root.finiteNumber(windowWidth,
             root.contentWidth))
         const height = Math.max(1, root.finiteNumber(windowHeight,
             root.contentHeight))
         const minimumX = available.x
-        const minimumY = available.y
+        const minimumY = verticalBounds.y
         const maximumX = available.x + available.width - width
-        const maximumY = available.y + available.height - height
+        const maximumY = verticalBounds.y + verticalBounds.height - height
         const targetX = available.x + available.width - margin - width
-        const targetY = available.y + margin
+        const targetY = verticalBounds.y + (verticalBounds.height - height) / 2
         return Qt.point(
             Math.round(Math.max(minimumX, Math.min(maximumX, targetX))),
             Math.round(Math.max(minimumY, Math.min(maximumY, targetY))))

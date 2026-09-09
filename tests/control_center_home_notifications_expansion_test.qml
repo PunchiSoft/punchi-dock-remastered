@@ -105,6 +105,36 @@ TestCase {
         }
     }
 
+    function test_contentRemainsInsideViewportWhenHeightIsLimited() {
+        const hostWindow = createTemporaryObject(windowComponent, testCase)
+        verify(hostWindow !== null)
+        hostWindowUnderTest = hostWindow
+        const page = hostWindow.page
+        const section = findChild(page, "controlCenterNotificationsSection")
+        hostWindow.height = 500
+        wait(0)
+        const viewport = findChild(page, "controlCenterHomeScrollView")
+        verify(viewport !== null)
+        compare(viewport.height, page.height)
+        verify(viewport.clip)
+        verify(viewport.contentHeight >= viewport.height)
+        const flickable = viewport
+        flickable.contentY = Math.max(0,
+            flickable.contentHeight - flickable.height)
+        wait(0)
+        verify(section.mapToItem(page, 0, section.height).y <= page.height + 1)
+        page.focusFirstControl()
+        compare(viewport.contentY, 0)
+        hostWindow.height = 750
+        tryVerify(function() {
+            return Math.abs(viewport.contentHeight - viewport.height) < 1
+        })
+        hostWindow.height = 1000
+        tryVerify(function() {
+            return Math.abs(viewport.contentHeight - viewport.height) < 1
+        })
+    }
+
     function test_historyIsPersistentAndQuickControlsRemainActionable() {
         const hostWindow = createTemporaryObject(windowComponent, testCase)
         verify(hostWindow !== null)
@@ -163,6 +193,7 @@ TestCase {
         doNotDisturbSpy.target = page
         themeSpy.target = page
         nightLightSpy.target = page
+        verify(waitForRendering(page))
         mouseClick(dndTile, dndTile.width / 2, dndTile.height / 2)
         compare(doNotDisturbSpy.count, 1)
         mouseClick(themeButton, themeButton.width / 2,

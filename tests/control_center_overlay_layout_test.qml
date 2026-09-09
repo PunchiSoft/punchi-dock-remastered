@@ -61,10 +61,33 @@ TestCase {
             })
         verify(geometry !== null)
         compare(geometry.contentWidth, 756)
-        compare(geometry.contentHeight, 1292)
+        compare(geometry.contentHeight, 1332)
         compare(geometry.positionFor(
             geometry.contentWidth, geometry.contentHeight),
-            Qt.point(3670, 94))
+            Qt.point(3670, 54))
+    }
+
+    function test_verticalMarginsUseFullScreenAndFollowGridUnits() {
+        const geometry = createTemporaryObject(
+            floatingGeometryComponent, testCase, {
+                "screenGeometry": Qt.rect(1920, -1080, 1920, 1080),
+                "availableScreenRect": Qt.rect(0, 40, 1920, 900),
+                "gridUnit": 18
+            })
+        verify(geometry !== null)
+        for (const unit of [18, 24, 30]) {
+            geometry.gridUnit = unit
+            const position = geometry.positionFor(
+                geometry.contentWidth, geometry.contentHeight)
+            compare(position.y - geometry.screenGeometry.y, unit * 3)
+            compare(geometry.screenGeometry.y + geometry.screenGeometry.height
+                - position.y - geometry.contentHeight, unit * 3)
+        }
+        const nativeHeight = geometry.contentHeight + 10
+        const nativePosition = geometry.positionFor(geometry.contentWidth, nativeHeight)
+        compare(nativePosition.y - geometry.screenGeometry.y,
+            geometry.screenGeometry.y + geometry.screenGeometry.height
+                - nativePosition.y - nativeHeight)
     }
 
     function test_floatingGeometryShrinksOnlyWhenNecessary() {

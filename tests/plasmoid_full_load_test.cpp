@@ -235,6 +235,7 @@ struct LoadResult {
     bool controlCenterBluetoothEscapeReturnedHome = false;
     bool controlCenterDialogClosed = false;
     bool controlCenterModeChanged = false;
+    bool controlCenterDefaultFloating = false;
     bool controlCenterFloatingDialogCreated = false;
     bool controlCenterFloatingOverlayCreated = false;
     bool controlCenterFloatingDialogOpened = false;
@@ -352,6 +353,8 @@ private Q_SLOTS:
                      "The open-applications move request was rejected");
             QVERIFY2(result.dynamicMoveModeActivated,
                      "The open-applications move mode did not activate after the popup turn");
+            QVERIFY2(result.controlCenterDefaultFloating,
+                     "The Control Center must default to floating mode");
             QVERIFY2(result.controlCenterDialogCreated,
                      "The Control Center full-screen dialog was not created");
             QVERIFY2(result.controlCenterOverlayCreated,
@@ -635,6 +638,44 @@ private:
                     }
 
                     if (rootObject) {
+                        result.controlCenterDefaultFloating = rootObject->property(
+                            "configuredControlCenterMode").toString()
+                            == QLatin1StringView("floating");
+                        QQmlContext *controllerContext = controller
+                            ? QQmlEngine::contextForObject(controller) : nullptr;
+                        QQmlEngine *controllerEngine = controllerContext
+                            ? controllerContext->engine() : nullptr;
+                        if (controller && controllerEngine) {
+                            const QVariant currentItemsValue = controller->property(
+                                "dockItems");
+                            QJSValue currentItems = currentItemsValue.canConvert<QJSValue>()
+                                ? currentItemsValue.value<QJSValue>()
+                                : controllerEngine->toScriptValue(
+                                      currentItemsValue.toList());
+                            const int currentLength = currentItems
+                                .property(QStringLiteral("length")).toInt();
+                            QJSValue nextItems = controllerEngine->newArray(
+                                static_cast<uint>(currentLength + 1));
+                            for (int index = 0; index < currentLength; ++index) {
+                                nextItems.setProperty(index,
+                                    currentItems.property(index));
+                            }
+                            QJSValue controlCenterItem = controllerEngine->newObject();
+                            controlCenterItem.setProperty(
+                                QStringLiteral("type"),
+                                QStringLiteral("control-center"));
+                            controlCenterItem.setProperty(
+                                QStringLiteral("name"),
+                                QStringLiteral("Control Center"));
+                            controlCenterItem.setProperty(
+                                QStringLiteral("controlCenterMode"),
+                                QStringLiteral("fullScreen"));
+                            nextItems.setProperty(currentLength, controlCenterItem);
+                            controller->setProperty(
+                                "dockItems", QVariant::fromValue(nextItems));
+                            drainDeferredEvents();
+                        }
+
                         const bool invoked = QMetaObject::invokeMethod(
                             rootObject,
                             "toggleControlCenter",
@@ -685,41 +726,6 @@ private:
                             drainDeferredEvents();
                             result.controlCenterDialogClosed = closeInvoked
                                 && !dialog->property("visible").toBool();
-                        }
-
-                        QQmlContext *controllerContext = controller
-                            ? QQmlEngine::contextForObject(controller) : nullptr;
-                        QQmlEngine *controllerEngine = controllerContext
-                            ? controllerContext->engine() : nullptr;
-                        if (controller && controllerEngine) {
-                            const QVariant currentItemsValue = controller->property(
-                                "dockItems");
-                            QJSValue currentItems = currentItemsValue.canConvert<QJSValue>()
-                                ? currentItemsValue.value<QJSValue>()
-                                : controllerEngine->toScriptValue(
-                                      currentItemsValue.toList());
-                            const int currentLength = currentItems
-                                .property(QStringLiteral("length")).toInt();
-                            QJSValue nextItems = controllerEngine->newArray(
-                                static_cast<uint>(currentLength + 1));
-                            for (int index = 0; index < currentLength; ++index) {
-                                nextItems.setProperty(index,
-                                    currentItems.property(index));
-                            }
-                            QJSValue controlCenterItem = controllerEngine->newObject();
-                            controlCenterItem.setProperty(
-                                QStringLiteral("type"),
-                                QStringLiteral("control-center"));
-                            controlCenterItem.setProperty(
-                                QStringLiteral("name"),
-                                QStringLiteral("Control Center"));
-                            controlCenterItem.setProperty(
-                                QStringLiteral("controlCenterMode"),
-                                QStringLiteral("fullScreen"));
-                            nextItems.setProperty(currentLength, controlCenterItem);
-                            controller->setProperty(
-                                "dockItems", QVariant::fromValue(nextItems));
-                            drainDeferredEvents();
                         }
 
                         QVariant modeChanged;

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-08 17:42-0300\n"
+"POT-Creation-Date: 2026-09-08 22:07-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -134,6 +134,7 @@ msgid "  [2] Configure and build"
 msgstr "  [2] Configurar e compilar"
 
 #: scripts-user/lib/build-concurrency.sh:179
+#, sh-printf-format
 msgid "  [3] Fast Mode (%s cores) - Use all available CPU cores\\n"
 msgstr ""
 "  [3] Modo Rápido (%s núcleos) - Usar todos os núcleos de CPU disponíveis\\n"
@@ -237,7 +238,7 @@ msgid_plural "%1 applications"
 msgstr[0] "%1 aplicativo"
 msgstr[1] "%1 aplicativos"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:97
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:115
 msgid "%1 device connected"
 msgid_plural "%1 devices connected"
 msgstr[0] "%1 dispositivo conectado"
@@ -340,7 +341,7 @@ msgid_plural "%1 seconds"
 msgstr[0] "%1 segundo"
 msgstr[1] "%1 segundos"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:363
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:381
 msgid "%1 unread notification"
 msgid_plural "%1 unread notifications"
 msgstr[0] "%1 notificação não lida"
@@ -472,6 +473,7 @@ msgid "%1. Playing."
 msgstr "%1. Reproduzindo."
 
 #: scripts-cmake/setup.sh:124
+#, sh-printf-format
 msgid "%s cannot be combined with another action."
 msgstr "%s não pode ser combinado com outra ação."
 
@@ -540,6 +542,7 @@ msgid "==> Checking and installing build dependencies..."
 msgstr "==> Verificando e instalando dependências de compilação..."
 
 #: scripts-user/lib/build-concurrency.sh:236
+#, sh-printf-format
 msgid "==> Concurrency set to: %s cores (Custom)\\n"
 msgstr "==> Concorrência definida para: %s núcleos (Personalizado)\\n"
 
@@ -548,6 +551,7 @@ msgid "==> Concurrency set to: Balanced Mode (2 cores)"
 msgstr "==> Concorrência definida para: Modo Equilibrado (2 núcleos)"
 
 #: scripts-user/lib/build-concurrency.sh:220
+#, sh-printf-format
 msgid "==> Concurrency set to: Fast Mode (%s cores)\\n"
 msgstr "==> Concorrência definida para: Modo Rápido (%s núcleos)\\n"
 
@@ -564,6 +568,7 @@ msgid "==> Plasmoid uninstalled successfully."
 msgstr "==> Plasmoide desinstalado com sucesso."
 
 #: scripts-dev/setup.sh:124
+#, sh-printf-format
 msgid "==> Removed existing installation: %s\\n"
 msgstr "==> Instalação existente removida: %s\\n"
 
@@ -653,6 +658,7 @@ msgstr ""
 "janelas agrupadas."
 
 #: scripts-dev/setup.sh:104
+#, sh-printf-format
 msgid "Active build concurrency: %s\\n"
 msgstr "Concorrência de compilação ativa: %s\\n"
 
@@ -1057,6 +1063,7 @@ msgid "Apply"
 msgstr "Aplicar"
 
 #: scripts-dev/distro/arch-setup.sh:263
+#, sh-printf-format
 msgid "Arch artifact ready: %s\\n"
 msgstr "Artefato do Arch pronto: %s\\n"
 
@@ -1279,7 +1286,7 @@ msgstr ""
 msgid "Before compiling Punchi Dock Remastered, this system needs:"
 msgstr "Antes de compilar o Punchi Dock Remastered, este sistema precisa de:"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:87
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:105
 msgctxt "@action:button"
 msgid "Bluetooth"
 msgstr "Bluetooth"
@@ -1295,7 +1302,7 @@ msgid "Bluetooth Devices"
 msgstr "Dispositivos Bluetooth"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:91
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:109
 msgctxt "@info"
 msgid "Bluetooth controls unavailable"
 msgstr "Controles de Bluetooth indisponíveis"
@@ -1342,6 +1349,7 @@ msgid "Build package"
 msgstr "Compilar pacote"
 
 #: scripts-cmake/setup.sh:300
+#, sh-printf-format
 msgid "Building with %s parallel job(s)...\\n"
 msgstr "Compilando com %s tarefa(s) paralela(s)...\\n"
 
@@ -1393,6 +1401,7 @@ msgid "CMake assistant menu:"
 msgstr "Menu do assistente CMake:"
 
 #: scripts-cmake/setup.sh:302
+#, sh-printf-format
 msgid "CMake build completed: %s\\n"
 msgstr "Compilação CMake concluída: %s\\n"
 
@@ -1408,7 +1417,7 @@ msgstr ""
 msgid "CMake installation completed successfully."
 msgstr "Instalação CMake concluída com sucesso."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:291
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:309
 msgctxt "@action:button"
 msgid "Calculator"
 msgstr "Calculadora"
@@ -1529,7 +1538,7 @@ msgstr ""
 "Altera o tamanho dos ícones na seção reservada de Favoritos nos dois modos "
 "de menu."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:203
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:221
 msgctxt "@info:accessibility"
 msgid ""
 "Changes the volume indicator for all Plasma controls and multimedia keys"
@@ -1538,6 +1547,7 @@ msgstr ""
 "multimídia"
 
 #: scripts-cmake/setup.sh:278
+#, sh-printf-format
 msgid "Checking the complete CMake environment in: %s\\n"
 msgstr "Verificando o ambiente CMake completo em: %s\\n"
 
@@ -1740,7 +1750,7 @@ msgstr "Limpeza concluída."
 msgid "Clean configuration file?"
 msgstr "Limpar arquivo de configuração?"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:374
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:392
 #: contents/ui/components/NotePopup.qml:175
 msgid "Clear"
 msgstr "Limpar"
@@ -1852,8 +1862,8 @@ msgctxt "@option:media-display-mode"
 msgid "Compact"
 msgstr "Reduzido"
 
-#: contents/ui/components/DockContextActionsController.qml:142
-#: contents/ui/components/DockContextActionsController.qml:195
+#: contents/ui/components/DockContextActionsController.qml:192
+#: contents/ui/components/DockContextActionsController.qml:245
 #: contents/ui/config/components/PunchiMenuDialog.qml:26
 msgctxt "@option:punchimenu-mode"
 msgid "Compact"
@@ -1891,13 +1901,14 @@ msgctxt "@action:button opens system settings"
 msgid "Configure Desktop Effects…"
 msgstr "Configurar efeitos da área de trabalho…"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:319
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:337
 msgctxt "@action:button"
 msgid "Configure Night Light"
 msgstr "Configurar Luz noturna"
 
-#: contents/ui/components/DockContextActionsController.qml:124
-#: contents/ui/components/DockContextActionsController.qml:316
+#: contents/ui/components/DockContextActionsController.qml:102
+#: contents/ui/components/DockContextActionsController.qml:174
+#: contents/ui/components/DockContextActionsController.qml:366
 msgctxt "@action:context"
 msgid "Configure Punchi Dock…"
 msgstr "Configurar o Punchi Dock…"
@@ -2132,6 +2143,7 @@ msgid "Current color: %1"
 msgstr "Cor atual: %1"
 
 #: scripts-user/lib/build-concurrency.sh:169
+#, sh-printf-format
 msgid "Current concurrency: %s\\n"
 msgstr "Concorrência atual: %s\\n"
 
@@ -2276,22 +2288,25 @@ msgstr "Visibilidade da área de trabalho:"
 msgid "Detailed"
 msgstr "Detalhado"
 
-#: contents/ui/components/DockContextActionsController.qml:216
-#: contents/ui/components/DockContextActionsController.qml:257
+#: contents/ui/components/DockContextActionsController.qml:266
+#: contents/ui/components/DockContextActionsController.qml:307
 #: contents/ui/config/ConfigFolderPopups.qml:92
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
 msgstr "Detalhado"
 
 #: scripts-dev/setup.sh:101
+#, sh-printf-format
 msgid "Detected RAM: %s | CPU Cores: %s\\n"
 msgstr "RAM detectada: %s | Núcleos de CPU: %s\\n"
 
 #: scripts-dev/setup.sh:98
+#, sh-printf-format
 msgid "Detected host: %s (%s)\\n"
 msgstr "Sistema detectado: %s (%s)\\n"
 
 #: scripts-dev/distro/arch-setup.sh:272
+#, sh-printf-format
 msgid "Detected host: %s\\n"
 msgstr "Sistema detectado: %s\\n"
 
@@ -2312,6 +2327,7 @@ msgid "Devices"
 msgstr "Dispositivos"
 
 #: scripts-user/setup-universal.sh:141
+#, sh-printf-format
 msgid "Diagnostics saved to: %s\\n"
 msgstr "Diagnósticos salvos em: %s\\n"
 
@@ -2358,7 +2374,7 @@ msgid "Disconnecting…"
 msgstr "Desconectando…"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:157
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:175
 msgctxt "@title"
 msgid "Display"
 msgstr "Tela"
@@ -2400,7 +2416,7 @@ msgstr "Dissolver pasta"
 msgid "Distribution label:"
 msgstr "Rótulo da distribuição:"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:119
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:137
 msgctxt "@action:button"
 msgid "Do Not Disturb"
 msgstr "Não incomodar"
@@ -2539,7 +2555,7 @@ msgstr ""
 msgid "Edge direction:"
 msgstr "Direção da borda:"
 
-#: contents/ui/components/DockContextActionsController.qml:113
+#: contents/ui/components/DockContextActionsController.qml:163
 msgctxt "@action:context"
 msgid "Edit item…"
 msgstr "Editar item…"
@@ -2637,10 +2653,12 @@ msgid "Error: "
 msgstr "Erro: "
 
 #: scripts-cmake/setup.sh:116 scripts-user/setup.sh:93
+#, sh-printf-format
 msgid "Error: %s\\n"
 msgstr "Erro: %s\\n"
 
 #: scripts-dev/setup.sh:86
+#, sh-printf-format
 msgid "Error: Cannot build natively on this system (%s).\\n"
 msgstr "Erro: Não é possível compilar nativamente neste sistema (%s).\\n"
 
@@ -2649,6 +2667,7 @@ msgid "Error: Could not identify the distribution from /etc/os-release."
 msgstr "Erro: Não foi possível identificar a distribuição em /etc/os-release."
 
 #: scripts-user/setup.sh:86
+#, sh-printf-format
 msgid "Error: Invalid menu option: '%s'\\n"
 msgstr "Erro: Opção de menu inválida: '%s'\\n"
 
@@ -2659,18 +2678,22 @@ msgstr ""
 "Erro: Número de tarefas inválido. Insira um número inteiro entre 1 e 64."
 
 #: scripts-dev/setup.sh:129
+#, sh-printf-format
 msgid "Error: Invalid option: %s\\n"
 msgstr "Erro: Opção inválida: %s\\n"
 
 #: scripts-user/lib/build-concurrency.sh:254
+#, sh-printf-format
 msgid "Error: Invalid option: '%s'\\n"
 msgstr "Erro: Opção inválida: '%s'\\n"
 
 #: scripts-dev/setup.sh:90
+#, sh-printf-format
 msgid "Error: No build profile exists for the distribution: %s.\\n"
 msgstr "Erro: Não existe perfil de compilação para a distribuição: %s.\\n"
 
 #: scripts-user/setup-universal.sh:131
+#, sh-printf-format
 msgid "Error: Plasma Shell PID %s stopped during startup.\\n"
 msgstr "Erro: o PID %s do Plasma Shell parou durante a inicialização.\\n"
 
@@ -2690,10 +2713,12 @@ msgstr ""
 "sudo."
 
 #: scripts-dev/setup.sh:76
+#, sh-printf-format
 msgid "Error: Unsupported Debian version for building: %s.\\n"
 msgstr "Erro: Versão do Debian não compatível para compilação: %s.\\n"
 
 #: scripts-user/setup-universal.sh:115
+#, sh-printf-format
 msgid "Error: kpackagetool6 did not leave a valid installation in %s\\n"
 msgstr "Erro: o kpackagetool6 não deixou uma instalação válida em %s\\n"
 
@@ -2703,6 +2728,7 @@ msgstr ""
 "Erro: nenhum comando compatível está disponível para iniciar o Plasma Shell."
 
 #: scripts-user/setup-universal.sh:99
+#, sh-printf-format
 msgid ""
 "Error: no universal .plasmoid was found in '%s' and no valid package path "
 "was provided.\\n"
@@ -2715,6 +2741,7 @@ msgid "Error: only one .plasmoid package can be installed at a time."
 msgstr "Erro: somente um pacote .plasmoid pode ser instalado por vez."
 
 #: scripts-user/setup-universal.sh:86
+#, sh-printf-format
 msgid "Error: required installation command not found: %s\\n"
 msgstr "Erro: comando de instalação obrigatório não encontrado: %s\\n"
 
@@ -2723,6 +2750,7 @@ msgid "Error: the Plasma Shell user service could not be restarted."
 msgstr "Erro: não foi possível reiniciar o serviço de usuário do Plasma Shell."
 
 #: scripts-user/setup-universal.sh:77
+#, sh-printf-format
 msgid "Error: unknown option or invalid package path: %s\\n"
 msgstr "Erro: opção desconhecida ou caminho de pacote inválido: %s\\n"
 
@@ -2785,6 +2813,7 @@ msgstr "Preencher largura"
 msgid "Fit content (Recommended)"
 msgstr "Ajustar ao conteúdo (Recomendado)"
 
+#: contents/ui/components/DockContextActionsController.qml:69
 #: contents/ui/config/components/ControlCenterDialog.qml:23
 msgctxt "@option:control-center-mode"
 msgid "Floating"
@@ -2884,7 +2913,7 @@ msgstr "Escala de pop-up de pasta"
 msgid "Folder popups"
 msgstr "Pop-ups de pasta"
 
-#: contents/ui/components/DockContextActionsController.qml:224
+#: contents/ui/components/DockContextActionsController.qml:274
 msgctxt "@title:menu"
 msgid "Folder view"
 msgstr "Visualização da pasta"
@@ -2991,13 +3020,14 @@ msgstr "Ícone completo:"
 msgid "Full screen"
 msgstr "Tela inteira"
 
+#: contents/ui/components/DockContextActionsController.qml:70
 #: contents/ui/config/components/ControlCenterDialog.qml:19
 msgctxt "@option:control-center-mode"
 msgid "Full screen"
 msgstr "Tela inteira"
 
-#: contents/ui/components/DockContextActionsController.qml:147
-#: contents/ui/components/DockContextActionsController.qml:184
+#: contents/ui/components/DockContextActionsController.qml:197
+#: contents/ui/components/DockContextActionsController.qml:234
 #: contents/ui/config/components/PunchiMenuDialog.qml:16
 msgctxt "@option:punchimenu-mode"
 msgid "Full screen"
@@ -3051,8 +3081,8 @@ msgstr "Gráficos"
 msgid "Grid"
 msgstr "Grade"
 
-#: contents/ui/components/DockContextActionsController.qml:217
-#: contents/ui/components/DockContextActionsController.qml:233
+#: contents/ui/components/DockContextActionsController.qml:267
+#: contents/ui/components/DockContextActionsController.qml:283
 #: contents/ui/config/ConfigFolderPopups.qml:90
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Grid"
@@ -3104,7 +3134,7 @@ msgctxt "@option:media-track-information"
 msgid "Hide"
 msgstr "Ocultar"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:197
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:215
 msgctxt "@action:button"
 msgid "Hide Plasma volume indicator"
 msgstr "Ocultar o indicador de volume do Plasma"
@@ -3317,6 +3347,7 @@ msgstr ""
 "novamente."
 
 #: scripts-user/setup-universal.sh:119
+#, sh-printf-format
 msgid "Installation completed in: %s\\n"
 msgstr "Instalação concluída em: %s\\n"
 
@@ -3325,6 +3356,7 @@ msgid "Installation completed without restarting Plasma Shell."
 msgstr "Instalação concluída sem reiniciar o Plasma Shell."
 
 #: scripts-user/setup-universal.sh:108
+#, sh-printf-format
 msgid "Installation directory: %s\\n"
 msgstr "Diretório de instalação: %s\\n"
 
@@ -3337,6 +3369,7 @@ msgid "Installed Punchi Dock theme"
 msgstr "Tema Punchi Dock instalado"
 
 #: scripts-user/setup-universal.sh:140 scripts-user/setup-universal.sh:146
+#, sh-printf-format
 msgid "Installed package: %s\\n"
 msgstr "Pacote instalado: %s\\n"
 
@@ -3345,6 +3378,7 @@ msgid "Installed theme:"
 msgstr "Tema instalado:"
 
 #: scripts-cmake/setup.sh:365
+#, sh-printf-format
 msgid "Installing the current build for this user under: %s\\n"
 msgstr "Instalando a compilação atual para este usuário em: %s\\n"
 
@@ -3495,7 +3529,7 @@ msgstr "Esquerda"
 msgid "Length:"
 msgstr "Comprimento:"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:248
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:266
 msgctxt "@action:button"
 msgid "Light and dark mode"
 msgstr "Modo claro e escuro"
@@ -3542,8 +3576,8 @@ msgstr ""
 msgid "List"
 msgstr "Vista simples"
 
-#: contents/ui/components/DockContextActionsController.qml:214
-#: contents/ui/components/DockContextActionsController.qml:245
+#: contents/ui/components/DockContextActionsController.qml:264
+#: contents/ui/components/DockContextActionsController.qml:295
 #: contents/ui/config/ConfigFolderPopups.qml:91
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
@@ -3564,6 +3598,7 @@ msgid "Loading applications…"
 msgstr "Carregando aplicativos…"
 
 #: scripts-user/setup.sh:85
+#, sh-printf-format
 msgid "Local package created without installation: %s\\n"
 msgstr "Pacote local criado sem instalação: %s\\n"
 
@@ -3589,6 +3624,7 @@ msgstr ""
 "aplicar as alterações."
 
 #: scripts-dev/setup.sh:144
+#, sh-printf-format
 msgid "Logs: docs/logs/%s/setup-%s-latest.log\\n"
 msgstr "Registros: docs/logs/%s/setup-%s-latest.log\\n"
 
@@ -3620,12 +3656,12 @@ msgctxt "@info"
 msgid "Manage audio devices and application volumes"
 msgstr "Gerenciar dispositivos de áudio e volumes de aplicativos"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:210
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:228
 msgctxt "@action:button"
 msgid "Manage audio devices and applications"
 msgstr "Gerenciar dispositivos de áudio e aplicativos"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:138
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:156
 msgctxt "@info"
 msgid "Manage system updates"
 msgstr "Gerenciar atualizações do sistema"
@@ -3793,7 +3829,8 @@ msgstr ""
 "As entradas de menu e as ações por item permanecem configuradas na seção "
 "Itens."
 
-#: contents/ui/components/DockContextActionsController.qml:151
+#: contents/ui/components/DockContextActionsController.qml:71
+#: contents/ui/components/DockContextActionsController.qml:201
 msgctxt "@title:menu"
 msgid "Menu mode"
 msgstr "Modo do menu"
@@ -3838,6 +3875,7 @@ msgid "Minimize window"
 msgstr "Minimizar janela"
 
 #: scripts-dev/distro/arch-setup.sh:205
+#, sh-printf-format
 msgid "Missing pacman packages: %s\\n"
 msgstr "Pacotes do pacman ausentes: %s\\n"
 
@@ -3879,7 +3917,7 @@ msgstr[1] "Mover %1 temas para a Lixeira?"
 msgid "Move all themes to the Trash…"
 msgstr "Mover todos os temas para a Lixeira…"
 
-#: contents/ui/components/DockContextActionsController.qml:88
+#: contents/ui/components/DockContextActionsController.qml:138
 msgctxt "@action:context"
 msgid "Move open applications section"
 msgstr "Mover seção de aplicativos abertos"
@@ -3932,7 +3970,7 @@ msgctxt "@title:category"
 msgid "Multimedia"
 msgstr "Multimídia"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:187
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
 msgctxt "@action:button"
 msgid "Mute"
 msgstr "Silenciar"
@@ -3958,7 +3996,7 @@ msgid "Needs attention"
 msgstr "Requer atenção"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:77
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:95
 msgctxt "@info"
 msgid "Network controls unavailable"
 msgstr "Controles de rede indisponíveis"
@@ -3992,7 +4030,7 @@ msgctxt "@action:button"
 msgid "Next track"
 msgstr "Próxima faixa"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:270
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:288
 msgctxt "@action:button"
 msgid "Night Light"
 msgstr "Luz noturna"
@@ -4003,12 +4041,12 @@ msgctxt "@label"
 msgid "Night Light intensity"
 msgstr "Intensidade da Luz noturna"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:280
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:298
 msgctxt "@info:status"
 msgid "Night Light is paused"
 msgstr "A Luz noturna está pausada"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:93
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:111
 msgctxt "@info:status"
 msgid "No Bluetooth adapters"
 msgstr "Nenhum adaptador Bluetooth"
@@ -4093,7 +4131,7 @@ msgstr "Nenhuma mídia em reprodução"
 msgid "No movement"
 msgstr "Nenhum movimento"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:428
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:446
 msgctxt "@info"
 msgid "No notifications"
 msgstr "Nenhuma notificação"
@@ -4123,14 +4161,14 @@ msgctxt "@option:punchimenu-mode"
 msgid "Normal"
 msgstr "Normal"
 
-#: contents/ui/components/DockContextActionsController.qml:144
-#: contents/ui/components/DockContextActionsController.qml:160
+#: contents/ui/components/DockContextActionsController.qml:194
+#: contents/ui/components/DockContextActionsController.qml:210
 msgctxt "@option:punchimenu-mode"
 msgid "Normal (anchored)"
 msgstr "Normal (fixado)"
 
-#: contents/ui/components/DockContextActionsController.qml:146
-#: contents/ui/components/DockContextActionsController.qml:172
+#: contents/ui/components/DockContextActionsController.qml:196
+#: contents/ui/components/DockContextActionsController.qml:222
 msgctxt "@option:punchimenu-mode"
 msgid "Normal (floating center)"
 msgstr "Normal (flutuante central)"
@@ -4188,24 +4226,25 @@ msgid "Notice: No local installation was found."
 msgstr "Aviso: nenhuma instalação local foi encontrada."
 
 #: scripts-dev/setup.sh:81
+#, sh-printf-format
 msgid ""
 "Notice: This distribution (%s) is not an official C++ build environment.\\n"
 msgstr ""
 "Aviso: Esta distribuição (%s) não é um ambiente oficial de compilação C++.\\n"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:121
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:429
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:139
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:447
 msgctxt "@info"
 msgid "Notification service unavailable"
 msgstr "Serviço de notificações indisponível"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:381
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:399
 msgctxt "@action:button"
 msgid "Notification settings"
 msgstr "Configurações de notificações"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:343
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:354
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:361
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:372
 msgctxt "@title"
 msgid "Notifications"
 msgstr "Notificações"
@@ -4218,17 +4257,17 @@ msgstr "Número de barras do visualizador de áudio"
 msgid "Number of bars:"
 msgstr "Número de barras:"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:124
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:142
 msgctxt "@info:status"
 msgid "Off — allow notification popups"
 msgstr "Desativado — permitir pop-ups de notificação"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:95
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:113
 msgctxt "@info:status"
 msgid "Off — view devices"
 msgstr "Desativado — ver dispositivos"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:76
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:94
 msgctxt "@info:status"
 msgid "Off — view networks"
 msgstr "Desativado — ver redes"
@@ -4244,17 +4283,17 @@ msgctxt "@title:category"
 msgid "Office"
 msgstr "Escritório"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:123
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:141
 msgctxt "@info:status"
 msgid "On — suppress notification popups"
 msgstr "Ativado — suprimir pop-ups de notificação"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:100
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:118
 msgctxt "@info:status"
 msgid "On — view devices"
 msgstr "Ativado — ver dispositivos"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:75
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:93
 msgctxt "@info:status"
 msgid "On — view networks"
 msgstr "Ativado — ver redes"
@@ -4356,7 +4395,7 @@ msgstr "Opacidade:"
 msgid "Opaque"
 msgstr "Opaco"
 
-#: contents/ui/components/DockContextActionsController.qml:76
+#: contents/ui/components/DockContextActionsController.qml:126
 msgctxt "@action:context"
 msgid "Open"
 msgstr "Abrir %1"
@@ -4373,7 +4412,7 @@ msgid "Open Bluetooth settings"
 msgstr "Abrir configurações de Bluetooth"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:273
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:291
 msgctxt "@info"
 msgid "Open Night Light settings"
 msgstr "Abrir configurações da Luz noturna"
@@ -4382,7 +4421,7 @@ msgstr "Abrir configurações da Luz noturna"
 msgid "Open Trash"
 msgstr "Abrir Lixeira"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:251
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:269
 msgctxt "@info"
 msgid "Open appearance settings"
 msgstr "Abrir configurações de aparência"
@@ -4401,7 +4440,7 @@ msgid "Open applications"
 msgstr "Aplicativos abertos"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:163
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:181
 msgctxt "@action:button"
 msgid "Open display settings"
 msgstr "Abrir configurações de tela"
@@ -4438,7 +4477,7 @@ msgstr "Abrir configurações"
 
 #
 #: contents/ui/components/controlcenter/ControlCenterAudioPage.qml:128
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:212
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:230
 msgctxt "@action:button"
 msgid "Open sound settings"
 msgstr "Abrir configurações de som"
@@ -4613,7 +4652,7 @@ msgctxt "@action:button"
 msgid "Pause"
 msgstr "Pausa"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:278
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:296
 msgctxt "@info:status"
 msgid "Paused by another application"
 msgstr "Pausada por outro aplicativo"
@@ -4631,7 +4670,7 @@ msgctxt "@info:status Bluetooth device type"
 msgid "Phone"
 msgstr "Telefone"
 
-#: contents/ui/components/DockContextActionsController.qml:100
+#: contents/ui/components/DockContextActionsController.qml:150
 msgctxt "@action:context"
 msgid "Pin to Dock"
 msgstr "Fixar no Dock"
@@ -4658,10 +4697,12 @@ msgid "Pixel spectrum"
 msgstr "Espectro de pixels"
 
 #: scripts-user/lib/plasma-shell-control.sh:16
+#, sh-printf-format
 msgid "Plasma Shell PID before restart: %s\\n"
 msgstr "PID do Plasma Shell antes da reinicialização: %s\\n"
 
 #: scripts-cmake/setup.sh:333
+#, sh-printf-format
 msgid "Plasma Shell restart failed with status %s.\\n"
 msgstr "A reinicialização do Plasma Shell falhou com o status %s.\\n"
 
@@ -4677,6 +4718,7 @@ msgstr ""
 "novamente ou reinicie o Plasma mais tarde."
 
 #: scripts-cmake/setup.sh:328
+#, sh-printf-format
 msgid ""
 "Plasma Shell restart timed out after %s seconds; continuing without waiting."
 "\\n"
@@ -4685,6 +4727,7 @@ msgstr ""
 "continuando sem aguardar.\\n"
 
 #: scripts-user/lib/plasma-shell-control.sh:65
+#, sh-printf-format
 msgid "Plasma Shell restarted successfully (new PID: %s).\\n"
 msgstr "Plasma Shell reiniciado com sucesso (novo PID: %s).\\n"
 
@@ -4914,6 +4957,7 @@ msgid "Quick access to system status and settings"
 msgstr "Acesso rápido ao status e às configurações do sistema"
 
 #: scripts-user/setup.sh:139
+#, sh-printf-format
 msgid "RAM %s | CPU cores %s | Build jobs %s"
 msgstr "RAM %s | Núcleos da CPU %s | Tarefas de compilação %s"
 
@@ -5197,7 +5241,7 @@ msgstr "Procurar redes"
 msgid "Scope:"
 msgstr "Escopo:"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:301
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:319
 msgctxt "@action:button"
 msgid "Screenshot"
 msgstr "Captura de tela"
@@ -5295,6 +5339,7 @@ msgid "Selected for the new folder"
 msgstr "Selecionado para a nova pasta"
 
 #: scripts-user/setup-universal.sh:107
+#, sh-printf-format
 msgid "Selected package: %s\\n"
 msgstr "Pacote selecionado: %s\\n"
 
@@ -5361,7 +5406,7 @@ msgstr "Mostrar \"Configurar o Punchi Dock…\""
 msgid "Show \"Edit item…\""
 msgstr "Mostrar \"Editar item…\""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:198
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:216
 msgctxt "@action:button"
 msgid "Show Plasma volume indicator"
 msgstr "Mostrar o indicador de volume do Plasma"
@@ -5596,7 +5641,7 @@ msgid "Sort applications alphabetically"
 msgstr "Ordenar aplicativos em ordem alfabética"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:176
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:194
 msgctxt "@title"
 msgid "Sound"
 msgstr "Som"
@@ -5646,12 +5691,12 @@ msgstr ""
 msgid "Supported build environments: Fedora, Debian 13, and Arch Linux."
 msgstr "Ambientes de compilação compatíveis: Fedora, Debian 13 e Arch Linux."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:254
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:272
 msgctxt "@action:button"
 msgid "Switch to dark mode"
 msgstr "Alternar para o modo escuro"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:253
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:271
 msgctxt "@action:button"
 msgid "Switch to light mode"
 msgstr "Alternar para o modo claro"
@@ -6130,6 +6175,7 @@ msgid "Top to bottom"
 msgstr "De cima para baixo"
 
 #: scripts-user/lib/build-concurrency.sh:168
+#, sh-printf-format
 msgid "Total system RAM: %s | CPU Cores: %s\\n"
 msgstr "RAM total do sistema: %s | Núcleos de CPU: %s\\n"
 
@@ -6172,7 +6218,7 @@ msgctxt "@info"
 msgid "Try scanning again or open Network Settings."
 msgstr "Tente procurar novamente ou abra as Configurações de rede."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:281
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:299
 msgctxt "@action:button"
 msgid "Turn off Night Light"
 msgstr "Desativar Luz noturna"
@@ -6182,7 +6228,7 @@ msgctxt "@info"
 msgid "Turn on Bluetooth to manage paired devices."
 msgstr "Ative o Bluetooth para gerenciar dispositivos pareados."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:275
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:293
 msgctxt "@action:button"
 msgid "Turn on Night Light"
 msgstr "Ativar Luz noturna"
@@ -6217,7 +6263,7 @@ msgctxt "@info"
 msgid "Unknown audio stream"
 msgstr "Fluxo de áudio desconhecido"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:186
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:204
 msgctxt "@action:button"
 msgid "Unmute"
 msgstr "Ativar som"
@@ -6232,12 +6278,12 @@ msgctxt "@info"
 msgid "Unnamed audio device"
 msgstr "Dispositivo de áudio sem nome"
 
-#: contents/ui/components/DockContextActionsController.qml:272
+#: contents/ui/components/DockContextActionsController.qml:322
 msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Desafixar do Dock"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:137
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:155
 msgctxt "@action:button"
 msgid "Updates"
 msgstr "Atualizações"
@@ -6621,6 +6667,7 @@ msgid "Validate"
 msgstr "Validar"
 
 #: scripts-user/setup.sh:137
+#, sh-printf-format
 msgid "Version %s | %s | %s"
 msgstr "Versão %s | %s | %s"
 
@@ -6717,7 +6764,7 @@ msgstr ""
 "Quando ativados, os campos de texto usam um cursor em forma de I, enquanto "
 "os controles deslizantes, botões e seletores usam um ponteiro interativo."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:72
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:90
 msgctxt "@action:button"
 msgid "Wi-Fi"
 msgstr "Wi-Fi"
@@ -6864,6 +6911,7 @@ msgid "install the missing Arch packages and retry"
 msgstr "instale os pacotes ausentes do Arch e tente novamente"
 
 #: scripts-dev/distro/arch-setup.sh:122 scripts-dev/distro/arch-setup.sh:126
+#, sh-printf-format
 msgid "invalid number of parallel jobs: %s\\n"
 msgstr "número de tarefas paralelas inválido: %s\\n"
 
@@ -6893,6 +6941,7 @@ msgstr ""
 "de segundos"
 
 #: scripts-dev/distro/arch-setup.sh:262
+#, sh-printf-format
 msgid "the build finished without creating the expected artifact: %s\\n"
 msgstr "a compilação terminou sem criar o artefato esperado: %s\\n"
 
@@ -6915,6 +6964,7 @@ msgstr ""
 "de /"
 
 #: scripts-dev/distro/arch-setup.sh:178
+#, sh-printf-format
 msgid ""
 "this setup script requires Arch Linux or an Arch-family distribution "
 "(detected: %s)\\n"
@@ -6923,9 +6973,11 @@ msgstr ""
 "Arch (detectada: %s)\\n"
 
 #: scripts-cmake/setup.sh:178
+#, sh-printf-format
 msgid "unknown option: %s"
 msgstr "opção desconhecida: %s"
 
 #: scripts-dev/distro/arch-setup.sh:149
+#, sh-printf-format
 msgid "unknown option: %s\\n"
 msgstr "opção desconhecida: %s\\n"
