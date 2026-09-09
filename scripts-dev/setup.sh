@@ -26,6 +26,49 @@ source "$PROJECT_ROOT/scripts-user/lib/setup-localization.sh"
 source "$PROJECT_ROOT/scripts-user/lib/qtpaths-resolver.sh"
 # shellcheck source=../scripts-user/lib/build-concurrency.sh
 source "$PROJECT_ROOT/scripts-user/lib/build-concurrency.sh"
+# shellcheck source=../scripts-user/lib/setup-terminal-ui.sh
+source "$PROJECT_ROOT/scripts-user/lib/setup-terminal-ui.sh"
+
+project_version() {
+    awk -F '"' '/"Version"[[:space:]]*:/ { print $4; exit }' "$PROJECT_ROOT/metadata.json"
+}
+
+system_display_name() {
+    local distribution_name="Linux"
+    if [[ -r /etc/os-release ]]; then
+        # shellcheck disable=SC1091
+        source /etc/os-release
+        distribution_name="${PRETTY_NAME:-${NAME:-${ID:-Linux}}}"
+    fi
+    punchi_ui_sanitize_text "$distribution_name"
+}
+
+show_setup_header() {
+    local package_version=""
+    local distribution_name=""
+    local architecture=""
+    local ram_display=""
+    local cpu_cores=""
+    local current_jobs=""
+    local environment_line=""
+    local resources_line=""
+
+    package_version="$(project_version)"
+    distribution_name="$(system_display_name)"
+    architecture="$(uname -m)"
+    ram_display="$(punchi_format_ram_display "$(punchi_detect_total_ram_mb)")"
+    cpu_cores="$(punchi_detect_cpu_cores)"
+    current_jobs="$(punchi_get_concurrency_level)"
+    environment_line="$(punchi_gettext_format 'Version %s | %s | %s' \
+        "${package_version:-unknown}" "$distribution_name" "$architecture")"
+    resources_line="$(punchi_gettext_format 'RAM %s | CPU cores %s | Build jobs %s' \
+        "$ram_display" "$cpu_cores" "$current_jobs")"
+
+    punchi_ui_render_header 1 \
+        "$(punchi_gettext 'Punchi Dock Remastered · Setup')" \
+        "$environment_line" \
+        "$resources_line"
+}
 
 # ---------------------------------------------------------------------------
 # Localized developer-assistant messages
@@ -90,9 +133,7 @@ Examples:
             punchi_gettext_format 'Error: No build profile exists for the distribution: %s.\n' "${1:-unknown}" >&2
             ;;
         banner)
-            echo "=========================================================="
-            punchi_gettext_line '   Punchi Dock Remastered - Master Setup Assistant        '
-            echo "=========================================================="
+            show_setup_header
             ;;
         detected_host)
             punchi_gettext_format 'Detected host: %s (%s)\n' "${1:-unknown}" "$(uname -m)"
@@ -104,8 +145,11 @@ Examples:
             punchi_gettext_format 'Active build concurrency: %s\n' "${1:-unknown}"
             ;;
         menu_question)   punchi_gettext_line 'What would you like to do?' ;;
+        menu_primary)    punchi_ui_write_styled_line heading 1 "$(punchi_gettext 'Primary actions')" ;;
+        menu_maintenance) punchi_ui_write_styled_line heading 1 "$(punchi_gettext 'Maintenance')" ;;
+        menu_settings)   punchi_ui_write_styled_line heading 1 "$(punchi_gettext 'Settings and help')" ;;
         menu_opt1)       punchi_gettext_line '  [1] Build official release package (Release in dist/)' ;;
-        menu_opt2)       punchi_gettext_line '  [2] Build, install and test locally (--local-test)' ;;
+        menu_opt2)       punchi_ui_write_styled_line success 1 "$(punchi_gettext '  [2] Build, install and test locally (--local-test)')" ;;
         menu_opt3)       punchi_gettext_line '  [3] Install an existing .plasmoid package from dist/' ;;
         menu_opt4)       punchi_gettext_line '  [4] Clean install (remove current + rebuild + install)' ;;
         menu_opt5)       punchi_gettext_line '  [5] Check and install build dependencies only' ;;
@@ -114,19 +158,19 @@ Examples:
         menu_opt8)       punchi_gettext_line '  [8] Help (show CLI commands reference)' ;;
         menu_opt9)       punchi_gettext_line '  [9] Exit' ;;
         menu_prompt)     punchi_gettext 'Select an option [1-9]: ' ;;
-        start_release)   punchi_gettext_line '==> Starting Release build...' ;;
-        start_local)     punchi_gettext_line '==> Starting build and local test...' ;;
-        start_clean)     punchi_gettext_line '==> Starting clean install (remove + rebuild + install)...' ;;
-        start_deps)      punchi_gettext_line '==> Checking and installing build dependencies...' ;;
-        start_uninstall) punchi_gettext_line '==> Uninstalling the plasmoid...' ;;
-        uninstall_done)  punchi_gettext_line '==> Plasmoid uninstalled successfully.' ;;
-        uninstall_none)  punchi_gettext_line 'Notice: No local installation found for the plasmoid.' ;;
-        clean_removed)   punchi_gettext_format '==> Removed existing installation: %s\n' "${1:-}" ;;
-        start_plasma_restart) punchi_gettext_line '==> Restarting Plasma Shell...' ;;
-        restart_done)    punchi_gettext_line '==> Plasma Shell restart requested.' ;;
+        start_release)   punchi_ui_write_styled_line info 1 "$(punchi_gettext '==> Starting Release build...')" ;;
+        start_local)     punchi_ui_write_styled_line info 1 "$(punchi_gettext '==> Starting build and local test...')" ;;
+        start_clean)     punchi_ui_write_styled_line info 1 "$(punchi_gettext '==> Starting clean install (remove + rebuild + install)...')" ;;
+        start_deps)      punchi_ui_write_styled_line info 1 "$(punchi_gettext '==> Checking and installing build dependencies...')" ;;
+        start_uninstall) punchi_ui_write_styled_line info 1 "$(punchi_gettext '==> Uninstalling the plasmoid...')" ;;
+        uninstall_done)  punchi_ui_write_styled_line success 1 "$(punchi_gettext '==> Plasmoid uninstalled successfully.')" ;;
+        uninstall_none)  punchi_ui_write_styled_line warning 1 "$(punchi_gettext 'Notice: No local installation found for the plasmoid.')" ;;
+        clean_removed)   punchi_ui_write_styled_line info 1 "$(punchi_gettext_format '==> Removed existing installation: %s' "${1:-}")" ;;
+        start_plasma_restart) punchi_ui_write_styled_line info 1 "$(punchi_gettext '==> Restarting Plasma Shell...')" ;;
+        restart_done)    punchi_ui_write_styled_line success 1 "$(punchi_gettext '==> Plasma Shell restart requested.')" ;;
         prompt_restart)  punchi_gettext 'Would you like to restart Plasma Shell now? [y/N]: ' ;;
         cancelled)       punchi_gettext_line 'Operation cancelled.' ;;
-        err_invalid_opt) punchi_gettext_format 'Error: Invalid option: %s\n' "${1:-}" >&2 ;;
+        err_invalid_opt) punchi_ui_write_styled_line error 2 "$(punchi_gettext_format 'Error: Invalid option: %s' "${1:-}")" ;;
         quick_ref)
             echo ""
             punchi_gettext_line 'CLI Quick Reference
@@ -391,26 +435,22 @@ fi
 # ---------------------------------------------------------------------------
 if (( $# == 0 )); then
     interactive_mode=1
-    ram_mb="$(punchi_detect_total_ram_mb)"
-    ram_display="$(punchi_format_ram_display "$ram_mb")"
-    cpu_cores="$(punchi_detect_cpu_cores)"
 
     while true; do
-        current_jobs="$(punchi_get_concurrency_level)"
         echo ""
-        msg banner
-        msg detected_host "${PRETTY_NAME:-$ID}"
-        msg ram_info "$ram_display" "$cpu_cores"
-        msg concurrency_info "$(punchi_concurrency_profile_label "$current_jobs")"
+        show_setup_header
         echo ""
         msg menu_question
+        msg menu_primary
         msg menu_opt1
         msg menu_opt2
         msg menu_opt3
         msg menu_opt4
+        msg menu_maintenance
         msg menu_opt5
         msg menu_opt6
         msg menu_opt7
+        msg menu_settings
         msg menu_opt8
         msg menu_opt9
         echo ""
@@ -488,7 +528,7 @@ else
     fi
 
     if [[ "${1:-}" == "--uninstall" ]]; then
-        local do_restart=0
+        do_restart=0
         if [[ "${2:-}" == "--restart" || "${2:-}" == "-r" ]]; then
             do_restart=1
         fi

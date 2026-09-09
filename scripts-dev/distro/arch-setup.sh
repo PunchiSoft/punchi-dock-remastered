@@ -4,6 +4,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
+# shellcheck source=../lib/setup-progress.sh
+source "$SCRIPTS_DIR/lib/setup-progress.sh"
 ASSUME_YES=0
 SKIP_PACMAN=0
 DEPENDENCIES_ONLY=0
@@ -110,7 +112,11 @@ run_command() {
     printf ' %q' "$@"
     printf '\n'
     if (( DRY_RUN == 0 )); then
-        "$@"
+        if [[ "${1:-}" == sudo ]]; then
+            punchi_progress_interactive "$@"
+        else
+            "$@"
+        fi
     fi
 }
 
@@ -270,7 +276,9 @@ main() {
     validate_host
 
     log_format 'Detected host: %s\n' "${PRETTY_NAME:-Arch Linux}"
+    punchi_progress_update 5 dependencies
     install_dependencies
+    punchi_progress_update 15 environment
     verify_commands
 
     if (( DEPENDENCIES_ONLY == 0 )); then
@@ -281,5 +289,12 @@ main() {
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
+    if [[ -z "${PUNCHI_PROGRESS_DIR:-}" && "${PUNCHI_SETUP_LOG_ACTIVE:-0}" != 1 ]]; then
+        # shellcheck source=../lib/setup-logging.sh
+        source "$SCRIPTS_DIR/lib/setup-logging.sh"
+        PUNCHI_LOG_DIR="${PUNCHI_LOG_DIR:-$PROJECT_ROOT/docs/logs/arch}"
+        punchi_run_setup_with_log "arch" "$0" "$@"
+    else
+        main "$@"
+    fi
 fi

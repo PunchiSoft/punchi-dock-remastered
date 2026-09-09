@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-punchi_run_setup_with_log() {
+# shellcheck source=setup-progress.sh
+source "$(dirname "${BASH_SOURCE[0]}")/setup-progress.sh"
+# shellcheck source=../../scripts-user/lib/setup-localization.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../../scripts-user/lib/setup-localization.sh"
+
+punchi_run_setup_with_log() (
+    export PUNCHI_SETUP_LOG_ACTIVE=1
     local profile="${1:?setup profile is required}"
     local setup_command="${2:?setup command is required}"
     shift 2
@@ -19,6 +25,11 @@ punchi_run_setup_with_log() {
     local pipeline_status=()
     local command_status=0
     local tee_status=0
+    local plain=0 argument
+    for argument in "$@"; do
+        case "$argument" in --dry-run|--help|-h) plain=1 ;; esac
+    done
+    punchi_prepare_setup_localization "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
     timestamp="$(date '+%Y%m%d-%H%M%S')"
     started_at="$(date --iso-8601=seconds)"
@@ -43,11 +54,28 @@ punchi_run_setup_with_log() {
         printf 'Started: %s\n' "$started_at"
         printf 'Log file: %s\n' "$log_file"
         printf '%s\n' '----------------------------------------'
-    } | tee -a "$log_file"
+    } >>"$log_file"
 
     set +e
-    "$setup_command" "$@" 2>&1 | tee -a "$log_file"
-    pipeline_status=("${PIPESTATUS[@]}")
+    if (( plain )); then
+        "$setup_command" "$@" 2>&1 | tee -a "$log_file"
+        pipeline_status=("${PIPESTATUS[@]}")
+    else
+        local input_fd runner signal_status=0
+        exec {input_fd}<&0
+        punchi_progress_run "$log_file" "$setup_command" "$@" <&"$input_fd" &
+        runner=$!
+        trap 'signal_status=130; kill -TERM "$runner" 2>/dev/null || true' INT
+        trap 'signal_status=143; kill -TERM "$runner" 2>/dev/null || true' TERM
+        wait "$runner"
+        command_status=$?
+        if (( signal_status )); then
+            wait "$runner" 2>/dev/null || true
+            command_status="$signal_status"
+        fi
+        trap - INT TERM
+        pipeline_status=("$command_status" 0)
+    fi
     set -e
 
     command_status="${pipeline_status[0]}"
@@ -59,7 +87,8 @@ punchi_run_setup_with_log() {
         printf 'Finished: %s\n' "$finished_at"
         printf 'Exit status: %s\n' "$command_status"
         printf 'Log saved to: %s\n' "$log_file"
-    } | tee -a "$log_file"
+    } >>"$log_file"
+    printf 'Log: %s\nExit status: %s\n' "$log_file" "$command_status"
 
     cp -- "$log_file" "$latest_file" || {
         printf 'Warning: could not update the latest log file: %s\n' "$latest_file" >&2
@@ -71,4 +100,4 @@ punchi_run_setup_with_log() {
     fi
 
     return "$command_status"
-}
+)

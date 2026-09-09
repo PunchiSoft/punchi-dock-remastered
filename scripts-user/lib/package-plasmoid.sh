@@ -6,6 +6,14 @@ SCRIPTS_DIR="$(cd "$LIB_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
 DEV_SCRIPTS_DIR="$PROJECT_ROOT/scripts-dev"
 
+if [[ -f "$DEV_SCRIPTS_DIR/lib/setup-progress.sh" ]]; then
+    # shellcheck source=../../scripts-dev/lib/setup-progress.sh
+    source "$DEV_SCRIPTS_DIR/lib/setup-progress.sh"
+fi
+if ! declare -F punchi_progress_update >/dev/null; then
+    punchi_progress_update() { :; }
+fi
+
 # shellcheck source=build-concurrency.sh
 source "$LIB_DIR/build-concurrency.sh"
 
@@ -176,6 +184,7 @@ if [[ "$PACKAGE_VALIDATION_MODE" == "full" ]]; then
         source "$QMLLINT_BASELINE_FILE"
     fi
 
+    punchi_progress_update 20 lint
     echo "==> Validating QML (developer mode)"
     echo "Using: $QMLLINT_BIN ($QMLLINT_VERSION)"
     mkdir -p "$BUILD_DIR"
@@ -255,6 +264,7 @@ else
     echo "==> Building the native QML module without developer tests"
 fi
 echo "Build type: $PACKAGE_BUILD_TYPE"
+punchi_progress_update 30 configure
 env \
     GIT_CONFIG_COUNT=1 \
     GIT_CONFIG_KEY_0=safe.directory \
@@ -264,11 +274,14 @@ env \
     -DCMAKE_BUILD_TYPE="$PACKAGE_BUILD_TYPE"
 parallel_jobs="$(punchi_get_concurrency_level)"
 echo "Build concurrency: $(punchi_concurrency_profile_label "$parallel_jobs")"
+punchi_progress_update 40 build
 cmake --build "$BUILD_DIR" --parallel "$parallel_jobs"
 if [[ "$PACKAGE_VALIDATION_MODE" == "full" ]]; then
+    punchi_progress_update 60 tests
     ctest --test-dir "$BUILD_DIR" --parallel "$parallel_jobs" --output-on-failure
 fi
 
+punchi_progress_update 70 stage
 echo "==> Assembling a clean package tree"
 cmake -E rm -rf "$PACKAGE_ROOT"
 cmake -E make_directory "$PACKAGE_ROOT"
@@ -386,6 +399,7 @@ for native_library in "${native_libraries[@]}"; do
     fi
 done
 
+punchi_progress_update 78 package
 echo "==> Creating the plasmoid and checking its structure"
 mkdir -p "$DIST_DIR"
 rm -f "$ZIP_FILE"

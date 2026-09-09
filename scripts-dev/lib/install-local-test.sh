@@ -6,6 +6,9 @@ SCRIPTS_DIR="$(cd "$LIB_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"
 PUBLIC_LIB_DIR="$PROJECT_ROOT/scripts-user/lib"
 
+# shellcheck source=setup-progress.sh
+source "$LIB_DIR/setup-progress.sh"
+
 # shellcheck source=plasma-version.sh
 source "$LIB_DIR/plasma-version.sh"
 # shellcheck source=local-package-install.sh
@@ -104,6 +107,7 @@ PUNCHI_LOCAL_TEST=1 \
     "$PUBLIC_LIB_DIR/package-plasmoid.sh"
 
 echo "==> [1/3] Installing the local test package"
+punchi_progress_update 82 install
 punchi_install_local_package "$ZIP_FILE" "$INSTALL_DIR" "$DATA_ROOT" "$PLUGIN_ID"
 
 if [[ ! -f "$INSTALL_DIR/metadata.json" ]]; then
@@ -115,10 +119,12 @@ echo "Installed package: $ZIP_FILE"
 echo "Installation directory: $INSTALL_DIR"
 
 echo "==> [2/3] Restarting Plasma Shell"
+punchi_progress_update 88 restart
 restart_started_at="$(date --iso-8601=seconds)"
 restart_plasma_shell
 
 echo "==> [3/3] Collecting local startup diagnostics"
+punchi_progress_update 95 diagnostics
 sleep 5
 if ! kill -0 "$PUNCHI_PLASMA_PID" >/dev/null 2>&1; then
     echo "Error: Plasma Shell PID $PUNCHI_PLASMA_PID stopped during startup." >&2
