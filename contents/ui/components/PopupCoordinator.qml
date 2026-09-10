@@ -40,7 +40,7 @@ Item {
     property var activeNoteData: ({})
     property int activeNoteIndex: -1
     property var activeTaskPopupData: ({ "name": "", "windows": [] })
-    property var activeAppContextMenuData: ({ "name": "", "actions": [], "maxVisibleRows": 6 })
+    property var activeAppContextMenuData: ({ "name": "", "actions": [], "maxVisibleRows": 0 })
     property string activeTrashEmptySound: ""
     property string pendingTaskPopupAppName: ""
     property var pendingTaskPopupRows: []
@@ -433,10 +433,12 @@ Item {
             "name": itemData && itemData.name ? itemData.name : "",
             "icon": itemData && itemData.icon ? itemData.icon : "emblem-music-symbolic",
             "actions": actions,
-            "maxVisibleRows": Math.max(1, Math.min(12,
-                Number(itemData && itemData.actionPopupMaxVisibleRows
-                    ? itemData.actionPopupMaxVisibleRows
-                    : 6)))
+            "maxVisibleRows": itemData
+                && itemData.actionPopupMaxVisibleRows !== undefined
+                && Number.isFinite(Number(itemData.actionPopupMaxVisibleRows))
+                ? Math.max(1, Math.min(12,
+                    Math.round(Number(itemData.actionPopupMaxVisibleRows))))
+                : 0
         }
         if (taskPopupAlreadyActive) {
             taskPopupOpenTimer.stop()

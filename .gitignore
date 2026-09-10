@@ -16,6 +16,7 @@
 /.vscode/
 /.idea/
 /AGENTS.md
+/scripts-cmake/
 
 # Documentacion interna, bitacoras y logs no trackeados
 /docs/

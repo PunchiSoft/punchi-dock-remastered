@@ -68,21 +68,21 @@ punchi_progress_label() {
 # first so their waiting parents can reap them; never signal the desktop group.
 punchi_progress_stop_tree() {
     local parent="${1:?owned PID is required}" child
-    while read -r child; do
+    while IFS=' ' read -r child; do
         [[ "$child" =~ ^[0-9]+$ ]] || continue
         punchi_progress_stop_tree "$child"
     done < <(ps -o pid= --ppid "$parent" 2>/dev/null || true)
     kill -TERM "$parent" 2>/dev/null || true
 }
 
-# The foreground owner animates while reading a FIFO. There is no separate
-# spinner process to orphan, and no timer-derived percentage.
-punchi_progress_run() (
+# The logger starts this function in a private background shell and waits for
+# it. Do not add another subshell here: the logger must signal the actual owner.
+punchi_progress_run() {
     local log_file="${1:?log file is required}"
     shift
     local worker="" status=0 percent=0 label=prepare last_state=""
     local frame=0 part="" pending="" line="" read_status=0 tty=0 columns=80
-    local tests_done=0 tests_total=0 tests_failed=0 last_render=""
+    local tests_done=0 tests_total=0 tests_failed=0 tests_skipped=0 last_render=""
     local frames=('/' '-' '\' '|') input_fd output_fd
     exec {input_fd}<&0
     exec {output_fd}>&1
@@ -101,8 +101,10 @@ punchi_progress_run() (
         exit "$saved"
     }
     trap cleanup_progress EXIT
-    trap 'status=130; punchi_progress_stop_tree "$worker"' INT
-    trap 'status=143; punchi_progress_stop_tree "$worker"' TERM
+    # Never read from a trap interrupting read -t: nested reads can disturb its
+    # timeout and inherit its temporary IFS. Clean up in the main loop instead.
+    trap 'status=130' INT
+    trap 'status=143' TERM
     mkfifo "$PUNCHI_PROGRESS_DIR/output"
     local pipe_fd
     exec {pipe_fd}<>"$PUNCHI_PROGRESS_DIR/output"
@@ -142,7 +144,11 @@ punchi_progress_run() (
             if [[ "$line" =~ ^[[:space:]]*([0-9]+)/([0-9]+)[[:space:]]Test[[:space:]] ]]; then
                 tests_done="${BASH_REMATCH[1]}"
                 tests_total="${BASH_REMATCH[2]}"
-                [[ "$line" == *Passed* ]] || tests_failed=$((tests_failed + 1))
+                case "$line" in
+                    *'***Skipped'*|*'***Not Run (Disabled)'*) tests_skipped=$((tests_skipped + 1)) ;;
+                    *Passed*) ;;
+                    *) tests_failed=$((tests_failed + 1)) ;;
+                esac
             fi
         fi
         if [[ -f "$PUNCHI_PROGRESS_DIR/state" ]]; then
@@ -191,7 +197,7 @@ punchi_progress_run() (
     fi
     (( tty == 0 )) || printf '\n'
     if (( tests_total > 0 )); then
-        punchi_gettext_format 'Tests: %s/%s completed; %s failed.\n' "$tests_done" "$tests_total" "$tests_failed"
+        punchi_gettext_format 'Tests: %s/%s completed; %s failed; %s skipped.\n' "$tests_done" "$tests_total" "$tests_failed" "$tests_skipped"
     fi
     exit "$status"
-)
+}

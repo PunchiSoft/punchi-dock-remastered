@@ -63,3 +63,4 @@ unset -f chmod
     || fail "the shared filesystem permission warning was not reported"
 
 printf 'Setup logging tests passed.\n'
+python3 "$SCRIPT_DIR/setup_progress_test.py"

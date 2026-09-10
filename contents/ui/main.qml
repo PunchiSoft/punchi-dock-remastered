@@ -3770,7 +3770,10 @@ PlasmoidItem {
                         itemName: popupCoordinator.activeAppContextMenuData.name || ""
                         actions: popupCoordinator.activeAppContextMenuData.actions || []
                         // qmllint disable unqualified
-                        maxVisibleRows: dockConfig.contextMenuVisibleRows
+                        maxVisibleRows: Number(
+                            popupCoordinator.activeAppContextMenuData.maxVisibleRows) > 0
+                            ? Number(popupCoordinator.activeAppContextMenuData.maxVisibleRows)
+                            : dockConfig.contextMenuVisibleRows
                         rowHeight: dockConfig.contextMenuRowHeight
                         iconSize: dockConfig.contextMenuIconSize
                         targetWidth: dockConfig.contextMenuWidth
@@ -4008,7 +4011,10 @@ PlasmoidItem {
                         actionItemName: popupCoordinator.activeAppContextMenuData.name || ""
                         actions: popupCoordinator.activeAppContextMenuData.actions || []
                         // qmllint disable unqualified
-                        maxVisibleActionRows: dockConfig.contextMenuVisibleRows
+                        maxVisibleActionRows: Number(
+                            popupCoordinator.activeAppContextMenuData.maxVisibleRows) > 0
+                            ? Number(popupCoordinator.activeAppContextMenuData.maxVisibleRows)
+                            : dockConfig.contextMenuVisibleRows
                         actionRowHeight: dockConfig.contextMenuRowHeight
                         actionIconSize: dockConfig.contextMenuIconSize
                         actionMenuWidth: dockConfig.contextMenuWidth

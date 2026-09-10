@@ -5,8 +5,12 @@ source "$(dirname "${BASH_SOURCE[0]}")/setup-progress.sh"
 # shellcheck source=../../scripts-user/lib/setup-localization.sh
 source "$(dirname "${BASH_SOURCE[0]}")/../../scripts-user/lib/setup-localization.sh"
 
-punchi_run_setup_with_log() (
-    export PUNCHI_SETUP_LOG_ACTIVE=1
+punchi_run_setup_with_log() {
+    local -x PUNCHI_SETUP_LOG_ACTIVE=1
+    local previous_int previous_term had_errexit=0
+    previous_int="$(trap -p INT)"
+    previous_term="$(trap -p TERM)"
+    [[ $- != *e* ]] || had_errexit=1
     local profile="${1:?setup profile is required}"
     local setup_command="${2:?setup command is required}"
     shift 2
@@ -74,9 +78,13 @@ punchi_run_setup_with_log() (
             command_status="$signal_status"
         fi
         trap - INT TERM
+        # These strings come only from Bash's own trap -p output.
+        eval "$previous_int"
+        eval "$previous_term"
+        exec {input_fd}<&-
         pipeline_status=("$command_status" 0)
     fi
-    set -e
+    (( had_errexit == 0 )) || set -e
 
     command_status="${pipeline_status[0]}"
     tee_status="${pipeline_status[1]}"
@@ -100,4 +108,4 @@ punchi_run_setup_with_log() (
     fi
 
     return "$command_status"
-)
+}

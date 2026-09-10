@@ -53,6 +53,8 @@ function refreshItemForm() {
         trashDialog.showStateChecked = true
         trashDialog.acceptDropsChecked = true
         actionDialog.actionsEnabledChecked = false
+        actionDialog.actionPopupLimitRowsChecked = false
+        actionDialog.actionPopupMaxVisibleRowsValue = 6
         actionDialog.containerLayoutIndex = 0
         actionDialog.setSeparatorVisibleChecked(true)
         actionDialog.setSeparatorAppearanceSourceValue("theme")
@@ -110,6 +112,14 @@ function refreshItemForm() {
     trashDialog.showStateChecked = item.showState === undefined ? true : item.showState
     trashDialog.acceptDropsChecked = item.acceptDrops === undefined ? true : item.acceptDrops
     actionDialog.actionsEnabledChecked = selectedItemType === "app" && item.actions instanceof Array && item.actionsEnabled !== false
+    const configuredActionRows = Number(item.actionPopupMaxVisibleRows)
+    actionDialog.actionPopupLimitRowsChecked = selectedItemType === "app"
+        && item.actionPopupMaxVisibleRows !== undefined
+        && Number.isFinite(configuredActionRows)
+    actionDialog.actionPopupMaxVisibleRowsValue =
+        actionDialog.actionPopupLimitRowsChecked
+            ? Math.max(1, Math.min(12, Math.round(configuredActionRows)))
+            : 6
 }
 
 function refreshActions() {
@@ -253,6 +263,12 @@ function applyItemForm(force) {
             if (!autoSeeded) {
                 delete item.actionsEnabled
             }
+        }
+        if (actionDialog.actionPopupLimitRowsChecked) {
+            item.actionPopupMaxVisibleRows = Math.max(1, Math.min(12,
+                Math.round(Number(actionDialog.actionPopupMaxVisibleRowsValue))))
+        } else {
+            delete item.actionPopupMaxVisibleRows
         }
         ConfigItemsJS.pruneApp(item)
     }

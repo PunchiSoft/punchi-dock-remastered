@@ -47,6 +47,7 @@ ColumnLayout {
     property string addActionText: "Add action"
 
     signal actionsEnabledToggled(bool checked)
+    signal actionPopupSettingsChanged()
     signal actionSelected(int index)
     signal addActionRequested()
     signal moveActionRequested(int delta)
@@ -150,6 +151,7 @@ ColumnLayout {
         Controls.CheckBox {
             id: actionPopupLimitRows
             text: root.limitContextMenuRowsText
+            onClicked: root.actionPopupSettingsChanged()
         }
 
         Controls.SpinBox {
@@ -158,7 +160,7 @@ ColumnLayout {
             visible: actionPopupLimitRows.checked
             enabled: actionPopupLimitRows.checked
             from: 1
-            to: 32
+            to: 12
             textFromValue: function(value) {
                 return i18n("%1 rows", value) // qmllint disable unqualified
             }
@@ -166,6 +168,7 @@ ColumnLayout {
                 var valueText = String(text)
                 return Number.fromLocaleString(Qt.locale(), valueText.replace(root.rowsText, ""))
             }
+            onValueModified: root.actionPopupSettingsChanged()
         }
     }
 

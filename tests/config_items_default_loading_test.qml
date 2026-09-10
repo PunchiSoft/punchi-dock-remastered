@@ -148,6 +148,32 @@ TestCase {
         verify(WorkflowHelper.canConfigureSelectedItem())
     }
 
+    function test_actionPopupRowOverrideIsNormalizedForApplications() {
+        const app = {
+            "type": "app",
+            "actionPopupMaxVisibleRows": 32
+        }
+
+        ConfigItemsJS.pruneApp(app)
+
+        compare(app.actionPopupMaxVisibleRows, 12)
+        app.actionPopupMaxVisibleRows = "invalid"
+        ConfigItemsJS.pruneApp(app)
+        verify(app.actionPopupMaxVisibleRows === undefined)
+    }
+
+    function test_actionPopupRowOverrideIsRemovedFromNonApplications() {
+        const folder = {
+            "type": "folder",
+            "actionPopupMaxVisibleRows": 5,
+            "apps": []
+        }
+
+        ConfigItemsJS.pruneFolder(folder)
+
+        verify(folder.actionPopupMaxVisibleRows === undefined)
+    }
+
     function test_controlCenterModeIsClosedAndPersistent() {
         items = [{
             "type": "control-center",

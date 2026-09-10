@@ -30,7 +30,6 @@ mapfile -d '' cpp_sources < <(
     find src -type f \( -name '*.cpp' -o -name '*.h' \) -print0 | sort -z
 )
 shell_sources=(
-    scripts-cmake/setup.sh
     scripts-dev/lib/setup-progress.sh
     scripts-dev/setup.sh
     scripts-dev/distro/arch-setup.sh

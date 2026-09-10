@@ -245,8 +245,6 @@ QtObject {
         return Qt.BottomEdge
     }
     readonly property int popupMargin: root.inPanel ? 2 : 10
-    readonly property int maximumAdaptivePopupGap:
-        root.popupSpacingMetrics.maximumGap
     readonly property int folderPopupGap:
         root.popupGapForPercent(root.folderPopupDistancePercent)
     readonly property int contextMenuGap:

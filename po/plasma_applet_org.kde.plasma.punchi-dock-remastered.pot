@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.60\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-09 16:58-0300\n"
+"POT-Creation-Date: 2026-09-09 23:21-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,76 +23,6 @@ msgstr ""
 msgid "     Build Concurrency & Memory Configuration           "
 msgstr ""
 
-#: scripts-dev/setup.sh:94
-msgid "   Punchi Dock Remastered - Master Setup Assistant        "
-msgstr ""
-
-#: scripts-cmake/setup.sh:253
-msgid "  - A C++20 compiler (c++ or the compiler selected with CXX)."
-msgstr ""
-
-#: scripts-cmake/setup.sh:197
-msgid "  - A C++20 compiler such as GCC or Clang."
-msgstr ""
-
-#: scripts-cmake/setup.sh:252
-msgid "  - CMake 3.22 or newer (cmake)."
-msgstr ""
-
-#: scripts-cmake/setup.sh:196
-msgid "  - CMake 3.22 or newer."
-msgstr ""
-
-#: scripts-cmake/setup.sh:198
-msgid "  - Extra CMake Modules 6.0 or newer."
-msgstr ""
-
-#: scripts-cmake/setup.sh:256
-msgid "  - Gettext catalog merger (msgmerge)."
-msgstr ""
-
-#: scripts-cmake/setup.sh:255
-msgid "  - Gettext message compiler (msgfmt)."
-msgstr ""
-
-#: scripts-cmake/setup.sh:200
-msgid ""
-"  - KDE Frameworks 6 development files for Config, CoreAddons, GlobalAccel, "
-"I18n, JobWidgets, KIO, Service, and WindowSystem."
-msgstr ""
-
-#: scripts-cmake/setup.sh:202
-msgid "  - PipeWire development files and pkg-config."
-msgstr ""
-
-#: scripts-cmake/setup.sh:259
-msgid "  - PipeWire development metadata (libpipewire-0.3)."
-msgstr ""
-
-#: scripts-cmake/setup.sh:201
-msgid "  - Plasma 6 and LibKWorkspace development files."
-msgstr ""
-
-#: scripts-cmake/setup.sh:199
-msgid "  - Qt 6.6 development files for Core, DBus, Gui, Qml, and Quick."
-msgstr ""
-
-#: scripts-cmake/setup.sh:203
-msgid "  - Qt Shader Baker (qsb) and Gettext tools."
-msgstr ""
-
-#: scripts-cmake/setup.sh:258
-msgid "  - Qt Shader Baker (qsb)."
-msgstr ""
-
-#: scripts-cmake/setup.sh:257
-msgid "  - The bounded command runner from GNU Coreutils (timeout)."
-msgstr ""
-
-#: scripts-cmake/setup.sh:254
-msgid "  - pkg-config."
-msgstr ""
-
 #: scripts-user/setup-universal.sh:105
 msgid "  Punchi Dock Remastered - Package Installer             "
 msgstr ""
@@ -101,12 +31,8 @@ msgstr ""
 msgid "  [1] Build and install locally (Recommended)"
 msgstr ""
 
-#: scripts-dev/setup.sh:107
+#: scripts-dev/setup.sh:151
 msgid "  [1] Build official release package (Release in dist/)"
-msgstr ""
-
-#: scripts-cmake/setup.sh:380
-msgid "  [1] Check requirements again"
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:177
@@ -121,12 +47,8 @@ msgstr ""
 msgid "  [2] Build .plasmoid package only (no install)"
 msgstr ""
 
-#: scripts-dev/setup.sh:108
+#: scripts-dev/setup.sh:152
 msgid "  [2] Build, install and test locally (--local-test)"
-msgstr ""
-
-#: scripts-cmake/setup.sh:381
-msgid "  [2] Configure and build"
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:179
@@ -138,20 +60,12 @@ msgstr ""
 msgid "  [3] Install an existing .plasmoid package"
 msgstr ""
 
-#: scripts-dev/setup.sh:109
+#: scripts-dev/setup.sh:153
 msgid "  [3] Install an existing .plasmoid package from dist/"
 msgstr ""
 
-#: scripts-cmake/setup.sh:382
-msgid "  [3] Install the current compiled build"
-msgstr ""
-
-#: scripts-dev/setup.sh:110
+#: scripts-dev/setup.sh:154
 msgid "  [4] Clean install (remove current + rebuild + install)"
-msgstr ""
-
-#: scripts-cmake/setup.sh:383
-msgid "  [4] Configure, build, and install"
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:180
@@ -166,39 +80,27 @@ msgstr ""
 msgid "  [5] Back to main menu"
 msgstr ""
 
-#: scripts-dev/setup.sh:111
+#: scripts-dev/setup.sh:155
 msgid "  [5] Check and install build dependencies only"
-msgstr ""
-
-#: scripts-cmake/setup.sh:384
-msgid "  [5] Inspect the installation in temporary staging"
 msgstr ""
 
 #: scripts-user/setup.sh:71
 msgid "  [5] Restart Plasma Shell only"
 msgstr ""
 
-#: scripts-dev/setup.sh:112 scripts-user/setup.sh:72
+#: scripts-dev/setup.sh:156 scripts-user/setup.sh:72
 msgid "  [6] Configure build concurrency (Safe / Balanced / Custom)"
-msgstr ""
-
-#: scripts-cmake/setup.sh:385
-msgid "  [6] Restart Plasma Shell"
 msgstr ""
 
 #: scripts-user/setup.sh:73
 msgid "  [7] Check system build dependencies"
 msgstr ""
 
-#: scripts-cmake/setup.sh:386
-msgid "  [7] Exit"
-msgstr ""
-
-#: scripts-dev/setup.sh:113
+#: scripts-dev/setup.sh:157
 msgid "  [7] Uninstall the plasmoid from this system"
 msgstr ""
 
-#: scripts-dev/setup.sh:114
+#: scripts-dev/setup.sh:158
 msgid "  [8] Help (show CLI commands reference)"
 msgstr ""
 
@@ -206,7 +108,7 @@ msgstr ""
 msgid "  [8] Help (show CLI options)"
 msgstr ""
 
-#: scripts-dev/setup.sh:115 scripts-user/setup.sh:75
+#: scripts-dev/setup.sh:159 scripts-user/setup.sh:75
 msgid "  [9] Exit"
 msgstr ""
 
@@ -238,7 +140,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: contents/ui/components/DockItemsController.qml:802
-#: contents/ui/config/ConfigItems.qml:471
+#: contents/ui/config/ConfigItems.qml:469
 msgctxt "@info:status"
 msgid "%1 is already in %2."
 msgstr ""
@@ -259,14 +161,14 @@ msgid "%1 is updated automatically and cannot accept applications"
 msgstr ""
 
 #: contents/ui/components/DockItemsController.qml:807
-#: contents/ui/config/ConfigItems.qml:476
+#: contents/ui/config/ConfigItems.qml:474
 msgctxt "@info:status"
 msgid ""
 "%1 is updated automatically. Change its content source to Manual before "
 "adding applications."
 msgstr ""
 
-#: contents/ui/config/code/configItemsFormHelper.js:319
+#: contents/ui/config/code/configItemsFormHelper.js:335
 msgid "%1 items loaded."
 msgstr ""
 
@@ -319,9 +221,9 @@ msgid "%1 px"
 msgstr ""
 
 #: contents/ui/config/components/ActionDialog.qml:92
-#: contents/ui/config/ConfigItems.qml:744
+#: contents/ui/config/ConfigItems.qml:742
 #: contents/ui/config/ItemActionEditor.qml:40
-#: contents/ui/config/ItemActionEditor.qml:163
+#: contents/ui/config/ItemActionEditor.qml:165
 msgid "%1 rows"
 msgstr ""
 
@@ -338,7 +240,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: contents/ui/components/DockItemsController.qml:798
-#: contents/ui/config/ConfigItems.qml:467
+#: contents/ui/config/ConfigItems.qml:465
 msgctxt "@info:status"
 msgid "%1 was added to %2."
 msgstr ""
@@ -461,17 +363,8 @@ msgctxt "@info:accessible"
 msgid "%1. Playing."
 msgstr ""
 
-#: scripts-cmake/setup.sh:124
-#, sh-printf-format
-msgid "%s cannot be combined with another action."
-msgstr ""
-
 #: scripts-dev/distro/arch-setup.sh:162
 msgid "--dependencies-only and --local-test cannot be used together"
-msgstr ""
-
-#: scripts-cmake/setup.sh:190
-msgid "--no-restart cannot be combined with --yes"
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:120
@@ -522,7 +415,7 @@ msgstr ""
 msgid "==> Building the native QML module without developer tests..."
 msgstr ""
 
-#: scripts-dev/setup.sh:120
+#: scripts-dev/setup.sh:164
 msgid "==> Checking and installing build dependencies..."
 msgstr ""
 
@@ -544,32 +437,32 @@ msgstr ""
 msgid "==> Concurrency set to: Safe Mode (1 core)"
 msgstr ""
 
-#: scripts-dev/setup.sh:126
+#: scripts-dev/setup.sh:170
 msgid "==> Plasma Shell restart requested."
 msgstr ""
 
-#: scripts-dev/setup.sh:122 scripts-user/setup.sh:83
+#: scripts-dev/setup.sh:166 scripts-user/setup.sh:83
 msgid "==> Plasmoid uninstalled successfully."
 msgstr ""
 
-#: scripts-dev/setup.sh:124
+#: scripts-dev/setup.sh:168
 #, sh-printf-format
-msgid "==> Removed existing installation: %s\\n"
+msgid "==> Removed existing installation: %s"
 msgstr ""
 
-#: scripts-dev/setup.sh:125
+#: scripts-dev/setup.sh:169
 msgid "==> Restarting Plasma Shell..."
 msgstr ""
 
-#: scripts-dev/setup.sh:117
+#: scripts-dev/setup.sh:161
 msgid "==> Starting Release build..."
 msgstr ""
 
-#: scripts-dev/setup.sh:118
+#: scripts-dev/setup.sh:162
 msgid "==> Starting build and local test..."
 msgstr ""
 
-#: scripts-dev/setup.sh:119
+#: scripts-dev/setup.sh:163
 msgid "==> Starting clean install (remove + rebuild + install)..."
 msgstr ""
 
@@ -577,7 +470,7 @@ msgstr ""
 msgid "==> Uninstalling Punchi Dock Remastered..."
 msgstr ""
 
-#: scripts-dev/setup.sh:121
+#: scripts-dev/setup.sh:165
 msgid "==> Uninstalling the plasmoid..."
 msgstr ""
 
@@ -608,15 +501,15 @@ msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:747
+#: contents/ui/config/ConfigItems.qml:745
 msgid "Action command:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:746
+#: contents/ui/config/ConfigItems.qml:744
 msgid "Action icon:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:745
+#: contents/ui/config/ConfigItems.qml:743
 msgid "Action name:"
 msgstr ""
 
@@ -630,7 +523,7 @@ msgid ""
 "Active applications do not show hover previews or grouped-window popups."
 msgstr ""
 
-#: scripts-dev/setup.sh:104
+#: scripts-dev/setup.sh:145
 #, sh-printf-format
 msgid "Active build concurrency: %s\\n"
 msgstr ""
@@ -660,7 +553,7 @@ msgstr ""
 msgid "Add a visual separator"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:750
+#: contents/ui/config/ConfigItems.qml:748
 msgctxt "@action:button"
 msgid "Add action"
 msgstr ""
@@ -669,7 +562,7 @@ msgstr ""
 msgid "Add an app or container item"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:749
+#: contents/ui/config/ConfigItems.qml:747
 msgctxt "@action:button"
 msgid "Add application"
 msgstr ""
@@ -778,7 +671,7 @@ msgstr ""
 msgid "Adjusts the window preview scale between 100 and 300 percent."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:715
+#: contents/ui/config/ConfigItems.qml:713
 msgid "Alias/Quick Search:"
 msgstr ""
 
@@ -804,17 +697,13 @@ msgid "All desktops"
 msgstr ""
 
 #: contents/ui/config/ConfigAspect.qml:398
-#: contents/ui/config/ConfigItems.qml:862
+#: contents/ui/config/ConfigItems.qml:861
 #: contents/ui/config/SoundFileDialog.qml:9
 msgid "All files"
 msgstr ""
 
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:44
 msgid "All items were permanently removed."
-msgstr ""
-
-#: scripts-cmake/setup.sh:289
-msgid "All required build dependencies were accepted by CMake."
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:37
@@ -857,15 +746,15 @@ msgctxt "@info"
 msgid "Another folder change is still being saved."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:747
+#: contents/ui/config/ConfigItems.qml:745
 msgid "App command:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:746
+#: contents/ui/config/ConfigItems.qml:744
 msgid "App icon:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:745
+#: contents/ui/config/ConfigItems.qml:743
 msgid "App name:"
 msgstr ""
 
@@ -917,7 +806,7 @@ msgctxt "@info:accessibility"
 msgid "Application audio streams"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:737
+#: contents/ui/config/ConfigItems.qml:735
 msgid "Application category"
 msgstr ""
 
@@ -1023,7 +912,7 @@ msgstr ""
 msgid "Arch setup completed"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:43
+#: scripts-dev/lib/setup-progress.sh:55
 msgid "Assembling package..."
 msgstr ""
 
@@ -1053,7 +942,7 @@ msgctxt "@info:accessibility"
 msgid "Audio devices"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:861
+#: contents/ui/config/ConfigItems.qml:860
 #: contents/ui/config/SoundFileDialog.qml:8
 msgid "Audio files"
 msgstr ""
@@ -1095,9 +984,9 @@ msgstr ""
 #: contents/ui/config/components/TimedDialog.qml:117
 #: contents/ui/config/components/TimedDialog.qml:120
 #: contents/ui/config/ConfigFolderPopups.qml:145
-#: contents/ui/config/ConfigItems.qml:266
-#: contents/ui/config/ConfigItems.qml:283
-#: contents/ui/config/ConfigItems.qml:287
+#: contents/ui/config/ConfigItems.qml:264
+#: contents/ui/config/ConfigItems.qml:281
+#: contents/ui/config/ConfigItems.qml:285
 msgid "Automatic"
 msgstr ""
 
@@ -1226,15 +1115,6 @@ msgstr ""
 msgid "Balanced Mode"
 msgstr ""
 
-#: scripts-cmake/setup.sh:244
-msgid ""
-"Basic build tools found. CMake will now verify the development libraries."
-msgstr ""
-
-#: scripts-cmake/setup.sh:195
-msgid "Before compiling Punchi Dock Remastered, this system needs:"
-msgstr ""
-
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:105
 msgctxt "@action:button"
 msgid "Bluetooth"
@@ -1296,13 +1176,8 @@ msgstr ""
 msgid "Build package"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:41
+#: scripts-dev/lib/setup-progress.sh:53
 msgid "Building native integration..."
-msgstr ""
-
-#: scripts-cmake/setup.sh:300
-#, sh-printf-format
-msgid "Building with %s parallel job(s)...\\n"
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:41
@@ -1310,7 +1185,7 @@ msgctxt "@option:application-order"
 msgid "By categories"
 msgstr ""
 
-#: scripts-dev/setup.sh:132
+#: scripts-dev/setup.sh:176
 msgid ""
 "CLI Quick Reference\n"
 "==================\n"
@@ -1330,35 +1205,16 @@ msgid ""
 "directly"
 msgstr ""
 
-#: scripts-cmake/setup.sh:379
-msgid "CMake assistant menu:"
-msgstr ""
-
-#: scripts-cmake/setup.sh:302
-#, sh-printf-format
-msgid "CMake build completed: %s\\n"
-msgstr ""
-
-#: scripts-cmake/setup.sh:286
-msgid ""
-"CMake configuration failed. Install the development package named in the "
-"error above and run this assistant again."
-msgstr ""
-
-#: scripts-cmake/setup.sh:367
-msgid "CMake installation completed successfully."
-msgstr ""
-
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:309
 msgctxt "@action:button"
 msgid "Calculator"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:147
+#: contents/ui/config/ConfigItems.qml:145
 msgid "Calendar color:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:143
+#: contents/ui/config/ConfigItems.qml:141
 msgid "Calendar font:"
 msgstr ""
 
@@ -1368,7 +1224,7 @@ msgstr ""
 
 #: contents/ui/components/DockItem.qml:40
 #: contents/ui/config/AddItemPalette.qml:33
-#: contents/ui/config/ConfigItems.qml:139
+#: contents/ui/config/ConfigItems.qml:137
 msgid "Calendar/Clock"
 msgstr ""
 
@@ -1412,7 +1268,7 @@ msgstr ""
 msgid "Category grouping is active; the top category carousel is hidden."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:739
+#: contents/ui/config/ConfigItems.qml:737
 msgid "Category:"
 msgstr ""
 
@@ -1468,13 +1324,8 @@ msgid ""
 "Changes the volume indicator for all Plasma controls and multimedia keys"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:37
+#: scripts-dev/lib/setup-progress.sh:49
 msgid "Checking dependencies..."
-msgstr ""
-
-#: scripts-cmake/setup.sh:278
-#, sh-printf-format
-msgid "Checking the complete CMake environment in: %s\\n"
 msgstr ""
 
 #: contents/ui/config/SeparatorOptions.qml:123
@@ -1539,39 +1390,39 @@ msgctxt "@info"
 msgid "Choose and manage a Wi-Fi connection"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:153
+#: contents/ui/config/ConfigItems.qml:151
 msgid "Choose calendar background color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:159
+#: contents/ui/config/ConfigItems.qml:157
 msgid "Choose calendar border color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:176
+#: contents/ui/config/ConfigItems.qml:174
 msgid "Choose calendar color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:156
+#: contents/ui/config/ConfigItems.qml:154
 msgid "Choose calendar header color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:164
+#: contents/ui/config/ConfigItems.qml:162
 msgid "Choose clock accent color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:170
+#: contents/ui/config/ConfigItems.qml:168
 msgid "Choose clock border color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:176
+#: contents/ui/config/ConfigItems.qml:174
 msgid "Choose clock color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:173
+#: contents/ui/config/ConfigItems.qml:171
 msgid "Choose clock face color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:167
+#: contents/ui/config/ConfigItems.qml:165
 msgid "Choose clock marker color"
 msgstr ""
 
@@ -1580,7 +1431,7 @@ msgstr ""
 msgid "Choose custom color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:658
+#: contents/ui/config/ConfigItems.qml:656
 msgid "Choose folder"
 msgstr ""
 
@@ -1592,8 +1443,8 @@ msgstr ""
 
 #: contents/ui/config/components/TrashDialog.qml:105
 #: contents/ui/config/components/TrashDialog.qml:135
-#: contents/ui/config/ConfigItems.qml:650
-#: contents/ui/config/ConfigItems.qml:731
+#: contents/ui/config/ConfigItems.qml:648
+#: contents/ui/config/ConfigItems.qml:729
 msgid "Choose icon"
 msgstr ""
 
@@ -1604,7 +1455,7 @@ msgid ""
 msgstr ""
 
 #: contents/ui/config/components/TrashDialog.qml:202
-#: contents/ui/config/ConfigItems.qml:859
+#: contents/ui/config/ConfigItems.qml:858
 msgid "Choose sound"
 msgstr ""
 
@@ -1679,15 +1530,15 @@ msgstr ""
 msgid "Click effect:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:139
+#: contents/ui/config/ConfigItems.qml:137
 msgid "Clock"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:147
+#: contents/ui/config/ConfigItems.qml:145
 msgid "Clock color:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:143
+#: contents/ui/config/ConfigItems.qml:141
 msgid "Clock font:"
 msgstr ""
 
@@ -1750,7 +1601,7 @@ msgstr ""
 msgid "Collapse controls after:"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:47
+#: scripts-dev/lib/setup-progress.sh:59
 msgid "Collecting diagnostics..."
 msgstr ""
 
@@ -1763,7 +1614,7 @@ msgctxt "@item:inlistbox Context menu size"
 msgid "Comfortable"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:729
+#: contents/ui/config/ConfigItems.qml:727
 msgid "Command:"
 msgstr ""
 
@@ -1851,7 +1702,7 @@ msgstr ""
 msgid "Configure folder"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:810
+#: contents/ui/config/ConfigItems.qml:809
 msgid "Configure media player"
 msgstr ""
 
@@ -1876,7 +1727,7 @@ msgstr ""
 msgid "Configure trash"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:40
+#: scripts-dev/lib/setup-progress.sh:52
 msgid "Configuring CMake..."
 msgstr ""
 
@@ -1935,7 +1786,7 @@ msgctxt "@info:status"
 msgid "Connection failed"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:720
+#: contents/ui/config/ConfigItems.qml:718
 msgid "Container"
 msgstr ""
 
@@ -1944,11 +1795,11 @@ msgctxt "@title"
 msgid "Container"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:733
+#: contents/ui/config/ConfigItems.qml:731
 msgid "Container applications"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:734
+#: contents/ui/config/ConfigItems.qml:732
 msgid "Content:"
 msgstr ""
 
@@ -2045,7 +1896,7 @@ msgctxt "@title"
 msgid "Create application folder"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:44
+#: scripts-dev/lib/setup-progress.sh:56
 msgid "Creating and verifying the plasmoid..."
 msgstr ""
 
@@ -2175,7 +2026,7 @@ msgstr ""
 msgid "Dependency check"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:716
+#: contents/ui/config/ConfigItems.qml:714
 msgid "Description:"
 msgstr ""
 
@@ -2187,7 +2038,7 @@ msgstr ""
 msgid "Desktop visibility:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:724
+#: contents/ui/config/ConfigItems.qml:722
 msgid "Detailed"
 msgstr ""
 
@@ -2198,12 +2049,12 @@ msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
 msgstr ""
 
-#: scripts-dev/setup.sh:101
+#: scripts-dev/setup.sh:142
 #, sh-printf-format
 msgid "Detected RAM: %s | CPU Cores: %s\\n"
 msgstr ""
 
-#: scripts-dev/setup.sh:98
+#: scripts-dev/setup.sh:139
 #, sh-printf-format
 msgid "Detected host: %s (%s)\\n"
 msgstr ""
@@ -2371,7 +2222,7 @@ msgstr ""
 msgid "Dock theme"
 msgstr ""
 
-#: scripts-dev/setup.sh:145
+#: scripts-dev/setup.sh:189
 msgid "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
 msgstr ""
 
@@ -2404,7 +2255,7 @@ msgctxt "@info:status Bluetooth device type"
 msgid "Drawing tablet"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:748
+#: contents/ui/config/ConfigItems.qml:746
 msgctxt "@info:placeholder"
 msgid "Drop applications here"
 msgstr ""
@@ -2501,7 +2352,7 @@ msgstr ""
 msgid "Enable press-and-hold item reordering"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:741
+#: contents/ui/config/ConfigItems.qml:739
 msgid "Enable right-click menu"
 msgstr ""
 
@@ -2543,17 +2394,17 @@ msgstr ""
 msgid "Error: "
 msgstr ""
 
-#: scripts-cmake/setup.sh:116 scripts-user/setup.sh:93
+#: scripts-user/setup.sh:93
 #, sh-printf-format
 msgid "Error: %s\\n"
 msgstr ""
 
-#: scripts-dev/setup.sh:86
+#: scripts-dev/setup.sh:129
 #, sh-printf-format
 msgid "Error: Cannot build natively on this system (%s).\\n"
 msgstr ""
 
-#: scripts-dev/setup.sh:73
+#: scripts-dev/setup.sh:116
 msgid "Error: Could not identify the distribution from /etc/os-release."
 msgstr ""
 
@@ -2567,9 +2418,9 @@ msgid ""
 "Error: Invalid number of jobs. Please enter an integer between 1 and 64."
 msgstr ""
 
-#: scripts-dev/setup.sh:129
+#: scripts-dev/setup.sh:173
 #, sh-printf-format
-msgid "Error: Invalid option: %s\\n"
+msgid "Error: Invalid option: %s"
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:254
@@ -2577,7 +2428,7 @@ msgstr ""
 msgid "Error: Invalid option: '%s'\\n"
 msgstr ""
 
-#: scripts-dev/setup.sh:90
+#: scripts-dev/setup.sh:133
 #, sh-printf-format
 msgid "Error: No build profile exists for the distribution: %s.\\n"
 msgstr ""
@@ -2595,11 +2446,11 @@ msgstr ""
 msgid "Error: Plasma Shell did not stop and the forced restart failed."
 msgstr ""
 
-#: scripts-dev/setup.sh:69
+#: scripts-dev/setup.sh:112
 msgid "Error: Run this script as the Plasma desktop user, NOT with sudo."
 msgstr ""
 
-#: scripts-dev/setup.sh:76
+#: scripts-dev/setup.sh:119
 #, sh-printf-format
 msgid "Error: Unsupported Debian version for building: %s.\\n"
 msgstr ""
@@ -2644,10 +2495,6 @@ msgstr ""
 
 #: contents/ui/components/TaskModelController.qml:926
 msgid "Exit full screen"
-msgstr ""
-
-#: scripts-cmake/setup.sh:397
-msgid "Exiting the CMake assistant."
 msgstr ""
 
 #: contents/ui/config/ConfigFileToolbar.qml:55
@@ -2724,7 +2571,7 @@ msgid "Flow to the right"
 msgstr ""
 
 #: contents/ui/components/FolderPopup.qml:121
-#: contents/ui/config/ConfigItems.qml:736
+#: contents/ui/config/ConfigItems.qml:734
 msgid "Folder"
 msgstr ""
 
@@ -2793,7 +2640,7 @@ msgctxt "@title:menu"
 msgid "Folder view"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:738
+#: contents/ui/config/ConfigItems.qml:736
 msgid "Folder:"
 msgstr ""
 
@@ -2943,7 +2790,7 @@ msgctxt "@title:category"
 msgid "Graphics"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:722
+#: contents/ui/config/ConfigItems.qml:720
 msgid "Grid"
 msgstr ""
 
@@ -3086,7 +2933,7 @@ msgid "Icon spacing:"
 msgstr ""
 
 #: contents/ui/config/components/PunchiMenuDialog.qml:90
-#: contents/ui/config/ConfigItems.qml:728
+#: contents/ui/config/ConfigItems.qml:726
 msgid "Icon:"
 msgstr ""
 
@@ -3195,10 +3042,6 @@ msgctxt "@title:group"
 msgid "Input Devices"
 msgstr ""
 
-#: scripts-cmake/setup.sh:262
-msgid "Install the missing development packages and run this assistant again."
-msgstr ""
-
 #: scripts-user/setup-universal.sh:119
 #, sh-printf-format
 msgid "Installation completed in: %s\\n"
@@ -3230,13 +3073,8 @@ msgstr ""
 msgid "Installed theme:"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:45
+#: scripts-dev/lib/setup-progress.sh:57
 msgid "Installing local package..."
-msgstr ""
-
-#: scripts-cmake/setup.sh:365
-#, sh-printf-format
-msgid "Installing the current build for this user under: %s\\n"
 msgstr ""
 
 #: contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml:51
@@ -3261,10 +3099,6 @@ msgstr ""
 
 #: contents/ui/config/ConfigFiles.qml:94
 msgid "Invalid JSON: %1"
-msgstr ""
-
-#: scripts-cmake/setup.sh:398
-msgid "Invalid option. Select a number from 1 to 7."
 msgstr ""
 
 #: contents/ui/config/components/TimedDialog.qml:125
@@ -3351,7 +3185,7 @@ msgstr ""
 msgid "Lateral ripple"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:719
+#: contents/ui/config/ConfigItems.qml:717
 msgid "Launch app"
 msgstr ""
 
@@ -3387,7 +3221,7 @@ msgctxt "@action:button"
 msgid "Light and dark mode"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:742
+#: contents/ui/config/ConfigItems.qml:740
 msgid "Limit menu rows"
 msgstr ""
 
@@ -3418,7 +3252,7 @@ msgid ""
 "edge of the icon."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:723
+#: contents/ui/config/ConfigItems.qml:721
 msgid "List"
 msgstr ""
 
@@ -3429,7 +3263,7 @@ msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:740
+#: contents/ui/config/ConfigItems.qml:738
 msgid "Load content"
 msgstr ""
 
@@ -3467,7 +3301,7 @@ msgstr ""
 msgid "Log out and back in or restart Plasma later to apply the changes."
 msgstr ""
 
-#: scripts-dev/setup.sh:144
+#: scripts-dev/setup.sh:188
 #, sh-printf-format
 msgid "Logs: docs/logs/%s/setup-%s-latest.log\\n"
 msgstr ""
@@ -3488,7 +3322,7 @@ msgstr ""
 msgid "MPRIS controls"
 msgstr ""
 
-#: scripts-user/setup.sh:65
+#: scripts-dev/setup.sh:149 scripts-user/setup.sh:65
 msgid "Maintenance"
 msgstr ""
 
@@ -3511,7 +3345,7 @@ msgstr ""
 msgid "Manage themes:"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:735
+#: contents/ui/config/ConfigItems.qml:733
 msgid "Manual"
 msgstr ""
 
@@ -3821,7 +3655,7 @@ msgstr ""
 
 #: contents/ui/config/components/TimedDialog.qml:46
 #: contents/ui/config/components/TrashDialog.qml:42
-#: contents/ui/config/ConfigItems.qml:714
+#: contents/ui/config/ConfigItems.qml:712
 msgid "Name:"
 msgstr ""
 
@@ -3919,11 +3753,6 @@ msgstr ""
 #: contents/ui/components/controlcenter/ControlCenterNetworkPage.qml:124
 msgctxt "@info"
 msgid "No available networks"
-msgstr ""
-
-#: scripts-cmake/setup.sh:362
-msgid ""
-"No compiled native module was found. Build the project before installing it."
 msgstr ""
 
 #: contents/ui/components/controlcenter/ControlCenterBluetoothPage.qml:110
@@ -4037,7 +3866,7 @@ msgstr ""
 
 #: contents/ui/components/NotePopup.qml:133
 #: contents/ui/config/AddItemPalette.qml:30
-#: contents/ui/config/ConfigItems.qml:725
+#: contents/ui/config/ConfigItems.qml:723
 msgid "Note"
 msgstr ""
 
@@ -4045,7 +3874,7 @@ msgstr ""
 msgid "Note content"
 msgstr ""
 
-#: scripts-dev/setup.sh:123
+#: scripts-dev/setup.sh:167
 msgid "Notice: No local installation found for the plasmoid."
 msgstr ""
 
@@ -4053,7 +3882,7 @@ msgstr ""
 msgid "Notice: No local installation was found."
 msgstr ""
 
-#: scripts-dev/setup.sh:81
+#: scripts-dev/setup.sh:124
 #, sh-printf-format
 msgid ""
 "Notice: This distribution (%s) is not an official C++ build environment.\\n"
@@ -4335,16 +4164,16 @@ msgid ""
 "shortcut."
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:50 scripts-dev/setup.sh:128
+#: scripts-dev/lib/setup-progress.sh:62 scripts-dev/setup.sh:172
 #: scripts-user/setup.sh:87
 msgid "Operation cancelled."
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:48
+#: scripts-dev/lib/setup-progress.sh:60
 msgid "Operation completed successfully"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:49
+#: scripts-dev/lib/setup-progress.sh:61
 msgid "Operation failed"
 msgstr ""
 
@@ -4515,25 +4344,9 @@ msgstr ""
 msgid "Plasma Shell PID before restart: %s\\n"
 msgstr ""
 
-#: scripts-cmake/setup.sh:333
-#, sh-printf-format
-msgid "Plasma Shell restart failed with status %s.\\n"
-msgstr ""
-
-#: scripts-cmake/setup.sh:341 scripts-cmake/setup.sh:355
-msgid "Plasma Shell restart skipped."
-msgstr ""
-
 #: scripts-user/setup.sh:80
 msgid ""
 "Plasma Shell restart skipped. Log out and back in or restart Plasma later."
-msgstr ""
-
-#: scripts-cmake/setup.sh:328
-#, sh-printf-format
-msgid ""
-"Plasma Shell restart timed out after %s seconds; continuing without waiting."
-"\\n"
 msgstr ""
 
 #: scripts-user/lib/plasma-shell-control.sh:65
@@ -4599,7 +4412,7 @@ msgstr ""
 msgid "Position is not used with the current indicator shape."
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:36
+#: scripts-dev/lib/setup-progress.sh:48
 msgid "Preparing environment..."
 msgstr ""
 
@@ -4659,7 +4472,7 @@ msgctxt "@action:button"
 msgid "Previous track"
 msgstr ""
 
-#: scripts-user/setup.sh:64
+#: scripts-dev/setup.sh:148 scripts-user/setup.sh:64
 msgid "Primary actions"
 msgstr ""
 
@@ -4685,7 +4498,7 @@ msgstr ""
 msgid "Punchi Dock Remastered"
 msgstr ""
 
-#: scripts-user/setup.sh:143
+#: scripts-dev/setup.sh:68 scripts-user/setup.sh:143
 msgid "Punchi Dock Remastered · Setup"
 msgstr ""
 
@@ -4767,7 +4580,7 @@ msgctxt "@info"
 msgid "Quick access to system status and settings"
 msgstr ""
 
-#: scripts-user/setup.sh:139
+#: scripts-dev/setup.sh:64 scripts-user/setup.sh:139
 #, sh-printf-format
 msgid "RAM %s | CPU cores %s | Build jobs %s"
 msgstr ""
@@ -4818,7 +4631,7 @@ msgctxt "@action:button"
 msgid "Remove"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:676
+#: contents/ui/config/ConfigItems.qml:674
 msgid "Remove and disable"
 msgstr ""
 
@@ -4851,7 +4664,7 @@ msgctxt "@title"
 msgid "Remove from folder"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:666
+#: contents/ui/config/ConfigItems.qml:664
 msgid "Remove open applications from the dock?"
 msgstr ""
 
@@ -4866,7 +4679,7 @@ msgid ""
 "will return to the main list, and neither application will be deleted."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:683
+#: contents/ui/config/ConfigItems.qml:681
 msgid ""
 "Removing this item will also disable Show active windows in the dock. You "
 "can enable it again from the Windows settings."
@@ -4935,10 +4748,6 @@ msgstr ""
 msgid "Restart Plasma Shell now to finish uninstalling? [Y/n]: "
 msgstr ""
 
-#: scripts-cmake/setup.sh:348
-msgid "Restart Plasma Shell now to load the installed build? [Y/n]: "
-msgstr ""
-
 #: scripts-user/lib/plasma-shell-control.sh:41
 msgid "Restart method: KDE application control"
 msgstr ""
@@ -4947,7 +4756,7 @@ msgstr ""
 msgid "Restart method: systemd user service"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:46
+#: scripts-dev/lib/setup-progress.sh:58
 msgid "Restarting Plasma Shell..."
 msgstr ""
 
@@ -4997,7 +4806,7 @@ msgctxt "@option:close-button-position"
 msgid "Right"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:732
+#: contents/ui/config/ConfigItems.qml:730
 msgid "Right-click commands"
 msgstr ""
 
@@ -5018,7 +4827,7 @@ msgstr ""
 msgid "Row height:"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:42
+#: scripts-dev/lib/setup-progress.sh:54
 msgid "Running tests..."
 msgstr ""
 
@@ -5126,11 +4935,7 @@ msgstr ""
 msgid "Select an option [1-5]: "
 msgstr ""
 
-#: scripts-cmake/setup.sh:387
-msgid "Select an option [1-7]: "
-msgstr ""
-
-#: scripts-dev/setup.sh:116 scripts-user/setup.sh:76
+#: scripts-dev/setup.sh:160 scripts-user/setup.sh:76
 msgid "Select an option [1-9]: "
 msgstr ""
 
@@ -5153,7 +4958,7 @@ msgid "Selected package: %s\\n"
 msgstr ""
 
 #: contents/ui/config/AddItemPalette.qml:31
-#: contents/ui/config/ConfigItems.qml:726
+#: contents/ui/config/ConfigItems.qml:724
 msgid "Separator"
 msgstr ""
 
@@ -5189,7 +4994,7 @@ msgctxt "@title:application-category"
 msgid "Settings"
 msgstr ""
 
-#: scripts-user/setup.sh:66
+#: scripts-dev/setup.sh:150 scripts-user/setup.sh:66
 msgid "Settings and help"
 msgstr ""
 
@@ -5442,11 +5247,11 @@ msgid "Sound Volume"
 msgstr ""
 
 #: contents/ui/config/AddItemPalette.qml:32
-#: contents/ui/config/ConfigItems.qml:727
+#: contents/ui/config/ConfigItems.qml:725
 msgid "Spacer"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:730
+#: contents/ui/config/ConfigItems.qml:728
 msgid "Spacer size:"
 msgstr ""
 
@@ -5470,12 +5275,12 @@ msgstr ""
 msgid "Subtle scale"
 msgstr ""
 
-#: scripts-dev/setup.sh:77
+#: scripts-dev/setup.sh:120
 msgid ""
 "Supported build environments: Debian 13 (Trixie), Fedora, or Arch Linux."
 msgstr ""
 
-#: scripts-dev/setup.sh:82
+#: scripts-dev/setup.sh:125
 msgid "Supported build environments: Fedora, Debian 13, and Arch Linux."
 msgstr ""
 
@@ -5500,7 +5305,7 @@ msgctxt "@title:category"
 msgid "System"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:84
+#: contents/ui/config/ConfigItems.qml:82
 msgid "System operation failed: %1"
 msgstr ""
 
@@ -5524,9 +5329,9 @@ msgstr ""
 msgid "Test sound"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:172
+#: scripts-dev/lib/setup-progress.sh:200
 #, sh-printf-format
-msgid "Tests: %s/%s completed; %s failed.\\n"
+msgid "Tests: %s/%s completed; %s failed; %s skipped.\\n"
 msgstr ""
 
 #: contents/ui/config/CalendarOptions.qml:192
@@ -5675,7 +5480,7 @@ msgid "The dropped files could not be opened."
 msgstr ""
 
 #: contents/ui/components/DockItemsController.qml:812
-#: contents/ui/config/ConfigItems.qml:484
+#: contents/ui/config/ConfigItems.qml:482
 msgctxt "@info:status"
 msgid "The dropped launcher could not be resolved safely."
 msgstr ""
@@ -5687,10 +5492,6 @@ msgstr ""
 
 #: src/systemdiscovery.cpp:432
 msgid "The folder location is invalid."
-msgstr ""
-
-#: scripts-cmake/setup.sh:248
-msgid "The following required tools or development files were not found:"
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:240
@@ -5743,7 +5544,7 @@ msgstr ""
 msgid "The root value must be a JSON array."
 msgstr ""
 
-#: scripts-dev/setup.sh:70
+#: scripts-dev/setup.sh:113
 msgid ""
 "The script will request sudo only when the detected package manager needs to "
 "install packages."
@@ -5789,7 +5590,7 @@ msgstr ""
 msgid "The selected theme uses an unsupported schema version."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:95
+#: contents/ui/config/ConfigItems.qml:93
 msgid "The sound could not be played: %1"
 msgstr ""
 
@@ -5798,7 +5599,7 @@ msgid "The spectrum is drawn over the Plasma-themed dock background."
 msgstr ""
 
 #: contents/ui/components/DockItemsController.qml:816
-#: contents/ui/config/ConfigItems.qml:481
+#: contents/ui/config/ConfigItems.qml:479
 msgctxt "@info:status"
 msgid "The target container changed before the application could be added."
 msgstr ""
@@ -5900,11 +5701,11 @@ msgstr ""
 msgid "Title header:"
 msgstr ""
 
-#: scripts-dev/setup.sh:78
+#: scripts-dev/setup.sh:121
 msgid "To install a prebuilt .plasmoid use: ./scripts-user/setup-universal.sh"
 msgstr ""
 
-#: scripts-dev/setup.sh:83
+#: scripts-dev/setup.sh:126
 msgid "To install a prebuilt .plasmoid, use: ./scripts-user/setup-universal.sh"
 msgstr ""
 
@@ -5993,11 +5794,11 @@ msgctxt "@info"
 msgid "Turn on Wi-Fi to search for networks."
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:717
+#: contents/ui/config/ConfigItems.qml:715
 msgid "Type name or alias... then search"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:718
+#: contents/ui/config/ConfigItems.qml:716
 msgid "Type:"
 msgstr ""
 
@@ -6042,37 +5843,6 @@ msgctxt "@action:button"
 msgid "Updates"
 msgstr ""
 
-#: scripts-cmake/setup.sh:91
-msgid ""
-"Usage: scripts-cmake/setup.sh [action] [options]\n"
-"\n"
-"Checks the native build requirements, configures CMake for a per-user "
-"prefix,\n"
-"and provides an interactive menu when no action is specified.\n"
-"\n"
-"Actions (choose only one):\n"
-"  --check             Check tools and configure CMake without compiling.\n"
-"  --build             Configure and compile the native module.\n"
-"  --install           Install the current compiled build for this user.\n"
-"  --build-install     Configure, compile, and install for this user.\n"
-"  --inspect           Inspect the configured installation in temporary "
-"staging.\n"
-"  --restart-plasma    Restart Plasma Shell without compiling or installing.\n"
-"\n"
-"Options:\n"
-"  -j, --jobs N        Number of parallel build jobs (default: 1).\n"
-"  --no-restart        Do not ask to restart Plasma Shell after "
-"installation.\n"
-"  -y, --yes           Restart Plasma Shell after installation without "
-"prompting.\n"
-"  --lang CODE         Select en, es, de, or pt_BR for assistant messages.\n"
-"  -h, --help          Show this help.\n"
-"\n"
-"This assistant does not install system packages, use a package manager, "
-"create\n"
-"a .plasmoid artifact, or run the developer validation suite."
-msgstr ""
-
 #: scripts-dev/distro/arch-setup.sh:67
 msgid ""
 "Usage: scripts-dev/distro/arch-setup.sh [options]\n"
@@ -6101,7 +5871,7 @@ msgid ""
 "system upgrade because partial upgrades are unsupported on Arch Linux."
 msgstr ""
 
-#: scripts-dev/setup.sh:38
+#: scripts-dev/setup.sh:81
 msgid ""
 "Usage: scripts-dev/setup.sh [options | path_to_package.plasmoid]\n"
 "\n"
@@ -6232,12 +6002,7 @@ msgstr ""
 msgid "Use custom folder"
 msgstr ""
 
-#: scripts-cmake/setup.sh:204
-msgid ""
-"Use the matching development packages supplied by your Linux distribution."
-msgstr ""
-
-#: scripts-dev/setup.sh:87
+#: scripts-dev/setup.sh:130
 msgid ""
 "Use: ./scripts-user/setup-universal.sh <path/to/package.plasmoid> to install."
 msgstr ""
@@ -6263,15 +6028,15 @@ msgstr ""
 msgid "Validate"
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:39
+#: scripts-dev/lib/setup-progress.sh:51
 msgid "Validating QML..."
 msgstr ""
 
-#: scripts-dev/lib/setup-progress.sh:38
+#: scripts-dev/lib/setup-progress.sh:50
 msgid "Verifying build environment..."
 msgstr ""
 
-#: scripts-user/setup.sh:137
+#: scripts-dev/setup.sh:62 scripts-user/setup.sh:137
 #, sh-printf-format
 msgid "Version %s | %s | %s"
 msgstr ""
@@ -6280,7 +6045,7 @@ msgstr ""
 msgid "Vertical"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:721
+#: contents/ui/config/ConfigItems.qml:719
 msgid "View:"
 msgstr ""
 
@@ -6346,7 +6111,7 @@ msgstr ""
 msgid "Wave"
 msgstr ""
 
-#: scripts-dev/setup.sh:106 scripts-user/setup.sh:63
+#: scripts-dev/setup.sh:147 scripts-user/setup.sh:63
 msgid "What would you like to do?"
 msgstr ""
 
@@ -6464,7 +6229,7 @@ msgid ""
 "opacity."
 msgstr ""
 
-#: scripts-dev/setup.sh:127
+#: scripts-dev/setup.sh:171
 msgid "Would you like to restart Plasma Shell now? [y/N]: "
 msgstr ""
 
@@ -6504,7 +6269,7 @@ msgid "pacman is required on Arch-family distributions"
 msgstr ""
 
 #: contents/ui/config/components/ActionDialog.qml:91
-#: contents/ui/config/ConfigItems.qml:743
+#: contents/ui/config/ConfigItems.qml:741
 #: contents/ui/config/ItemActionEditor.qml:39
 msgid "rows"
 msgstr ""
@@ -6517,29 +6282,13 @@ msgstr ""
 msgid "sudo is required to install missing pacman packages"
 msgstr ""
 
-#: scripts-cmake/setup.sh:186
-msgid "the Plasma restart timeout must be a positive number of seconds"
-msgstr ""
-
 #: scripts-dev/distro/arch-setup.sh:268
 #, sh-printf-format
 msgid "the build finished without creating the expected artifact: %s\\n"
 msgstr ""
 
-#: scripts-cmake/setup.sh:157
-msgid "the jobs option requires a positive integer"
-msgstr ""
-
 #: scripts-dev/distro/arch-setup.sh:256
 msgid "the package version could not be read from metadata.json"
-msgstr ""
-
-#: scripts-cmake/setup.sh:184
-msgid "the parallel job count must be a positive integer"
-msgstr ""
-
-#: scripts-cmake/setup.sh:188
-msgid "the per-user installation prefix must be an absolute path other than /"
 msgstr ""
 
 #: scripts-dev/distro/arch-setup.sh:184
@@ -6547,11 +6296,6 @@ msgstr ""
 msgid ""
 "this setup script requires Arch Linux or an Arch-family distribution "
 "(detected: %s)\\n"
-msgstr ""
-
-#: scripts-cmake/setup.sh:178
-#, sh-printf-format
-msgid "unknown option: %s"
 msgstr ""
 
 #: scripts-dev/distro/arch-setup.sh:155

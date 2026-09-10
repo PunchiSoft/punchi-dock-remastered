@@ -478,11 +478,13 @@ function normalizedSeparatorAppearanceSource(item) {
 }
 
 function pruneSeparator(item) {
+    delete item.actionPopupMaxVisibleRows
     removeKeys(item, ["name", "icon", "command", "apps"])
     pruneSeparatorAppearance(item)
 }
 
 function pruneDynamicApplications(item) {
+    delete item.actionPopupMaxVisibleRows
     removeKeys(item, [
         "icon", "command", "apps", "actions", "actionsEnabled",
         "description", "storageId", "appId"
@@ -498,10 +500,12 @@ function pruneDynamicApplications(item) {
 }
 
 function pruneSpacer(item) {
+    delete item.actionPopupMaxVisibleRows
     removeKeys(item, ["name", "icon", "command", "apps"])
 }
 
 function pruneClock(item) {
+    delete item.actionPopupMaxVisibleRows
     removeKeys(item, ["icon", "command", "apps"])
     if (item.mode === "analog") {
         if (!item.analogCustomAppearance) {
@@ -516,6 +520,7 @@ function pruneClock(item) {
 }
 
 function pruneCalendar(item) {
+    delete item.actionPopupMaxVisibleRows
     removeKeys(item, ["icon", "fontFamily", "mode", "showSeconds", "command", "apps", "width", "height", "backgroundColor", "accentColor", "borderColor", "radius", "textScale"])
     item.timeTextScale = Math.max(0.75, Math.min(2.0, Number(item.timeTextScale === undefined ? 1.0 : item.timeTextScale)))
     item.dateTextScale = Math.max(0.75, Math.min(2.0, Number(item.dateTextScale === undefined ? 1.0 : item.dateTextScale)))
@@ -526,10 +531,12 @@ function pruneCalendar(item) {
 }
 
 function pruneTrash(item) {
+    delete item.actionPopupMaxVisibleRows
     removeKeys(item, ["command", "apps"])
 }
 
 function pruneNote(item) {
+    delete item.actionPopupMaxVisibleRows
     removeKeys(item, ["command", "apps", "actions", "actionsEnabled"])
     item.name = item.name || "Note"
     item.icon = !item.icon || item.icon === "note" ? "knotes" : item.icon
@@ -539,6 +546,7 @@ function pruneNote(item) {
 }
 
 function pruneMedia(item) {
+    delete item.actionPopupMaxVisibleRows
     removeKeys(item, [
         "command", "apps", "actions", "actionsEnabled", "storageId", "appId",
         "description"
@@ -595,6 +603,7 @@ function normalizedControlCenterMode(value) {
 }
 
 function pruneControlCenter(item) {
+    delete item.actionPopupMaxVisibleRows
     removeKeys(item, [
         "command", "apps", "actions", "actionsEnabled", "storageId", "appId",
         "description"
@@ -780,6 +789,7 @@ function normalizedPunchiMenuHiddenApplicationIds(value) {
 }
 
 function prunePunchiMenu(item) {
+    delete item.actionPopupMaxVisibleRows
     removeKeys(item, [
         "command", "apps", "actions", "actionsEnabled", "storageId", "appId",
         "description"
@@ -895,6 +905,13 @@ function prunePunchiMenu(item) {
 
 function pruneApp(item) {
     removeKeys(item, ["apps"])
+    if (item.actionPopupMaxVisibleRows === undefined
+            || !Number.isFinite(Number(item.actionPopupMaxVisibleRows))) {
+        delete item.actionPopupMaxVisibleRows
+    } else {
+        item.actionPopupMaxVisibleRows = Math.max(1, Math.min(12,
+            Math.round(Number(item.actionPopupMaxVisibleRows))))
+    }
     if (!item.storageId || String(item.storageId).trim().length === 0) {
         delete item.storageId
     }
@@ -906,6 +923,7 @@ function pruneApp(item) {
 }
 
 function pruneFolder(item) {
+    delete item.actionPopupMaxVisibleRows
     removeKeys(item, ["command", "actions", "actionsEnabled"])
     removeKeys(item, ["radialBackground", "radialIconSlots", "radialDistance", "fanCenterDistance"])
     item.apps = item.apps instanceof Array ? item.apps : []

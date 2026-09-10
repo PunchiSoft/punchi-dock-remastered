@@ -108,6 +108,7 @@ Controls.Dialog {
     signal autofillRequested(string alias)
     signal iconPickerRequested(string target)
     signal actionsEnabledToggled(bool checked)
+    signal actionPopupSettingsChanged()
     signal actionSelected(int index)
     signal addActionRequested()
     signal moveActionRequested(int delta)
@@ -247,6 +248,7 @@ Controls.Dialog {
             addApplicationText: root.addApplicationText
             addActionText: root.addActionText
             onActionsEnabledToggled: function(checked) { root.actionsEnabledToggled(checked) }
+            onActionPopupSettingsChanged: root.actionPopupSettingsChanged()
             onActionSelected: function(index) { root.actionSelected(index) }
             onAddActionRequested: root.addActionRequested()
             onMoveActionRequested: function(delta) { root.moveActionRequested(delta) }

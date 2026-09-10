@@ -51,8 +51,6 @@ KCM.SimpleKCM {
     property string cfg_dockItemsJson: ""
     property int cfg_pendingEditDockItemIndex: -1
     property bool cfg_showActiveTasks: true
-    property alias cfg_actionPopupLimitRows: actionDialog.actionPopupLimitRowsChecked
-    property alias cfg_actionPopupMaxVisibleRows: actionDialog.actionPopupMaxVisibleRowsValue
     property bool pendingEditConsumed: false
     property string iconPickerTarget: "item"
     property real listRowHeight: Kirigami.Units.gridUnit * 2.4
@@ -769,6 +767,7 @@ KCM.SimpleKCM {
         }
         onIconPickerRequested: function(target) { page.openIconPicker(target) }
         onActionsEnabledToggled: function(checked) { page.setAppActionsEnabled(checked) }
+        onActionPopupSettingsChanged: page.applyItemForm()
         onActionSelected: function(index) {
             page.selectedActionIndex = index
             page.refreshActionForm()

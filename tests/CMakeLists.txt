@@ -2,22 +2,6 @@ find_package(Qt6 6.6 REQUIRED COMPONENTS QuickTest Test)
 find_package(PlasmaQuick 6.0 REQUIRED)
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
-add_test(
-    NAME cmake_install_contract_test
-    COMMAND ${Python3_EXECUTABLE}
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake_install_contract_test.py
-)
-
-add_test(
-    NAME cmake_setup_contract_test
-    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/cmake_setup_contract_test.sh
-)
-set_tests_properties(
-    cmake_install_contract_test
-    cmake_setup_contract_test
-    PROPERTIES TIMEOUT 15
-)
-
 add_executable(spectrumanalyzer_test
     spectrumanalyzer_test.cpp
     ${CMAKE_SOURCE_DIR}/src/spectrumanalyzer.cpp

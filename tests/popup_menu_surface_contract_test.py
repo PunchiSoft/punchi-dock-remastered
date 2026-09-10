@@ -162,6 +162,9 @@ def main() -> int:
     item_editor = (
         PROJECT_ROOT / "contents/ui/config/ItemEditorPanel.qml"
     ).read_text()
+    item_action_editor = (
+        PROJECT_ROOT / "contents/ui/config/ItemActionEditor.qml"
+    ).read_text()
     action_dialog = (
         PROJECT_ROOT / "contents/ui/config/components/ActionDialog.qml"
     ).read_text()
@@ -627,8 +630,6 @@ def main() -> int:
     ):
         require(config_schema, fragment, message)
     for fragment, message in (
-        ("readonly property int maximumAdaptivePopupGap:",
-         "Dock geometry must expose one adaptive maximum"),
         ("function popupGapForPercent(value)",
          "Dock geometry must centralize percentage conversion"),
     ):
@@ -642,6 +643,52 @@ def main() -> int:
          "The shared metric must own the effective-gap conversion"),
     ):
         require(popup_spacing_metrics, fragment, message)
+    if "maximumAdaptivePopupGap" in dock_geometry:
+        raise AssertionError(
+            "Dock geometry must not duplicate PopupSpacingMetrics.maximumGap"
+        )
+
+    for source, fragment, message in (
+        (item_action_editor,
+         "signal actionPopupSettingsChanged()",
+         "The per-application row limit must emit an edit intent"),
+        (item_action_editor,
+         "to: 12",
+         "The per-application row selector must match its runtime maximum"),
+        (action_dialog,
+         "onActionPopupSettingsChanged: root.actionPopupSettingsChanged()",
+         "ActionDialog must forward per-application row changes"),
+        (config_items,
+         "onActionPopupSettingsChanged: page.applyItemForm()",
+         "ConfigItems must persist per-application row changes"),
+        (config_items_form_helper,
+         "item.actionPopupMaxVisibleRows !== undefined",
+         "The item editor must restore an existing row override"),
+        (config_items_form_helper,
+         "item.actionPopupMaxVisibleRows = Math.max(1, Math.min(12,",
+         "The item editor must store a bounded row override"),
+        (config_items_form_helper,
+         "delete item.actionPopupMaxVisibleRows",
+         "Disabling the row override must restore global behavior"),
+        (popup_coordinator,
+         '"maxVisibleRows": itemData',
+         "PopupCoordinator must project the per-application override"),
+        (app_actions,
+         "popupCoordinator.activeAppContextMenuData.maxVisibleRows",
+         "Standalone application menus must consume the per-item row limit"),
+        (main_qml,
+         "maxVisibleActionRows: Number(",
+         "Task action menus must consume the per-item row limit"),
+    ):
+        require(source, fragment, message)
+    for stale_cfg_property in (
+        "cfg_actionPopupLimitRows",
+        "cfg_actionPopupMaxVisibleRows",
+    ):
+        if stale_cfg_property in config_items:
+            raise AssertionError(
+                f"ConfigItems must not expose non-schema property {stale_cfg_property}"
+            )
     require(
         main_qml,
         "showEditDockItemAction: Plasmoid.configuration.showEditDockItemAction !== false",
