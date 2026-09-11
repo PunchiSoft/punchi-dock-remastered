@@ -533,6 +533,10 @@ punchi_add_qml_test(
     control_center_bluetooth_page_test.qml
 )
 punchi_add_qml_test(
+    control_center_bluetooth_compatibility_test
+    control_center_bluetooth_compatibility_test.qml
+)
+punchi_add_qml_test(
     control_center_audio_page_test
     control_center_audio_page_test.qml
 )

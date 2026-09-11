@@ -97,6 +97,10 @@ NETWORK_PAGE = (
 BLUETOOTH_ADAPTER = (
     ROOT / "contents/ui/components/controlcenter/ControlCenterBluetoothAdapter.qml"
 ).read_text(encoding="utf-8")
+BLUETOOTH_COMPATIBILITY = (
+    ROOT
+    / "contents/ui/components/controlcenter/ControlCenterBluetoothCompatibility.js"
+).read_text(encoding="utf-8")
 BLUETOOTH_PAGE = (
     ROOT / "contents/ui/components/controlcenter/ControlCenterBluetoothPage.qml"
 ).read_text(encoding="utf-8")
@@ -393,10 +397,15 @@ require(
     and "PlasmaBt.SharedDevicesStateProxyModel" in BLUETOOTH_ADAPTER
     and "connectToDevice" in BLUETOOTH_ADAPTER
     and "disconnectFromDevice" in BLUETOOTH_ADAPTER
-    and "registerConnectingCallForDeviceUbi" in BLUETOOTH_ADAPTER
-    and "registerDisconnectingCallForDeviceUbi" in BLUETOOTH_ADAPTER
+    and "BluetoothCompatibility.registerPendingCall" in BLUETOOTH_ADAPTER
+    and "registerConnectingCallForDeviceUbi" in BLUETOOTH_COMPATIBILITY
+    and "registerDisconnectingCallForDeviceUbi" in BLUETOOTH_COMPATIBILITY
+    and "registerPendingCallForDeviceUbi" in BLUETOOTH_COMPATIBILITY
+    and "function registerPendingCall" in BLUETOOTH_COMPATIBILITY
+    and '"disconnecting"' in BLUETOOTH_ADAPTER
+    and "SharedDevicesStateProxyModel.disconnecting" not in BLUETOOTH_ADAPTER
     and "PlasmaBt.LaunchApp.launchWizard()" in BLUETOOTH_ADAPTER,
-    "The Bluetooth adapter must reproduce BlueDevil's state and action contract.",
+    "The Bluetooth adapter must normalize modern and legacy BlueDevil contracts.",
 )
 require(
     'currentPage = "bluetooth"' in OVERLAY

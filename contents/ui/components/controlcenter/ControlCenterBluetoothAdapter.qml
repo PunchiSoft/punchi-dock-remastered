@@ -3,6 +3,7 @@
 import QtQml
 import org.kde.bluezqt as BluezQt
 import org.kde.plasma.private.bluetooth as PlasmaBt
+import "ControlCenterBluetoothCompatibility.js" as BluetoothCompatibility
 
 QtObject {
     id: root
@@ -14,7 +15,8 @@ QtObject {
         BluezQt.Manager.bluetoothOperational
     readonly property bool blocked: BluezQt.Manager.bluetoothBlocked
     readonly property bool busy: PlasmaBt.SharedDevicesStateProxyModel.connecting
-        || PlasmaBt.SharedDevicesStateProxyModel.disconnecting
+        || BluetoothCompatibility.optionalBooleanProperty(
+            PlasmaBt.SharedDevicesStateProxyModel, "disconnecting")
     readonly property int connectedCount:
         BluezQt.Manager.connectedDevices.length
     readonly property var model: devicesModel
@@ -46,12 +48,12 @@ QtObject {
 
         if (connected) {
             const call = device.disconnectFromDevice()
-            PlasmaBt.SharedDevicesStateProxyModel
-                .registerDisconnectingCallForDeviceUbi(call, String(ubi || ""))
+            BluetoothCompatibility.registerPendingCall(
+                PlasmaBt.SharedDevicesStateProxyModel, call, ubi, true)
         } else {
             const call = device.connectToDevice()
-            PlasmaBt.SharedDevicesStateProxyModel
-                .registerConnectingCallForDeviceUbi(call, String(ubi || ""))
+            BluetoothCompatibility.registerPendingCall(
+                PlasmaBt.SharedDevicesStateProxyModel, call, ubi, false)
         }
         return true
     }
