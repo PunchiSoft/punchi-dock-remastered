@@ -22,6 +22,7 @@ Item {
     property var taskWindowsPopupContentRef: null
     property var taskPopupSurfaceRef: null
     property var taskPopupAnimatedContentRef: null
+    property var stableTaskPopupAnchorRef: null
 
     property var folderPopupDialogRef: null
     property var calendarPopupDialogRef: null
@@ -45,6 +46,13 @@ Item {
     property string pendingTaskPopupAppName: ""
     property var pendingTaskPopupRows: []
     property var taskPopupVisualParent: null
+    property bool taskPopupUsesStableAnchor: false
+    property Item pendingDynamicTaskPopupOwner: null
+    property var pendingDynamicTaskPopupRows: []
+    property rect pendingDynamicTaskPopupGeometry: Qt.rect(0, 0, 0, 0)
+    property int pendingDynamicTaskPopupStableSamples: 0
+    property int pendingDynamicTaskPopupRestoreAttempts: 0
+    property int maximumDynamicTaskPopupRestoreAttempts: 12
     property bool taskPopupHovered: false
     property bool contextMenuOpening: false
     property string mediaHoverMode: "card"
@@ -125,6 +133,13 @@ Item {
                 root.closeTaskWindowsPopup(true)
             }
         }
+    }
+
+    Timer {
+        id: dynamicTaskPopupOwnerRestoreTimer
+        interval: 16
+        repeat: false
+        onTriggered: root.continueDynamicTaskPopupOwnerRestore()
     }
 
     Timer {
@@ -252,37 +267,15 @@ Item {
 
     function taskPopupAnchor(visualParent) {
         if (visualParent && visualParent.taskPopupAnchorItem) {
+            if (stableTaskPopupAnchorRef
+                    && typeof stableTaskPopupAnchorRef.capture === "function"
+                    && stableTaskPopupAnchorRef.capture(
+                        visualParent.taskPopupAnchorItem)) {
+                return stableTaskPopupAnchorRef
+            }
             return visualParent.taskPopupAnchorItem
         }
         return popupAnchor(visualParent)
-    }
-
-    function taskPopupHorizontalX(popupWidth, availableGeometry) {
-        const anchor = taskPopupAnchor(root.taskPopupVisualParent)
-        const width = Number(popupWidth)
-        const bounds = availableGeometry || Qt.rect(0, 0, 0, 0)
-        const boundsX = Number(bounds.x)
-        const boundsWidth = Number(bounds.width)
-        if (!anchor || typeof anchor.mapToGlobal !== "function"
-                || !Number.isFinite(width) || width <= 0
-                || !Number.isFinite(boundsX)
-                || !Number.isFinite(boundsWidth) || boundsWidth <= 0) {
-            return Number.NaN
-        }
-
-        try {
-            const anchorWidth = Math.max(0, Number(anchor.width || 0))
-            const anchorHeight = Math.max(0, Number(anchor.height || 0))
-            const center = anchor.mapToGlobal(Qt.point(
-                anchorWidth / 2, anchorHeight / 2))
-            const desiredX = Math.round(Number(center.x) - (width / 2))
-            const maximumX = Math.max(boundsX,
-                boundsX + boundsWidth - width)
-            return Math.round(Math.max(boundsX,
-                Math.min(maximumX, desiredX)))
-        } catch (error) {
-            return Number.NaN
-        }
     }
 
     function popupDirectionForAnchor(anchor) {
@@ -546,8 +539,10 @@ Item {
             }),
             "windows": popupWindows
         }
-        taskWindowsDialogRef.visualParent = preparePopupAnchor(
-            taskPopupAnchor(visualParent))
+        const resolvedTaskAnchor = taskPopupAnchor(visualParent)
+        taskPopupUsesStableAnchor = stableTaskPopupAnchorRef
+            && resolvedTaskAnchor === stableTaskPopupAnchorRef
+        taskWindowsDialogRef.visualParent = preparePopupAnchor(resolvedTaskAnchor)
         taskPopupVisualParent = visualParent
         pendingTaskPopupRequestValid = false
         showTaskWindowsDialog()
@@ -678,6 +673,7 @@ Item {
         taskPopupOpenTimer.stop()
         taskPopupCloseTimer.stop()
         mediaAvailabilityFallbackTimer.stop()
+        clearPendingDynamicTaskPopupOwnerRestore()
         pendingTaskPopupAppName = ""
         pendingTaskPopupRows = []
         taskPopupVisualParent = null
@@ -687,6 +683,11 @@ Item {
         pendingTaskPopupRequestValid = false
         pendingTaskPopupAwaitingMediaResolution = false
         activeTaskPopupPresentation = "none"
+        taskPopupUsesStableAnchor = false
+        if (stableTaskPopupAnchorRef
+                && typeof stableTaskPopupAnchorRef.clear === "function") {
+            stableTaskPopupAnchorRef.clear()
+        }
     }
 
     function closeMediaHoverFromKeyboard() {
@@ -733,6 +734,170 @@ Item {
         } catch (error) {
             return false
         }
+    }
+
+    function dynamicTaskPopupOwnerMatches(visualParent, taskRows) {
+        if (!taskPopupUsesStableAnchor || !visualParent
+                || !visualParent.taskPopupAnchorItem
+                || !taskControllerRef
+                || !root.popupDialogActive(taskWindowsDialogRef)) {
+            return false
+        }
+
+        const popupData = activeTaskPopupData || {}
+        const applicationId = String(popupData.applicationId || "")
+        const candidateApplicationId = String(
+            taskControllerRef.taskApplicationIdForRows(taskRows || []) || "")
+        let matches = applicationId.length > 0
+            && candidateApplicationId === applicationId
+
+        if (!matches && applicationId.length === 0) {
+            const popupWindowUuids = popupData.windowUuids instanceof Array
+                ? popupData.windowUuids : []
+            const candidateWindows = taskControllerRef.taskWindowsForRows(
+                taskRows || [])
+            matches = candidateWindows.some(function(windowData) {
+                const uuid = String(windowData.windowUuid || "")
+                return uuid.length > 0 && popupWindowUuids.indexOf(uuid) >= 0
+            })
+        }
+        return matches
+    }
+
+    function taskPopupAnchorGeometryIsValid(geometry) {
+        return geometry
+            && Number.isFinite(Number(geometry.x))
+            && Number.isFinite(Number(geometry.y))
+            && Number.isFinite(Number(geometry.width))
+            && Number(geometry.width) > 0
+            && Number.isFinite(Number(geometry.height))
+            && Number(geometry.height) > 0
+    }
+
+    function taskPopupAnchorGeometriesMatch(first, second) {
+        if (!taskPopupAnchorGeometryIsValid(first)
+                || !taskPopupAnchorGeometryIsValid(second)) {
+            return false
+        }
+        const tolerance = 0.01
+        return Math.abs(Number(first.x) - Number(second.x)) <= tolerance
+            && Math.abs(Number(first.y) - Number(second.y)) <= tolerance
+            && Math.abs(Number(first.width) - Number(second.width)) <= tolerance
+            && Math.abs(Number(first.height) - Number(second.height)) <= tolerance
+    }
+
+    function clearPendingDynamicTaskPopupOwnerRestore() {
+        dynamicTaskPopupOwnerRestoreTimer.stop()
+        pendingDynamicTaskPopupOwner = null
+        pendingDynamicTaskPopupRows = []
+        pendingDynamicTaskPopupGeometry = Qt.rect(0, 0, 0, 0)
+        pendingDynamicTaskPopupStableSamples = 0
+        pendingDynamicTaskPopupRestoreAttempts = 0
+    }
+
+    function scheduleDynamicTaskPopupOwnerRestore(visualParent, taskRows) {
+        if (!dynamicTaskPopupOwnerMatches(visualParent, taskRows)
+                || !stableTaskPopupAnchorRef
+                || typeof stableTaskPopupAnchorRef.geometryFor !== "function") {
+            return false
+        }
+
+        pendingDynamicTaskPopupOwner = visualParent
+        pendingDynamicTaskPopupRows = taskRows instanceof Array
+            ? taskRows.slice() : []
+        pendingDynamicTaskPopupGeometry = Qt.rect(0, 0, 0, 0)
+        pendingDynamicTaskPopupStableSamples = 0
+        pendingDynamicTaskPopupRestoreAttempts = 0
+        dynamicTaskPopupOwnerRestoreTimer.restart()
+        return true
+    }
+
+    function continueDynamicTaskPopupOwnerRestore() {
+        const visualParent = pendingDynamicTaskPopupOwner
+        const taskRows = pendingDynamicTaskPopupRows
+        if (!dynamicTaskPopupOwnerMatches(visualParent, taskRows)) {
+            clearPendingDynamicTaskPopupOwnerRestore()
+            return
+        }
+
+        const geometry = stableTaskPopupAnchorRef.geometryFor(
+            visualParent.taskPopupAnchorItem)
+        const geometryValid = taskPopupAnchorGeometryIsValid(geometry)
+        pendingDynamicTaskPopupRestoreAttempts += 1
+
+        if (geometryValid && taskPopupAnchorGeometriesMatch(
+                geometry, pendingDynamicTaskPopupGeometry)) {
+            pendingDynamicTaskPopupStableSamples += 1
+        } else if (geometryValid) {
+            pendingDynamicTaskPopupGeometry = geometry
+            pendingDynamicTaskPopupStableSamples = 1
+        } else {
+            pendingDynamicTaskPopupStableSamples = 0
+        }
+
+        const attemptsExhausted = pendingDynamicTaskPopupRestoreAttempts
+            >= Math.max(2, maximumDynamicTaskPopupRestoreAttempts)
+        if (geometryValid
+                && (pendingDynamicTaskPopupStableSamples >= 2
+                    || attemptsExhausted)) {
+            restoreDynamicTaskPopupOwner(visualParent, taskRows, geometry)
+            clearPendingDynamicTaskPopupOwnerRestore()
+            return
+        }
+        if (attemptsExhausted) {
+            clearPendingDynamicTaskPopupOwnerRestore()
+            return
+        }
+        dynamicTaskPopupOwnerRestoreTimer.restart()
+    }
+
+    function refreshDynamicTaskPopupAnchor() {
+        if (!stableTaskPopupAnchorRef
+                || !taskWindowsDialogRef
+                || !root.popupDialogActive(taskWindowsDialogRef)) {
+            return false
+        }
+        configureStableTaskPopupAnchor(
+            Number(taskWindowsDialogRef.width || 0),
+            Number(taskWindowsDialogRef.height || 0),
+            stableTaskPopupAnchorRef.popupOnHorizontalEdge !== false)
+        const anchor = preparePopupAnchor(stableTaskPopupAnchorRef)
+        if (taskWindowsDialogRef.visualParent === anchor) {
+            taskWindowsDialogRef.visualParent = null
+        }
+        taskWindowsDialogRef.visualParent = anchor
+        return true
+    }
+
+    function configureStableTaskPopupAnchor(popupWidth, popupHeight,
+            horizontalEdge) {
+        if (!taskPopupUsesStableAnchor
+                || !stableTaskPopupAnchorRef
+                || typeof stableTaskPopupAnchorRef.configureForPopup
+                    !== "function") {
+            return false
+        }
+        return stableTaskPopupAnchorRef.configureForPopup(
+            popupWidth, popupHeight, horizontalEdge)
+    }
+
+    function restoreDynamicTaskPopupOwner(visualParent, taskRows, geometry) {
+        if (!dynamicTaskPopupOwnerMatches(visualParent, taskRows)
+                || !stableTaskPopupAnchorRef
+                || typeof stableTaskPopupAnchorRef.captureGeometry !== "function") {
+            return false
+        }
+
+        const targetGeometry = taskPopupAnchorGeometryIsValid(geometry)
+            ? geometry
+            : stableTaskPopupAnchorRef.geometryFor(
+                visualParent.taskPopupAnchorItem)
+        if (!stableTaskPopupAnchorRef.captureGeometry(targetGeometry)) {
+            return false
+        }
+
+        taskPopupVisualParent = visualParent
+        return refreshDynamicTaskPopupAnchor()
     }
 
     function refreshTaskPopupAfterStructureChange() {

@@ -1193,7 +1193,9 @@ Item {
 
         WindowCountBadge {
             z: 3
-            anchors.fill: parent
+            anchors.centerIn: parent
+            width: dockItemContainer.iconSize
+            height: dockItemContainer.iconSize
             count: dockItemContainer.taskIndicatorCount
             iconSize: dockItemContainer.iconSize
             demandsAttention: dockItemContainer.taskDemandsAttention
@@ -1203,6 +1205,12 @@ Item {
             emblemColor: dockItemContainer.windowCountEmblemColor
             emblemOpacity: dockItemContainer.windowCountEmblemOpacity
             emblemScale: dockItemContainer.windowCountEmblemScale
+            transformOrigin: Item.Center
+            scale: dockItemContainer.waveScale
+            transform: Translate {
+                x: dockItemContainer.hoverOffsetX
+                y: dockItemContainer.hoverOffsetY
+            }
         }
 
         MediaDockItem {

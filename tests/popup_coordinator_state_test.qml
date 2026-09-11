@@ -41,8 +41,32 @@ TestCase {
         }
     }
 
+    Item {
+        id: replacementDynamicOwner
+
+        x: 96
+        width: 48
+        height: 48
+        property bool containsMouse: true
+        property Item taskPopupAnchorItem: replacementDynamicVisualAnchor
+
+        Item {
+            id: replacementDynamicVisualAnchor
+
+            x: 8
+            width: 48
+            height: 48
+        }
+    }
+
+    Components.TaskPopupAnchorProxy {
+        id: stableDynamicAnchor
+    }
+
     QtObject {
         id: fakeTaskController
+
+        property var identityWindows: []
 
         function taskApplicationIdForRows(rows) {
             if (!rows || rows.length === 0) {
@@ -57,13 +81,19 @@ TestCase {
             if (!rows || rows.length === 0) {
                 return []
             }
-            const row = Number(rows[0])
-            return [{
-                "row": row,
-                "title": row === 2 ? "Second window" : "First window",
-                "icon": row === 2 ? "vlc" : "firefox",
-                "windowUuid": "window-" + row
-            }]
+            return rows.map(function(taskRow) {
+                const row = Number(taskRow)
+                return {
+                    "row": row,
+                    "title": row === 2 ? "Second window" : "First window",
+                    "icon": row === 2 ? "vlc" : "firefox",
+                    "windowUuid": "window-" + row
+                }
+            })
+        }
+
+        function taskWindowsForIdentity() {
+            return identityWindows
         }
     }
 
@@ -126,6 +156,9 @@ TestCase {
         property bool visible: false
         property bool preparingToShow: false
         property var visualParent: null
+        property real width: 180
+        property real height: 150
+        property int visualParentChangeCount: 0
         property int openCount: 0
         property int closeCount: 0
         property bool deferOpen: false
@@ -144,6 +177,8 @@ TestCase {
             preparingToShow = false
             visible = false
         }
+
+        onVisualParentChanged: visualParentChangeCount += 1
     }
 
     QtObject {
@@ -172,6 +207,7 @@ TestCase {
         taskWindowsPopupContentRef: fakePopupContent
         taskPopupSurfaceRef: fakeSurfaceStack
         taskPopupAnimatedContentRef: fakeAnimatedContent
+        stableTaskPopupAnchorRef: stableDynamicAnchor
         taskWindowsDialogRef: fakeDialog
         appActionsDialogRef: fakeAppActionsDialog
         applicationIdentityResolver: function(itemData) {
@@ -189,6 +225,9 @@ TestCase {
         fakeDialog.visible = false
         fakeDialog.preparingToShow = false
         fakeDialog.visualParent = null
+        fakeDialog.width = 180
+        fakeDialog.height = 150
+        fakeDialog.visualParentChangeCount = 0
         fakeDialog.openCount = 0
         fakeDialog.closeCount = 0
         fakeDialog.deferOpen = false
@@ -205,9 +244,13 @@ TestCase {
         fakeMprisController.available = false
         fakeMprisController.resolving = false
         fakeMprisController.applicationId = ""
+        fakeTaskController.identityWindows = []
         firstAnchor.containsMouse = true
         secondAnchor.containsMouse = true
         dynamicOwner.containsMouse = true
+        replacementDynamicOwner.containsMouse = true
+        replacementDynamicOwner.x = 96
+        stableDynamicAnchor.clear()
         coordinator.mediaHoverMode = "card"
         coordinator.windowPreviewsEnabled = false
     }
@@ -247,27 +290,68 @@ TestCase {
             false, false)
 
         tryCompare(fakeDialog, "openCount", 1, 600)
-        compare(fakeDialog.visualParent, dynamicVisualAnchor)
+        compare(fakeDialog.visualParent, stableDynamicAnchor)
         compare(coordinator.taskPopupVisualParent, dynamicOwner)
+        verify(coordinator.taskPopupUsesStableAnchor)
     }
 
-    function test_dynamicTaskHorizontalPositionUsesVisualAnchor() {
-        coordinator.taskPopupVisualParent = dynamicOwner
-        const popupWidth = 120
-        const available = Qt.rect(-1000, 0, 2000, 800)
-        const center = dynamicVisualAnchor.mapToGlobal(Qt.point(
-            dynamicVisualAnchor.width / 2,
-            dynamicVisualAnchor.height / 2))
-        const expectedX = Math.round(center.x - (popupWidth / 2))
-
-        compare(coordinator.taskPopupHorizontalX(popupWidth, available),
-            expectedX)
+    function test_dynamicGroupWaitsForSettledReplacementAnchor_data() {
+        return [
+            { tag: "horizontal", horizontalEdge: true },
+            { tag: "vertical", horizontalEdge: false }
+        ]
     }
 
-    function test_dynamicTaskHorizontalPositionClampsToAvailableGeometry() {
-        coordinator.taskPopupVisualParent = dynamicOwner
-        compare(coordinator.taskPopupHorizontalX(120,
-            Qt.rect(500, 0, 100, 800)), 500)
+    function test_dynamicGroupWaitsForSettledReplacementAnchor(data) {
+        coordinator.mediaHoverMode = "none"
+        coordinator.windowPreviewsEnabled = true
+        coordinator.scheduleTaskWindowsPopup("Firefox", [1, 3], dynamicOwner,
+            false, true)
+
+        tryCompare(fakeDialog, "openCount", 1, 600)
+        compare(coordinator.activeTaskPopupData.windows.length, 2)
+        compare(fakeDialog.visualParent, stableDynamicAnchor)
+        verify(coordinator.configureStableTaskPopupAnchor(
+            fakeDialog.width, fakeDialog.height, data.horizontalEdge))
+
+        coordinator.removeTaskPopupWindow(3)
+        compare(coordinator.activeTaskPopupData.windows.length, 1)
+        coordinator.taskPopupVisualParent = null
+        const previousAnchorX = stableDynamicAnchor.x
+        const anchorChangesBeforeRestore = fakeDialog.visualParentChangeCount
+
+        replacementDynamicOwner.x = 0
+        verify(coordinator.scheduleDynamicTaskPopupOwnerRestore(
+            replacementDynamicOwner, [1]))
+        wait(20)
+        compare(stableDynamicAnchor.x, previousAnchorX)
+
+        replacementDynamicOwner.x = 96
+        tryCompare(coordinator, "taskPopupVisualParent",
+            replacementDynamicOwner, 600)
+        compare(stableDynamicAnchor.x + stableDynamicAnchor.width / 2, 128)
+        compare(stableDynamicAnchor.y + stableDynamicAnchor.height / 2, 24)
+        if (data.horizontalEdge) {
+            verify(stableDynamicAnchor.width / 3 > fakeDialog.width / 2)
+        } else {
+            verify(stableDynamicAnchor.height / 3 > fakeDialog.height / 2)
+        }
+        compare(fakeDialog.visualParent, stableDynamicAnchor)
+        verify(fakeDialog.visualParentChangeCount
+            >= anchorChangesBeforeRestore + 2)
+        verify(fakeDialog.visible)
+        compare(fakeDialog.closeCount, 0)
+    }
+
+    function test_pinnedTaskKeepsItsDirectAnchor() {
+        coordinator.mediaHoverMode = "none"
+        coordinator.windowPreviewsEnabled = true
+        coordinator.scheduleTaskWindowsPopup("Firefox", [1], firstAnchor,
+            false, true)
+
+        tryCompare(fakeDialog, "openCount", 1, 600)
+        compare(fakeDialog.visualParent, firstAnchor)
+        verify(!coordinator.taskPopupUsesStableAnchor)
     }
 
     function test_noneCardLateFirstResolutionOpens() {

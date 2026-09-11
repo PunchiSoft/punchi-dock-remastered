@@ -2245,6 +2245,7 @@ PlasmoidItem {
             taskWindowsPopupContentRef: taskWindowsPopupContent
             taskPopupSurfaceRef: taskPopupSurface
             taskPopupAnimatedContentRef: taskPopupAnimatedContent
+            stableTaskPopupAnchorRef: stableTaskPopupAnchor
             // These ids belong to the owning full representation.
             // qmllint disable unqualified
             mediaHoverMode: dockConfig.mediaControlsMode
@@ -2313,6 +2314,10 @@ PlasmoidItem {
                 + dockGeometry.floatingExtraHeight
             width: root.inPanel ? parent.width : implicitWidth
             height: root.inPanel ? parent.height : implicitHeight
+
+            TaskPopupAnchorProxy {
+                id: stableTaskPopupAnchor
+            }
 
             Component.onCompleted: root.floatingDockAnchor = dockWrapper
             onXChanged: dockGeometry.updateFloatingScreenEdge(dockWrapper)
@@ -3264,6 +3269,10 @@ PlasmoidItem {
                             return taskController.taskDataForEntry(modelData)
                         }
 
+                        Component.onCompleted:
+                            popupCoordinator.scheduleDynamicTaskPopupOwnerRestore(
+                                taskDockItemDelegate, taskData.rows)
+
                         Layout.column: dockGeometry.verticalPanel
                             ? 0 : root.dynamicVisualIndex(taskDockItemDelegate.index)
                         Layout.row: dockGeometry.verticalPanel
@@ -3874,6 +3883,7 @@ PlasmoidItem {
             readonly property bool isX11Session: KWindowSystem.isPlatformX11
             property bool preparingToShow: false
             property int openRequestSerial: 0
+            property bool anchorExtentRefreshPending: false
 
             location: dockGeometry.effectivePanelLocation
             type: PlasmaCore.Dialog.AppletPopup
@@ -3885,23 +3895,37 @@ PlasmoidItem {
             backgroundHints: PlasmaCore.Dialog.NoBackground
 
             // qmllint disable unqualified
-            function compactDynamicHorizontalAnchorEnabled() {
-                return root.inPanel
-                    && dockGeometry.horizontalPanel
-                    && !dockGeometry.panelFillLengthEnabled
-                    && popupCoordinator.taskPopupVisualParent
-                    && popupCoordinator.taskPopupVisualParent.taskPopupTracksVisualArea
-            }
-
-            function applyCompactDynamicHorizontalAnchor() {
-                if (!compactDynamicHorizontalAnchorEnabled()) {
+            function configureStableAnchorExtent(reposition) {
+                if (!popupCoordinator.taskPopupUsesStableAnchor) {
                     return
                 }
-                const targetX = popupCoordinator.taskPopupHorizontalX(
-                    width, root.availableScreenRect)
-                if (Number.isFinite(targetX)) {
-                    x = targetX
+                const popupWidth = Math.max(Number(width || 0),
+                    Number(taskPopupAnimatedContent.width || 0))
+                const popupHeight = Math.max(Number(height || 0),
+                    Number(taskPopupAnimatedContent.height || 0))
+                popupCoordinator.configureStableTaskPopupAnchor(
+                    popupWidth, popupHeight,
+                    location === PlasmaCore.Types.TopEdge
+                        || location === PlasmaCore.Types.BottomEdge)
+                if (reposition && visible) {
+                    popupCoordinator.refreshDynamicTaskPopupAnchor()
                 }
+            }
+
+            function scheduleStableAnchorExtentRefresh() {
+                if (anchorExtentRefreshPending
+                        || !popupCoordinator.taskPopupUsesStableAnchor
+                        || (!visible && !preparingToShow)) {
+                    return
+                }
+                anchorExtentRefreshPending = true
+                Qt.callLater(function() {
+                    taskWindowsDialog.anchorExtentRefreshPending = false
+                    if (taskWindowsDialog.visible
+                            || taskWindowsDialog.preparingToShow) {
+                        taskWindowsDialog.configureStableAnchorExtent(true)
+                    }
+                })
             }
 
             function finishPreparedOpen(requestSerial, remainingAttempts) {
@@ -3925,8 +3949,8 @@ PlasmoidItem {
                     }
                     return
                 }
+                configureStableAnchorExtent(false)
                 visible = true
-                applyCompactDynamicHorizontalAnchor()
                 preparingToShow = false
             }
 
@@ -3942,9 +3966,14 @@ PlasmoidItem {
             function closeSafely() {
                 openRequestSerial += 1
                 preparingToShow = false
+                anchorExtentRefreshPending = false
                 visible = false
             }
             // qmllint enable unqualified
+
+            onWidthChanged: scheduleStableAnchorExtentRefresh()
+            onHeightChanged: scheduleStableAnchorExtentRefresh()
+            onLocationChanged: scheduleStableAnchorExtentRefresh()
 
             onVisibleChanged: {
                 if (!visible) {

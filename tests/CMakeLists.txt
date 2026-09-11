@@ -489,6 +489,10 @@ punchi_add_qml_test(
     popup_coordinator_state_test.qml
 )
 punchi_add_qml_test(
+    task_popup_anchor_proxy_test
+    task_popup_anchor_proxy_test.qml
+)
+punchi_add_qml_test(
     control_center_shortcut_tile_test
     control_center_shortcut_tile_test.qml
 )

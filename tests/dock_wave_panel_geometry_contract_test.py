@@ -87,6 +87,13 @@ task_indicator_end = DOCK_ITEM.index(
     "\n        WindowCountBadge {", task_indicator_start
 )
 task_indicator = DOCK_ITEM[task_indicator_start:task_indicator_end]
+window_count_badge_start = task_indicator_end + 1
+window_count_badge_end = DOCK_ITEM.index(
+    "\n        MediaDockItem {", window_count_badge_start
+)
+window_count_badge = DOCK_ITEM[
+    window_count_badge_start:window_count_badge_end
+]
 require(
     'readonly property string effectiveIndicatorPosition:\n'
     '        indicatorPosition === "top" ? "top" : "bottom"'
@@ -108,6 +115,19 @@ require(
     and "y: dockItemContainer.hoverOffsetY" in task_indicator
     and "hoverAnimationMode === \"wave\"" not in task_indicator,
     "The task indicator must follow the icon transform in every zoom mode.",
+)
+require(
+    "anchors.centerIn: parent" in window_count_badge
+    and "width: dockItemContainer.iconSize" in window_count_badge
+    and "height: dockItemContainer.iconSize" in window_count_badge
+    and "anchors.fill: parent" not in window_count_badge,
+    "The window count badge must remain attached to the icon footprint.",
+)
+require(
+    "scale: dockItemContainer.waveScale" in window_count_badge
+    and "x: dockItemContainer.hoverOffsetX" in window_count_badge
+    and "y: dockItemContainer.hoverOffsetY" in window_count_badge,
+    "The window count badge must follow the icon transform during zoom.",
 )
 require(
     "const configuredPercent = Number(Plasmoid.configuration.indicatorOpacity)"

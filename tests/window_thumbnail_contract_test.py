@@ -398,28 +398,43 @@ def main() -> int:
          "The visual task anchor must remain optional"),
         ("taskPopupAnchor(visualParent)",
          "Task popup opening must use the resolved visual anchor"),
-        ("function taskPopupHorizontalX(popupWidth, availableGeometry)",
-         "Compact dynamic previews must expose a one-shot horizontal position"),
-        ("anchor.mapToGlobal(Qt.point(",
-         "The compact correction must use the dynamic icon's global center"),
+        ("function scheduleDynamicTaskPopupOwnerRestore(visualParent, taskRows)",
+         "Recreated dynamic owners must be restored after layout settles"),
+        ("pendingDynamicTaskPopupStableSamples >= 2",
+         "A provisional delegate position must not replace the last valid anchor"),
+        ("taskWindowsDialogRef.visualParent = null",
+         "Moving the stable proxy must explicitly request native repositioning"),
+        ("function configureStableTaskPopupAnchor(popupWidth, popupHeight,",
+         "The stable anchor must receive the popup cross-axis extent"),
     ):
         require(popup_coordinator, fragment, message)
 
     for fragment, message in (
-        ("function compactDynamicHorizontalAnchorEnabled()",
-         "The task dialog must classify compact dynamic anchoring explicitly"),
-        ("&& dockGeometry.horizontalPanel",
-         "The one-shot correction must remain horizontal-only"),
-        ("&& !dockGeometry.panelFillLengthEnabled",
-         "Fill-length panels must preserve Plasma's native positioning"),
-        ("popupCoordinator.taskPopupVisualParent.taskPopupTracksVisualArea",
-         "Only dynamic task owners may request the compact correction"),
-        ("function applyCompactDynamicHorizontalAnchor()",
-         "The task dialog must apply the correction once while opening"),
-        ("visible = true\n                applyCompactDynamicHorizontalAnchor()",
-         "The corrected X must be applied after Plasma's native placement and before the first frame"),
+        ("function configureStableAnchorExtent(reposition)",
+         "The task dialog must configure its stable native anchor"),
+        ("location === PlasmaCore.Types.TopEdge",
+         "Top and bottom panels must expand the horizontal anchor extent"),
+        ("location === PlasmaCore.Types.BottomEdge",
+         "Both horizontal screen edges must share the same anchor contract"),
+        ("onWidthChanged: scheduleStableAnchorExtentRefresh()",
+         "Popup width changes must refresh exact horizontal anchoring"),
+        ("onHeightChanged: scheduleStableAnchorExtentRefresh()",
+         "Popup height changes must refresh exact vertical anchoring"),
+        ("configureStableAnchorExtent(false)\n                visible = true",
+         "The cross-axis anchor must be ready before the native popup is exposed"),
     ):
         require(task_dialog, fragment, message)
+
+    for forbidden in (
+        "taskPopupHorizontalX",
+        "compactDynamicHorizontalAnchorEnabled",
+        "applyCompactDynamicHorizontalAnchor",
+    ):
+        if forbidden in popup_coordinator or forbidden in task_dialog:
+            raise AssertionError(
+                "Task popup positioning must not retain a horizontal-only correction: "
+                f"{forbidden}"
+            )
 
     for forbidden in (
         "backgroundHints: PlasmaCore.AppletPopup.StandardBackground",
