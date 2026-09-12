@@ -288,6 +288,11 @@ add_test(
 )
 
 add_test(
+    NAME audio_spectrum_panel_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/audio_spectrum_panel_contract_test.py
+)
+
+add_test(
     NAME kubuntu_version_detection_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/kubuntu_version_detection_test.py
 )

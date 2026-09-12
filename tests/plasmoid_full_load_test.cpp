@@ -516,17 +516,35 @@ private:
                         drainDeferredEvents();
                         QQuickItem *renderer = surface
                             ? surface->findChild<QQuickItem *>(QStringLiteral("panelFlatThemeRenderer")) : nullptr;
+                        QQuickItem *spectrumRenderer = surface
+                            ? surface->findChild<QQuickItem *>(QStringLiteral("panelAudioSpectrumRenderer")) : nullptr;
                         QQuickItem *colorSurface = renderer && !renderer->childItems().isEmpty()
                             ? renderer->childItems().constFirst() : nullptr;
-                        if (colorSurface) {
+                        if (colorSurface && spectrumRenderer) {
                             const QRectF initial = colorSurface->mapRectToItem(panelWindow.contentItem(),
                                 QRectF(0, 0, colorSurface->width(), colorSurface->height()));
+                            const QRectF initialSpectrum = spectrumRenderer->mapRectToItem(
+                                panelWindow.contentItem(), QRectF(0, 0,
+                                    spectrumRenderer->width(), spectrumRenderer->height()));
+                            const bool backgroundStartsExclusive = renderer->isVisible()
+                                && !spectrumRenderer->isVisible();
+                            surface->setProperty("backgroundVisible", false);
+                            surface->setProperty("spectrumVisible", true);
+                            drainDeferredEvents();
+                            const bool spectrumReplacementIsExclusive = !renderer->isVisible()
+                                && spectrumRenderer->isVisible()
+                                && initialSpectrum == initial;
+                            surface->setProperty("backgroundVisible", true);
+                            surface->setProperty("spectrumVisible", false);
+                            drainDeferredEvents();
                             panelRoot->setProperty("topShadowMargin", 0.0);
                             panelRoot->setProperty("bottomShadowMargin", -26.0);
                             drainDeferredEvents();
                             const QRectF attached = colorSurface->mapRectToItem(panelWindow.contentItem(),
                                 QRectF(0, 0, colorSurface->width(), colorSurface->height()));
                             result.panelFlatGeometryValid = surface->property("hosting").toBool()
+                                && backgroundStartsExclusive
+                                && spectrumReplacementIsExclusive
                                 && initial == QRectF(8, 27, 984, 40)
                                 && attached == QRectF(8, 27, 984, 40)
                                 && panelRoot->height() == 90;

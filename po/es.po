@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-10 20:44-0300\n"
+"POT-Creation-Date: 2026-09-11 23:54-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Spanish\n"
@@ -176,7 +176,7 @@ msgstr ""
 msgid "%1 items loaded."
 msgstr "%1 elementos cargados."
 
-#: contents/ui/main.qml:3480
+#: contents/ui/main.qml:3498
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de ventanas más"
@@ -507,7 +507,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Se creó un acceso directo de escritorio para %1."
 
-#: contents/ui/main.qml:2058
+#: contents/ui/main.qml:2065
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr ""
@@ -3174,11 +3174,12 @@ msgstr "Importar…"
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:143
 msgid ""
-"In floating mode, only the spectrum and dock items remain visible. A Plasma "
-"panel keeps its own background."
+"In floating mode, only the spectrum and dock items remain visible. In panel "
+"mode, the spectrum replaces the panel background and keeps the same fit."
 msgstr ""
 "En modo flotante solo permanecen visibles el espectro y los elementos del "
-"dock. Un panel de Plasma conserva su propio fondo."
+"dock. En modo panel, el espectro reemplaza el fondo del panel y conserva el "
+"mismo ajuste."
 
 #: contents/ui/config/ConfigAspect.qml:748
 msgid ""
@@ -3989,7 +3990,7 @@ msgstr ""
 "No se encontraron aplicaciones multimedia instaladas. La selección "
 "automática sigue disponible."
 
-#: contents/ui/main.qml:2044
+#: contents/ui/main.qml:2051
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "No se encontraron archivos locales en este arrastre."
@@ -4179,7 +4180,7 @@ msgstr ""
 "cerrada.Solo se aplica cuando este elemento del dock inicia una aplicación "
 "cerrada."
 
-#: contents/ui/main.qml:2055
+#: contents/ui/main.qml:2062
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Solo se pueden abrir archivos locales con una aplicación."
@@ -5765,12 +5766,12 @@ msgstr ""
 "El tema del dock controla este separador. Elige «Este separador» para editar "
 "aquí su apariencia."
 
-#: contents/ui/main.qml:2052
+#: contents/ui/main.qml:2059
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "El arrastre contiene una ubicación de archivo local no válida."
 
-#: contents/ui/main.qml:2061
+#: contents/ui/main.qml:2068
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
@@ -5778,7 +5779,7 @@ msgstr ""
 "seguridad.La lista de archivos arrastrados es demasiado grande para abrirla "
 "de forma segura."
 
-#: contents/ui/main.qml:2066
+#: contents/ui/main.qml:2073
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "No se pudieron abrir los archivos arrastrados."
@@ -5958,7 +5959,7 @@ msgstr "Delgado"
 msgid "This action cannot be undone."
 msgstr "Esta acción no se puede deshacer."
 
-#: contents/ui/main.qml:2064
+#: contents/ui/main.qml:2071
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -6716,7 +6717,7 @@ msgstr "Escribir una nota rápida editable"
 msgid "Write a quick note"
 msgstr "Escribir una nota rápida"
 
-#: contents/ui/main.qml:2048
+#: contents/ui/main.qml:2055
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Puede abrir hasta %1 archivos locales a la vez."

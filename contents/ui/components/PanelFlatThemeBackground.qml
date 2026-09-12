@@ -10,8 +10,19 @@ Punchi.PanelThemeSurface {
     property var theme: ({})
     property bool dockVertical: false
     property real restingPadding: 0
+    property bool backgroundVisible: true
+    property bool spectrumVisible: false
+    property bool spectrumActive: false
+    property var spectrumLevels: []
+    property real spectrumIntensity: 0.35
+    property bool spectrumUsePlasmaTheme: true
+    property int spectrumBarCount: 12
+    property int spectrumOriginEdge: Qt.BottomEdge
+    property string spectrumBarStyle: "edge"
+    property string spectrumFlowDirection: "none"
     readonly property bool aligned: hosting && contentGeometry.width > 0
         && contentGeometry.height > 0
+    readonly property bool spectrumHosted: aligned && spectrumVisible
     readonly property real visibleThickness: (dockVertical
         ? contentGeometry.width : contentGeometry.height) + restingPadding * 2
     readonly property real surfaceX: dockVertical ? contentGeometry.x - restingPadding : 0
@@ -35,10 +46,33 @@ Punchi.PanelThemeSurface {
             + root.leftReserve + root.rightReserve
         height: (root.dockVertical ? root.height : root.visibleThickness)
             + root.topReserve + root.bottomReserve
-        visible: root.aligned
+        visible: root.aligned && root.backgroundVisible
         theme: root.theme
         dockVertical: root.dockVertical
         inPanel: true
         Accessible.ignored: true
+    }
+
+    Item {
+        objectName: "panelAudioSpectrumRenderer"
+        x: root.surfaceX
+        y: root.surfaceY
+        width: root.dockVertical ? root.visibleThickness : root.width
+        height: root.dockVertical ? root.height : root.visibleThickness
+        visible: root.spectrumHosted
+        Accessible.ignored: true
+
+        AudioSpectrumLayer {
+            anchors.fill: parent
+            active: root.spectrumActive
+            levels: root.spectrumLevels
+            intensity: root.spectrumIntensity
+            usePlasmaTheme: root.spectrumUsePlasmaTheme
+            barCount: root.spectrumBarCount
+            vertical: root.dockVertical
+            originEdge: root.spectrumOriginEdge
+            barStyle: root.spectrumBarStyle
+            flowDirection: root.spectrumFlowDirection
+        }
     }
 }

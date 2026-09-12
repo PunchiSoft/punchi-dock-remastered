@@ -140,7 +140,7 @@ Item {
 
         Controls.Label {
             text: page.cfg_audioSpectrumBackgroundMode === "spectrumOnly"
-                ? i18n("In floating mode, only the spectrum and dock items remain visible. A Plasma panel keeps its own background.")
+                ? i18n("In floating mode, only the spectrum and dock items remain visible. In panel mode, the spectrum replaces the panel background and keeps the same fit.")
                 : i18n("The spectrum is drawn over the Plasma-themed dock background.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true

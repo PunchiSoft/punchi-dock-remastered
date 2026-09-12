@@ -619,6 +619,10 @@ PlasmoidItem {
     onConfiguredPanelOpacityModeChanged: applyConfiguredPanelOpacityMode()
     readonly property bool customDockThemeActiveForPanel: root.inPanel && dockConfig.customDockThemeActive
     onCustomDockThemeActiveForPanelChanged: applyConfiguredPanelOpacityMode()
+    readonly property bool audioSpectrumReplacesPanelBackground: root.inPanel
+        && dockConfig.audioSpectrumConfigured
+        && dockConfig.audioSpectrumBackgroundMode === "spectrumOnly"
+    onAudioSpectrumReplacesPanelBackgroundChanged: applyConfiguredPanelOpacityMode()
 
     // Shell window and containment expose backgroundHints and opacityMode at runtime.
     // qmllint disable missing-property
@@ -628,6 +632,7 @@ PlasmoidItem {
         }
         const mode = root.configuredPanelOpacityMode
         const forceNoBackground = mode === "none" || dockConfig.customDockThemeActive
+            || root.audioSpectrumReplacesPanelBackground
         const hints = forceNoBackground ? PlasmaCore.Types.NoBackground : PlasmaCore.Types.StandardBackground
 
         try {
@@ -652,7 +657,9 @@ PlasmoidItem {
             // Guard against variations in Plasma containment APIs
         }
 
-        if (!root.Window.window || mode === "system" || mode === "none" || dockConfig.customDockThemeActive) {
+        if (!root.Window.window || mode === "system" || mode === "none"
+                || dockConfig.customDockThemeActive
+                || root.audioSpectrumReplacesPanelBackground) {
             return
         }
         try {
@@ -2396,14 +2403,25 @@ PlasmoidItem {
                 objectName: "panelFlatThemeBackground"
                 panelWindow: root.Window.window
                 requested: root.inPanel && mainContainer.visible
-                    && dockConfig.customDockThemeActive
-                    && dockThemeRepository.theme.renderer === "flat"
-                    && (!dockConfig.audioSpectrumConfigured
-                        || dockConfig.audioSpectrumBackgroundMode === "plasma")
+                    && (root.audioSpectrumReplacesPanelBackground
+                        || (dockConfig.customDockThemeActive
+                            && dockThemeRepository.theme.renderer === "flat"))
                 theme: dockThemeRepository.theme
                 dockVertical: dockGeometry.verticalPanel
                 contentReference: dockLayout
                 restingPadding: dockBackground.customThemeVisualVerticalPadding
+                backgroundVisible: dockConfig.customDockThemeActive
+                    && dockThemeRepository.theme.renderer === "flat"
+                    && !root.audioSpectrumReplacesPanelBackground
+                spectrumVisible: root.audioSpectrumReplacesPanelBackground
+                spectrumActive: audioSpectrumController.active
+                spectrumLevels: audioSpectrumController.levels
+                spectrumIntensity: dockConfig.audioSpectrumIntensity
+                spectrumUsePlasmaTheme: dockConfig.audioSpectrumUsePlasmaTheme
+                spectrumBarCount: dockConfig.audioSpectrumBarCount
+                spectrumOriginEdge: dockGeometry.spectrumOriginEdge
+                spectrumBarStyle: dockConfig.audioSpectrumStyle
+                spectrumFlowDirection: dockConfig.audioSpectrumFlow
             }
 
             DockBackground {
@@ -2469,7 +2487,7 @@ PlasmoidItem {
                     & PlasmaCore.Types.ContainmentPrefersOpaqueBackground)
                     || windowIntersectionController.touchingWindow
                 // qmllint disable unqualified
-                spectrumActive: audioSpectrumController.active
+                spectrumActive: !root.inPanel && audioSpectrumController.active
                 spectrumLevels: audioSpectrumController.levels
                 spectrumIntensity: dockConfig.audioSpectrumIntensity
                 spectrumUsePlasmaTheme: dockConfig.audioSpectrumUsePlasmaTheme
@@ -2525,7 +2543,7 @@ PlasmoidItem {
                         : dockLayout.height)
                     : Math.min(dockLayout.height, panelCrossAxisExtent)
                 clip: true
-                visible: root.inPanel
+                visible: root.inPanel && !panelFlatBackground.spectrumHosted
 
                 AudioSpectrumLayer {
                     anchors.fill: parent
