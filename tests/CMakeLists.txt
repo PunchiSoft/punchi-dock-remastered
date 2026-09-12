@@ -502,6 +502,10 @@ punchi_add_qml_test(
     control_center_shortcut_tile_test.qml
 )
 punchi_add_qml_test(
+    control_center_application_placeholder_button_test
+    control_center_application_placeholder_button_test.qml
+)
+punchi_add_qml_test(
     control_center_controller_test
     control_center_controller_test.qml
 )
@@ -605,6 +609,10 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     plasma_panel_sizing_test
     plasma_panel_sizing_test.qml
+)
+punchi_add_qml_test(
+    media_dock_item_morph_test
+    media_dock_item_morph_test.qml
 )
 add_test(
     NAME native_popup_spacing_test

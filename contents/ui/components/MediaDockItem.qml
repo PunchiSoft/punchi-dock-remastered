@@ -9,12 +9,23 @@ import org.kde.plasma.components as PlasmaComponents
 
 FocusScope {
     id: root
-    scale: root.clickScale
+    objectName: "mediaDockItem"
+    scale: root.clickScale * root.visualScale
+    transform: Translate {
+        x: root.visualOffsetX
+        y: root.visualOffsetY
+    }
 
     // Plasma provides translation functions in the applet context.
     // qmllint disable unqualified
     property var controller: null
     property int iconSize: 48
+    property int compactIconRenderSize: iconSize
+    property real compactIconBaseScale: compactIconRenderSize > 0
+        ? iconSize / compactIconRenderSize : 1.0
+    property real visualScale: 1.0
+    property real visualOffsetX: 0.0
+    property real visualOffsetY: 0.0
     property bool vertical: false
     property bool motionEnabled: true
     property bool contextMenuEnabled: true
@@ -68,13 +79,23 @@ FocusScope {
         Math.min(30, Number.isFinite(autoCollapseDelaySeconds)
             ? Math.round(autoCollapseDelaySeconds)
             : 3))
-    readonly property int morphDuration: Math.round(200 * 100
+    readonly property int expandMorphDuration: Math.round(220 * 100
         / resolvedMotionSpeedPercent)
-    property real currentMainAxisLength: !compactMode || expanded
-        ? expandedMainAxisLength
-        : compactMainAxisLength
-    property real expandedContentOpacity: !compactMode || expanded ? 1.0 : 0.0
-    property real compactContentOpacity: compactMode && !expanded ? 1.0 : 0.0
+    readonly property int collapseMorphDuration: Math.round(190 * 100
+        / resolvedMotionSpeedPercent)
+    readonly property int currentMorphDuration: expanded
+        ? expandMorphDuration : collapseMorphDuration
+    property real collapseProgress: compactMode && !expanded ? 1.0 : 0.0
+    readonly property real currentMainAxisLength: expandedMainAxisLength
+        + (compactMainAxisLength - expandedMainAxisLength) * collapseProgress
+    readonly property real expandedContentOpacity: 1.0 - Math.max(0.0,
+        Math.min(1.0, collapseProgress / 0.45))
+    readonly property real compactIconProgress: Math.max(0.0,
+        Math.min(1.0, (collapseProgress - 0.35) / 0.65))
+    readonly property real compactContentOpacity: compactMode
+        ? compactIconProgress : 0.0
+    readonly property real compactIconMorphScale: 0.88
+        + (0.12 * compactIconProgress)
     readonly property string accessibleDescription: available
         ? (controller.playing
             ? i18nc("@info:accessible", "%1. Playing.", metadataText)
@@ -103,33 +124,11 @@ FocusScope {
         }
     }
 
-    Behavior on currentMainAxisLength {
+    Behavior on collapseProgress {
         enabled: root.motionEnabled && Kirigami.Units.longDuration > 0
         NumberAnimation {
-            duration: root.expanded
-                ? Math.round(180 * 100 / root.resolvedMotionSpeedPercent)
-                : Math.round(140 * 100 / root.resolvedMotionSpeedPercent)
-            easing.type: root.expanded ? Easing.OutCubic : Easing.InCubic
-        }
-    }
-
-    Behavior on expandedContentOpacity {
-        enabled: root.motionEnabled && Kirigami.Units.longDuration > 0
-        NumberAnimation {
-            duration: root.expanded
-                ? Math.round(160 * 100 / root.resolvedMotionSpeedPercent)
-                : Math.round(100 * 100 / root.resolvedMotionSpeedPercent)
-            easing.type: root.expanded ? Easing.OutCubic : Easing.InQuad
-        }
-    }
-
-    Behavior on compactContentOpacity {
-        enabled: root.motionEnabled && Kirigami.Units.longDuration > 0
-        NumberAnimation {
-            duration: root.expanded
-                ? Math.round(100 * 100 / root.resolvedMotionSpeedPercent)
-                : Math.round(140 * 100 / root.resolvedMotionSpeedPercent)
-            easing.type: root.expanded ? Easing.InQuad : Easing.OutCubic
+            duration: root.currentMorphDuration
+            easing.type: root.expanded ? Easing.OutCubic : Easing.InOutCubic
         }
     }
 
@@ -327,13 +326,11 @@ FocusScope {
         if (!compactMode && !expanded) {
             expanded = true
         } else {
-            expansionChanged(!compactMode || expanded, Math.round(220 * 100
-                / resolvedMotionSpeedPercent))
+            expansionChanged(!compactMode || expanded, currentMorphDuration)
         }
     }
 
-    onExpandedChanged: expansionChanged(expanded, Math.round(220 * 100
-        / resolvedMotionSpeedPercent))
+    onExpandedChanged: expansionChanged(expanded, currentMorphDuration)
 
     Controls.ToolTip {
         visible: !root.metadataVisible && hoverHandler.hovered
@@ -389,9 +386,10 @@ FocusScope {
 
     Kirigami.Icon {
         id: compactPlayerIcon
+        objectName: "compactMediaPlayerIcon"
         anchors.centerIn: parent
-        width: root.iconSize
-        height: root.iconSize
+        width: root.compactIconRenderSize
+        height: root.compactIconRenderSize
         source: root.defaultPlayerIcon.length > 0
             ? root.defaultPlayerIcon
             : "emblem-music-symbolic"
@@ -399,6 +397,7 @@ FocusScope {
         isMask: String(source).indexOf("-symbolic") >= 0
         opacity: root.compactContentOpacity
         visible: opacity > 0.01
+        scale: root.compactIconBaseScale * root.compactIconMorphScale
         Accessible.ignored: true
 
         HoverHandler {

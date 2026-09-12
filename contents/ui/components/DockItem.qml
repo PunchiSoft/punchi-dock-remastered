@@ -223,9 +223,15 @@ Item {
         return iconSize + 12
     }
     property real clickAnimationScale: 1.0
+    function mediaAdjustedWaveScale(candidateScale) {
+        if (!mediaItem) {
+            return candidateScale
+        }
+        return 1.0 + (candidateScale - 1.0) * mediaDockItem.collapseProgress
+    }
     property real waveScale: {
-        if (itemType === "calendar" || itemType === "media"
-                || structuralWaveItem) {
+        if (itemType === "calendar" || structuralWaveItem
+                || (mediaItem && !mediaDockItem.compactMode)) {
             return 1.0
         }
 
@@ -234,7 +240,7 @@ Item {
         }
 
         if (hoverAnimationMode === "selectionPulse") {
-            return selectionPulseScale
+            return mediaAdjustedWaveScale(selectionPulseScale)
         }
 
         var activeIndex = hoveredIndex >= 0 ? hoveredIndex : lastHoveredIndex
@@ -249,15 +255,17 @@ Item {
         if (Kirigami.Units.longDuration === 0) {
             // Under Reduce Motion, restrict wave zoom to subtle instant scale on active item only
             if (itemIndex === activeIndex) {
-                return 1.0 + Math.min(0.08, (hoverScaleSetting - 1.0) * 0.25)
+                return mediaAdjustedWaveScale(1.0
+                    + Math.min(0.08, (hoverScaleSetting - 1.0) * 0.25))
             }
             return 1.0
         }
 
         if (hoverAnimationMode === "single" || hoverAnimationMode === "axisZoom") {
-            return itemIndex === activeIndex
+            const singleScale = itemIndex === activeIndex
                 ? 1.0 + (hoverScaleSetting - 1.0) * hoverZoomProgress
                 : 1.0
+            return mediaAdjustedWaveScale(singleScale)
         }
 
         if (!Number.isFinite(pointerPosition) || pointerPosition < 0) {
@@ -291,7 +299,7 @@ Item {
             scale += wavePrimaryScaleDelta
                 * primaryInfluence * hoverZoomProgress
         }
-        return scale
+        return mediaAdjustedWaveScale(scale)
     }
 
     readonly property real waveMainAxisShift: {
@@ -1225,6 +1233,11 @@ Item {
             visible: dockItemContainer.mediaItem
             controller: dockItemContainer.mediaController
             iconSize: dockItemContainer.iconSize
+            compactIconRenderSize: dockItemContainer.highQualityIconSize
+            compactIconBaseScale: dockItemContainer.highQualityIconScale
+            visualScale: dockItemContainer.waveScale
+            visualOffsetX: dockItemContainer.hoverOffsetX
+            visualOffsetY: dockItemContainer.hoverOffsetY
             vertical: dockItemContainer.verticalPanelMode
             motionEnabled: dockItemContainer.mediaMotionEnabled
             motionSpeedPercent: dockItemContainer.resolvedDockMotionSpeedPercent

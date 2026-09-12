@@ -69,6 +69,10 @@ QUICK_ACTION = (
     ROOT
     / "contents/ui/components/controlcenter/ControlCenterQuickActionButton.qml"
 ).read_text(encoding="utf-8")
+APPLICATION_PLACEHOLDER = (
+    ROOT
+    / "contents/ui/components/controlcenter/ControlCenterApplicationPlaceholderButton.qml"
+).read_text(encoding="utf-8")
 NIGHT_LIGHT_STRENGTH = (
     ROOT
     / "contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml"
@@ -302,7 +306,6 @@ for label in (
     "Do Not Disturb",
     "Updates",
     "Calculator",
-    "Screenshot",
     "Light and dark mode",
     "Night Light",
 ):
@@ -316,11 +319,15 @@ require(
     and 'objectName: "controlCenterUpdatesTile"' in HOME_PAGE
     and 'root.applicationRequested("updates")' in HOME_PAGE
     and 'root.applicationRequested("calculator")' in HOME_PAGE
-    and 'objectName: "controlCenterScreenshotPlaceholderButton"' in HOME_PAGE
+    and "readonly property int applicationPlaceholderCount: 3" in HOME_PAGE
+    and HOME_PAGE.count('objectName: "controlCenterApplicationPlaceholderButton') == 3
+    and HOME_PAGE.count("ControlCenterApplicationPlaceholderButton {") == 3
+    and 'iconName: "list-add-symbolic"' in APPLICATION_PLACEHOLDER
+    and "enabled: false" in APPLICATION_PLACEHOLDER
+    and "Accessible.ignored: true" in APPLICATION_PLACEHOLDER
     and 'objectName: "controlCenterThemeButton"' in HOME_PAGE
     and 'objectName: "controlCenterNightLightButton"' in HOME_PAGE
     and 'objectName: "controlCenterDoNotDisturbTile"' in HOME_PAGE
-    and "enabled: false" in HOME_PAGE
     and "Accessible.name: text" in QUICK_ACTION
     and "Accessible.description: description" in QUICK_ACTION
     and "Accessible.checkable: root.checkable" in QUICK_ACTION
@@ -337,7 +344,7 @@ require(
     and 'icon.name: "configure"' in NIGHT_LIGHT_STRENGTH
     and "leftPadding: Kirigami.Units.largeSpacing" in SHORTCUT_TILE
     and "rightPadding: Kirigami.Units.largeSpacing" in SHORTCUT_TILE,
-    "The compact actions must be accessible, theme-aware, and keep Screenshot inert.",
+    "The compact actions must be accessible, theme-aware, and keep app placeholders inert.",
 )
 
 require(

@@ -148,8 +148,6 @@ TestCase {
         const updatesTile = findChild(page, "controlCenterUpdatesTile")
         const calculatorButton = findChild(page,
             "controlCenterCalculatorButton")
-        const screenshotButton = findChild(page,
-            "controlCenterScreenshotPlaceholderButton")
         const themeButton = findChild(page, "controlCenterThemeButton")
         const nightLightButton = findChild(page,
             "controlCenterNightLightButton")
@@ -162,16 +160,47 @@ TestCase {
         verify(section !== null)
         verify(updatesTile !== null)
         verify(calculatorButton !== null)
-        verify(screenshotButton !== null)
         verify(themeButton !== null)
         verify(nightLightButton !== null)
         verify(brightnessCard !== null)
         verify(strengthControl !== null)
         verify(strengthSlider !== null)
-        compare(screenshotButton.enabled, false)
+        compare(page.applicationPlaceholderCount, 3)
+        const placeholderButtons = []
+        for (let index = 1; index <= page.applicationPlaceholderCount;
+                ++index) {
+            const placeholderButton = findChild(page,
+                "controlCenterApplicationPlaceholderButton" + index)
+            verify(placeholderButton !== null)
+            placeholderButtons.push(placeholderButton)
+            compare(placeholderButton.enabled, false)
+            compare(placeholderButton.activeFocusOnTab, false)
+            compare(placeholderButton.Accessible.ignored, true)
+            compare(placeholderButton.iconName, "list-add-symbolic")
+            compare(placeholderButton.implicitHeight,
+                Kirigami.Units.gridUnit * 3)
+            compare(placeholderButton.implicitWidth,
+                placeholderButton.implicitHeight)
+        }
+        verify(waitForRendering(page))
+        for (let index = 1; index < placeholderButtons.length; ++index) {
+            verify(placeholderButtons[index].x
+                > placeholderButtons[index - 1].x)
+            compare(placeholderButtons[index].y,
+                placeholderButtons[0].y)
+        }
+        let finalPlaceholder = placeholderButtons[
+            placeholderButtons.length - 1]
+        verify(finalPlaceholder.mapToItem(page,
+            finalPlaceholder.width, 0).x <= page.width + 1)
+
+        hostWindow.width = 900
+        tryVerify(function() { return page.wideLayout })
+        verify(waitForRendering(page))
+        finalPlaceholder = placeholderButtons[placeholderButtons.length - 1]
+        verify(finalPlaceholder.mapToItem(page,
+            finalPlaceholder.width, 0).x <= page.width + 1)
         compare(calculatorButton.implicitHeight,
-            Kirigami.Units.gridUnit * 3)
-        compare(screenshotButton.implicitHeight,
             Kirigami.Units.gridUnit * 3)
         verify(calculatorButton.implicitHeight < brightnessCard.implicitHeight)
         compare(calculatorButton.implicitWidth,
@@ -193,7 +222,6 @@ TestCase {
         doNotDisturbSpy.target = page
         themeSpy.target = page
         nightLightSpy.target = page
-        verify(waitForRendering(page))
         mouseClick(dndTile, dndTile.width / 2, dndTile.height / 2)
         compare(doNotDisturbSpy.count, 1)
         mouseClick(themeButton, themeButton.width / 2,

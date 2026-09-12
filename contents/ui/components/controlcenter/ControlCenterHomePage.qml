@@ -25,6 +25,7 @@ FocusScope {
     property bool doNotDisturbAvailable: false
     property bool doNotDisturbActive: false
     property bool motionEnabled: true
+    readonly property int applicationPlaceholderCount: 3
     readonly property bool wideLayout:
         width >= Kirigami.Units.gridUnit * 48
 
@@ -311,13 +312,16 @@ FocusScope {
                         onClicked: root.applicationRequested("calculator")
                     }
 
-                    ControlCenterQuickActionButton {
-                        id: screenshotPlaceholderButton
+                    ControlCenterApplicationPlaceholderButton {
+                        objectName: "controlCenterApplicationPlaceholderButton1"
+                    }
 
-                        objectName: "controlCenterScreenshotPlaceholderButton"
-                        enabled: false
-                        text: i18nc("@action:button", "Screenshot") // qmllint disable unqualified
-                        iconName: "spectacle"
+                    ControlCenterApplicationPlaceholderButton {
+                        objectName: "controlCenterApplicationPlaceholderButton2"
+                    }
+
+                    ControlCenterApplicationPlaceholderButton {
+                        objectName: "controlCenterApplicationPlaceholderButton3"
                     }
                 }
 
