@@ -119,6 +119,18 @@ target_link_libraries(panellengthmodebridge_test PRIVATE Qt6::Core Qt6::Qml)
 
 add_test(NAME panellengthmodebridge_test COMMAND panellengthmodebridge_test)
 
+add_executable(panelinputregionsynchronizer_test
+    panelinputregionsynchronizer_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/panelinputregionsynchronizer.cpp
+)
+target_include_directories(panelinputregionsynchronizer_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(panelinputregionsynchronizer_test PRIVATE Qt6::Quick Qt6::Test)
+add_test(NAME panelinputregionsynchronizer_test COMMAND panelinputregionsynchronizer_test)
+set_tests_properties(panelinputregionsynchronizer_test PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 15)
+
 add_executable(panelthemesurface_test
     panelthemesurface_test.cpp
     ${CMAKE_SOURCE_DIR}/src/panelthemesurface.cpp

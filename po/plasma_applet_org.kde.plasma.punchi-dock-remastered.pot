@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.60\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-12 08:25-0300\n"
+"POT-Creation-Date: 2026-09-14 09:55-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -172,7 +172,7 @@ msgstr ""
 msgid "%1 items loaded."
 msgstr ""
 
-#: contents/ui/main.qml:3498
+#: contents/ui/main.qml:3503
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] ""
@@ -496,7 +496,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr ""
 
-#: contents/ui/main.qml:2065
+#: contents/ui/main.qml:2070
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr ""
@@ -3774,7 +3774,7 @@ msgid ""
 "available."
 msgstr ""
 
-#: contents/ui/main.qml:2051
+#: contents/ui/main.qml:2056
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr ""
@@ -3958,7 +3958,7 @@ msgstr ""
 msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 
-#: contents/ui/main.qml:2062
+#: contents/ui/main.qml:2067
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr ""
@@ -5459,17 +5459,17 @@ msgid ""
 "appearance here."
 msgstr ""
 
-#: contents/ui/main.qml:2059
+#: contents/ui/main.qml:2064
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr ""
 
-#: contents/ui/main.qml:2068
+#: contents/ui/main.qml:2073
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
 
-#: contents/ui/main.qml:2073
+#: contents/ui/main.qml:2078
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr ""
@@ -5633,7 +5633,7 @@ msgstr ""
 msgid "This action cannot be undone."
 msgstr ""
 
-#: contents/ui/main.qml:2071
+#: contents/ui/main.qml:2076
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -6236,7 +6236,7 @@ msgstr ""
 msgid "Write a quick note"
 msgstr ""
 
-#: contents/ui/main.qml:2055
+#: contents/ui/main.qml:2060
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr ""

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-12 08:25-0300\n"
+"POT-Creation-Date: 2026-09-14 09:55-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -177,7 +177,7 @@ msgstr ""
 msgid "%1 items loaded."
 msgstr "%1 itens carregados."
 
-#: contents/ui/main.qml:3498
+#: contents/ui/main.qml:3503
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de janelas adicional"
@@ -507,7 +507,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Foi criado um atalho na área de trabalho para %1."
 
-#: contents/ui/main.qml:2065
+#: contents/ui/main.qml:2070
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr "O local de um arquivo é longo demais para ser aberto com segurança."
@@ -3958,7 +3958,7 @@ msgstr ""
 "Nenhum aplicativo multimídia instalado foi encontrado. A seleção automática "
 "continua disponível."
 
-#: contents/ui/main.qml:2051
+#: contents/ui/main.qml:2056
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "Nenhum arquivo local foi encontrado neste arrastar e soltar."
@@ -4144,7 +4144,7 @@ msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 "Aplica-se somente quando este item do dock inicia um aplicativo fechado."
 
-#: contents/ui/main.qml:2062
+#: contents/ui/main.qml:2067
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Somente arquivos locais podem ser abertos com um aplicativo."
@@ -5713,18 +5713,18 @@ msgstr ""
 "O tema do dock controla este separador. Escolha “Este separador” para editar "
 "a aparência dele aqui."
 
-#: contents/ui/main.qml:2059
+#: contents/ui/main.qml:2064
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "O arrastar e soltar contém um local de arquivo inválido."
 
-#: contents/ui/main.qml:2068
+#: contents/ui/main.qml:2073
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
 "A lista de arquivos soltos é grande demais para ser aberta com segurança."
 
-#: contents/ui/main.qml:2073
+#: contents/ui/main.qml:2078
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Os arquivos soltos não puderam ser abertos."
@@ -5905,7 +5905,7 @@ msgstr "Fino"
 msgid "This action cannot be undone."
 msgstr "Esta ação não pode ser desfeita."
 
-#: contents/ui/main.qml:2071
+#: contents/ui/main.qml:2076
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -6653,7 +6653,7 @@ msgstr "Escreva uma nota editável rápida"
 msgid "Write a quick note"
 msgstr "Escreva uma nota rápida"
 
-#: contents/ui/main.qml:2055
+#: contents/ui/main.qml:2060
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Você pode abrir até %1 arquivos locais de uma vez."

@@ -68,6 +68,8 @@ target_sources(punchidockintegration PRIVATE
     mprisplayerselection.h
     panellengthmodebridge.cpp
     panellengthmodebridge.h
+    panelinputregionsynchronizer.cpp
+    panelinputregionsynchronizer.h
     panelthemesurface.cpp
     panelthemesurface.h
     pipewireaudiobackend.cpp

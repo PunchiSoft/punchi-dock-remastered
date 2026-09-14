@@ -837,6 +837,46 @@ Module {
         }
     }
     Component {
+        file: "panelinputregionsynchronizer.h"
+        lineNumber: 10
+        name: "PanelInputRegionSynchronizer"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/PanelInputRegionSynchronizer 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "panelWindow"
+            type: "QQuickWindow"
+            isPointer: true
+            read: "panelWindow"
+            write: "setPanelWindow"
+            notify: "panelWindowChanged"
+            index: 0
+            lineNumber: 15
+        }
+        Property {
+            name: "enabled"
+            type: "bool"
+            read: "isEnabled"
+            write: "setEnabled"
+            notify: "enabledChanged"
+            index: 1
+            lineNumber: 16
+        }
+        Property {
+            name: "verticalPanel"
+            type: "bool"
+            read: "isVerticalPanel"
+            write: "setVerticalPanel"
+            notify: "verticalPanelChanged"
+            index: 2
+            lineNumber: 17
+        }
+        Signal { name: "panelWindowChanged"; lineNumber: 32 }
+        Signal { name: "enabledChanged"; lineNumber: 33 }
+        Signal { name: "verticalPanelChanged"; lineNumber: 34 }
+    }
+    Component {
         file: "panellengthmodebridge.h"
         lineNumber: 8
         name: "PanelLengthModeBridge"

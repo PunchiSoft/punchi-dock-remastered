@@ -615,6 +615,11 @@ PlasmoidItem {
         reportedPanelThickness: dockGeometry.detectedPanelThickness
         reportedPanelOpacityMode: dockGeometry.detectedPanelOpacityMode
     }
+    Punchi.PanelInputRegionSynchronizer {
+        panelWindow: root.inPanel ? root.Window.window : null
+        enabled: root.inPanel
+        verticalPanel: dockGeometry.verticalPanel
+    }
     readonly property string configuredPanelOpacityMode: String(Plasmoid.configuration.panelOpacityMode || "system")
     onConfiguredPanelOpacityModeChanged: applyConfiguredPanelOpacityMode()
     readonly property bool customDockThemeActiveForPanel: root.inPanel && dockConfig.customDockThemeActive
