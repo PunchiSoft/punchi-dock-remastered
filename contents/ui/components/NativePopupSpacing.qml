@@ -8,6 +8,15 @@ Item {
     property GuardedPopupDialog popup: null
     property int gap: 0
     property int location: PlasmaCore.Types.BottomEdge
+    property bool preserveHorizontalAnchorCenter: false
+
+    readonly property PopupAnchorMetrics anchorMetrics: PopupAnchorMetrics {}
+    readonly property bool centerHorizontally: root.preserveHorizontalAnchorCenter
+        && (root.location === PlasmaCore.Types.TopEdge
+            || root.location === PlasmaCore.Types.BottomEdge)
+    readonly property real popupWidth: root.popup
+        ? Math.max(root.popup.width,
+            root.popup.sizingItem ? root.popup.sizingItem.width : 0) : 0
 
     // Map into the window content item so the extra distance stays in logical
     // units even when the launcher or one of its ancestors is scaled.
@@ -33,13 +42,16 @@ Item {
     }
     readonly property int safeGap: Math.max(0, root.gap)
 
-    x: root.sourceGeometry.x + (root.location === PlasmaCore.Types.LeftEdge
+    x: root.sourceGeometry.x - (root.width - root.sourceGeometry.width) / 2
+        + (root.location === PlasmaCore.Types.LeftEdge
         ? root.safeGap : root.location === PlasmaCore.Types.RightEdge
             ? -root.safeGap : 0)
     y: root.sourceGeometry.y + (root.location === PlasmaCore.Types.TopEdge
         ? root.safeGap : root.location === PlasmaCore.Types.BottomEdge
             ? -root.safeGap : 0)
-    width: root.sourceGeometry.width
+    width: root.centerHorizontally
+        ? root.anchorMetrics.centeredExtent(root.sourceGeometry.width, root.popupWidth)
+        : root.sourceGeometry.width
     height: root.sourceGeometry.height
 
     function refreshAnchor() {
@@ -56,7 +68,8 @@ Item {
         // Dialog::setVisualParent recalculates placement; moving the same
         // visualParent does not. Reassign without hiding or resizing the popup.
         root.popup.visualParent = null
-        root.popup.visualParent = root.safeGap > 0 ? root : root.sourceAnchor
+        root.popup.visualParent = root.safeGap > 0 || root.centerHorizontally
+            ? root : root.sourceAnchor
     }
 
     function scheduleRefresh() {
@@ -72,6 +85,7 @@ Item {
     onHeightChanged: root.scheduleRefresh()
     onSafeGapChanged: root.scheduleRefresh()
     onLocationChanged: root.scheduleRefresh()
+    onCenterHorizontallyChanged: root.scheduleRefresh()
 
     Connections {
         target: root.popup

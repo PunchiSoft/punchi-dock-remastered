@@ -191,6 +191,8 @@ def main() -> int:
             "Folder popup must retain native positioning with a spacing anchor")
     require(folder_popup, "sourceAnchor: folderPopupDialog.sourceAnchor",
             "Folder popup must preserve the original launcher identity")
+    require(folder_popup, "preserveHorizontalAnchorCenter: true",
+            "All folder profiles must remain anchored horizontally near the screen center")
     assert_widget_surface(
         trash_menu,
         "Trash menu",

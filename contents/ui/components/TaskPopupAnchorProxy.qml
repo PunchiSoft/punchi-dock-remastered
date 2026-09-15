@@ -8,6 +8,8 @@ Item {
     property real popupHeight: 0
     property bool popupOnHorizontalEdge: true
 
+    readonly property PopupAnchorMetrics anchorMetrics: PopupAnchorMetrics {}
+
     readonly property bool geometryReady: width > 0 && height > 0
 
     enabled: false
@@ -24,19 +26,12 @@ Item {
             return false
         }
 
-        // PlasmaQuick::Dialog centers AppletPopup windows on the screen when
-        // the popup is wider (or taller) than its visual parent by a specific
-        // threshold. A 1.5x cross-axis extent keeps Plasma's native edge and
-        // screen handling while preserving this proxy's center on the icon.
-        const requiredCrossAxisExtent = popupOnHorizontalEdge
-            ? Math.ceil(Math.max(0, popupWidth) * 1.5) + 2
-            : Math.ceil(Math.max(0, popupHeight) * 1.5) + 2
         const effectiveWidth = popupOnHorizontalEdge
-            ? Math.max(sourceGeometry.width, requiredCrossAxisExtent)
+            ? root.anchorMetrics.centeredExtent(sourceGeometry.width, popupWidth)
             : sourceGeometry.width
         const effectiveHeight = popupOnHorizontalEdge
             ? sourceGeometry.height
-            : Math.max(sourceGeometry.height, requiredCrossAxisExtent)
+            : root.anchorMetrics.centeredExtent(sourceGeometry.height, popupHeight)
 
         root.x = sourceGeometry.x
             - (effectiveWidth - sourceGeometry.width) / 2

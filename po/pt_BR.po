@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-14 09:55-0300\n"
+"POT-Creation-Date: 2026-09-14 10:21-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -26,7 +26,7 @@ msgstr "     Configuração de concorrência e memória de compilação "
 msgid "  Punchi Dock Remastered - Package Installer             "
 msgstr "  Punchi Dock Remastered - Instalador de pacotes         "
 
-#: scripts-user/setup.sh:67
+#: scripts-user/setup.sh:71
 msgid "  [1] Build and install locally (Recommended)"
 msgstr "  [1] Compilar e instalar localmente (Recomendado)"
 
@@ -43,7 +43,7 @@ msgstr ""
 msgid "  [2] Balanced Mode (2 cores) - Fast and stable for general usage"
 msgstr "  [2] Modo Equilibrado (2 núcleos) - Rápido e estável para uso geral"
 
-#: scripts-user/setup.sh:68
+#: scripts-user/setup.sh:72
 msgid "  [2] Build .plasmoid package only (no install)"
 msgstr "  [2] Criar apenas o pacote .plasmoid (sem instalar)"
 
@@ -57,7 +57,7 @@ msgid "  [3] Fast Mode (%s cores) - Use all available CPU cores\\n"
 msgstr ""
 "  [3] Modo Rápido (%s núcleos) - Usar todos os núcleos de CPU disponíveis\\n"
 
-#: scripts-user/setup.sh:69
+#: scripts-user/setup.sh:73
 msgid "  [3] Install an existing .plasmoid package"
 msgstr "  [3] Instalar um pacote .plasmoid existente"
 
@@ -73,7 +73,7 @@ msgstr "  [4] Instalação limpa (remover + recompilar + instalar)"
 msgid "  [4] Custom (enter specific number of parallel jobs)"
 msgstr "  [4] Personalizado (inserir número específico de tarefas paralelas)"
 
-#: scripts-user/setup.sh:70
+#: scripts-user/setup.sh:74
 msgid "  [4] Uninstall the plasmoid from this system"
 msgstr "  [4] Desinstalar o plasmoide deste sistema"
 
@@ -85,17 +85,17 @@ msgstr "  [5] Voltar ao menu principal"
 msgid "  [5] Check and install build dependencies only"
 msgstr "  [5] Verificar e instalar somente dependências de compilação"
 
-#: scripts-user/setup.sh:71
+#: scripts-user/setup.sh:75
 msgid "  [5] Restart Plasma Shell only"
 msgstr "  [5] Reiniciar somente o Plasma Shell"
 
-#: scripts-dev/setup.sh:156 scripts-user/setup.sh:72
+#: scripts-dev/setup.sh:156 scripts-user/setup.sh:76
 msgid "  [6] Configure build concurrency (Safe / Balanced / Custom)"
 msgstr ""
 "  [6] Configurar concorrência de compilação (Seguro / Equilibrado / "
 "Personalizado)"
 
-#: scripts-user/setup.sh:73
+#: scripts-user/setup.sh:77
 msgid "  [7] Check system build dependencies"
 msgstr "  [7] Verificar dependências de compilação do sistema"
 
@@ -107,11 +107,11 @@ msgstr "  [7] Desinstalar o plasmoide deste sistema"
 msgid "  [8] Help (show CLI commands reference)"
 msgstr "  [8] Ajuda (mostrar referência de comandos da CLI)"
 
-#: scripts-user/setup.sh:74
+#: scripts-user/setup.sh:78
 msgid "  [8] Help (show CLI options)"
 msgstr "  [8] Ajuda (mostrar opções da CLI)"
 
-#: scripts-dev/setup.sh:159 scripts-user/setup.sh:75
+#: scripts-dev/setup.sh:159 scripts-user/setup.sh:79
 msgid "  [9] Exit"
 msgstr "  [9] Sair"
 
@@ -422,7 +422,7 @@ msgstr "48 barras"
 msgid "8 bars"
 msgstr "8 barras"
 
-#: scripts-user/setup.sh:81
+#: scripts-user/setup.sh:85
 msgid "==> Building the native QML module without developer tests..."
 msgstr "==> Compilando o módulo QML nativo sem testes de desenvolvimento..."
 
@@ -452,7 +452,7 @@ msgstr "==> Concorrência definida para: Modo Seguro (1 núcleo)"
 msgid "==> Plasma Shell restart requested."
 msgstr "==> Reinicialização do Plasma Shell solicitada."
 
-#: scripts-dev/setup.sh:166 scripts-user/setup.sh:83
+#: scripts-dev/setup.sh:166 scripts-user/setup.sh:87
 msgid "==> Plasmoid uninstalled successfully."
 msgstr "==> Plasmoide desinstalado com sucesso."
 
@@ -477,7 +477,7 @@ msgstr "==> Iniciando compilação e teste local..."
 msgid "==> Starting clean install (remove + rebuild + install)..."
 msgstr "==> Iniciando instalação limpa (remover + recompilar + instalar)..."
 
-#: scripts-user/setup.sh:82
+#: scripts-user/setup.sh:86
 msgid "==> Uninstalling Punchi Dock Remastered..."
 msgstr "==> Desinstalando o Punchi Dock Remastered..."
 
@@ -946,7 +946,7 @@ msgstr "Artefato do Arch pronto: %s\\n"
 msgid "Arch setup completed"
 msgstr "Configuração do Arch concluída"
 
-#: scripts-dev/lib/setup-progress.sh:55
+#: scripts-dev/lib/setup-progress.sh:60
 msgid "Assembling package..."
 msgstr "Preparando conteúdo do pacote..."
 
@@ -1212,11 +1212,11 @@ msgstr "Saltar"
 msgid "Bring window to front"
 msgstr "Traga a janela para frente"
 
-#: scripts-user/setup.sh:442 scripts-user/setup.sh:447
+#: scripts-user/setup.sh:465 scripts-user/setup.sh:470
 msgid "Build package"
 msgstr "Compilar pacote"
 
-#: scripts-dev/lib/setup-progress.sh:53
+#: scripts-dev/lib/setup-progress.sh:58
 msgid "Building native integration..."
 msgstr "Compilando integração nativa..."
 
@@ -1392,7 +1392,7 @@ msgstr ""
 "Altera o indicador de volume para todos os controles do Plasma e teclas "
 "multimídia"
 
-#: scripts-dev/lib/setup-progress.sh:49
+#: scripts-dev/lib/setup-progress.sh:54
 msgid "Checking dependencies..."
 msgstr "Verificando dependências..."
 
@@ -1684,7 +1684,7 @@ msgstr "Fecha automaticamente"
 msgid "Collapse controls after:"
 msgstr "Collapse controls after:"
 
-#: scripts-dev/lib/setup-progress.sh:59
+#: scripts-dev/lib/setup-progress.sh:64
 msgid "Collecting diagnostics..."
 msgstr "Coletando diagnósticos..."
 
@@ -1723,7 +1723,7 @@ msgctxt "@title:window"
 msgid "Compact Menu Settings"
 msgstr "Configurações do menu compacto"
 
-#: scripts-user/setup.sh:425 scripts-user/setup.sh:448
+#: scripts-user/setup.sh:448 scripts-user/setup.sh:471
 msgid "Completed"
 msgstr "Concluído"
 
@@ -1810,7 +1810,7 @@ msgstr "Configurar espaçador"
 msgid "Configure trash"
 msgstr "Configurar lixo"
 
-#: scripts-dev/lib/setup-progress.sh:52
+#: scripts-dev/lib/setup-progress.sh:57
 msgid "Configuring CMake..."
 msgstr "Configurando CMake..."
 
@@ -1991,7 +1991,7 @@ msgctxt "@title"
 msgid "Create application folder"
 msgstr "Criar pasta de aplicativos"
 
-#: scripts-dev/lib/setup-progress.sh:56
+#: scripts-dev/lib/setup-progress.sh:61
 msgid "Creating and verifying the plasmoid..."
 msgstr "Criando e verificando o plasmoide..."
 
@@ -2124,8 +2124,8 @@ msgstr "Excluir nota"
 msgid "Delete this note from the dock? Its contents cannot be recovered."
 msgstr "Excluir esta nota do dock? Seu conteúdo não pode ser recuperado."
 
-#: scripts-user/setup.sh:429 scripts-user/setup.sh:433
-#: scripts-user/setup.sh:437
+#: scripts-user/setup.sh:452 scripts-user/setup.sh:456
+#: scripts-user/setup.sh:460
 msgid "Dependency check"
 msgstr "Verificação de dependências"
 
@@ -2502,11 +2502,11 @@ msgid "Enter the Wi-Fi password. It is used only for this connection attempt."
 msgstr ""
 "Digite a senha do Wi-Fi. Ela será usada somente nesta tentativa de conexão."
 
-#: scripts-user/setup.sh:79
+#: scripts-user/setup.sh:83
 msgid "Enter the path to a .plasmoid package: "
 msgstr "Informe o caminho para um pacote .plasmoid: "
 
-#: scripts-user/setup.sh:424
+#: scripts-user/setup.sh:447
 msgid "Environment"
 msgstr "Ambiente"
 
@@ -2514,7 +2514,7 @@ msgstr "Ambiente"
 msgid "Error: "
 msgstr "Erro: "
 
-#: scripts-user/setup.sh:93
+#: scripts-user/setup.sh:97
 #, sh-printf-format
 msgid "Error: %s\\n"
 msgstr "Erro: %s\\n"
@@ -2528,7 +2528,7 @@ msgstr "Erro: Não é possível compilar nativamente neste sistema (%s).\\n"
 msgid "Error: Could not identify the distribution from /etc/os-release."
 msgstr "Erro: Não foi possível identificar a distribuição em /etc/os-release."
 
-#: scripts-user/setup.sh:86
+#: scripts-user/setup.sh:90
 #, sh-printf-format
 msgid "Error: Invalid menu option: '%s'\\n"
 msgstr "Erro: Opção de menu inválida: '%s'\\n"
@@ -3158,7 +3158,7 @@ msgstr ""
 "painel nativo como «Sem plano de fundo» para que a forma, as bordas e as "
 "sombras do tema fiquem totalmente visíveis."
 
-#: scripts-user/setup.sh:430 scripts-user/setup.sh:443
+#: scripts-user/setup.sh:453 scripts-user/setup.sh:466
 msgid "In progress"
 msgstr "Em andamento"
 
@@ -3230,7 +3230,7 @@ msgstr "Pacote instalado: %s\\n"
 msgid "Installed theme:"
 msgstr "Tema instalado:"
 
-#: scripts-dev/lib/setup-progress.sh:57
+#: scripts-dev/lib/setup-progress.sh:62
 msgid "Installing local package..."
 msgstr "Instalando pacote local..."
 
@@ -3445,7 +3445,7 @@ msgctxt "@info:status"
 msgid "Loading applications…"
 msgstr "Carregando aplicativos…"
 
-#: scripts-user/setup.sh:85
+#: scripts-user/setup.sh:89
 #, sh-printf-format
 msgid "Local package created without installation: %s\\n"
 msgstr "Pacote local criado sem instalação: %s\\n"
@@ -3495,7 +3495,7 @@ msgstr "Nuvem luminosa"
 msgid "MPRIS controls"
 msgstr "Controles MPRIS"
 
-#: scripts-dev/setup.sh:149 scripts-user/setup.sh:65
+#: scripts-dev/setup.sh:149 scripts-user/setup.sh:69
 msgid "Maintenance"
 msgstr "Manutenção"
 
@@ -3839,7 +3839,7 @@ msgstr "Silenciar volume de mídia"
 msgid "Name:"
 msgstr "Nome:"
 
-#: scripts-user/setup.sh:438
+#: scripts-user/setup.sh:461
 msgid "Needs attention"
 msgstr "Requer atenção"
 
@@ -4062,7 +4062,7 @@ msgstr "Conteúdo da nota"
 msgid "Notice: No local installation found for the plasmoid."
 msgstr "Aviso: Nenhuma instalação local do plasmoide foi encontrada."
 
-#: scripts-user/setup.sh:84
+#: scripts-user/setup.sh:88
 msgid "Notice: No local installation was found."
 msgstr "Aviso: nenhuma instalação local foi encontrada."
 
@@ -4368,16 +4368,16 @@ msgid ""
 msgstr ""
 "Abre ou fecha o PunchiMenu independentemente do atalho de ativação do widget."
 
-#: scripts-dev/lib/setup-progress.sh:62 scripts-dev/setup.sh:172
-#: scripts-user/setup.sh:87
+#: scripts-dev/lib/setup-progress.sh:67 scripts-dev/setup.sh:172
+#: scripts-user/setup.sh:91
 msgid "Operation cancelled."
 msgstr "Operação cancelada."
 
-#: scripts-dev/lib/setup-progress.sh:60
+#: scripts-dev/lib/setup-progress.sh:65
 msgid "Operation completed successfully"
 msgstr "Operação concluída com sucesso"
 
-#: scripts-dev/lib/setup-progress.sh:61
+#: scripts-dev/lib/setup-progress.sh:66
 msgid "Operation failed"
 msgstr "A operação falhou"
 
@@ -4551,7 +4551,7 @@ msgstr "Espectro de pixels"
 msgid "Plasma Shell PID before restart: %s\\n"
 msgstr "PID do Plasma Shell antes da reinicialização: %s\\n"
 
-#: scripts-user/setup.sh:80
+#: scripts-user/setup.sh:84
 msgid ""
 "Plasma Shell restart skipped. Log out and back in or restart Plasma later."
 msgstr ""
@@ -4623,7 +4623,7 @@ msgstr "Pop-ups"
 msgid "Position is not used with the current indicator shape."
 msgstr "A posição não é usada com o formato atual do indicador."
 
-#: scripts-dev/lib/setup-progress.sh:48
+#: scripts-dev/lib/setup-progress.sh:53
 msgid "Preparing environment..."
 msgstr "Preparando ambiente..."
 
@@ -4685,7 +4685,7 @@ msgctxt "@action:button"
 msgid "Previous track"
 msgstr "Faixa anterior"
 
-#: scripts-dev/setup.sh:148 scripts-user/setup.sh:64
+#: scripts-dev/setup.sh:148 scripts-user/setup.sh:68
 msgid "Primary actions"
 msgstr "Ações principais"
 
@@ -4716,7 +4716,7 @@ msgstr "Pulso"
 msgid "Punchi Dock Remastered"
 msgstr "Punchi Dock Remastered"
 
-#: scripts-dev/setup.sh:68 scripts-user/setup.sh:143
+#: scripts-dev/setup.sh:68 scripts-user/setup.sh:147
 msgid "Punchi Dock Remastered · Setup"
 msgstr "Punchi Dock Remastered · Instalação"
 
@@ -4800,7 +4800,7 @@ msgctxt "@info"
 msgid "Quick access to system status and settings"
 msgstr "Acesso rápido ao status e às configurações do sistema"
 
-#: scripts-dev/setup.sh:64 scripts-user/setup.sh:139
+#: scripts-dev/setup.sh:64 scripts-user/setup.sh:143
 #, sh-printf-format
 msgid "RAM %s | CPU cores %s | Build jobs %s"
 msgstr "RAM %s | Núcleos da CPU %s | Tarefas de compilação %s"
@@ -4966,11 +4966,11 @@ msgctxt "@action:button"
 msgid "Restart"
 msgstr "Reiniciar"
 
-#: scripts-user/setup.sh:77
+#: scripts-user/setup.sh:81
 msgid "Restart Plasma Shell now to apply the changes? [Y/n]: "
 msgstr "Reiniciar o Plasma Shell agora para aplicar as alterações? [S/n]: "
 
-#: scripts-user/setup.sh:78
+#: scripts-user/setup.sh:82
 msgid "Restart Plasma Shell now to finish uninstalling? [Y/n]: "
 msgstr "Reiniciar o Plasma Shell agora para concluir a desinstalação? [S/n]: "
 
@@ -4982,7 +4982,7 @@ msgstr "Método de reinicialização: controle de aplicativos do KDE"
 msgid "Restart method: systemd user service"
 msgstr "Método de reinicialização: serviço de usuário do systemd"
 
-#: scripts-dev/lib/setup-progress.sh:58
+#: scripts-dev/lib/setup-progress.sh:63
 msgid "Restarting Plasma Shell..."
 msgstr "Reiniciando Plasma Shell..."
 
@@ -5015,7 +5015,7 @@ msgstr "Restaurar limite seguro"
 msgid "Restore window size"
 msgstr "Restaurar tamanho da janela"
 
-#: scripts-user/setup.sh:434
+#: scripts-user/setup.sh:457
 msgid "Reviewed"
 msgstr "Revisado"
 
@@ -5053,7 +5053,7 @@ msgstr "Quadrado arredondado"
 msgid "Row height:"
 msgstr "Altura da linha:"
 
-#: scripts-dev/lib/setup-progress.sh:54
+#: scripts-dev/lib/setup-progress.sh:59
 msgid "Running tests..."
 msgstr "Executando testes..."
 
@@ -5159,7 +5159,7 @@ msgstr "Selecione um tema"
 msgid "Select an option [1-5]: "
 msgstr "Selecione uma opção [1-5]: "
 
-#: scripts-dev/setup.sh:160 scripts-user/setup.sh:76
+#: scripts-dev/setup.sh:160 scripts-user/setup.sh:80
 msgid "Select an option [1-9]: "
 msgstr "Selecione uma opção [1-9]: "
 
@@ -5220,7 +5220,7 @@ msgctxt "@title:application-category"
 msgid "Settings"
 msgstr "Configurações"
 
-#: scripts-dev/setup.sh:150 scripts-user/setup.sh:66
+#: scripts-dev/setup.sh:150 scripts-user/setup.sh:70
 msgid "Settings and help"
 msgstr "Configurações e ajuda"
 
@@ -5570,7 +5570,7 @@ msgstr "Tarefas:"
 msgid "Test sound"
 msgstr "Teste de som"
 
-#: scripts-dev/lib/setup-progress.sh:200
+#: scripts-dev/lib/setup-progress.sh:251
 #, sh-printf-format
 msgid "Tests: %s/%s completed; %s failed; %s skipped.\\n"
 msgstr "Testes: %s/%s concluídos; %s com falha; %s ignorados.\\n"
@@ -6301,7 +6301,7 @@ msgstr ""
 "  scripts-user/setup-universal.sh dist/punchi-dock-remastered-0.9.7-"
 "universal.plasmoid # Instalar um pacote específico"
 
-#: scripts-user/setup.sh:29
+#: scripts-user/setup.sh:33
 msgid ""
 "Usage: scripts-user/setup.sh [options] [path/to/package.plasmoid]\n"
 "\n"
@@ -6427,15 +6427,15 @@ msgstr "Utilitários"
 msgid "Validate"
 msgstr "Validar"
 
-#: scripts-dev/lib/setup-progress.sh:51
+#: scripts-dev/lib/setup-progress.sh:56
 msgid "Validating QML..."
 msgstr "Validando QML..."
 
-#: scripts-dev/lib/setup-progress.sh:50
+#: scripts-dev/lib/setup-progress.sh:55
 msgid "Verifying build environment..."
 msgstr "Verificando ambiente de compilação..."
 
-#: scripts-dev/setup.sh:62 scripts-user/setup.sh:137
+#: scripts-dev/setup.sh:62 scripts-user/setup.sh:141
 #, sh-printf-format
 msgid "Version %s | %s | %s"
 msgstr "Versão %s | %s | %s"
@@ -6513,7 +6513,7 @@ msgstr "Os volumes podem ser aumentados acima de 100 por cento"
 msgid "Wave"
 msgstr "Onda"
 
-#: scripts-dev/setup.sh:147 scripts-user/setup.sh:63
+#: scripts-dev/setup.sh:147 scripts-user/setup.sh:67
 msgid "What would you like to do?"
 msgstr "O que você deseja fazer?"
 

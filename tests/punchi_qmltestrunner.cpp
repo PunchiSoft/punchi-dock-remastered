@@ -15,11 +15,13 @@ QtMessageHandler previousMessageHandler = nullptr;
 void nativePopupMessageHandler(QtMsgType type, const QMessageLogContext &context,
                                const QString &message)
 {
-    // The offscreen plugin cannot apply native masks or raise windows. Keep
+    // The offscreen plugin cannot apply native masks, raise windows or forward
+    // size hints from the real folder popup's Layout constraints. Keep
     // this exact allowlist opt-in for the native popup geometry test only.
     if (type == QtWarningMsg
         && (message == QLatin1StringView("This plugin does not support setting window masks")
-            || message == QLatin1StringView("This plugin does not support raise()"))) {
+            || message == QLatin1StringView("This plugin does not support raise()")
+            || message == QLatin1StringView("This plugin does not support propagateSizeHints()"))) {
         return;
     }
     if (previousMessageHandler) {

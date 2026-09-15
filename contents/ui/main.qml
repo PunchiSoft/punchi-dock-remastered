@@ -3552,6 +3552,7 @@ PlasmoidItem {
                 popup: folderPopupDialog
                 gap: dockGeometry.folderPopupGap
                 location: folderPopupDialog.location
+                preserveHorizontalAnchorCenter: true
             }
 
             function setPopupAnchor(anchor) {

@@ -637,7 +637,9 @@ punchi_add_qml_test(
 )
 add_test(
     NAME native_popup_spacing_test
-    COMMAND ${PUNCHI_DBUS_RUN_SESSION} -- $<TARGET_FILE:punchi_qmltestrunner>
+    COMMAND ${PUNCHI_DBUS_RUN_SESSION}
+        --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:punchi_qmltestrunner>
         -input ${CMAKE_CURRENT_SOURCE_DIR}/native_popup_spacing_test.qml
 )
 set_tests_properties(native_popup_spacing_test PROPERTIES
