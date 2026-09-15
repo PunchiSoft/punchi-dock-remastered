@@ -19,7 +19,6 @@
 #include <QQuickItem>
 #include <QQuickWindow>
 #include <QSet>
-#include <QTemporaryDir>
 #include <QTest>
 
 #include <KPluginMetaData>
@@ -820,8 +819,14 @@ private:
 
 int main(int argc, char **argv)
 {
-    QTemporaryDir environment(QStringLiteral("/tmp/punchi-full-load-test-XXXXXX"));
-    if (!environment.isValid()) {
+    const QByteArray encodedEnvironmentRoot = qgetenv("PUNCHI_TEST_ENVIRONMENT_ROOT");
+    if (encodedEnvironmentRoot.isEmpty()) {
+        qCritical("PUNCHI_TEST_ENVIRONMENT_ROOT must be provided by the cleanup wrapper");
+        return 1;
+    }
+    const QString environmentRoot = QFile::decodeName(encodedEnvironmentRoot);
+    if (!QFileInfo(environmentRoot).isDir()) {
+        qCritical("PUNCHI_TEST_ENVIRONMENT_ROOT does not identify an existing directory");
         return 1;
     }
 
@@ -832,7 +837,7 @@ int main(int argc, char **argv)
         {QByteArrayLiteral("XDG_RUNTIME_DIR"), QStringLiteral("runtime")},
     };
     for (const auto &[variable, directory] : isolatedLocations) {
-        const QString path = QDir(environment.path()).filePath(directory);
+        const QString path = QDir(environmentRoot).filePath(directory);
         if (!QDir().mkpath(path)) {
             return 1;
         }
@@ -843,7 +848,7 @@ int main(int argc, char **argv)
         qputenv(variable.constData(), QFile::encodeName(path));
     }
 
-    const QString configRoot = QDir(environment.path()).filePath(QStringLiteral("config"));
+    const QString configRoot = QDir(environmentRoot).filePath(QStringLiteral("config"));
     if (!writeFile(QDir(configRoot).filePath(QStringLiteral("plasmarc")),
                    QByteArrayLiteral("[Theme]\nname=default\n"))
         || !writeFile(QDir(configRoot).filePath(QStringLiteral("kdeglobals")),
@@ -862,7 +867,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    PlasmoidFullLoadTest test(environment.path());
+    PlasmoidFullLoadTest test(environmentRoot);
     const int result = QTest::qExec(&test, argc, argv);
     return result;
 }

@@ -458,7 +458,9 @@ target_link_libraries(plasmoid_full_load_test PRIVATE
 )
 add_test(
     NAME plasmoid_full_load_test
-    COMMAND ${PUNCHI_DBUS_RUN_SESSION}
+    COMMAND ${Python3_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${PUNCHI_DBUS_RUN_SESSION}
         --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
         --
         $<TARGET_FILE:plasmoid_full_load_test>
@@ -467,6 +469,13 @@ set_tests_properties(plasmoid_full_load_test PROPERTIES
     ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
     TIMEOUT 30
 )
+
+add_test(
+    NAME test_environment_cleanup_test
+    COMMAND ${Python3_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/test_environment_cleanup_test.py
+)
+set_tests_properties(test_environment_cleanup_test PROPERTIES TIMEOUT 15)
 
 add_executable(punchi_qmltestrunner punchi_qmltestrunner.cpp)
 target_link_libraries(punchi_qmltestrunner PRIVATE
@@ -662,4 +671,11 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     separator_appearance_source_test
     separator_appearance_source_test.qml
+)
+
+# Tests must not leave Python bytecode caches in the source tree. Applying this
+# to every test also covers Python helpers launched indirectly by shell tests.
+get_property(PUNCHI_ALL_TESTS DIRECTORY PROPERTY TESTS)
+set_property(TEST ${PUNCHI_ALL_TESTS} APPEND PROPERTY
+    ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1"
 )
