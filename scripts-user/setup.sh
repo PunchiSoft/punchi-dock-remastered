@@ -18,6 +18,10 @@ source "$LIB_DIR/qtpaths-resolver.sh"
 source "$LIB_DIR/build-concurrency.sh"
 # shellcheck source=lib/setup-terminal-ui.sh
 source "$LIB_DIR/setup-terminal-ui.sh"
+if [[ -r "$PROJECT_ROOT/scripts-dev/lib/setup-progress.sh" ]]; then
+    # shellcheck source=../scripts-dev/lib/setup-progress.sh
+    source "$PROJECT_ROOT/scripts-dev/lib/setup-progress.sh"
+fi
 
 ACTION=""
 ACTION_OPTION=""
@@ -367,6 +371,24 @@ require_action_commands() {
     fi
 }
 
+run_command_with_transient_progress() {
+    if [[ ! -t 2 || "${TERM:-}" == dumb ]] \
+        || ! declare -F punchi_progress_run >/dev/null; then
+        "$@" >&2
+        return
+    fi
+
+    (
+        local progress_log=""
+        if progress_log="$(mktemp "${TMPDIR:-/tmp}/punchi-user-progress.XXXXXX.log")"; then
+            trap 'rm -f -- "$progress_log"' EXIT
+            (punchi_progress_run "$progress_log" "$@")
+        else
+            "$@"
+        fi
+    ) >&2
+}
+
 do_build_package() {
     local check_dependencies="${1:-1}"
     local package_version=""
@@ -400,13 +422,14 @@ do_build_package() {
 
 ' "${package_file#"$PROJECT_ROOT/"}" >&2
 
-    env \
+    run_command_with_transient_progress env \
         PUNCHI_PACKAGE_CORE=1 \
         PUNCHI_PACKAGE_VALIDATION_MODE=minimal \
+        PUNCHI_PROGRESS_PRESENTATION=dynamic \
         BUILD_DIR="$target_build_dir" \
         PACKAGE_BUILD_TYPE=Release \
         PACKAGE_OUTPUT_FILE="$package_file" \
-        "$LIB_DIR/package-plasmoid.sh" >&2
+        "$LIB_DIR/package-plasmoid.sh"
 
     [[ -f "$package_file" ]] || die "the build completed without creating the expected package: $package_file"
     printf '%s

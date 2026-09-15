@@ -434,3 +434,4 @@ if unzip -Z1 "$ZIP_FILE" | grep -Eq '^(build|dist|backup|docs|bitacora|kde-sdk|s
 fi
 
 echo "Package created: $ZIP_FILE ($(stat -c '%s' "$ZIP_FILE") bytes)"
+punchi_progress_update 100 complete

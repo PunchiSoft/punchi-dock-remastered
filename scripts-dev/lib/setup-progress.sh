@@ -14,10 +14,15 @@ if ! declare -F punchi_gettext_format >/dev/null; then
 fi
 
 punchi_progress_update() {
-    [[ -n "${PUNCHI_PROGRESS_DIR:-}" ]] || return 0
     local percent="${1:?percentage is required}"
     local label="${2:?label is required}"
     [[ "$percent" =~ ^[0-9]+$ ]] && (( percent <= 100 )) || return 2
+    if [[ -z "${PUNCHI_PROGRESS_DIR:-}" ]]; then
+        if [[ "${PUNCHI_PROGRESS_PRESENTATION:-}" == static ]]; then
+            punchi_progress_render_static "$percent" "$label"
+        fi
+        return 0
+    fi
     printf '%s\t%s\n' "$percent" "$label" >"$PUNCHI_PROGRESS_DIR/next-$BASHPID"
     mv -- "$PUNCHI_PROGRESS_DIR/next-$BASHPID" "$PUNCHI_PROGRESS_DIR/state"
 }
@@ -64,6 +69,44 @@ punchi_progress_label() {
     esac
 }
 
+punchi_progress_bar() {
+    local percent="${1:?percentage is required}"
+    local width="${2:?bar width is required}"
+    local fill="${3:-#}" filled_width empty_width filled empty
+    [[ "$percent" =~ ^[0-9]+$ ]] && (( percent <= 100 )) || return 2
+    [[ "$width" =~ ^[0-9]+$ ]] && (( width > 0 )) || return 2
+    filled_width=$(( percent * width / 100 ))
+    empty_width=$(( width - filled_width ))
+    printf -v filled '%*s' "$filled_width" ''
+    printf -v empty '%*s' "$empty_width" ''
+    printf '[%s%s]' "${filled// /$fill}" "$empty"
+}
+
+punchi_progress_render_static() {
+    local percent="${1:?percentage is required}"
+    local label="${2:?label is required}"
+    local text="" columns=80 bar_width=34 text_width=0 bar_fill='#' bar=""
+    text="$(punchi_progress_label "$label")"
+    if [[ -t 2 && "${TERM:-}" != dumb ]]; then
+        columns="$(tput cols 2>/dev/null || printf 80)"
+        [[ "$columns" =~ ^[0-9]+$ ]] || columns=80
+        bar_width=$(( columns - 24 ))
+        (( bar_width <= 34 )) || bar_width=34
+        (( bar_width >= 4 )) || bar_width=4
+        text_width=$(( columns - bar_width - 8 ))
+        (( text_width >= 0 )) || text_width=0
+        text="${text:0:text_width}"
+        local locale_name="${LC_ALL:-${LC_CTYPE:-${LANG:-}}}"
+        if [[ "${locale_name^^}" == *UTF-8* || "${locale_name^^}" == *UTF8* ]]; then
+            bar_fill='█'
+        fi
+        bar="$(punchi_progress_bar "$percent" "$bar_width" "$bar_fill")"
+        printf '%s %3d%% %s\n' "$bar" "$percent" "$text" >&2
+    else
+        printf '[%3d%%] %s\n' "$percent" "$text" >&2
+    fi
+}
+
 # Only descend from the command PID owned by this invocation. Stop descendants
 # first so their waiting parents can reap them; never signal the desktop group.
 punchi_progress_stop_tree() {
@@ -83,7 +126,11 @@ punchi_progress_run() {
     local worker="" status=0 percent=0 label=prepare last_state=""
     local frame=0 part="" pending="" line="" read_status=0 tty=0 columns=80
     local tests_done=0 tests_total=0 tests_failed=0 tests_skipped=0 last_render=""
-    local frames=('/' '-' '\' '|') input_fd output_fd
+    local frames=('/' '-' '\' '|') bar_fill='#' input_fd output_fd
+    local locale_name="${LC_ALL:-${LC_CTYPE:-${LANG:-}}}"
+    if [[ "${locale_name^^}" == *UTF-8* || "${locale_name^^}" == *UTF8* ]]; then
+        bar_fill='█'
+    fi
     exec {input_fd}<&0
     exec {output_fd}>&1
     export PUNCHI_PROGRESS_TERMINAL_FD="$output_fd"
@@ -113,7 +160,7 @@ punchi_progress_run() {
     worker=$!
 
     render_progress() {
-        local symbol="$1" text width
+        local symbol="$1" text bar bar_width text_width
         text="$(punchi_progress_label "$label")"
         if [[ "$label" == tests && "$tests_total" != 0 ]]; then
             text+=" $tests_done/$tests_total"
@@ -121,9 +168,14 @@ punchi_progress_run() {
         if (( tty )); then
             columns="$(tput cols 2>/dev/null || printf 80)"
             [[ "$columns" =~ ^[0-9]+$ ]] || columns=80
-            width=$(( columns > 18 ? columns - 18 : 1 ))
-            text="${text:0:width}"
-            printf '\r\033[2K[ %s ] [%3d%%] %s' "$symbol" "$percent" "$text"
+            bar_width=$(( columns - 29 ))
+            (( bar_width <= 34 )) || bar_width=34
+            (( bar_width >= 4 )) || bar_width=4
+            text_width=$(( columns - bar_width - 13 ))
+            (( text_width >= 0 )) || text_width=0
+            text="${text:0:text_width}"
+            bar="$(punchi_progress_bar "$percent" "$bar_width" "$bar_fill")"
+            printf '\r\033[2K[ %s ] %s %3d%% %s' "$symbol" "$bar" "$percent" "$text"
         elif [[ "$last_render" != "$percent:$text:$symbol" ]]; then
             printf '[%3d%%] %s\n' "$percent" "$text"
         fi
@@ -178,7 +230,6 @@ punchi_progress_run() {
     (( status != 0 )) || status="$command_status"
 
     local success_sym="✓" fail_sym="✗"
-    local locale_name="${LC_ALL:-${LC_CTYPE:-${LANG:-}}}"
     if [[ ! -t 1 || "${TERM:-}" == "dumb" ]] || [[ "${locale_name^^}" != *UTF-8* && "${locale_name^^}" != *UTF8* ]]; then
         success_sym="OK"
         fail_sym="XX"

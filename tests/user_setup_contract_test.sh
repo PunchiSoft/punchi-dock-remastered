@@ -36,6 +36,12 @@ help_output_single_line="${help_output//$'\n'/ }"
 
 grep -q 'PUNCHI_PACKAGE_VALIDATION_MODE=minimal' "$PUBLIC_SETUP" \
     || fail "the public setup does not select minimal packaging"
+grep -q 'PUNCHI_PROGRESS_PRESENTATION=dynamic' "$PUBLIC_SETUP" \
+    || fail "the public setup does not select the coordinated progress presentation"
+grep -q 'run_command_with_transient_progress env' "$PUBLIC_SETUP" \
+    || fail "the public package flow does not isolate build output from its progress line"
+grep -q 'punchi_progress_update 100 complete' "$PACKAGE_ENGINE" \
+    || fail "the public package flow does not complete the shared progress presentation"
 if grep -Eq '^[[:space:]]*(ctest|qmllint)([[:space:]]|$)' "$PUBLIC_SETUP"; then
     fail "the public setup directly executes a developer test command"
 fi
