@@ -1,3 +1,96 @@
+## [0.9.7.61] - 2026-09-15
+
+Esta versión reúne los cambios realizados después de `0.9.7.52`. El Centro de
+control continúa siendo una función preliminar: sus integraciones y diseño
+seguirán evolucionando antes de considerarse definitivos.
+
+### Panel nativo de Plasma
+
+- Añadidos controles directos de longitud, alineación, modo flotante,
+  visibilidad, grosor y opacidad del panel, con sincronización bidireccional
+  reactiva mediante `PanelLengthModeBridge`.
+- Incorporado un cálculo adaptativo común para tamaño de iconos y ampliación en
+  paneles Plasma horizontales y verticales, conservando la política propia de
+  temas JSON y docks flotantes.
+- Sincronizada la región de entrada del panel después de cambios reales de
+  tamaño para evitar áreas sin respuesta durante el arranque o redimensionado.
+- Unificada la sustitución del fondo Plasma o JSON por el visualizador de audio,
+  evitando espectros dobles y conservando una única superficie activa.
+
+### Popups, tareas e interacción
+
+- Conectada la distancia configurable a carpetas, Papelera y menús de acciones
+  mediante anclas nativas que conservan el posicionamiento de Plasma.
+- Estabilizados los popups de grupos de ventanas cuando desaparece una ventana:
+  el ancla sobrevive a la reconstrucción del delegado y se resincroniza sin
+  cerrar la superficie.
+- Conservado el centrado horizontal de los popups de carpetas respecto del
+  lanzador en vistas de cuadrícula, lista y detalle, con ajuste seguro en los
+  bordes de pantalla.
+- Añadidos límites de filas por aplicación para los menús de ventanas y badges
+  opcionales de conteo que acompañan la transformación del icono.
+- Corregida la limpieza de captura de puntero, hover y foco tras arrastres
+  interrumpidos, incluida la mitigación del foco persistente del issue #20.
+- El desplazamiento por categorías de PunchiMenu sigue la sensibilidad y los
+  deltas finos configurados por el sistema.
+
+### Centro de control preliminar
+
+- Incorporada la primera fase del Centro de control en pantalla completa y su
+  presentación flotante predeterminada, con selección contextual de modo y
+  márgenes simétricos relativos a la pantalla.
+- Añadidas superficies para Wi-Fi, Bluetooth, sonido, brillo, No molestar,
+  tema claro/oscuro, Luz nocturna, notificaciones, multimedia y accesos rápidos.
+- Incorporados submenús de audio y Bluetooth, iconografía de volumen reactiva,
+  selector de dispositivos y aplicaciones, y acceso a la preferencia OSD.
+- Normalizadas las diferencias de API de Wi-Fi y BlueDevil entre Plasma 6
+  estable y reciente mediante detección dinámica y fallbacks seguros.
+- Añadidos tres espacios visuales deshabilitados para futuras aplicaciones; no
+  ejecutan acciones ni forman parte de la navegación accesible todavía.
+
+### Temas y multimedia
+
+- Añadido soporte para una carpeta externa administrada de temas JSON, con
+  selector nativo, validación de rutas y eliminación individual o masiva a la
+  Papelera de KDE.
+- Refinado el ítem MPRIS compacto con una transición reversible basada en un
+  único progreso, respetando la preferencia de movimiento reducido.
+- Mejorada la disposición horizontal compacta del reproductor y el centrado de
+  carátulas en paneles estrechos.
+
+### Herramientas, pruebas y mantenimiento
+
+- Retirada la infraestructura de contenedores sin uso y los auxiliares CMake
+  obsoletos, manteniendo Debian 13 como entorno oficial para el build universal.
+- Modernizados `scripts-dev` y `scripts-user` con progreso coordinado en una
+  sola línea, barra proporcional, diagnóstico conservado y concurrencia segura
+  según CPU y memoria, sin cambiar el comportamiento funcional del asistente de
+  usuario.
+- Añadido un preflight corto que detecta sandboxes sin los sockets D-Bus
+  necesarios antes de lanzar la suite completa y permite repetirla en el host
+  sin consumir timeouts ambientales.
+- Cada prueba administra y elimina sus cachés y directorios temporales en éxito,
+  fallo, señal o timeout; la evidencia diagnóstica explícita se limpia después
+  de extraer la información requerida.
+
+### Validación del candidato
+
+- Suite CTest completa aprobada al 100 % en Fedora 44 (`95/95`, 10,02 s durante
+  el empaquetado estricto), incluida carga integral, popups nativos y limpieza
+  del entorno de pruebas.
+- `qmllint` 6.11.2 permanece en cero para `total`, `unqualified`,
+  `missing-property`, `layout` e `import`, igual al baseline Fedora.
+- Catálogos `es`, `de` y `pt_BR` completos (`1291/1291` por idioma), sin
+  entradas vacías ni difusas y aprobados mediante validación de formato y
+  semántica.
+- Preflight de seguridad aprobado: sin secretos, datos personales, telemetría,
+  red, privilegios ni rutas locales nuevas; contenido de desarrollo excluido.
+- Paquete nativo Fedora 44 `x86_64` auditado: 942226 bytes, SHA-256
+  `e4a364f1ab353da003b42fd7b10ad447da267d0f4a1d8805dc88b25a457c8a25`.
+- La instalación/actualización y la revisión visual en Plasma real permanecen
+  separadas y no se consideran aprobadas por pruebas offscreen. El artefacto
+  universal también permanece pendiente de su build obligatorio en Debian 13.
+
 ## [0.9.7.60] - 2026-09-08
 
 ### Corregido

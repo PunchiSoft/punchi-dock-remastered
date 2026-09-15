@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60">
-    <img src="https://img.shields.io/badge/release-v0.9.7.60-4caf50" alt="Release v0.9.7.60">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61">
+    <img src="https://img.shields.io/badge/release-v0.9.7.61-4caf50" alt="Release v0.9.7.61">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,16 +23,18 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7.60](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60).
+[v0.9.7.61](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61).
 
-## What's New in 0.9.7.60
+## What's New in 0.9.7.61
 
-- **Control Center Wi-Fi Fix**: Restored Wi-Fi network management with universal compatibility across Debian 13, Kubuntu, and newer Plasma 6 distributions via dynamic feature detection.
-- **Interrupted Gesture Cleanup**: Clean pointer grab release, hover coordinate reset, and focus handoff when drag reorder gestures are cancelled or timed out.
-- **Persistent Focus Mitigation**: Resolved persistent focus outlines on the launcher icon after interrupted gestures (issue #20).
-- **Test Platform Flexibility**: Added configurable QPA platform plugin support for testing in live desktop environments.
+- **Native Plasma Panel Integration**: Added direct controls for length, alignment, floating mode, visibility, thickness, and opacity, plus adaptive geometry and input-region synchronization.
+- **More Reliable Popups and Window Tasks**: Stabilized grouped-window anchors, folder-popup centering, native popup spacing, per-application row limits, and optional window-count badges.
+- **Preliminary Control Center**: Expanded the in-development fullscreen Control Center with Wi-Fi, Bluetooth, sound, display, Night Light, notification, media, and quick-application surfaces. Some controls and placeholders are not yet final.
+- **Themes and Audio Spectrum**: Added managed external JSON theme folders with safe removal and unified background replacement for the panel audio spectrum.
+- **Smoother Interaction and Media**: Improved category scrolling, interrupted drag cleanup, compact MPRIS morphing, and cross-version Wi-Fi and Bluetooth fallbacks.
+- **Cleaner Development Workflow**: Coordinated single-line progress output, safer test concurrency, early sandbox preflight, and automatic cleanup of test caches and temporary files.
 
-See the [0.9.7.60 changelog](CHANGELOG.md#09760---2026-09-08) for detailed release
+See the [0.9.7.61 changelog](CHANGELOG.md#09761---2026-09-15) for detailed release
 notes and the validation performed for this version.
 
 ## Screenshots
@@ -81,7 +83,7 @@ contribution requirements.
   search, categories, favorites, named application folders, selective hiding,
   keyboard operation, a global shortcut, and native session actions. Compact
   remains reserved for a future version.
-- Fullscreen Control Center with quick Wi-Fi and Bluetooth connections, display brightness and audio volume controls, Do Not Disturb, Light/Dark theme toggle, live Night Light temperature adjustment, and persistent notification history.
+- Preliminary fullscreen Control Center with quick Wi-Fi and Bluetooth connections, display brightness and audio volume controls, Do Not Disturb, Light/Dark theme toggle, live Night Light temperature adjustment, and persistent notification history. This feature remains in development.
 - Optional PipeWire audio visualizer with six styles, dynamic or Plasma-themed colors, and up to 48 visual elements.
 - Plasma-themed popups with configurable opening animations, adaptive
   theme-aware distance from the dock, smooth preview-to-menu transitions, and

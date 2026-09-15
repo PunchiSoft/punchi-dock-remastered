@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60">
-    <img src="https://img.shields.io/badge/release-v0.9.7.60-4caf50" alt="Versión v0.9.7.60">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61">
+    <img src="https://img.shields.io/badge/release-v0.9.7.61-4caf50" alt="Versión v0.9.7.61">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -23,16 +23,18 @@ Punchi Dock Remastered es un dock lanzador nativo e interfaz de tareas para KDE 
 Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). El proyecto prepara actualmente su camino hacia una versión 1.0 estable.
 
 La versión actual es
-[v0.9.7.60](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60).
+[v0.9.7.61](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61).
 
-## Novedades de la versión 0.9.7.60
+## Novedades de la versión 0.9.7.61
 
-- **Corrección de Wi-Fi en el Centro de Control**: Restaurado el control de redes Wi-Fi con compatibilidad universal para Debian 13, Kubuntu y versiones recientes de Plasma 6 mediante detección dinámica.
-- **Limpieza de interacción tras arrastre**: Liberación limpia de captura de puntero, reseteo de coordenadas hover y cesión de foco al cancelar o interrumpir arrastres en el dock.
-- **Mitigación de foco persistente**: Eliminado el borde de foco huérfano en el lanzador tras gestos interrumpidos o expiración del watchdog (issue #20).
-- **Flexibilidad en pruebas de plataforma**: Soporte configurable para plugin QPA en pruebas QML en entornos de escritorio activos.
+- **Integración con el panel nativo de Plasma**: Controles directos de longitud, alineación, modo flotante, visibilidad, grosor y opacidad, además de geometría adaptativa y sincronización de la región de entrada.
+- **Popups y tareas de ventanas más fiables**: Anclas estables para grupos de ventanas, centrado de carpetas, distancia de popups nativos, límite de filas por aplicación y badges opcionales de conteo.
+- **Centro de control preliminar**: Ampliación del Centro de control en pantalla completa, aún en desarrollo, con Wi-Fi, Bluetooth, sonido, pantalla, Luz nocturna, notificaciones, multimedia y accesos rápidos. Algunos controles y espacios reservados todavía no son definitivos.
+- **Temas y espectro de audio**: Carpetas administradas para temas JSON externos con eliminación segura y reemplazo unificado del fondo por el espectro en modo panel.
+- **Interacción y multimedia más fluidas**: Mejoras en desplazamiento por categorías, limpieza de arrastres interrumpidos, morph del MPRIS compacto y fallbacks de Wi-Fi y Bluetooth entre versiones.
+- **Flujo de desarrollo más limpio**: Progreso coordinado en una sola línea, concurrencia segura, preflight temprano para sandbox y limpieza automática de cachés y temporales de pruebas.
 
-Consulta el [registro de cambios de 0.9.7.60](CHANGELOG.md#09760---2026-09-08) para ver las notas detalladas de la versión y la validación realizada.
+Consulta el [registro de cambios de 0.9.7.61](CHANGELOG.md#09761---2026-09-15) para ver las notas detalladas de la versión y la validación realizada.
 
 ## Capturas
 
@@ -69,7 +71,7 @@ Consulta el [registro de cambios de 0.9.7.60](CHANGELOG.md#09760---2026-09-08) p
   búsqueda, categorías, favoritos, carpetas de aplicaciones con nombre,
   ocultación selectiva, operación por teclado, atajo global y acciones de
   sesión nativas. Compacto queda reservado para una versión futura.
-- Centro de control en pantalla completa con accesos directos para Wi-Fi y Bluetooth, controles de brillo y volumen, No molestar, tema claro/oscuro, temperatura de Luz nocturna con previsualización en vivo e historial de notificaciones.
+- Centro de control preliminar en pantalla completa con accesos directos para Wi-Fi y Bluetooth, controles de brillo y volumen, No molestar, tema claro/oscuro, temperatura de Luz nocturna con previsualización en vivo e historial de notificaciones. Esta función continúa en desarrollo.
 - Visualizador de audio PipeWire opcional con seis estilos, colores dinámicos o del tema Plasma y hasta 48 elementos visuales.
 - Popups adaptados al tema de Plasma con animaciones de apertura configurables,
   distancia adaptativa respecto del dock, transiciones fluidas entre miniaturas

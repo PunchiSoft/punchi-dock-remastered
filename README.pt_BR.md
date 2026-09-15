@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60">
-    <img src="https://img.shields.io/badge/release-v0.9.7.60-4caf50" alt="Versão v0.9.7.60">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61">
+    <img src="https://img.shields.io/badge/release-v0.9.7.61-4caf50" alt="Versão v0.9.7.61">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0--or--later-blue" alt="Licença GPL-3.0-or-later">
@@ -23,16 +23,18 @@ Punchi Dock Remastered é um dock inicializador nativo e interface de tarefas pa
 Este repositório é uma reescrita modular do [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). O projeto prepara atualmente seu caminho rumo à versão estável 1.0.
 
 A versão atual é
-[v0.9.7.60](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60).
+[v0.9.7.61](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61).
 
-## Novidades na versão 0.9.7.60
+## Novidades na versão 0.9.7.61
 
-- **Correção do Wi-Fi na Central de Controle**: Restaurado o gerenciamento de redes Wi-Fi com compatibilidade universal para Debian 13, Kubuntu e versões recentes do Plasma 6 via detecção dinâmica.
-- **Limpeza de interação após arrasto**: Liberação limpa de captura de ponteiro, redefinição de coordenadas hover e transferência de foco ao cancelar arrastos na dock.
-- **Mitigação de foco persistente**: Removido contorno de foco órfão no inicializador após gestos interrompidos ou expiração do watchdog (issue #20).
-- **Flexibilidade em testes de plataforma**: Suporte configurável a plugins de plataforma QPA para testes em ambientes ativos.
+- **Integração com o painel nativo do Plasma**: Controles diretos de comprimento, alinhamento, modo flutuante, visibilidade, espessura e opacidade, além de geometria adaptativa e sincronização da região de entrada.
+- **Popups e tarefas de janelas mais confiáveis**: Âncoras estáveis para grupos de janelas, centralização de pastas, distância de popups nativos, limite de linhas por aplicativo e badges opcionais de contagem.
+- **Central de Controle preliminar**: Ampliação da Central de Controle em tela cheia, ainda em desenvolvimento, com Wi-Fi, Bluetooth, áudio, tela, Luz Noturna, notificações, mídia e atalhos. Alguns controles e espaços reservados ainda não são definitivos.
+- **Temas e espectro de áudio**: Pastas gerenciadas para temas JSON externos com remoção segura e substituição unificada do fundo pelo espectro no modo painel.
+- **Interação e mídia mais fluidas**: Melhorias na rolagem por categorias, limpeza de arrastos interrompidos, morph do MPRIS compacto e fallbacks de Wi-Fi e Bluetooth entre versões.
+- **Fluxo de desenvolvimento mais limpo**: Progresso coordenado em uma única linha, concorrência segura, preflight antecipado para sandbox e limpeza automática de caches e temporários de testes.
 
-Consulte o [registro de alterações da 0.9.7.60](CHANGELOG.md#09760---2026-09-08) para ver as notas detalhadas de lançamento e a validação executada.
+Consulte o [registro de alterações da 0.9.7.61](CHANGELOG.md#09761---2026-09-15) para ver as notas detalhadas de lançamento e a validação executada.
 
 ## Capturas de Tela
 
@@ -72,7 +74,7 @@ Consulte o [guia de tradução](po/README.md) para diretrizes sobre os catálogo
 - Cartões de janelas, miniaturas em tempo real e controles de janelas agrupadas (escolha entre cartões, miniaturas ao vivo ou sem popup de prévia).
 - Pastas configuráveis com visualizações em grade, lista e detalhes, alternância direta pelo menu de contexto e arrastar e soltar de inicializadores do PunchiMenu ou da área de trabalho, notas rápidas, lixeira, separadores e calendário.
 - Lançador de aplicativos PunchiMenu com apresentações Normal e Tela Cheia, pesquisa, categorias, favoritos, pastas nomeadas, ocultação seletiva, navegação por teclado e atalho global.
-- Centro de Controle em tela cheia com conexões rápidas para Wi-Fi e Bluetooth, controles de brilho e volume, Não Perturbe, alternância de tema claro/escuro, ajuste ao vivo de Luz Noturna e histórico de notificações.
+- Central de Controle preliminar em tela cheia com conexões rápidas para Wi-Fi e Bluetooth, controles de brilho e volume, Não Perturbe, alternância de tema claro/escuro, ajuste ao vivo de Luz Noturna e histórico de notificações. Esse recurso continua em desenvolvimento.
 - Visualizador de áudio PipeWire opcional com seis estilos, cores dinâmicas ou do tema Plasma e até 48 elementos visuais.
 - Popups com tema Plasma, animações configuráveis, distância adaptativa ao dock e transições suaves.
 - Ações nativas de aplicativos e janelas nos menus de contexto de inicializadores fixados e tarefas dinâmicas.

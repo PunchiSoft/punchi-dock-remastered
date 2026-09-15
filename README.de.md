@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60">
-    <img src="https://img.shields.io/badge/release-v0.9.7.60-4caf50" alt="Version v0.9.7.60">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61">
+    <img src="https://img.shields.io/badge/release-v0.9.7.61-4caf50" alt="Version v0.9.7.61">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/lizenz-GPL--3.0--or--later-blue" alt="Lizenz GPL-3.0-or-later">
@@ -23,16 +23,18 @@ Punchi Dock Remastered ist ein natives Starter-Dock und eine Aufgabenleiste für
 Dieses Repository ist ein modularer Rewrite des ursprünglichen [Punchi Dock Plasmoids](https://github.com/PunchiSoft/punchi-dock-plasmoid). Das Projekt bereitet derzeit seinen Weg zur stabilen Version 1.0 vor.
 
 Die aktuelle Version ist
-[v0.9.7.60](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.60).
+[v0.9.7.61](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61).
 
-## Neuigkeiten in Version 0.9.7.60
+## Neuigkeiten in Version 0.9.7.61
 
-- **WLAN-Steuerung im Kontrollzentrum behoben**: Wiederhergestellte WLAN-Verwaltung mit universeller Kompatibilität für Debian 13, Kubuntu und neuere Plasma 6-Distributionen durch dynamische Funktionserkennung.
-- **Bereinigung bei Drag-Abbruch**: Saubere Freigabe der Mauszeiger-Erfassung, Zurücksetzen der Hover-Koordinaten und Fokusübergabe bei abgebrochenem Neuanordnen.
-- **Behebung von verwaistem Fokus**: Kein dauerhafter Fokusrahmen mehr auf dem Starter-Icon nach unterbrochenen Gesten (Issue #20).
-- **Flexible Testplattform**: Konfigurierbare QPA-Plattformunterstützung für Tests in aktiven Desktop-Umgebungen.
+- **Native Plasma-Panel-Integration**: Direkte Steuerung von Länge, Ausrichtung, Schwebemodus, Sichtbarkeit, Dicke und Deckkraft sowie adaptive Geometrie und Synchronisierung der Eingaberegion.
+- **Zuverlässigere Popups und Fensteraufgaben**: Stabile Anker für Fenstergruppen, zentrierte Ordner-Popups, nativer Popup-Abstand, Zeilenlimits pro Anwendung und optionale Fensteranzahl-Badges.
+- **Vorläufiges Kontrollzentrum**: Das noch in Entwicklung befindliche Vollbild-Kontrollzentrum wurde um WLAN, Bluetooth, Audio, Anzeige, Nachtlicht, Benachrichtigungen, Medien und Schnellzugriffe erweitert. Einige Steuerelemente und Platzhalter sind noch nicht endgültig.
+- **Stile und Audiospektrum**: Verwaltete Ordner für externe JSON-Stile mit sicherem Entfernen und einheitlichem Ersetzen des Panel-Hintergrunds durch das Audiospektrum.
+- **Flüssigere Interaktion und Medien**: Verbessertes Kategorie-Scrollen, Bereinigung abgebrochener Drag-Vorgänge, Morphing des kompakten MPRIS-Elements und versionsübergreifende WLAN-/Bluetooth-Fallbacks.
+- **Sauberer Entwicklungsablauf**: Koordinierte Fortschrittsanzeige in einer Zeile, sichere Parallelität, früher Sandbox-Preflight und automatische Bereinigung von Test-Caches und temporären Dateien.
 
-Siehe das [Änderungsprotokoll für 0.9.7.60](CHANGELOG.md#09760---2026-09-08) für detaillierte Versionshinweise und die durchgeführte Validierung.
+Siehe das [Änderungsprotokoll für 0.9.7.61](CHANGELOG.md#09761---2026-09-15) für detaillierte Versionshinweise und die durchgeführte Validierung.
 
 ## Screenshots
 
@@ -72,7 +74,7 @@ Siehe den [Leitfaden für Übersetzungen](po/README.md) für Katalogrichtlinien 
 - Fensterkarten, Live-Vorschauen und gruppierte Fenstersteuerungen (Auswahl zwischen Karten, Live-Vorschauen oder reiner Menüanzeige).
 - Konfigurierbare Ordner mit Raster-, Listen- und Detailansicht, direktem Umschalten aus dem Kontextmenü sowie Drag-and-Drop von Startern aus PunchiMenu oder vom Schreibtisch, Notizen, Papierkorb, Trennlinien und Kalender.
 - PunchiMenu-Anwendungsstarter mit Normal- und Vollbilddarstellung, Suche, Kategorien, Favoriten, Ordnern, selektivem Ausblenden, Tastaturbedienung und globalem Tastaturkürzel.
-- Vollbild-Kontrollzentrum mit Schnellverbindungen für WLAN und Bluetooth, Helligkeits- und Lautstärkesteuerung, Nicht stören, Hell-/Dunkel-Umschaltung, Live-Nachtlicht-Einstellung und persistentem Benachrichtigungsverlauf.
+- Vorläufiges Vollbild-Kontrollzentrum mit Schnellverbindungen für WLAN und Bluetooth, Helligkeits- und Lautstärkesteuerung, Nicht stören, Hell-/Dunkel-Umschaltung, Live-Nachtlicht-Einstellung und persistentem Benachrichtigungsverlauf. Diese Funktion befindet sich weiterhin in Entwicklung.
 - Optionaler PipeWire-Audio-Visualisierer mit sechs Stilen, dynamischen oder Plasma-Farben und bis zu 48 visuellen Elementen.
 - Plasma-angepasste Popups mit konfigurierbaren Animationen, anpassbarem Abstand und fließenden Übergängen.
 - Native Anwendungs- und Fensteraktionen in Kontextmenüs.
