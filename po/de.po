@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-14 10:21-0300\n"
+"POT-Creation-Date: 2026-09-18 08:50-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: German\n"
@@ -138,7 +138,7 @@ msgid_plural "%1 applications"
 msgstr[0] "%1 Anwendung"
 msgstr[1] "%1 Anwendungen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:116
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:123
 msgid "%1 device connected"
 msgid_plural "%1 devices connected"
 msgstr[0] "%1 Gerät verbunden"
@@ -244,7 +244,7 @@ msgid_plural "%1 seconds"
 msgstr[0] "%1 Sekunde"
 msgstr[1] "%1 Sekunden"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:385
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:427
 msgid "%1 unread notification"
 msgid_plural "%1 unread notifications"
 msgstr[0] "%1 ungelesene Benachrichtigung"
@@ -339,7 +339,7 @@ msgctxt "@label"
 msgid "%1%"
 msgstr "%1%"
 
-#: contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml:87
+#: contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml:109
 #, javascript-format
 msgctxt "@label Night Light intensity percentage"
 msgid "%1%"
@@ -573,9 +573,19 @@ msgctxt "@action:context"
 msgid "Add Separator"
 msgstr "Trennzeichen hinzufügen"
 
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:82
+msgctxt "@info:accessibility"
+msgid "Add a trash item to the dock"
+msgstr "Einen Papierkorb zum Dock hinzufügen"
+
 #: contents/ui/config/AddItemPalette.qml:31
 msgid "Add a visual separator"
 msgstr "Fügen Sie eine visuelle Trennlinie hinzu"
+
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:69
+msgctxt "@info:accessibility"
+msgid "Add a visual separator to the dock"
+msgstr "Eine visuelle Trennlinie zum Dock hinzufügen"
 
 #: contents/ui/config/ConfigItems.qml:748
 msgctxt "@action:button"
@@ -586,12 +596,23 @@ msgstr "Aktion hinzufügen"
 msgid "Add an app or container item"
 msgstr "Fügen Sie eine App oder ein Containerelement hinzu"
 
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:29
+msgctxt "@info:accessibility"
+msgid "Add an application folder to the dock"
+msgstr "Einen Anwendungsordner zum Dock hinzufügen"
+
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:22
+msgctxt "@info:accessibility"
+msgid "Add an application launcher to the dock"
+msgstr "Einen Anwendungsstarter zum Dock hinzufügen"
+
 #: contents/ui/config/ConfigItems.qml:747
 msgctxt "@action:button"
 msgid "Add application"
 msgstr "Anwendung hinzufügen"
 
 #: contents/ui/config/AddItemPalette.qml:32
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:75
 msgid "Add empty space between items"
 msgstr "Fügen Sie Leerraum zwischen Elementen hinzu"
 
@@ -664,7 +685,7 @@ msgctxt "@info:accessible"
 msgid "Adjust the media player volume"
 msgstr "Passen Sie die Lautstärke des Mediaplayers an"
 
-#: contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml:67
+#: contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml:89
 msgctxt "@info"
 msgid "Adjust the warmth of the screen filter"
 msgstr "Wärme des Bildschirmfilters anpassen"
@@ -834,6 +855,11 @@ msgstr "Nur Miniprogramme"
 msgid "Application"
 msgstr "Bewerbung"
 
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:19
+msgctxt "@action:button"
+msgid "Application"
+msgstr "Anwendung"
+
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:130
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:134
 #: contents/ui/components/punchimenu/PunchiMenuCompactFlyout.qml:41
@@ -951,6 +977,7 @@ msgstr ""
 "Gilt für Fenstertitel, Fensterdetails und Überlaufgruppenbezeichnungen."
 
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionState.qml:344
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:282
 msgctxt "@action:button"
 msgid "Apply"
 msgstr "Anwenden"
@@ -1073,8 +1100,14 @@ msgstr ""
 "Automatische Größenanpassung aktiviert (Panel passt sich an Symbole an)"
 
 #: contents/ui/config/AddItemPalette.qml:34
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:49
 msgid "Automatically select the active player"
 msgstr "Aktiven Player automatisch auswählen"
+
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:94
+msgctxt "@title:group"
+msgid "Available elements"
+msgstr "Verfügbare Elemente"
 
 #: contents/ui/config/ConfigAspect.qml:815
 msgid "Available when dock item names are shown."
@@ -1174,7 +1207,7 @@ msgstr "Abzeichen:"
 msgid "Balanced Mode"
 msgstr "Ausgewogener Modus"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:106
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:113
 msgctxt "@action:button"
 msgid "Bluetooth"
 msgstr "Bluetooth"
@@ -1190,7 +1223,7 @@ msgid "Bluetooth Devices"
 msgstr "Bluetooth-Geräte"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:110
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:117
 msgctxt "@info"
 msgid "Bluetooth controls unavailable"
 msgstr "Bluetooth-Steuerung nicht verfügbar"
@@ -1284,7 +1317,7 @@ msgstr ""
 "  ./scripts-dev/setup.sh <datei.plasmoid>   Vorgefertigtes Paket direkt "
 "installieren"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:310
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:332
 msgctxt "@action:button"
 msgid "Calculator"
 msgstr "Rechner"
@@ -1303,6 +1336,7 @@ msgstr "Kalender-Popup-Skala"
 
 #: contents/ui/components/DockItem.qml:40
 #: contents/ui/config/AddItemPalette.qml:33
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:54
 #: contents/ui/config/ConfigItems.qml:137
 msgid "Calendar/Clock"
 msgstr "Kalender/Uhr"
@@ -1319,6 +1353,7 @@ msgstr "Abbrechen"
 #: contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml:108
 #: contents/ui/components/NotePopup.qml:289
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:388
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:274
 #: contents/ui/config/ConfigAspect.qml:467
 msgctxt "@action:button"
 msgid "Cancel"
@@ -1405,7 +1440,7 @@ msgid ""
 msgstr ""
 "Ändert die Symbolgröße im reservierten Favoritenbereich in beiden Menümodi."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:222
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:229
 msgctxt "@info:accessibility"
 msgid ""
 "Changes the volume indicator for all Plasma controls and multimedia keys"
@@ -1476,7 +1511,7 @@ msgctxt "@info"
 msgid "Choose a name and at least one more application."
 msgstr "Wählen Sie einen Namen und mindestens eine weitere Anwendung aus."
 
-#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:450
+#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:442
 msgctxt "@info"
 msgid "Choose and manage a Wi-Fi connection"
 msgstr "Eine WLAN-Verbindung auswählen und verwalten"
@@ -1618,7 +1653,7 @@ msgstr "Reinigung abgeschlossen."
 msgid "Clean configuration file?"
 msgstr "Konfigurationsdatei bereinigen?"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:396
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:438
 #: contents/ui/components/NotePopup.qml:175
 msgid "Clear"
 msgstr "Klar"
@@ -1659,10 +1694,11 @@ msgid "Close"
 msgstr "Schließen"
 
 #: contents/ui/components/controlcenter/ControlCenterNotificationDelegate.qml:95
-#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:464
+#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:456
 #: contents/ui/components/punchimenu/PunchiMenuFolderView.qml:209
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:1875
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:1784
+#: contents/ui/config/components/ItemsConfigurationWindow.qml:345
 msgctxt "@action:button"
 msgid "Close"
 msgstr "Schließen"
@@ -1773,7 +1809,7 @@ msgctxt "@action:button opens system settings"
 msgid "Configure Desktop Effects…"
 msgstr "Arbeitsflächeneffekte einrichten…"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:341
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:382
 msgctxt "@action:button"
 msgid "Configure Night Light"
 msgstr "Nachtlicht einrichten"
@@ -1807,6 +1843,11 @@ msgstr "Uhr konfigurieren"
 #: contents/ui/config/code/configItemsWorkflowHelper.js:391
 msgid "Configure folder"
 msgstr "Ordner konfigurieren"
+
+#: contents/ui/config/ConfigDevelopment.qml:39
+msgctxt "@action:button"
+msgid "Configure items"
+msgstr "Elemente konfigurieren"
 
 #: contents/ui/config/ConfigItems.qml:809
 msgid "Configure media player"
@@ -1869,7 +1910,7 @@ msgstr ""
 "Schließen Sie ein Gerät an oder öffnen Sie die Klangeinstellungen für "
 "weitere Informationen."
 
-#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:452
+#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:444
 msgctxt "@info"
 msgid "Connect and manage paired Bluetooth devices"
 msgstr "Gekoppelte Bluetooth-Geräte verbinden und verwalten"
@@ -1947,10 +1988,11 @@ msgid "Context menu target width"
 msgstr "Zielbreite des Kontextmenüs"
 
 #: contents/ui/config/AddItemPalette.qml:27
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:40
 msgid "Control Center"
 msgstr "Kontrollzentrum"
 
-#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:440
+#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:432
 #: contents/ui/components/DockItem.qml:50
 msgctxt "@title"
 msgid "Control Center"
@@ -2196,6 +2238,10 @@ msgstr "Erkanntes System: %s (%s)\\n"
 msgid "Detected host: %s\\n"
 msgstr "Erkanntes System: %s\\n"
 
+#: contents/config/config.qml:47 contents/ui/config/ConfigDevelopment.qml:17
+msgid "Development"
+msgstr "Entwicklung"
+
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:106
 #: contents/ui/components/punchimenu/PunchiMenuCompact.qml:205
 msgctxt "@title:application-category"
@@ -2260,7 +2306,7 @@ msgid "Disconnecting…"
 msgstr "Verbindung wird getrennt…"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:176
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:183
 msgctxt "@title"
 msgid "Display"
 msgstr "Anzeige"
@@ -2302,7 +2348,7 @@ msgstr "Ordner auflösen"
 msgid "Distribution label:"
 msgstr "Distributionsbezeichnung:"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:138
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:145
 msgctxt "@action:button"
 msgid "Do Not Disturb"
 msgstr "Nicht stören"
@@ -2334,6 +2380,11 @@ msgstr "Dock-Hintergrund:"
 #: contents/ui/config/ConfigMenus.qml:225
 msgid "Dock context menu distance"
 msgstr "Abstand der Dock-Kontextmenüs"
+
+#: contents/ui/config/components/ItemsConfigurationPreview.qml:98
+msgctxt "@info:accessibility"
+msgid "Dock element %1 of %2"
+msgstr "Dock-Element %1 von %2"
 
 #: contents/ui/config/AddItemPalette.qml:28
 msgid "Dock item"
@@ -2375,6 +2426,16 @@ msgstr "Punkt"
 msgctxt "@item:inlistbox Separator shape"
 msgid "Double line"
 msgstr "Double line"
+
+#: contents/ui/config/components/ItemsConfigurationPreview.qml:63
+msgctxt "@info:placeholder"
+msgid "Drag elements here or activate one above to add it"
+msgstr "Elemente hierher ziehen oder oben eines aktivieren, um es hinzuzufügen"
+
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:139
+msgctxt "@info"
+msgid "Drag elements to the dock"
+msgstr "Elemente zum Dock ziehen"
 
 #: contents/ui/config/components/TrashDialog.qml:74
 msgid "Drag files"
@@ -2742,6 +2803,11 @@ msgstr "Nach rechts fließen"
 msgid "Folder"
 msgstr "Ordner"
 
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:26
+msgctxt "@action:button"
+msgid "Folder"
+msgstr "Ordner"
+
 #: contents/ui/config/code/configItemsWorkflowHelper.js:135
 msgid ""
 "Folder configuration was removed temporarily while it is rebuilt safely."
@@ -3033,7 +3099,7 @@ msgctxt "@option:media-track-information"
 msgid "Hide"
 msgstr "Ausblenden"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:216
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:223
 msgctxt "@action:button"
 msgid "Hide Plasma volume indicator"
 msgstr "Plasma-Lautstärkeanzeige ausblenden"
@@ -3276,7 +3342,7 @@ msgstr "Installiertes Theme:"
 msgid "Installing local package..."
 msgstr "Lokales Paket wird installiert..."
 
-#: contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml:51
+#: contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml:73
 msgctxt "@label"
 msgid "Intensity"
 msgstr "Intensität"
@@ -3419,7 +3485,7 @@ msgstr "Links"
 msgid "Length:"
 msgstr "Länge:"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:267
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:289
 msgctxt "@action:button"
 msgid "Light and dark mode"
 msgstr "Heller und dunkler Modus"
@@ -3540,17 +3606,17 @@ msgstr "MPRIS-Kontrollen"
 msgid "Maintenance"
 msgstr "Wartung"
 
-#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:454
+#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:446
 msgctxt "@info"
 msgid "Manage audio devices and application volumes"
 msgstr "Audiogeräte und Anwendungslautstärken verwalten"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:229
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:236
 msgctxt "@action:button"
 msgid "Manage audio devices and applications"
 msgstr "Audiogeräte und Anwendungen verwalten"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:157
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:164
 msgctxt "@info"
 msgid "Manage system updates"
 msgstr "Systemaktualisierungen verwalten"
@@ -3664,6 +3730,7 @@ msgid "Media playback"
 msgstr "Medienwiedergabe"
 
 #: contents/ui/config/AddItemPalette.qml:34
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:47
 msgid "Media player"
 msgstr "Medienspieler"
 
@@ -3806,10 +3873,20 @@ msgstr[1] "%1 Designs in den Papierkorb verschieben?"
 msgid "Move all themes to the Trash…"
 msgstr "Alle Designs in den Papierkorb verschieben…"
 
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:163
+msgctxt "@action:button"
+msgid "Move left"
+msgstr "Nach links verschieben"
+
 #: contents/ui/components/DockContextActionsController.qml:138
 msgctxt "@action:context"
 msgid "Move open applications section"
 msgstr "Bereich für offene Anwendungen verschieben"
+
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:184
+msgctxt "@action:button"
+msgid "Move right"
+msgstr "Nach rechts verschieben"
 
 #: contents/ui/config/ConfigAspect.qml:490
 msgid "Move selected theme to the Trash…"
@@ -3859,7 +3936,7 @@ msgctxt "@title:category"
 msgid "Multimedia"
 msgstr "Multimedia"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:206
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:213
 msgctxt "@action:button"
 msgid "Mute"
 msgstr "Stummschalten"
@@ -3885,7 +3962,7 @@ msgid "Needs attention"
 msgstr "Eingreifen erforderlich"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:96
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:103
 msgctxt "@info"
 msgid "Network controls unavailable"
 msgstr "Netzwerksteuerung nicht verfügbar"
@@ -3919,23 +3996,23 @@ msgctxt "@action:button"
 msgid "Next track"
 msgstr "Nächster Titel"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:289
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:311
 msgctxt "@action:button"
 msgid "Night Light"
 msgstr "Nachtlicht"
 
-#: contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml:27
-#: contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml:66
+#: contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml:37
+#: contents/ui/components/controlcenter/ControlCenterNightLightStrength.qml:88
 msgctxt "@label"
 msgid "Night Light intensity"
 msgstr "Nachtlichtintensität"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:299
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:321
 msgctxt "@info:status"
 msgid "Night Light is paused"
 msgstr "Nachtlicht ist pausiert"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:112
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:119
 msgctxt "@info:status"
 msgid "No Bluetooth adapters"
 msgstr "Keine Bluetooth-Adapter"
@@ -4013,7 +4090,7 @@ msgstr "Keine Medienwiedergabe"
 msgid "No movement"
 msgstr "Keine Bewegung"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:450
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:492
 msgctxt "@info"
 msgid "No notifications"
 msgstr "Keine Benachrichtigungen"
@@ -4091,6 +4168,7 @@ msgstr "Nicht für den neuen Ordner ausgewählt"
 
 #: contents/ui/components/NotePopup.qml:133
 #: contents/ui/config/AddItemPalette.qml:30
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:60
 #: contents/ui/config/ConfigItems.qml:723
 msgid "Note"
 msgstr "Hinweis"
@@ -4114,19 +4192,19 @@ msgid ""
 msgstr ""
 "Hinweis: Diese Distribution (%s) ist keine offizielle C++-Build-Umgebung.\\n"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:140
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:451
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:147
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:493
 msgctxt "@info"
 msgid "Notification service unavailable"
 msgstr "Benachrichtigungsdienst nicht verfügbar"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:403
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:445
 msgctxt "@action:button"
 msgid "Notification settings"
 msgstr "Benachrichtigungseinstellungen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:365
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:376
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:407
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:418
 msgctxt "@title"
 msgid "Notifications"
 msgstr "Benachrichtigungen"
@@ -4139,17 +4217,17 @@ msgstr "Anzahl der Audiovisualisierungsbalken"
 msgid "Number of bars:"
 msgstr "Anzahl der Balken:"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:143
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:150
 msgctxt "@info:status"
 msgid "Off — allow notification popups"
 msgstr "Aus — Benachrichtigungs-Pop-ups zulassen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:114
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:121
 msgctxt "@info:status"
 msgid "Off — view devices"
 msgstr "Aus — Geräte anzeigen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:95
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:102
 msgctxt "@info:status"
 msgid "Off — view networks"
 msgstr "Aus — Netzwerke anzeigen"
@@ -4165,17 +4243,17 @@ msgctxt "@title:category"
 msgid "Office"
 msgstr "Büro"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:142
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:149
 msgctxt "@info:status"
 msgid "On — suppress notification popups"
 msgstr "Ein — Benachrichtigungs-Pop-ups unterdrücken"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:119
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:126
 msgctxt "@info:status"
 msgid "On — view devices"
 msgstr "Ein — Geräte anzeigen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:94
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:101
 msgctxt "@info:status"
 msgid "On — view networks"
 msgstr "Ein — Netzwerke anzeigen"
@@ -4192,6 +4270,7 @@ msgstr "Mit einer Anwendung können nur lokale Dateien geöffnet werden."
 
 #: contents/ui/config/AddItemPalette.qml:105
 #: contents/ui/config/code/configItemsWorkflowHelper.js:462
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:83
 msgid "Only one Control Center item can be added."
 msgstr "Es kann nur ein Kontrollzentrum-Element hinzugefügt werden."
 
@@ -4202,6 +4281,7 @@ msgstr ""
 
 #: contents/ui/config/AddItemPalette.qml:99
 #: contents/ui/config/code/configItemsWorkflowHelper.js:456
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:80
 msgid "Only one PunchiMenu item can be added."
 msgstr "Es kann nur ein PunchiMenu-Element hinzugefügt werden."
 
@@ -4211,6 +4291,7 @@ msgstr "In der Dock-Konfiguration ist nur ein PunchiMenu-Element zulässig."
 
 #: contents/ui/config/AddItemPalette.qml:107
 #: contents/ui/config/code/configItemsWorkflowHelper.js:450
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:85
 msgid "Only one media player item can be added."
 msgstr "Es kann nur ein Medienspieler-Element hinzugefügt werden."
 
@@ -4294,7 +4375,7 @@ msgid "Open Bluetooth settings"
 msgstr "Bluetooth-Einstellungen öffnen"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:292
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:314
 msgctxt "@info"
 msgid "Open Night Light settings"
 msgstr "Nachtlicht-Einstellungen öffnen"
@@ -4303,12 +4384,13 @@ msgstr "Nachtlicht-Einstellungen öffnen"
 msgid "Open Trash"
 msgstr "Papierkorb öffnen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:270
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:292
 msgctxt "@info"
 msgid "Open appearance settings"
 msgstr "Einstellungen zum Erscheinungsbild öffnen"
 
 #: contents/ui/config/AddItemPalette.qml:26
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:35
 msgid "Open application menu & carousel"
 msgstr "Open application menu & carousel"
 
@@ -4321,8 +4403,17 @@ msgctxt "@title"
 msgid "Open applications"
 msgstr "Geöffnete Anwendungen"
 
+#: contents/ui/config/components/ItemsConfigurationWindow.qml:194
+msgctxt "@info"
+msgid ""
+"Open applications must still be removed from the existing Items page during "
+"this development phase."
+msgstr ""
+"„Geöffnete Anwendungen“ muss während dieser Entwicklungsphase weiterhin auf "
+"der vorhandenen Seite Elemente entfernt werden."
+
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:182
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:189
 msgctxt "@action:button"
 msgid "Open display settings"
 msgstr "Anzeigeeinstellungen öffnen"
@@ -4359,12 +4450,13 @@ msgstr "Einstellungen öffnen"
 
 #
 #: contents/ui/components/controlcenter/ControlCenterAudioPage.qml:128
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:231
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:238
 msgctxt "@action:button"
 msgid "Open sound settings"
 msgstr "Klangeinstellungen öffnen"
 
 #: contents/ui/config/AddItemPalette.qml:27
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:42
 msgid "Open system controls and notifications"
 msgstr "Systemsteuerung und Benachrichtigungen öffnen"
 
@@ -4544,7 +4636,7 @@ msgctxt "@action:button"
 msgid "Pause"
 msgstr "Pause"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:297
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:319
 msgctxt "@info:status"
 msgid "Paused by another application"
 msgstr "Durch eine andere Anwendung pausiert"
@@ -4756,6 +4848,11 @@ msgstr ""
 msgid "Pulse"
 msgstr "Puls"
 
+#: contents/ui/config/components/ItemsConfigurationWindow.qml:69
+msgctxt "@title:window"
+msgid "Punchi Dock Items Configuration"
+msgstr "Konfiguration der Punchi-Dock-Elemente"
+
 #: src/punchimenushortcutcontroller.cpp:120
 msgid "Punchi Dock Remastered"
 msgstr "Punchi Dock Remastered"
@@ -4776,7 +4873,14 @@ msgstr ""
 msgid "Punchi Dock could not store the imported theme."
 msgstr "Punchi Dock konnte das importierte Theme nicht speichern."
 
+#: contents/ui/config/components/ItemsConfigurationPreview.qml:30
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:248
+msgctxt "@title:group"
+msgid "Punchi Dock preview"
+msgstr "Vorschau von Punchi Dock"
+
 #: contents/ui/config/AddItemPalette.qml:26
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:33
 msgid "PunchiMenu"
 msgstr "PunchiMenu"
 
@@ -4839,7 +4943,7 @@ msgctxt "@title"
 msgid "Quick Note"
 msgstr "Kurzer Hinweis"
 
-#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:455
+#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:447
 msgctxt "@info"
 msgid "Quick access to system status and settings"
 msgstr "Schnellzugriff auf Systemstatus und Einstellungen"
@@ -4935,6 +5039,11 @@ msgstr "Geöffnete Anwendungen aus dem Dock entfernen?"
 #: contents/ui/config/ConfigGeneral.qml:550
 msgid "Remove safe limits"
 msgstr "Sichere Grenzen aufheben"
+
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:205
+msgctxt "@action:button"
+msgid "Remove selected element"
+msgstr "Ausgewähltes Element entfernen"
 
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionState.qml:320
 msgctxt "@info"
@@ -5111,6 +5220,11 @@ msgstr "Sicherer Modus"
 msgid "Safe limits disabled (up to 96 px)"
 msgstr "Sichere Grenzen deaktiviert (bis zu 96 px)"
 
+#: contents/ui/config/components/ItemsConfigurationWorkspace.qml:290
+msgctxt "@action:button"
+msgid "Save and close"
+msgstr "Speichern und schließen"
+
 #: contents/ui/components/NotePopup.qml:149
 msgid "Save note"
 msgstr "Notiz speichern"
@@ -5232,6 +5346,11 @@ msgstr "Ausgewähltes Paket: %s\\n"
 msgid "Separator"
 msgstr "Trennzeichen"
 
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:66
+msgctxt "@action:button"
+msgid "Separator"
+msgstr "Trennlinie"
+
 #: contents/ui/config/SeparatorOptions.qml:80
 msgid "Separator appearance source"
 msgstr "Quelle für das Erscheinungsbild des Trenners"
@@ -5286,7 +5405,7 @@ msgstr "„Punchi Dock einrichten…“ anzeigen"
 msgid "Show \"Edit item…\""
 msgstr "„Element bearbeiten…“ anzeigen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:217
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:224
 msgctxt "@action:button"
 msgid "Show Plasma volume indicator"
 msgstr "Plasma-Lautstärkeanzeige anzeigen"
@@ -5325,6 +5444,7 @@ msgid "Show category carousel"
 msgstr "Kategorienkarussell anzeigen"
 
 #: contents/ui/config/AddItemPalette.qml:33
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:56
 msgid "Show date information"
 msgstr "Datumsinformationen anzeigen"
 
@@ -5521,7 +5641,7 @@ msgid "Sort applications alphabetically"
 msgstr "Anwendungen alphabetisch sortieren"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:195
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:202
 msgctxt "@title"
 msgid "Sound"
 msgstr "Ton"
@@ -5532,6 +5652,7 @@ msgid "Sound Volume"
 msgstr "Lautstärke"
 
 #: contents/ui/config/AddItemPalette.qml:32
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:73
 #: contents/ui/config/ConfigItems.qml:725
 msgid "Spacer"
 msgstr "Abstandshalter"
@@ -5570,12 +5691,12 @@ msgstr ""
 msgid "Supported build environments: Fedora, Debian 13, and Arch Linux."
 msgstr "Unterstützte Build-Umgebungen: Fedora, Debian 13 und Arch Linux."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:273
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:295
 msgctxt "@action:button"
 msgid "Switch to dark mode"
 msgstr "Zum dunklen Modus wechseln"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:272
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:294
 msgctxt "@action:button"
 msgid "Switch to light mode"
 msgstr "Zum hellen Modus wechseln"
@@ -5615,7 +5736,7 @@ msgstr "Aufgaben:"
 msgid "Test sound"
 msgstr "Ton testen"
 
-#: scripts-dev/lib/setup-progress.sh:251
+#: scripts-dev/lib/setup-progress.sh:257
 #, sh-printf-format
 msgid "Tests: %s/%s completed; %s failed; %s skipped.\\n"
 msgstr "Tests: %s/%s abgeschlossen; %s fehlgeschlagen; %s übersprungen.\\n"
@@ -5740,10 +5861,28 @@ msgctxt "@info:status"
 msgid "The desktop shortcut source is not safe."
 msgstr "Die Quelle der Desktop-Verknüpfung ist nicht sicher."
 
+#: contents/ui/config/components/ItemsConfigurationWindow.qml:185
+msgctxt "@info"
+msgid ""
+"The dock configuration changed elsewhere. Close and reopen this window "
+"before applying again."
+msgstr ""
+"Die Dock-Konfiguration wurde an anderer Stelle geändert. Schließen und "
+"öffnen Sie dieses Fenster erneut, bevor Sie wieder anwenden."
+
 #: contents/ui/config/ConfigFiles.qml:76 contents/ui/config/ConfigFiles.qml:210
 msgid "The dock configuration contains too many items. The maximum is %1."
 msgstr ""
 "Die Dockkonfiguration enthält zu viele Elemente. Das Maximum beträgt %1."
+
+#: contents/ui/config/components/ItemsConfigurationWindow.qml:199
+msgctxt "@info"
+msgid ""
+"The dock configuration could not be saved. No existing changes were "
+"overwritten."
+msgstr ""
+"Die Dock-Konfiguration konnte nicht gespeichert werden. Vorhandene "
+"Änderungen wurden nicht überschrieben."
 
 #: src/dockruntimeservice.cpp:50
 msgid "The dock configuration is too large."
@@ -5756,6 +5895,16 @@ msgid ""
 msgstr ""
 "Die Dockkonfiguration ist zu groß. Die maximal unterstützte Größe beträgt 1 "
 "MiB."
+
+#: contents/ui/config/components/ItemsConfigurationWindow.qml:191
+msgctxt "@info"
+msgid "The dock has reached the maximum number of supported elements."
+msgstr "Das Dock hat die maximal unterstützte Anzahl von Elementen erreicht."
+
+#: contents/ui/config/components/ItemsConfigurationWindow.qml:197
+msgctxt "@info"
+msgid "The dock supports only one element of this type."
+msgstr "Das Dock unterstützt nur ein Element dieses Typs."
 
 #: contents/ui/config/SeparatorOptions.qml:91
 msgid ""
@@ -5785,6 +5934,14 @@ msgstr "Die abgelegten Dateien konnten nicht geöffnet werden."
 msgctxt "@info:status"
 msgid "The dropped launcher could not be resolved safely."
 msgstr "Der abgelegte Anwendungsstarter konnte nicht sicher aufgelöst werden."
+
+#: contents/ui/config/components/ItemsConfigurationWindow.qml:188
+msgctxt "@info"
+msgid ""
+"The existing dock configuration could not be read. No changes were made."
+msgstr ""
+"Die vorhandene Dock-Konfiguration konnte nicht gelesen werden. Es wurden "
+"keine Änderungen vorgenommen."
 
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionState.qml:383
 msgctxt "@info"
@@ -6090,6 +6247,11 @@ msgstr "Durchscheinend"
 msgid "Trash"
 msgstr "Müll"
 
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:79
+msgctxt "@action:button"
+msgid "Trash"
+msgstr "Papierkorb"
+
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:32
 msgid "Trash emptied successfully."
 msgstr "Der Papierkorb wurde erfolgreich geleert."
@@ -6112,7 +6274,7 @@ msgid "Try scanning again or open Network Settings."
 msgstr ""
 "Versuchen Sie erneut zu suchen oder öffnen Sie die Netzwerkeinstellungen."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:300
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:322
 msgctxt "@action:button"
 msgid "Turn off Night Light"
 msgstr "Nachtlicht ausschalten"
@@ -6122,7 +6284,7 @@ msgctxt "@info"
 msgid "Turn on Bluetooth to manage paired devices."
 msgstr "Schalten Sie Bluetooth ein, um gekoppelte Geräte zu verwalten."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:294
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:316
 msgctxt "@action:button"
 msgid "Turn on Night Light"
 msgstr "Nachtlicht einschalten"
@@ -6157,7 +6319,7 @@ msgctxt "@info"
 msgid "Unknown audio stream"
 msgstr "Unbekannter Audio-Stream"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:212
 msgctxt "@action:button"
 msgid "Unmute"
 msgstr "Stummschaltung aufheben"
@@ -6177,7 +6339,7 @@ msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Vom Dock lösen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:156
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:163
 msgctxt "@action:button"
 msgid "Updates"
 msgstr "Aktualisierungen"
@@ -6597,7 +6759,7 @@ msgstr ""
 "Wenn deaktiviert, ignorieren Anwendungssymbole abgelegte Dateien. Der "
 "Papierkorb kann weiterhin Dateien empfangen."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:91
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:98
 msgctxt "@action:button"
 msgid "Wi-Fi"
 msgstr "WLAN"
@@ -6719,6 +6881,7 @@ msgid "Would you like to restart Plasma Shell now? [y/N]: "
 msgstr "Möchten Sie Plasma Shell jetzt neu starten? [j/N]: "
 
 #: contents/ui/config/AddItemPalette.qml:30
+#: contents/ui/config/components/ItemsConfigurationCatalog.qml:62
 msgid "Write a quick editable note"
 msgstr "Schreiben Sie eine schnell bearbeitbare Notiz"
 

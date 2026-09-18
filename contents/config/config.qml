@@ -42,4 +42,10 @@ ConfigModel {
         icon: "input-keyboard"
         source: "config/ConfigAdditionalShortcuts.qml"
     }
+
+    ConfigCategory {
+        name: i18n("Development")
+        icon: "applications-development"
+        source: "config/ConfigDevelopment.qml"
+    }
 }

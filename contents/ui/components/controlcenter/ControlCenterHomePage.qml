@@ -8,6 +8,8 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.components as PlasmaComponents
 
+import "ControlCenterLayoutMetrics.js" as LayoutMetrics
+
 FocusScope {
     id: root
 
@@ -25,7 +27,12 @@ FocusScope {
     property bool doNotDisturbAvailable: false
     property bool doNotDisturbActive: false
     property bool motionEnabled: true
-    readonly property int applicationPlaceholderCount: 3
+    // The quick-action strip keeps three non-removable controls —theme, Night
+    // Light and the initial Calculator entry— and fills the rest of its width
+    // with empty positions, so its capacity follows the width it really has.
+    readonly property int quickActionFixedCount: 3
+    readonly property int quickActionMinimumCount: 4
+    readonly property int quickActionMaximumCount: 8
     readonly property bool wideLayout:
         width >= Kirigami.Units.gridUnit * 48
 
@@ -247,9 +254,24 @@ FocusScope {
                 }
 
                 RowLayout {
+                    id: quickActionsRow
+
+                    objectName: "controlCenterQuickActionsRow"
                     Layout.fillWidth: true
                     Layout.columnSpan: root.wideLayout ? 2 : 1
-                    spacing: Kirigami.Units.mediumSpacing
+                    // The width comes from the scroll view, which the surface
+                    // sizes, so filling empty slots never feeds back into the
+                    // layout that decides how many of them fit.
+                    readonly property int cellCount: LayoutMetrics.quickActionCapacity(
+                        homeScrollView.width, Kirigami.Units.gridUnit * 3,
+                        Kirigami.Units.mediumSpacing, root.quickActionMinimumCount,
+                        root.quickActionMaximumCount)
+                    readonly property int emptySlotCount: Math.max(0,
+                        cellCount - root.quickActionFixedCount)
+                    spacing: LayoutMetrics.quickActionSpacing(homeScrollView.width,
+                        Kirigami.Units.gridUnit * 3, cellCount,
+                        Kirigami.Units.mediumSpacing,
+                        Kirigami.Units.largeSpacing * 2)
 
                     Item {
                         Layout.fillWidth: true
@@ -312,41 +334,61 @@ FocusScope {
                         onClicked: root.applicationRequested("calculator")
                     }
 
-                    ControlCenterApplicationPlaceholderButton {
-                        objectName: "controlCenterApplicationPlaceholderButton1"
+                    // The empty positions reuse the placeholder already present in
+                    // the project; their number follows the width of the strip.
+                    Repeater {
+                        model: quickActionsRow.emptySlotCount
+
+                        delegate: ControlCenterApplicationPlaceholderButton {
+                            required property int index
+
+                            objectName: "controlCenterApplicationPlaceholderButton"
+                                + (index + 1)
+                        }
                     }
 
-                    ControlCenterApplicationPlaceholderButton {
-                        objectName: "controlCenterApplicationPlaceholderButton2"
-                    }
-
-                    ControlCenterApplicationPlaceholderButton {
-                        objectName: "controlCenterApplicationPlaceholderButton3"
+                    Item {
+                        Layout.fillWidth: true
                     }
                 }
 
-                ControlCenterNightLightStrength {
-                    objectName: "controlCenterNightLightStrengthControl"
+                ControlCenterHoverReveal {
+                    objectName: "controlCenterNightLightStrengthReveal"
                     Layout.fillWidth: true
                     Layout.columnSpan: root.wideLayout ? 2 : 1
                     visible: root.nightLightAdapter
                         && root.nightLightAdapter.available
-                    strength: root.nightLightAdapter
-                        ? root.nightLightAdapter.strength : 0
-                    controlAvailable: root.nightLightAdapter
-                        && root.nightLightAdapter.available
-                        && root.nightLightAdapter.configured
-                        && !root.nightLightAdapter.inhibited
-                        && !root.nightLightAdapter.busy
-                    settingsActionName: i18nc("@action:button", "Configure Night Light") // qmllint disable unqualified
-                    onPreviewRequested: function(strength) {
-                        root.nightLightStrengthPreviewRequested(strength)
+                    motionEnabled: root.motionEnabled
+                    expandedHeight: strengthControl.implicitHeight
+                    revealRequested: nightLightButton.hovered
+                        || nightLightButton.activeFocus
+                    interacting: strengthControl.interacting
+                    usable: strengthControl.controlAvailable
+
+                    ControlCenterNightLightStrength {
+                        id: strengthControl
+
+                        objectName: "controlCenterNightLightStrengthControl"
+                        width: parent.width
+                        height: implicitHeight
+                        anchors.verticalCenter: parent.verticalCenter
+                        strength: root.nightLightAdapter
+                            ? root.nightLightAdapter.strength : 0
+                        controlAvailable: root.nightLightAdapter
+                            && root.nightLightAdapter.available
+                            && root.nightLightAdapter.configured
+                            && !root.nightLightAdapter.inhibited
+                            && !root.nightLightAdapter.busy
+                        settingsActionName: i18nc("@action:button", "Configure Night Light") // qmllint disable unqualified
+                        onPreviewRequested: function(strength) {
+                            root.nightLightStrengthPreviewRequested(strength)
+                        }
+                        onPreviewStopped: root.nightLightStrengthPreviewStopped()
+                        onStrengthModified: function(strength) {
+                            root.nightLightStrengthModified(strength)
+                        }
+                        onSettingsRequested: root.settingsRequested("nightlight")
                     }
-                    onPreviewStopped: root.nightLightStrengthPreviewStopped()
-                    onStrengthModified: function(strength) {
-                        root.nightLightStrengthModified(strength)
-                    }
-                    onSettingsRequested: root.settingsRequested("nightlight")
                 }
             }
 

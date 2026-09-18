@@ -68,6 +68,8 @@ target_sources(punchidockintegration PRIVATE
     mprisplayerselection.h
     panellengthmodebridge.cpp
     panellengthmodebridge.h
+    panelrevealadapter.cpp
+    panelrevealadapter.h
     panelinputregionsynchronizer.cpp
     panelinputregionsynchronizer.h
     panelthemesurface.cpp
@@ -168,6 +170,7 @@ target_link_libraries(punchidockintegration
         KF6::WindowSystem
         PkgConfig::PipeWire
         Plasma::Plasma
+        Plasma::PlasmaQuick
         PW::KWorkspace
 )
 

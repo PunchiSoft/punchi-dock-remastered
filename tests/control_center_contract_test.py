@@ -58,6 +58,10 @@ EXPANDABLE_SECTION = (
     ROOT
     / "contents/ui/components/controlcenter/ControlCenterExpandableSection.qml"
 ).read_text(encoding="utf-8")
+HOVER_REVEAL = (
+    ROOT
+    / "contents/ui/components/controlcenter/ControlCenterHoverReveal.qml"
+).read_text(encoding="utf-8")
 NOTIFICATION_DELEGATE = (
     ROOT
     / "contents/ui/components/controlcenter/ControlCenterNotificationDelegate.qml"
@@ -122,6 +126,9 @@ BLUETOOTH_DELEGATE = (
 ).read_text(encoding="utf-8")
 PASSWORD_SURFACE = (
     ROOT / "contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml"
+).read_text(encoding="utf-8")
+PAGE_SLOT = (
+    ROOT / "contents/ui/components/controlcenter/ControlCenterPageSlot.qml"
 ).read_text(encoding="utf-8")
 
 
@@ -289,6 +296,22 @@ require(
     "Notification history must always occupy the remaining home-page height.",
 )
 require(
+    "ControlCenterHoverReveal" in HOME_PAGE
+    and "nightLightButton.hovered" in HOME_PAGE
+    and "nightLightButton.activeFocus" in HOME_PAGE
+    and "ControlCenterExpandableSection" in HOVER_REVEAL
+    and "property bool revealRequested" in HOVER_REVEAL
+    and "property bool interacting" in HOVER_REVEAL
+    and "property bool usable" in HOVER_REVEAL
+    and "property int collapseDelay" in HOVER_REVEAL
+    and "Kirigami.Units.shortDuration" in HOVER_REVEAL
+    and "readonly property bool interacting" in NIGHT_LIGHT_STRENGTH
+    and "strengthSlider.hovered" in NIGHT_LIGHT_STRENGTH
+    and "settingsButton.hovered" in NIGHT_LIGHT_STRENGTH,
+    "The extra night-light row must reveal on pointer or keyboard focus, stay "
+    "open while used and reuse the shared expandable transition.",
+)
+require(
     "Behavior on expansionProgress" in EXPANDABLE_SECTION
     and "Easing.OutCubic" in EXPANDABLE_SECTION
     and "Easing.InCubic" in EXPANDABLE_SECTION
@@ -319,9 +342,17 @@ require(
     and 'objectName: "controlCenterUpdatesTile"' in HOME_PAGE
     and 'root.applicationRequested("updates")' in HOME_PAGE
     and 'root.applicationRequested("calculator")' in HOME_PAGE
-    and "readonly property int applicationPlaceholderCount: 3" in HOME_PAGE
-    and HOME_PAGE.count('objectName: "controlCenterApplicationPlaceholderButton') == 3
-    and HOME_PAGE.count("ControlCenterApplicationPlaceholderButton {") == 3
+    # The strip derives its capacity from the real width: the fixed controls stay
+    # and the remaining positions reuse the project's empty "add" slot.
+    and "readonly property int quickActionFixedCount: 3" in HOME_PAGE
+    and "readonly property int quickActionMinimumCount: 4" in HOME_PAGE
+    and "readonly property int quickActionMaximumCount: 8" in HOME_PAGE
+    and "LayoutMetrics.quickActionCapacity(" in HOME_PAGE
+    and "LayoutMetrics.quickActionSpacing(" in HOME_PAGE
+    and "model: quickActionsRow.emptySlotCount" in HOME_PAGE
+    and HOME_PAGE.count("ControlCenterApplicationPlaceholderButton {") == 1
+    and "applicationPlaceholderCount" not in HOME_PAGE
+    and 'objectName: "controlCenterQuickActionsRow"' in HOME_PAGE
     and 'iconName: "list-add-symbolic"' in APPLICATION_PLACEHOLDER
     and "enabled: false" in APPLICATION_PLACEHOLDER
     and "Accessible.ignored: true" in APPLICATION_PLACEHOLDER
@@ -471,6 +502,63 @@ require(
     and "openItemOptions" in AUDIO_ITEM
     and 'objectName: "controlCenterNavigationActionButton"' in CONTROL_CARD,
     "Sound must open an accessible internal Devices/Applications page with native interactions.",
+)
+require(
+    "StackLayout" not in OVERLAY
+    and OVERLAY.count("ControlCenterPageSlot {") == 4
+    and 'objectName: "controlCenterHomePageSlot"' in OVERLAY
+    and 'objectName: "controlCenterNetworkPageSlot"' in OVERLAY
+    and 'objectName: "controlCenterBluetoothPageSlot"' in OVERLAY
+    and 'objectName: "controlCenterAudioPageSlot"' in OVERLAY
+    and 'current: root.currentPage === "home"' in OVERLAY
+    and 'current: root.currentPage === "network"' in OVERLAY
+    and 'current: root.currentPage === "bluetooth"' in OVERLAY
+    and 'current: root.currentPage === "sound"' in OVERLAY
+    and "motionEnabled: root.motionEnabled" in OVERLAY
+    and "fullHeight: pageHost.height" in OVERLAY
+    and OVERLAY.count("anchors.top: parent.top") == 4
+    and "function settlePage(pageName)" in OVERLAY
+    and "typeof target.focusFirstControl === \"function\"" in OVERLAY
+    and "root.networkPage.focusFirstControl()" not in OVERLAY
+    and "root.bluetoothPage.focusFirstControl()" not in OVERLAY
+    and "root.audioPage.focusFirstControl()" not in OVERLAY
+    and OVERLAY.count("settlePage(") == 5
+    and "property real progress: current ? 1.0 : 0.0" in PAGE_SLOT
+    and "Behavior on progress" in PAGE_SLOT
+    and "signal transitionFinished(bool current)" in PAGE_SLOT
+    and OVERLAY.count("onTransitionFinished") == 4
+    and OVERLAY.count("root.settlePage(") == 4
+    and "property bool current: false" in PAGE_SLOT
+    and "property bool motionEnabled: true" in PAGE_SLOT
+    and "property real fullHeight: 0" in PAGE_SLOT
+    and "visible: progress > 0.001" in PAGE_SLOT
+    and "enabled: current" in PAGE_SLOT
+    and "z: root.current ? 1 : 0" in PAGE_SLOT
+    and "clip: true" in PAGE_SLOT
+    and "Timer" not in PAGE_SLOT
+    and "Kirigami.Units.longDuration" in PAGE_SLOT
+    and "Kirigami.Units.gridUnit" in PAGE_SLOT
+    # The slot clips a plain container, so every page must fill it; an unsized
+    # FocusScope page left the Control Center empty once before.
+    and re.search(
+        r"ControlCenterHomePage \{\n\s+id: homePage[\s\S]{0,240}?"
+        r"anchors\.fill: parent",
+        OVERLAY,
+    )
+    is not None
+    and all(
+        re.search(
+            r"id: %s\n[\s\S]{0,240}?anchors\.fill: parent" % loader,
+            OVERLAY,
+        )
+        is not None
+        for loader in (
+            "networkPageLoader",
+            "bluetoothPageLoader",
+            "audioPageLoader",
+        )
+    ),
+    "Both Control Center directions must share one declarative, interruptible page transition.",
 )
 require(
     'KSharedConfig::openConfig(QStringLiteral("plasmaparc"))'

@@ -31,6 +31,34 @@ TestCase {
         compare(LayoutMetrics.availableHeight(80, gridUnit), 0)
     }
 
+    function test_quickActionCapacityFollowsWidth() {
+        const gridUnit = 18
+        const cell = gridUnit * 3
+        const spacing = gridUnit / 2
+        const maximumSpacing = gridUnit * 2
+
+        // Without a real width there is no capacity to report.
+        compare(LayoutMetrics.quickActionCapacity(0, cell, spacing, 4, 8), 0)
+        // Narrow strips keep the minimum so the row never loses its function.
+        compare(LayoutMetrics.quickActionCapacity(200, cell, spacing, 4, 8), 4)
+        // A floating rail at its minimum width already fits the whole row.
+        compare(LayoutMetrics.quickActionCapacity(540, cell, spacing, 4, 8), 8)
+        compare(LayoutMetrics.quickActionCapacity(756, cell, spacing, 4, 8), 8)
+        // Wider surfaces stay capped instead of growing without limit.
+        compare(LayoutMetrics.quickActionCapacity(1800, cell, spacing, 4, 8), 8)
+
+        // The cells spread evenly and never end up below the theme spacing.
+        fuzzyCompare(LayoutMetrics.quickActionSpacing(540, cell, 8, spacing,
+            maximumSpacing), 108 / 7, 0.01)
+        compare(LayoutMetrics.quickActionSpacing(200, cell, 4, spacing,
+            maximumSpacing), spacing)
+        // Above the cap the caller centers the group instead of stretching it.
+        compare(LayoutMetrics.quickActionSpacing(1800, cell, 8, spacing,
+            maximumSpacing), maximumSpacing)
+        compare(LayoutMetrics.quickActionSpacing(0, cell, 1, spacing,
+            maximumSpacing), spacing)
+    }
+
     Component {
         id: floatingGeometryComponent
 

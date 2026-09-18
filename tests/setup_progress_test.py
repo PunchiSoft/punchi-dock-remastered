@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import fcntl
 import pty
+import re
 import select
 import signal
 import struct
@@ -13,6 +14,16 @@ import termios
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def visible_frames(output):
+    """Return every rendered frame without ANSI sequences or carriage returns."""
+    frames = []
+    for segment in output.replace("\r", "\n").split("\n"):
+        visible = re.sub(r"\x1b\[[0-9;?]*[A-Za-z]", "", segment)
+        if visible:
+            frames.append(visible)
+    return frames
 
 
 def run_in_terminal(command, environment, expected_status=0):
@@ -98,6 +109,11 @@ def main():
                           'punchi_progress_update 70 stage\n'
                           'printf "noisy staging output\\n"\n'
                           'sleep 0.15\n'
+                          # The longest built-in label reaches the truncation
+                          # width, which is where the frame used to be one
+                          # column too wide and wrapped.
+                          'punchi_progress_update 85 package\n'
+                          'sleep 0.15\n'
                           'punchi_progress_update 100 complete\n')
         public_output = run_in_terminal(public_command, environment)
         assert "noisy compiler output" not in public_output, public_output
@@ -105,6 +121,11 @@ def main():
         assert "\r\x1b[2K" in public_output, public_output
         assert "100% Operation completed successfully" in public_output, public_output
         assert public_output.count("\n") == 1, repr(public_output)
+        # A frame wider than the terminal wraps, and the carriage return then
+        # clears only the wrapped line, leaving one visible line per frame.
+        too_wide = [frame for frame in visible_frames(public_output)
+                    if len(frame) > 80]
+        assert not too_wide, too_wide
         assert not list(temporary.glob("punchi-user-progress.*"))
         assert not list(temporary.glob("punchi-progress.*"))
 

@@ -220,6 +220,8 @@ struct LoadResult {
     bool fullRepresentationItemLoaded = false;
     bool appearanceConfigLoaded = false;
     bool appearanceRemovalFeedbackWorks = false;
+    bool developmentConfigLoaded = false;
+    bool itemsConfigurationWindowAvailable = false;
     bool panelFlatGeometryValid = false;
     bool mediaCoverCentered = false;
     bool initialIconSizeCorrect = false;
@@ -341,6 +343,8 @@ private Q_SLOTS:
             QVERIFY2(result.fullRepresentationItemLoaded, "The full representation item was not instantiated");
             QVERIFY2(result.appearanceConfigLoaded, "The appearance configuration was not instantiated");
             QVERIFY2(result.appearanceRemovalFeedbackWorks, "Theme removal feedback did not update reactively");
+            QVERIFY2(result.developmentConfigLoaded, "The Development configuration was not instantiated");
+            QVERIFY2(result.itemsConfigurationWindowAvailable, "The items configuration window is unavailable from Development");
             QVERIFY2(result.panelFlatGeometryValid, "The flat panel surface did not preserve its visible geometry");
             QVERIFY2(result.mediaCoverCentered, "The large horizontal media cover was not centered");
             QVERIFY2(result.initialIconSizeCorrect, "The icon size default or stored override was incorrect");
@@ -592,6 +596,17 @@ private:
                         drainDeferredEvents();
                     } else {
                         qWarning().noquote() << appearance.errorString();
+                    }
+                    QQmlComponent development(configContext->engine(), QUrl::fromLocalFile(
+                        QDir(m_packageRoot).filePath(QStringLiteral("contents/ui/config/ConfigDevelopment.qml"))));
+                    std::unique_ptr<QObject> developmentConfig(development.create(configContext));
+                    result.developmentConfigLoaded = developmentConfig != nullptr;
+                    if (developmentConfig) {
+                        result.itemsConfigurationWindowAvailable = developmentConfig->findChild<QObject *>(
+                            QStringLiteral("itemsConfigurationWindow")) != nullptr;
+                        drainDeferredEvents();
+                    } else {
+                        qWarning().noquote() << development.errorString();
                     }
                 }
                 QQmlComponent *fullRepresentation = item->fullRepresentation();

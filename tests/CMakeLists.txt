@@ -119,6 +119,22 @@ target_link_libraries(panellengthmodebridge_test PRIVATE Qt6::Core Qt6::Qml)
 
 add_test(NAME panellengthmodebridge_test COMMAND panellengthmodebridge_test)
 
+add_executable(panelrevealadapter_test
+    panelrevealadapter_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/panelrevealadapter.cpp
+)
+
+target_include_directories(panelrevealadapter_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(panelrevealadapter_test PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Qml
+    Plasma::Plasma
+    Plasma::PlasmaQuick
+)
+
+add_test(NAME panelrevealadapter_test COMMAND panelrevealadapter_test)
+
 add_executable(panelinputregionsynchronizer_test
     panelinputregionsynchronizer_test.cpp
     ${CMAKE_SOURCE_DIR}/src/panelinputregionsynchronizer.cpp
@@ -232,6 +248,11 @@ add_test(
 add_test(
     NAME control_center_contract_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/control_center_contract_test.py
+)
+
+add_test(
+    NAME config_development_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/config_development_contract_test.py
 )
 
 add_test(
@@ -539,6 +560,10 @@ punchi_add_qml_test(
     control_center_overlay_layout_test.qml
 )
 punchi_add_qml_test(
+    control_center_page_slot_test
+    control_center_page_slot_test.qml
+)
+punchi_add_qml_test(
     control_center_notification_delegate_test
     control_center_notification_delegate_test.qml
 )
@@ -646,6 +671,22 @@ set_tests_properties(native_popup_spacing_test PROPERTIES
     ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PUNCHI_TEST_NATIVE_POPUP=1"
     FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
     TIMEOUT 30
+)
+add_test(
+    NAME items_configuration_window_test
+    COMMAND ${PUNCHI_DBUS_RUN_SESSION}
+        --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:punchi_qmltestrunner>
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/items_configuration_window_test.qml
+)
+set_tests_properties(items_configuration_window_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PUNCHI_TEST_NATIVE_POPUP=1"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30
+)
+punchi_add_qml_test(
+    items_configuration_draft_controller_test
+    items_configuration_draft_controller_test.qml
 )
 punchi_add_qml_test(
     dock_item_launcher_drop_state_test

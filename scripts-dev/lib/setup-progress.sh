@@ -171,7 +171,13 @@ punchi_progress_run() {
             bar_width=$(( columns - 29 ))
             (( bar_width <= 34 )) || bar_width=34
             (( bar_width >= 4 )) || bar_width=4
-            text_width=$(( columns - bar_width - 13 ))
+            # The rest of the frame ("[ ", the spinner symbol, " ] ", the bar
+            # brackets, the percentage and the separating spaces) takes 14
+            # columns, so this keeps the rendered line exactly as wide as the
+            # terminal. A wider line wraps, and since the carriage return can
+            # only clear the line it lands on, every rendered frame stayed
+            # visible on its own line.
+            text_width=$(( columns - bar_width - 14 ))
             (( text_width >= 0 )) || text_width=0
             text="${text:0:text_width}"
             bar="$(punchi_progress_bar "$percent" "$bar_width" "$bar_fill")"

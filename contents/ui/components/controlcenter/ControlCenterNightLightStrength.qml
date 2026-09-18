@@ -12,6 +12,16 @@ Rectangle {
     property int strength: 0
     property bool controlAvailable: false
     property string settingsActionName: ""
+    // True while the row is pointed at or used, so a reveal wrapper can keep it
+    // open even when the pointer left the trigger button. The controls report
+    // their own hover because a hovered Control consumes the event before it
+    // reaches the hover-only area behind the content.
+    readonly property bool interacting: rowHoverArea.containsMouse
+        || strengthSlider.hovered
+        || settingsButton.hovered
+        || strengthSlider.pressed
+        || strengthSlider.activeFocus
+        || settingsButton.activeFocus
 
     signal previewRequested(int strength)
     signal previewStopped()
@@ -31,6 +41,18 @@ Rectangle {
 
         interval: Kirigami.Units.humanMoment
         onTriggered: root.previewStopped()
+    }
+
+    // Hover-only pointer tracking for the whole row, declared behind the
+    // content so the slider and the action button keep every press, drag and
+    // wheel event.
+    MouseArea {
+        id: rowHoverArea
+
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
+        hoverEnabled: true
+        Accessible.ignored: true
     }
 
     RowLayout {
@@ -91,6 +113,8 @@ Rectangle {
         }
 
         PlasmaComponents.Button {
+            id: settingsButton
+
             objectName: "controlCenterNightLightSettingsButton"
             text: root.settingsActionName
             icon.name: "configure"

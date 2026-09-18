@@ -166,17 +166,27 @@ FocusScope {
         })
     }
 
+    // Moves focus to the page that finished expanding. The page that is leaving
+    // stays disabled while it compresses, so keyboard focus and assistive
+    // technology always land on the page that is actually visible.
+    function settlePage(pageName) {
+        if (!root.controlCenterOpen || root.currentPage !== pageName) {
+            return
+        }
+        const target = pageName === "network" ? root.networkPage
+            : pageName === "bluetooth" ? root.bluetoothPage
+                : pageName === "sound" ? root.audioPage : homePage
+        if (target && typeof target.focusFirstControl === "function") {
+            target.focusFirstControl()
+        }
+    }
+
     function showNetworkPage() {
         if (!networkAdapter) {
             requestSettings("network")
             return
         }
         currentPage = "network"
-        Qt.callLater(function() {
-            if (root.controlCenterOpen && root.networkPage) {
-                root.networkPage.focusFirstControl()
-            }
-        })
     }
 
     function showBluetoothPage() {
@@ -185,11 +195,6 @@ FocusScope {
             return
         }
         currentPage = "bluetooth"
-        Qt.callLater(function() {
-            if (root.controlCenterOpen && root.bluetoothPage) {
-                root.bluetoothPage.focusFirstControl()
-            }
-        })
     }
 
     function showSoundPage() {
@@ -198,20 +203,10 @@ FocusScope {
             return
         }
         currentPage = "sound"
-        Qt.callLater(function() {
-            if (root.controlCenterOpen && root.audioPage) {
-                root.audioPage.focusFirstControl()
-            }
-        })
     }
 
     function showHomePage() {
         currentPage = "home"
-        Qt.callLater(function() {
-            if (root.controlCenterOpen) {
-                homePage.focusFirstControl()
-            }
-        })
     }
 
     function handleEscape() {
@@ -409,22 +404,19 @@ FocusScope {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.leftMargin: root.floatingMode
-                ? floatingBackground.margins.left
-                    + Kirigami.Units.largeSpacing
-                : 0
-            anchors.topMargin: root.floatingMode
-                ? floatingBackground.margins.top
-                    + Kirigami.Units.largeSpacing
-                : 0
-            anchors.rightMargin: root.floatingMode
-                ? floatingBackground.margins.right
-                    + Kirigami.Units.largeSpacing
-                : 0
-            anchors.bottomMargin: root.floatingMode
-                ? floatingBackground.margins.bottom
-                    + Kirigami.Units.largeSpacing
-                : 0
+            // The theme frame allowance applies to both presentations: the only
+            // intended difference between floating and full screen is the
+            // backdrop, never the content width, the layout or the number of
+            // controls. Applying it only in floating made the full-screen rail
+            // wider and the quick-action strip fit one more control.
+            anchors.leftMargin: floatingBackground.margins.left
+                + Kirigami.Units.largeSpacing
+            anchors.topMargin: floatingBackground.margins.top
+                + Kirigami.Units.largeSpacing
+            anchors.rightMargin: floatingBackground.margins.right
+                + Kirigami.Units.largeSpacing
+            anchors.bottomMargin: floatingBackground.margins.bottom
+                + Kirigami.Units.largeSpacing
             spacing: Kirigami.Units.largeSpacing
 
             RowLayout {
@@ -472,106 +464,187 @@ FocusScope {
                 }
             }
 
-            StackLayout {
+            Item {
+                id: pageHost
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                currentIndex: root.currentPage === "network" ? 1
-                    : root.currentPage === "bluetooth" ? 2
-                    : root.currentPage === "sound" ? 3 : 0
 
-                ControlCenterHomePage {
-                    id: homePage
-                    volumeAdapter: root.volumeAdapter
-                    brightnessAdapter: root.brightnessAdapter
-                    networkAdapter: root.networkAdapter
-                    bluetoothAdapter: root.bluetoothAdapter
-                    themeAdapter: root.themeAdapter
-                    nightLightAdapter: root.nightLightAdapter
-                    volumeOsdAdapter: root.volumeOsdAdapter
-                    notificationModel: notificationHistory
-                    unreadNotificationCount: root.unreadNotificationCount
-                    expiredNotificationCount:
-                        notificationHistory.expiredNotificationsCount
-                    notificationServiceValid: NotificationManager.Server.valid
-                    doNotDisturbAvailable: NotificationManager.Server.valid
-                    doNotDisturbActive: root.doNotDisturbActive
+                // One slot per page. The current page expands while the previous
+                // one compresses and slides away, so the incoming page lands over
+                // the space the outgoing one releases. Both directions and every
+                // page use the same declarative transition.
+                ControlCenterPageSlot {
+                    id: homePageSlot
+
+                    objectName: "controlCenterHomePageSlot"
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    current: root.currentPage === "home"
                     motionEnabled: root.motionEnabled
-                    onNetworkRequested: root.showNetworkPage()
-                    onBluetoothRequested: root.showBluetoothPage()
-                    onSoundRequested: root.showSoundPage()
-                    onDoNotDisturbRequested: root.toggleDoNotDisturb()
-                    onThemeToggleRequested: root.toggleTheme()
-                    onNightLightToggleRequested: root.toggleNightLight()
-                    onVolumeOsdToggleRequested: root.toggleVolumeOsd()
-                    onNightLightStrengthPreviewRequested: function(strength) {
-                        root.previewNightLightStrength(strength)
+                    fullHeight: pageHost.height
+                    onTransitionFinished: function(current) {
+                        if (current) {
+                            root.settlePage("home")
+                        }
                     }
-                    onNightLightStrengthPreviewStopped:
-                        root.stopNightLightPreview()
-                    onNightLightStrengthModified: function(strength) {
-                        root.setNightLightStrength(strength)
-                    }
-                    onNotificationCloseRequested: function(index) {
-                        notificationHistory.close(
-                            notificationHistory.index(index, 0))
-                    }
-                    onClearNotificationsRequested: notificationHistory.clear(
-                        NotificationManager.Notifications.ClearExpired)
-                    onSettingsRequested: function(section) {
-                        root.requestSettings(section)
-                    }
-                    onApplicationRequested: function(application) {
-                        root.requestApplication(application)
+
+                    ControlCenterHomePage {
+                        id: homePage
+                        // The slot clips a plain container and the page root is an
+                        // unsized FocusScope, so the page must fill it explicitly.
+                        anchors.fill: parent
+                        volumeAdapter: root.volumeAdapter
+                        brightnessAdapter: root.brightnessAdapter
+                        networkAdapter: root.networkAdapter
+                        bluetoothAdapter: root.bluetoothAdapter
+                        themeAdapter: root.themeAdapter
+                        nightLightAdapter: root.nightLightAdapter
+                        volumeOsdAdapter: root.volumeOsdAdapter
+                        notificationModel: notificationHistory
+                        unreadNotificationCount: root.unreadNotificationCount
+                        expiredNotificationCount:
+                            notificationHistory.expiredNotificationsCount
+                        notificationServiceValid: NotificationManager.Server.valid
+                        doNotDisturbAvailable: NotificationManager.Server.valid
+                        doNotDisturbActive: root.doNotDisturbActive
+                        motionEnabled: root.motionEnabled
+                        onNetworkRequested: root.showNetworkPage()
+                        onBluetoothRequested: root.showBluetoothPage()
+                        onSoundRequested: root.showSoundPage()
+                        onDoNotDisturbRequested: root.toggleDoNotDisturb()
+                        onThemeToggleRequested: root.toggleTheme()
+                        onNightLightToggleRequested: root.toggleNightLight()
+                        onVolumeOsdToggleRequested: root.toggleVolumeOsd()
+                        onNightLightStrengthPreviewRequested: function(strength) {
+                            root.previewNightLightStrength(strength)
+                        }
+                        onNightLightStrengthPreviewStopped:
+                            root.stopNightLightPreview()
+                        onNightLightStrengthModified: function(strength) {
+                            root.setNightLightStrength(strength)
+                        }
+                        onNotificationCloseRequested: function(index) {
+                            notificationHistory.close(
+                                notificationHistory.index(index, 0))
+                        }
+                        onClearNotificationsRequested: notificationHistory.clear(
+                            NotificationManager.Notifications.ClearExpired)
+                        onSettingsRequested: function(section) {
+                            root.requestSettings(section)
+                        }
+                        onApplicationRequested: function(application) {
+                            root.requestApplication(application)
+                        }
                     }
                 }
 
-                Loader {
-                    id: networkPageLoader
-                    active: root.networkAdapter !== null
-                    asynchronous: false
-                    sourceComponent: Component {
-                        ControlCenterNetworkPage {
-                            adapter: root.networkAdapter
-                            onBackRequested: root.showHomePage()
-                            onSettingsRequested: function(section) {
-                                root.requestSettings(section)
+                ControlCenterPageSlot {
+                    id: networkPageSlot
+
+                    objectName: "controlCenterNetworkPageSlot"
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    current: root.currentPage === "network"
+                    motionEnabled: root.motionEnabled
+                    fullHeight: pageHost.height
+                    onTransitionFinished: function(current) {
+                        if (current) {
+                            root.settlePage("network")
+                        }
+                    }
+
+                    Loader {
+                        id: networkPageLoader
+                        anchors.fill: parent
+                        active: root.networkAdapter !== null
+                        asynchronous: false
+                        sourceComponent: Component {
+                            ControlCenterNetworkPage {
+                                adapter: root.networkAdapter
+                                onBackRequested: root.showHomePage()
+                                onSettingsRequested: function(section) {
+                                    root.requestSettings(section)
+                                }
                             }
                         }
                     }
                 }
 
-                Loader {
-                    id: bluetoothPageLoader
-                    active: root.currentPage === "bluetooth"
-                        && root.bluetoothAdapter !== null
-                    asynchronous: false
-                    sourceComponent: Component {
-                        ControlCenterBluetoothPage {
-                            adapter: root.bluetoothAdapter
-                            onBackRequested: root.showHomePage()
-                            onSettingsRequested: function(section) {
-                                root.requestSettings(section)
+                ControlCenterPageSlot {
+                    id: bluetoothPageSlot
+
+                    objectName: "controlCenterBluetoothPageSlot"
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    current: root.currentPage === "bluetooth"
+                    motionEnabled: root.motionEnabled
+                    fullHeight: pageHost.height
+                    onTransitionFinished: function(current) {
+                        if (current) {
+                            root.settlePage("bluetooth")
+                        }
+                    }
+
+                    Loader {
+                        id: bluetoothPageLoader
+                        anchors.fill: parent
+                        // Kept loaded while the slot is still visible so the page
+                        // can compress instead of disappearing at once.
+                        active: (root.currentPage === "bluetooth"
+                                || bluetoothPageSlot.progress > 0.001)
+                            && root.bluetoothAdapter !== null
+                        asynchronous: false
+                        sourceComponent: Component {
+                            ControlCenterBluetoothPage {
+                                adapter: root.bluetoothAdapter
+                                onBackRequested: root.showHomePage()
+                                onSettingsRequested: function(section) {
+                                    root.requestSettings(section)
+                                }
                             }
                         }
                     }
                 }
 
-                Loader {
-                    id: audioPageLoader
-                    active: root.currentPage === "sound"
-                        && root.volumeAdapter !== null
-                    asynchronous: false
-                    sourceComponent: Component {
-                        ControlCenterAudioPage {
-                            adapter: root.volumeAdapter
-                            showVirtualDevices:
-                                root.showVirtualAudioDevices
-                            onBackRequested: root.showHomePage()
-                            onSettingsRequested: function(section) {
-                                root.requestSettings(section)
-                            }
-                            onShowVirtualDevicesToggled: function(enabled) {
-                                root.showVirtualAudioDevices = enabled
+                ControlCenterPageSlot {
+                    id: audioPageSlot
+
+                    objectName: "controlCenterAudioPageSlot"
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    current: root.currentPage === "sound"
+                    motionEnabled: root.motionEnabled
+                    fullHeight: pageHost.height
+                    onTransitionFinished: function(current) {
+                        if (current) {
+                            root.settlePage("sound")
+                        }
+                    }
+
+                    Loader {
+                        id: audioPageLoader
+                        anchors.fill: parent
+                        active: (root.currentPage === "sound"
+                                || audioPageSlot.progress > 0.001)
+                            && root.volumeAdapter !== null
+                        asynchronous: false
+                        sourceComponent: Component {
+                            ControlCenterAudioPage {
+                                adapter: root.volumeAdapter
+                                showVirtualDevices:
+                                    root.showVirtualAudioDevices
+                                onBackRequested: root.showHomePage()
+                                onSettingsRequested: function(section) {
+                                    root.requestSettings(section)
+                                }
+                                onShowVirtualDevicesToggled: function(enabled) {
+                                    root.showVirtualAudioDevices = enabled
+                                }
                             }
                         }
                     }

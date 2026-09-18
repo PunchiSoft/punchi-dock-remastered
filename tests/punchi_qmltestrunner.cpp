@@ -16,12 +16,17 @@ void nativePopupMessageHandler(QtMsgType type, const QMessageLogContext &context
                                const QString &message)
 {
     // The offscreen plugin cannot apply native masks, raise windows or forward
-    // size hints from the real folder popup's Layout constraints. Keep
-    // this exact allowlist opt-in for the native popup geometry test only.
+    // size hints from the real folder popup's Layout constraints. It also
+    // cannot create a KWindowShadow, which every Plasma window and every tooltip
+    // window of PlasmaCore.ToolTipArea requests on creation. Keep this exact
+    // allowlist opt-in for the native popup and tooltip tests only.
     if (type == QtWarningMsg
         && (message == QLatin1StringView("This plugin does not support setting window masks")
             || message == QLatin1StringView("This plugin does not support raise()")
-            || message == QLatin1StringView("This plugin does not support propagateSizeHints()"))) {
+            || message == QLatin1StringView("This plugin does not support propagateSizeHints()")
+            || (message.startsWith(QLatin1StringView("Couldn't create KWindowShadow for "))
+                && (message.contains(QLatin1StringView("ToolTipDialog"))
+                    || message.contains(QLatin1StringView("PlasmaQuick::PlasmaWindow")))))) {
         return;
     }
     if (previousMessageHandler) {

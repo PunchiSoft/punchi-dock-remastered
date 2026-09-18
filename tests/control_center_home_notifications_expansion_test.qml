@@ -165,9 +165,18 @@ TestCase {
         verify(brightnessCard !== null)
         verify(strengthControl !== null)
         verify(strengthSlider !== null)
-        compare(page.applicationPlaceholderCount, 3)
+        // The strip derives its capacity from its own width, so the number of
+        // empty slots is data, not a constant.
+        const quickActionsRow = findChild(page, "controlCenterQuickActionsRow")
+        verify(quickActionsRow !== null)
+        verify(waitForRendering(page))
+        tryVerify(function() { return quickActionsRow.cellCount > 0 })
+        verify(quickActionsRow.cellCount >= page.quickActionMinimumCount)
+        verify(quickActionsRow.cellCount <= page.quickActionMaximumCount)
+        compare(quickActionsRow.emptySlotCount,
+            Math.max(0, quickActionsRow.cellCount - page.quickActionFixedCount))
         const placeholderButtons = []
-        for (let index = 1; index <= page.applicationPlaceholderCount;
+        for (let index = 1; index <= quickActionsRow.emptySlotCount;
                 ++index) {
             const placeholderButton = findChild(page,
                 "controlCenterApplicationPlaceholderButton" + index)
@@ -182,6 +191,9 @@ TestCase {
             compare(placeholderButton.implicitWidth,
                 placeholderButton.implicitHeight)
         }
+        compare(placeholderButtons.length, quickActionsRow.emptySlotCount)
+        compare(findChild(page, "controlCenterApplicationPlaceholderButton"
+            + (quickActionsRow.emptySlotCount + 1)), null)
         verify(waitForRendering(page))
         for (let index = 1; index < placeholderButtons.length; ++index) {
             verify(placeholderButtons[index].x
@@ -194,10 +206,25 @@ TestCase {
         verify(finalPlaceholder.mapToItem(page,
             finalPlaceholder.width, 0).x <= page.width + 1)
 
+        const narrowCapacity = quickActionsRow.cellCount
         hostWindow.width = 900
         tryVerify(function() { return page.wideLayout })
         verify(waitForRendering(page))
-        finalPlaceholder = placeholderButtons[placeholderButtons.length - 1]
+        tryVerify(function() {
+            return quickActionsRow.cellCount >= narrowCapacity
+        })
+        // The strip recomputes its empty slots instead of keeping the old ones.
+        compare(quickActionsRow.emptySlotCount,
+            Math.max(0, quickActionsRow.cellCount - page.quickActionFixedCount))
+        const widenedPlaceholders = []
+        for (let index = 1; index <= quickActionsRow.emptySlotCount; ++index) {
+            const placeholderButton = findChild(page,
+                "controlCenterApplicationPlaceholderButton" + index)
+            verify(placeholderButton !== null)
+            widenedPlaceholders.push(placeholderButton)
+        }
+        compare(widenedPlaceholders.length, quickActionsRow.emptySlotCount)
+        finalPlaceholder = widenedPlaceholders[widenedPlaceholders.length - 1]
         verify(finalPlaceholder.mapToItem(page,
             finalPlaceholder.width, 0).x <= page.width + 1)
         compare(calculatorButton.implicitHeight,
@@ -250,5 +277,67 @@ TestCase {
             calculatorButton.height / 2)
         compare(applicationSpy.count, 2)
         compare(applicationSpy.signalArguments[1][0], "calculator")
+    }
+
+    function test_intensityRowRevealsOnlyWhileInteracting() {
+        const hostWindow = createTemporaryObject(windowComponent, testCase)
+        verify(hostWindow !== null)
+        hostWindowUnderTest = hostWindow
+        tryCompare(hostWindow, "visible", true)
+
+        const page = hostWindow.page
+        const reveal = findChild(page,
+            "controlCenterNightLightStrengthReveal")
+        const nightLightButton = findChild(page,
+            "controlCenterNightLightButton")
+        const strengthSlider = findChild(page,
+            "controlCenterNightLightStrengthSlider")
+        const section = findChild(page,
+            "controlCenterNotificationsSection")
+        verify(reveal !== null)
+        verify(nightLightButton !== null)
+        verify(strengthSlider !== null)
+        verify(section !== null)
+        verify(waitForRendering(page))
+
+        // The extra row stays collapsed until somebody asks for it.
+        compare(reveal.expanded, false)
+        compare(Math.round(reveal.height), 0)
+
+        // Pointer over the trigger button reveals it.
+        mouseMove(nightLightButton, nightLightButton.width / 2,
+            nightLightButton.height / 2)
+        tryCompare(reveal, "expanded", true)
+        verify(waitForRendering(page))
+        tryVerify(function() { return reveal.height > 0 })
+
+        // The notification history keeps the remaining height and stays below.
+        verify(section.y >= reveal.y + reveal.height - 1)
+
+        // The pointer can travel onto the row itself and it stays open.
+        mouseMove(strengthSlider, strengthSlider.width / 2,
+            strengthSlider.height / 2)
+        verify(waitForRendering(page))
+        compare(reveal.expanded, true)
+
+        // Leaving both collapses it again.
+        mouseMove(page, page.width - 2, 2)
+        tryVerify(function() { return !reveal.expanded }, 2000)
+
+        // Keyboard focus on the trigger reveals it too: hover must not be the
+        // only way in.
+        nightLightButton.forceActiveFocus()
+        tryCompare(reveal, "expanded", true)
+        compare(reveal.revealRequested, true)
+        nightLightButton.focus = false
+        tryVerify(function() { return !reveal.expanded }, 2000)
+
+        // A control that cannot be used never reveals.
+        fakeNightLightAdapter.configured = false
+        mouseMove(nightLightButton, nightLightButton.width / 2,
+            nightLightButton.height / 2)
+        verify(waitForRendering(page))
+        compare(reveal.usable, false)
+        compare(reveal.expanded, false)
     }
 }

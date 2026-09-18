@@ -1013,6 +1013,38 @@ Module {
         Signal { name: "panelOpacityModeChanged"; lineNumber: 67 }
     }
     Component {
+        file: "panelrevealadapter.h"
+        lineNumber: 19
+        name: "PanelRevealAdapter"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/PanelRevealAdapter 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "applet"
+            type: "QObject"
+            isPointer: true
+            read: "applet"
+            write: "setApplet"
+            notify: "appletChanged"
+            index: 0
+            lineNumber: 21
+        }
+        Property {
+            name: "revealing"
+            type: "bool"
+            read: "revealing"
+            notify: "revealingChanged"
+            index: 1
+            lineNumber: 22
+            isReadonly: true
+        }
+        Signal { name: "appletChanged"; lineNumber: 36 }
+        Signal { name: "revealingChanged"; lineNumber: 37 }
+        Method { name: "beginReveal"; type: "bool"; lineNumber: 32 }
+        Method { name: "endReveal"; lineNumber: 33 }
+    }
+    Component {
         file: "panelthemesurface.h"
         lineNumber: 11
         name: "PanelThemeSurface"
