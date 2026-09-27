@@ -1,107 +1,52 @@
 import QtQuick
 import QtQuick.Controls as Controls
-import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
+import ".."
 
+// Thin wrapper of `PunchiMenuOptionsPanel`.
+//
+// The panel owns the layout, the list of modes and their texts; this dialog keeps
+// only what makes it a dialog—title, modality, close button and size—plus the
+// public API it already had, so every existing caller keeps working. It forwards
+// what the panel announces and updates its own state, and writes nothing else.
+//
 // Translation helpers are supplied by the KCM context.
 // qmllint disable unqualified
 Controls.Dialog {
     id: root
 
+    // Public API kept as it was: the panel owns the values it shows, so this
+    // wrapper only mirrors them and announces what the user asked for.
     property string menuMode: "normal"
     property string iconName: "start-here-kde"
     property real selectorWidth: Kirigami.Units.gridUnit * 16
-    readonly property var modeOptions: [
-        {
-            "text": i18nc("@option:punchimenu-mode", "Full screen"),
-            "value": "fullScreen",
-            "available": true
-        },
-        {
-            "text": i18nc("@option:punchimenu-mode", "Normal"),
-            "value": "normal",
-            "available": true
-        },
-        {
-            "text": i18nc("@option:punchimenu-mode", "Compact"),
-            "value": "compact",
-            "available": true
-        }
-    ]
+    readonly property alias modeOptions: optionsPanel.modeOptions
 
     signal menuModeSelected(string mode)
     signal iconPickerRequested()
 
     function modeIndex(mode) {
-        for (let index = 0; index < modeOptions.length; index++) {
-            if (modeOptions[index].value === mode) {
-                return index
-            }
-        }
-        return 0
+        return optionsPanel.modeIndex(mode)
     }
 
     title: i18n("Configure PunchiMenu")
     modal: true
     standardButtons: Controls.Dialog.Close
-    onOpened: modeCombo.currentIndex = root.modeIndex(root.menuMode)
+    // A value set from outside is the state of the dialog, never a choice of the
+    // user: showing it again must not announce an intention.
+    onOpened: optionsPanel.synchronizeSelection()
 
-    contentItem: RowLayout {
-        spacing: Kirigami.Units.smallSpacing
+    contentItem: PunchiMenuOptionsPanel {
+        id: optionsPanel
 
-        Controls.Label {
-            text: i18n("Menu mode:")
+        menuMode: root.menuMode
+        iconName: root.iconName
+        selectorWidth: root.selectorWidth
+        onMenuModeSelected: function(mode) {
+            root.menuMode = String(mode)
+            root.menuModeSelected(root.menuMode)
         }
-
-        Controls.ComboBox {
-            id: modeCombo
-
-            Layout.fillWidth: true
-            Layout.minimumWidth: Kirigami.Units.gridUnit * 8
-            Layout.preferredWidth: Math.min(root.selectorWidth,
-                Kirigami.Units.gridUnit * 12)
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 12
-            model: root.modeOptions
-            textRole: "text"
-            Accessible.name: i18n("PunchiMenu display mode")
-
-            delegate: Controls.ItemDelegate {
-                required property int index
-                required property var modelData
-
-                width: modeCombo.width
-                text: String(modelData.text || "")
-                enabled: modelData.available === true
-                highlighted: modeCombo.highlightedIndex === index
-            }
-
-            onActivated: function(index) {
-                const option = root.modeOptions[index]
-                if (!option || option.available !== true) {
-                    currentIndex = root.modeIndex(root.menuMode)
-                    return
-                }
-                root.menuMode = String(option.value)
-                root.menuModeSelected(root.menuMode)
-            }
-        }
-
-        Controls.Label {
-            text: i18n("Icon:")
-        }
-
-        Controls.Button {
-            icon.name: root.iconName
-            display: Controls.AbstractButton.IconOnly
-            text: i18nc("@action:button", "Choose PunchiMenu icon")
-            Accessible.name: text
-            Accessible.description: i18nc("@info:accessibility",
-                "Current icon: %1", root.iconName)
-            onClicked: root.iconPickerRequested()
-
-            Controls.ToolTip.visible: hovered
-            Controls.ToolTip.text: text
-        }
+        onIconPickerRequested: root.iconPickerRequested()
     }
 }
 // qmllint enable unqualified

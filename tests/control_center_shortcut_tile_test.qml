@@ -28,6 +28,13 @@ TestCase {
             visible: true
 
             property alias tile: shortcutTile
+            property alias focusSink: focusSink
+
+            Item {
+                id: focusSink
+                width: 1
+                height: 1
+            }
 
             ControlCenter.ControlCenterShortcutTile {
                 id: shortcutTile
@@ -73,6 +80,10 @@ TestCase {
         tryVerify(function() { return tile.activeFocus })
         keyClick(Qt.Key_Space)
         compare(clickedSpy.count, 2)
+        keyClick(Qt.Key_Return)
+        compare(clickedSpy.count, 3)
+        keyClick(Qt.Key_Enter)
+        compare(clickedSpy.count, 4)
         compare(tile.Accessible.name, "Wi-Fi")
         compare(tile.Accessible.description, "Open network connections")
         compare(tile.leftPadding, Kirigami.Units.largeSpacing)
@@ -81,5 +92,33 @@ TestCase {
         compare(tile.bottomPadding, Kirigami.Units.mediumSpacing)
         verify(tile.contentItem.x >= tile.leftPadding)
         verify(tile.contentItem.width <= tile.availableWidth)
+    }
+
+    function test_programmaticFocusIsNeutralAndKeyboardFocusHasAnOutline() {
+        const hostWindow = createTemporaryObject(windowComponent, testCase)
+        verify(hostWindow !== null)
+        hostWindowUnderTest = hostWindow
+        tryCompare(hostWindow, "visible", true)
+        const tile = hostWindow.tile
+        const restingColor = tile.background.color
+
+        tile.forceActiveFocus(Qt.PopupFocusReason)
+        verify(tile.activeFocus)
+        verify(!tile.visualFocus)
+        compare(tile.background.border.width, 1)
+        compare(tile.background.color, restingColor)
+        mouseMove(tile, tile.width / 2, tile.height / 2)
+        tryCompare(tile, "hovered", true)
+        compare(tile.background.color, restingColor)
+
+        hostWindow.focusSink.forceActiveFocus(Qt.OtherFocusReason)
+        verify(!tile.activeFocus)
+        tile.forceActiveFocus(Qt.TabFocusReason)
+        verify(tile.visualFocus,
+            "focus reason=" + tile.focusReason + " active=" + tile.activeFocus)
+        compare(tile.background.border.width, 2)
+        compare(tile.background.color, restingColor)
+        compare(tile.Accessible.role, Accessible.Button)
+        compare(tile.Accessible.focused, true)
     }
 }

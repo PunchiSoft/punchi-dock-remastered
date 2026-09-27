@@ -22,6 +22,7 @@ Item {
     property alias cfg_contextMenuDistancePercent: contextMenuDistanceSlider.value
     property string cfg_contextMenuTransitionDirection: "fromRight"
     property alias cfg_contextMenuBackgroundOpacityPercent: contextMenuBackgroundOpacitySlider.value
+    property alias cfg_contextMenuBackgroundBlurEnabled: contextMenuBackgroundBlurSwitch.checked
     property alias cfg_menuTextShadowsEnabled: menuTextShadowsSwitch.checked
     property alias cfg_showEditDockItemAction: showEditDockItemActionSwitch.checked
     property alias cfg_showConfigureDockAction: showConfigureDockActionSwitch.checked
@@ -276,6 +277,13 @@ Item {
             Layout.maximumWidth: page.contentWidthHint
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
+        }
+
+        Controls.Switch {
+            id: contextMenuBackgroundBlurSwitch
+            Kirigami.FormData.label: i18n("Background blur:")
+            text: i18n("Blur context menus when available")
+            Accessible.description: i18n("Requests desktop blur behind context menus when the compositor provides it.")
         }
 
         Controls.Switch {

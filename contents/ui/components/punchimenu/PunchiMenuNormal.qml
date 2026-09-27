@@ -1292,7 +1292,13 @@ FocusScope {
     }
 
     function setContentView(viewName) {
+        setContentViewWithFocusReason(viewName, Qt.PopupFocusReason)
+    }
+
+    function setContentViewWithFocusReason(viewName, focusReason) {
         const requestedView = normalizedContentView(viewName)
+        const requestedFocusReason = focusReason === undefined
+            ? Qt.PopupFocusReason : focusReason
         if (contentViewActive === requestedView) {
             return
         }
@@ -1305,14 +1311,14 @@ FocusScope {
             Qt.callLater(function() {
                 const loadedView = settingsViewLoader.item
                 if (loadedView) {
-                    loadedView.focusInitialAction()
+                    loadedView.focusInitialAction(requestedFocusReason)
                 }
             })
         } else if (sessionViewActive) {
             Qt.callLater(function() {
                 const loadedView = sessionViewLoader.item
                 if (loadedView) {
-                    loadedView.focusInitialAction()
+                    loadedView.focusInitialAction(requestedFocusReason)
                 }
             })
         } else {
@@ -1326,15 +1332,16 @@ FocusScope {
         setContentView(active ? "settings" : "applications")
     }
 
-    function setSessionViewActive(active) {
-        setContentView(active ? "session" : "applications")
+    function setSessionViewActive(active, focusReason) {
+        setContentViewWithFocusReason(
+            active ? "session" : "applications", focusReason)
     }
 
     function focusPrimaryContent() {
         if (sessionViewActive) {
             const loadedView = sessionViewLoader.item
             if (loadedView) {
-                loadedView.focusInitialAction()
+                loadedView.focusInitialAction(Qt.TabFocusReason)
             }
             return
         }
@@ -1710,6 +1717,7 @@ FocusScope {
 
                 PlasmaComponents.ToolButton {
                     id: sessionButton
+                    readonly property bool keyboardFocusVisible: visualFocus
                     readonly property bool highlightedContent: enabled
                         && (sessionHover.hovered || hovered || down
                             || activeFocus || checked)
@@ -1780,7 +1788,9 @@ FocusScope {
                         }
                     }
                     onClicked: root.setSessionViewActive(
-                        !root.sessionViewActive)
+                        !root.sessionViewActive,
+                        sessionButton.keyboardFocusVisible
+                            ? Qt.TabFocusReason : Qt.MouseFocusReason)
 
                     Keys.onDownPressed: function(event) {
                         root.focusPrimaryContent()

@@ -1,6 +1,7 @@
 import QtQuick
 import org.kde.ksvg as KSvg
 import org.kde.kirigami as Kirigami
+import "punchimenu" as PunchiMenuComponents
 
 Item {
     id: root
@@ -23,17 +24,81 @@ Item {
     property bool drawContentBackground: true
     property string backgroundImagePath: "dialogs/background"
     property real backgroundOpacity: 1.0
+    // When enabled, the owning dialog asks KWin for blur behind this surface.
+    // The region comes from the theme frame mask contracted by its insets.
+    property bool backgroundBlurEnabled: true
     property real contentFramePaddingPercent: 0
     property real contentFramePaddingScale: 1.0
     property real minimumSurfaceWidth: 0
     property real minimumSurfaceHeight: 0
     property bool preserveContentGeometry: false
+    // Optional comic-style tail, composed from the same theme frame that draws
+    // the background. It needs a band outside the frame, so the frame keeps its
+    // own size and the surface grows by the visible length of the tail.
+    // Disabled by default: only the folder grid popup enables it.
+    property bool edgeTailEnabled: false
+    property int edgeTailLocation: Qt.BottomEdge
+    // Extent of the dock item the tail points at, so the tail stays proportional
+    // to the icon it belongs to.
+    property real edgeTailAnchorExtent: 0
+    // Tip position along the surface axis, in window coordinates. A non-finite
+    // value centers the tail on the surface.
+    property real edgeTailTipOffset: NaN
     property real contentTransferProgress: 1
     readonly property Item contentItem: contentHost.children.length > 0
         ? contentHost.children[0]
         : null
     readonly property real contentImplicitWidth: !mediaOnly && contentItem ? contentItem.implicitWidth : 0
     readonly property real contentImplicitHeight: !mediaOnly && contentItem ? contentItem.implicitHeight : 0
+    readonly property var backgroundBlurMaskSource: menuBackground
+    readonly property bool backgroundBlurMaskPresent: menuBackground.visible
+        && menuBackground.width > 0
+        && menuBackground.height > 0
+    readonly property point backgroundBlurMaskOffset:
+        mappedSurfaceGeometry.backgroundMaskOffset
+    // Optional shapes are expressed in the local coordinate system of the
+    // themed frame. BlurBehindController contracts that frame first and then
+    // unions this polygon, so the frame insets never erode the tail.
+    readonly property var backgroundBlurAdditionalMaskPolygon: {
+        if (!root.edgeTailPresent) {
+            return []
+        }
+        // mapToItem() is a mapping operation, not a complete dependency list.
+        // These reads keep the polygon reactive when either sibling moves or
+        // changes size. Ancestor animation is applied once through the shared
+        // backgroundBlurMaskOffset below.
+        const geometryValues = [
+            edgeTail.x, edgeTail.y, edgeTail.width, edgeTail.height,
+            menuBackground.x, menuBackground.y,
+            menuBackground.width, menuBackground.height,
+            edgeTail.tipPosition, edgeTail.tailBase,
+            edgeTail.protrusion, edgeTail.tipRadius
+        ]
+        if (geometryValues.some(value => !Number.isFinite(value))) {
+            return []
+        }
+        const localPolygon = edgeTail.blurRegionPolygon
+        const mappedPolygon = []
+        for (let index = 0; index < localPolygon.length; ++index) {
+            const mappedPoint = edgeTail.mapToItem(
+                menuBackground, localPolygon[index])
+            if (!Number.isFinite(mappedPoint.x)
+                    || !Number.isFinite(mappedPoint.y)) {
+                return []
+            }
+            mappedPolygon.push(Qt.point(mappedPoint.x, mappedPoint.y))
+        }
+        return mappedPolygon
+    }
+    // The owning dialog reveals this surface inside an animated container.
+    // Supplying that container and its translation keeps the mask origin valid
+    // after the reveal, which mapToItem() alone does not invalidate. Both
+    // default to this surface when no animation wraps it.
+    property Item blurTransformSurface: null
+    property real blurTranslationX: 0
+    property real blurTranslationY: 0
+    readonly property Item effectiveBlurTransformSurface:
+        root.blurTransformSurface ? root.blurTransformSurface : root
     readonly property real effectiveMediaGap: mediaOnly ? 0 : mediaGap
     readonly property bool mediaRequested: showMedia
         && !!mediaController
@@ -88,6 +153,24 @@ Item {
         Math.max(0, root.minimumSurfaceWidth), root.contentWidthExtent)
     readonly property real surfaceContentHeight: Math.max(
         Math.max(0, root.minimumSurfaceHeight), root.contentExtent)
+    readonly property bool edgeTailPresent: root.edgeTailEnabled
+        && root.drawContentBackground && !root.mediaOnly
+    readonly property bool edgeTailHorizontal:
+        root.edgeTailLocation === Qt.TopEdge
+            || root.edgeTailLocation === Qt.BottomEdge
+    // True when the band sits before the frame on its axis, that is, on the top
+    // or on the left of the window.
+    readonly property bool edgeTailBandOnStart:
+        root.edgeTailLocation === Qt.TopEdge
+            || root.edgeTailLocation === Qt.LeftEdge
+    // Band the tail needs outside the frame. The tail derives both lengths from
+    // the frame insets, so no length is fixed here: the visible length starts at
+    // the effective background edge, and the surface only grows by the part that
+    // falls outside the frame rectangle.
+    readonly property real edgeTailProtrusion: root.edgeTailPresent
+        ? edgeTail.protrusion : 0
+    readonly property real edgeTailExtent: root.edgeTailPresent
+        ? edgeTail.windowGrowth : 0
     readonly property real contentFramePadding: {
         const requestedPercent = Number(root.contentFramePaddingPercent)
         if (!root.drawContentBackground || root.mediaOnly
@@ -117,9 +200,13 @@ Item {
             ? 0
             : root.contentFramePadding * 2),
         root.mediaSurfacePresent ? 280 : 0)
+        + (root.edgeTailPresent && !root.edgeTailHorizontal
+            ? root.edgeTailExtent : 0)
     implicitHeight: root.mediaExtent + (root.mediaOnly
         ? 0
         : root.surfaceContentHeight + root.contentFramePadding * 2)
+        + (root.edgeTailPresent && root.edgeTailHorizontal
+            ? root.edgeTailExtent : 0)
     readonly property bool presentationGeometryReady:
         Number.isFinite(root.implicitWidth) && root.implicitWidth > 0
         && Number.isFinite(root.implicitHeight) && root.implicitHeight > 0
@@ -286,6 +373,12 @@ Item {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.topMargin: root.edgeTailPresent && root.edgeTailHorizontal
+            && root.edgeTailBandOnStart ? root.edgeTailExtent : 0
+        anchors.leftMargin: root.edgeTailPresent && !root.edgeTailHorizontal
+            && root.edgeTailBandOnStart ? root.edgeTailExtent : 0
+        anchors.rightMargin: root.edgeTailPresent && !root.edgeTailHorizontal
+            && !root.edgeTailBandOnStart ? root.edgeTailExtent : 0
         controller: root.mediaController
         taskControllerRef: root.taskControllerRef
         windows: root.mediaWindows
@@ -309,11 +402,54 @@ Item {
         onCloseRequested: root.mediaCloseRequested()
     }
 
+    // Band that carries the optional tail. It starts at the effective background
+    // edge of the frame, which is the border the user sees and the one the blur
+    // region measures, and the clip keeps the rest of the lobe off the card.
+    FolderPopupTail {
+        id: edgeTail
+        visible: root.edgeTailPresent
+        clip: true
+        // The band joins the card edge, so it paints over the card shadow strip
+        // at the junction instead of leaving a seam there.
+        z: menuBackground.z + 1
+        location: root.edgeTailLocation
+        surfaceOpacity: menuBackground.opacity
+        tipOffset: root.edgeTailTipOffset
+        anchorExtent: root.edgeTailAnchorExtent
+        frameInsetLeft: menuBackground.inset.left
+        frameInsetTop: menuBackground.inset.top
+        frameInsetRight: menuBackground.inset.right
+        frameInsetBottom: menuBackground.inset.bottom
+        x: !root.edgeTailHorizontal
+            ? (root.edgeTailBandOnStart
+                ? menuBackground.x + root.backgroundFrameInset("left")
+                    - root.edgeTailProtrusion
+                : menuBackground.x + menuBackground.width
+                    - root.backgroundFrameInset("right"))
+            : 0
+        y: root.edgeTailHorizontal
+            ? (root.edgeTailBandOnStart
+                ? menuBackground.y + root.backgroundFrameInset("top")
+                    - root.edgeTailProtrusion
+                : menuBackground.y + menuBackground.height
+                    - root.backgroundFrameInset("bottom"))
+            : 0
+        width: root.edgeTailHorizontal
+            ? root.width : root.edgeTailProtrusion
+        height: root.edgeTailHorizontal
+            ? root.edgeTailProtrusion : root.height
+    }
+
     KSvg.FrameSvgItem {
         id: menuBackground
-        x: 0
-        y: root.mediaExtent
-        width: root.width
+        // The frame keeps its own size, so the popup background and its blur
+        // region do not change: only its position moves by the tail band.
+        x: root.edgeTailPresent && root.edgeTailBandOnStart
+            && !root.edgeTailHorizontal ? root.edgeTailExtent : 0
+        y: root.mediaExtent + (root.edgeTailPresent && root.edgeTailBandOnStart
+            && root.edgeTailHorizontal ? root.edgeTailExtent : 0)
+        width: root.width - (root.edgeTailPresent && !root.edgeTailHorizontal
+            ? root.edgeTailExtent : 0)
         height: root.surfaceContentHeight + root.contentFramePadding * 2
         imagePath: root.backgroundImagePath
         visible: root.drawContentBackground && !root.mediaOnly
@@ -321,12 +457,28 @@ Item {
             * (0.72 + (0.28 * root.contentTransferProgress))
         Accessible.ignored: true
     }
-
+    // Mask contract consumed by the owning dialog's BlurBehindController. The
+    // frame does not fill the window, so its own origin and insets define the
+    // requested region instead of the window bounds or the theme shadow.
+    PunchiMenuComponents.PunchiMenuMappedSurfaceGeometry {
+        id: mappedSurfaceGeometry
+        targetItem: root
+        surfaceItem: root.effectiveBlurTransformSurface
+        backgroundItem: menuBackground
+        translationX: root.blurTranslationX
+        translationY: root.blurTranslationY
+        leftInset: menuBackground.inset.left
+        topInset: menuBackground.inset.top
+        rightInset: menuBackground.inset.right
+        bottomInset: menuBackground.inset.bottom
+    }
     Item {
         id: contentHost
-        x: root.contentFramePadding
-        y: root.mediaExtent + root.contentFramePadding
-        width: Math.max(0, root.width - root.contentFramePadding * 2)
+        // The content follows the frame, so a tail band moves the content with
+        // the card instead of resizing it.
+        x: menuBackground.x + root.contentFramePadding
+        y: menuBackground.y + root.contentFramePadding
+        width: Math.max(0, menuBackground.width - root.contentFramePadding * 2)
         height: root.surfaceContentHeight
         visible: !root.mediaOnly
         opacity: 0.72 + (0.28 * root.contentTransferProgress)

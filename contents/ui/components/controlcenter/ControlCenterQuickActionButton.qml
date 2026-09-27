@@ -10,6 +10,16 @@ Controls.AbstractButton {
     property string iconName: ""
     property string description: ""
 
+    // Same feedback contract as the shortcut tile: colour, opacity and border
+    // colour transition on the theme scale, while the focus ring and the
+    // geometry stay immediate. See ControlCenterShortcutTile.qml.
+    readonly property bool feedbackActive: root.checked || root.down
+        || root.activeFocus || root.hovered
+    readonly property int feedbackEnterDuration:
+        Math.max(1, Kirigami.Units.shortDuration)
+    readonly property int feedbackExitDuration:
+        Math.max(1, Math.round(Kirigami.Units.shortDuration * 0.8))
+
     implicitWidth: Kirigami.Units.gridUnit * 3
     implicitHeight: Kirigami.Units.gridUnit * 3
     leftPadding: Kirigami.Units.smallSpacing
@@ -36,10 +46,33 @@ Controls.AbstractButton {
                 ? Qt.alpha(Kirigami.Theme.textColor, 0.14)
                 : Qt.alpha(Kirigami.Theme.backgroundColor, 0.34)
         opacity: root.enabled ? 1.0 : 0.46
+        // The focus ring stays immediate on purpose; see the shortcut tile.
         border.width: root.activeFocus ? 2 : 1
         border.color: root.activeFocus
             ? Kirigami.Theme.highlightColor
             : Qt.alpha(Kirigami.Theme.textColor, 0.18)
+
+        Behavior on color {
+            ColorAnimation {
+                duration: root.feedbackActive
+                    ? root.feedbackEnterDuration : root.feedbackExitDuration
+            }
+        }
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: root.feedbackActive
+                    ? root.feedbackEnterDuration : root.feedbackExitDuration
+            }
+        }
+
+        Behavior on border.color {
+            ColorAnimation {
+                duration: root.feedbackActive
+                    ? root.feedbackEnterDuration : root.feedbackExitDuration
+            }
+        }
+
         Accessible.ignored: true
     }
 

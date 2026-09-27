@@ -41,6 +41,12 @@ TestCase {
         }
     }
 
+    SignalSpy {
+        id: blurRefreshSpy
+        target: popup
+        signalName: "blurReapplyRequested"
+    }
+
     NativePopupSpacing {
         id: spacing
         sourceAnchor: source
@@ -55,9 +61,11 @@ TestCase {
             id: folderAnimation
             popupVisible: folderPopup.visible
             ContextSurfaceStack {
+                id: folderSurface
                 contentGeometryTransitionsEnabled: false
                 showMedia: false
-                drawContentBackground: true
+                drawContentBackground: folderContent.layoutMode !== "fan"
+                backgroundBlurEnabled: folderContent.layoutMode !== "fan"
                 backgroundImagePath: "widgets/background"
                 contentFramePaddingPercent: 2
                 FolderPopup {
@@ -76,6 +84,11 @@ TestCase {
         id: folderSpacing
         sourceAnchor: source
         popup: folderPopup
+        horizontalAnchorOffset: folderContent.layoutMode === "fan"
+            ? folderSurface.width / 2
+                - (folderSurface.contentFramePadding
+                    + folderContent.fanOriginIconCenterX)
+            : 0
     }
 
     function init() {
@@ -114,6 +127,37 @@ TestCase {
             {tag: "left", edge: PlasmaCore.Types.LeftEdge, dx: 1, dy: 0},
             {tag: "right", edge: PlasmaCore.Types.RightEdge, dx: -1, dy: 0}
         ]
+    }
+
+    function test_blurRefreshAfterVisibleReanchor() {
+        popup.openSafely()
+        tryCompare(popup, "visible", true)
+
+        blurRefreshSpy.clear()
+        spacing.refreshAnchor()
+        verify(blurRefreshSpy.count > 0,
+            "Reanchoring a visible dialog must request blur after Plasma updates its theme")
+
+        popup.closeSafely()
+        tryCompare(popup, "visible", false)
+        blurRefreshSpy.clear()
+        spacing.refreshAnchor()
+        compare(blurRefreshSpy.count, 0)
+    }
+
+    function test_blurRefreshAfterSubpixelContentResize() {
+        popup.openSafely()
+        tryCompare(popup, "visible", true)
+
+        const originalWindowWidth = popup.width
+        const originalImplicitWidth = popup.mainItem.implicitWidth
+        blurRefreshSpy.clear()
+        popup.mainItem.implicitWidth = originalImplicitWidth + 0.01
+
+        compare(popup.width, originalWindowWidth)
+        verify(blurRefreshSpy.count > 0,
+            "A mainItem resize must refresh blur even when the window size is unchanged")
+        popup.mainItem.implicitWidth = originalImplicitWidth
     }
 
     function test_visibleDistance(data) {
@@ -173,16 +217,22 @@ TestCase {
         folderSpacing.refreshAnchor()
     }
 
-    function verifyFolderCenter() {
+    function verifyFolderAlignment() {
         tryVerify(function() {
             const center = source.mapToGlobal(source.width / 2, source.height / 2)
-            return Math.abs(folderPopup.x + folderPopup.width / 2 - center.x) <= 2
-        }, 2000, "The native dialog must remain centered on its launcher")
+            const localAnchor = folderContent.layoutMode === "fan"
+                ? folderSurface.contentFramePadding
+                    + folderContent.fanOriginIconCenterX
+                : folderPopup.width / 2
+            return Math.abs(folderPopup.x + localAnchor - center.x) <= 2
+        }, 2000, folderContent.layoutMode === "fan"
+            ? "The Fan origin must remain aligned with its launcher"
+            : "The native dialog must remain centered on its launcher")
     }
 
     function test_folderCenterNearScreenMiddle_data() {
         const rows = []
-        for (const mode of ["grid", "list", "detailed"]) {
+        for (const mode of ["grid", "list", "detailed", "fan"]) {
             for (const edge of [PlasmaCore.Types.BottomEdge, PlasmaCore.Types.TopEdge]) {
                 for (const offset of [-60, 60]) {
                     rows.push({tag: mode + "-" + edge + "-" + offset,
@@ -196,46 +246,65 @@ TestCase {
     function test_folderCenterNearScreenMiddle(data) {
         folderContent.layoutMode = data.mode
         folderSpacing.location = data.edge
+        folderContent.popupDirection = data.edge
+            === PlasmaCore.Types.BottomEdge ? Qt.TopEdge : Qt.BottomEdge
         const screen = testCase.Screen
         const screenCenter = screen.virtualX + screen.width / 2
         placeSource(screenCenter + data.offset)
 
-        // Control: the unprotected native dialog reproduces the original bug.
+        // Control: the unprotected native dialog cannot place the fan origin on
+        // its launcher. It either snaps its own center to the screen or, when
+        // its width already keeps it on screen, it centers itself on the
+        // launcher; both leave the fan origin — a column offset from the popup
+        // center by the arc sag — off the launcher, which is the reason the
+        // compensation exists. The screen-snap wording only holds for the
+        // surfaces whose content is centered in the popup.
         folderPopup.openSafely()
         tryCompare(folderPopup, "visible", true)
         tryCompare(folderAnimation, "openingProgress", 1)
         tryVerify(function() {
-            return Math.abs(folderPopup.x + folderPopup.width / 2 - screenCenter) <= 2
+            const launcherX = source.mapToGlobal(source.width / 2,
+                source.height / 2).x
+            const center = folderPopup.x + folderPopup.width / 2
+            if (data.mode === "fan") {
+                const originX = folderPopup.x + folderSurface.contentFramePadding
+                    + folderContent.fanOriginIconCenterX
+                return Math.abs(originX - launcherX) > 2
+            }
+            return Math.abs(center - screenCenter) <= 2
+                && Math.abs(center - launcherX) > 40
         })
-        verify(Math.abs(folderPopup.x + folderPopup.width / 2
-            - source.mapToGlobal(source.width / 2, source.height / 2).x) > 40)
 
         folderPopup.closeSafely()
         folderSpacing.preserveHorizontalAnchorCenter = true
         folderSpacing.refreshAnchor()
         folderPopup.openSafely()
         tryCompare(folderPopup, "visible", true)
-        verifyFolderCenter()
+        verifyFolderAlignment()
         tryCompare(folderAnimation, "openingProgress", 1)
-        verifyFolderCenter()
+        verifyFolderAlignment()
+        compare(folderSurface.backgroundBlurMaskPresent,
+            data.mode !== "fan")
+        compare(folderSurface.backgroundBlurEnabled,
+            data.mode !== "fan")
 
         // Distance and size changes must not restore the screen-center snap.
         const baseY = folderPopup.y
         folderSpacing.gap = metrics.maximumGap
         tryCompare(folderPopup, "y", baseY
             + (data.edge === PlasmaCore.Types.BottomEdge ? -1 : 1) * metrics.maximumGap)
-        verifyFolderCenter()
+        verifyFolderAlignment()
         folderContent.profileScale = 1.25
-        verifyFolderCenter()
+        verifyFolderAlignment()
         folderSpacing.gap = 0
         tryCompare(folderPopup, "visualParent", folderSpacing)
-        verifyFolderCenter()
+        verifyFolderAlignment()
         placeSource(screenCenter - data.offset)
-        verifyFolderCenter()
+        verifyFolderAlignment()
         folderPopup.closeSafely()
         folderPopup.openSafely()
         tryCompare(folderAnimation, "openingProgress", 1)
-        verifyFolderCenter()
+        verifyFolderAlignment()
     }
 
     function test_folderCenterClampsToScreenEdges() {

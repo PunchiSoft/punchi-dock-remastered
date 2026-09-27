@@ -9,11 +9,17 @@ Item {
     property int gap: 0
     property int location: PlasmaCore.Types.BottomEdge
     property bool preserveHorizontalAnchorCenter: false
+    // Keeps an internal visual origin aligned with the launcher while Plasma
+    // continues positioning the popup through its native visualParent.
+    property real horizontalAnchorOffset: 0
 
     readonly property PopupAnchorMetrics anchorMetrics: PopupAnchorMetrics {}
     readonly property bool centerHorizontally: root.preserveHorizontalAnchorCenter
         && (root.location === PlasmaCore.Types.TopEdge
             || root.location === PlasmaCore.Types.BottomEdge)
+    readonly property real safeHorizontalAnchorOffset:
+        Number.isFinite(Number(root.horizontalAnchorOffset))
+            ? Number(root.horizontalAnchorOffset) : 0
     readonly property real popupWidth: root.popup
         ? Math.max(root.popup.width,
             root.popup.sizingItem ? root.popup.sizingItem.width : 0) : 0
@@ -43,6 +49,7 @@ Item {
     readonly property int safeGap: Math.max(0, root.gap)
 
     x: root.sourceGeometry.x - (root.width - root.sourceGeometry.width) / 2
+        + (root.centerHorizontally ? root.safeHorizontalAnchorOffset : 0)
         + (root.location === PlasmaCore.Types.LeftEdge
         ? root.safeGap : root.location === PlasmaCore.Types.RightEdge
             ? -root.safeGap : 0)
@@ -86,6 +93,7 @@ Item {
     onSafeGapChanged: root.scheduleRefresh()
     onLocationChanged: root.scheduleRefresh()
     onCenterHorizontallyChanged: root.scheduleRefresh()
+    onHorizontalAnchorOffsetChanged: root.scheduleRefresh()
 
     Connections {
         target: root.popup

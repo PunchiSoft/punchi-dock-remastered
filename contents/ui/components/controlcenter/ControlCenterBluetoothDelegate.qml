@@ -19,6 +19,9 @@ FocusScope {
     readonly property bool disconnecting:
         Boolean(device && device.Disconnecting)
     readonly property bool busy: connecting || disconnecting
+    // One tile, one hover state, as in the network row: hover is owned by an area
+    // on top that accepts no buttons.
+    readonly property bool rowHovered: rowHoverArea.containsMouse
     readonly property bool connectionFailed:
         Boolean(device && device.ConnectionFailed)
     readonly property int batteryPercentage:
@@ -104,14 +107,53 @@ FocusScope {
     }
     // qmllint enable unqualified
 
+    // Hover only, on top of the content; see the network row.
+    MouseArea {
+        id: rowHoverArea
+
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
+        z: 1
+        hoverEnabled: true
+        enabled: !root.busy
+        cursorShape: Qt.PointingHandCursor
+        Accessible.ignored: true
+        onWheel: function(wheel) {
+            wheel.accepted = false
+        }
+    }
+
+    // Press target for the free space of the tile; the button keeps its own.
+    MouseArea {
+        id: rowPointer
+
+        anchors.fill: parent
+        acceptedButtons: Qt.LeftButton
+        enabled: !root.busy
+        Accessible.ignored: true
+        onClicked: root.requestToggle()
+    }
+
     Rectangle {
         anchors.fill: parent
         radius: Kirigami.Units.cornerRadius * 1.5
-        color: root.activeFocus
+        color: root.activeFocus || root.rowHovered
             ? Qt.alpha(Kirigami.Theme.highlightColor, 0.24)
             : "transparent"
+        // Pointer and focus feedback share the fill, like the network row: the
+        // fill fades on the theme scale and the border stays immediate.
         border.width: root.activeFocus ? 2 : 0
         border.color: Kirigami.Theme.highlightColor
+
+        Behavior on color {
+            ColorAnimation {
+                duration: root.activeFocus
+                    ? Math.max(1, Kirigami.Units.shortDuration)
+                    : Math.max(1,
+                        Math.round(Kirigami.Units.shortDuration * 0.8))
+            }
+        }
+
         Accessible.ignored: true
     }
 
@@ -162,6 +204,8 @@ FocusScope {
         PlasmaComponents.Button {
             id: stateButton
             objectName: "controlCenterBluetoothStateButton"
+            // The tile owns the hover feedback; see the network row.
+            hoverEnabled: false
             text: root.connected
                 ? i18nc("@action:button", "Disconnect") // qmllint disable unqualified
                 : i18nc("@action:button", "Connect") // qmllint disable unqualified

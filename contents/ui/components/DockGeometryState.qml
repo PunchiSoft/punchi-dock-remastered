@@ -367,11 +367,22 @@ QtObject {
             : root.compactMediaItemMainAxisLength
     }
 
+    // Mirrors DockItem.dynamicApplicationsMarkerCollapsed from the item model:
+    // a marker whose separator is hidden must not reserve panel length either.
+    function dynamicApplicationsMarkerCollapsed(item) {
+        const itemType = item && item.type ? String(item.type) : "app"
+        return itemType === "dynamic-applications"
+            && item.showSeparator === false
+    }
+
     function panelMainAxisExtentForDockItem(item) {
         const itemType = item && item.type ? String(item.type) : "app"
         if (itemType === "dynamic-applications"
                 && root.dynamicApplicationsMoveModeActive) {
             return root.dynamicApplicationsMoveHandleExtent
+        }
+        if (root.dynamicApplicationsMarkerCollapsed(item)) {
+            return 0
         }
         if (itemType === "separator" || itemType === "dynamic-applications") {
             const appearance = SeparatorAppearance.resolvedAppearance(
@@ -388,18 +399,29 @@ QtObject {
         return root.verticalPanel ? panelItemHeight : panelItemWidth
     }
 
+    readonly property int visibleFixedDockItemCount: {
+        let count = 0
+        const items = root.dockItems || []
+        for (let index = 0; index < items.length; index++) {
+            if (!root.dynamicApplicationsMarkerCollapsed(items[index])) {
+                count += 1
+            }
+        }
+        return count
+    }
     readonly property int panelFixedContentLength: {
         let extent = 0
         const items = root.dockItems || []
         for (let index = 0; index < items.length; index++) {
             extent += root.panelMainAxisExtentForDockItem(items[index])
         }
-        return Math.ceil(extent + (Math.max(0, items.length - 1) * dockSpacing))
+        return Math.ceil(extent
+            + (Math.max(0, root.visibleFixedDockItemCount - 1) * dockSpacing))
     }
     readonly property int renderedDynamicItemCount: root.visibleTaskCount
         + (root.overflowTaskCount > 0 ? 1 : 0)
     readonly property int panelCompactContentLength: {
-        const boundarySpacing = root.dockItems.length > 0 && renderedDynamicItemCount > 0
+        const boundarySpacing = root.visibleFixedDockItemCount > 0 && renderedDynamicItemCount > 0
             ? dockSpacing
             : 0
         const dynamicItemExtent = root.verticalPanel ? panelItemHeight : panelItemWidth
@@ -411,7 +433,7 @@ QtObject {
     }
     readonly property int panelMinimumContentLength: {
         const hasDynamicGroups = root.totalDynamicGroups > 0
-        const boundarySpacing = root.dockItems.length > 0 && hasDynamicGroups ? dockSpacing : 0
+        const boundarySpacing = root.visibleFixedDockItemCount > 0 && hasDynamicGroups ? dockSpacing : 0
         const dynamicItemExtent = root.verticalPanel ? panelItemHeight : panelItemWidth
         return Math.ceil(panelFixedContentLength + boundarySpacing
             + (hasDynamicGroups ? dynamicItemExtent : 0))
@@ -476,4 +498,12 @@ QtObject {
             - taskPopupReservedVerticalExtent - 24)
     readonly property int taskPopupAvailableWidth: Math.max(280,
         Number(root.availableScreenRect.width || 800) - 48)
+    // Height the folder fan may use. `taskPopupAvailableHeight` keeps a 240 px
+    // floor so a popup stays usable, but that floor can exceed what a short
+    // display really offers; the fan takes the honest value instead, so its
+    // invisible frame can never grow past the screen, and it shows fewer rows
+    // when the space is not enough.
+    readonly property int folderFanAvailableHeight: Math.max(0,
+        Number(root.availableScreenRect.height || 640)
+            - taskPopupReservedVerticalExtent - 24)
 }

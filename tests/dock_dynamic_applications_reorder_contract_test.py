@@ -41,9 +41,12 @@ WORKFLOW = (
 CONFIG_ITEMS_PAGE = (ROOT / "contents/ui/config/ConfigItems.qml").read_text(
     encoding="utf-8"
 )
-PALETTE = (ROOT / "contents/ui/config/AddItemPalette.qml").read_text(
+ITEM_CATALOG = (ROOT / "contents/ui/config/code/itemTypeCatalog.js").read_text(
     encoding="utf-8"
 )
+ITEM_DRAFT_CONTROLLER = (
+    ROOT / "contents/ui/config/ItemDraftController.qml"
+).read_text(encoding="utf-8")
 
 
 def require(condition: bool, message: str) -> None:
@@ -85,8 +88,8 @@ require(
     and "impact.confirmationRequired" in WORKFLOW
     and "dynamicApplicationsRemovalDialog.open()" in WORKFLOW
     and "cfg_showActiveTasks = false" in WORKFLOW
-    and "impact.enableActiveTasks" in WORKFLOW
-    and "cfg_showActiveTasks = true" in WORKFLOW
+    and "impact.enableActiveTasks" in CONFIG_ITEMS_PAGE
+    and "cfg_showActiveTasks = true" in CONFIG_ITEMS_PAGE
     and "property bool cfg_showActiveTasks: true" in CONFIG_ITEMS_PAGE
     and 'id: dynamicApplicationsRemovalDialog' in CONFIG_ITEMS_PAGE
     and 'i18n("Remove and disable")' in CONFIG_ITEMS_PAGE,
@@ -105,10 +108,11 @@ require(
     "The configuration model must expose a named and themed marker.",
 )
 require(
-    '"type": "dynamic-applications"' in PALETTE
-    and 'hasItemType("dynamic-applications")' in PALETTE
-    and 'hasItemType("dynamic-applications")' in WORKFLOW,
-    "The KCM must add at most one open-applications marker.",
+    'entry("dynamic-applications"' in ITEM_CATALOG
+    and 'root.isSingletonType(type) && root.hasItemType(type)'
+    in ITEM_DRAFT_CONTROLLER
+    and "function acceptAddedItem(item)" in CONFIG_ITEMS_PAGE,
+    "The KCM must add at most one open-applications marker through the transactional flow.",
 )
 require(
     'itemType === "separator" || itemType === "dynamic-applications"'
@@ -155,7 +159,8 @@ dock_items_entry_end = CONFIG_SCHEMA.index("</entry>", dock_items_entry_start)
 require(
     "<default></default>"
     in CONFIG_SCHEMA[dock_items_entry_start:dock_items_entry_end]
-    and CONTROLLER.count("root.dockItems = Logic.loadItems(raw)") >= 2
+    and CONTROLLER.count("Logic.loadItems(raw)") >= 2
+    and "root.dockItems = seed.items" in CONTROLLER
     and 'raw.trim().length > 0 ? Logic.loadItems(raw) : []' not in CONTROLLER
     and "cfg_dockItemsJson && cfg_dockItemsJson.length > 0"
     in WORKFLOW

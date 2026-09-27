@@ -11,13 +11,19 @@ ColumnLayout {
     property var statusHideTimer
     property alias statusText: statusLabel.text
     property alias statusType: statusLabel.type
-    readonly property real columnsBodyHeight: Math.max(
-        root.controller ? root.controller.itemsColumnBodyHeight : 0,
-        addItemPalette.implicitHeight
-    )
+
+    signal addItemRequested()
 
     function positionAtIndex(index) {
         itemListEditor.positionAtIndex(index)
+    }
+
+    function focusItemAtIndex(index) {
+        itemListEditor.focusAtIndex(index)
+    }
+
+    function focusAddItemButton() {
+        itemListEditor.focusAddItemButton()
     }
 
     function showStatus(text, type) {
@@ -29,9 +35,9 @@ ColumnLayout {
         statusLabel.text = ""
     }
 
-    width: Math.max(0, parent.width - Kirigami.Units.smallSpacing * 2)
-    height: Math.max(0, parent.height - Kirigami.Units.smallSpacing * 2)
-    anchors.horizontalCenter: parent.horizontalCenter
+    // The configuration dialog already provides the page margins, so the view
+    // fills its content area instead of adding a second inset.
+    anchors.fill: parent
     spacing: Kirigami.Units.smallSpacing
 
     ColumnLayout {
@@ -42,59 +48,32 @@ ColumnLayout {
         RowLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            Layout.alignment: Qt.AlignTop
-            spacing: Kirigami.Units.largeSpacing
+            spacing: Kirigami.Units.smallSpacing
 
-            ColumnLayout {
-                Layout.fillWidth: false
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 16
-                Layout.alignment: Qt.AlignTop
-                spacing: Kirigami.Units.smallSpacing
-
-                Controls.Label {
-                    Layout.fillWidth: true
-                    text: i18n("Items to add") // qmllint disable unqualified
-                    opacity: 0.88
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    font.bold: true
-                }
-
-                AddItemPalette {
-                    id: addItemPalette
-                    controller: root.controller
-                    Layout.preferredHeight: root.columnsBodyHeight
-                    Layout.minimumHeight: root.columnsBodyHeight
-                    Layout.maximumHeight: root.columnsBodyHeight
-                    onAddRequested: function(type) {
-                        root.controller.addItem(type)
-                    }
-                }
+            DockItemListEditor {
+                id: itemListEditor
+                objectName: "dockItemListEditor"
+                controller: root.controller
+                itemModel: root.itemModel
+                // The add action now belongs to this collection toolbar. Keep a
+                // wider preferred column for its labelled state, but allow the
+                // toolbar to compact before taking the reserved panel's floor.
+                Layout.fillWidth: true
+                Layout.preferredWidth: Kirigami.Units.gridUnit * 20
+                Layout.minimumWidth: Kirigami.Units.gridUnit * 16
+                Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+                onAddItemRequested: root.addItemRequested()
             }
 
-            ColumnLayout {
+            // Reserved right column, deliberately empty: it keeps the same
+            // Controls.Frame surface as the dock item list so both columns read
+            // as equals. It holds no item editor, links to nothing and writes no
+            // configuration; the content of this column is still undecided.
+            Controls.Frame {
+                objectName: "itemConfigurationReservedArea"
                 Layout.fillWidth: true
-                Layout.preferredWidth: 1
-                Layout.alignment: Qt.AlignTop
-                spacing: Kirigami.Units.smallSpacing
-
-                Controls.Label {
-                    Layout.fillWidth: true
-                    text: i18n("Items in Dock") // qmllint disable unqualified
-                    opacity: 0.88
-                    horizontalAlignment: Text.AlignHCenter
-                    font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                    font.bold: true
-                }
-
-                DockItemListEditor {
-                    id: itemListEditor
-                    controller: root.controller
-                    itemModel: root.itemModel
-                    Layout.preferredHeight: root.columnsBodyHeight
-                    Layout.minimumHeight: root.columnsBodyHeight
-                    Layout.maximumHeight: root.columnsBodyHeight
-                }
+                Layout.fillHeight: true
+                Layout.minimumWidth: Kirigami.Units.gridUnit * 12
             }
         }
 

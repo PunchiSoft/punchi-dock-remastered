@@ -30,12 +30,20 @@ Item {
     property bool cfg_folderDetailedShowLabels: true
     property string cfg_folderDetailedFontFamily: ""
     property int cfg_folderDetailedFontSize: 10
+    property int cfg_folderFanIconSize: 44
+    property int cfg_folderFanRows: 6
+    property bool cfg_folderFanShowLabels: true
+    property string cfg_folderFanFontFamily: ""
+    property int cfg_folderFanFontSize: 10
+    property alias cfg_folderFanScrollEnabled: fanScrollCheck.checked
     property int cfg_folderPopupExtraDistance: 0
     property int cfg_folderPopupDistancePercent: -1
     property alias cfg_folderPopupScale: folderPopupScaleSlider.value
     property alias cfg_folderPopupBackgroundOpacityPercent: folderPopupBackgroundOpacitySlider.value
     property alias cfg_folderPopupShowHeader: showFolderHeaderCheck.checked
+    property alias cfg_popupBackgroundBlurEnabled: popupBackgroundBlurSwitch.checked
     property alias cfg_popupTextShadowsEnabled: popupTextShadowsCheck.checked
+    property alias cfg_folderPopupTextShadowPercent: popupTextShadowIntensitySlider.value
     property alias cfg_popupAnimation: generalPopupAnimationSettings.animationStyle
     property alias cfg_popupAnimationSpeedPercent: generalPopupAnimationSettings.animationSpeedPercent
     property alias cfg_popupAnimationIntensity: generalPopupAnimationSettings.animationIntensityPercent
@@ -57,41 +65,54 @@ Item {
         return Math.max(0, Math.min(100,
             Math.round((safeLegacyDistance * 100 / 32) / 5) * 5))
     }
-    readonly property int activeIconSize: activeProfile === "list"
-        ? cfg_folderListIconSize
-        : (activeProfile === "detailed"
-            ? cfg_folderDetailedIconSize
-            : cfg_folderGridIconSize)
-    readonly property int activeRows: activeProfile === "list"
-        ? cfg_folderListRows
-        : (activeProfile === "detailed"
-            ? cfg_folderDetailedRows
-            : cfg_folderGridRows)
-    readonly property bool activeShowLabels: activeProfile === "list"
-        ? cfg_folderListShowLabels
-        : (activeProfile === "detailed"
-            ? cfg_folderDetailedShowLabels
-            : cfg_folderGridShowLabels)
-    readonly property string activeFontFamily: activeProfile === "list"
-        ? cfg_folderListFontFamily
-        : (activeProfile === "detailed"
-            ? cfg_folderDetailedFontFamily
-            : cfg_folderGridFontFamily)
-    readonly property int activeFontSize: activeProfile === "list"
-        ? cfg_folderListFontSize
-        : (activeProfile === "detailed"
-            ? cfg_folderDetailedFontSize
-            : cfg_folderGridFontSize)
+    readonly property int activeIconSize: activeProfile === "fan"
+        ? cfg_folderFanIconSize
+        : (activeProfile === "list"
+            ? cfg_folderListIconSize
+            : (activeProfile === "detailed"
+                ? cfg_folderDetailedIconSize
+                : cfg_folderGridIconSize))
+    readonly property int activeRows: activeProfile === "fan"
+        ? cfg_folderFanRows
+        : (activeProfile === "list"
+            ? cfg_folderListRows
+            : (activeProfile === "detailed"
+                ? cfg_folderDetailedRows
+                : cfg_folderGridRows))
+    readonly property bool activeShowLabels: activeProfile === "fan"
+        ? cfg_folderFanShowLabels
+        : (activeProfile === "list"
+            ? cfg_folderListShowLabels
+            : (activeProfile === "detailed"
+                ? cfg_folderDetailedShowLabels
+                : cfg_folderGridShowLabels))
+    readonly property string activeFontFamily: activeProfile === "fan"
+        ? cfg_folderFanFontFamily
+        : (activeProfile === "list"
+            ? cfg_folderListFontFamily
+            : (activeProfile === "detailed"
+                ? cfg_folderDetailedFontFamily
+                : cfg_folderGridFontFamily))
+    readonly property int activeFontSize: activeProfile === "fan"
+        ? cfg_folderFanFontSize
+        : (activeProfile === "list"
+            ? cfg_folderListFontSize
+            : (activeProfile === "detailed"
+                ? cfg_folderDetailedFontSize
+                : cfg_folderGridFontSize))
     // qmllint disable unqualified
     readonly property var profileOptions: [
         { "text": i18nc("@item:inlistbox Folder popup layout", "Grid"), "value": "grid" },
         { "text": i18nc("@item:inlistbox Folder popup layout", "List"), "value": "list" },
-        { "text": i18nc("@item:inlistbox Folder popup layout", "Detailed"), "value": "detailed" }
+        { "text": i18nc("@item:inlistbox Folder popup layout", "Detailed"), "value": "detailed" },
+        { "text": i18nc("@item:inlistbox Folder popup layout", "Fan"), "value": "fan" }
     ]
     // qmllint enable unqualified
 
     function setActiveIconSize(value) {
-        if (activeProfile === "list") {
+        if (activeProfile === "fan") {
+            cfg_folderFanIconSize = value
+        } else if (activeProfile === "list") {
             cfg_folderListIconSize = value
         } else if (activeProfile === "detailed") {
             cfg_folderDetailedIconSize = value
@@ -101,7 +122,9 @@ Item {
     }
 
     function setActiveRows(value) {
-        if (activeProfile === "list") {
+        if (activeProfile === "fan") {
+            cfg_folderFanRows = value
+        } else if (activeProfile === "list") {
             cfg_folderListRows = value
         } else if (activeProfile === "detailed") {
             cfg_folderDetailedRows = value
@@ -111,7 +134,9 @@ Item {
     }
 
     function setActiveShowLabels(value) {
-        if (activeProfile === "list") {
+        if (activeProfile === "fan") {
+            cfg_folderFanShowLabels = value
+        } else if (activeProfile === "list") {
             cfg_folderListShowLabels = value
         } else if (activeProfile === "detailed") {
             cfg_folderDetailedShowLabels = value
@@ -121,7 +146,9 @@ Item {
     }
 
     function setActiveFontFamily(value) {
-        if (activeProfile === "list") {
+        if (activeProfile === "fan") {
+            cfg_folderFanFontFamily = value
+        } else if (activeProfile === "list") {
             cfg_folderListFontFamily = value
         } else if (activeProfile === "detailed") {
             cfg_folderDetailedFontFamily = value
@@ -131,7 +158,9 @@ Item {
     }
 
     function setActiveFontSize(value) {
-        if (activeProfile === "list") {
+        if (activeProfile === "fan") {
+            cfg_folderFanFontSize = value
+        } else if (activeProfile === "list") {
             cfg_folderListFontSize = value
         } else if (activeProfile === "detailed") {
             cfg_folderDetailedFontSize = value
@@ -193,7 +222,9 @@ Item {
                 id: folderPopupScaleSlider
                 from: 0.5
                 to: 3.0
-                stepSize: 0.1
+                // The scale is stored as a multiplier, so a five percent step is
+                // 0.05 and the label rounds it back to whole percent.
+                stepSize: 0.05
                 snapMode: Controls.Slider.SnapAlways
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
@@ -251,6 +282,13 @@ Item {
             Layout.maximumWidth: page.contentWidthHint
             leftPadding: layoutMetrics.helperIndent
             color: Kirigami.Theme.disabledTextColor
+        }
+
+        Controls.Switch {
+            id: popupBackgroundBlurSwitch
+            Kirigami.FormData.label: i18n("Background blur:")
+            text: i18n("Use background blur when available")
+            Accessible.description: i18n("Requests the desktop blur effect behind dock popups when the compositor provides it.")
         }
 
         RowLayout {
@@ -333,11 +371,13 @@ Item {
             Kirigami.FormData.label: i18n("Icon size:")
             Layout.maximumWidth: page.contentWidthHint
 
+            // The step matches the dock icon size slider so any even value of
+            // the profile is reachable instead of only multiples of four.
             Controls.Slider {
                 id: iconSizeSlider
                 from: 24
                 to: 64
-                stepSize: 4
+                stepSize: 2
                 snapMode: Controls.Slider.SnapAlways
                 value: page.activeIconSize
                 onMoved: page.setActiveIconSize(Math.round(value))
@@ -370,14 +410,47 @@ Item {
 
         Controls.SpinBox {
             id: rowsSpin
-            Kirigami.FormData.label: i18n("Visible rows:")
+            Kirigami.FormData.label: page.activeProfile === "fan"
+                ? i18n("Items before the opening row:")
+                : i18n("Visible rows:")
             from: 1
             to: 8
             value: page.activeRows
             onValueModified: page.setActiveRows(value)
             Layout.preferredWidth: page.selectorWidthHint
-            Accessible.name: i18n("Maximum visible folder popup rows")
+            Accessible.name: page.activeProfile === "fan"
+                ? i18n("Maximum items the folder fan shows before its opening row")
+                : i18n("Maximum visible folder popup rows")
 
+        }
+
+        // The fan derives how many items it shows from the configured limit and
+        // the height the display offers, so the value above is a maximum. With
+        // scrolling off, the closing row reports the entries it left out; with
+        // scrolling on, that row only opens the folder.
+        Controls.Label {
+            visible: page.activeProfile === "fan"
+            text: page.cfg_folderFanScrollEnabled
+                ? i18n("The fan shows the items that fit, up to eight, and scrolls to reach the rest. The closing row opens the folder.")
+                : i18n("The fan shows only the items that fit, up to eight. The closing row opens the folder and says how many entries are left out.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
+        }
+
+        // The fan is static by default: the preference returns the scrolling
+        // behaviour. It is offered only for the fan profile, which is the only
+        // one whose model is truncated when the preference is off.
+        Controls.Switch {
+            id: fanScrollCheck
+            objectName: "fanScrollCheck"
+            visible: page.activeProfile === "fan"
+            Kirigami.FormData.label: i18n("Fan scrolling:")
+            text: i18n("Allow scrolling in the fan")
+            Accessible.name: i18n("Allow scrolling in the fan")
+            Accessible.description: i18n("When disabled, the fan shows only the configured number of items. Use the final row to open the remaining items in the file manager.")
         }
 
         Controls.CheckBox {
@@ -438,7 +511,10 @@ Item {
         Controls.Label {
             text: page.activeProfile === "grid"
                 ? i18n("Additional applications remain available by scrolling. On narrow screens, the popup safely reduces the number of columns.")
-                : i18n("Additional applications remain available by scrolling.")
+                : (page.activeProfile === "fan"
+                    && !page.cfg_folderFanScrollEnabled
+                    ? i18n("A container without a folder keeps scrolling enabled, so no application becomes unreachable.")
+                    : i18n("Additional applications remain available by scrolling."))
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint
@@ -461,6 +537,41 @@ Item {
             text: i18n("Show subtle shadows on popup text")
             Accessible.description: i18n("Applies to folder popup labels and note popup titles.")
 
+        }
+
+        RowLayout {
+            visible: popupTextShadowsCheck.checked
+            Kirigami.FormData.label: i18n("Shadow intensity:")
+            Layout.maximumWidth: page.contentWidthHint
+
+            Controls.Slider {
+                id: popupTextShadowIntensitySlider
+                from: 0
+                to: 100
+                stepSize: 5
+                snapMode: Controls.Slider.SnapAlways
+                Layout.fillWidth: true
+                Layout.preferredWidth: page.contentWidthHint - 64
+                Accessible.name: i18n("Folder popup text shadow intensity")
+                Accessible.description: i18n("Zero leaves the text with no shadow at all; one hundred approaches the shadow Plasma draws by default.")
+
+            }
+
+            Controls.Label {
+                text: i18n("%1%", Math.round(popupTextShadowIntensitySlider.value))
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: 56
+            }
+        }
+
+        Controls.Label {
+            visible: popupTextShadowsCheck.checked
+            text: i18n("The amount applies to the labels of the folder popups. Zero removes the shadow completely, so the text keeps only its surface behind it.")
+            wrapMode: Text.WordWrap
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
+            leftPadding: layoutMetrics.helperIndent
+            color: Kirigami.Theme.disabledTextColor
         }
 
         Kirigami.Separator {

@@ -130,6 +130,9 @@ def main() -> int:
     dialog_source = (
         PROJECT_ROOT / "contents/ui/config/components/PunchiMenuDialog.qml"
     ).read_text(encoding="utf-8")
+    options_panel_source = (
+        PROJECT_ROOT / "contents/ui/config/PunchiMenuOptionsPanel.qml"
+    ).read_text(encoding="utf-8")
     placement_source = (
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuNormalPlacement.qml"
@@ -733,20 +736,43 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
+    # The controls of the item editor live in the panel extracted from the dialog.
+    # The dialog keeps the public API, hosts the panel and forwards what it
+    # announces, so the contract reads the interface in its new owner and the
+    # wrapper for its own part.
     item_dialog_contract = (
         'i18n("Menu mode:")',
         "Controls.ComboBox {",
+        "property string menuMode",
         "signal menuModeSelected(string mode)",
         "property string iconName",
         "signal iconPickerRequested()",
         'i18n("Icon:")',
         'i18nc("@action:button", "Choose PunchiMenu icon")',
-        "contentItem: RowLayout {",
     )
     for marker in item_dialog_contract:
-        if marker not in dialog_source:
+        source = options_panel_source if marker in (
+            'i18n("Menu mode:")',
+            "Controls.ComboBox {",
+            'i18n("Icon:")',
+            'i18nc("@action:button", "Choose PunchiMenu icon")',
+        ) else dialog_source
+        if marker not in source:
             print(
                 f"PunchiMenuDialog.qml: missing item editor control: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    wrapper_contract = (
+        "contentItem: PunchiMenuOptionsPanel {",
+        "onMenuModeSelected: function(mode) {",
+        "onIconPickerRequested: root.iconPickerRequested()",
+        "onOpened: optionsPanel.synchronizeSelection()",
+    )
+    for marker in wrapper_contract:
+        if marker not in dialog_source:
+            print(
+                f"PunchiMenuDialog.qml: the wrapper must host and forward: {marker}",
                 file=sys.stderr,
             )
             passed = False
@@ -1038,6 +1064,42 @@ def main() -> int:
             file=sys.stderr,
         )
         passed = False
+    if session_view_source.count("hovered || down || visualFocus") < 3:
+        print(
+            "PunchiMenu session view: programmatic focus must not paint the "
+            "action highlight",
+            file=sys.stderr,
+        )
+        passed = False
+    session_focus_contract = (
+        "function focusInitialAction(reason)",
+        "? Qt.PopupFocusReason : reason",
+        "forceActiveFocus(focusReason)",
+    )
+    for marker in session_focus_contract:
+        if marker not in session_view_source:
+            print(
+                "PunchiMenu session view: focus-visible contract is incomplete: "
+                f"{marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    for source, mode_name in (
+        (overlay_source, "Fullscreen"),
+        (normal_source, "Normal"),
+    ):
+        if "readonly property bool keyboardFocusVisible: visualFocus" not in source:
+            print(
+                f"PunchiMenu {mode_name}: session entry must preserve keyboard modality",
+                file=sys.stderr,
+            )
+            passed = False
+        if "? Qt.TabFocusReason : Qt.MouseFocusReason" not in source:
+            print(
+                f"PunchiMenu {mode_name}: session focus reason is not routed",
+                file=sys.stderr,
+            )
+            passed = False
     if session_view_source.count(
         "readonly property color foregroundColor: highlightedContent"
     ) < 3:
@@ -3073,8 +3135,11 @@ def main() -> int:
             'source: "config/ConfigAdditionalShortcuts.qml"',
             "additional shortcuts configuration category",
         ),
-        (dialog_source, '"value": "fullScreen"', "full-screen mode option"),
-        (dialog_source, '"value": "normal"', "Normal mode option"),
+        # The list of modes belongs to the panel extracted from the dialog: the
+        # contract reads it where it now lives.
+        (options_panel_source, '"value": "fullScreen"', "full-screen mode option"),
+        (options_panel_source, '"value": "normal"', "Normal mode option"),
+        (options_panel_source, '"value": "compact"', "Compact mode option"),
         (workflow_source, "ConfigItemsJS.prunePunchiMenu(item)",
          "shared item normalization"),
         (

@@ -8,6 +8,9 @@
 #include <limits>
 #include <QEvent>
 #include <QPlatformSurfaceEvent>
+#include <QPointF>
+#include <QPolygon>
+#include <QQuickWindow>
 #include <QRegion>
 #include <QTimer>
 #include <QVariant>
@@ -85,6 +88,15 @@ void BlurBehindController::setWindow(QObject *windowObject)
     m_window = window;
     if (m_window) {
         m_window->installEventFilter(this);
+        if (auto *quickWindow = qobject_cast<QQuickWindow *>(m_window.data())) {
+            // PlasmaQuick::Dialog may disable blur while updating its
+            // NoBackground theme during layout. Restore it after that frame.
+            connect(quickWindow, &QQuickWindow::frameSwapped, this, [this]() {
+                if (m_restoreAfterFrame && m_window && m_window->isVisible() && m_enabled) {
+                    apply();
+                }
+            }, Qt::QueuedConnection);
+        }
         connect(m_window, &QWindow::visibleChanged, this, [this]() {
             apply();
             if (m_window && m_window->isVisible()) {
@@ -172,6 +184,7 @@ void BlurBehindController::setUseMaskSourceInsets(bool useMaskSourceInsets)
         return;
     }
     m_useMaskSourceInsets = useMaskSourceInsets;
+    invalidateMaskCache();
     Q_EMIT useMaskSourceInsetsChanged();
     apply();
 }
@@ -191,9 +204,42 @@ void BlurBehindController::setMaskOffset(const QPoint &maskOffset)
     apply();
 }
 
+QVariantList BlurBehindController::additionalMaskPolygon() const
+{
+    return m_additionalMaskPolygon;
+}
+
+void BlurBehindController::setAdditionalMaskPolygon(
+    const QVariantList &additionalMaskPolygon)
+{
+    if (m_additionalMaskPolygon == additionalMaskPolygon) {
+        return;
+    }
+
+    m_additionalMaskPolygon = additionalMaskPolygon;
+    m_additionalMaskRegion = regionFromPolygon(m_additionalMaskPolygon);
+    m_composedMaskCacheValid = false;
+    Q_EMIT additionalMaskPolygonChanged();
+    apply();
+}
+
 bool BlurBehindController::fullWindow() const
 {
     return m_fullWindow;
+}
+
+bool BlurBehindController::restoreAfterFrame() const
+{
+    return m_restoreAfterFrame;
+}
+
+void BlurBehindController::setRestoreAfterFrame(bool restoreAfterFrame)
+{
+    if (m_restoreAfterFrame == restoreAfterFrame) {
+        return;
+    }
+    m_restoreAfterFrame = restoreAfterFrame;
+    Q_EMIT restoreAfterFrameChanged();
 }
 
 void BlurBehindController::setFullWindow(bool fullWindow)
@@ -250,7 +296,10 @@ void BlurBehindController::invalidateMaskCache()
     m_maskCacheValid = false;
     m_cachedSourceMask = QRegion();
     m_cachedContractedMask = QRegion();
+    m_cachedEffectiveMask = QRegion();
+    m_cachedComposedMask = QRegion();
     m_cachedInsets = QMargins();
+    m_composedMaskCacheValid = false;
 }
 
 QRegion BlurBehindController::contractMaskToInsets(
@@ -317,6 +366,41 @@ QRegion BlurBehindController::contractMaskToInsets(
     return contractedMask;
 }
 
+QRegion BlurBehindController::regionFromPolygon(const QVariantList &polygon)
+{
+    constexpr qsizetype maximumPointCount = 256;
+    constexpr qreal maximumCoordinateMagnitude = 1000000.0;
+    if (polygon.size() < 3 || polygon.size() > maximumPointCount) {
+        return QRegion();
+    }
+
+    QPolygon integerPolygon;
+    integerPolygon.reserve(polygon.size());
+    for (const QVariant &value : polygon) {
+        if (!value.canConvert<QPointF>()) {
+            return QRegion();
+        }
+        const QPointF point = value.toPointF();
+        if (!std::isfinite(point.x()) || !std::isfinite(point.y())
+            || std::abs(point.x()) > maximumCoordinateMagnitude
+            || std::abs(point.y()) > maximumCoordinateMagnitude) {
+            return QRegion();
+        }
+        integerPolygon.append(QPoint(qRound(point.x()), qRound(point.y())));
+    }
+
+    return QRegion(integerPolygon, Qt::WindingFill);
+}
+
+QRegion BlurBehindController::composeMaskRegion(
+    const QRegion &effectiveSourceMask,
+    const QRegion &additionalMaskRegion)
+{
+    QRegion composedMask = effectiveSourceMask;
+    composedMask += additionalMaskRegion;
+    return composedMask;
+}
+
 void BlurBehindController::apply()
 {
     refreshAvailability();
@@ -337,6 +421,13 @@ void BlurBehindController::apply()
             sourceMask = m_cachedContractedMask;
         }
     }
+    if (!m_composedMaskCacheValid || m_cachedEffectiveMask != sourceMask) {
+        m_cachedEffectiveMask = sourceMask;
+        m_cachedComposedMask = composeMaskRegion(
+            sourceMask, m_additionalMaskRegion);
+        m_composedMaskCacheValid = true;
+    }
+    sourceMask = m_cachedComposedMask;
     const bool hasRegion = m_fullWindow || !sourceMask.isEmpty();
     const bool shouldEnable = m_window && m_available && m_enabled && hasRegion;
     if (!m_window) {

@@ -7,6 +7,8 @@
 #include <QMetaObject>
 #include <QMetaProperty>
 #include <QPoint>
+#include <QPointF>
+#include <QPolygon>
 #include <QRect>
 #include <QRegion>
 #include <QVariant>
@@ -14,6 +16,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <limits>
 
 namespace
 {
@@ -136,6 +139,57 @@ int main()
     passed &= expect(maskOffsetChangeCount == 1,
                      "setting the same maskOffset must not emit a duplicate change");
 
+    const int additionalPolygonPropertyIndex =
+        metaObject->indexOfProperty("additionalMaskPolygon");
+    passed &= expect(additionalPolygonPropertyIndex >= 0,
+                     "additionalMaskPolygon property must be exposed");
+    if (additionalPolygonPropertyIndex >= 0) {
+        const QMetaProperty property = metaObject->property(additionalPolygonPropertyIndex);
+        passed &= expect(property.metaType().id() == QMetaType::QVariantList,
+                         "additionalMaskPolygon must accept QML point lists");
+        passed &= expect(property.isWritable(),
+                         "additionalMaskPolygon must be writable from QML");
+        passed &= expect(property.notifySignal().name() == "additionalMaskPolygonChanged",
+                         "additionalMaskPolygon must use its dedicated notifier");
+    }
+
+    int additionalPolygonChangeCount = 0;
+    QObject::connect(&controller, &BlurBehindController::additionalMaskPolygonChanged,
+                     [&additionalPolygonChangeCount]() {
+        ++additionalPolygonChangeCount;
+    });
+    const QVariantList tailPolygon{
+        QPointF(40, 76),
+        QPointF(50, 92),
+        QPointF(60, 76),
+    };
+    controller.setAdditionalMaskPolygon(tailPolygon);
+    passed &= expect(controller.additionalMaskPolygon() == tailPolygon,
+                     "additionalMaskPolygon must preserve the QML point list");
+    controller.setAdditionalMaskPolygon(tailPolygon);
+    passed &= expect(additionalPolygonChangeCount == 1,
+                     "setting the same additional polygon must not notify twice");
+
+    const QRegion tailRegion = BlurBehindController::regionFromPolygon(tailPolygon);
+    passed &= expect(!tailRegion.isEmpty(),
+                     "a valid tail polygon must produce a region");
+    passed &= expect(tailRegion.contains(QPoint(50, 84)),
+                     "the polygon region must contain the tail interior");
+    passed &= expect(!tailRegion.contains(QPoint(20, 84)),
+                     "the polygon region must exclude points outside the tail");
+    passed &= expect(BlurBehindController::regionFromPolygon(
+                         QVariantList{QPointF(0, 0), QPointF(1, 1)}).isEmpty(),
+                     "a polygon with fewer than three points must be rejected");
+    passed &= expect(BlurBehindController::regionFromPolygon(
+                         QVariantList{QPointF(0, 0), QStringLiteral("invalid"),
+                                      QPointF(1, 1)}).isEmpty(),
+                     "a polygon containing a non-point value must be rejected");
+    passed &= expect(BlurBehindController::regionFromPolygon(
+                         QVariantList{QPointF(0, 0),
+                                      QPointF(std::numeric_limits<double>::quiet_NaN(), 1),
+                                      QPointF(1, 1)}).isEmpty(),
+                     "a polygon containing a non-finite coordinate must be rejected");
+
     const int useInsetsPropertyIndex = metaObject->indexOfProperty("useMaskSourceInsets");
     passed &= expect(useInsetsPropertyIndex >= 0,
                      "useMaskSourceInsets property must be exposed");
@@ -166,6 +220,12 @@ int main()
         rectangularMask, QMargins(10, 8, 6, 4));
     passed &= expect(asymmetricContractedMask.boundingRect() == QRect(10, 8, 84, 68),
                      "mask contraction must honor each runtime inset independently");
+    const QRegion composedPopupMask = BlurBehindController::composeMaskRegion(
+        asymmetricContractedMask, tailRegion);
+    passed &= expect(composedPopupMask.contains(QPoint(50, 84)),
+                     "the additional tail must be united after frame contraction");
+    passed &= expect(!composedPopupMask.contains(QPoint(5, 5)),
+                     "composition must not restore the frame area removed by insets");
 
     const QRegion ellipticalMask(QRect(0, 0, 100, 80), QRegion::Ellipse);
     const QRegion roundedContractedMask = BlurBehindController::contractMaskToInsets(

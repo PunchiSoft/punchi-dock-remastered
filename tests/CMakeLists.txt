@@ -119,22 +119,6 @@ target_link_libraries(panellengthmodebridge_test PRIVATE Qt6::Core Qt6::Qml)
 
 add_test(NAME panellengthmodebridge_test COMMAND panellengthmodebridge_test)
 
-add_executable(panelrevealadapter_test
-    panelrevealadapter_test.cpp
-    ${CMAKE_SOURCE_DIR}/src/panelrevealadapter.cpp
-)
-
-target_include_directories(panelrevealadapter_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(panelrevealadapter_test PRIVATE
-    Qt6::Core
-    Qt6::Gui
-    Qt6::Qml
-    Plasma::Plasma
-    Plasma::PlasmaQuick
-)
-
-add_test(NAME panelrevealadapter_test COMMAND panelrevealadapter_test)
-
 add_executable(panelinputregionsynchronizer_test
     panelinputregionsynchronizer_test.cpp
     ${CMAKE_SOURCE_DIR}/src/panelinputregionsynchronizer.cpp
@@ -188,7 +172,7 @@ add_executable(blurbehindcontroller_test
 )
 
 target_include_directories(blurbehindcontroller_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(blurbehindcontroller_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml KF6::WindowSystem)
+target_link_libraries(blurbehindcontroller_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick KF6::WindowSystem)
 
 add_test(NAME blurbehindcontroller_test COMMAND blurbehindcontroller_test)
 
@@ -251,8 +235,20 @@ add_test(
 )
 
 add_test(
-    NAME config_development_contract_test
-    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/config_development_contract_test.py
+    NAME items_page_layout_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/items_page_layout_contract_test.py
+)
+add_test(
+    NAME item_type_catalog_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/item_type_catalog_contract_test.py
+)
+add_test(
+    NAME item_draft_form_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/item_draft_form_contract_test.py
+)
+add_test(
+    NAME item_addition_page_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/item_addition_page_contract_test.py
 )
 
 add_test(
@@ -306,6 +302,16 @@ add_test(
 )
 
 add_test(
+    NAME first_install_category_seed_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/first_install_category_seed_contract_test.py
+)
+
+add_test(
+    NAME dynamic_applications_marker_space_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_applications_marker_space_contract_test.py
+)
+
+add_test(
     NAME window_thumbnail_contract_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/window_thumbnail_contract_test.py
 )
@@ -313,6 +319,11 @@ add_test(
 add_test(
     NAME popup_menu_surface_contract_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/popup_menu_surface_contract_test.py
+)
+
+add_test(
+    NAME popup_background_blur_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/popup_background_blur_contract_test.py
 )
 
 add_test(
@@ -328,6 +339,21 @@ add_test(
 add_test(
     NAME kubuntu_version_detection_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/kubuntu_version_detection_test.py
+)
+
+add_test(
+    NAME options_panels_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/options_panels_contract_test.py
+)
+
+add_test(
+    NAME media_trash_panels_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/media_trash_panels_contract_test.py
+)
+
+add_test(
+    NAME timed_options_panel_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/timed_options_panel_contract_test.py
 )
 
 add_test(
@@ -524,8 +550,12 @@ function(punchi_add_qml_test test_name qml_file)
         COMMAND $<TARGET_FILE:punchi_qmltestrunner>
             -input ${CMAKE_CURRENT_SOURCE_DIR}/${qml_file}
     )
+    # Extra arguments are appended to the shared environment. Use them only for
+    # a test that must adapt its runtime to a service it loads.
+    set(test_environment "${PUNCHI_QML_TEST_ENVIRONMENT}")
+    list(APPEND test_environment ${ARGN})
     set_tests_properties(${test_name} PROPERTIES
-        ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT}"
+        ENVIRONMENT "${test_environment}"
         FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
         TIMEOUT 30
     )
@@ -538,6 +568,62 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     task_popup_anchor_proxy_test
     task_popup_anchor_proxy_test.qml
+)
+punchi_add_qml_test(
+    items_add_button_test
+    items_add_button_test.qml
+)
+punchi_add_qml_test(
+    item_type_selector_test
+    item_type_selector_test.qml
+)
+punchi_add_qml_test(
+    item_draft_controller_test
+    item_draft_controller_test.qml
+)
+punchi_add_qml_test(
+    item_configuration_dialog_test
+    item_configuration_dialog_test.qml
+)
+punchi_add_qml_test(
+    item_action_editor_layout_test
+    item_action_editor_layout_test.qml
+)
+punchi_add_qml_test(
+    punchi_menu_options_panel_test
+    punchi_menu_options_panel_test.qml
+)
+punchi_add_qml_test(
+    control_center_options_panel_test
+    control_center_options_panel_test.qml
+)
+punchi_add_qml_test(
+    item_configuration_options_panels_test
+    item_configuration_options_panels_test.qml
+)
+punchi_add_qml_test(
+    media_player_options_panel_test
+    media_player_options_panel_test.qml
+)
+punchi_add_qml_test(
+    trash_options_panel_test
+    trash_options_panel_test.qml
+)
+punchi_add_qml_test(
+    item_configuration_media_trash_panels_test
+    item_configuration_media_trash_panels_test.qml
+)
+punchi_add_qml_test(
+    timed_options_panel_test
+    timed_options_panel_test.qml
+)
+punchi_add_qml_test(
+    item_configuration_calendar_panel_test
+    item_configuration_calendar_panel_test.qml
+)
+punchi_add_qml_test(
+    items_page_horizontal_layout_test
+    items_page_horizontal_layout_test.qml
 )
 punchi_add_qml_test(
     control_center_shortcut_tile_test
@@ -584,6 +670,10 @@ punchi_add_qml_test(
     control_center_network_page_test.qml
 )
 punchi_add_qml_test(
+    control_center_network_submenu_test
+    control_center_network_submenu_test.qml
+)
+punchi_add_qml_test(
     control_center_bluetooth_page_test
     control_center_bluetooth_page_test.qml
 )
@@ -594,6 +684,15 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     control_center_audio_page_test
     control_center_audio_page_test.qml
+)
+# The backend test loads the real plasma-pa models, so the host audio server can
+# make pulseaudio-qt warn while it registers the default source. The category is
+# silenced in this process only, so failOnWarning() keeps guarding project code
+# and the shared QWARN output gate stays meaningful.
+punchi_add_qml_test(
+    control_center_audio_backend_test
+    control_center_audio_backend_test.qml
+    "QT_LOGGING_RULES=org.kde.pulseaudio.warning=false"
 )
 punchi_add_qml_test(
     popup_visible_gap_placement_test
@@ -606,6 +705,22 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     punchimenu_normal_size_state_test
     punchimenu_normal_size_state_test.qml
+)
+punchi_add_qml_test(
+    punchimenu_session_focus_test
+    punchimenu_session_focus_test.qml
+)
+punchi_add_qml_test(
+    folder_popup_motion_test
+    folder_popup_motion_test.qml
+)
+punchi_add_qml_test(
+    folder_open_location_test
+    folder_open_location_test.qml
+)
+punchi_add_qml_test(
+    folder_fan_view_test
+    folder_fan_view_test.qml
 )
 punchi_add_qml_test(task_popup_surface_test task_popup_surface_test.qml)
 punchi_add_qml_test(
@@ -623,6 +738,10 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     config_items_default_loading_test
     config_items_default_loading_test.qml
+)
+punchi_add_qml_test(
+    config_folder_popups_fan_scroll_test
+    config_folder_popups_fan_scroll_test.qml
 )
 punchi_add_qml_test(
     dynamic_applications_options_test
@@ -672,22 +791,7 @@ set_tests_properties(native_popup_spacing_test PROPERTIES
     FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
     TIMEOUT 30
 )
-add_test(
-    NAME items_configuration_window_test
-    COMMAND ${PUNCHI_DBUS_RUN_SESSION}
-        --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
-        -- $<TARGET_FILE:punchi_qmltestrunner>
-        -input ${CMAKE_CURRENT_SOURCE_DIR}/items_configuration_window_test.qml
-)
-set_tests_properties(items_configuration_window_test PROPERTIES
-    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PUNCHI_TEST_NATIVE_POPUP=1"
-    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
-    TIMEOUT 30
-)
-punchi_add_qml_test(
-    items_configuration_draft_controller_test
-    items_configuration_draft_controller_test.qml
-)
+
 punchi_add_qml_test(
     dock_item_launcher_drop_state_test
     dock_item_launcher_drop_state_test.qml
@@ -695,6 +799,10 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     dock_item_reorder_group_opacity_test
     dock_item_reorder_group_opacity_test.qml
+)
+punchi_add_qml_test(
+    dock_item_tooltip_anchor_test
+    dock_item_tooltip_anchor_test.qml
 )
 add_test(
     NAME item_action_editor_drop_test

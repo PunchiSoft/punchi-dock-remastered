@@ -1,19 +1,31 @@
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Controls as Controls
-import org.kde.kirigami as Kirigami
+import ".."
 
-
+// Thin wrapper of `TrashOptionsPanel`.
+//
+// The panel owns the layout, the controls and their texts; this dialog keeps only
+// what makes it a dialog—title, modality and its close button—plus the public API it
+// already had, so every existing caller and the form helpers that read it keep
+// working. It resolves with the page controller the two values the panel shows as
+// names and forwards what the panel announces; it writes nothing else.
+//
+// Translation helpers are supplied by the KCM context.
+// qmllint disable unqualified
 Controls.Dialog {
     id: root
 
+    // Page the dialog reads its context from: the selected type gates the form and
+    // the sounds are shown with the name its helper resolves. It is not handed to
+    // the panel, which receives plain values and stays passive.
     property var controller
-    property alias nameText: trashName.text
-    property alias emptyIconText: trashIconName.text
-    property alias fullIconText: trashFullIconName.text
-    property alias showStateChecked: trashShowState.checked
-    property alias acceptDropsChecked: trashAcceptDrops.checked
-    property alias soundPath: trashEmptySound.soundPath
+
+    property alias nameText: optionsPanel.nameText
+    property alias emptyIconText: optionsPanel.emptyIconText
+    property alias fullIconText: optionsPanel.fullIconText
+    property alias showStateChecked: optionsPanel.showStateChecked
+    property alias acceptDropsChecked: optionsPanel.acceptDropsChecked
+    property alias soundPath: optionsPanel.soundPath
 
     signal formChanged()
     signal emptyIconPickerRequested()
@@ -22,190 +34,57 @@ Controls.Dialog {
     signal soundResetRequested()
     signal soundPickerRequested()
 
-    modal: true
-    title: i18n("Configure trash") // qmllint disable unqualified
-    standardButtons: Controls.Dialog.Close
+    function hasController() {
+        return root.controller !== undefined && root.controller !== null
+    }
 
-    ColumnLayout {
-        anchors.fill: parent
-        spacing: Kirigami.Units.largeSpacing
+    function defaultSoundPath() {
+        return root.hasController()
+            ? String(root.controller.defaultTrashEmptySound || "") : ""
+    }
 
-        GridLayout {
-            Layout.fillWidth: true
-            columns: 2
-            columnSpacing: Kirigami.Units.largeSpacing
-            rowSpacing: Kirigami.Units.smallSpacing
+    function resolvedSoundName(path) {
+        return root.hasController()
+            ? String(root.controller.fileName(path)) : String(path)
+    }
 
-            Controls.Label {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-                text: i18n("Name:") // qmllint disable unqualified
-                horizontalAlignment: Text.AlignLeft
-                opacity: 0.75
-            }
+    function selectedTypeIsTrash() {
+        return root.hasController()
+            && String(root.controller.selectedItemType) === "trash"
+    }
 
-            Controls.TextField {
-                id: trashName
-                Layout.fillWidth: true
-                Layout.minimumWidth: Kirigami.Units.gridUnit * 18
-                enabled: root.controller.selectedItemType === "trash"
-                onEditingFinished: root.formChanged()
-            }
-        }
-
-        Kirigami.Separator {
-            Layout.fillWidth: true
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            enabled: root.controller.selectedItemType === "trash"
-
-            Controls.CheckBox {
-                id: trashShowState
-                Layout.fillWidth: true
-                text: i18n("Show trash state") // qmllint disable unqualified
-                onClicked: root.formChanged()
-            }
-
-            Controls.CheckBox {
-                id: trashAcceptDrops
-                Layout.fillWidth: true
-                text: i18n("Drag files") // qmllint disable unqualified
-                onClicked: root.formChanged()
-            }
-        }
-
-        GridLayout {
-            Layout.fillWidth: true
-            visible: trashShowState.checked
-            enabled: root.controller.selectedItemType === "trash"
-            columns: 2
-            columnSpacing: Kirigami.Units.largeSpacing
-            rowSpacing: Kirigami.Units.smallSpacing
-
-            Controls.Label {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-                text: i18n("Empty icon:") // qmllint disable unqualified
-                horizontalAlignment: Text.AlignLeft
-                opacity: 0.75
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-
-                Controls.Button {
-                    HoverHandler { cursorShape: Qt.PointingHandCursor }
-                    icon.name: trashIconName.text.length > 0 ? trashIconName.text : "user-trash"
-                    display: Controls.AbstractButton.IconOnly
-                    onClicked: root.emptyIconPickerRequested()
-
-                    Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: i18n("Choose icon") // qmllint disable unqualified
-                }
-
-                Controls.TextField {
-                    id: trashIconName
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: Kirigami.Units.gridUnit * 18
-                    placeholderText: "user-trash"
-                    onEditingFinished: root.formChanged()
-                }
-            }
-
-            Controls.Label {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-                text: i18n("Full icon:") // qmllint disable unqualified
-                horizontalAlignment: Text.AlignLeft
-                opacity: 0.75
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-
-                Controls.Button {
-                    HoverHandler { cursorShape: Qt.PointingHandCursor }
-                    icon.name: trashFullIconName.text.length > 0 ? trashFullIconName.text : "user-trash-full"
-                    display: Controls.AbstractButton.IconOnly
-                    onClicked: root.fullIconPickerRequested()
-
-                    Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: i18n("Choose icon") // qmllint disable unqualified
-                }
-
-                Controls.TextField {
-                    id: trashFullIconName
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: Kirigami.Units.gridUnit * 18
-                    placeholderText: "user-trash-full"
-                    onEditingFinished: root.formChanged()
-                }
-            }
-        }
-
-        RowLayout {
-            Layout.fillWidth: true
-            enabled: root.controller.selectedItemType === "trash"
-            spacing: Kirigami.Units.smallSpacing
-
-            Controls.Label {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-                text: i18n("Empty sound:") // qmllint disable unqualified
-                horizontalAlignment: Text.AlignLeft
-                opacity: 0.75
-            }
-
-            Controls.TextField {
-                id: trashEmptySound
-                Layout.fillWidth: true
-                Layout.minimumWidth: Kirigami.Units.gridUnit * 16
-                readOnly: true
-                text: root.controller.fileName(soundPath)
-                placeholderText: root.controller.fileName(root.controller.defaultTrashEmptySound)
-
-                property string soundPath: root.controller.defaultTrashEmptySound
-
-                onSoundPathChanged: {
-                    if (soundPath.length === 0) {
-                        soundPath = root.controller.defaultTrashEmptySound
-                    }
-                }
-            }
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                icon.name: "media-playback-start-symbolic"
-                display: Controls.AbstractButton.IconOnly
-                onClicked: root.soundPreviewRequested()
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Test sound") // qmllint disable unqualified
-            }
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                icon.name: "edit-reset-symbolic"
-                display: Controls.AbstractButton.IconOnly
-                onClicked: root.soundResetRequested()
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Default") // qmllint disable unqualified
-            }
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                icon.name: "document-open-symbolic"
-                display: Controls.AbstractButton.IconOnly
-                onClicked: root.soundPickerRequested()
-                Controls.ToolTip.visible: hovered
-                Controls.ToolTip.text: i18n("Choose sound") // qmllint disable unqualified
-            }
-        }
-
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: Kirigami.Units.gridUnit * 2
+    // A sound that was cleared falls back to the one a new element ships with, and
+    // the same default is what the dialog starts with. The rule lives here because
+    // this wrapper is the one that knows the default.
+    onSoundPathChanged: {
+        if (root.soundPath.length === 0 && root.defaultSoundPath().length > 0) {
+            root.soundPath = root.defaultSoundPath()
         }
     }
+    Component.onCompleted: {
+        if (root.soundPath.length === 0) {
+            root.soundPath = root.defaultSoundPath()
+        }
+    }
+
+    modal: true
+    title: i18n("Configure trash")
+    standardButtons: Controls.Dialog.Close
+
+    contentItem: TrashOptionsPanel {
+        id: optionsPanel
+
+        objectName: "trashOptionsPanel"
+
+        editable: root.selectedTypeIsTrash()
+        soundFileName: root.resolvedSoundName(root.soundPath)
+        defaultSoundFileName: root.resolvedSoundName(root.defaultSoundPath())
+        onFormChanged: root.formChanged()
+        onEmptyIconPickerRequested: root.emptyIconPickerRequested()
+        onFullIconPickerRequested: root.fullIconPickerRequested()
+        onSoundPreviewRequested: root.soundPreviewRequested()
+        onSoundResetRequested: root.soundResetRequested()
+        onSoundPickerRequested: root.soundPickerRequested()
+    }
 }
+// qmllint enable unqualified

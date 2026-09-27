@@ -1,186 +1,102 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import org.kde.kirigami as Kirigami
 import ".."
 
+// Thin wrapper of `TimedOptionsPanel`.
+//
+// The panel owns the layout, the controls and their texts; this dialog keeps only
+// what makes it a dialog—title, modality, size and close button—plus the public API
+// it already had, so the page and its form helper keep working without changes. It
+// reads from the page the type being configured and whether it is being synchronized,
+// forwards what the panel announces and opens the colour dialog the panel only
+// requests; it writes nothing else.
+//
+// The four colour controls of `calendarBackgroundColor`, `calendarAccentColor`,
+// `calendarBorderColor` and `calendarRadius` are kept as they were: they resolve to
+// null today, because nothing in the calendar or clock flow ever asks for another
+// target, and the page still declares aliases to them. Removing them would change
+// the public surface of this wrapper, so this session preserves them.
+//
+// Translation helpers are supplied by the KCM context.
+// qmllint disable unqualified
 Controls.Dialog {
     id: timedDialog
 
     property var controller
-    property alias itemNameControl: itemName
-    property alias timedItemWidthControl: timedItemWidth
-    property alias timedTextScaleControl: timedTextScale
-    property alias calendarItemHeightControl: calendarItemHeight
-    property alias calendarFormatControl: calendarOptions.calendarFormatControl
-    property alias calendarTimeTextScaleControl: calendarOptions.calendarTimeTextScaleControl
-    property alias calendarDateTextScaleControl: calendarOptions.calendarDateTextScaleControl
-    property alias calendarTextShadowsControl: calendarOptions.calendarTextShadowsControl
-    property alias calendarShowWeekNumbersControl: calendarOptions.calendarShowWeekNumbersControl
-    property alias calendarPopupScaleControl: calendarOptions.calendarPopupScaleControl
-    property var calendarTextColorControl
-    property var calendarBackgroundColorControl
-    property var calendarAccentColorControl
-    property var calendarBorderColorControl
-    property var calendarRadiusControl
-    modal: true
-    title: timedDialog.controller.selectedConfigureTitle()
-    standardButtons: Controls.Dialog.Close
-    width: Math.min(timedDialog.controller.width - Kirigami.Units.largeSpacing * 2, Kirigami.Units.gridUnit * 42)
-    height: Math.min(timedDialog.controller.height - Kirigami.Units.largeSpacing * 2, timedDialogContent.implicitHeight + Kirigami.Units.gridUnit * 8)
+    property alias itemNameControl: optionsPanel.itemNameControl
+    property alias timedItemWidthControl: optionsPanel.timedItemWidthControl
+    property alias timedTextScaleControl: optionsPanel.timedTextScaleControl
+    property alias calendarItemHeightControl: optionsPanel.calendarItemHeightControl
+    property alias calendarFormatControl: optionsPanel.calendarFormatControl
+    property alias calendarTimeTextScaleControl:
+        optionsPanel.calendarTimeTextScaleControl
+    property alias calendarDateTextScaleControl:
+        optionsPanel.calendarDateTextScaleControl
+    property alias calendarTextShadowsControl: optionsPanel.calendarTextShadowsControl
+    property alias calendarShowWeekNumbersControl:
+        optionsPanel.calendarShowWeekNumbersControl
+    property alias calendarPopupScaleControl: optionsPanel.calendarPopupScaleControl
+    property alias calendarTextColorControl: optionsPanel.calendarTextColorControl
+    property var calendarBackgroundColorControl: null
+    property var calendarAccentColorControl: null
+    property var calendarBorderColorControl: null
+    property var calendarRadiusControl: null
 
-    ColumnLayout {
-        id: timedDialogContent
-        anchors.fill: parent
-        spacing: Kirigami.Units.largeSpacing
-
-        GridLayout {
-            Layout.fillWidth: true
-            columns: 2
-            columnSpacing: Kirigami.Units.largeSpacing
-            rowSpacing: Kirigami.Units.smallSpacing
-
-            Controls.Label {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-                text: i18n("Name:") // qmllint disable unqualified
-                horizontalAlignment: Text.AlignLeft
-                opacity: 0.75
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: Kirigami.Units.smallSpacing
-
-                Controls.TextField {
-                    id: itemName
-                    Layout.fillWidth: true
-                    enabled: timedDialog.controller.selectedIndex >= 0
-                    onEditingFinished: timedDialog.controller.applyItemForm()
-                }
-            }
-
-            Controls.Label {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                visible: timedDialog.controller.selectedItemType === "clock"
-                text: i18n("Item width:") // qmllint disable unqualified
-                horizontalAlignment: Text.AlignLeft
-                opacity: 0.75
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                visible: timedDialog.controller.selectedItemType === "clock"
-                enabled: timedDialog.controller.selectedIndex >= 0
-                spacing: Kirigami.Units.smallSpacing
-
-                Controls.Label {
-                    visible: timedDialog.controller.selectedItemType === "clock"
-                    text: i18n("Width:") // qmllint disable unqualified
-                    opacity: 0.75
-                }
-
-                Controls.SpinBox {
-                    id: timedItemWidth
-                    Layout.preferredWidth: Kirigami.Units.gridUnit * 7
-                    enabled: timedDialog.controller.selectedIndex >= 0
-                    from: 0
-                    to: 600
-                    stepSize: 10
-                    textFromValue: function(value) {
-                        return value === 0 ? i18n("Automatic") : value + " px" // qmllint disable unqualified
-                    }
-                    valueFromText: function(text) {
-                        return text === i18n("Automatic") ? 0 : Number.fromLocaleString(Qt.locale(), text.replace("px", "")) // qmllint disable unqualified
-                    }
-                    onValueModified: timedDialog.controller.applyItemForm()
-
-                    Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: i18n("Item width:") // qmllint disable unqualified
-                }
-
-                Controls.Label {
-                    visible: false
-                    text: i18n("Height:") // qmllint disable unqualified
-                    opacity: 0.75
-                }
-
-                Controls.SpinBox {
-                    id: calendarItemHeight
-                    Layout.preferredWidth: Kirigami.Units.gridUnit * 7
-                    visible: false
-                    enabled: timedDialog.controller.selectedIndex >= 0
-                    from: 0
-                    to: 600
-                    stepSize: 10
-                    textFromValue: function(value) {
-                        return value === 0 ? i18n("Automatic") : value + " px" // qmllint disable unqualified
-                    }
-                    valueFromText: function(text) {
-                        return text === i18n("Automatic") ? 0 : Number.fromLocaleString(Qt.locale(), text.replace("px", "")) // qmllint disable unqualified
-                    }
-                    onValueModified: timedDialog.controller.applyItemForm()
-
-                    Controls.ToolTip.visible: hovered
-                    Controls.ToolTip.text: i18n("Item height:") // qmllint disable unqualified
-                }
-            }
-
-            Controls.Label {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                visible: false
-                text: i18n("Text scale:") // qmllint disable unqualified
-                horizontalAlignment: Text.AlignLeft
-                opacity: 0.75
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                visible: false
-                enabled: timedDialog.controller.selectedIndex >= 0
-                spacing: Kirigami.Units.smallSpacing
-
-                Controls.Slider {
-                    id: timedTextScale
-                    Layout.fillWidth: true
-                    from: 0.75
-                    to: 1.8
-                    stepSize: 0.05
-                    snapMode: Controls.Slider.SnapAlways
-                    onMoved: timedDialog.controller.applyItemForm()
-                    onValueChanged: {
-                        if (!timedDialog.controller.syncing) {
-                            timedDialog.controller.applyItemForm()
-                        }
-                    }
-                }
-
-                Controls.Label {
-                    Layout.minimumWidth: Kirigami.Units.gridUnit * 2.6
-                    horizontalAlignment: Text.AlignRight
-                    text: Math.round(timedTextScale.value * 100) + "%"
-                    opacity: 0.75
-                }
-            }
-
-            CalendarOptions {
-                id: calendarOptions
-                Layout.fillWidth: true
-                Layout.columnSpan: 2
-                controller: timedDialog.controller
-            }
-        }
-
-        Item {
-            Layout.fillWidth: true
-            Layout.preferredHeight: Kirigami.Units.gridUnit * 2
-        }
+    function hasController() {
+        return timedDialog.controller !== undefined && timedDialog.controller !== null
     }
-    Component.onCompleted: {
-        calendarTextColorControl = calendarOptions.calendarTextColorControl
-        calendarBackgroundColorControl = calendarOptions.calendarBackgroundColorControl
-        calendarAccentColorControl = calendarOptions.calendarAccentColorControl
-        calendarBorderColorControl = calendarOptions.calendarBorderColorControl
-        calendarRadiusControl = calendarOptions.calendarRadiusControl
+
+    function selectedType() {
+        return timedDialog.hasController()
+            ? String(timedDialog.controller.selectedItemType) : "calendar"
+    }
+
+    function selectedItemIsEditable() {
+        return timedDialog.hasController()
+            && Number(timedDialog.controller.selectedIndex) >= 0
+    }
+
+    // The page sets its own flag while it fills the form: the panel must not read a
+    // synchronization as an edit of the user.
+    function isSynchronizing() {
+        return timedDialog.hasController()
+            && timedDialog.controller.syncing === true
+    }
+
+    modal: true
+    title: timedDialog.hasController()
+        ? String(timedDialog.controller.selectedConfigureTitle())
+        : ""
+    standardButtons: Controls.Dialog.Close
+    width: Math.min(timedDialog.hasController()
+        ? timedDialog.controller.width - Kirigami.Units.largeSpacing * 2
+        : Kirigami.Units.gridUnit * 42, Kirigami.Units.gridUnit * 42)
+    height: Math.min(timedDialog.hasController()
+        ? timedDialog.controller.height - Kirigami.Units.largeSpacing * 2
+        : Kirigami.Units.gridUnit * 40,
+        optionsPanel.implicitHeight + Kirigami.Units.gridUnit * 8)
+
+    contentItem: TimedOptionsPanel {
+        id: optionsPanel
+
+        objectName: "timedOptionsPanel"
+
+        selectedItemType: timedDialog.selectedType()
+        editable: timedDialog.selectedItemIsEditable()
+        syncingValues: timedDialog.isSynchronizing()
+        onFormChanged: {
+            if (timedDialog.hasController()) {
+                timedDialog.controller.applyItemForm()
+            }
+        }
+        onColorRequested: function(target) {
+            if (timedDialog.hasController()) {
+                timedDialog.controller.openTimedColorDialog(String(target))
+            }
+        }
     }
 }
+// qmllint enable unqualified

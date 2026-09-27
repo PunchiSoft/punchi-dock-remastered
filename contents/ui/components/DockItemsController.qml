@@ -26,6 +26,10 @@ Item {
     property int minimizeReactionTargetIndex: -1
     property bool trashHasItems: false
     readonly property bool itemTransitionActive: itemTransitionTimer.running
+    // Name of the file manager the desktop uses, so a container popup can say
+    // where it opens instead of naming one application.
+    readonly property string folderOpenerName: systemDiscovery
+        ? String(systemDiscovery.folderOpenerName || "") : ""
 
     signal configurationChanged()
 
@@ -53,7 +57,11 @@ Item {
 
         function onDockItemsJsonChanged() {
             const raw = Plasmoid.configuration.dockItemsJson || ""
-            root.dockItems = Logic.loadItems(raw)
+            // A write that already matches the loaded items must not rebuild
+            // the dock with an identical list.
+            if (raw !== JSON.stringify(root.dockItems)) {
+                root.dockItems = Logic.loadItems(raw)
+            }
             root.scheduleDynamicApplicationsMarker()
             if (root.runtimeService) {
                 root.runtimeService.persistDockItemsJson(raw, root.configInstanceId())
@@ -75,12 +83,60 @@ Item {
 
     Component.onCompleted: {
         const raw = Plasmoid.configuration.dockItemsJson || ""
-        root.dockItems = Logic.loadItems(raw)
+        // Category containers shipped with the defaults are filled from the
+        // installed launchers once, on the first install, so the end user sees
+        // the capability working with the applications of their own machine.
+        // Everything resolves before the items are exposed, because replacing
+        // an already loaded list would rebuild the whole dock.
+        const seed = root.seedCategoryItems(Logic.loadItems(raw), raw)
+        root.dockItems = seed.items
         root.dockItemsLoaded = true
         root.scheduleDynamicApplicationsMarker()
         if (root.trashIntegration) {
             root.trashIntegration.refresh()
         }
+        if (seed.changed) {
+            root.persistItems(root.dockItems)
+        }
+    }
+
+    // Seeding is only valid while the stored configuration is still empty,
+    // which is what marks a first install. An empty answer keeps the shipped
+    // fallback list, so a container is never left blank, and the seeded list
+    // becomes a normal editable container.
+    function seedCategoryItems(items, storedJson) {
+        const result = { "items": items, "changed": false }
+        if (String(storedJson || "").length > 0 || !root.systemDiscovery
+                || !(items instanceof Array)) {
+            return result
+        }
+
+        const seeded = []
+        for (let index = 0; index < items.length; index++) {
+            const item = items[index]
+            if (!item || item.type !== "folder"
+                    || item.sourceType !== "category"
+                    || String(item.sourceCategory || "").length === 0) {
+                seeded.push(item)
+                continue
+            }
+
+            const resolved = root.systemDiscovery.applicationsForCategory(
+                String(item.sourceCategory))
+            if (!(resolved instanceof Array) || resolved.length === 0) {
+                seeded.push(item)
+                continue
+            }
+
+            const next = JSON.parse(JSON.stringify(item))
+            next.apps = resolved
+            next.sourceType = "manual"
+            seeded.push(next)
+            result.changed = true
+        }
+
+        result.items = seeded
+        return result
     }
 
     function configInstanceId() {
@@ -102,6 +158,16 @@ Item {
         if (root.runtimeService) {
             root.runtimeService.launchCommand(command)
         }
+    }
+
+    // Opens a folder with the user's file manager. The path may carry a leading
+    // tilde, which the native side resolves against the home directory.
+    function openLocation(path) {
+        const requestedPath = String(path || "").trim()
+        if (requestedPath.length === 0 || !root.systemDiscovery) {
+            return
+        }
+        root.systemDiscovery.openLocation(requestedPath)
     }
 
     function launchDockItem(item) {
@@ -218,8 +284,8 @@ Item {
         }
     }
 
-    function syncDockItemsConfiguration() {
-        const raw = JSON.stringify(root.dockItems)
+    function persistItems(items) {
+        const raw = JSON.stringify(items)
         if (raw.length > Logic.maximumDockItemsJsonLength) {
             console.warn("Punchi Dock: Refused to persist an oversized dock configuration.")
             return false
@@ -229,6 +295,10 @@ Item {
             return root.runtimeService.persistDockItemsJson(raw, root.configInstanceId())
         }
         return true
+    }
+
+    function syncDockItemsConfiguration() {
+        return root.persistItems(root.dockItems)
     }
 
     function scheduleDynamicApplicationsMarker() {

@@ -86,6 +86,18 @@ QtObject {
         Plasmoid.configuration.windowPreviewTextShadowsEnabled === true
     readonly property bool popupTextShadowsEnabled:
         Plasmoid.configuration.popupTextShadowsEnabled === true
+    // Amount of the text shadow of the folder popups, in percent. Zero removes
+    // the shadow completely, so the value cannot fall back on a default when it
+    // is present: only a missing or unusable value does.
+    readonly property int folderPopupTextShadowPercent: {
+        const requestedPercent = Number(
+            Plasmoid.configuration.folderPopupTextShadowPercent)
+        if (!Number.isFinite(requestedPercent)) {
+            return 25
+        }
+        return Math.max(0, Math.min(100,
+            Math.round(requestedPercent / 5) * 5))
+    }
     readonly property real contextMenuBackgroundOpacity: {
         const requestedPercent = Number(
             Plasmoid.configuration.contextMenuBackgroundOpacityPercent)
@@ -95,6 +107,8 @@ QtObject {
             : 75
         return safePercent / 100
     }
+    readonly property bool contextMenuBackgroundBlurEnabled:
+        Plasmoid.configuration.contextMenuBackgroundBlurEnabled !== false
     readonly property bool menuTextShadowsEnabled:
         Plasmoid.configuration.menuTextShadowsEnabled === true
 
@@ -132,6 +146,21 @@ QtObject {
         String(Plasmoid.configuration.folderDetailedFontFamily || "")
     readonly property int folderDetailedFontSize: Math.max(8, Math.min(18,
         Number(Plasmoid.configuration.folderDetailedFontSize || 10)))
+
+    readonly property int folderFanIconSize: Math.max(24, Math.min(64,
+        Number(Plasmoid.configuration.folderFanIconSize || 44)))
+    readonly property int folderFanRows: Math.max(1, Math.min(8,
+        Number(Plasmoid.configuration.folderFanRows || 6)))
+    readonly property bool folderFanShowLabels:
+        Plasmoid.configuration.folderFanShowLabels !== false
+    readonly property string folderFanFontFamily:
+        String(Plasmoid.configuration.folderFanFontFamily || "")
+    readonly property int folderFanFontSize: Math.max(8, Math.min(18,
+        Number(Plasmoid.configuration.folderFanFontSize || 10)))
+    // The fan is static by default: a missing key resolves to `false` on
+    // purpose, so every existing installation starts with no scrolling.
+    readonly property bool folderFanScrollEnabled:
+        Plasmoid.configuration.folderFanScrollEnabled === true
     readonly property int folderPopupDistancePercent: {
         const configuredPercent = Number(
             Plasmoid.configuration.folderPopupDistancePercent)
@@ -152,6 +181,10 @@ QtObject {
     }
     readonly property bool folderPopupShowHeader:
         Plasmoid.configuration.folderPopupShowHeader !== false
+    // Blur is requested only when the compositor provides it; the controller
+    // reports availability separately and degrades to a plain themed surface.
+    readonly property bool popupBackgroundBlurEnabled:
+        Plasmoid.configuration.popupBackgroundBlurEnabled !== false
 
     readonly property bool dockShowLabels: !!Plasmoid.configuration.showLabels
     readonly property bool dockTextShadowsEnabled:

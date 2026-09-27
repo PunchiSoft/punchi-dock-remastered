@@ -2,9 +2,16 @@
 
 import QtQuick
 import QtQuick.Controls as Controls
-import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
+import ".."
 
+// Thin wrapper of `ControlCenterOptionsPanel`.
+//
+// The panel owns the layout, the list of modes and their texts; this dialog keeps
+// only what makes it a dialog—title, modality, close button and size—plus the
+// public API it already had, so every existing caller keeps working. It forwards
+// what the panel announces and updates its own state, and writes nothing else.
+//
 // Translation helpers are supplied by the KCM context.
 // qmllint disable unqualified
 Controls.Dialog {
@@ -12,79 +19,37 @@ Controls.Dialog {
 
     objectName: "controlCenterConfigDialog"
 
+    // Public API kept as it was: the panel owns the value it shows, so this
+    // wrapper only mirrors it and announces what the user asked for.
     property string controlCenterMode: "floating"
     property real selectorWidth: Kirigami.Units.gridUnit * 16
-    readonly property var modeOptions: [
-        {
-            "text": i18nc("@option:control-center-mode", "Full screen"),
-            "value": "fullScreen"
-        },
-        {
-            "text": i18nc("@option:control-center-mode", "Floating"),
-            "value": "floating"
-        }
-    ]
+    readonly property alias modeOptions: optionsPanel.modeOptions
 
     signal controlCenterModeSelected(string mode)
 
     function modeIndex(mode) {
-        for (let index = 0; index < root.modeOptions.length; index++) {
-            if (root.modeOptions[index].value === mode) {
-                return index
-            }
-        }
-        return 1
+        return optionsPanel.modeIndex(mode)
     }
 
     function synchronizeModeSelection() {
-        modeCombo.currentIndex = root.modeIndex(root.controlCenterMode)
+        optionsPanel.synchronizeSelection()
     }
 
     title: i18nc("@title:window", "Configure Control Center")
     modal: true
     standardButtons: Controls.Dialog.Close
-    onOpened: root.synchronizeModeSelection()
+    // A value set from outside is the state of the dialog, never a choice of the
+    // user: showing it again must not announce an intention.
+    onOpened: optionsPanel.synchronizeSelection()
 
-    contentItem: RowLayout {
-        spacing: Kirigami.Units.smallSpacing
+    contentItem: ControlCenterOptionsPanel {
+        id: optionsPanel
 
-        Controls.Label {
-            text: i18nc("@label:listbox", "Display mode:")
-        }
-
-        Controls.ComboBox {
-            id: modeCombo
-
-            objectName: "controlCenterModeCombo"
-
-            Layout.fillWidth: true
-            Layout.minimumWidth: Kirigami.Units.gridUnit * 8
-            Layout.preferredWidth: Math.min(root.selectorWidth,
-                Kirigami.Units.gridUnit * 12)
-            Layout.maximumWidth: Kirigami.Units.gridUnit * 12
-            model: root.modeOptions
-            textRole: "text"
-            Accessible.name: i18nc("@info:accessibility",
-                "Control Center display mode")
-
-            delegate: Controls.ItemDelegate {
-                required property int index
-                required property var modelData
-
-                width: modeCombo.width
-                text: String(modelData.text || "")
-                highlighted: modeCombo.highlightedIndex === index
-            }
-
-            onActivated: function(index) {
-                const option = root.modeOptions[index]
-                if (!option) {
-                    currentIndex = root.modeIndex(root.controlCenterMode)
-                    return
-                }
-                root.controlCenterMode = String(option.value)
-                root.controlCenterModeSelected(root.controlCenterMode)
-            }
+        controlCenterMode: root.controlCenterMode
+        selectorWidth: root.selectorWidth
+        onControlCenterModeSelected: function(mode) {
+            root.controlCenterMode = String(mode)
+            root.controlCenterModeSelected(root.controlCenterMode)
         }
     }
 }

@@ -11,6 +11,11 @@ ColumnLayout {
     property var actionModel
     property int selectedActionIndex: -1
     property int selectedItemIndex: -1
+    // The editor works on an element that exists. The action dialog of an existing
+    // element gates it with its index; the add dialog, which edits a draft that is
+    // not in the dock list yet, sets it directly. The default keeps the previous
+    // behavior for every existing caller.
+    property bool editableItemAvailable: selectedItemIndex >= 0
     property string selectedItemType: "app"
     property string itemModeValue: "app"
     property string appIconText: ""
@@ -199,8 +204,13 @@ ColumnLayout {
 
             ListView {
                 id: actionList
+                objectName: "actionList"
                 anchors.fill: parent
                 clip: true
+                // The rows are as wide as the viewport: the list must not derive its
+                // width from its delegates, because each delegate reserves its
+                // subtitle as a share of that same width.
+                contentWidth: width
                 model: root.actionModel
                 currentIndex: root.selectedActionIndex
                 boundsBehavior: Flickable.StopAtBounds
@@ -219,6 +229,13 @@ ColumnLayout {
                     HoverHandler { cursorShape: Qt.PointingHandCursor }
                     property bool hasVerticalScroll: actionList.contentHeight > actionList.height
 
+                    // The row takes its width from the list and reserves a share of it
+                    // for the subtitle. That reservation cannot be left implicit: the
+                    // style derives its implicit width from the padding and from the
+                    // elided label, which closes a sizing cycle when the padding is a
+                    // share of that same width. Declaring the row width as the row's
+                    // implicit width keeps every reserved value identical.
+                    implicitWidth: actionList.width
                     width: actionList.width
                     height: root.rowHeight
                     rightPadding: width * 0.42 + Kirigami.Units.largeSpacing + (hasVerticalScroll ? root.scrollGutter : 0)
@@ -307,7 +324,7 @@ ColumnLayout {
                 objectName: "addActionButton"
                 HoverHandler { cursorShape: Qt.PointingHandCursor }
                 icon.name: "list-add-symbolic"
-                enabled: root.selectedItemIndex >= 0
+                enabled: root.editableItemAvailable
                 onClicked: root.addActionRequested()
                 Accessible.name: root.itemModeValue === "container"
                     ? root.addApplicationText : root.addActionText

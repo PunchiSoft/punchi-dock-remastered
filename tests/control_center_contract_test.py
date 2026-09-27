@@ -8,9 +8,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 MAIN = (ROOT / "contents/ui/main.qml").read_text(encoding="utf-8")
 LOGIC = (ROOT / "contents/code/logic.js").read_text(encoding="utf-8")
-PALETTE = (ROOT / "contents/ui/config/AddItemPalette.qml").read_text(
+ITEM_CATALOG = (ROOT / "contents/ui/config/code/itemTypeCatalog.js").read_text(
     encoding="utf-8"
 )
+ITEM_DRAFT_CONTROLLER = (
+    ROOT / "contents/ui/config/ItemDraftController.qml"
+).read_text(encoding="utf-8")
 CONFIG_ITEMS = (
     ROOT / "contents/ui/config/code/configItems.js"
 ).read_text(encoding="utf-8")
@@ -41,6 +44,9 @@ FLOATING_GEOMETRY = (
 ).read_text(encoding="utf-8")
 CONTROL_CENTER_DIALOG = (
     ROOT / "contents/ui/config/components/ControlCenterDialog.qml"
+).read_text(encoding="utf-8")
+CONTROL_CENTER_OPTIONS_PANEL = (
+    ROOT / "contents/ui/config/ControlCenterOptionsPanel.qml"
 ).read_text(encoding="utf-8")
 CONTROLLER = (
     ROOT / "contents/ui/components/ControlCenterController.qml"
@@ -121,6 +127,9 @@ AUDIO_PAGE = (
 AUDIO_ITEM = (
     ROOT / "contents/ui/components/controlcenter/ControlCenterAudioItem.qml"
 ).read_text(encoding="utf-8")
+NETWORK_DELEGATE = (
+    ROOT / "contents/ui/components/controlcenter/ControlCenterNetworkDelegate.qml"
+).read_text(encoding="utf-8")
 BLUETOOTH_DELEGATE = (
     ROOT / "contents/ui/components/controlcenter/ControlCenterBluetoothDelegate.qml"
 ).read_text(encoding="utf-8")
@@ -129,6 +138,10 @@ PASSWORD_SURFACE = (
 ).read_text(encoding="utf-8")
 PAGE_SLOT = (
     ROOT / "contents/ui/components/controlcenter/ControlCenterPageSlot.qml"
+).read_text(encoding="utf-8")
+NETWORK_SUBMENU = (
+    ROOT
+    / "contents/ui/components/controlcenter/ControlCenterNetworkSubmenu.qml"
 ).read_text(encoding="utf-8")
 
 
@@ -142,10 +155,10 @@ require(
     "The Control Center item must be a singleton persistent type.",
 )
 require(
-    '"type": "control-center"' in PALETTE
-    and 'hasItemType("control-center")' in PALETTE
-    and 'hasItemType("control-center")' in WORKFLOW,
-    "The item palette must add at most one Control Center item.",
+    'entry("control-center"' in ITEM_CATALOG
+    and 'root.isSingletonType(type) && root.hasItemType(type)'
+    in ITEM_DRAFT_CONTROLLER,
+    "The canonical selector and draft controller must reject a second Control Center item.",
 )
 require(
     'if (type === "control-center")' in CONFIG_ITEMS
@@ -161,7 +174,11 @@ require(
     and "function openControlCenterDialog(index)" in WORKFLOW
     and "function setControlCenterMode(mode)" in WORKFLOW
     and 'selectedItemType === "control-center"' in WORKFLOW
-    and 'objectName: "controlCenterModeCombo"' in CONTROL_CENTER_DIALOG,
+    # The mode control lives in the options panel extracted from the dialog; the
+    # dialog keeps its public API and hosts that panel.
+    and 'objectName: "controlCenterModeCombo"' in CONTROL_CENTER_OPTIONS_PANEL
+    and "contentItem: ControlCenterOptionsPanel {" in CONTROL_CENTER_DIALOG
+    and "property string controlCenterMode" in CONTROL_CENTER_DIALOG,
     "The item editor must expose a closed, per-item Control Center mode.",
 )
 require(
@@ -210,12 +227,35 @@ require(
     "Floating mode must derive its size from the full-screen rail and active screen.",
 )
 require(
-    "transform: Translate" in OVERLAY
-    and "Behavior on x" in OVERLAY
+    # One driver for the surface: opacity, scale and travel derive from it, so the
+    # panel cannot cross-fade while it travels and no second animator can
+    # disagree with the entrance. Reported as unconvincing by the user.
+    "property real revealProgress: controlCenterOpen ? 1.0 : 0.0" in OVERLAY
+    and "Behavior on revealProgress" in OVERLAY
+    and "Behavior on opacity" not in OVERLAY
+    and "Behavior on x" not in OVERLAY
+    and "Behavior on scale" not in OVERLAY
+    and "revealProgress > 0.001" in OVERLAY
     and "Easing.OutCubic" in OVERLAY
-    and "root.motionEnabled" in OVERLAY
-    and "Behavior on scale" not in OVERLAY,
-    "Both Control Center modes must share a reduced-motion-aware right-to-left transition.",
+    and "root.motionEnabled" in OVERLAY,
+    "The Control Center surface must reveal itself from a single progress "
+    "driver.",
+)
+require(
+    # Floating: anchored reveal from the docked corner, without fading the panel.
+    "import \"ControlCenterRevealMetrics.js\" as RevealMetrics" in OVERLAY
+    and "RevealMetrics.revealOpacity(root.revealProgress)" in OVERLAY
+    and "RevealMetrics.revealScale(root.revealProgress," in OVERLAY
+    and "readonly property int revealOrigin: Item.TopRight" in OVERLAY
+    and "transformOrigin: root.revealOrigin" in OVERLAY
+    and "opacity: root.floatingMode" in OVERLAY
+    and "scale: root.floatingMode" in OVERLAY
+    # Full screen keeps the travel: a full-height rail must not be scaled.
+    and "RevealMetrics.revealTravel(root.revealProgress," in OVERLAY
+    and "transform: Translate" in OVERLAY
+    and "Kirigami.Units.gridUnit * 4" in OVERLAY,
+    "Floating mode must reveal the panel from its docked corner, while the "
+    "full-screen rail keeps its horizontal travel.",
 )
 require(
     "Punchi.BlurBehindController" in BACKDROP
@@ -285,15 +325,23 @@ require(
 )
 require(
     'objectName: "controlCenterNotificationsSection"' in HOME_PAGE
-    and "Layout.fillHeight: true" in HOME_PAGE
-    and "Layout.minimumHeight: Kirigami.Units.gridUnit * 8" in HOME_PAGE
+    # The notifications are the primary area of the home page: they keep the
+    # remaining height at the foot of the frame instead of scrolling away with the
+    # quick controls, and they stay there while a section opens.
+    and "anchors.bottom: parent.bottom" in HOME_PAGE
+    and "height: root.notificationsArea" in HOME_PAGE
+    and "readonly property real minimumNotificationsHeight:" in HOME_PAGE
+    and "homeLayout.implicitHeight - Kirigami.Units.largeSpacing" in HOME_PAGE
+    and "anchors.bottomMargin: root.notificationsArea" in HOME_PAGE
+    and "heldNotificationsHeight = notificationsArea" in HOME_PAGE
     and "ControlCenterExpandableSection" not in HOME_PAGE
     and "notificationsExpanded" not in HOME_PAGE
     and "collapseNotifications" not in OVERLAY
     and 'objectName: "controlCenterNotificationsTile"' not in HOME_PAGE
     and 'text: i18nc("@title", "Notifications")' in HOME_PAGE
     and 'i18np("%1 unread notification"' in HOME_PAGE,
-    "Notification history must always occupy the remaining home-page height.",
+    "Notification history must always occupy the remaining home-page height at "
+    "the foot of the frame.",
 )
 require(
     "ControlCenterHoverReveal" in HOME_PAGE
@@ -559,6 +607,208 @@ require(
         )
     ),
     "Both Control Center directions must share one declarative, interruptible page transition.",
+)
+require(
+    all(
+        "readonly property bool feedbackActive" in source
+        and "Behavior on color" in source
+        and "Behavior on opacity" in source
+        and "Behavior on border.color" in source
+        and "ColorAnimation {" in source
+        and "Math.max(1, Kirigami.Units.shortDuration)" in source
+        and "Math.round(Kirigami.Units.shortDuration * 0.8)" in source
+        # The focus ring must stay immediate: it cannot wait for a transition.
+        and "Behavior on border.width" not in source
+        for source in (SHORTCUT_TILE, QUICK_ACTION)
+    ),
+    "Control Center tiles and quick actions must transition hover, press and "
+    "selection feedback on the theme duration while keeping the focus ring "
+    "immediate.",
+)
+require(
+    "StackLayout" not in AUDIO_PAGE
+    and AUDIO_PAGE.count("ControlCenterPageSlot {") == 2
+    and 'objectName: "controlCenterAudioDevicesSlot"' in AUDIO_PAGE
+    and 'objectName: "controlCenterAudioApplicationsSlot"' in AUDIO_PAGE
+    and "current: tabBar.currentIndex === 0" in AUDIO_PAGE
+    and "current: tabBar.currentIndex === 1" in AUDIO_PAGE
+    and "motionEnabled: root.motionEnabled" in AUDIO_PAGE
+    and "property bool motionEnabled: true" in AUDIO_PAGE
+    # The slot clips a plain container, so both tab views must fill it.
+    and AUDIO_PAGE.count("anchors.fill: parent") >= 2
+    and "motionEnabled: root.motionEnabled" in OVERLAY,
+    "Both audio tabs must share the Control Center page transition model.",
+)
+require(
+    all(
+        "MouseArea {" in source
+        # The tile owns hover from an area stacked above the content, because the
+        # icon and the labels claim hover for themselves when the pointer area
+        # stays behind them. Reported by the user.
+        and "rowHovered: rowHoverArea.containsMouse" in source
+        and "acceptedButtons: Qt.NoButton" in source
+        and "z: 1" in source
+        and "onWheel: function(wheel)" in source
+        and "wheel.accepted = false" in source
+        # Press target for the free space of the tile, behind the content so the
+        # button keeps its own press.
+        and "acceptedButtons: Qt.LeftButton" in source
+        and "hoverEnabled: true" in source
+        and "containsMouse" in source
+        # One tile, one hover state: the labelled button must not claim hover.
+        and "hoverEnabled: false" in source
+        and "|| stateButton.hovered" not in source
+        and "cursorShape: Qt.PointingHandCursor" in source
+        # One accessible control per action: both row areas stay ignored.
+        and source.count("Accessible.ignored: true") >= 2
+        and "Behavior on color" in source
+        and "ColorAnimation {" in source
+        and "Math.max(1, Kirigami.Units.shortDuration)" in source
+        and "Behavior on border.width" not in source
+        for source in (NETWORK_DELEGATE, BLUETOOTH_DELEGATE)
+    )
+    and 'changeConnectionState(root.network, "")' in NETWORK_DELEGATE
+    and "onClicked: root.requestToggle()" in BLUETOOTH_DELEGATE,
+    "The network and Bluetooth rows are single tiles: one hover state and one "
+    "press target for the free space, for the same action as their explicit "
+    "button, which stays the accessible control without claiming hover.",
+)
+require(
+    "add: Transition {" in HOME_PAGE
+    and "remove: Transition {" in HOME_PAGE
+    and 'property: "opacity"' in HOME_PAGE
+    and "displaced: Transition" not in HOME_PAGE,
+    "Notification entry and removal fade only; positions must not animate.",
+)
+require(
+    "Kirigami.Units.longDuration > 1" in OVERLAY,
+    "The reduce-motion criterion must be able to become false in Plasma.",
+)
+require(
+    # The Wi-Fi row opens its own section in place instead of replacing the page,
+    # and the rest of the home page leaves the frame through its bottom edge.
+    "property bool networkSubmenuOpen: false" in HOME_PAGE
+    and "signal networkSubmenuToggleRequested()" in HOME_PAGE
+    and "objectName: \"controlCenterWifiTile\"" in HOME_PAGE
+    and "expandable: true" in HOME_PAGE
+    and "expanded: root.networkSubmenuOpen" in HOME_PAGE
+    and "root.networkSubmenuToggleRequested()" in HOME_PAGE
+    and 'root.settingsRequested("network")' in HOME_PAGE
+    and "ControlCenterNetworkSubmenu {" in HOME_PAGE
+    # The section takes exactly the height left below itself, so the remaining
+    # content starts at the bottom edge of the frame and stops being visible.
+    and "topInViewport:" in HOME_PAGE
+    and "quickControls.y + y - homeScrollView.contentY" in HOME_PAGE
+    and "expandedHeight: Math.max(0," in HOME_PAGE
+    and "homeScrollView.height - topInViewport" in HOME_PAGE
+    # Content that left the frame must not be reachable while it is hidden.
+    and "interactive: networkSubmenu.expansionProgress < 0.001" in HOME_PAGE
+    and "homeScrollView.contentY = 0" in HOME_PAGE
+    and "networkSubmenu.focusFirstControl(reason)" in HOME_PAGE
+    and "wifiTile.forceActiveFocus" in HOME_PAGE
+    # The Wi-Fi/Bluetooth row is the anchor; the marked row (Do Not Disturb and
+    # Updates) is declared after the section, so opening it pushes that row out of
+    # the frame together with the control cards and the quick actions.
+    and HOME_PAGE.index("id: networkSubmenu")
+    < HOME_PAGE.index("id: doNotDisturbTile")
+    and HOME_PAGE.index("id: doNotDisturbTile")
+    < HOME_PAGE.index("id: brightnessCard"),
+    "The Wi-Fi row must reveal its own submenu in place and push the marked row "
+    "and the control cards out of the frame.",
+)
+require(
+    # The row of primary tiles is laid out by hand so the reveal of a section can
+    # take the neighbour tile out of it and hand its width to the tile that stays:
+    # the survivor reads as the title of the open section instead of a control next
+    # to another one. One progress drives both motions, so the row turns from two
+    # tiles into one in a single deformation, in both directions.
+    'objectName: "controlCenterPrimaryTileRow"' in HOME_PAGE
+    and 'objectName: "controlCenterBluetoothTile"' in HOME_PAGE
+    and "LayoutMetrics.restingTileWidth(" in HOME_PAGE
+    and "LayoutMetrics.primaryTileWidth(width, gap, stacked," in HOME_PAGE
+    and "LayoutMetrics.leavingTileX(width, gap, stacked, progress)" in HOME_PAGE
+    and "LayoutMetrics.primaryRowHeight(tileHeight," in HOME_PAGE
+    and "readonly property real progress:" in HOME_PAGE
+    and "networkSubmenu.expansionProgress" in HOME_PAGE
+    # The departing tile leaves the pointer, the keyboard and the accessible tree
+    # with the same progress that moves it, and the row clips it at its edge.
+    and "enabled: primaryRow.progress <= 0.001" in HOME_PAGE
+    and "activeFocusOnTab: primaryRow.progress <= 0.001" in HOME_PAGE
+    and "Accessible.ignored: primaryRow.progress > 0.001" in HOME_PAGE
+    and "clip: true" in HOME_PAGE
+    # The morph reads the section animation: it adds no second animator and no
+    # timing value of its own to the same reveal.
+    and "Behavior on" not in HOME_PAGE
+    and "function restingTileWidth(rowWidth, spacing)" in LAYOUT_METRICS
+    and "function primaryTileWidth(rowWidth, spacing, stacked, progress)"
+    in LAYOUT_METRICS
+    and "function leavingTileX(rowWidth, spacing, stacked, progress)"
+    in LAYOUT_METRICS
+    and "function primaryRowHeight(tileHeight, spacing, stacked, progress)"
+    in LAYOUT_METRICS,
+    "Opening a section must leave one tile in the row, holding the whole width as "
+    "the title of that section, with the geometry read from the reveal progress "
+    "alone.",
+)
+require(
+    # One expansion primitive, reused: the section owns the animator, so the
+    # submenu adds no second one and no new timing values.
+    NETWORK_SUBMENU.startswith(
+        "// SPDX-License-Identifier: GPL-2.0-or-later")
+    and "ControlCenterExpandableSection {" in NETWORK_SUBMENU
+    and "Behavior on" not in NETWORK_SUBMENU
+    and "NumberAnimation" not in NETWORK_SUBMENU
+    and "active: root.adapter !== null && root.expansionProgress > 0.001"
+    in NETWORK_SUBMENU
+    and "inlineMode: true" in NETWORK_SUBMENU
+    and "ControlCenterNetworkPage {" in NETWORK_SUBMENU,
+    "The inline submenu must reuse the existing expansion primitive and build "
+    "its page only while it is on screen.",
+)
+require(
+    # Inline presentation: the row that opened the section closes it, so the
+    # navigation row disappears and the actions stay.
+    "property bool inlineMode: false" in NETWORK_PAGE
+    and "navigationRowVisible: !root.inlineMode" in NETWORK_PAGE
+    and "pageHeader.focusFirstControl(reason)" in NETWORK_PAGE
+    and "property bool navigationRowVisible: true" in PAGE_HEADER
+    and "visible: root.navigationRowVisible" in PAGE_HEADER
+    and "function focusFirstControl(reason)" in PAGE_HEADER,
+    "The inline page must drop its navigation row and keep its actions.",
+)
+require(
+    # The visible scroll of an open section belongs to the list of networks and
+    # stays inside its surface; the page bar switches off because the page cannot
+    # scroll while the content leaves the frame. A ScrollView reserves the bar its
+    # own column, so it never covers a row of the list.
+    'objectName: "controlCenterHomeScrollBar"' in HOME_PAGE
+    and "policy: networkSubmenu.expansionProgress > 0.001" in HOME_PAGE
+    and "? Controls.ScrollBar.AlwaysOff : Controls.ScrollBar.AsNeeded"
+    in HOME_PAGE
+    and "Controls.ScrollView {" in NETWORK_PAGE
+    and "PlasmaComponents.ScrollView {" not in NETWORK_PAGE
+    # The bar is never declared by this page: the scroll view provides it already
+    # placed on the trailing edge and reserving its column. A bar declared here
+    # stayed at the origin and left the rows without their column, which is the
+    # defect reported in docs/revisiones/revision-2026-09-18-scroll-lista-redes-y-botones.md.
+    and "ScrollBar.vertical:" not in NETWORK_PAGE
+    and 'objectName: "controlCenterNetworkScrollView"' in NETWORK_PAGE,
+    "The scrollbar of an open section must live inside the network list "
+    "without covering it.",
+)
+require(
+    # The overlay owns the section state so Escape, page changes and activation
+    # errors agree on who is on screen.
+    "property bool networkSubmenuOpen: false" in OVERLAY
+    and "root.networkSubmenuOpen = false" in OVERLAY
+    and "networkSubmenuOpen: root.networkSubmenuOpen" in OVERLAY
+    and "onNetworkSubmenuToggleRequested:" in OVERLAY
+    and "if (currentPage !== \"home\") {" in OVERLAY
+    and "homePage.showNetworkError(message)" in OVERLAY
+    and 'root.networkErrorMessage = String(message || "")' in OVERLAY
+    and 'active: (root.currentPage === "network"' in OVERLAY
+    and '|| networkPageSlot.progress > 0.001)' in OVERLAY,
+    "The overlay must own the inline submenu state.",
 )
 require(
     'KSharedConfig::openConfig(QStringLiteral("plasmaparc"))'

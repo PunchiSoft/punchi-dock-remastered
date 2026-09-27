@@ -206,6 +206,33 @@ TestCase {
             stateButton.height / 2)
         compare(hostWindow.fakeAdapter.deviceChanges, 1)
 
+        // The row itself is a click target too, so the pointer does not have to
+        // find the small control.
+        const rowPointerX = Math.round(firstDelegate.width * 0.25)
+        const rowPointerY = Math.round(firstDelegate.height / 2)
+        // The hover state of a row behind its own content is not observable
+        // under the offscreen platform, so it stays a visual check.
+        mouseMove(firstDelegate, rowPointerX, rowPointerY)
+        mouseClick(firstDelegate, rowPointerX, rowPointerY)
+        compare(hostWindow.fakeAdapter.deviceChanges, 2)
+
+        // The row is one tile: the highlight must cover the button band too.
+        verify(!stateButton.hoverEnabled)
+        // One tile: the highlight must reach the icon band and the centre, not
+        // only the button band.
+        const hoverFractions = [0.10, 0.55, 0.90]
+        for (let i = 0; i < hoverFractions.length; ++i) {
+            mouseMove(backButton, backButton.width / 2, backButton.height / 2)
+            wait(30)
+            verify(!firstDelegate.rowHovered,
+                "the tile must stop reporting hover when the pointer leaves it")
+            mouseMove(firstDelegate,
+                Math.round(firstDelegate.width * hoverFractions[i]), rowPointerY)
+            tryCompare(firstDelegate, "rowHovered", true, 5000,
+                "the whole tile must report hover at " + hoverFractions[i]
+                + " of its width")
+        }
+
         mouseClick(pairButton, pairButton.width / 2,
             pairButton.height / 2)
         compare(hostWindow.fakeAdapter.pairingRequests, 1)

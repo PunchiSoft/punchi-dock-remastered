@@ -869,6 +869,15 @@ def assert_modal_interaction_and_accessibility(
         "The modal backdrop and empty panel area must consume wheel input.",
     )
     require(
+        "Math.max(120" not in modal_compact
+        and modal_compact.count(
+            "Math.max(1, Math.min(200, Kirigami.Units.shortDuration * 2))"
+        )
+        == 2,
+        "The modal surface must not floor its duration above the theme value: "
+        "a fixed minimum overrides the animation speed chosen by the user.",
+    )
+    require(
         "property real backdropOpacity: 0.64" in modal_compact
         and "root.backdropOpacity" in modal_compact,
         "The modal surface must expose a visual backdrop opacity without "

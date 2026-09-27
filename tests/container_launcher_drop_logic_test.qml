@@ -38,7 +38,7 @@ TestCase {
     }
 
     function test_eachPresentationAcceptsTheSameManualContainerOperation() {
-        const layouts = ["grid", "list", "detailed"]
+        const layouts = ["grid", "list", "detailed", "fan"]
         for (let index = 0; index < layouts.length; index++) {
             const original = [manualContainer(layouts[index])]
             const result = ConfigItems.addApplicationToManualContainer(
@@ -101,12 +101,12 @@ TestCase {
         const original = [manualContainer("grid")]
         original[0].apps = [launcher()]
 
-        const result = ConfigItems.setFolderLayout(original, 0, "detailed")
+        const result = ConfigItems.setFolderLayout(original, 0, "fan")
 
         verify(result.changed)
         compare(result.status, "updated")
         compare(original[0].layout, "grid")
-        compare(result.items[0].layout, "detailed")
+        compare(result.items[0].layout, "fan")
         compare(result.items[0].apps.length, 1)
         compare(result.items[0].sourceType, "manual")
     }

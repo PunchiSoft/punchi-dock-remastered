@@ -213,10 +213,14 @@ FocusScope {
                 + Kirigami.Units.largeSpacing
         }
 
+        // Twice the theme duration, capped, and never floored above it: a fixed
+        // minimum would override the animation speed chosen by the user. The
+        // 1 ms clamp only keeps the animator reliable, since one with duration 0
+        // may never fire. See docs/Referencias/referencia-motion-plasma-qt.md.
         Behavior on scale {
             enabled: root.motionEnabled
             NumberAnimation {
-                duration: Math.max(120,
+                duration: Math.max(1,
                     Math.min(200, Kirigami.Units.shortDuration * 2))
                 easing.type: root.active ? Easing.OutCubic : Easing.InCubic
             }
@@ -260,7 +264,8 @@ FocusScope {
     Behavior on opacity {
         enabled: root.motionEnabled
         NumberAnimation {
-            duration: Math.max(120,
+            // Same duration policy as the panel scale above.
+            duration: Math.max(1,
                 Math.min(200, Kirigami.Units.shortDuration * 2))
             easing.type: root.active ? Easing.OutCubic : Easing.InCubic
         }

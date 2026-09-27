@@ -81,3 +81,75 @@ function quickActionSpacing(availableWidth, cellSize, count, minimumSpacing,
     const evenSpacing = (width - items * cell) / (items - 1)
     return Math.max(minimum, Math.min(maximum, evenSpacing))
 }
+
+// Primary tile row of the home page.
+//
+// The row holds the tile that expands a section next to the tile it cannot share
+// the open state with. When the section opens, the neighbour leaves the row
+// through its right edge and the surviving tile takes over the whole width, so it
+// reads as the title of the section below instead of a control next to another
+// one.
+//
+// Both motions are pure functions of the section reveal progress, with no animator
+// and no timing of their own: the section owns the animation, and these follow it
+// in both directions, at any speed and through an interruption. The distance the
+// survivor grows and the distance the neighbour travels are the same, so the two
+// tiles stay adjacent while the row turns into a single tile: one continuous
+// deformation instead of two motions crossing each other. The tile that leaves
+// ends exactly one gap beyond the row, which is outside the frame.
+
+function clampProgress(progress) {
+    const value = Number(progress)
+    if (!Number.isFinite(value)) {
+        return 0
+    }
+    return Math.max(0, Math.min(1, value))
+}
+
+function restingTileWidth(rowWidth, spacing) {
+    const width = Math.max(0, Number(rowWidth) || 0)
+    const gap = Math.max(0, Number(spacing) || 0)
+    return Math.max(0, (width - gap) / 2)
+}
+
+// Width of the tile that outlives the section it opens. In the stacked
+// arrangement it already owns the whole row, so only the progress of a row that
+// holds two tiles changes its width.
+function primaryTileWidth(rowWidth, spacing, stacked, progress) {
+    const width = Math.max(0, Number(rowWidth) || 0)
+    if (width === 0 || stacked) {
+        return width
+    }
+    const gap = Math.max(0, Number(spacing) || 0)
+    const restingWidth = restingTileWidth(width, gap)
+    return restingWidth + clampProgress(progress) * (restingWidth + gap)
+}
+
+// Left edge of the tile that leaves the row with the section it does not open.
+// It travels the same distance the surviving tile grows, so the two tiles never
+// overlap and never leave a hole between them, and it ends clear of the row.
+function leavingTileX(rowWidth, spacing, stacked, progress) {
+    const width = Math.max(0, Number(rowWidth) || 0)
+    if (width === 0) {
+        return 0
+    }
+    const gap = Math.max(0, Number(spacing) || 0)
+    const travelled = clampProgress(progress)
+    if (stacked) {
+        return travelled * (width + gap)
+    }
+    const restingWidth = restingTileWidth(width, gap)
+    return restingWidth + gap + travelled * (restingWidth + gap)
+}
+
+// Height of the row. Two tiles stacked lose the height of the one that leaves, so
+// the open section does not begin under a hole; when the tiles share the row, its
+// height never depends on how many of them are still in it.
+function primaryRowHeight(tileHeight, spacing, stacked, progress) {
+    const height = Math.max(0, Number(tileHeight) || 0)
+    if (height === 0 || !stacked) {
+        return height
+    }
+    const gap = Math.max(0, Number(spacing) || 0)
+    return height + (1 - clampProgress(progress)) * (height + gap)
+}

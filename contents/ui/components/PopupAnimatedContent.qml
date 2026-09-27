@@ -27,6 +27,13 @@ Item {
         ? Math.round(Kirigami.Units.longDuration * 100
             / Math.max(10, Math.min(200, animationSpeedPercent)))
         : 0
+    // Exits run on a shorter budget than entries, as the shared motion doctrine
+    // requires. The factor scales the same theme-derived duration, so the user
+    // animation speed preference keeps governing both directions.
+    readonly property real closingDurationFactor: 0.65
+    readonly property int effectiveAnimationDuration: root.closing
+        ? Math.round(root.animationDuration * root.closingDurationFactor)
+        : root.animationDuration
     readonly property real slideDistance: Math.round(Kirigami.Units.gridUnit * root.intensityFactor)
     readonly property real initialOpacity: Math.max(0, 1 - (0.95 * root.intensityFactor))
     readonly property real safeImplicitWidth: Number.isFinite(root.implicitWidth)
@@ -35,6 +42,13 @@ Item {
     readonly property real safeImplicitHeight: Number.isFinite(root.implicitHeight)
         ? Math.max(1, root.implicitHeight)
         : 1
+    // Geometry inputs for surfaces that map a blur mask to window-client
+    // coordinates. mapToItem() does not invalidate a binding when an ancestor
+    // transform changes, so the mask origin reads these values explicitly and
+    // follows the reveal animation until it settles.
+    readonly property Item transformSurfaceItem: animatedSurface
+    readonly property real contentTranslationX: slideX
+    readonly property real contentTranslationY: slideY
 
     signal closeAnimationFinished()
     readonly property real slideX: {
@@ -154,7 +168,7 @@ Item {
         enabled: root.popupVisible && root.animationStyle !== "none"
 
         NumberAnimation {
-            duration: root.animationDuration
+            duration: root.effectiveAnimationDuration
             easing.type: root.closing
                 ? Easing.InCubic
                 : (root.animationStyle === "bounce"

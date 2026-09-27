@@ -24,6 +24,29 @@ PlasmaCore.Dialog {
     backgroundHints: PlasmaCore.Dialog.NoBackground
 
     signal openFailed()
+    signal blurReapplyRequested()
+
+    function refreshBlurAfterWindowChange() {
+        if (root.visible) {
+            root.blurReapplyRequested()
+        }
+    }
+
+    onVisualParentChanged: refreshBlurAfterWindowChange()
+    onXChanged: refreshBlurAfterWindowChange()
+    onYChanged: refreshBlurAfterWindowChange()
+    onWidthChanged: refreshBlurAfterWindowChange()
+    onHeightChanged: refreshBlurAfterWindowChange()
+
+    // PlasmaQuick updates NoBackground when mainItem changes size even if the
+    // window keeps the same rounded pixel size.
+    readonly property Connections sizingBlurConnections: Connections {
+        target: root.sizingItem
+        enabled: root.visible
+
+        function onWidthChanged() { root.refreshBlurAfterWindowChange() }
+        function onHeightChanged() { root.refreshBlurAfterWindowChange() }
+    }
 
     function finishPreparedOpen(requestSerial, remainingAttempts) {
         if (requestSerial !== root.openRequestSerial || !root.preparingToShow) {

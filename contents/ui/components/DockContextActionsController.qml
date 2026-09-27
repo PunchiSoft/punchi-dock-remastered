@@ -258,13 +258,16 @@ QtObject {
             if (itemType === "folder") {
                 const currentFolderView = item.layout === "list"
                         || item.layout === "detailed"
+                        || item.layout === "fan"
                     ? item.layout : "grid"
                 const activeFolderViewDetail = currentFolderView === "list"
                     // qmllint disable unqualified
                     ? i18nc("@item:inlistbox Folder popup layout", "List")
                     : currentFolderView === "detailed"
                         ? i18nc("@item:inlistbox Folder popup layout", "Detailed")
-                        : i18nc("@item:inlistbox Folder popup layout", "Grid")
+                        : currentFolderView === "fan"
+                            ? i18nc("@item:inlistbox Folder popup layout", "Fan")
+                            : i18nc("@item:inlistbox Folder popup layout", "Grid")
                     // qmllint enable unqualified
                 const expectedFolderText = typeof root.dockItemsController.canonicalJsonText
                         === "function"
@@ -311,6 +314,18 @@ QtObject {
                             "enabled": true,
                             "checked": currentFolderView === "detailed",
                             "layout": "detailed",
+                            "targetIndex": persistentIndex,
+                            "expectedFolderText": expectedFolderText
+                        },
+                        {
+                            // qmllint disable unqualified
+                            "name": i18nc("@item:inlistbox Folder popup layout", "Fan"),
+                            // qmllint enable unqualified
+                            "icon": "view-list-icons",
+                            "kind": "setFolderView",
+                            "enabled": true,
+                            "checked": currentFolderView === "fan",
+                            "layout": "fan",
                             "targetIndex": persistentIndex,
                             "expectedFolderText": expectedFolderText
                         }

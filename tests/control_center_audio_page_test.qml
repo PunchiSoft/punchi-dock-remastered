@@ -5,6 +5,10 @@ import QtQuick.Window
 import QtTest
 import "../contents/ui/components/controlcenter" as ControlCenter
 
+// Interface behaviour with a simulated adapter. Tests that need the real
+// plasma-pa stack live in control_center_audio_backend_test.qml, in their own
+// process, so nothing here loads the host audio server.
+
 TestCase {
     id: testCase
 
@@ -75,35 +79,6 @@ TestCase {
         }
     }
 
-    Component {
-        id: realAdapterComponent
-
-        ControlCenter.ControlCenterVolumeAdapter {}
-    }
-
-    Component {
-        id: realAudioPageWindowComponent
-
-        Window {
-            id: realHostWindow
-            width: 640
-            height: 700
-            visible: true
-
-            property alias page: realAudioPage
-
-            ControlCenter.ControlCenterVolumeAdapter {
-                id: realAdapter
-            }
-
-            ControlCenter.ControlCenterAudioPage {
-                id: realAudioPage
-                anchors.fill: parent
-                adapter: realAdapter
-            }
-        }
-    }
-
     function init() {
         failOnWarning(/.?/)
         backSpy.clear()
@@ -136,6 +111,9 @@ TestCase {
         const devicesView = findChild(page, "controlCenterAudioDevicesView")
         const applicationsView = findChild(
             page, "controlCenterAudioApplicationsView")
+        const devicesSlot = findChild(page, "controlCenterAudioDevicesSlot")
+        const applicationsSlot = findChild(
+            page, "controlCenterAudioApplicationsSlot")
         const backButton = findChild(page, "controlCenterAudioBackButton")
         const settingsButton = findChild(
             page, "controlCenterAudioSettingsButton")
@@ -144,16 +122,26 @@ TestCase {
         verify(applicationsTab !== null)
         verify(devicesView !== null)
         verify(applicationsView !== null)
+        verify(devicesSlot !== null)
+        verify(applicationsSlot !== null)
         verify(backButton !== null)
         verify(settingsButton !== null)
         compare(tabBar.currentIndex, 0)
-        compare(devicesView.visible, true)
-        compare(applicationsView.visible, false)
+        // The active tab is the only one shown, and the pending one cannot take
+        // input while its slot is still collapsing.
+        compare(devicesSlot.visible, true)
+        compare(applicationsSlot.visible, false)
+        compare(applicationsSlot.enabled, false)
 
         applicationsTab.clicked()
         tryCompare(tabBar, "currentIndex", 1)
-        compare(devicesView.visible, false)
-        compare(applicationsView.visible, true)
+        // The tab change transitions instead of jumping: the incoming slot is
+        // visible before it finishes expanding.
+        verify(applicationsSlot.progress < 1)
+        compare(applicationsSlot.enabled, true)
+        tryCompare(applicationsSlot, "progress", 1)
+        tryCompare(devicesSlot, "visible", false)
+        compare(devicesSlot.enabled, false)
 
         backSpy.target = page
         mouseClick(backButton, backButton.width / 2, backButton.height / 2)
@@ -180,33 +168,5 @@ TestCase {
         tryCompare(hostWindow.fakeAdapter, "raiseMaximumChanges", 1)
         compare(hostWindow.fakeAdapter.raiseMaximumVolume, true)
         compare(checkBox.checked, true)
-    }
-
-    function test_privatePlasmaPaTypesInstantiateWhenAvailable() {
-        const adapter = createTemporaryObject(realAdapterComponent, testCase)
-        verify(adapter !== null)
-        verify(adapter.normalVolume > 0)
-        verify(adapter.outputDevicesModel !== null)
-        verify(adapter.inputDevicesModel !== null)
-        verify(adapter.playbackStreamsModel !== null)
-        verify(adapter.recordingStreamsModel !== null)
-        verify(adapter.cardModel !== null)
-        verify(adapter.sinkItemType !== adapter.sourceItemType)
-        verify(adapter.maximumPercentage >= 100)
-        adapter.destroy()
-    }
-
-    function test_realPlasmaPaModelsPopulateThePage() {
-        const hostWindow = createTemporaryObject(
-            realAudioPageWindowComponent, testCase)
-        verify(hostWindow !== null)
-        hostWindowUnderTest = hostWindow
-        tryCompare(hostWindow, "visible", true)
-        verify(hostWindow.page.deviceCount >= 0)
-        verify(hostWindow.page.applicationCount >= 0)
-        if (hostWindow.page.deviceCount > 0) {
-            verify(findChild(
-                hostWindow.page, "controlCenterAudioItem") !== null)
-        }
     }
 }

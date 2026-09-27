@@ -519,20 +519,54 @@ function pruneClock(item) {
     ])
 }
 
+// Effective value of the calendar options. `pruneCalendar` keeps the stored shape—it
+// always writes them—while these readers return the value a control shows, so the page
+// and the add dialog share one rule instead of one copy each.
+function normalizedCalendarTimeTextScale(value) {
+    return Math.max(0.75, Math.min(2.0, Number(value === undefined ? 1.0 : value)))
+}
+
+function normalizedCalendarDateTextScale(value) {
+    return Math.max(0.75, Math.min(2.0, Number(value === undefined ? 1.0 : value)))
+}
+
+function normalizedCalendarTextShadowsEnabled(value) {
+    return value !== false
+}
+
+function normalizedCalendarShowWeekNumbers(value) {
+    return value === undefined ? true : Boolean(value)
+}
+
+function normalizedCalendarPopupScale(value) {
+    return Math.max(0.5, Math.min(3.0, Number(value === undefined ? 1.0 : value)))
+}
+
 function pruneCalendar(item) {
     delete item.actionPopupMaxVisibleRows
     removeKeys(item, ["icon", "fontFamily", "mode", "showSeconds", "command", "apps", "width", "height", "backgroundColor", "accentColor", "borderColor", "radius", "textScale"])
-    item.timeTextScale = Math.max(0.75, Math.min(2.0, Number(item.timeTextScale === undefined ? 1.0 : item.timeTextScale)))
-    item.dateTextScale = Math.max(0.75, Math.min(2.0, Number(item.dateTextScale === undefined ? 1.0 : item.dateTextScale)))
-    item.calendarTextShadowsEnabled = item.calendarTextShadowsEnabled !== false
-    item.showWeekNumbers = item.showWeekNumbers === undefined ? true : !!item.showWeekNumbers
-    item.popupScale = Math.max(0.5, Math.min(3.0,
-        Number(item.popupScale === undefined ? 1.0 : item.popupScale)))
+    item.timeTextScale = normalizedCalendarTimeTextScale(item.timeTextScale)
+    item.dateTextScale = normalizedCalendarDateTextScale(item.dateTextScale)
+    item.calendarTextShadowsEnabled =
+        normalizedCalendarTextShadowsEnabled(item.calendarTextShadowsEnabled)
+    item.showWeekNumbers = normalizedCalendarShowWeekNumbers(item.showWeekNumbers)
+    item.popupScale = normalizedCalendarPopupScale(item.popupScale)
 }
 
 function pruneTrash(item) {
     delete item.actionPopupMaxVisibleRows
     removeKeys(item, ["command", "apps"])
+}
+
+// Effective value of the trash switches: an element that never declared them keeps
+// both enabled, which is the rule a new item is created with. They live here so the
+// page and the add dialog read the same rule instead of one copy each.
+function normalizedTrashShowState(value) {
+    return value === undefined ? true : Boolean(value)
+}
+
+function normalizedTrashAcceptDrops(value) {
+    return value === undefined ? true : Boolean(value)
 }
 
 function pruneNote(item) {
@@ -545,6 +579,27 @@ function pruneNote(item) {
     item.popupHeight = Math.max(160, item.popupHeight || 260)
 }
 
+// Effective value of the media options. `pruneMedia` keeps the stored shape—absent
+// means default—while these readers return the value a control shows, so the page
+// and the add dialog share one rule instead of one copy each.
+function normalizedMediaTextMode(value) {
+    var requestedMode = String(value || "automatic")
+    return requestedMode === "always" || requestedMode === "hidden"
+        ? requestedMode
+        : "automatic"
+}
+
+function normalizedMediaDisplayMode(value) {
+    return String(value || "normal") === "compact" ? "compact" : "normal"
+}
+
+function normalizedMediaAutoCollapseDelaySeconds(value) {
+    var requestedDelay = Number(value)
+    return Number.isFinite(requestedDelay)
+        ? Math.max(0, Math.min(30, Math.round(requestedDelay)))
+        : 3
+}
+
 function pruneMedia(item) {
     delete item.actionPopupMaxVisibleRows
     removeKeys(item, [
@@ -553,22 +608,21 @@ function pruneMedia(item) {
     ])
     item.name = "Media player"
     item.icon = "emblem-music-symbolic"
-    var mediaTextMode = String(item.mediaTextMode || "automatic")
-    if (mediaTextMode !== "always" && mediaTextMode !== "hidden") {
+    // The stored shape keeps only what differs from the default, and the value
+    // itself comes from the readers above.
+    var mediaTextMode = normalizedMediaTextMode(item.mediaTextMode)
+    if (mediaTextMode === "automatic") {
         delete item.mediaTextMode
     } else {
         item.mediaTextMode = mediaTextMode
     }
-    var mediaDisplayMode = String(item.mediaDisplayMode || "normal")
-    if (mediaDisplayMode === "compact") {
-        item.mediaDisplayMode = mediaDisplayMode
+    if (normalizedMediaDisplayMode(item.mediaDisplayMode) === "compact") {
+        item.mediaDisplayMode = "compact"
     } else {
         delete item.mediaDisplayMode
     }
-    var requestedAutoCollapseDelaySeconds = Number(item.mediaAutoCollapseDelaySeconds)
-    var autoCollapseDelaySeconds = Number.isFinite(requestedAutoCollapseDelaySeconds)
-        ? Math.max(0, Math.min(30, Math.round(requestedAutoCollapseDelaySeconds)))
-        : 3
+    var autoCollapseDelaySeconds =
+        normalizedMediaAutoCollapseDelaySeconds(item.mediaAutoCollapseDelaySeconds)
     if (autoCollapseDelaySeconds === 3) {
         delete item.mediaAutoCollapseDelaySeconds
     } else {
@@ -927,7 +981,8 @@ function pruneFolder(item) {
     removeKeys(item, ["command", "actions", "actionsEnabled"])
     removeKeys(item, ["radialBackground", "radialIconSlots", "radialDistance", "fanCenterDistance"])
     item.apps = item.apps instanceof Array ? item.apps : []
-    item.layout = item.layout === "list" || item.layout === "detailed" ? item.layout : "grid"
+    item.layout = item.layout === "list" || item.layout === "detailed"
+            || item.layout === "fan" ? item.layout : "grid"
     item.columns = Math.max(0, item.columns || 0)
     item.rows = Math.max(0, item.rows || 0)
     item.innerIconSize = Math.max(16, item.innerIconSize || 48)
@@ -950,7 +1005,7 @@ function setFolderLayout(items, targetIndex, layout) {
         return { "items": source, "changed": false, "status": "invalid-target" }
     }
     if (nextLayout !== "grid" && nextLayout !== "list"
-            && nextLayout !== "detailed") {
+            && nextLayout !== "detailed" && nextLayout !== "fan") {
         return { "items": source, "changed": false, "status": "invalid-layout" }
     }
 
@@ -960,6 +1015,7 @@ function setFolderLayout(items, targetIndex, layout) {
     }
     var currentLayout = currentFolder.layout === "list"
             || currentFolder.layout === "detailed"
+            || currentFolder.layout === "fan"
         ? currentFolder.layout : "grid"
     if (currentLayout === nextLayout) {
         return { "items": source, "changed": false, "status": "unchanged" }

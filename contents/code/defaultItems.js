@@ -43,11 +43,12 @@ var items = [
         "command": "konsole"
     },
     {
-        "_comment": "Folder item. Groups common user folders inside a Plasma-themed popup.",
+        "_comment": "Folder item. Groups common user folders and opens as a fan, like the stack row of macOS: it also ships a location so the fan closes with the action that opens that folder in the file manager out of the box.",
         "type": "folder",
         "name": "Home",
         "icon": "user-home",
-        "layout": "grid",
+        "layout": "fan",
+        "sourcePath": "~",
         "columns": 3,
         "rows": 0,
         "popupMaxWidth": 0,
@@ -112,6 +113,28 @@ var items = [
             { "type": "app", "name": "Inkscape", "icon": "inkscape", "command": "inkscape" },
             { "type": "app", "name": "GIMP", "icon": "gimp", "command": "gimp" },
             { "type": "app", "name": "KolourPaint", "icon": "kolourpaint", "command": "kolourpaint" }
+        ]
+    },
+    {
+        "_comment": "Category container in the fan presentation. Its list is filled from the user's installed launchers on the first install and becomes a normal editable container afterwards, so the category capability is visible out of the box.",
+        "type": "folder",
+        "name": "Internet",
+        "icon": "applications-internet",
+        "layout": "fan",
+        "sourceType": "category",
+        "sourceCategory": "Network",
+        "columns": 0,
+        "rows": 0,
+        "popupMaxWidth": 0,
+        "popupMaxHeight": 0,
+        "innerIconSize": 48,
+        "showLabels": true,
+        "sourcePath": "",
+        "closeOnLaunch": true,
+        "apps": [
+            { "type": "app", "name": "Firefox", "icon": "firefox", "command": "firefox" },
+            { "type": "app", "name": "KMail", "icon": "kmail", "command": "kmail" },
+            { "type": "app", "name": "Konqueror", "icon": "konqueror", "command": "konqueror" }
         ]
     },
     {

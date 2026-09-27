@@ -7,6 +7,7 @@
 #include <QPoint>
 #include <QPointer>
 #include <QRegion>
+#include <QVariantList>
 #include <QWindow>
 #include <qqmlintegration.h>
 
@@ -18,8 +19,10 @@ class BlurBehindController : public QObject
     Q_PROPERTY(QObject *window READ window WRITE setWindow NOTIFY windowChanged)
     Q_PROPERTY(QObject *maskSource READ maskSource WRITE setMaskSource NOTIFY maskSourceChanged)
     Q_PROPERTY(QPoint maskOffset READ maskOffset WRITE setMaskOffset NOTIFY maskOffsetChanged)
+    Q_PROPERTY(QVariantList additionalMaskPolygon READ additionalMaskPolygon WRITE setAdditionalMaskPolygon NOTIFY additionalMaskPolygonChanged)
     Q_PROPERTY(bool useMaskSourceInsets READ useMaskSourceInsets WRITE setUseMaskSourceInsets NOTIFY useMaskSourceInsetsChanged)
     Q_PROPERTY(bool fullWindow READ fullWindow WRITE setFullWindow NOTIFY fullWindowChanged)
+    Q_PROPERTY(bool restoreAfterFrame READ restoreAfterFrame WRITE setRestoreAfterFrame NOTIFY restoreAfterFrameChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
     Q_PROPERTY(bool available READ available NOTIFY availableChanged)
     Q_PROPERTY(bool active READ active NOTIFY activeChanged)
@@ -34,16 +37,23 @@ public:
     void setMaskSource(QObject *maskSource);
     QPoint maskOffset() const;
     void setMaskOffset(const QPoint &maskOffset);
+    QVariantList additionalMaskPolygon() const;
+    void setAdditionalMaskPolygon(const QVariantList &additionalMaskPolygon);
     bool useMaskSourceInsets() const;
     void setUseMaskSourceInsets(bool useMaskSourceInsets);
     bool fullWindow() const;
     void setFullWindow(bool fullWindow);
+    bool restoreAfterFrame() const;
+    void setRestoreAfterFrame(bool restoreAfterFrame);
     bool enabled() const;
     void setEnabled(bool enabled);
     bool available() const;
     bool active() const;
 
     static QRegion contractMaskToInsets(const QRegion &sourceMask, const QMargins &insets);
+    static QRegion regionFromPolygon(const QVariantList &polygon);
+    static QRegion composeMaskRegion(const QRegion &effectiveSourceMask,
+                                     const QRegion &additionalMaskRegion);
 
 public Q_SLOTS:
     void reapply();
@@ -52,8 +62,10 @@ Q_SIGNALS:
     void windowChanged();
     void maskSourceChanged();
     void maskOffsetChanged();
+    void additionalMaskPolygonChanged();
     void useMaskSourceInsetsChanged();
     void fullWindowChanged();
+    void restoreAfterFrameChanged();
     void enabledChanged();
     void availableChanged();
     void activeChanged();
@@ -70,13 +82,19 @@ private:
     QPointer<QObject> m_maskSource;
     QPointer<QObject> m_maskInsetSource;
     QPoint m_maskOffset;
+    QVariantList m_additionalMaskPolygon;
+    QRegion m_additionalMaskRegion;
     QRegion m_cachedSourceMask;
     QRegion m_cachedContractedMask;
+    QRegion m_cachedEffectiveMask;
+    QRegion m_cachedComposedMask;
     QMargins m_cachedInsets;
     bool m_maskCacheValid = false;
+    bool m_composedMaskCacheValid = false;
     bool m_reapplyScheduled = false;
     bool m_useMaskSourceInsets = false;
     bool m_fullWindow = false;
+    bool m_restoreAfterFrame = false;
     bool m_enabled = false;
     bool m_available = false;
     bool m_active = false;

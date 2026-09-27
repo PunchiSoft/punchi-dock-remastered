@@ -123,28 +123,22 @@ TestCase {
         verify(cfg_showActiveTasks)
     }
 
-    function test_addingMarkerEnablesActiveTasks() {
-        items = []
-        cfg_showActiveTasks = false
-
-        WorkflowHelper.addItem("dynamic-applications")
-
-        compare(items.length, 1)
-        compare(items[0].type, "dynamic-applications")
-        verify(cfg_showActiveTasks)
+    function test_markerAdditionImpactEnablesActiveTasksAfterCommit() {
+        const impact = ConfigItemsJS.itemAdditionImpact(
+            "dynamic-applications")
+        verify(impact.enableActiveTasks)
+        verify(!ConfigItemsJS.itemAdditionImpact("app").enableActiveTasks)
     }
 
-    function test_addingControlCenterCreatesCanonicalSingletonItem() {
-        items = []
-
-        WorkflowHelper.addItem("control-center")
-
-        compare(items.length, 1)
-        compare(items[0].type, "control-center")
-        compare(items[0].name, "Control Center")
-        compare(items[0].icon, "preferences-system")
-        compare(items[0].controlCenterMode, "floating")
-        selectedItemType = items[0].type
+    function test_newControlCenterIsCanonicalBeforeCommit() {
+        const item = ConfigItemsJS.newItem("control-center", "")
+        compare(item.type, "control-center")
+        compare(item.name, "Control Center")
+        compare(item.icon, "preferences-system")
+        compare(item.controlCenterMode, "floating")
+        items = [item]
+        selectedIndex = 0
+        selectedItemType = item.type
         verify(WorkflowHelper.canConfigureSelectedItem())
     }
 

@@ -3545,6 +3545,7 @@ PlasmoidItem {
             id: folderPopupDialog
             location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: true
+            onBlurReapplyRequested: folderPopupBlurController.reapply()
 
             property Item sourceAnchor: null
             readonly property NativePopupSpacing popupSpacing: NativePopupSpacing {
@@ -3553,6 +3554,12 @@ PlasmoidItem {
                 gap: dockGeometry.folderPopupGap
                 location: folderPopupDialog.location
                 preserveHorizontalAnchorCenter: true
+                horizontalAnchorOffset:
+                    folderPopupContent.layoutMode === "fan"
+                    ? folderSurfaceStack.width / 2
+                        - (folderSurfaceStack.contentFramePadding
+                            + folderPopupContent.fanOriginIconCenterX)
+                    : 0
             }
 
             function setPopupAnchor(anchor) {
@@ -3560,7 +3567,24 @@ PlasmoidItem {
                 folderPopupDialog.popupSpacing.refreshAnchor()
             }
 
+            readonly property Punchi.BlurBehindController folderPopupBlurController:
+                Punchi.BlurBehindController {
+                    window: folderPopupDialog
+                    restoreAfterFrame: true
+                    fullWindow: false
+                    maskSource: folderSurfaceStack.backgroundBlurMaskSource
+                    useMaskSourceInsets: true
+                    maskOffset: folderSurfaceStack.backgroundBlurMaskOffset
+                    additionalMaskPolygon:
+                        folderSurfaceStack.backgroundBlurAdditionalMaskPolygon
+                    enabled: folderPopupDialog.visible
+                        && folderSurfaceStack.backgroundBlurEnabled
+                        && folderSurfaceStack.backgroundBlurMaskPresent
+                        && dockConfig.popupBackgroundBlurEnabled
+                }
+
             mainItem: PopupAnimatedContent {
+                id: folderPopupAnimatedContent
                 popupVisible: folderPopupDialog.visible
                 // qmllint disable unqualified
                 animationStyle: dockConfig.popupAnimationStyle
@@ -3571,13 +3595,36 @@ PlasmoidItem {
 
                 ContextSurfaceStack {
                     id: folderSurfaceStack
+                    blurTransformSurface: folderPopupAnimatedContent.transformSurfaceItem
+                    blurTranslationX: folderPopupAnimatedContent.contentTranslationX
+                    blurTranslationY: folderPopupAnimatedContent.contentTranslationY
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
                     showMedia: false
                     // Folder profiles use different widths. Resolve the final
                     // geometry before mapping the dialog so Plasma can center
                     // it against visualParent without an intermediate width.
                     contentGeometryTransitionsEnabled: false
-                    drawContentBackground: true
+                    drawContentBackground:
+                        folderPopupContent.layoutMode !== "fan"
+                    // Comic-style tail, composed from the same theme frame that
+                    // draws the background. The three classic presentations of the
+                    // folder popup ask for it — grid, list and detailed — and the
+                    // fan stays out, because it draws no card background of its
+                    // own and its alignment belongs to its arc. The accepted
+                    // layouts are listed one by one on purpose: a layout added
+                    // later must not inherit the tail without a review. The side is
+                    // the dock edge: popupDirection is the edge the popup grows
+                    // away from and would put the tail at the far side of the popup.
+                    edgeTailEnabled: ["grid", "list", "detailed"].indexOf(folderPopupContent.layoutMode) >= 0
+                    edgeTailLocation: dockGeometry.spectrumOriginEdge
+                    // The tail is as wide as the dock item it points at.
+                    edgeTailAnchorExtent: folderPopupDialog.sourceAnchor
+                        ? Math.min(
+                            Number(folderPopupDialog.sourceAnchor.width || 0),
+                            Number(folderPopupDialog.sourceAnchor.height || 0))
+                        : 0
+                    backgroundBlurEnabled:
+                        folderPopupContent.layoutMode !== "fan"
                     backgroundImagePath: "widgets/background"
                     backgroundOpacity: dockConfig.folderPopupBackgroundOpacity
                     contentFramePaddingPercent: 2
@@ -3587,41 +3634,63 @@ PlasmoidItem {
                     FolderPopup {
                         id: folderPopupContent
                         folderItem: popupCoordinator.activeFolderData
-                        layoutMode: ["list", "detailed"].indexOf(popupCoordinator.activeFolderData.layout) >= 0
+                        animationStyle: folderPopupAnimatedContent.animationStyle
+                        animationIntensityPercent:
+                            folderPopupAnimatedContent.animationIntensityPercent
+                        popupDirection: folderPopupAnimatedContent.popupDirection
+                        revealProgress: folderPopupAnimatedContent.openingProgress
+                        layoutMode: ["list", "detailed", "fan"].indexOf(popupCoordinator.activeFolderData.layout) >= 0
                             ? popupCoordinator.activeFolderData.layout
                             : "grid"
                         // qmllint disable unqualified
-                        profileIconSize: folderPopupContent.layoutMode === "list"
+                        profileIconSize: folderPopupContent.layoutMode === "fan"
+                            ? dockConfig.folderFanIconSize
+                            : (folderPopupContent.layoutMode === "list"
                             ? dockConfig.folderListIconSize
                             : (folderPopupContent.layoutMode === "detailed"
                                 ? dockConfig.folderDetailedIconSize
-                                : dockConfig.folderGridIconSize)
+                                : dockConfig.folderGridIconSize))
                         profileColumns: dockConfig.folderGridColumns
-                        profileRows: folderPopupContent.layoutMode === "list"
+                        profileRows: folderPopupContent.layoutMode === "fan"
+                            ? dockConfig.folderFanRows
+                            : (folderPopupContent.layoutMode === "list"
                             ? dockConfig.folderListRows
                             : (folderPopupContent.layoutMode === "detailed"
                                 ? dockConfig.folderDetailedRows
-                                : dockConfig.folderGridRows)
-                        profileShowLabels: folderPopupContent.layoutMode === "list"
+                                : dockConfig.folderGridRows))
+                        profileShowLabels: folderPopupContent.layoutMode === "fan"
+                            ? dockConfig.folderFanShowLabels
+                            : (folderPopupContent.layoutMode === "list"
                             ? dockConfig.folderListShowLabels
                             : (folderPopupContent.layoutMode === "detailed"
                                 ? dockConfig.folderDetailedShowLabels
-                                : dockConfig.folderGridShowLabels)
-                        profileFontFamily: folderPopupContent.layoutMode === "list"
+                                : dockConfig.folderGridShowLabels))
+                        profileFontFamily: folderPopupContent.layoutMode === "fan"
+                            ? dockConfig.folderFanFontFamily
+                            : (folderPopupContent.layoutMode === "list"
                             ? dockConfig.folderListFontFamily
                             : (folderPopupContent.layoutMode === "detailed"
                                 ? dockConfig.folderDetailedFontFamily
-                                : dockConfig.folderGridFontFamily)
-                        profileFontSize: folderPopupContent.layoutMode === "list"
+                                : dockConfig.folderGridFontFamily))
+                        profileFontSize: folderPopupContent.layoutMode === "fan"
+                            ? dockConfig.folderFanFontSize
+                            : (folderPopupContent.layoutMode === "list"
                             ? dockConfig.folderListFontSize
                             : (folderPopupContent.layoutMode === "detailed"
                                 ? dockConfig.folderDetailedFontSize
-                                : dockConfig.folderGridFontSize)
+                                : dockConfig.folderGridFontSize))
+                        profileFanScrollEnabled: dockConfig.folderFanScrollEnabled
                         profileScale: dockConfig.folderPopupScale
                         showHeaderLabel: dockConfig.folderPopupShowHeader
                         textShadowsEnabled: dockConfig.popupTextShadowsEnabled
+                        textShadowPercent: dockConfig.folderPopupTextShadowPercent
                         maximumAvailableWidth: dockGeometry.taskPopupAvailableWidth
                         maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
+                        // The fan sizes its arc from the height the display
+                        // really offers, so its invisible frame never grows past
+                        // the screen and it shows the rows that fit.
+                        maximumSurfaceHeight: dockGeometry.folderFanAvailableHeight
+                        folderOpenerName: dockItemsController.folderOpenerName
                         // qmllint enable unqualified
 
                         onAppLaunched: function(app) {
@@ -3633,6 +3702,13 @@ PlasmoidItem {
                             popupCoordinator.openAppContextMenu(app,
                                 folderPopupDialog.sourceAnchor, undefined,
                                 "folder", -1)
+                        }
+
+                        // The container opens its own folder in the file manager.
+                        // The popup closes first, exactly like a launch.
+                        onOpenLocationRequested: function(path) {
+                            folderPopupDialog.closeSafely()
+                            dockItemsController.openLocation(path)
                         }
 
                         onCloseRequested: folderPopupDialog.closeSafely()
@@ -3688,6 +3764,7 @@ PlasmoidItem {
             id: trashMenuDialog
             location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: !trashContextContent.confirmationVisible
+            onBlurReapplyRequested: trashMenuBlurController.reapply()
 
             property Item sourceAnchor: null
             readonly property NativePopupSpacing popupSpacing: NativePopupSpacing {
@@ -3702,7 +3779,22 @@ PlasmoidItem {
                 trashMenuDialog.popupSpacing.refreshAnchor()
             }
 
+            readonly property Punchi.BlurBehindController trashMenuBlurController:
+                Punchi.BlurBehindController {
+                    window: trashMenuDialog
+                    restoreAfterFrame: true
+                    fullWindow: false
+                    maskSource: trashSurfaceStack.backgroundBlurMaskSource
+                    useMaskSourceInsets: true
+                    maskOffset: trashSurfaceStack.backgroundBlurMaskOffset
+                    enabled: trashMenuDialog.visible
+                        && trashSurfaceStack.backgroundBlurEnabled
+                        && trashSurfaceStack.backgroundBlurMaskPresent
+                        && dockConfig.contextMenuBackgroundBlurEnabled
+                }
+
             mainItem: PopupAnimatedContent {
+                id: trashMenuAnimatedContent
                 popupVisible: trashMenuDialog.visible
                 // qmllint disable unqualified
                 animationStyle: dockConfig.menuAnimationStyle
@@ -3713,6 +3805,9 @@ PlasmoidItem {
 
                 ContextSurfaceStack {
                     id: trashSurfaceStack
+                    blurTransformSurface: trashMenuAnimatedContent.transformSurfaceItem
+                    blurTranslationX: trashMenuAnimatedContent.contentTranslationX
+                    blurTranslationY: trashMenuAnimatedContent.contentTranslationY
                     showMedia: false
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
                     drawContentBackground: true
@@ -3764,6 +3859,7 @@ PlasmoidItem {
             location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: !popupCoordinator.contextMenuOpening
             onOpenFailed: popupCoordinator.contextMenuOpening = false
+            onBlurReapplyRequested: appActionsBlurController.reapply()
 
             property Item sourceAnchor: null
             readonly property NativePopupSpacing popupSpacing: NativePopupSpacing {
@@ -3778,7 +3874,22 @@ PlasmoidItem {
                 appActionsDialog.popupSpacing.refreshAnchor()
             }
 
+            readonly property Punchi.BlurBehindController appActionsBlurController:
+                Punchi.BlurBehindController {
+                    window: appActionsDialog
+                    restoreAfterFrame: true
+                    fullWindow: false
+                    maskSource: appActionsSurfaceStack.backgroundBlurMaskSource
+                    useMaskSourceInsets: true
+                    maskOffset: appActionsSurfaceStack.backgroundBlurMaskOffset
+                    enabled: appActionsDialog.visible
+                        && appActionsSurfaceStack.backgroundBlurEnabled
+                        && appActionsSurfaceStack.backgroundBlurMaskPresent
+                        && dockConfig.contextMenuBackgroundBlurEnabled
+                }
+
             mainItem: PopupAnimatedContent {
+                id: appActionsAnimatedContent
                 popupVisible: appActionsDialog.visible
                 // qmllint disable unqualified
                 animationStyle: dockConfig.menuAnimationStyle
@@ -3789,6 +3900,9 @@ PlasmoidItem {
 
                 ContextSurfaceStack {
                     id: appActionsSurfaceStack
+                    blurTransformSurface: appActionsAnimatedContent.transformSurfaceItem
+                    blurTranslationX: appActionsAnimatedContent.contentTranslationX
+                    blurTranslationY: appActionsAnimatedContent.contentTranslationY
                     showMedia: false
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
                     drawContentBackground: true
@@ -3831,6 +3945,7 @@ PlasmoidItem {
             id: notePopupDialog
             location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: true
+            onBlurReapplyRequested: notePopupBlurController.reapply()
             onVisibleChanged: {
                 if (!visible && !root.deletingActiveNote
                         && notePopupContent.currentText !== notePopupContent.initialText) {
@@ -3844,7 +3959,22 @@ PlasmoidItem {
                 }
             }
 
+            readonly property Punchi.BlurBehindController notePopupBlurController:
+                Punchi.BlurBehindController {
+                    window: notePopupDialog
+                    restoreAfterFrame: true
+                    fullWindow: false
+                    maskSource: noteSurfaceStack.backgroundBlurMaskSource
+                    useMaskSourceInsets: true
+                    maskOffset: noteSurfaceStack.backgroundBlurMaskOffset
+                    enabled: notePopupDialog.visible
+                        && noteSurfaceStack.backgroundBlurEnabled
+                        && noteSurfaceStack.backgroundBlurMaskPresent
+                        && dockConfig.popupBackgroundBlurEnabled
+                }
+
             mainItem: PopupAnimatedContent {
+                id: notePopupAnimatedContent
                 popupVisible: notePopupDialog.visible
                 // qmllint disable unqualified
                 animationStyle: dockConfig.popupAnimationStyle
@@ -3854,6 +3984,10 @@ PlasmoidItem {
                 // qmllint enable unqualified
 
                 ContextSurfaceStack {
+                    id: noteSurfaceStack
+                    blurTransformSurface: notePopupAnimatedContent.transformSurfaceItem
+                    blurTranslationX: notePopupAnimatedContent.contentTranslationX
+                    blurTranslationY: notePopupAnimatedContent.contentTranslationY
                     showMedia: false
                     maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
                     drawContentBackground: true

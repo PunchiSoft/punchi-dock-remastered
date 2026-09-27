@@ -8,6 +8,11 @@ GridLayout {
     id: root
 
     property string selectedItemType: "app"
+    // The type of the element can be chosen from outside (the type selector of the
+    // add dialog) or from this panel's own selector (the action dialog of an
+    // existing element). When it is chosen outside, the panel hides its selector
+    // so the flow never shows two of them, and the caller drives itemModeIndex.
+    property bool showTypeSelector: true
     property alias appNameText: appName.text
     property alias appAliasText: appAlias.text
     property alias appDescriptionText: appDescription.text
@@ -169,20 +174,28 @@ GridLayout {
     Controls.Label {
         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         Layout.preferredWidth: Kirigami.Units.gridUnit * 5
-        visible: !root.dynamicApplicationsItem
+        visible: root.showTypeSelector && !root.dynamicApplicationsItem
         text: root.itemTypeLabel
         horizontalAlignment: Text.AlignLeft
         opacity: 0.75
     }
 
     RowLayout {
+        objectName: "itemEditorTypeRow"
+
         Layout.fillWidth: true
+        Layout.columnSpan: root.showTypeSelector ? 1 : 2
+        // When the caller owns the type, this row has no content except for a
+        // Container's view selector. Keeping an empty row in the two-column grid
+        // shifts every following label and field by one cell.
         visible: !root.dynamicApplicationsItem
+            && (root.showTypeSelector || root.itemModeValue === "container")
         spacing: Kirigami.Units.smallSpacing
 
         Controls.ComboBox {
             id: itemMode
             Layout.fillWidth: true
+            visible: root.showTypeSelector
             enabled: root.selectedItemType === "app" || root.selectedItemType === "folder" || root.selectedItemType === "note" || root.selectedItemType === "separator" || root.selectedItemType === "spacer"
             textRole: "text"
             valueRole: "value"
@@ -220,6 +233,8 @@ GridLayout {
     }
 
     Controls.Label {
+        objectName: "itemEditorAliasLabel"
+
         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         Layout.preferredWidth: Kirigami.Units.gridUnit * 5
         visible: root.itemModeValue === "app"
@@ -229,6 +244,8 @@ GridLayout {
     }
 
     RowLayout {
+        objectName: "itemEditorAliasRow"
+
         Layout.fillWidth: true
         visible: root.itemModeValue === "app"
         enabled: root.selectedItemType === "app"
@@ -250,6 +267,8 @@ GridLayout {
     }
 
     Controls.Label {
+        objectName: "itemEditorNameLabel"
+
         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         Layout.preferredWidth: Kirigami.Units.gridUnit * 5
         visible: root.itemModeValue === "app" || root.itemModeValue === "container" || root.itemModeValue === "note"
@@ -259,6 +278,8 @@ GridLayout {
     }
 
     RowLayout {
+        objectName: "itemEditorNameRow"
+
         Layout.fillWidth: true
         visible: root.itemModeValue === "app" || root.itemModeValue === "container" || root.itemModeValue === "note"
         enabled: root.selectedItemType === "app" || root.selectedItemType === "folder" || root.selectedItemType === "note"

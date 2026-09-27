@@ -216,6 +216,9 @@ Item {
             return mediaCurrentMainAxisLength + 12
         }
         if ((separatorItem || spacerItem) && verticalPanelMode) {
+            if (dynamicApplicationsMarkerCollapsed) {
+                return 0
+            }
             return separatorItem
                 ? Math.max(10, Math.ceil(separatorThickness + 4))
                 : Math.max(12, iconSize * 0.5)
@@ -463,6 +466,15 @@ Item {
     readonly property bool mediaItem: itemType === "media"
     readonly property bool overflowItem: itemType === "overflow"
     readonly property bool structuralWaveItem: separatorItem || spacerItem
+    // The dynamic-applications marker only keeps its layout slot while it draws
+    // something: its separator, its move handle or the launcher drop
+    // placeholder. Hiding the separator must also release the slot, otherwise
+    // unchecking "Show separator" would only hide the line and leave a gap.
+    readonly property bool dynamicApplicationsMarkerCollapsed:
+        itemType === "dynamic-applications"
+        && !separatorVisibleSetting
+        && !persistentMoveHandleVisible
+        && !launcherDropPlaceholderVisible
     readonly property bool activeTaskItem: itemType === "app" && (taskIsActive || taskIndicatorCount > 0)
     readonly property bool supportsPopupSurface: supportsContextMenu
         || itemType === "app"
@@ -482,7 +494,23 @@ Item {
         }
         return false
     }
-    readonly property bool showAnyTooltip: false
+    // The floating label is only offered where the item has no readable title of
+    // its own: the container and the special launchers. Plain application items
+    // already carry their own label and indicator.
+    readonly property bool tooltipEligibleItem: itemType === "folder"
+        || itemType === "trash"
+        || itemType === "punchimenu"
+        || itemType === "control-center"
+        || itemType === "note"
+        || itemType === "calendar"
+    // The community report #3 showed this label painting over open popups, so it
+    // stays off while any surface or context menu of the dock is on screen.
+    // `suppressTooltip` carries the item's own context menu and
+    // `isAnyPopupOrMenuOpen` covers every popup, including another item's window
+    // preview, whichever item it belongs to.
+    readonly property bool showAnyTooltip: tooltipEligibleItem
+        && !suppressTooltip
+        && !isAnyPopupOrMenuOpen
     readonly property real requestedSeparatorThickness:
         Number(effectiveSeparatorAppearance.thickness)
     readonly property real separatorThickness: Math.min(iconSize,
@@ -712,7 +740,9 @@ Item {
         : (persistentMoveHandleVisible
             ? persistentMoveHandleMainExtent
             : (separatorItem
-            ? Math.max(10, Math.ceil(separatorThickness + 4))
+            ? (dynamicApplicationsMarkerCollapsed
+                ? 0
+                : Math.max(10, Math.ceil(separatorThickness + 4)))
             : (spacerItem
                 ? Math.max(12, iconSize * 0.5)
                 : (mediaItem
@@ -723,13 +753,18 @@ Item {
         ? (persistentMoveHandleVisible
             ? Math.max(iconSize + 12, visualAreaHeight + labelAreaHeight)
             : (separatorItem
-            ? Math.max(10, Math.ceil(separatorThickness + 4))
+            ? (dynamicApplicationsMarkerCollapsed
+                ? 0
+                : Math.max(10, Math.ceil(separatorThickness + 4)))
             : (spacerItem
                 ? Math.max(12, iconSize * 0.5)
                 : (mediaItem
                     ? mediaCurrentMainAxisLength + 12
                     : (visualAreaHeight + labelAreaHeight)))))
         : (visualAreaHeight + labelAreaHeight)
+    // An invisible delegate contributes no size and no layout spacing, which is
+    // what removes the gap left by a hidden dynamic-applications separator.
+    visible: !dockItemContainer.dynamicApplicationsMarkerCollapsed
     opacity: dockItemContainer.entryOpacity
         * ((dockItemContainer.persistentReorderSource
             || dockItemContainer.persistentReorderGroupMember) ? 0.28 : 1.0)
@@ -1112,6 +1147,7 @@ Item {
         Kirigami.Icon {
             id: itemIcon
             z: 1
+            objectName: "dockItemIcon"
             anchors.centerIn: parent
             width: dockItemContainer.highQualityIconSize
             height: dockItemContainer.highQualityIconSize
@@ -1125,6 +1161,31 @@ Item {
                 x: dockItemContainer.hoverOffsetX
                 y: dockItemContainer.hoverOffsetY
             }
+        }
+
+        // The floating label has to sit on the icon that is on screen. The dock
+        // moves that icon while the item keeps its layout rect: an ancestor
+        // shifts the whole visual along the main axis (`waveMainAxisShift` lives
+        // in `visualArea`) and the icon itself scales about its centre
+        // (`waveScale`) and then translates (`hoverOffsetX/Y`). Plasma places a
+        // tooltip against its visual parent's scene rect and does not follow that
+        // item afterwards, so the label is anchored to this invisible item,
+        // which mirrors the visible icon rect instead of the layout rect.
+        // Scale, offsets and the icon geometry stay declared here: reading a
+        // transformed item does not make a binding depend on its transform.
+        // The exact match is the settled state, with `entryScale`,
+        // `clickAnimationScale` and the reaction offsets back at 1 and 0.
+        Item {
+            id: tooltipAnchor
+
+            objectName: "dockItemTooltipAnchor"
+            visible: false
+            width: itemIcon.width * itemIcon.scale
+            height: itemIcon.height * itemIcon.scale
+            x: itemIcon.x + (itemIcon.width - width) / 2
+                + dockItemContainer.hoverOffsetX
+            y: itemIcon.y + (itemIcon.height - height) / 2
+                + dockItemContainer.hoverOffsetY
         }
 
         Column {
@@ -1809,7 +1870,7 @@ Item {
     }
     Timer {
         id: tooltipDelayTimer
-        interval: 700
+        interval: Kirigami.Units.toolTipDelay
         running: dockItemContainer.showAnyTooltip && mouseArea.containsMouse
     }
 
@@ -1829,7 +1890,9 @@ Item {
 
     PlasmaCore.Dialog {
         id: tooltipDialog
-        visualParent: dockItemContainer
+        // Plasma places the label against what the item shows on screen, so the
+        // label follows the dock zoom instead of staying on the layout rect.
+        visualParent: tooltipAnchor
         location: dockItemContainer.tooltipLocation
         type: PlasmaCore.Dialog.Tooltip
         visible: dockItemContainer.showAnyTooltip && mouseArea.containsMouse && !tooltipDelayTimer.running

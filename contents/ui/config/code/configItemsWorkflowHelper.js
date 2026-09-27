@@ -444,41 +444,6 @@ function configureSelectedItem() {
     }
 }
 
-function addItem(type) {
-    if (type === "media" && hasItemType("media")) {
-        mainView.showStatus(
-            i18n("Only one media player item can be added."),
-            Kirigami.MessageType.Information)
-        return
-    }
-    if (type === "punchimenu" && hasItemType("punchimenu")) {
-        mainView.showStatus(
-            i18n("Only one PunchiMenu item can be added."),
-            Kirigami.MessageType.Information)
-        return
-    }
-    if (type === "control-center" && hasItemType("control-center")) {
-        mainView.showStatus(
-            i18n("Only one Control Center item can be added."),
-            Kirigami.MessageType.Information)
-        return
-    }
-    if (type === "dynamic-applications" && hasItemType("dynamic-applications")) {
-        mainView.showStatus(
-            i18n("Only one open applications item can be added."),
-            Kirigami.MessageType.Information)
-        return
-    }
-    const impact = ConfigItemsJS.itemAdditionImpact(type)
-    var nextItems = clone(items)
-    nextItems.push(ConfigItemsJS.newItem(type, defaultTrashEmptySound))
-    selectedIndex = nextItems.length - 1
-    setItems(nextItems)
-    if (impact.enableActiveTasks) {
-        cfg_showActiveTasks = true
-    }
-}
-
 function applyTimedColor(value) {
     if (timedColorTarget === "background") {
         calendarBackgroundColor.text = value

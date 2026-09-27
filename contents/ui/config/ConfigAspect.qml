@@ -60,10 +60,12 @@ KCM.SimpleKCM {
     property alias cfg_popupAnimationSpeedPercent: folderPopupPage.cfg_popupAnimationSpeedPercent
     property alias cfg_popupAnimationIntensity: folderPopupPage.cfg_popupAnimationIntensity
     property alias cfg_popupTextShadowsEnabled: folderPopupPage.cfg_popupTextShadowsEnabled
+    property alias cfg_folderPopupTextShadowPercent: folderPopupPage.cfg_folderPopupTextShadowPercent
     property alias cfg_menuAnimation: menuAppearancePage.cfg_menuAnimation
     property alias cfg_menuAnimationSpeedPercent: menuAppearancePage.cfg_menuAnimationSpeedPercent
     property alias cfg_menuAnimationIntensity: menuAppearancePage.cfg_menuAnimationIntensity
     property alias cfg_contextMenuBackgroundOpacityPercent: menuAppearancePage.cfg_contextMenuBackgroundOpacityPercent
+    property alias cfg_contextMenuBackgroundBlurEnabled: menuAppearancePage.cfg_contextMenuBackgroundBlurEnabled
     property alias cfg_menuTextShadowsEnabled: menuAppearancePage.cfg_menuTextShadowsEnabled
     property alias cfg_showEditDockItemAction: menuAppearancePage.cfg_showEditDockItemAction
     property alias cfg_showConfigureDockAction: menuAppearancePage.cfg_showConfigureDockAction
@@ -86,11 +88,18 @@ KCM.SimpleKCM {
     property alias cfg_folderDetailedShowLabels: folderPopupPage.cfg_folderDetailedShowLabels
     property alias cfg_folderDetailedFontFamily: folderPopupPage.cfg_folderDetailedFontFamily
     property alias cfg_folderDetailedFontSize: folderPopupPage.cfg_folderDetailedFontSize
+    property alias cfg_folderFanIconSize: folderPopupPage.cfg_folderFanIconSize
+    property alias cfg_folderFanRows: folderPopupPage.cfg_folderFanRows
+    property alias cfg_folderFanShowLabels: folderPopupPage.cfg_folderFanShowLabels
+    property alias cfg_folderFanFontFamily: folderPopupPage.cfg_folderFanFontFamily
+    property alias cfg_folderFanFontSize: folderPopupPage.cfg_folderFanFontSize
+    property alias cfg_folderFanScrollEnabled: folderPopupPage.cfg_folderFanScrollEnabled
     property alias cfg_folderPopupExtraDistance: folderPopupPage.cfg_folderPopupExtraDistance
     property alias cfg_folderPopupDistancePercent: folderPopupPage.cfg_folderPopupDistancePercent
     property alias cfg_folderPopupScale: folderPopupPage.cfg_folderPopupScale
     property alias cfg_folderPopupBackgroundOpacityPercent: folderPopupPage.cfg_folderPopupBackgroundOpacityPercent
     property alias cfg_folderPopupShowHeader: folderPopupPage.cfg_folderPopupShowHeader
+    property alias cfg_popupBackgroundBlurEnabled: folderPopupPage.cfg_popupBackgroundBlurEnabled
     property alias cfg_contextMenuTransitionSpeed: menuAppearancePage.cfg_contextMenuTransitionSpeed
     property alias cfg_contextMenuTransitionDirection: menuAppearancePage.cfg_contextMenuTransitionDirection
     property alias cfg_contextMenuVisibleRows: menuAppearancePage.cfg_contextMenuVisibleRows

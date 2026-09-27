@@ -86,30 +86,33 @@ TestCase {
         verify(submenu !== null)
         compare(submenu.name, "Folder view")
         compare(submenu.detail, "List")
-        compare(submenu.children.length, 3)
+        compare(submenu.children.length, 4)
 
         const gridAction = childByLayout(submenu, "grid")
         const listAction = childByLayout(submenu, "list")
         const detailedAction = childByLayout(submenu, "detailed")
+        const fanAction = childByLayout(submenu, "fan")
         verify(gridAction !== null)
         verify(listAction !== null)
         verify(detailedAction !== null)
+        verify(fanAction !== null)
         verify(!gridAction.checked)
         verify(listAction.checked)
         verify(!detailedAction.checked)
+        verify(!fanAction.checked)
         compare(detailedAction.kind, "setFolderView")
     }
 
     function test_folderViewActionCarriesStableTargetIdentity() {
         const actions = contextController.actionsForItem(folder, [], "pinned", 0)
         const submenu = actionByKind(actions, "submenu")
-        const detailedAction = childByLayout(submenu, "detailed")
+        const fanAction = childByLayout(submenu, "fan")
         const expectedText = JSON.stringify(folder)
 
-        verify(contextController.triggerAction(detailedAction))
+        verify(contextController.triggerAction(fanAction))
         compare(fakeDockItemsController.layoutCallCount, 1)
         compare(fakeDockItemsController.lastTargetIndex, 0)
-        compare(fakeDockItemsController.lastLayout, "detailed")
+        compare(fakeDockItemsController.lastLayout, "fan")
         compare(fakeDockItemsController.lastExpectedFolderText, expectedText)
     }
 

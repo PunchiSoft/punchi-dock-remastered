@@ -14,6 +14,7 @@ FocusScope {
 
     required property var adapter
     property bool showVirtualDevices: false
+    property bool motionEnabled: true
 
     readonly property int outputDeviceCount:
         modelCount(adapter.outputDevicesModel)
@@ -188,180 +189,216 @@ FocusScope {
             border.width: 1
             border.color: Qt.alpha(Kirigami.Theme.textColor, 0.16)
 
-            StackLayout {
+            Item {
+                id: tabHost
+
                 anchors.fill: parent
                 anchors.margins: Kirigami.Units.mediumSpacing
-                currentIndex: tabBar.currentIndex
+                clip: true
 
-                Controls.ScrollView {
-                    id: devicesScroll
+                // Both tabs share the Control Center page transition model,
+                // so switching tabs and switching pages move the same way:
+                // the outgoing tab compresses and fades while the incoming
+                // one takes its place over the space it releases.
+                ControlCenterPageSlot {
+                    id: devicesSlot
 
-                    objectName: "controlCenterAudioDevicesView"
-                    clip: true
-                    contentWidth: availableWidth
-                    Accessible.role: Accessible.List
-                    // qmllint disable unqualified
-                    Accessible.name: i18nc(
-                        "@info:accessibility", "Audio devices")
-                    // qmllint enable unqualified
+                    objectName: "controlCenterAudioDevicesSlot"
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    fullHeight: tabHost.height
+                    current: tabBar.currentIndex === 0
+                    motionEnabled: root.motionEnabled
 
-                    ColumnLayout {
-                        width: devicesScroll.availableWidth
-                        spacing: Kirigami.Units.smallSpacing
+                    Controls.ScrollView {
+                        id: devicesScroll
 
-                        PlasmaExtras.ListSectionHeader {
-                            Layout.fillWidth: true
-                            visible: root.outputDeviceCount > 0
-                                && root.deviceSectionsVisible
-                            text: i18nc("@title:group", "Output Devices") // qmllint disable unqualified
-                        }
+                        objectName: "controlCenterAudioDevicesView"
+                        // The slot clips a plain container, so the view fills it
+                        // explicitly instead of relying on a layout.
+                        anchors.fill: parent
+                        clip: true
+                        contentWidth: availableWidth
+                        Accessible.role: Accessible.List
+                        // qmllint disable unqualified
+                        Accessible.name: i18nc(
+                            "@info:accessibility", "Audio devices")
+                        // qmllint enable unqualified
 
-                        Repeater {
-                            model: root.adapter.outputDevicesModel
+                        ColumnLayout {
+                            width: devicesScroll.availableWidth
+                            spacing: Kirigami.Units.smallSpacing
 
-                            delegate: ControlCenterAudioItem {
-                                required property var model
-
+                            PlasmaExtras.ListSectionHeader {
                                 Layout.fillWidth: true
-                                adapter: root.adapter
-                                audioObject: model.PulseObject
-                                itemType: root.adapter.sinkItemType
-                                label: root.deviceLabel(model)
-                                iconName: String(model.IconName || "audio-volume-high")
-                                description: defaultDevice
-                                    ? i18nc("@info:status", "Default output") // qmllint disable unqualified
-                                    : ""
-                                routingModel:
-                                    root.adapter.outputDevicesModel
-                                defaultSelectorVisible:
-                                    root.deviceSectionsVisible
+                                visible: root.outputDeviceCount > 0
+                                    && root.deviceSectionsVisible
+                                text: i18nc("@title:group", "Output Devices") // qmllint disable unqualified
                             }
-                        }
 
-                        PlasmaExtras.ListSectionHeader {
-                            Layout.fillWidth: true
-                            visible: root.inputDeviceCount > 0
-                                && root.deviceSectionsVisible
-                            text: i18nc("@title:group", "Input Devices") // qmllint disable unqualified
-                        }
+                            Repeater {
+                                model: root.adapter.outputDevicesModel
 
-                        Repeater {
-                            model: root.adapter.inputDevicesModel
+                                delegate: ControlCenterAudioItem {
+                                    required property var model
 
-                            delegate: ControlCenterAudioItem {
-                                required property var model
+                                    Layout.fillWidth: true
+                                    adapter: root.adapter
+                                    audioObject: model.PulseObject
+                                    itemType: root.adapter.sinkItemType
+                                    label: root.deviceLabel(model)
+                                    iconName: String(model.IconName || "audio-volume-high")
+                                    description: defaultDevice
+                                        ? i18nc("@info:status", "Default output") // qmllint disable unqualified
+                                        : ""
+                                    routingModel:
+                                        root.adapter.outputDevicesModel
+                                    defaultSelectorVisible:
+                                        root.deviceSectionsVisible
+                                }
+                            }
 
+                            PlasmaExtras.ListSectionHeader {
                                 Layout.fillWidth: true
-                                adapter: root.adapter
-                                audioObject: model.PulseObject
-                                itemType: root.adapter.sourceItemType
-                                label: root.deviceLabel(model)
-                                iconName: String(model.IconName
-                                    || "audio-input-microphone")
-                                description: defaultDevice
-                                    ? i18nc("@info:status", "Default input") // qmllint disable unqualified
-                                    : ""
-                                routingModel:
-                                    root.adapter.inputDevicesModel
-                                defaultSelectorVisible:
-                                    root.deviceSectionsVisible
+                                visible: root.inputDeviceCount > 0
+                                    && root.deviceSectionsVisible
+                                text: i18nc("@title:group", "Input Devices") // qmllint disable unqualified
                             }
-                        }
 
-                        PlasmaExtras.PlaceholderMessage {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight:
-                                Kirigami.Units.gridUnit * 12
-                            visible: root.deviceCount === 0
-                            iconName: "audio-volume-muted"
-                            text: i18nc("@info", "No audio devices available") // qmllint disable unqualified
-                            // qmllint disable unqualified
-                            explanation: i18nc(
-                                "@info",
-                                "Connect a device or open Sound Settings for details.")
-                            // qmllint enable unqualified
+                            Repeater {
+                                model: root.adapter.inputDevicesModel
+
+                                delegate: ControlCenterAudioItem {
+                                    required property var model
+
+                                    Layout.fillWidth: true
+                                    adapter: root.adapter
+                                    audioObject: model.PulseObject
+                                    itemType: root.adapter.sourceItemType
+                                    label: root.deviceLabel(model)
+                                    iconName: String(model.IconName
+                                        || "audio-input-microphone")
+                                    description: defaultDevice
+                                        ? i18nc("@info:status", "Default input") // qmllint disable unqualified
+                                        : ""
+                                    routingModel:
+                                        root.adapter.inputDevicesModel
+                                    defaultSelectorVisible:
+                                        root.deviceSectionsVisible
+                                }
+                            }
+
+                            PlasmaExtras.PlaceholderMessage {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight:
+                                    Kirigami.Units.gridUnit * 12
+                                visible: root.deviceCount === 0
+                                iconName: "audio-volume-muted"
+                                text: i18nc("@info", "No audio devices available") // qmllint disable unqualified
+                                // qmllint disable unqualified
+                                explanation: i18nc(
+                                    "@info",
+                                    "Connect a device or open Sound Settings for details.")
+                                // qmllint enable unqualified
+                            }
                         }
                     }
+
                 }
 
-                Controls.ScrollView {
-                    id: applicationsScroll
+                ControlCenterPageSlot {
+                    id: applicationsSlot
 
-                    objectName: "controlCenterAudioApplicationsView"
-                    clip: true
-                    contentWidth: availableWidth
-                    Accessible.role: Accessible.List
-                    // qmllint disable unqualified
-                    Accessible.name: i18nc(
-                        "@info:accessibility", "Application audio streams")
-                    // qmllint enable unqualified
+                    objectName: "controlCenterAudioApplicationsSlot"
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    fullHeight: tabHost.height
+                    current: tabBar.currentIndex === 1
+                    motionEnabled: root.motionEnabled
 
-                    ColumnLayout {
-                        width: applicationsScroll.availableWidth
-                        spacing: Kirigami.Units.smallSpacing
+                    Controls.ScrollView {
+                        id: applicationsScroll
 
-                        PlasmaExtras.ListSectionHeader {
-                            Layout.fillWidth: true
-                            visible: root.playbackStreamCount > 0
-                                && root.applicationSectionsVisible
-                            text: i18nc("@title:group", "Playing Audio") // qmllint disable unqualified
-                        }
+                        objectName: "controlCenterAudioApplicationsView"
+                        // See the devices view above: the slot is not a layout.
+                        anchors.fill: parent
+                        clip: true
+                        contentWidth: availableWidth
+                        Accessible.role: Accessible.List
+                        // qmllint disable unqualified
+                        Accessible.name: i18nc(
+                            "@info:accessibility", "Application audio streams")
+                        // qmllint enable unqualified
 
-                        Repeater {
-                            model: root.adapter.playbackStreamsModel
+                        ColumnLayout {
+                            width: applicationsScroll.availableWidth
+                            spacing: Kirigami.Units.smallSpacing
 
-                            delegate: ControlCenterAudioItem {
-                                required property var model
-
+                            PlasmaExtras.ListSectionHeader {
                                 Layout.fillWidth: true
-                                adapter: root.adapter
-                                audioObject: model.PulseObject
-                                itemType: root.adapter.sinkInputItemType
-                                label: root.streamLabel(model)
-                                iconName: String(model.IconName
-                                    || "audio-volume-high")
-                                routingModel:
-                                    root.adapter.outputDevicesModel
+                                visible: root.playbackStreamCount > 0
+                                    && root.applicationSectionsVisible
+                                text: i18nc("@title:group", "Playing Audio") // qmllint disable unqualified
                             }
-                        }
 
-                        PlasmaExtras.ListSectionHeader {
-                            Layout.fillWidth: true
-                            visible: root.recordingStreamCount > 0
-                                && root.applicationSectionsVisible
-                            text: i18nc("@title:group", "Recording Audio") // qmllint disable unqualified
-                        }
+                            Repeater {
+                                model: root.adapter.playbackStreamsModel
 
-                        Repeater {
-                            model: root.adapter.recordingStreamsModel
+                                delegate: ControlCenterAudioItem {
+                                    required property var model
 
-                            delegate: ControlCenterAudioItem {
-                                required property var model
+                                    Layout.fillWidth: true
+                                    adapter: root.adapter
+                                    audioObject: model.PulseObject
+                                    itemType: root.adapter.sinkInputItemType
+                                    label: root.streamLabel(model)
+                                    iconName: String(model.IconName
+                                        || "audio-volume-high")
+                                    routingModel:
+                                        root.adapter.outputDevicesModel
+                                }
+                            }
 
+                            PlasmaExtras.ListSectionHeader {
                                 Layout.fillWidth: true
-                                adapter: root.adapter
-                                audioObject: model.PulseObject
-                                itemType: root.adapter.sourceOutputItemType
-                                label: root.streamLabel(model)
-                                iconName: String(model.IconName
-                                    || "audio-input-microphone")
-                                routingModel:
-                                    root.adapter.inputDevicesModel
+                                visible: root.recordingStreamCount > 0
+                                    && root.applicationSectionsVisible
+                                text: i18nc("@title:group", "Recording Audio") // qmllint disable unqualified
                             }
-                        }
 
-                        PlasmaExtras.PlaceholderMessage {
-                            Layout.fillWidth: true
-                            Layout.preferredHeight:
-                                Kirigami.Units.gridUnit * 12
-                            visible: root.applicationCount === 0
-                            iconName: "application-x-executable"
-                            text: i18nc("@info", "No applications are playing or recording audio") // qmllint disable unqualified
-                            // qmllint disable unqualified
-                            explanation: i18nc(
-                                "@info",
-                                "Applications appear here while they use an audio stream.")
-                            // qmllint enable unqualified
+                            Repeater {
+                                model: root.adapter.recordingStreamsModel
+
+                                delegate: ControlCenterAudioItem {
+                                    required property var model
+
+                                    Layout.fillWidth: true
+                                    adapter: root.adapter
+                                    audioObject: model.PulseObject
+                                    itemType: root.adapter.sourceOutputItemType
+                                    label: root.streamLabel(model)
+                                    iconName: String(model.IconName
+                                        || "audio-input-microphone")
+                                    routingModel:
+                                        root.adapter.inputDevicesModel
+                                }
+                            }
+
+                            PlasmaExtras.PlaceholderMessage {
+                                Layout.fillWidth: true
+                                Layout.preferredHeight:
+                                    Kirigami.Units.gridUnit * 12
+                                visible: root.applicationCount === 0
+                                iconName: "application-x-executable"
+                                text: i18nc("@info", "No applications are playing or recording audio") // qmllint disable unqualified
+                                // qmllint disable unqualified
+                                explanation: i18nc(
+                                    "@info",
+                                    "Applications appear here while they use an audio stream.")
+                                // qmllint enable unqualified
+                            }
                         }
                     }
                 }

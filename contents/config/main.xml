@@ -85,6 +85,9 @@
     <entry name="contextMenuBackgroundOpacityPercent" type="Int">
       <default>75</default>
     </entry>
+    <entry name="contextMenuBackgroundBlurEnabled" type="Bool">
+      <default>true</default>
+    </entry>
     <entry name="showItemHoverBackground" type="Bool">
       <default>true</default>
     </entry>
@@ -187,6 +190,24 @@
     <entry name="folderDetailedFontSize" type="Int">
       <default>10</default>
     </entry>
+    <entry name="folderFanIconSize" type="Int">
+      <default>44</default>
+    </entry>
+    <entry name="folderFanRows" type="Int">
+      <default>6</default>
+    </entry>
+    <entry name="folderFanShowLabels" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="folderFanFontFamily" type="String">
+      <default></default>
+    </entry>
+    <entry name="folderFanFontSize" type="Int">
+      <default>10</default>
+    </entry>
+    <entry name="folderFanScrollEnabled" type="Bool">
+      <default>false</default>
+    </entry>
     <entry name="folderPopupExtraDistance" type="Int">
       <default>0</default>
     </entry>
@@ -200,6 +221,12 @@
       <default>75</default>
     </entry>
     <entry name="folderPopupShowHeader" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="folderPopupTextShadowPercent" type="Int">
+      <default>25</default>
+    </entry>
+    <entry name="popupBackgroundBlurEnabled" type="Bool">
       <default>true</default>
     </entry>
     <entry name="audioSpectrumEnabled" type="Bool">

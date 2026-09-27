@@ -38,6 +38,16 @@ TestCase {
         signalName: "nightLightStrengthModified"
     }
 
+    SignalSpy {
+        id: networkSubmenuSpy
+        signalName: "networkSubmenuToggleRequested"
+    }
+
+    SignalSpy {
+        id: settingsSpy
+        signalName: "settingsRequested"
+    }
+
     QtObject {
         id: fakeThemeAdapter
         property bool available: true
@@ -85,6 +95,7 @@ TestCase {
         themeSpy.clear()
         nightLightSpy.clear()
         nightLightStrengthSpy.clear()
+        settingsSpy.clear()
         fakeThemeAdapter.darkMode = false
         fakeThemeAdapter.busy = false
         fakeNightLightAdapter.inhibited = false
@@ -115,7 +126,11 @@ TestCase {
         wait(0)
         const viewport = findChild(page, "controlCenterHomeScrollView")
         verify(viewport !== null)
-        compare(viewport.height, page.height)
+        // The notifications are pinned at the foot of the frame, so the quick
+        // controls scroll in the area above them instead of taking the page.
+        verify(viewport.height < page.height)
+        compare(viewport.height, page.height - section.height
+            - Kirigami.Units.largeSpacing)
         verify(viewport.clip)
         verify(viewport.contentHeight >= viewport.height)
         const flickable = viewport
@@ -133,6 +148,86 @@ TestCase {
         tryVerify(function() {
             return Math.abs(viewport.contentHeight - viewport.height) < 1
         })
+    }
+
+    function test_arrowKeysFollowTheShortcutGridAndSkipUnavailableTiles() {
+        const hostWindow = createTemporaryObject(windowComponent, testCase)
+        verify(hostWindow !== null)
+        hostWindowUnderTest = hostWindow
+        tryCompare(hostWindow, "visible", true)
+        waitForRendering(hostWindow.contentItem)
+        const page = hostWindow.page
+        const wifi = findChild(page, "controlCenterWifiTile")
+        const bluetooth = findChild(page, "controlCenterBluetoothTile")
+        const doNotDisturb = findChild(page, "controlCenterDoNotDisturbTile")
+        const updates = findChild(page, "controlCenterUpdatesTile")
+        verify(wifi !== null)
+        verify(bluetooth !== null)
+        verify(doNotDisturb !== null)
+        verify(updates !== null)
+
+        page.focusFirstControl()
+        verify(wifi.activeFocus)
+        verify(!wifi.visualFocus)
+        keyClick(Qt.Key_Right)
+        tryCompare(bluetooth, "activeFocus", true)
+        verify(bluetooth.visualFocus)
+        keyClick(Qt.Key_Down)
+        tryCompare(updates, "activeFocus", true)
+        keyClick(Qt.Key_Left)
+        tryCompare(doNotDisturb, "activeFocus", true)
+        keyClick(Qt.Key_Up)
+        tryCompare(wifi, "activeFocus", true)
+
+        page.doNotDisturbAvailable = false
+        keyClick(Qt.Key_Down)
+        tryCompare(updates, "activeFocus", true)
+        verify(!doNotDisturb.activeFocus)
+
+        page.focusFirstControl()
+        keyClick(Qt.Key_Tab)
+        tryCompare(bluetooth, "activeFocus", true)
+        verify(bluetooth.visualFocus)
+        keyClick(Qt.Key_Tab, Qt.ShiftModifier)
+        tryCompare(wifi, "activeFocus", true)
+    }
+
+    function test_arrowKeysFollowStackedTilesAndKeepFocusInView() {
+        const hostWindow = createTemporaryObject(windowComponent, testCase)
+        verify(hostWindow !== null)
+        hostWindowUnderTest = hostWindow
+        tryCompare(hostWindow, "visible", true)
+        hostWindow.width = 400
+        hostWindow.height = 320
+        waitForRendering(hostWindow.contentItem)
+        const page = hostWindow.page
+        const primaryRow = findChild(page, "controlCenterPrimaryTileRow")
+        const scrollView = findChild(page, "controlCenterHomeScrollView")
+        const wifi = findChild(page, "controlCenterWifiTile")
+        const bluetooth = findChild(page, "controlCenterBluetoothTile")
+        const doNotDisturb = findChild(page, "controlCenterDoNotDisturbTile")
+        const updates = findChild(page, "controlCenterUpdatesTile")
+        verify(primaryRow !== null)
+        verify(scrollView !== null)
+        verify(wifi !== null)
+        verify(bluetooth !== null)
+        verify(doNotDisturb !== null)
+        verify(updates !== null)
+        tryCompare(primaryRow, "stacked", true)
+
+        page.focusFirstControl()
+        keyClick(Qt.Key_Down)
+        tryCompare(bluetooth, "activeFocus", true)
+        keyClick(Qt.Key_Down)
+        tryCompare(doNotDisturb, "activeFocus", true)
+        keyClick(Qt.Key_Down)
+        tryCompare(updates, "activeFocus", true)
+        tryVerify(function() {
+            return updates.mapToItem(scrollView, 0, updates.height).y
+                <= scrollView.height + 0.5
+        })
+        keyClick(Qt.Key_Up)
+        tryCompare(doNotDisturb, "activeFocus", true)
     }
 
     function test_historyIsPersistentAndQuickControlsRemainActionable() {
@@ -249,8 +344,17 @@ TestCase {
         doNotDisturbSpy.target = page
         themeSpy.target = page
         nightLightSpy.target = page
+        networkSubmenuSpy.target = page
+        settingsSpy.target = page
         mouseClick(dndTile, dndTile.width / 2, dndTile.height / 2)
         compare(doNotDisturbSpy.count, 1)
+        // With no network adapter, the Wi-Fi row offers Network Settings.
+        const wifiTile = findChild(page, "controlCenterWifiTile")
+        verify(wifiTile !== null)
+        mouseClick(wifiTile, wifiTile.width / 2, wifiTile.height / 2)
+        compare(networkSubmenuSpy.count, 0)
+        compare(settingsSpy.count, 1)
+        compare(settingsSpy.signalArguments[0][0], "network")
         mouseClick(themeButton, themeButton.width / 2,
             themeButton.height / 2)
         compare(themeSpy.count, 1)

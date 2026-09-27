@@ -26,6 +26,10 @@ ColumnLayout {
     property string toggleObjectName: ""
     property string primaryActionObjectName: ""
     property string settingsActionObjectName: ""
+    // The inline presentation keeps the actions row and drops the navigation row:
+    // the control that opened the section is the one that closes it, so a back
+    // button and a repeated title would only add noise.
+    property bool navigationRowVisible: true
 
     signal backRequested()
     signal toggleRequested(bool enabled)
@@ -35,12 +39,30 @@ ColumnLayout {
     objectName: headerObjectName
     spacing: Kirigami.Units.smallSpacing
 
-    function focusBackButton() {
-        backButton.forceActiveFocus(Qt.PopupFocusReason)
+    function focusBackButton(reason) {
+        backButton.forceActiveFocus(reason === undefined
+            ? Qt.PopupFocusReason : reason)
+    }
+
+    // First control of the header in reading order: the back button when it
+    // exists, otherwise the toggle that heads the actions row.
+    function focusFirstControl(reason) {
+        const focusReason = reason === undefined
+            ? Qt.PopupFocusReason : reason
+        if (root.navigationRowVisible) {
+            root.focusBackButton(focusReason)
+        } else if (toggle.enabled) {
+            toggle.forceActiveFocus(focusReason)
+        } else if (primaryAction.enabled) {
+            primaryAction.forceActiveFocus(focusReason)
+        } else {
+            settingsAction.forceActiveFocus(focusReason)
+        }
     }
 
     RowLayout {
         objectName: root.navigationRowObjectName
+        visible: root.navigationRowVisible
         Layout.fillWidth: true
         spacing: Kirigami.Units.mediumSpacing
 
@@ -76,6 +98,8 @@ ColumnLayout {
         }
 
         PlasmaComponents.Switch {
+            id: toggle
+
             objectName: root.toggleObjectName
             text: root.toggleText
             checked: root.toggleChecked
@@ -84,6 +108,8 @@ ColumnLayout {
         }
 
         PlasmaComponents.ToolButton {
+            id: primaryAction
+
             objectName: root.primaryActionObjectName
             text: root.primaryActionText
             icon.name: root.primaryActionIconName
@@ -94,6 +120,8 @@ ColumnLayout {
         }
 
         PlasmaComponents.ToolButton {
+            id: settingsAction
+
             objectName: root.settingsActionObjectName
             text: root.settingsActionText
             icon.name: "configure"

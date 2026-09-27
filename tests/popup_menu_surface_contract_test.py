@@ -156,6 +156,16 @@ def main() -> int:
     folder_popup_component = (
         PROJECT_ROOT / "contents/ui/components/FolderPopup.qml"
     ).read_text()
+    folder_fan_view = (
+        PROJECT_ROOT / "contents/ui/components/FolderFanView.qml"
+    ).read_text()
+    text_shadow_label = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuTextShadowLabel.qml"
+    ).read_text()
+    items_controller = (
+        PROJECT_ROOT / "contents/ui/components/DockItemsController.qml"
+    ).read_text()
     config_items = (
         PROJECT_ROOT / "contents/ui/config/ConfigItems.qml"
     ).read_text()
@@ -290,6 +300,193 @@ def main() -> int:
         "Popup placement must measure its themed surface in window-client coordinates",
     )
     require(
+        context_surface_stack,
+        "backgroundBlurMaskSource: menuBackground",
+        "The blur region must keep reading the background frame",
+    )
+    popup_tail = (
+        PROJECT_ROOT / "contents/ui/components/FolderPopupTail.qml"
+    ).read_text()
+    require(
+        popup_tail,
+        "fillColor: Kirigami.Theme.backgroundColor",
+        "The tail fill must come from the theme background colour",
+    )
+    require(
+        popup_tail,
+        "readonly property real safeAnchorExtent:",
+        "The tail must normalize the live dock item extent",
+    )
+    require(
+        popup_tail,
+        "readonly property real tailWidthRatio: 0.55",
+        "The compact tail width must stay a share of its dock item",
+    )
+    require(
+        popup_tail,
+        "layer.samples: 8",
+        "The drawn triangle must share the multisampled pass of the shaped surfaces",
+    )
+    require(
+        popup_tail,
+        "readonly property real tailDepthRatio: 0.55",
+        "The compact tail depth must stay a ratio of its base",
+    )
+    require(
+        popup_tail,
+        "root.safeAnchorExtent * root.tailWidthRatio)",
+        "The tail base must follow that share, never a fixed length",
+    )
+    require(
+        popup_tail,
+        "readonly property real tipRadiusRatio: 0.08",
+        "The compact tip radius must be independent of frame insets",
+    )
+    if "cornerRadius" in popup_tail:
+        raise AssertionError(
+            "Frame insets must not be reused as the tail corner radius")
+    require(
+        popup_tail,
+        "PathSvg {",
+        "The tail outline must be drawn as a vector path",
+    )
+    require(
+        popup_tail,
+        "readonly property real windowGrowth: Math.max(0,",
+        "The surface must grow only by the part of the tail outside the frame",
+    )
+    require(
+        popup_tail,
+        "readonly property var blurRegionPolygon:",
+        "The tail must publish the same silhouette for the KWin blur region",
+    )
+    require(
+        context_surface_stack,
+        "backgroundBlurAdditionalMaskPolygon:",
+        "The shared surface must expose the optional tail blur polygon",
+    )
+    for fragment, message in (
+        ('menuBackground.y + root.backgroundFrameInset("top")',
+         "The tail band must start at the effective background edge"),
+        ('menuBackground.x + root.backgroundFrameInset("left")',
+         "The tail band must start at the effective background edge"),
+        ("z: menuBackground.z + 1",
+         "The tail must join the card edge over the frame shadow strip"),
+    ):
+        require(context_surface_stack, fragment, message)
+    require(
+        popup_tail,
+        'root.command("L", tipLeft)',
+        "The flank must run straight from the base corner to the tip",
+    )
+    if "neckLeft" in popup_tail:
+        raise AssertionError(
+            "The tail must not carry the reverted neck in its outline")
+    require(
+        popup_tail,
+        'root.command("Q", apex)',
+        "Only the tip of the triangle must be curved",
+    )
+    require(
+        popup_tail,
+        'root.command("M", baseLeft)',
+        "The triangle base must start on the card edge, with sharp corners",
+    )
+    for fragment, message in (
+        ("Accessible.ignored: true",
+         "The decorative tail must stay out of accessibility"),
+    ):
+        require(popup_tail, fragment, message)
+    if re.search(r"KSvg\.FrameSvgItem\s*\{\s*id:\s*lobe", popup_tail):
+        raise AssertionError(
+            "The tail must not go back to a frame lobe without junction curves")
+    for fragment, message in (
+        ("property bool edgeTailEnabled: false",
+         "The tail must stay disabled for the popups sharing the surface"),
+        ("readonly property real edgeTailExtent: root.edgeTailPresent",
+         "The reserved band must follow the tail length"),
+        ("visible: root.edgeTailPresent",
+         "The band must be hidden unless the surface asked for a tail"),
+        ("clip: true",
+         "The band must keep the buried half of the tail off the card"),
+        ("frameInsetLeft: menuBackground.inset.left",
+         "The tail must be composed from the background frame insets"),
+        ("surfaceOpacity: menuBackground.opacity",
+         "The tail must share the background opacity"),
+        ("height: root.surfaceContentHeight + root.contentFramePadding * 2",
+         "The background frame must keep its own size when a band is reserved"),
+    ):
+        require(context_surface_stack, fragment, message)
+    # The tail belongs to the three classic presentations of the folder popup.
+    # The accepted layouts are listed one by one on purpose: a layout added later
+    # must not inherit the tail without a review, and the fan never receives it.
+    tail_binding_match = re.search(
+        r"edgeTailEnabled:(?P<value>.*?)edgeTailLocation:",
+        main_qml,
+        re.DOTALL,
+    )
+    if tail_binding_match is None:
+        raise AssertionError(
+            "The folder surface must enable the tail right before its side")
+    tail_binding = tail_binding_match.group("value")
+    for layout_mode in ("grid", "list", "detailed"):
+        if f'"{layout_mode}"' not in tail_binding:
+            raise AssertionError(
+                f"The {layout_mode} presentation must receive the folder tail")
+    if '"fan"' in tail_binding:
+        raise AssertionError(
+            "The fan presentation must stay out of the tail: it draws no card "
+            "background of its own and its alignment belongs to its arc")
+    if "indexOf(" not in tail_binding or "layoutMode" not in tail_binding:
+        raise AssertionError(
+            "The tail must be enabled from an explicit list of folder layouts")
+    if "===" in tail_binding or "!==" in tail_binding:
+        raise AssertionError(
+            "The tail must not be enabled by excluding the fan: an unknown "
+            "layout would inherit it without a review")
+    require(
+        main_qml,
+        "edgeTailLocation: dockGeometry.spectrumOriginEdge",
+        "The tail must leave from the dock edge",
+    )
+    require(
+        main_qml,
+        "edgeTailAnchorExtent: folderPopupDialog.sourceAnchor",
+        "The tail must stay proportional to the dock item it points at",
+    )
+    require(
+        main_qml,
+        "folderSurfaceStack.backgroundBlurAdditionalMaskPolygon",
+        "The folder popup controller must unite the tail with its blur region",
+    )
+    if re.search(r"edgeTailLocation:\s*folderPopupAnimatedContent\b", main_qml):
+        raise AssertionError(
+            "The tail side must not follow the direction the popup grows toward")
+    if main_qml.count("edgeTailEnabled:") != 1:
+        raise AssertionError(
+            "The tail must stay scoped to the folder popup surface only, so "
+            "every other consumer of the shared surface keeps it disabled")
+    if main_qml.count("additionalMaskPolygon:") != 1:
+        raise AssertionError(
+            "Only the folder popup blur controller may unite the tail "
+            "silhouette with its blur region")
+    tail_instantiations = sorted(
+        path.relative_to(PROJECT_ROOT).as_posix()
+        for path in (PROJECT_ROOT / "contents/ui").rglob("*.qml")
+        if "FolderPopupTail {" in path.read_text()
+    )
+    if tail_instantiations != ["contents/ui/components/ContextSurfaceStack.qml"]:
+        raise AssertionError(
+            "The three classic presentations must share a single tail "
+            f"component, found in: {tail_instantiations}")
+    if "i18n" in popup_tail:
+        raise AssertionError(
+            "The decorative tail must not carry visible text of its own")
+    config_xml = (PROJECT_ROOT / "contents/config/main.xml").read_text()
+    if re.search(r"(?<![A-Za-z])tail(?![A-Za-z])", config_xml, re.IGNORECASE):
+        raise AssertionError(
+            "The tail must not introduce a configuration key")
+    require(
         guarded_positioned_popup,
         "readonly property rect effectivePopupGeometry:",
         "Adaptive popups must consume their measured visible geometry",
@@ -305,6 +502,27 @@ def main() -> int:
          "A popup main item must never expose zero real height to Plasma Dialog"),
     ):
         require(animated_content, fragment, message)
+    folder_popup_component = (
+        PROJECT_ROOT / "contents/ui/components/FolderPopup.qml"
+    ).read_text()
+    require(
+        folder_popup_component,
+        "horizontalAlignment: Text.AlignHCenter",
+        "The folder popup title must be centered on the popup",
+    )
+    require(
+        folder_popup_component,
+        "font.weight: Font.DemiBold",
+        "The popup labels must share the weight the fan labels use",
+    )
+    folder_popup_config_page = (
+        PROJECT_ROOT / "contents/ui/config/ConfigFolderPopups.qml"
+    ).read_text()
+    require(
+        folder_popup_config_page,
+        "stepSize: 0.05",
+        "The folder popup scale must move in five percent steps",
+    )
     require(folder_popup, "FolderPopup {",
             "Folder profiles must remain inside the shared surface")
     require(
@@ -316,6 +534,10 @@ def main() -> int:
     for fragment, message in (
         ('import "punchimenu" as PunchiMenuComponents',
          "Folder popup launchers must import the canonical highlight"),
+        ("move: Transition {",
+         "Folder popup model moves must animate declaratively"),
+        ("moveDisplaced: Transition {",
+         "Folder popup neighbours must follow model moves"),
         ("PunchiMenuComponents.PunchiMenuItemHighlight {",
          "Folder popup launchers must reuse the canonical highlight"),
         ("hovered: itemMouse.containsMouse",
@@ -324,10 +546,316 @@ def main() -> int:
          "Folder popup focus must remain independent from hover"),
         ("pressed: itemMouse.pressed",
          "Folder popup press feedback must remain interruptible"),
-        ("motionEnabled: Kirigami.Units.longDuration > 0",
+        ("motionEnabled: folderRoot.motionEnabled",
          "Folder popup motion must follow the reduced-motion preference"),
+        ("transformSelf: false",
+         "Folder popup delegates must not duplicate the canonical highlight transform"),
     ):
         require(folder_popup_component, fragment, message)
+    for fragment, message in (
+        ("ListView {",
+         "The fan view must virtualize the entries it shows"),
+        ("curveOffsetForItem(itemY)",
+         "The fan curve must be derived from viewport geometry"),
+        ("rowLeanForItem(itemY)",
+         "The fan must lean each row along its arc, not only shift it"),
+        ("rowArcStepDegrees",
+         "The fan must derive the lean of a row from the angular step of the "
+         "arc"),
+        ("rowSagPerPitch",
+         "The fan must derive its sag from the same angular step as its lean"),
+        ("radius: root.highlightRadius",
+         "The fan highlight must adopt the text curvature"),
+        ("highlightRadius: labelHeight / 2",
+         "The fan highlight radius must be derived, not fixed"),
+        ("objectName: \"folderFanPill-\" + fanDelegate.index",
+         "Every fan entry must carry its own labelled pill"),
+        ("radius: height / 2",
+         "A fan pill must hug its own text with a full pill radius"),
+        ("origin.x: fanContent.iconX + root.iconSize / 2",
+         "A fan row must turn about the centre of its own icon"),
+        ("rowAir",
+         "The fan must declare the air between two rows"),
+        ("preferredRowHeight",
+         "The fan must expose the pitch its rows need"),
+        ("source: \"go-next-symbolic\"",
+         "The closing row must point towards the container it opens"),
+        ("revealProgressForDistance(",
+         "The fan reveal must sweep along its arc instead of by row order"),
+        ("property real revealSweepShare:",
+         "The fan sweep must stay a declared, tunable share"),
+        ("rowSagPerPitchSquared",
+         "The fan arc must keep the second order of its own angular step"),
+        ("PunchiMenuComponents.PunchiMenuItemHighlight {",
+         "Fan launchers must reuse the canonical interaction surface"),
+        ("focused: fanDelegate.visualFocus",
+         "Fan focus indication must follow keyboard-visible focus"),
+        ("acceptedButtons: Qt.LeftButton | Qt.RightButton",
+         "Fan launchers must expose their application context menu"),
+        ("Keys.onEscapePressed:",
+         "The fan view must support keyboard dismissal"),
+        ("root.focusItem(fanDelegate.index + 1",
+         "The fan view must support predictable keyboard navigation"),
+        ("naturalLabelWidth:",
+         "Fan label capsules must follow their own text width"),
+        ("distanceFromOrigin",
+         "The fan curve must open progressively from the panel-facing item"),
+        ("leadingOverhang",
+         "The fan must reserve the flight its pills take at the end the arc "
+         "opens to"),
+        ("trailingOverhang",
+         "The fan must reserve the flight at the other end too, for the popups "
+         "that open downwards"),
+        ("bandHeight",
+         "The fan must declare the band its own rows occupy"),
+        ("topMargin: root.leadingOverhang",
+         "The reserve of the far end must be content of the list, so the list "
+         "paints it instead of wasting it as a half row"),
+        ("bottomMargin: root.trailingOverhang",
+         "The reserve of a popup opening downwards must be content of the list "
+         "as well"),
+        ("envelopeForRows(",
+         "The fan must measure its reserve for the row count it shows"),
+        ("settleAtBeginning(",
+         "The fan must rest with its band placed after the reserve"),
+        ("maximumContentHeight",
+         "The fan must accept the height its popup can really offer"),
+        ("overflowItemCount",
+         "The fan must know how many entries exceed its visible area"),
+        ("omittedItemCount",
+         "The fan must know how many entries the effective model really "
+         "leaves out"),
+        ("displayedApps",
+         "The fan must expose the model its list consumes"),
+        ("displayedItemCount",
+         "The fan must separate the entries it keeps from the total"),
+        ("effectiveScrollEnabled",
+         "The fan must separate the requested scroll from the effective one"),
+        ("model: root.displayedApps",
+         "The list must consume the effective model, not the whole array"),
+        ("interactive: root.effectiveScrollEnabled",
+         "A static fan must refuse the wheel, the touchpad and drag"),
+        ("property bool scrollEnabled: false",
+         "The fan must be static unless the preference turns scrolling on"),
+        ("focusStepFromLocationAction(",
+         "The closing row must take part in the keyboard ring"),
+        ("focusLocationAction(",
+         "The fan must be able to move the focus to the closing row"),
+        ("reconcileAfterModelChange(",
+         "A change of the effective model must keep a valid current row"),
+        ('i18ncp("@item:inlistbox closing row of the folder fan"',
+         "The closing row must count what it leaves out, with plurals"),
+        ('"%1 more in %2"',
+         "The count of the closing row must name where it opens"),
+        ("folderOpenerName",
+         "The fan must receive the file manager that opens a container"),
+        ("openActionLabelText",
+         "The closing row must keep a short label for the folder it opens"),
+        ('i18nc("@action:button open the container", "Open")',
+         "The short label of the closing row must stay translatable"),
+        ('"Open this folder in the file manager"',
+         "The closing row must describe its action for readers"),
+        ("actionCaptionProbe",
+         "The reserved width must be measured from the text the row can show"),
+        ("Math.max(actionCaptionWidth,",
+         "The closing row must never be narrower than its own text"),
+        ("PunchiMenuComponents.PunchiMenuTextShadowLabel",
+         "The labels of the fan must take the graduated shadow of the popups"),
+        ("shadowPercent: root.textShadowPercent",
+         "The fan must take the amount of the shadow from the configuration"),
+    ):
+        require(folder_fan_view, fragment, message)
+    if "hiddenItemCount" in folder_fan_view:
+        raise AssertionError(
+            "The fan must separate the entries that exceed its visible area "
+            "from the ones the effective model really omits: a single "
+            "hiddenItemCount conflated both"
+        )
+    if "rowBleed" in folder_fan_view:
+        raise AssertionError(
+            "The fan must not keep one symmetric bleed for the whole fan: the "
+            "flight belongs to the end the arc opens to"
+        )
+    if "Open in Dolphin" in folder_fan_view:
+        raise AssertionError(
+            "The closing row of the fan must keep its short label: the "
+            "descriptive phrase belongs to the chrome row of the other "
+            "presentations"
+        )
+    if "renderShadow: root.textShadowsEnabled" in folder_fan_view:
+        raise AssertionError(
+            "A label of the fan must not enable the fixed texture shadow of the "
+            "shared label: the amount belongs to the configuration"
+        )
+    # The chrome row of grid, list and detailed is an action, not the container:
+    # it shows the glyph of the reference and names the file manager the desktop
+    # opens a folder with, the way the closing row of the fan does.
+    for fragment, message in (
+        ('i18nc("@action:button open the folder in the file manager"',
+         "The chrome action must name the file manager that opens a folder"),
+        ("folderRoot.folderOpenerName.length > 0",
+         "The chrome action must name the file manager the desktop resolved"),
+        ('objectName: "folderOpenLocationGlyph"',
+         "The chrome action must show the glyph of the reference"),
+        ('objectName: "folderOpenLocationArrow"',
+         "The glyph of the chrome action must carry the arrow of the reference"),
+    ):
+        require(folder_popup_component, fragment, message)
+    if "folderOpenLocationIcon" in folder_popup_component:
+        raise AssertionError(
+            "The chrome action must not fall back to the icon of the container: "
+            "the row is an action and has to read the same in every presentation "
+            "that offers it"
+        )
+    # Every row that opens the container is a button whose click belongs to its
+    # delegate, so the pointer cursor has to be asked for without taking that
+    # click away: a hover handler, not a mouse area.
+    for source, surface in (
+        (folder_popup_component, "folder popup"),
+        (folder_fan_view, "folder fan"),
+    ):
+        opening_rows = [
+            body
+            for body in qml_object_bodies(source, "Controls.ItemDelegate")
+            if "openLocationRequested" in body
+        ]
+        if not opening_rows:
+            raise AssertionError(
+                f"The {surface} must keep the row that opens the container"
+            )
+        for body in opening_rows:
+            require(
+                body,
+                "cursorShape: Qt.PointingHandCursor",
+                f"The row that opens the container of the {surface} must show "
+                "the hand cursor",
+            )
+    require(
+        folder_popup_component,
+        'visible: folderRoot.layoutMode === "fan"',
+        "FolderPopup must instantiate the dedicated fan presentation",
+    )
+    for fragment, message in (
+        ("classicContentHeight: layoutMode === \"fan\"",
+         "The folder popup must take the fan height from the fan itself"),
+        ("Math.ceil(fanView.implicitHeight)",
+         "The folder popup must not add a second reserve on top of the one the "
+         "fan already keeps"),
+        ("maximumContentHeight: folderRoot.layoutMode === \"fan\"",
+         "The folder popup must hand the fan the height it can offer"),
+        ("folderOpenerName: folderRoot.folderOpenerName",
+         "The folder popup must hand the fan the file manager it opens with"),
+        ("fanContentCeiling",
+         "The folder popup must hold the fan to the height the display offers"),
+        ("property bool profileFanScrollEnabled: false",
+         "The folder popup must carry the fan scroll preference"),
+        ("scrollEnabled: folderRoot.profileFanScrollEnabled",
+         "The folder popup must hand the fan the scroll preference"),
+    ):
+        require(folder_popup_component, fragment, message)
+    require(
+        main_qml,
+        "maximumSurfaceHeight: dockGeometry.folderFanAvailableHeight",
+        "The folder popup must receive the height the display really offers",
+    )
+    require(
+        main_qml,
+        "folderOpenerName: dockItemsController.folderOpenerName",
+        "The folder popup must receive the name of the file manager",
+    )
+    require(
+        items_controller,
+        "readonly property string folderOpenerName",
+        "The items controller must expose the file manager in use",
+    )
+    require(
+        folder_popup_component,
+        '&& layoutMode !== "fan"',
+        "The Fan presentation must not retain conventional dialog chrome",
+    )
+    for fragment, message in (
+        ('folderPopupContent.layoutMode !== "fan"',
+         "The Fan presentation must not draw a general themed surface"),
+        ('backgroundBlurEnabled:\n'
+         '                        folderPopupContent.layoutMode !== "fan"',
+         "The folder surface must explicitly disable Fan blur"),
+        ("horizontalAnchorOffset:",
+         "The native popup anchor must support an internal Fan origin"),
+        ("folderPopupContent.fanOriginIconCenterX",
+         "The Fan origin must remain aligned with the dock launcher"),
+    ):
+        require(folder_popup, fragment, message)
+    for fragment, message in (
+        ('"Fan"), "value": "fan"',
+         "The folder KCM must expose the fan profile"),
+        ("cfg_folderFanIconSize",
+         "The folder KCM must persist fan icon sizing"),
+        ("cfg_folderFanRows",
+         "The folder KCM must persist the fan visible-row limit"),
+        ("cfg_folderFanScrollEnabled",
+         "The folder KCM must persist the fan scroll preference"),
+        ('id: fanScrollCheck\n'
+         '            objectName: "fanScrollCheck"\n'
+         '            visible: page.activeProfile === "fan"',
+         "The fan scroll switch must be offered only for the fan profile"),
+        ('i18n("Allow scrolling in the fan")',
+         "The fan scroll switch must keep its translatable label"),
+        (
+            'i18n("When disabled, the fan shows only the configured number '
+            'of items. Use the final row to open the remaining items in the '
+            'file manager.")',
+            "The fan scroll switch must explain what it governs",
+        ),
+        ("from: 24\n                to: 64\n                stepSize: 2",
+         "The folder icon size must keep the granularity of the dock icon size"),
+    ):
+        require(config_folder_popups, fragment, message)
+    for fragment, message in (
+        ('name="folderFanIconSize"',
+         "KConfig must declare the fan icon profile"),
+        ('name="folderFanRows"',
+         "KConfig must declare the fan row profile"),
+        ('name="folderFanScrollEnabled"',
+         "KConfig must declare the fan scroll preference"),
+        ('<entry name="folderFanScrollEnabled" type="Bool">\n'
+         '      <default>false</default>',
+         "The fan scroll preference must be a Bool that defaults to false"),
+    ):
+        require(config_schema, fragment, message)
+    require(
+        config_aspect,
+        "property alias cfg_folderFanScrollEnabled: "
+        "folderPopupPage.cfg_folderFanScrollEnabled",
+        "The aspect page must expose the fan scroll preference",
+    )
+    require(
+        dock_configuration,
+        "readonly property bool folderFanScrollEnabled:",
+        "The configuration state must consume the fan scroll preference",
+    )
+    require(
+        main_qml,
+        "profileFanScrollEnabled: dockConfig.folderFanScrollEnabled",
+        "main.qml must hand the fan scroll preference to the folder popup",
+    )
+    for fragment, message in (
+        ("animationStyle: folderPopupAnimatedContent.animationStyle",
+         "Folder popup delegates must consume the configured opening style"),
+        ("animationIntensityPercent:",
+         "Folder popup delegates must consume the configured opening intensity"),
+        ("popupDirection: folderPopupAnimatedContent.popupDirection",
+         "Folder popup delegates must follow the popup direction"),
+        ("revealProgress: folderPopupAnimatedContent.openingProgress",
+         "Folder popup delegates must share the surface opening progress"),
+    ):
+        require(folder_popup, fragment, message)
+    for fragment, message in (
+        ("closingDurationFactor: 0.65",
+         "Exits must run on a shorter budget than entries"),
+        ("duration: root.effectiveAnimationDuration",
+         "The popup animation must consume the directional duration"),
+    ):
+        require(animated_content, fragment, message)
     require(folder_popup, "folderPopupDialog.closeSafely()",
             "Folder actions must close through the guarded popup path")
     require(trash_menu, "TrashContextPopup {",
@@ -555,17 +1083,26 @@ def main() -> int:
         require(folder_popup_component, fragment, message)
 
     shadowed_labels = qml_object_bodies(
-        folder_popup_component, "PlasmaExtras.ShadowedLabel"
+        folder_popup_component, "PunchiMenuComponents.PunchiMenuTextShadowLabel"
     )
-    if len(shadowed_labels) != 3:
+    # Four text surfaces: the folder title, the two cell captions (grid and
+    # list/detailed) and the container action that opens its folder in the file
+    # manager. The action label is a text surface of its own, so it is counted
+    # instead of being allowed to drift in unnoticed.
+    if len(shadowed_labels) != 4:
         raise AssertionError(
-            "Folder popup must retain exactly three themed shadow labels"
+            "Folder popup must retain exactly four themed shadow labels"
         )
     for label in shadowed_labels:
         require(
             label,
             "color: Kirigami.Theme.textColor",
             "Every folder popup shadow label must follow the active theme",
+        )
+        require(
+            label,
+            "shadowPercent: folderRoot.textShadowPercent",
+            "Every folder popup shadow label must follow the configured amount",
         )
 
     for source, stale_fragment, message in (
@@ -597,6 +1134,53 @@ def main() -> int:
         "Plasmoid.configuration.popupTextShadowsEnabled === true",
         "Runtime popup text shadows must remain opt-in",
     )
+    require(
+        config_schema,
+        '<entry name="folderPopupTextShadowPercent" type="Int">\n'
+        "      <default>25</default>",
+        "The folder popup must own the amount of its text shadow, with a mild "
+        "default",
+    )
+    require(
+        config_folder_popups,
+        "cfg_folderPopupTextShadowPercent",
+        "The folder popup page must offer the amount of the text shadow",
+    )
+    require(
+        config_aspect,
+        "cfg_folderPopupTextShadowPercent",
+        "The appearance page must forward the amount of the text shadow",
+    )
+    require(
+        dock_configuration,
+        "Plasmoid.configuration.folderPopupTextShadowPercent",
+        "The runtime must expose the amount of the folder popup text shadow",
+    )
+    require(
+        folder_popup_component,
+        "textShadowPercent: folderRoot.textShadowPercent",
+        "Every label of the folder popup must follow the configured amount",
+    )
+    require(
+        text_shadow_label,
+        "layer.effect: MultiEffect {",
+        "The label of the popups must own the shadow of its own text",
+    )
+    require(
+        text_shadow_label,
+        "shadowHorizontalOffset: root.shadowOffset",
+        "The amount must reach the geometry of the shadow, not only its text",
+    )
+    require(
+        text_shadow_label,
+        "layer.enabled: root.shadowRequested",
+        "Zero must remove the shadow completely, texture included",
+    )
+    if "renderShadow: true" in text_shadow_label:
+        raise AssertionError(
+            "The graduated label must not fall back on the fixed shadow of the "
+            "shared label"
+        )
     require(
         config_schema,
         '<entry name="menuTextShadowsEnabled" type="Bool">\n'
@@ -634,6 +1218,11 @@ def main() -> int:
     for fragment, message in (
         ("function popupGapForPercent(value)",
          "Dock geometry must centralize percentage conversion"),
+        ("readonly property int folderFanAvailableHeight",
+         "Dock geometry must expose the height the fan may really use"),
+        ("- taskPopupReservedVerticalExtent - 24",
+         "The fan height must discount the panel and the same screen margin as "
+         "the shared ceiling"),
     ):
         require(dock_geometry, fragment, message)
     for fragment, message in (

@@ -20,15 +20,17 @@ FocusScope {
     signal restartRequested()
     signal shutdownRequested()
 
-    function focusInitialAction() {
+    function focusInitialAction(reason) {
+        const focusReason = reason === undefined
+            ? Qt.PopupFocusReason : reason
         if (logoutButton.enabled) {
-            logoutButton.forceActiveFocus()
+            logoutButton.forceActiveFocus(focusReason)
         } else if (restartButton.enabled) {
-            restartButton.forceActiveFocus()
+            restartButton.forceActiveFocus(focusReason)
         } else if (shutdownButton.enabled) {
-            shutdownButton.forceActiveFocus()
+            shutdownButton.forceActiveFocus(focusReason)
         } else {
-            root.forceActiveFocus()
+            root.forceActiveFocus(focusReason)
         }
     }
 
@@ -61,8 +63,9 @@ FocusScope {
 
             PlasmaComponents.Button {
                 id: logoutButton
+                objectName: "punchiMenuLogoutButton"
                 readonly property bool highlightedContent: enabled
-                    && (hovered || down || activeFocus)
+                    && (hovered || down || visualFocus)
                 readonly property color foregroundColor: highlightedContent
                     ? root.Kirigami.Theme.highlightedTextColor
                     : root.Kirigami.Theme.textColor
@@ -117,8 +120,9 @@ FocusScope {
 
             PlasmaComponents.Button {
                 id: restartButton
+                objectName: "punchiMenuRestartButton"
                 readonly property bool highlightedContent: enabled
-                    && (hovered || down || activeFocus)
+                    && (hovered || down || visualFocus)
                 readonly property color foregroundColor: highlightedContent
                     ? root.Kirigami.Theme.highlightedTextColor
                     : root.Kirigami.Theme.textColor
@@ -175,8 +179,9 @@ FocusScope {
 
             PlasmaComponents.Button {
                 id: shutdownButton
+                objectName: "punchiMenuShutdownButton"
                 readonly property bool highlightedContent: enabled
-                    && (hovered || down || activeFocus)
+                    && (hovered || down || visualFocus)
                 readonly property color foregroundColor: highlightedContent
                     ? root.Kirigami.Theme.highlightedTextColor
                     : root.Kirigami.Theme.textColor

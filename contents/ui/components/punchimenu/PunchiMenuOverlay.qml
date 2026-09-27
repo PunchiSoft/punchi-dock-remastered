@@ -56,6 +56,7 @@ FocusScope {
     property bool wheelGestureCommitted: false
     property string contentViewActive: "applications"
     property string contentViewRequested: "applications"
+    property int contentFocusReason: Qt.PopupFocusReason
     property real modeContentOpacity: 1.0
 
     readonly property bool motionEnabled: Kirigami.Units.longDuration > 0
@@ -1050,7 +1051,7 @@ FocusScope {
         if (sessionViewActive) {
             const loadedSessionView = sessionViewItem()
             if (loadedSessionView) {
-                loadedSessionView.focusInitialAction()
+                loadedSessionView.focusInitialAction(contentFocusReason)
             }
         } else if (settingsViewActive) {
             const loadedSettingsView = settingsViewItem()
@@ -1076,17 +1077,25 @@ FocusScope {
         modeContentOpacity = 1.0
         contentViewRequested = "applications"
         contentViewActive = "applications"
+        contentFocusReason = Qt.PopupFocusReason
     }
 
     function setContentView(viewName) {
+        setContentViewWithFocusReason(viewName, Qt.PopupFocusReason)
+    }
+
+    function setContentViewWithFocusReason(viewName, focusReason) {
         cancelInternalLayoutDrag()
         const requestedView = normalizedContentView(viewName)
+        const requestedFocusReason = focusReason === undefined
+            ? Qt.PopupFocusReason : focusReason
         if (contentViewRequested === requestedView
                 && (contentViewActive === requestedView
                     || modeTransitionActive)) {
             return
         }
 
+        contentFocusReason = requestedFocusReason
         contentViewRequested = requestedView
         resetPageNavigation()
         resetWheelGesture()
@@ -1113,8 +1122,9 @@ FocusScope {
         modeFadeOutAnimation.start()
     }
 
-    function setSessionViewActive(active) {
-        setContentView(active ? "session" : "applications")
+    function setSessionViewActive(active, focusReason) {
+        setContentViewWithFocusReason(
+            active ? "session" : "applications", focusReason)
     }
 
     function setSettingsViewActive(active) {
@@ -2148,6 +2158,7 @@ FocusScope {
 
             PlasmaComponents.ToolButton {
                 id: sessionButton
+                readonly property bool keyboardFocusVisible: visualFocus
                 readonly property bool highlightedContent: enabled
                     && (hovered || down || activeFocus || checked)
                 readonly property color foregroundColor: highlightedContent
@@ -2233,7 +2244,9 @@ FocusScope {
                     }
                 }
                 onClicked: root.setSessionViewActive(
-                    !root.sessionViewRequested)
+                    !root.sessionViewRequested,
+                    sessionButton.keyboardFocusVisible
+                        ? Qt.TabFocusReason : Qt.MouseFocusReason)
             }
         }
 

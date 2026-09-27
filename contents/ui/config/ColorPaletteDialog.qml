@@ -11,6 +11,7 @@ Item {
     property color fallbackColor: Kirigami.Theme.textColor
 
     signal colorChosen(string color)
+    signal cancelled()
 
     function open() {
         openNativeColorDialog()
@@ -44,5 +45,6 @@ Item {
         title: root.title
         selectedColor: root.parseColor(root.currentColor, root.fallbackColor)
         onAccepted: root.colorChosen(root.colorToHex(selectedColor))
+        onRejected: root.cancelled()
     }
 }

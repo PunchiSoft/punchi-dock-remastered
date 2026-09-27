@@ -11,6 +11,7 @@ import org.kde.plasma.components as PlasmaComponents
 import org.kde.ksvg as KSvg
 import ".." as Components
 import "../punchimenu" as PunchiMenuComponents
+import "ControlCenterRevealMetrics.js" as RevealMetrics
 
 FocusScope {
     id: root
@@ -31,9 +32,18 @@ FocusScope {
     property string pendingSettingsSection: ""
     property string pendingApplicationAction: ""
     property string currentPage: "home"
+    // State of the inline Wi-Fi submenu. It belongs here because Escape, the page
+    // transitions and the activation errors all have to agree on it.
+    property bool networkSubmenuOpen: false
+    property string networkErrorMessage: ""
     property bool showVirtualAudioDevices: false
 
-    readonly property bool motionEnabled: Kirigami.Units.longDuration > 0
+    // The Plasma style collapses the theme durations to the animator minimum
+    // when the user reduces or disables animations, so comparing against that
+    // minimum is the only criterion here that can actually become false. A
+    // comparison against zero never did; see
+    // docs/Referencias/referencia-motion-plasma-qt.md.
+    readonly property bool motionEnabled: Kirigami.Units.longDuration > 1
     readonly property bool floatingMode: presentationMode === "floating"
     readonly property real safeFloatingBackgroundOpacity: {
         const requestedOpacity = Number(floatingBackgroundOpacity)
@@ -58,6 +68,16 @@ FocusScope {
     readonly property int animCloseDuration: motionEnabled
         ? Math.max(1, Math.round(Kirigami.Units.shortDuration * 1.4))
         : 1
+    // One progress driver for the whole surface. Opacity, scale and travel are
+    // derived from it, so the entrance has a single origin instead of stacking
+    // independent animators that can disagree with each other.
+    property real revealProgress: controlCenterOpen ? 1.0 : 0.0
+    // The floating panel is docked to the top-right corner of the screen, so it
+    // grows out of that corner instead of drifting across the surface it sits on.
+    readonly property int revealOrigin: Item.TopRight
+    // 6 % reads as a reveal without re-rastering text at a different size. Zero
+    // would turn the entrance back into a plain cross-fade.
+    readonly property real revealScaleDelta: 0.06
     readonly property int unreadNotificationCount:
         Math.max(0, notificationHistory.unreadNotificationsCount)
     readonly property bool doNotDisturbActive:
@@ -82,10 +102,39 @@ FocusScope {
     signal closeFinished()
 
     objectName: "controlCenterOverlay"
-    visible: controlCenterOpen || mainContent.opacity > 0.01
+    visible: controlCenterOpen || revealProgress > 0.001
         || fullscreenBackdrop.opacity > 0.01
     enabled: controlCenterOpen
     Keys.onEscapePressed: handleEscape()
+
+    // The submenu only belongs to the home page: leaving it closes the section, so
+    // the page that arrives never overlaps a reveal that is still open.
+    onCurrentPageChanged: {
+        if (currentPage !== "home") {
+            networkSubmenuOpen = false
+        }
+    }
+
+    onNetworkAdapterChanged: {
+        if (!networkAdapter) {
+            networkSubmenuOpen = false
+            networkErrorMessage = ""
+        }
+    }
+
+    // Single animator of the surface. A zero duration can leave an animator
+    // unstarted, so the reduce-motion path disables it and jumps to the final
+    // value instead; the close timer keeps ownership of the sequencing either
+    // way. See docs/Referencias/referencia-motion-plasma-qt.md.
+    Behavior on revealProgress {
+        enabled: root.motionEnabled
+        NumberAnimation {
+            duration: root.controlCenterOpen
+                ? root.animOpenDuration : root.animCloseDuration
+            easing.type: root.controlCenterOpen
+                ? Easing.OutCubic : Easing.InCubic
+        }
+    }
 
     NotificationManager.Notifications {
         id: notificationHistory
@@ -151,6 +200,8 @@ FocusScope {
         pendingSettingsSection = ""
         pendingApplicationAction = ""
         currentPage = "home"
+        networkSubmenuOpen = false
+        networkErrorMessage = ""
         if (root.nightLightAdapter) {
             root.nightLightAdapter.refresh()
         }
@@ -212,6 +263,11 @@ FocusScope {
     function handleEscape() {
         if (passwordSurface.active) {
             passwordSurface.closeAndClear()
+        } else if (root.networkSubmenuOpen) {
+            // The row that opened the submenu is the control that closes it, so
+            // Escape collapses the section instead of leaving the page.
+            homePage.networkKeyboardEntry = true
+            root.networkSubmenuOpen = false
         } else if (currentPage === "network"
                 || currentPage === "bluetooth"
                 || currentPage === "sound") {
@@ -312,6 +368,8 @@ FocusScope {
         pendingSettingsSection = ""
         pendingApplicationAction = ""
         currentPage = "home"
+        networkSubmenuOpen = false
+        networkErrorMessage = ""
         controlCenterOpen = false
     }
 
@@ -356,36 +414,28 @@ FocusScope {
         floatingMode: root.floatingMode
         referenceWidth: root.viewportWidth
         referenceHeight: root.viewportHeight
-        opacity: root.controlCenterOpen ? 1.0 : 0.0
+        // Anchored reveal in floating mode: the panel stays opaque and grows out
+        // of its docked corner. The full-screen rail keeps the horizontal travel,
+        // because scaling a full-height surface would resize its text and leave
+        // the mapped blur region at a scale it cannot follow. Both read the same
+        // progress, so there is still one surface with one origin.
+        opacity: root.floatingMode
+            ? RevealMetrics.revealOpacity(root.revealProgress)
+            : root.revealProgress
+        scale: root.floatingMode
+            ? RevealMetrics.revealScale(root.revealProgress,
+                root.revealScaleDelta)
+            : 1.0
+        transformOrigin: root.revealOrigin
 
         transform: Translate {
             id: surfaceTranslation
 
-            x: root.motionEnabled && !root.controlCenterOpen
-                ? Math.max(Kirigami.Units.gridUnit * 4,
-                    Math.min(mainContent.width * 0.14,
-                        Kirigami.Units.gridUnit * 6))
-                : 0
-
-            Behavior on x {
-                enabled: root.motionEnabled
-                NumberAnimation {
-                    duration: root.controlCenterOpen
-                        ? root.animOpenDuration : root.animCloseDuration
-                    easing.type: root.controlCenterOpen
-                        ? Easing.OutCubic : Easing.InCubic
-                }
-            }
-        }
-
-        Behavior on opacity {
-            enabled: root.motionEnabled
-            NumberAnimation {
-                duration: root.controlCenterOpen
-                    ? root.animOpenDuration : root.animCloseDuration
-                easing.type: root.controlCenterOpen
-                    ? Easing.OutCubic : Easing.InCubic
-            }
+            x: root.floatingMode ? 0
+                : RevealMetrics.revealTravel(root.revealProgress,
+                    Math.max(Kirigami.Units.gridUnit * 4,
+                        Math.min(mainContent.width * 0.14,
+                            Kirigami.Units.gridUnit * 6)))
         }
 
         KSvg.FrameSvgItem {
@@ -495,6 +545,18 @@ FocusScope {
                         // The slot clips a plain container and the page root is an
                         // unsized FocusScope, so the page must fill it explicitly.
                         anchors.fill: parent
+                        networkSubmenuOpen: root.networkSubmenuOpen
+                        networkErrorMessage: root.networkErrorMessage
+                        onNetworkSubmenuToggleRequested: {
+                            if (root.networkAdapter) {
+                                if (!root.networkSubmenuOpen) {
+                                    root.networkErrorMessage = ""
+                                }
+                                root.networkSubmenuOpen = !root.networkSubmenuOpen
+                            } else {
+                                root.requestSettings("network")
+                            }
+                        }
                         volumeAdapter: root.volumeAdapter
                         brightnessAdapter: root.brightnessAdapter
                         networkAdapter: root.networkAdapter
@@ -559,7 +621,9 @@ FocusScope {
                     Loader {
                         id: networkPageLoader
                         anchors.fill: parent
-                        active: root.networkAdapter !== null
+                        active: (root.currentPage === "network"
+                                || networkPageSlot.progress > 0.001)
+                            && root.networkAdapter !== null
                         asynchronous: false
                         sourceComponent: Component {
                             ControlCenterNetworkPage {
@@ -638,6 +702,7 @@ FocusScope {
                                 adapter: root.volumeAdapter
                                 showVirtualDevices:
                                     root.showVirtualAudioDevices
+                                motionEnabled: root.motionEnabled
                                 onBackRequested: root.showHomePage()
                                 onSettingsRequested: function(section) {
                                     root.requestSettings(section)
@@ -676,7 +741,12 @@ FocusScope {
         }
 
         function onActivationFailed(message) {
-            if (root.networkPage) {
+            // Keep the error on the home tile after the inline page unloads.
+            // While its exit is visible, also show the inline message there.
+            if (root.currentPage === "home") {
+                root.networkErrorMessage = String(message || "")
+                homePage.showNetworkError(message)
+            } else if (root.networkPage) {
                 root.networkPage.showError(message)
             }
         }

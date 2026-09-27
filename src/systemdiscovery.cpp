@@ -425,9 +425,41 @@ QString SystemDiscovery::distributionLogo() const
     return osRelease.logo().trimmed();
 }
 
+QString SystemDiscovery::folderOpenerName() const
+{
+    // The desktop association for a directory names the file manager the user
+    // chose, so a surface can mention it without assuming Dolphin or any other
+    // application. An empty answer means the association is unknown, and callers
+    // fall back to a text that needs no name.
+    const KService::Ptr service =
+        KApplicationTrader::preferredService(QStringLiteral("inode/directory"));
+    if (service) {
+        return service->name().trimmed();
+    }
+    return {};
+}
+
+namespace {
+// Qt does not expand a leading tilde in QUrl::fromUserInput, and no shell is
+// involved here, so resolve it against the home directory first. Relative paths
+// keep resolving against the home directory, which is what the folder picker
+// expects.
+QUrl localUrlForPath(const QString &path)
+{
+    const QString trimmed = path.trimmed();
+    QString resolved = trimmed;
+    if (resolved == QLatin1String("~")) {
+        resolved = QDir::homePath();
+    } else if (resolved.startsWith(QLatin1String("~/"))) {
+        resolved = QDir::homePath() + resolved.mid(1);
+    }
+    return QUrl::fromUserInput(resolved, QDir::homePath(), QUrl::AssumeLocalFile);
+}
+} // namespace
+
 void SystemDiscovery::requestFolderEntries(const QString &path)
 {
-    const QUrl url = QUrl::fromUserInput(path, QDir::homePath(), QUrl::AssumeLocalFile);
+    const QUrl url = localUrlForPath(path);
     if (!url.isValid()) {
         Q_EMIT operationFailed(QStringLiteral("folder"), i18nd(TranslationDomain, "The folder location is invalid."));
         return;
@@ -510,6 +542,11 @@ void SystemDiscovery::requestFolderEntries(const QString &path)
 void SystemDiscovery::requestApplications(const QString &category)
 {
     Q_EMIT applicationsReady(discoverApplications(category, maximumApplicationResults));
+}
+
+QVariantList SystemDiscovery::applicationsForCategory(const QString &category) const
+{
+    return discoverApplications(category, maximumApplicationResults);
 }
 
 void SystemDiscovery::requestApplicationCatalog()
@@ -807,6 +844,28 @@ void SystemDiscovery::openUrl(const QString &url)
     connect(job, &KJob::result, this, [this, job]() {
         if (job->error()) {
             Q_EMIT operationFailed(QStringLiteral("openUrl"), job->errorString());
+        }
+    });
+    job->start();
+}
+
+void SystemDiscovery::openLocation(const QString &path)
+{
+    const QUrl url = localUrlForPath(path);
+    if (!url.isValid()) {
+        Q_EMIT operationFailed(QStringLiteral("openLocation"),
+            i18nd(TranslationDomain, "The folder location is invalid."));
+        return;
+    }
+
+    // A directory is handed to the file manager through KIO, which follows the
+    // desktop's own association for folders, without building a shell command.
+    auto *job = new KIO::OpenUrlJob(url, QString(), this);
+    job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoErrorHandlingEnabled));
+    job->setRunExecutables(false);
+    connect(job, &KJob::result, this, [this, job]() {
+        if (job->error()) {
+            Q_EMIT operationFailed(QStringLiteral("openLocation"), job->errorString());
         }
     });
     job->start();

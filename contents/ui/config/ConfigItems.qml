@@ -24,7 +24,10 @@ import org.kde.kcmutils as KCM
 KCM.SimpleKCM {
     id: page
 
-    title: i18n("Items") // qmllint disable unqualified
+    // The sidebar already names the category, so the page does not repeat it as
+    // a heading. The shell decides whether an empty title still reserves a band:
+    // validate visually and restore i18n("Items") if it leaves empty space.
+    title: ""
     implicitWidth: layoutMetrics.pageImplicitWidth
 
     ConfigLayoutMetrics {
@@ -53,6 +56,7 @@ KCM.SimpleKCM {
     property bool cfg_showActiveTasks: true
     property bool pendingEditConsumed: false
     property string iconPickerTarget: "item"
+    property bool focusNewItemAfterDialogClose: false
     property real listRowHeight: Kirigami.Units.gridUnit * 2.4
     property real listFooterHeight: Kirigami.Units.gridUnit * 2.4
     property real listFramePadding: Kirigami.Units.largeSpacing * 2
@@ -66,7 +70,28 @@ KCM.SimpleKCM {
     SystemDiscoveryManager {
         id: systemDiscovery
 
-        onAppsDiscovered: function(apps) {
+        onAppsDiscovered: function(apps, requestId) {
+            if (requestId > 0) {
+                const operation = itemDraftController.takeExternalOperation(
+                    "", requestId)
+                if (operation === null) {
+                    return
+                }
+                if (String(operation.kind) === "media-applications") {
+                    itemConfigurationDialog.mediaApplications = apps || []
+                    return
+                }
+                if (String(operation.kind) === "container-applications") {
+                    const details = operation.details || {}
+                    const category = String(details.category || "Development")
+                    const iconName = systemDiscovery.iconForCategory(category)
+                        || ConfigItemsJS.categoryIcon(category)
+                    itemDraftController.applyContainerApplications(
+                        Number(operation.generation), apps, iconName)
+                    itemConfigurationDialog.refreshEditorFields()
+                }
+                return
+            }
             if (page.pendingApplicationListTarget === "media") {
                 page.pendingApplicationListTarget = ""
                 mediaPlayerDialog.applications = apps || []
@@ -74,11 +99,42 @@ KCM.SimpleKCM {
                 page.applyContainerApps(apps)
             }
         }
-        onApplicationDiscovered: function(application) {
+        onFolderEntriesDiscovered: function(entries, requestId) {
+            if (requestId > 0) {
+                const operation = itemDraftController.takeExternalOperation(
+                    "container-folder", requestId)
+                if (operation === null) {
+                    return
+                }
+                itemDraftController.applyContainerApplications(
+                    Number(operation.generation), entries, "")
+                itemConfigurationDialog.refreshEditorFields()
+                return
+            }
+            page.applyContainerApps(entries)
+        }
+        onApplicationDiscovered: function(application, requestId) {
+            if (requestId > 0) {
+                const operation = itemDraftController.takeExternalOperation(
+                    "application-search", requestId)
+                if (operation === null) {
+                    return
+                }
+                itemDraftController.applyDiscoveredApplication(
+                    Number(operation.generation), application)
+                itemConfigurationDialog.refreshEditorFields()
+                return
+            }
             page.applyDiscoveredApplication(application)
         }
         // qmllint disable unqualified
-        onOperationFailed: function(operation, message) {
+        onOperationFailed: function(operation, message, requestId) {
+            if (requestId > 0) {
+                if (itemDraftController.takeExternalOperation(
+                        "", requestId) === null) {
+                    return
+                }
+            }
             mainView.showStatus(i18n("System operation failed: %1", message), Kirigami.MessageType.Error)
         }
         // qmllint enable unqualified
@@ -146,6 +202,11 @@ KCM.SimpleKCM {
     }
 
     function timedChooseColorTitle() {
+        if (itemDraftController.externalOperationMatches("color-picker")
+                && itemDraftController.draft !== null
+                && String(itemDraftController.draftType) === "calendar") {
+            return i18n("Choose calendar color")
+        }
         if (selectedItemType === "calendar") {
             if (timedColorTarget === "background") {
                 return i18n("Choose calendar background color")
@@ -226,6 +287,7 @@ KCM.SimpleKCM {
     }
 
     function openTimedColorDialog(target) {
+        itemDraftController.clearExternalOperation()
         timedColorTarget = target || "text"
         clockColorDialog.open()
     }
@@ -236,6 +298,7 @@ KCM.SimpleKCM {
     }
 
     function openTrashSoundPicker() {
+        itemDraftController.clearExternalOperation()
         trashSoundFileDialog.open()
     }
 
@@ -370,6 +433,193 @@ KCM.SimpleKCM {
         selectedIndex = items.length > 0 ? Math.min(Math.max(selectedIndex, 0), items.length - 1) : -1
         refreshFromItems(markAsChanged)
         consumePendingEditRequest()
+    }
+
+    function openAddItemDialog() {
+        focusNewItemAfterDialogClose = false
+        itemConfigurationDialog.mediaApplications = []
+        itemConfigurationDialog.openFor("app")
+    }
+
+    function acceptAddedItem(item) {
+        if (!item) {
+            return
+        }
+        const nextItems = clone(items)
+        nextItems.push(clone(item))
+        selectedIndex = nextItems.length - 1
+        setItems(nextItems)
+        const impact = ConfigItemsJS.itemAdditionImpact(item.type)
+        if (impact.enableActiveTasks) {
+            cfg_showActiveTasks = true
+        }
+        focusNewItemAfterDialogClose = true
+        mainView.positionAtIndex(selectedIndex)
+    }
+
+    function finishAddItemDialog() {
+        itemDraftController.clearExternalOperation()
+        itemConfigurationDialog.mediaApplications = []
+        if (focusNewItemAfterDialogClose && selectedIndex >= 0) {
+            mainView.focusItemAtIndex(selectedIndex)
+        } else {
+            mainView.focusAddItemButton()
+        }
+        focusNewItemAfterDialogClose = false
+    }
+
+    function requestDraftApplicationSearch(text) {
+        const query = String(text || "").trim()
+        if (query.length === 0 || itemDraftController.draft === null
+                || String(itemDraftController.draftType) !== "app") {
+            return
+        }
+        const requestId = itemDraftController.beginExternalOperation(
+            "application-search", "application", {})
+        if (requestId > 0) {
+            systemDiscovery.requestApplication(query, requestId)
+        }
+    }
+
+    function requestDraftMediaApplications() {
+        if (itemDraftController.draft === null
+                || String(itemDraftController.draftType) !== "media") {
+            return
+        }
+        itemConfigurationDialog.mediaApplications = []
+        const requestId = itemDraftController.beginExternalOperation(
+            "media-applications", "media", {})
+        if (requestId > 0) {
+            systemDiscovery.requestApplications("AudioVideo", requestId)
+        }
+    }
+
+    function requestDraftContainerContent() {
+        const draft = itemDraftController.draft
+        if (!draft || String(itemDraftController.draftType) !== "folder") {
+            return
+        }
+        const source = String(draft.sourceType || "manual")
+        if (source === "folder") {
+            const path = String(draft.sourcePath || "").trim()
+            if (path.length === 0) {
+                // qmllint disable unqualified
+                mainView.showStatus(i18n("Choose a folder first."),
+                    Kirigami.MessageType.Warning)
+                // qmllint enable unqualified
+                return
+            }
+            const requestId = itemDraftController.beginExternalOperation(
+                "container-folder", "folder", {"path": path})
+            if (requestId > 0) {
+                systemDiscovery.requestFolderEntries(path, requestId)
+            }
+        } else if (source === "category") {
+            const category = String(draft.sourceCategory || "Development")
+            const requestId = itemDraftController.beginExternalOperation(
+                "container-applications", "category", {"category": category})
+            if (requestId > 0) {
+                systemDiscovery.requestApplications(category, requestId)
+            }
+        }
+    }
+
+    function openDraftIconPicker(target) {
+        const requestId = itemDraftController.beginExternalOperation(
+            "icon", target, {"nestedIndex": itemConfigurationDialog.selectedActionIndex})
+        if (requestId > 0) {
+            iconPicker.open()
+        }
+    }
+
+    function openDraftFolderPicker() {
+        const requestId = itemDraftController.beginExternalOperation(
+            "folder-picker", "sourcePath", {})
+        if (requestId > 0) {
+            containerFolderDialog.open()
+        }
+    }
+
+    function openDraftSoundPicker() {
+        const requestId = itemDraftController.beginExternalOperation(
+            "sound-picker", "emptySound", {})
+        if (requestId > 0) {
+            trashSoundFileDialog.open()
+        }
+    }
+
+    function openDraftColorPicker(target) {
+        const requestId = itemDraftController.beginExternalOperation(
+            "color-picker", target, {})
+        if (requestId > 0) {
+            clockColorDialog.open()
+        }
+    }
+
+    function chooseFolder(path) {
+        const operation = itemDraftController.takeExternalOperation(
+            "folder-picker")
+        if (operation !== null) {
+            itemDraftController.applyExternalValue(
+                Number(operation.generation), "folder", "sourcePath",
+                String(path || ""))
+            itemConfigurationDialog.refreshEditorFields()
+            return
+        }
+        setContainerFolder(path)
+    }
+
+    function chooseTrashSound(path) {
+        const operation = itemDraftController.takeExternalOperation(
+            "sound-picker")
+        if (operation !== null) {
+            itemDraftController.applyExternalValue(
+                Number(operation.generation), "trash", "emptySound",
+                String(path || defaultTrashEmptySound))
+            return
+        }
+        setTrashEmptySound(path)
+    }
+
+    function chooseTimedColor(value) {
+        const operation = itemDraftController.takeExternalOperation(
+            "color-picker")
+        if (operation !== null) {
+            itemDraftController.applyExternalValue(
+                Number(operation.generation), "calendar", "color",
+                String(value || ""))
+            return
+        }
+        applyTimedColor(value)
+    }
+
+    function playDraftTrashSoundPreview() {
+        const draft = itemDraftController.draft
+        if (!draft || String(itemDraftController.draftType) !== "trash") {
+            return
+        }
+        runtimeService.playSound(String(draft.emptySound
+            || defaultTrashEmptySound), "trash-empty")
+    }
+
+    function addApplicationLauncherToDraft(urls) {
+        const validation = validateApplicationLauncherDrop(urls)
+        const draft = itemDraftController.draft
+        const containerName = String(draft ? draft.name || "" : "")
+        const applicationName = String(validation
+            ? validation.name || validation.storageId || "" : "")
+        const result = validation && validation.accepted
+            ? itemDraftController.addDroppedApplication(
+                itemDraftController.generation, validation)
+            : {"changed": false, "status": "invalid-application"}
+        itemConfigurationDialog.showApplicationDropResult(
+            containerApplicationDropMessage(result.status,
+                applicationName, containerName), !result.changed)
+        if (result.changed) {
+            itemConfigurationDialog.nestedListChanged(
+                itemDraftController.nestedCount() - 1)
+        }
+        return result.changed
     }
 
     function consumePendingEditRequest() {
@@ -546,9 +796,8 @@ KCM.SimpleKCM {
 
         function applyActionForm(force) { FormHelper.applyActionForm(force) }
 
-    function addItem(type) { WorkflowHelper.addItem(type) }
-
     function openIconPicker(target) {
+        itemDraftController.clearExternalOperation()
         iconPickerTarget = target || "item"
         iconPicker.open()
     }
@@ -556,6 +805,13 @@ KCM.SimpleKCM {
     function chooseIcon(iconName) {
         var selectedIcon = String(iconName || "")
         if (selectedIcon.length === 0) {
+            return
+        }
+
+        const draftOperation = itemDraftController.takeExternalOperation("icon")
+        if (draftOperation !== null) {
+            itemConfigurationDialog.applyPickedIcon(
+                draftOperation, selectedIcon)
             return
         }
 
@@ -628,6 +884,59 @@ KCM.SimpleKCM {
         id: itemModel
     }
 
+    ItemDraftController {
+        id: itemDraftController
+
+        items: page.items
+        defaultTrashEmptySound: page.defaultTrashEmptySound
+    }
+
+    Connections {
+        target: itemDraftController
+
+        function onDraftStarted() {
+            itemConfigurationDialog.mediaApplications = []
+            if (String(itemDraftController.draftType) === "media") {
+                Qt.callLater(page.requestDraftMediaApplications)
+            }
+        }
+
+        function onItemAccepted(item) {
+            page.acceptAddedItem(item)
+        }
+    }
+
+    ItemConfigurationDialog {
+        id: itemConfigurationDialog
+
+        anchors.centerIn: parent
+        width: Math.min(page.width - Kirigami.Units.gridUnit * 2,
+            Kirigami.Units.gridUnit * 40)
+        height: Math.min(page.height - Kirigami.Units.gridUnit * 2,
+            Kirigami.Units.gridUnit * 26)
+        draftController: itemDraftController
+        applicationLauncherDropValidator: function(urls) {
+            return page.validateApplicationLauncherDrop(urls)
+        }
+        onApplicationSearchRequested: function(text) {
+            page.requestDraftApplicationSearch(text)
+        }
+        onIconPickerRequested: function(target) {
+            page.openDraftIconPicker(target)
+        }
+        onFolderPickerRequested: page.openDraftFolderPicker()
+        onContentLoadRequested: page.requestDraftContainerContent()
+        onApplicationLauncherDropped: function(urls) {
+            page.addApplicationLauncherToDraft(urls)
+        }
+        onSoundPickerRequested: page.openDraftSoundPicker()
+        onSoundPreviewRequested: page.playDraftTrashSoundPreview()
+        onColorPickerRequested: function(target) {
+            page.openDraftColorPicker(target)
+        }
+        onSurfaceClosed: page.finishAddItemDialog()
+    }
+
     ListModel {
         id: actionModel
     }
@@ -649,12 +958,14 @@ KCM.SimpleKCM {
         iconSize: 48
         modality: Qt.WindowModal
         onAccepted: page.chooseIcon(iconName)
+        onRejected: itemDraftController.clearExternalOperation()
     }
 
     FolderPathDialog {
         id: containerFolderDialog
         titleText: i18n("Choose folder") // qmllint disable unqualified
-        onFolderChosen: (path) => page.setContainerFolder(path)
+        onFolderChosen: (path) => page.chooseFolder(path)
+        onRejected: itemDraftController.clearExternalOperation()
     }
 
     Controls.Dialog {
@@ -686,9 +997,13 @@ KCM.SimpleKCM {
         id: clockColorDialog
         title: page.timedChooseColorTitle()
         width: Math.min(page.width - Kirigami.Units.largeSpacing * 2, Kirigami.Units.gridUnit * 24)
-        currentColor: page.timedColorValue()
+        currentColor: itemDraftController.externalOperationMatches(
+            "color-picker") && itemDraftController.draft !== null
+            ? String(itemDraftController.draft.color || "")
+            : page.timedColorValue()
         fallbackColor: page.timedFallbackColor()
-        onColorChosen: (color) => page.applyTimedColor(color)
+        onColorChosen: (color) => page.chooseTimedColor(color)
+        onCancelled: itemDraftController.clearExternalOperation()
     }
 
     // qmllint disable unqualified
@@ -707,7 +1022,8 @@ KCM.SimpleKCM {
         canMoveActionDown: {
             var item = page.selectedItem()
             var rows = item && item.type === "folder" ? item.apps : (item ? item.actions : [])
-            return rows && page.selectedActionIndex >= 0 && page.selectedActionIndex < rows.length - 1
+            return Boolean(rows) && page.selectedActionIndex >= 0
+                && page.selectedActionIndex < rows.length - 1
         }
         nameLabel: i18n("Name:")
         aliasLabel: i18n("Alias/Quick Search:")
@@ -859,7 +1175,8 @@ KCM.SimpleKCM {
         startFolder: "file://" + page.defaultTrashSoundFolder()
         audioFilesText: i18n("Audio files")
         allFilesText: i18n("All files")
-        onSoundChosen: (path) => page.setTrashEmptySound(path)
+        onSoundChosen: (path) => page.chooseTrashSound(path)
+        onRejected: itemDraftController.clearExternalOperation()
     }
     // qmllint enable unqualified
 
@@ -868,5 +1185,6 @@ KCM.SimpleKCM {
         controller: page
         itemModel: itemModel
         statusHideTimer: statusHideTimer
+        onAddItemRequested: page.openAddItemDialog()
     }
 }
