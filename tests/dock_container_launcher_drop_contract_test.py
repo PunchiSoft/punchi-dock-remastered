@@ -136,8 +136,16 @@ require(
 require(
     "beginExternalDropActivation()" in DOCK_ITEM
     and "handleApplicationUrlsDrop(" in MAIN
-    and 'externalDropState = "acceptable"' in DOCK_ITEM,
-    "Ordinary file hover activation and open-with behavior must remain intact.",
+    and 'externalDropState = "acceptable"' in DOCK_ITEM
+    and "externalUrlsDropped(" in DOCK_ITEM
+    and "const validation = root.validateDroppedUrls(urls)" in DOCK_CONTROLLER,
+    "Ordinary file hover activation and transactional open-with validation must remain intact.",
+)
+require(
+    "externalDropValidator" not in DOCK_ITEM
+    and "externalDropValidator" not in MAIN
+    and "validateExternalDrop" not in DOCK_ITEM,
+    "Ordinary file drops must not restore the obsolete prevalidation bridge.",
 )
 
 print("Dock container launcher drop contract: PASS")

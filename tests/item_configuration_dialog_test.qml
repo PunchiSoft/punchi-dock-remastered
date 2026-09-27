@@ -303,6 +303,37 @@ TestCase {
         dialog.cancelDraft()
     }
 
+    function test_theTypeSelectorCarriesItsLabelBesideIt() {
+        dialog.openFor("app")
+        tryVerify(function() {
+            return dialog.opened
+        })
+        wait(0)
+
+        const row = findChild(dialog, "itemConfigurationTypeRow")
+        const label = findChild(dialog, "itemConfigurationTypeLabel")
+        const selector = typeSelector()
+        verify(row !== null && label !== null && selector !== null,
+            "The type row must carry a label beside the selector")
+        verify(label.parent === row && selector.parent === row,
+            "The label and the selector must share the type row")
+        verify(String(label.text).length > 0,
+            "The label must say what the list chooses")
+        verify(label.width > 0 && label.height > 0,
+            "The label must occupy its cell")
+        // A label narrower than its own text would cut the translation, and the
+        // column must not squeeze it out of the row either.
+        verify(label.width >= label.implicitWidth,
+            "The label must not clip its text: " + label.text)
+        verify(Math.abs((label.y + label.height / 2)
+                - (selector.y + selector.height / 2)) <= 2,
+            "The label must stay on the same row as the type selector")
+        verify(label.x + label.width <= selector.x,
+            "The label must precede the type selector")
+
+        dialog.cancelDraft()
+    }
+
     function test_eachAvailableSelectorOptionLoadsItsConfiguration() {
         const expected = [
             {"type": "app", "mode": "app", "form": true},
@@ -682,7 +713,7 @@ TestCase {
 
         editorPanel().appNameText = "Container name"
         dialog.formChanged()
-        controller.setDraftArray("apps", [{"name": "One", "command": "one"}])
+        controller.addNestedEntry()
         wait(0)
         compare(controller.draftArray("apps").length, 1,
             "The nested array must live in the draft")

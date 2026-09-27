@@ -204,7 +204,6 @@ Item {
         Math.min(iconReflectionMaximumVisibleRatio,
             iconReflectionUsableExtent / Math.max(1,
                 iconReflectionDisplaySize * iconReflectionContainerScale)))
-    readonly property real baseItemExtent: Math.max(iconSize, (verticalPanelMode ? implicitHeight : implicitWidth) - 12)
     readonly property real labelAreaHeight: showPersistentLabel
         && !separatorItem && !spacerItem && !mediaItem
         ? (labelFontSize + 12)
@@ -431,7 +430,6 @@ Item {
     property bool supportsContextMenu: false
     property bool mediaHoverControlsEnabled: false
     property bool externalDropEnabled: false
-    property var externalDropValidator: null
     property bool launcherDropEnabled: false
     property var launcherDropValidator: null
     property bool launcherContainerDropTarget: false
@@ -475,15 +473,6 @@ Item {
         && !separatorVisibleSetting
         && !persistentMoveHandleVisible
         && !launcherDropPlaceholderVisible
-    readonly property bool activeTaskItem: itemType === "app" && (taskIsActive || taskIndicatorCount > 0)
-    readonly property bool supportsPopupSurface: supportsContextMenu
-        || itemType === "app"
-        || itemType === "folder"
-        || itemType === "punchimenu"
-        || itemType === "control-center"
-        || itemType === "note"
-        || itemType === "calendar"
-        || itemType === "trash"
     readonly property bool isAnyPopupOrMenuOpen: {
         if (layoutController && layoutController.popupCoordinator) {
             const coordinator = layoutController.popupCoordinator
@@ -515,21 +504,6 @@ Item {
         Number(effectiveSeparatorAppearance.thickness)
     readonly property real separatorThickness: Math.min(iconSize,
         requestedSeparatorThickness)
-    readonly property real requestedSeparatorGlowSize:
-        Math.max(0, Number(effectiveSeparatorAppearance.glowSize || 0))
-    readonly property real separatorGlowSize: Math.min(
-        requestedSeparatorGlowSize,
-        Math.max(0, (iconSize - separatorThickness) / 2))
-    readonly property real separatorBodyLengthLimit: Math.max(
-        separatorThickness, iconSize - (separatorGlowSize * 2))
-    readonly property real separatorLength:
-        String(effectiveSeparatorAppearance.style || "line") === "dot"
-            ? separatorThickness
-            : Math.min(separatorBodyLengthLimit,
-                Math.max(separatorThickness,
-                    Math.round(iconSize
-                        * Number(effectiveSeparatorAppearance.lengthRatio
-                            || 0.72))))
     Timer {
         id: clockTimer
         interval: 1000
@@ -598,14 +572,6 @@ Item {
         resetSelectionPulse()
         persistentReorderInteractionResetPending = true
         persistentReorderInteractionResetTimer.restart()
-    }
-
-    function validateExternalDrop(urls) {
-        if (!dockItemContainer.externalDropEnabled
-                || typeof dockItemContainer.externalDropValidator !== "function") {
-            return { "accepted": false, "errorCode": "applicationUnavailable" }
-        }
-        return dockItemContainer.externalDropValidator(urls || [])
     }
 
     function validateLauncherDrop(urls) {

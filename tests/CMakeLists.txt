@@ -119,6 +119,23 @@ target_link_libraries(panellengthmodebridge_test PRIVATE Qt6::Core Qt6::Qml)
 
 add_test(NAME panellengthmodebridge_test COMMAND panellengthmodebridge_test)
 
+add_executable(panelrevealadapter_test
+    panelrevealadapter_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/panelrevealadapter.cpp
+)
+target_include_directories(panelrevealadapter_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(panelrevealadapter_test PRIVATE
+    Qt6::Quick
+    Qt6::Test
+    Plasma::Plasma
+)
+add_test(NAME panelrevealadapter_test COMMAND panelrevealadapter_test)
+set_tests_properties(panelrevealadapter_test PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 15
+)
+
 add_executable(panelinputregionsynchronizer_test
     panelinputregionsynchronizer_test.cpp
     ${CMAKE_SOURCE_DIR}/src/panelinputregionsynchronizer.cpp
@@ -224,6 +241,16 @@ add_test(
 )
 
 find_program(PYTHON3_EXECUTABLE python3 REQUIRED)
+add_test(
+    NAME plasma_config_auditor_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/plasma_config_auditor_test.py
+)
+add_test(
+    NAME plasma_config_audit
+    COMMAND ${PYTHON3_EXECUTABLE}
+        ${CMAKE_SOURCE_DIR}/scripts/audit-plasma-config.py
+        --project-root ${CMAKE_SOURCE_DIR}
+)
 add_test(
     NAME punchimenu_context_contract_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/punchimenu_context_contract_test.py
@@ -620,6 +647,10 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     item_configuration_calendar_panel_test
     item_configuration_calendar_panel_test.qml
+)
+punchi_add_qml_test(
+    items_page_note_test
+    items_page_note_test.qml
 )
 punchi_add_qml_test(
     items_page_horizontal_layout_test

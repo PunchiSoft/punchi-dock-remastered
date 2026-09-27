@@ -199,17 +199,6 @@ QtObject {
         root.markEdited()
     }
 
-    // Nested arrays (context actions, container applications) are written the
-    // same way: the editor hands in its snapshot and the draft keeps the only
-    // copy, so cancelling discards those changes too.
-    function setDraftArray(name, values) {
-        if (root.draft === null) {
-            return
-        }
-        root.draft[name] = Array.isArray(values) ? values.slice() : []
-        root.markEdited()
-    }
-
     function draftArray(name) {
         const current = root.draft === null ? null : root.draft[name]
         return Array.isArray(current) ? current.slice() : []

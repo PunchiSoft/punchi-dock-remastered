@@ -12,7 +12,6 @@ FocusScope {
     property real backdropOpacity: 0.64
     property string panelBackgroundImagePath: "dialogs/background"
     property real panelBackgroundOpacity: 1.0
-    property bool panelShadowEnabled: true
     property rect backdropGeometry: Qt.rect(0, 0, -1, -1)
     property real backdropRadius: 0
     property real preferredWidth: Kirigami.Units.gridUnit * 34

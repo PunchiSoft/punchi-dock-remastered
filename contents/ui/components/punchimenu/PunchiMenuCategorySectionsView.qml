@@ -69,8 +69,6 @@ FocusScope {
         }
         return result
     }
-    readonly property int sectionCount: sections.length
-
     signal launchRequested(string storageId)
     signal applicationContextRequested(var sourceItem, var application,
         real x, real y)

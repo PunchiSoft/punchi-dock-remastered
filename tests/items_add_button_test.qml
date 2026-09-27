@@ -18,6 +18,7 @@ TestCase {
 
         property var items: []
         property int selectedIndex: -1
+        property string selectedItemType: "app"
         property real listRowHeight: Kirigami.Units.gridUnit * 2.4
         property real listFooterHeight: Kirigami.Units.gridUnit * 2.4
         property real listFramePadding: Kirigami.Units.largeSpacing * 2

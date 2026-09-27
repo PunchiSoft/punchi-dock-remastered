@@ -535,19 +535,46 @@ Controls.Dialog {
         columnSpacing: 0
         rowSpacing: Kirigami.Units.smallSpacing
 
-        ItemTypeSelector {
-            id: selector
+        // The drop-down carries the label the fields below already carry, so the row
+        // reads like the rest of the form and the reader knows what the list
+        // chooses. The selector keeps its own width, model and signal.
+        RowLayout {
+            objectName: "itemConfigurationTypeRow"
 
-            objectName: "itemConfigurationTypeSelector"
-
-            draftController: root.draftController
             Layout.fillWidth: true
-            Layout.preferredWidth: root.selectorWidth
-            Layout.maximumWidth: root.compactLayout
-                ? Number.POSITIVE_INFINITY : root.selectorWidth
             Layout.alignment: Qt.AlignLeft
-            onTypeRequested: function(type) {
-                root.requestType(type)
+            spacing: Kirigami.Units.smallSpacing
+
+            Controls.Label {
+                objectName: "itemConfigurationTypeLabel"
+
+                // qmllint disable unqualified
+                // The same short label the form below uses: it names the list
+                // without stealing the row from it.
+                text: i18n("Type:")
+                // qmllint enable unqualified
+                // The column stays as wide as the labels of the fields below, so
+                // the form keeps one alignment. The wording is short on purpose:
+                // a longer sentence would widen this cell and push the list right.
+                Layout.preferredWidth: Kirigami.Units.gridUnit * 5
+                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                horizontalAlignment: Text.AlignLeft
+                opacity: 0.75
+            }
+
+            ItemTypeSelector {
+                id: selector
+
+                objectName: "itemConfigurationTypeSelector"
+
+                draftController: root.draftController
+                Layout.fillWidth: true
+                Layout.preferredWidth: root.selectorWidth
+                Layout.maximumWidth: root.compactLayout
+                    ? Number.POSITIVE_INFINITY : root.selectorWidth
+                onTypeRequested: function(type) {
+                    root.requestType(type)
+                }
             }
         }
 

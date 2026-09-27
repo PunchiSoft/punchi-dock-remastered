@@ -1033,6 +1033,57 @@ Module {
         Signal { name: "panelOpacityModeChanged"; lineNumber: 67 }
     }
     Component {
+        file: "panelrevealadapter.h"
+        lineNumber: 15
+        name: "PanelRevealAdapter"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/PanelRevealAdapter 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "applet"
+            type: "QObject"
+            isPointer: true
+            read: "applet"
+            write: "setApplet"
+            notify: "appletChanged"
+            index: 0
+            lineNumber: 20
+        }
+        Property {
+            name: "panelWindow"
+            type: "QQuickWindow"
+            isPointer: true
+            read: "panelWindow"
+            write: "setPanelWindow"
+            notify: "panelWindowChanged"
+            index: 1
+            lineNumber: 21
+        }
+        Property {
+            name: "requested"
+            type: "bool"
+            read: "requested"
+            write: "setRequested"
+            notify: "requestedChanged"
+            index: 2
+            lineNumber: 22
+        }
+        Property {
+            name: "revealing"
+            type: "bool"
+            read: "revealing"
+            notify: "revealingChanged"
+            index: 3
+            lineNumber: 23
+            isReadonly: true
+        }
+        Signal { name: "appletChanged"; lineNumber: 41 }
+        Signal { name: "panelWindowChanged"; lineNumber: 42 }
+        Signal { name: "requestedChanged"; lineNumber: 43 }
+        Signal { name: "revealingChanged"; lineNumber: 44 }
+    }
+    Component {
         file: "panelthemesurface.h"
         lineNumber: 11
         name: "PanelThemeSurface"
@@ -2163,88 +2214,97 @@ Module {
             isReadonly: true
             isPropertyConstant: true
         }
+        Property {
+            name: "folderOpenerName"
+            type: "QString"
+            read: "folderOpenerName"
+            index: 2
+            lineNumber: 23
+            isReadonly: true
+            isPropertyConstant: true
+        }
         Signal {
             name: "folderEntriesReady"
-            lineNumber: 54
+            lineNumber: 62
             Parameter { name: "entries"; type: "QVariantList" }
         }
         Signal {
             name: "applicationsReady"
-            lineNumber: 55
+            lineNumber: 63
             Parameter { name: "applications"; type: "QVariantList" }
         }
         Signal {
             name: "applicationCatalogReady"
-            lineNumber: 56
+            lineNumber: 64
             Parameter { name: "applications"; type: "QVariantList" }
         }
         Signal {
             name: "applicationReady"
-            lineNumber: 57
+            lineNumber: 65
             Parameter { name: "application"; type: "QVariantMap" }
         }
         Signal {
             name: "applicationLaunchFinished"
-            lineNumber: 58
+            lineNumber: 66
             Parameter { name: "succeeded"; type: "bool" }
             Parameter { name: "message"; type: "QString" }
         }
         Signal {
             name: "operationFailed"
-            lineNumber: 59
+            lineNumber: 67
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
         Method {
             name: "requestFolderEntries"
-            lineNumber: 28
+            lineNumber: 32
             Parameter { name: "path"; type: "QString" }
         }
         Method {
             name: "requestApplications"
-            lineNumber: 29
+            lineNumber: 33
             Parameter { name: "category"; type: "QString" }
         }
-        Method { name: "requestApplications"; isCloned: true; lineNumber: 29 }
+        Method { name: "requestApplications"; isCloned: true; lineNumber: 33 }
         Method {
             name: "applicationsForCategory"
             type: "QVariantList"
             isMethodConstant: true
-            lineNumber: 32
+            lineNumber: 36
             Parameter { name: "category"; type: "QString" }
         }
-        Method { name: "requestApplicationCatalog"; lineNumber: 34 }
+        Method { name: "requestApplicationCatalog"; lineNumber: 38 }
         Method {
             name: "requestApplication"
-            lineNumber: 35
+            lineNumber: 39
             Parameter { name: "query"; type: "QString" }
         }
         Method {
             name: "iconForApplication"
             type: "QString"
             isMethodConstant: true
-            lineNumber: 36
+            lineNumber: 40
             Parameter { name: "applicationId"; type: "QString" }
         }
         Method {
             name: "iconForCategory"
             type: "QString"
             isMethodConstant: true
-            lineNumber: 37
+            lineNumber: 41
             Parameter { name: "category"; type: "QString" }
         }
         Method {
             name: "applicationIdForCommand"
             type: "QString"
             isMethodConstant: true
-            lineNumber: 38
+            lineNumber: 42
             Parameter { name: "command"; type: "QString" }
         }
         Method {
             name: "applicationForLauncher"
             type: "QVariantMap"
             isMethodConstant: true
-            lineNumber: 39
+            lineNumber: 43
             Parameter { name: "applicationId"; type: "QString" }
             Parameter { name: "launcherUrl"; type: "QString" }
         }
@@ -2252,7 +2312,7 @@ Module {
             name: "resolveApplication"
             type: "QVariantMap"
             isMethodConstant: true
-            lineNumber: 40
+            lineNumber: 44
             Parameter { name: "storageId"; type: "QString" }
             Parameter { name: "command"; type: "QString" }
             Parameter { name: "launcherUrl"; type: "QString" }
@@ -2262,7 +2322,7 @@ Module {
             type: "QVariantMap"
             isCloned: true
             isMethodConstant: true
-            lineNumber: 40
+            lineNumber: 44
             Parameter { name: "storageId"; type: "QString" }
             Parameter { name: "command"; type: "QString" }
         }
@@ -2271,39 +2331,39 @@ Module {
             type: "QVariantMap"
             isCloned: true
             isMethodConstant: true
-            lineNumber: 40
+            lineNumber: 44
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
             name: "applicationActions"
             type: "QVariantList"
             isMethodConstant: true
-            lineNumber: 42
+            lineNumber: 46
             Parameter { name: "applicationId"; type: "QString" }
         }
         Method {
             name: "validateDroppedUrls"
             type: "QVariantMap"
             isMethodConstant: true
-            lineNumber: 43
+            lineNumber: 47
             Parameter { name: "urls"; type: "QVariantList" }
         }
         Method {
             name: "validateApplicationLauncherDrop"
             type: "QVariantMap"
             isMethodConstant: true
-            lineNumber: 44
+            lineNumber: 48
             Parameter { name: "urls"; type: "QVariantList" }
         }
         Method {
             name: "launchApplication"
-            lineNumber: 45
+            lineNumber: 49
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
             name: "createDesktopShortcut"
             type: "QVariantMap"
-            lineNumber: 46
+            lineNumber: 50
             Parameter { name: "storageId"; type: "QString" }
             Parameter { name: "command"; type: "QString" }
         }
@@ -2311,13 +2371,13 @@ Module {
             name: "createDesktopShortcut"
             type: "QVariantMap"
             isCloned: true
-            lineNumber: 46
+            lineNumber: 50
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
             name: "launchApplicationWithUrls"
             type: "bool"
-            lineNumber: 47
+            lineNumber: 51
             Parameter { name: "applicationId"; type: "QString" }
             Parameter { name: "command"; type: "QString" }
             Parameter { name: "launcherUrl"; type: "QString" }
@@ -2326,20 +2386,25 @@ Module {
         Method {
             name: "launchApplicationAction"
             type: "bool"
-            lineNumber: 49
+            lineNumber: 53
             Parameter { name: "applicationId"; type: "QString" }
             Parameter { name: "actionId"; type: "QString" }
         }
         Method {
             name: "launchApplicationByCommand"
             type: "bool"
-            lineNumber: 50
+            lineNumber: 54
             Parameter { name: "command"; type: "QString" }
         }
         Method {
             name: "openUrl"
-            lineNumber: 51
+            lineNumber: 55
             Parameter { name: "url"; type: "QString" }
+        }
+        Method {
+            name: "openLocation"
+            lineNumber: 59
+            Parameter { name: "path"; type: "QString" }
         }
     }
     Component {

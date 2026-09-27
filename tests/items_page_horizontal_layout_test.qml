@@ -23,6 +23,7 @@ TestCase {
 
         property var items: []
         property int selectedIndex: -1
+        property string selectedItemType: "app"
         property real listRowHeight: Kirigami.Units.gridUnit * 2.4
         property real listFooterHeight: Kirigami.Units.gridUnit * 2.4
         property real listFramePadding: Kirigami.Units.largeSpacing * 2
@@ -132,7 +133,7 @@ TestCase {
         const reserved = findByName(view, "itemConfigurationReservedArea")
         verify(list !== null, "the dock item list must exist")
         verify(reserved !== null, "the reserved area must exist")
-        compare(list.width, Kirigami.Units.gridUnit * 20)
+        compare(list.width, Kirigami.Units.gridUnit * 16)
         verify(reserved.width > list.width,
             "the configuration panel must own the remaining width")
         compare(Math.round(list.width + reserved.width
@@ -145,8 +146,9 @@ TestCase {
         const reserved = findByName(view, "itemConfigurationReservedArea")
         verify(list !== null)
         verify(reserved !== null)
-        verify(list.width >= Kirigami.Units.gridUnit * 16)
-        verify(list.width <= Kirigami.Units.gridUnit * 20)
+        // The column is fixed at the width its compact toolbar needs, so both
+        // minimums survive a narrow host without squeezing either panel.
+        compare(list.width, Kirigami.Units.gridUnit * 16)
         verify(reserved.width >= Kirigami.Units.gridUnit * 12)
         compare(Math.round(list.width + reserved.width
             + Kirigami.Units.smallSpacing), Math.round(view.width))
@@ -161,7 +163,7 @@ TestCase {
         const narrowReserved = reserved.width
         hostWindowUnderTest.width = 1400
         wait(0)
-        compare(list.width, Kirigami.Units.gridUnit * 20)
+        compare(list.width, Kirigami.Units.gridUnit * 16)
         verify(reserved.width > narrowReserved,
             "widening the page must widen the configuration panel")
         compare(Math.round(list.width + reserved.width
@@ -177,7 +179,7 @@ TestCase {
                 + " panel scrolls inside instead of stretching the page")
     }
 
-    function test_add_action_remains_available_when_the_page_grows() {
+    function test_add_action_stays_compact_when_the_page_grows() {
         const view = createView(560)
         const button = findByName(view, "addDockItemButton")
         verify(button !== null, "the single add action must exist")
@@ -186,12 +188,16 @@ TestCase {
         verify(button.parent !== view,
             "the add action must live inside the dock item editor")
         compare(button.display, Controls.AbstractButton.IconOnly,
-            "the narrow toolbar must preserve the action without clipping text")
+            "the compact toolbar must preserve the action without clipping text")
         hostWindowUnderTest.width = 1600
         wait(0)
-        verify(button.visible)
-        verify(button.enabled)
-        compare(button.display, Controls.AbstractButton.TextBesideIcon,
-            "the widened list must show the add label beside its icon")
+        // The column no longer grows with the page, so the toolbar stays compact
+        // and the label keeps living in the tooltip and in the accessible name.
+        compare(button.display, Controls.AbstractButton.IconOnly,
+            "the fixed column must keep the add action compact")
+        verify(String(button.text).length > 0,
+            "the compact action must still carry its label for assistive tech")
+        verify(String(button.Accessible.name).length > 0,
+            "the compact action must still publish an accessible name")
     }
 }

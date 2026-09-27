@@ -620,6 +620,15 @@ PlasmoidItem {
         enabled: root.inPanel
         verticalPanel: dockGeometry.verticalPanel
     }
+    Punchi.PanelRevealAdapter {
+        objectName: "panelRevealAdapter"
+        applet: Plasmoid
+        // PanelView exposes visibilityMode on the hosting window at runtime.
+        // qmllint disable missing-property
+        panelWindow: root.inPanel ? root.Window.window : null
+        requested: Plasmoid.userConfiguring
+        // qmllint enable missing-property
+    }
     readonly property string configuredPanelOpacityMode: String(Plasmoid.configuration.panelOpacityMode || "system")
     onConfiguredPanelOpacityModeChanged: applyConfiguredPanelOpacityMode()
     readonly property bool customDockThemeActiveForPanel: root.inPanel && dockConfig.customDockThemeActive
@@ -3136,9 +3145,6 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         externalDropEnabled: dockItemDelegate.modelData.type === "app"
                             && dockConfig.appDragAndDropEnabled
-                        externalDropValidator: function(urls) {
-                            return dockItemsController.validateDroppedUrls(urls)
-                        }
                         launcherDropEnabled: true
                         launcherDropValidator: function(urls) {
                             return dockItemsController.validateApplicationLauncherDrop(urls)
@@ -3386,9 +3392,6 @@ PlasmoidItem {
                         mediaHoverControlsEnabled: dockConfig.mediaControlsOnHover && taskData.count > 0
                         externalDropEnabled: dockConfig.appDragAndDropEnabled
                         // qmllint disable unqualified
-                        externalDropValidator: function(urls) {
-                            return dockItemsController.validateDroppedUrls(urls)
-                        }
                         launcherDropEnabled: true
                         launcherDropValidator: function(urls) {
                             return dockItemsController.validateApplicationLauncherDrop(urls)

@@ -88,11 +88,6 @@ Controls.ComboBox {
             && Boolean(root.rows[index].available)
     }
 
-    function reasonAt(index) {
-        return index >= 0 && index < root.rows.length
-            ? String(root.rows[index].detail || "") : ""
-    }
-
     function indexOfType(type) {
         const wanted = String(type)
         for (let index = 0; index < root.rows.length; index++) {

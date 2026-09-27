@@ -43,28 +43,13 @@ Controls.Frame {
     ColumnLayout {
         anchors.fill: parent
 
-        // The item actions sit in the first row of the frame, above the list,
-        // following the reference editor whose toolbar precedes the elements.
+        // The item actions sit in the first row of the frame, above the list, in a
+        // single continuous row: first the two actions that build or edit the
+        // selection, then the three that reorder or remove it. All five share the
+        // same spacing and no filler stands between them, so the row reads as one
+        // group and the width left over stays at its end.
         RowLayout {
             Layout.fillWidth: true
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                icon.name: "go-up-symbolic"
-                enabled: root.controller.selectedIndex > 0
-                onClicked: root.controller.moveSelectedItem(-1)
-            }
-
-            Controls.Button {
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
-                icon.name: "go-down-symbolic"
-                enabled: root.controller.selectedIndex >= 0 && root.controller.selectedIndex < root.controller.items.length - 1
-                onClicked: root.controller.moveSelectedItem(1)
-            }
-
-            Item {
-                Layout.fillWidth: true
-            }
 
             Controls.Button {
                 id: addItemButton
@@ -97,6 +82,20 @@ Controls.Frame {
 
                 Controls.ToolTip.visible: hovered
                 Controls.ToolTip.text: root.controller.selectedConfigureTitle()
+            }
+
+            Controls.Button {
+                HoverHandler { cursorShape: Qt.PointingHandCursor }
+                icon.name: "go-up-symbolic"
+                enabled: root.controller.selectedIndex > 0
+                onClicked: root.controller.moveSelectedItem(-1)
+            }
+
+            Controls.Button {
+                HoverHandler { cursorShape: Qt.PointingHandCursor }
+                icon.name: "go-down-symbolic"
+                enabled: root.controller.selectedIndex >= 0 && root.controller.selectedIndex < root.controller.items.length - 1
+                onClicked: root.controller.moveSelectedItem(1)
             }
 
             Controls.Button {

@@ -271,9 +271,6 @@ QtObject {
             return 0
         }
     }
-    readonly property int panelCrossAxisPadding: root.verticalPanel
-        ? (dockBackgroundHorizontalPadding * 2)
-        : (dockBackgroundVerticalPadding * 2)
     readonly property var plasmaPanelSizing: PlasmaPanelSizing.calculate(
         root.configuredIconSize, root.panelHoverScale,
         root.configuredPanelThickness, root.verticalPanel,
@@ -302,7 +299,6 @@ QtObject {
     readonly property int effectivePanelBaseIconLimit: detectedPanelThickness > 0
         ? Math.max(24, Math.round((detectedPanelThickness - crossAxisBaseMargin) / root.effectivePanelHoverScale))
         : Math.max(24, root.configuredIconSize)
-    readonly property int effectivePanelIconLimit: effectivePanelBaseIconLimit
     readonly property int effectiveIconSize: root.inPanel && !root.customThemeActive
         ? root.plasmaPanelSizing.iconSize
         : (root.inPanel
@@ -455,7 +451,6 @@ QtObject {
         }
         return requiredExtent
     }
-    readonly property int plasmaThemePanelHeight: plasmaThemeCrossAxisExtent
     readonly property int panelMinimumWidth: root.hiddenByVirtualDesktop
         ? 0
         : Math.ceil(root.verticalPanel

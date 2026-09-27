@@ -77,16 +77,6 @@ KCM.SimpleKCM {
         page.cfg_iconSize, page.currentHoverScale, page.cfg_panelThickness,
         page.verticalPanel, !!Plasmoid.configuration.showLabels,
         Kirigami.Units.smallSpacing * 3)
-    function calculatedAutoThickness(iconSize) {
-        if (verticalPanel) {
-            return Math.ceil(iconSize + 12)
-        }
-        const scale = page.currentHoverScale
-        const zoomDelta = iconSize * Math.max(0.0, scale - 1.0)
-        const headroom = Math.ceil(zoomDelta + 8)
-        const base = iconSize + 12
-        return base + headroom
-    }
     // qmllint disable unqualified
     readonly property var panelLengthOptions: [
         { "text": i18n("Fit content (Recommended)"), "value": "content" },

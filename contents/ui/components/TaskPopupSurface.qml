@@ -51,9 +51,6 @@ Item {
     readonly property real maximumVerticalFramePaddingReservation: Math.max(
         maximumAdaptiveFramePaddingReservation,
         contentPaddingTop + contentPaddingBottom)
-    readonly property real maximumFramePaddingReservation: Math.max(
-        maximumHorizontalFramePaddingReservation,
-        maximumVerticalFramePaddingReservation)
     readonly property real maximumContentWidth: Math.max(1,
         maximumSurfaceWidth - maximumHorizontalFramePaddingReservation)
     readonly property real maximumContentHeight: Math.max(1,

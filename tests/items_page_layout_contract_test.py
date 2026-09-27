@@ -11,6 +11,9 @@ MAIN_VIEW = (ROOT / "contents/ui/config/ConfigItemsMainView.qml").read_text(
 LIST_EDITOR = (ROOT / "contents/ui/config/DockItemListEditor.qml").read_text(
     encoding="utf-8"
 )
+ITEM_NOTES = (ROOT / "contents/ui/config/code/itemNotes.js").read_text(
+    encoding="utf-8"
+)
 RETIRED_PALETTE = ROOT / "contents/ui/config/AddItemPalette.qml"
 
 
@@ -47,6 +50,35 @@ for fragment in (
 ):
     require(fragment in LIST_EDITOR, f"The list-owned add action is incomplete: {fragment}")
 
+# The toolbar is one continuous row: the two actions that build or edit the
+# selection first, then the three that reorder or remove it, all of them with the
+# same spacing and with no filler standing between them, so the width left over
+# stays at the end of the row instead of opening a hole in the middle.
+toolbar_start = LIST_EDITOR.index(
+    "// The item actions sit in the first row of the frame"
+)
+toolbar = LIST_EDITOR[toolbar_start:LIST_EDITOR.index("ListView {", toolbar_start)]
+toolbar_order = [
+    'objectName: "addDockItemButton"',
+    'text: i18n("Configure")',
+    'icon.name: "go-up-symbolic"',
+    'icon.name: "go-down-symbolic"',
+    'icon.name: "edit-delete-symbolic"',
+]
+toolbar_positions = [toolbar.find(fragment) for fragment in toolbar_order]
+require(
+    all(position >= 0 for position in toolbar_positions),
+    "The item toolbar is missing one of its five actions.",
+)
+require(
+    toolbar_positions == sorted(toolbar_positions),
+    "The item toolbar must order Add, Configure, Up, Down and Delete.",
+)
+require(
+    "Item {" not in toolbar,
+    "The item toolbar must stay one continuous row, with no filler between its buttons.",
+)
+
 for fragment in (
     "signal addItemRequested()",
     "function focusAddItemButton()",
@@ -68,9 +100,9 @@ require('objectName: "addDockItemButton"' not in MAIN_VIEW,
 for fragment in (
     'objectName: "dockItemListEditor"',
     "Layout.fillWidth: true",
-    "Layout.preferredWidth: Kirigami.Units.gridUnit * 20",
+    "Layout.preferredWidth: Kirigami.Units.gridUnit * 16",
     "Layout.minimumWidth: Kirigami.Units.gridUnit * 16",
-    "Layout.maximumWidth: Kirigami.Units.gridUnit * 20",
+    "Layout.maximumWidth: Kirigami.Units.gridUnit * 16",
     'objectName: "itemConfigurationReservedArea"',
     "Layout.minimumWidth: Kirigami.Units.gridUnit * 12",
 ):
@@ -79,8 +111,45 @@ for fragment in (
 reserved_start = MAIN_VIEW.index('objectName: "itemConfigurationReservedArea"')
 reserved_end = MAIN_VIEW.index("Kirigami.InlineMessage {", reserved_start)
 reserved = MAIN_VIEW[reserved_start:reserved_end]
-for forbidden in ("ItemEditorPanel", "ItemActionEditor", "controller", "cfg_", "i18n("):
-    require(forbidden not in reserved, f"The reserved area must remain inert: {forbidden}")
+
+# The right column is no longer empty: it shows the note of the selected type. It
+# must stay a note, so no editor panel and no configuration write live here, and its
+# text belongs to the note catalogue instead of being written into the view. Only the
+# short label of a note is bold, so the view declares styled text and the whole
+# sentence must never be bolded.
+for forbidden in ("ItemEditorPanel", "ItemActionEditor", "cfg_", "i18n(",
+                  "font.bold: true"):
+    require(forbidden not in reserved,
+            f"The right column must stay a note area: {forbidden}")
+for fragment in (
+    'objectName: "itemTypeNote"',
+    "ItemNotes.noteFor(",
+    "root.controller.selectedIndex >= 0",
+    "textFormat: Text.StyledText",
+    "Accessible.name: ItemNotes.plainText(text)",
+    "wrapMode: Text.WordWrap",
+    "Layout.maximumWidth: Kirigami.Units.gridUnit * 40",
+):
+    require(fragment in reserved, f"The selected-type note is incomplete: {fragment}")
+
+for fragment in (
+    "function plainText(markup)",
+    "function noteFor(type)",
+    'case "app":',
+    'case "folder":',
+    'case "dynamic-applications":',
+    'case "punchimenu":',
+    'case "control-center":',
+    'case "calendar":',
+    'case "trash":',
+    'case "media":',
+    'case "note":',
+    'case "separator":',
+    'case "spacer":',
+    "i18nc(",
+    "<b>Note:</b>",
+):
+    require(fragment in ITEM_NOTES, f"The note catalogue is incomplete: {fragment}")
 
 require('Accessible.name: i18n("Items in Dock")' in LIST_EDITOR,
         "The list must retain its accessible name.")

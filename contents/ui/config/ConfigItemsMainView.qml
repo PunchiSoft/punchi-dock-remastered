@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import org.kde.kirigami as Kirigami
+import "code/itemNotes.js" as ItemNotes
 
 ColumnLayout {
     id: root
@@ -10,7 +11,6 @@ ColumnLayout {
     property var itemModel
     property var statusHideTimer
     property alias statusText: statusLabel.text
-    property alias statusType: statusLabel.type
 
     signal addItemRequested()
 
@@ -55,25 +55,65 @@ ColumnLayout {
                 objectName: "dockItemListEditor"
                 controller: root.controller
                 itemModel: root.itemModel
-                // The add action now belongs to this collection toolbar. Keep a
-                // wider preferred column for its labelled state, but allow the
-                // toolbar to compact before taking the reserved panel's floor.
+                // The column hugs its own toolbar: the row of five actions is the
+                // widest thing this panel needs, and it is measured in its compact
+                // state. The labelled add button alone would need 344 px in German
+                // and 310 px in Spanish, so keeping the label would widen the column
+                // and leave a hole in the toolbar of the shorter languages; the
+                // label stays in the tooltip and in the accessible name instead.
+                // Every remaining pixel goes to the configuration panel.
                 Layout.fillWidth: true
-                Layout.preferredWidth: Kirigami.Units.gridUnit * 20
+                Layout.preferredWidth: Kirigami.Units.gridUnit * 16
                 Layout.minimumWidth: Kirigami.Units.gridUnit * 16
-                Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+                Layout.maximumWidth: Kirigami.Units.gridUnit * 16
                 onAddItemRequested: root.addItemRequested()
             }
 
-            // Reserved right column, deliberately empty: it keeps the same
-            // Controls.Frame surface as the dock item list so both columns read
-            // as equals. It holds no item editor, links to nothing and writes no
-            // configuration; the content of this column is still undecided.
+            // Right column. It keeps the same Controls.Frame surface as the dock
+            // item list so both columns read as equals, and it hosts the note of
+            // the selected type. It must stay a note: no editor panel, no
+            // configuration write and no second copy of the list.
             Controls.Frame {
                 objectName: "itemConfigurationReservedArea"
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.minimumWidth: Kirigami.Units.gridUnit * 12
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: Kirigami.Units.largeSpacing
+                    spacing: Kirigami.Units.smallSpacing
+
+                    Controls.Label {
+                        objectName: "itemTypeNote"
+
+                        Layout.fillWidth: true
+                        // A Label refuses to shrink below its implicit width by
+                        // default, so the whole sentence would stay on one line and
+                        // overflow the column. The floor at zero is what lets the
+                        // layout narrow the label and the wrap below do its job.
+                        Layout.minimumWidth: 0
+                        Layout.maximumWidth: Kirigami.Units.gridUnit * 40
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignTop
+                        // The note describes the type the list has selected, so it
+                        // asks for it only when there is a selection. The text is
+                        // read through a function, which keeps a language change
+                        // reachable, and it arrives as styled text because only its
+                        // short label is bold: the sentence continues in normal
+                        // weight and must still wrap as one paragraph.
+                        text: root.controller
+                            && root.controller.selectedIndex >= 0
+                            ? ItemNotes.noteFor(
+                                String(root.controller.selectedItemType))
+                            : ""
+                        visible: text.length > 0
+                        // The tags that mark the label must not be announced, so the
+                        // accessible name carries the words without their markup.
+                        Accessible.name: ItemNotes.plainText(text)
+                        textFormat: Text.StyledText
+                        wrapMode: Text.WordWrap
+                    }
+                }
             }
         }
 

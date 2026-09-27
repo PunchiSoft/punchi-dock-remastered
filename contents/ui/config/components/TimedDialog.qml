@@ -20,8 +20,6 @@ import ".."
 // target, and the page still declares aliases to them. Removing them would change
 // the public surface of this wrapper, so this session preserves them.
 //
-// Translation helpers are supplied by the KCM context.
-// qmllint disable unqualified
 Controls.Dialog {
     id: timedDialog
 
@@ -99,4 +97,3 @@ Controls.Dialog {
         }
     }
 }
-// qmllint enable unqualified

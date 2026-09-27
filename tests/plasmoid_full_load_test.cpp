@@ -227,6 +227,10 @@ struct LoadResult {
     bool dynamicMoveBridgeAvailable = false;
     bool dynamicMoveRequestAccepted = false;
     bool dynamicMoveModeActivated = false;
+    bool panelRevealAdapterAvailable = false;
+    bool panelRevealActivated = false;
+    bool panelRevealRestored = false;
+    bool panelRevealPreservedExternalStatus = false;
     bool controlCenterDialogCreated = false;
     bool controlCenterOverlayCreated = false;
     bool controlCenterDialogOpened = false;
@@ -352,6 +356,14 @@ private Q_SLOTS:
                      "The open-applications move request was rejected");
             QVERIFY2(result.dynamicMoveModeActivated,
                      "The open-applications move mode did not activate after the popup turn");
+            QVERIFY2(result.panelRevealAdapterAvailable,
+                     "The panel reveal adapter is unavailable from the applet root");
+            QVERIFY2(result.panelRevealActivated,
+                     "Opening applet configuration did not request the panel reveal lease");
+            QVERIFY2(result.panelRevealRestored,
+                     "Closing applet configuration did not restore the containment status");
+            QVERIFY2(result.panelRevealPreservedExternalStatus,
+                     "The panel reveal adapter overwrote an external containment status");
             QVERIFY2(result.controlCenterDefaultFloating,
                      "The Control Center must default to floating mode");
             QVERIFY2(result.controlCenterDialogCreated,
@@ -412,6 +424,8 @@ private:
         result.appletLoaded = applet != nullptr;
 
         QPointer<PlasmaQuick::AppletQuickItem> itemGuard;
+        QQuickWindow panelHostWindow;
+        panelHostWindow.setProperty("visibilityMode", 1);
         if (applet) {
             m_containment->addApplet(applet);
             auto *configuration = applet->configuration();
@@ -426,6 +440,10 @@ private:
             itemGuard = item;
             result.quickItemLoaded = item != nullptr;
             if (item) {
+                item->setParentItem(panelHostWindow.contentItem());
+                panelHostWindow.show();
+                drainDeferredEvents();
+
                 QQmlContext *configContext = QQmlEngine::contextForObject(item);
                 if (configContext && configContext->engine()) {
                     QQmlComponent mediaComponent(configContext->engine(), QUrl::fromLocalFile(
@@ -652,6 +670,42 @@ private:
                         result.dynamicMoveModeActivated = representationObject
                             ->property("dynamicApplicationsMoveModeActive")
                             .toBool();
+                    }
+
+                    QObject *panelRevealAdapter = rootObject
+                        ? rootObject->findChild<QObject *>(
+                              QStringLiteral("panelRevealAdapter"))
+                        : nullptr;
+                    result.panelRevealAdapterAvailable = panelRevealAdapter != nullptr;
+                    if (panelRevealAdapter) {
+                        const auto previousStatus = m_containment->status();
+
+                        applet->setUserConfiguring(true);
+                        drainDeferredEvents();
+                        result.panelRevealActivated = panelRevealAdapter
+                                ->property("requested").toBool()
+                            && panelRevealAdapter->property("revealing").toBool()
+                            && m_containment->status()
+                                == Plasma::Types::NeedsAttentionStatus;
+
+                        applet->setUserConfiguring(false);
+                        drainDeferredEvents();
+                        result.panelRevealRestored = !panelRevealAdapter
+                                ->property("requested").toBool()
+                            && !panelRevealAdapter->property("revealing").toBool()
+                            && m_containment->status() == previousStatus;
+
+                        applet->setUserConfiguring(true);
+                        drainDeferredEvents();
+                        m_containment->setStatus(
+                            Plasma::Types::AcceptingInputStatus);
+                        applet->setUserConfiguring(false);
+                        drainDeferredEvents();
+                        result.panelRevealPreservedExternalStatus =
+                            !panelRevealAdapter->property("revealing").toBool()
+                            && m_containment->status()
+                                == Plasma::Types::AcceptingInputStatus;
+                        m_containment->setStatus(previousStatus);
                     }
 
                     if (rootObject) {

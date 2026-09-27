@@ -17,7 +17,6 @@ Item {
 
     readonly property bool isWayland: KWindowSystem.isPlatformWayland
     readonly property bool isX11: KWindowSystem.isPlatformX11
-    readonly property bool usesMinimizedFallback: root.isX11 && root.minimized
     property bool waylandThumbnailReady: false
     property bool x11ThumbnailReady: false
 

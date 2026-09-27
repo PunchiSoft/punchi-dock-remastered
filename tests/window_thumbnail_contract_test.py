@@ -56,7 +56,6 @@ def main() -> int:
     preview_surface = (
         PROJECT_ROOT / "contents/ui/components/WindowPreviewSurface.qml"
     ).read_text()
-    popup = (PROJECT_ROOT / "contents/ui/components/TaskWindowsPopup.qml").read_text()
     main_qml = (PROJECT_ROOT / "contents/ui/main.qml").read_text()
     dock_configuration = (
         PROJECT_ROOT / "contents/ui/components/DockConfigurationState.qml"
@@ -95,22 +94,20 @@ def main() -> int:
 
     require(thumbnail, "property bool minimized: false",
             "WindowLiveThumbnail must receive the minimized state explicitly")
-    require(thumbnail, "root.isX11 && root.minimized",
-            "The minimized fallback must be restricted to X11")
     require(thumbnail, "root.isX11 && !root.minimized && Number(root.winId) > 0",
             "X11 thumbnails must require a restored window and an explicit XID")
+    if "usesMinimizedFallback" in thumbnail:
+        raise AssertionError(
+            "WindowLiveThumbnail must not restore the unused minimized fallback alias")
     if "Number(root.winId || root.windowUuid)" in thumbnail:
         raise AssertionError("Wayland UUIDs must not be used as X11 window identifiers")
 
-    for source, consumer in ((card, "WindowPreviewCard"), (popup, "TaskWindowsPopup")):
-        require(source, "minimized:", f"{consumer} must propagate minimized state")
-        require(source, "KWindowSystem.isPlatformX11",
-                f"{consumer} must restrict the minimized fallback to X11")
-        require(source, "i18n(\"Window minimized\")",
-                f"{consumer} must present the intentional minimized fallback")
-
-    require(popup, "winId: windowRow.previewWinId",
-            "TaskWindowsPopup must propagate the explicit X11 window identifier")
+    require(card, "minimized:",
+            "WindowPreviewCard must propagate minimized state")
+    require(card, "KWindowSystem.isPlatformX11",
+            "WindowPreviewCard must restrict the minimized fallback to X11")
+    require(card, "i18n(\"Window minimized\")",
+            "WindowPreviewCard must present the intentional minimized fallback")
 
     for fragment, message in (
         ('import QtQuick.Effects as Effects',

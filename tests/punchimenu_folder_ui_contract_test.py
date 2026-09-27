@@ -1022,10 +1022,10 @@ def assert_modal_interaction_and_accessibility(
         in folder_surface_compact
         and "backdropOpacity: 0.64"
         in folder_surface_compact
-        and "panelShadowEnabled: root.viewMode === \"action\" "
-        "&& !root.useWidgetModalProfile" in folder_surface_compact,
+        and "panelShadowEnabled" not in folder_surface_compact
+        and "panelShadowEnabled" not in modal_compact,
         "All PunchiMenu folder and action surfaces must use the shared "
-        "widget-themed modal profile.",
+        "widget-themed modal profile without a disconnected shadow API.",
     )
     for mode in ("Normal", "Fullscreen"):
         menu_compact = compact(menu_sources[mode])

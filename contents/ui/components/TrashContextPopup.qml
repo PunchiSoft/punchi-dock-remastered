@@ -45,8 +45,6 @@ Item {
     readonly property real targetSurfaceWidth: Math.max(240,
         Math.min(520, Number(maximumAvailableWidth || 752),
             Math.max(300, Number(menuWidth || 360))))
-    readonly property real bodyWidth: Math.max(1,
-        targetSurfaceWidth - (pagePadding * 2))
     readonly property real targetBodyHeight: confirmationVisible
         ? confirmationPage.implicitHeight
         : menuPage.implicitHeight

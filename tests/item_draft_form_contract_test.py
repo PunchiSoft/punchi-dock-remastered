@@ -99,6 +99,25 @@ def main() -> int:
     if re.search(r'"type"\s*:\s*"(app|folder|note|separator|spacer)"', DIALOG):
         fail("The dialog must not declare a second list of types")
 
+    # 4. The type list of the add dialog is labelled, and the label lives in the same
+    # row as the selector, to the left of it: the drop-down must not stand alone
+    # while every field below it carries its own label. The label reuses the short
+    # string the form already translates, so no new message is introduced for it.
+    for fragment, message in (
+        ('objectName: "itemConfigurationTypeRow"',
+         "The type row of the add dialog must keep its own container"),
+        ('objectName: "itemConfigurationTypeLabel"',
+         "The type list of the add dialog must keep its label"),
+        ('text: i18n("Type:")',
+         "The label of the type list must stay translatable and short"),
+        ("Layout.preferredWidth: Kirigami.Units.gridUnit * 5",
+         "The label must keep the column of the labels below"),
+    ):
+        require(DIALOG, fragment, message)
+    if not 0 <= DIALOG.find('objectName: "itemConfigurationTypeLabel"') \
+            < DIALOG.find('objectName: "itemConfigurationTypeSelector"'):
+        fail("The label of the type list must precede the selector")
+
     # 4. The view never writes the page: only the draft through the controller.
     for name, source in (("dialog", DIALOG), ("panel", PANEL)):
         if re.search(r"\bcfg_\w+\s*=", source):
@@ -119,8 +138,10 @@ def main() -> int:
          "The initial synchronization must not mark the draft as edited"),
         ("function setDraftValues(values)",
          "The controller must expose one write path for the form"),
-        ("function setDraftArray(name, values)",
-         "Nested arrays must be written through the controller"),
+        ("function addNestedEntry()",
+         "Nested arrays must use the controller's semantic operations"),
+        ("function applyNestedEntry(index, name, icon, command)",
+         "Nested array edits must use the controller's semantic operations"),
         ("function pruneDraft()",
          "The controller must normalize the draft with the shared rules"),
         ("ConfigItemsJS.pruneApp(root.draft)",

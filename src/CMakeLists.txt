@@ -70,6 +70,8 @@ target_sources(punchidockintegration PRIVATE
     panellengthmodebridge.h
     panelinputregionsynchronizer.cpp
     panelinputregionsynchronizer.h
+    panelrevealadapter.cpp
+    panelrevealadapter.h
     panelthemesurface.cpp
     panelthemesurface.h
     pipewireaudiobackend.cpp

@@ -36,7 +36,6 @@ KCM.SimpleKCM {
     }
 
     property string configDirectory: ConfigScriptsJS.localPath(StandardPaths.writableLocation(StandardPaths.ConfigLocation)) + "/punchi-dock"
-    property string legacyConfigFile: ConfigScriptsJS.localPath(configDirectory + "/dock_items.json")
     property string configFile: ConfigScriptsJS.localPath(configDirectory + "/" + instanceConfigFileName())
     property string pendingOperation: "load"
     property string pendingContainerSource: ""
@@ -61,9 +60,6 @@ KCM.SimpleKCM {
     property real listFooterHeight: Kirigami.Units.gridUnit * 2.4
     property real listFramePadding: Kirigami.Units.largeSpacing * 2
     property real listScrollGutter: Kirigami.Units.gridUnit * 1.6
-    property real itemListHeight: listRowHeight * 6 + listFooterHeight + listFramePadding
-    property real itemDetailsHeight: itemListHeight
-    property real itemsColumnBodyHeight: Math.max(itemListHeight, page.height > 0 ? page.height - Kirigami.Units.gridUnit * 8 : itemListHeight)
     property string defaultTrashEmptySound: "/usr/share/sounds/ocean/stereo/trash-empty.oga"
     property var fontChoices: ["Anurati", "Noto Sans", "Noto Sans Mono", "Inter", "Roboto", "Ubuntu", "Cantarell", "DejaVu Sans", "Liberation Sans", "Monospace", "Serif", "Sans Serif"]
 
@@ -188,19 +184,6 @@ KCM.SimpleKCM {
     }
 
     // qmllint disable unqualified
-    function timedItemName() {
-        return selectedItemType === "calendar"
-            ? i18n("Calendar/Clock") : i18n("Clock")
-    }
-
-    function timedFontLabel() {
-        return selectedItemType === "calendar" ? i18n("Calendar font:") : i18n("Clock font:")
-    }
-
-    function timedColorLabel() {
-        return selectedItemType === "calendar" ? i18n("Calendar color:") : i18n("Clock color:")
-    }
-
     function timedChooseColorTitle() {
         if (itemDraftController.externalOperationMatches("color-picker")
                 && itemDraftController.draft !== null
@@ -348,22 +331,6 @@ KCM.SimpleKCM {
         return ConfigItemsControllerJS.displayFontName(value, i18n("Automatic"))
     }
     // qmllint enable unqualified
-
-    function resetTimedColor(target) {
-        if (target === "background") {
-            calendarBackgroundColor.text = ""
-        } else if (target === "accent") {
-            calendarAccentColor.text = ""
-        } else if (target === "border") {
-            calendarBorderColor.text = ""
-        } else if (target === "analogAccent") {
-        } else if (target === "analogTick") {
-        } else if (target === "analogBorder") {
-        } else if (target === "analogFace") {
-        } else {
-        }
-        applyItemForm()
-    }
 
     function shellQuote(text) {
         return ConfigScriptsJS.shellQuote(text)

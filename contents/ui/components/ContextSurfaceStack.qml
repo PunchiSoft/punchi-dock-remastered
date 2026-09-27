@@ -44,7 +44,6 @@ Item {
     // Tip position along the surface axis, in window coordinates. A non-finite
     // value centers the tail on the surface.
     property real edgeTailTipOffset: NaN
-    property real contentTransferProgress: 1
     readonly property Item contentItem: contentHost.children.length > 0
         ? contentHost.children[0]
         : null
@@ -116,8 +115,6 @@ Item {
     readonly property real targetMediaExtent: mediaVisible
         ? mediaCard.implicitHeight + effectiveMediaGap
         : 0
-    readonly property bool mediaGeometrySettled:
-        Math.abs(mediaExtent - targetMediaExtent) <= 0.5
     readonly property int transitionDuration: transitionsEnabled && Kirigami.Units.longDuration > 1
         ? Math.round(Kirigami.Units.longDuration * 100
             / Math.max(10, Math.min(200, transitionSpeedPercent)))
@@ -207,10 +204,6 @@ Item {
         : root.surfaceContentHeight + root.contentFramePadding * 2)
         + (root.edgeTailPresent && root.edgeTailHorizontal
             ? root.edgeTailExtent : 0)
-    readonly property bool presentationGeometryReady:
-        Number.isFinite(root.implicitWidth) && root.implicitWidth > 0
-        && Number.isFinite(root.implicitHeight) && root.implicitHeight > 0
-        && root.mediaGeometrySettled
     width: implicitWidth
     height: implicitHeight
 
@@ -291,17 +284,6 @@ Item {
         }
     }
 
-    function beginContentTransfer() {
-        if (!transitionsEnabled || transitionDuration <= 0) {
-            contentTransferProgress = 1
-            return
-        }
-
-        contentTransferAnimation.stop()
-        contentTransferProgress = 0
-        contentTransferAnimation.start()
-    }
-
     onMediaVisibleChanged: updateMediaVisibility()
     onCompactMediaChanged: updateMediaExtent()
     onMediaOnlyChanged: updateMediaExtent()
@@ -354,16 +336,6 @@ Item {
         }
     }
 
-    NumberAnimation {
-        id: contentTransferAnimation
-        target: root
-        property: "contentTransferProgress"
-        from: 0
-        to: 1
-        duration: Math.max(90, Math.min(160, Math.round(root.transitionDuration * 0.65)))
-        easing.type: Easing.OutCubic
-    }
-
     HoverHandler {
         id: surfaceHover
     }
@@ -391,11 +363,10 @@ Item {
             ? Math.max(0, root.mediaExtent)
             : Math.max(0, root.mediaExtent - root.effectiveMediaGap)
         visible: root.mediaVisible || root.mediaExtent > 0.5
-        opacity: root.mediaRevealProgress * (0.72 + (0.28 * root.contentTransferProgress))
+        opacity: root.mediaRevealProgress
         scale: 0.98 + (0.02 * root.mediaRevealProgress)
         transform: Translate {
-            y: (6 * (1 - root.mediaRevealProgress))
-                + (4 * (1 - root.contentTransferProgress))
+            y: 6 * (1 - root.mediaRevealProgress)
         }
 
         onImplicitHeightChanged: root.updateMediaExtent()
@@ -454,7 +425,6 @@ Item {
         imagePath: root.backgroundImagePath
         visible: root.drawContentBackground && !root.mediaOnly
         opacity: root.safeBackgroundOpacity
-            * (0.72 + (0.28 * root.contentTransferProgress))
         Accessible.ignored: true
     }
     // Mask contract consumed by the owning dialog's BlurBehindController. The
@@ -481,10 +451,6 @@ Item {
         width: Math.max(0, menuBackground.width - root.contentFramePadding * 2)
         height: root.surfaceContentHeight
         visible: !root.mediaOnly
-        opacity: 0.72 + (0.28 * root.contentTransferProgress)
-        transform: Translate {
-            y: 4 * (1 - root.contentTransferProgress)
-        }
     }
 
     Binding {

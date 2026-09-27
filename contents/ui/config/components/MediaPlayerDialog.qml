@@ -11,8 +11,6 @@ import ".."
 // every existing caller keeps working. It updates its own state with what the panel
 // announces and forwards it; it writes nothing else.
 //
-// Translation helpers are supplied by the KCM context.
-// qmllint disable unqualified
 Controls.Dialog {
     id: root
 
@@ -85,4 +83,3 @@ Controls.Dialog {
         }
     }
 }
-// qmllint enable unqualified

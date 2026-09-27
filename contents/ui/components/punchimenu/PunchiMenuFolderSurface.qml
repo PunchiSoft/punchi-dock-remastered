@@ -54,8 +54,6 @@ FocusScope {
             activeMemberCount)))))
     readonly property int compactFolderColumnCount: Math.min(
         safeMaximumColumnCount, automaticCompactFolderColumnCount)
-    readonly property int compactFolderRowCount: Math.max(1,
-        folderView.visibleRowCount)
     readonly property real compactFolderPreferredWidth: Math.max(
         Kirigami.Units.gridUnit * 20,
         folderView.targetCellWidth * compactFolderColumnCount
@@ -328,8 +326,6 @@ FocusScope {
             : root.viewMode === "action"
                 ? "solid/dialogs/background" : "dialogs/background"
         panelBackgroundOpacity: 1.0
-        panelShadowEnabled: root.viewMode === "action"
-            && !root.useWidgetModalProfile
         backdropOpacity: 0.64
         backdropGeometry: root.backdropGeometry
         backdropRadius: root.backdropRadius

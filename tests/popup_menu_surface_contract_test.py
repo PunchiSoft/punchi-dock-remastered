@@ -40,10 +40,9 @@ def qml_object_body_by_id(
 
 def popup_body(main_qml: str, popup_id: str, next_popup_id: str) -> str:
     match = re.search(
-        rf"(?:GuardedPopupDialog|GuardedPositionedPopupDialog)\s*\{{\s*"
+        rf"GuardedPopupDialog\s*\{{\s*"
         rf"id:\s*{popup_id}\b(?P<body>.*?)\n\s*"
-        rf"(?:GuardedPopupDialog|GuardedPositionedPopupDialog|"
-        rf"PlasmaCore\.(?:AppletPopup|Dialog))\s*\{{\s*"
+        rf"(?:GuardedPopupDialog|PlasmaCore\.(?:AppletPopup|Dialog))\s*\{{\s*"
         rf"id:\s*{next_popup_id}\b",
         main_qml,
         re.DOTALL,
@@ -96,9 +95,6 @@ def main() -> int:
     main_qml = (PROJECT_ROOT / "contents/ui/main.qml").read_text()
     guarded_dialog = (
         PROJECT_ROOT / "contents/ui/components/GuardedPopupDialog.qml"
-    ).read_text()
-    guarded_positioned_popup = (
-        PROJECT_ROOT / "contents/ui/components/GuardedPositionedPopupDialog.qml"
     ).read_text()
     animated_content = (
         PROJECT_ROOT / "contents/ui/components/PopupAnimatedContent.qml"
@@ -248,27 +244,6 @@ def main() -> int:
          "Guarded menus must invalidate pending opens"),
     ):
         require(guarded_dialog, fragment, message)
-    for fragment, message in (
-        ("GuardedPopupDialog {",
-         "Adaptive popups must retain the transparent guarded host"),
-        ("visualParent: null",
-         "Adaptive popups must prevent competing native repositioning"),
-        ("PunchiMenuNormalPlacement {",
-         "Adaptive popups must reuse the bounded placement controller"),
-        ("panelGap: root.popupGap",
-         "Adaptive popups must apply the gap to panels"),
-        ("floatingGap: root.popupGap",
-         "Adaptive popups must apply the gap to floating docks"),
-        ("screenInset: root.popupGap",
-         "Adaptive popups must retain safe screen bounds"),
-        ("function surfaceFrameInset(side)",
-         "Adaptive popups must compensate the themed frame projection"),
-        ("function dockSurfaceFrameInset(side)",
-         "Adaptive popups must compensate the floating Dock frame projection"),
-        ("function scheduleReposition()",
-         "Adaptive popups must react to geometry and configuration"),
-    ):
-        require(guarded_positioned_popup, fragment, message)
     for fragment, message in (
         ("function backgroundFrameInset(side)",
          "The floating Dock background must expose its effective frame inset"),
@@ -486,11 +461,6 @@ def main() -> int:
     if re.search(r"(?<![A-Za-z])tail(?![A-Za-z])", config_xml, re.IGNORECASE):
         raise AssertionError(
             "The tail must not introduce a configuration key")
-    require(
-        guarded_positioned_popup,
-        "readonly property rect effectivePopupGeometry:",
-        "Adaptive popups must consume their measured visible geometry",
-    )
     for fragment, message in (
         ("readonly property real safeImplicitWidth:",
          "Animated popup content must sanitize its real width"),

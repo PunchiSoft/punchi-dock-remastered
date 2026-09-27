@@ -8,7 +8,6 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.ksvg as KSvg
 import "../../org/punchi/dock" as Punchi
 
-// qmllint disable unqualified
 FocusScope {
     id: root
 
@@ -3411,4 +3410,3 @@ FocusScope {
         }
     }
 }
-// qmllint enable unqualified
