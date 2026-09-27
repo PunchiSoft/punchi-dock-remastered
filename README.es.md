@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61">
-    <img src="https://img.shields.io/badge/release-v0.9.7.61-4caf50" alt="Versión v0.9.7.61">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64">
+    <img src="https://img.shields.io/badge/release-v0.9.7.64-4caf50" alt="Versión v0.9.7.64">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -23,7 +23,11 @@ Punchi Dock Remastered es un dock lanzador nativo e interfaz de tareas para KDE 
 Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). El proyecto prepara actualmente su camino hacia una versión 1.0 estable.
 
 La versión actual es
-[v0.9.7.61](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61).
+[v0.9.7.64](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64).
+
+## Novedades de la versión 0.9.7.64
+
+- **Notas explicativas para todos los tipos de ítem**: Se añadieron notas contextuales en línea para los 11 tipos de ítem de la página de configuración de Ítems, cubriendo su comportamiento, restricciones y pautas de formato. Las notas están completamente localizadas al español, alemán y portugués de Brasil.
 
 ## Novedades de la versión 0.9.7.61
 

@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61">
-    <img src="https://img.shields.io/badge/release-v0.9.7.61-4caf50" alt="Version v0.9.7.61">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64">
+    <img src="https://img.shields.io/badge/release-v0.9.7.64-4caf50" alt="Version v0.9.7.64">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/lizenz-GPL--3.0--or--later-blue" alt="Lizenz GPL-3.0-or-later">
@@ -23,7 +23,11 @@ Punchi Dock Remastered ist ein natives Starter-Dock und eine Aufgabenleiste für
 Dieses Repository ist ein modularer Rewrite des ursprünglichen [Punchi Dock Plasmoids](https://github.com/PunchiSoft/punchi-dock-plasmoid). Das Projekt bereitet derzeit seinen Weg zur stabilen Version 1.0 vor.
 
 Die aktuelle Version ist
-[v0.9.7.61](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61).
+[v0.9.7.64](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64).
+
+## Neuigkeiten in Version 0.9.7.64
+
+- **Erklärende Hinweise für alle Element-Typen**: Kontextuelle Inline-Hinweise für alle 11 Element-Typen der Konfigurationsseite "Elemente" hinzugefügt, die deren Verhalten, Einschränkungen und Formatierungsrichtlinien beschreiben. Die Hinweise sind vollständig auf Spanisch, Deutsch und Brasilianisches Portugiesisch lokalisiert.
 
 ## Neuigkeiten in Version 0.9.7.61
 

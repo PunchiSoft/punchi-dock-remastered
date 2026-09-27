@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61">
-    <img src="https://img.shields.io/badge/release-v0.9.7.61-4caf50" alt="Release v0.9.7.61">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64">
+    <img src="https://img.shields.io/badge/release-v0.9.7.64-4caf50" alt="Release v0.9.7.64">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,7 +23,11 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7.61](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61).
+[v0.9.7.64](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64).
+
+## What's New in 0.9.7.64
+
+- **Explanatory Notes for All Item Types**: Added contextual inline notes for all 11 item types in the configuration Items page, covering their behavior, constraints, and formatting guidelines. Notes are fully localized in Spanish, German, and Brazilian Portuguese.
 
 ## What's New in 0.9.7.61
 

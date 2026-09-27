@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61">
-    <img src="https://img.shields.io/badge/release-v0.9.7.61-4caf50" alt="Versão v0.9.7.61">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64">
+    <img src="https://img.shields.io/badge/release-v0.9.7.64-4caf50" alt="Versão v0.9.7.64">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0--or--later-blue" alt="Licença GPL-3.0-or-later">
@@ -23,7 +23,11 @@ Punchi Dock Remastered é um dock inicializador nativo e interface de tarefas pa
 Este repositório é uma reescrita modular do [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). O projeto prepara atualmente seu caminho rumo à versão estável 1.0.
 
 A versão atual é
-[v0.9.7.61](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.61).
+[v0.9.7.64](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64).
+
+## Novidades na versão 0.9.7.64
+
+- **Notas explicativas para todos os tipos de item**: Adicionadas notas contextuais em linha para os 11 tipos de item da página de configuração de Itens, cobrindo seu comportamento, restrições e diretrizes de formatação. As notas estão completamente localizadas em espanhol, alemão e português do Brasil.
 
 ## Novidades na versão 0.9.7.61
 
