@@ -18,6 +18,10 @@ PunchiMenuSettingsBase {
     property bool normalCategoryGrouping: false
 
     required property string normalPlacementMode
+    required property bool normalFloatingLabelShorteningEnabled
+    required property int normalFloatingLabelVisibleCharacters
+    required property bool normalFloatingTextShadowsEnabled
+    required property int normalFloatingTextShadowPercent
     required property int normalPanelDistancePercent
     required property int normalWidthPercent
     required property int normalHeightPercent
@@ -193,6 +197,115 @@ PunchiMenuSettingsBase {
                         Accessible.description: i18n("Shows application names below their icons in the application grid and Favorites.")
                         onToggled: root.settingChanged(
                             "showApplicationLabels", checked)
+                    }
+
+                    Kirigami.Heading {
+                        Kirigami.FormData.isSection: true
+                        level: 3
+                        visible: !root.anchoredMode
+                        text: i18n("Floating menu text")
+                    }
+
+                    Controls.Switch {
+                        visible: !root.anchoredMode
+                        enabled: root.showApplicationLabels
+                        Kirigami.FormData.label: i18n("Long names:")
+                        text: i18n("Shorten long application names")
+                        checked:
+                            root.normalFloatingLabelShorteningEnabled
+                        Accessible.name: text
+                        onToggled: root.settingChanged(
+                            "normalFloatingLabelShorteningEnabled", checked)
+                    }
+
+                    RowLayout {
+                        visible: !root.anchoredMode
+                        enabled: root.showApplicationLabels
+                            && root.normalFloatingLabelShorteningEnabled
+                        Kirigami.FormData.label: i18n("Visible characters:")
+
+                        Controls.Slider {
+                            id: floatingLabelVisibleCharactersSlider
+
+                            Layout.fillWidth: true
+                            from: 6
+                            to: 20
+                            stepSize: 1
+                            snapMode: Controls.Slider.SnapAlways
+                            value:
+                                root.normalFloatingLabelVisibleCharacters
+                            Accessible.name: i18n(
+                                "Visible application name characters")
+                            onMoved: root.settingChanged(
+                                "normalFloatingLabelVisibleCharacters",
+                                Math.round(value))
+                            onValueChanged: {
+                                if (activeFocus && !pressed) {
+                                    root.settingChanged(
+                                        "normalFloatingLabelVisibleCharacters",
+                                        Math.round(value))
+                                }
+                            }
+                        }
+
+                        PlasmaComponents.Label {
+                            Layout.preferredWidth:
+                                Kirigami.Units.gridUnit * 5
+                            horizontalAlignment: Text.AlignRight
+                            text: i18np("%1 character", "%1 characters",
+                                Math.round(
+                                    floatingLabelVisibleCharactersSlider.value))
+                        }
+                    }
+
+                    Controls.Switch {
+                        visible: !root.anchoredMode
+                        enabled: root.showApplicationLabels
+                        Kirigami.FormData.label: i18n("Text shadow:")
+                        text: i18n("Use text shadows")
+                        checked: root.normalFloatingTextShadowsEnabled
+                        Accessible.name: text
+                        onToggled: root.settingChanged(
+                            "normalFloatingTextShadowsEnabled", checked)
+                    }
+
+                    RowLayout {
+                        visible: !root.anchoredMode
+                        enabled: root.showApplicationLabels
+                            && root.normalFloatingTextShadowsEnabled
+                        Kirigami.FormData.label: i18n("Shadow intensity:")
+
+                        Controls.Slider {
+                            id: floatingTextShadowSlider
+
+                            Layout.fillWidth: true
+                            from: 0
+                            to: 100
+                            stepSize: 5
+                            snapMode: Controls.Slider.SnapAlways
+                            value: root.normalFloatingTextShadowPercent
+                            Accessible.name: i18n(
+                                "Floating menu text shadow intensity")
+                            onMoved: root.settingChanged(
+                                "normalFloatingTextShadowPercent",
+                                Math.round(value / stepSize) * stepSize)
+                            onValueChanged: {
+                                if (activeFocus && !pressed) {
+                                    root.settingChanged(
+                                        "normalFloatingTextShadowPercent",
+                                        Math.round(value / stepSize)
+                                            * stepSize)
+                                }
+                            }
+                        }
+
+                        PlasmaComponents.Label {
+                            Layout.preferredWidth:
+                                Kirigami.Units.gridUnit * 3
+                            horizontalAlignment: Text.AlignRight
+                            text: i18n("%1%", Math.round(
+                                floatingTextShadowSlider.value))
+                        }
                     }
 
                     Controls.Switch {

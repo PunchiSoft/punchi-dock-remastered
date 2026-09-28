@@ -14,6 +14,10 @@ FocusScope {
     property var folderNodes: []
     property bool showApplicationLabels: true
     property bool motionEnabled: true
+    property bool labelShorteningEnabled: false
+    property int labelVisibleCharacters: 10
+    property bool labelTextShadowEnabled: false
+    property int labelTextShadowPercent: 0
     property bool hoverEnabled: true
     property string hoverAnimation: "pulse"
     property real iconScale: 1.0
@@ -501,6 +505,14 @@ FocusScope {
                             motionEnabled: root.motionEnabled
                             requestedIconSize: root.iconSize
                             hoverAnimation: root.hoverAnimation
+                            labelShorteningEnabled:
+                                root.labelShorteningEnabled
+                            labelVisibleCharacters:
+                                root.labelVisibleCharacters
+                            labelTextShadowEnabled:
+                                root.labelTextShadowEnabled
+                            labelTextShadowPercent:
+                                root.labelTextShadowPercent
                             onActivated: root.folderOpenRequested(folderId)
                             onContextRequested: function(sourceItem, x, y) {
                                 root.folderContextRequested(sourceItem,
@@ -548,17 +560,28 @@ FocusScope {
                                     Accessible.ignored: true
                                 }
 
-                                PlasmaComponents.Label {
+                                PunchiMenuMarqueeLabel {
                                     id: applicationLabel
                                     Layout.fillWidth: true
                                     visible: root.showApplicationLabels
                                     text: root.applicationName(
                                         launcherDelegate.modelData)
-                                    textFormat: Text.PlainText
+                                    hovered: root.hoverEnabled
+                                        && applicationPointer.containsMouse
+                                    focused: launcherDelegate.isSelected
+                                        || launcherDelegate.activeFocus
+                                    motionEnabled: root.motionEnabled
+                                    shorteningEnabled:
+                                        root.labelShorteningEnabled
+                                    visibleCharacterLimit:
+                                        root.labelVisibleCharacters
+                                    shadowEnabled:
+                                        root.labelTextShadowEnabled
+                                    shadowPercent:
+                                        root.labelTextShadowPercent
                                     horizontalAlignment: Text.AlignHCenter
                                     maximumLineCount: 2
                                     wrapMode: Text.Wrap
-                                    elide: Text.ElideRight
                                     font: applicationLabelFontMetrics.font
                                     Accessible.ignored: true
                                 }
@@ -567,7 +590,8 @@ FocusScope {
                             PlasmaCore.ToolTipArea {
                                 anchors.fill: parent
                                 active: !root.showApplicationLabels
-                                    || applicationLabel.truncated
+                                    || (!applicationLabel.shorteningEnabled
+                                        && applicationLabel.truncated)
                                 mainText: root.applicationName(
                                     launcherDelegate.modelData)
                             }

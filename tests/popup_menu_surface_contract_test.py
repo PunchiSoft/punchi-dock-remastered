@@ -1090,9 +1090,18 @@ def main() -> int:
     popup_marquee_label = (
         PROJECT_ROOT / "contents/ui/components/PopupMarqueeLabel.qml"
     ).read_text()
+    shared_marquee_label = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuMarqueeLabel.qml"
+    ).read_text()
+    require(
+        popup_marquee_label,
+        "visibleCharacterLimit: 10",
+        "Popup names must keep the approved ten-character profile",
+    )
     for fragment, message in (
-        ('text: "MMMMMMMMMM"',
-         "Popup names must derive their resting cap from ten wide glyphs"),
+        ('text: "MMMMMMMMMMMMMMMMMMMM".substring(',
+         "Launcher names must derive their resting cap from wide glyphs"),
         ("elide: Text.ElideRight",
          "Popup names must show an ellipsis at rest"),
         ("SmoothedAnimation {",
@@ -1100,7 +1109,7 @@ def main() -> int:
         ("Controls.ToolTip.visible: root.revealFullText && !root.motionEnabled",
          "Reduced motion must expose the full popup name without movement"),
     ):
-        require(popup_marquee_label, fragment, message)
+        require(shared_marquee_label, fragment, message)
 
     for source, label in (
         (folder_popup_component, "classic folder popup"),

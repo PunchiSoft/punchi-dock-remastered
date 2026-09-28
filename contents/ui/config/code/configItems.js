@@ -733,6 +733,23 @@ function normalizedPunchiMenuNormalBackgroundOpacityPercent(value) {
     return Math.max(50, Math.min(100, Math.round(requestedValue / 5) * 5))
 }
 
+function normalizedPunchiMenuNormalFloatingLabelVisibleCharacters(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 10
+    }
+    return Math.max(6, Math.min(20, Math.round(requestedValue)))
+}
+
+function normalizedPunchiMenuNormalFloatingTextShadowPercent(value) {
+    var requestedValue = Number(value)
+    if (!Number.isFinite(requestedValue)) {
+        return 25
+    }
+    return Math.max(0, Math.min(100,
+        Math.round(requestedValue / 5) * 5))
+}
+
 function normalizedPunchiMenuCompactBackgroundOpacityPercent(value) {
     var requestedValue = Number(value)
     if (!Number.isFinite(requestedValue)) {
@@ -903,6 +920,22 @@ function prunePunchiMenu(item) {
     item.normalBackgroundOpacityPercent =
         normalizedPunchiMenuNormalBackgroundOpacityPercent(
             item.normalBackgroundOpacityPercent)
+    if (item.normalFloatingLabelShorteningEnabled !== false) {
+        delete item.normalFloatingLabelShorteningEnabled
+    } else {
+        item.normalFloatingLabelShorteningEnabled = false
+    }
+    item.normalFloatingLabelVisibleCharacters =
+        normalizedPunchiMenuNormalFloatingLabelVisibleCharacters(
+            item.normalFloatingLabelVisibleCharacters)
+    if (item.normalFloatingTextShadowsEnabled !== false) {
+        delete item.normalFloatingTextShadowsEnabled
+    } else {
+        item.normalFloatingTextShadowsEnabled = false
+    }
+    item.normalFloatingTextShadowPercent =
+        normalizedPunchiMenuNormalFloatingTextShadowPercent(
+            item.normalFloatingTextShadowPercent)
     if (item.showDistributionName !== false) {
         delete item.showDistributionName
     } else {
@@ -1105,6 +1138,8 @@ function newItem(type, defaultTrashEmptySound) {
             "fullScreenFolderMaximumRows": 5,
             "fullScreenBackgroundOpacityPercent": 50,
             "normalBackgroundOpacityPercent": 75,
+            "normalFloatingLabelVisibleCharacters": 10,
+            "normalFloatingTextShadowPercent": 25,
             "normalWidthPercent": 55,
             "normalHeightPercent": 65,
             "normalPanelDistancePercent": 25

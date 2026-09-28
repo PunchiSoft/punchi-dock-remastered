@@ -180,4 +180,26 @@ TestCase {
         ConfigItems.prunePunchiMenu(defaultItem)
         compare(defaultItem.normalPanelDistancePercent, 25)
     }
+
+    function test_punchiMenuFloatingTextSettingsNormalize() {
+        const explicitItem = {
+            "type": "punchimenu",
+            "normalFloatingLabelShorteningEnabled": false,
+            "normalFloatingLabelVisibleCharacters": 3,
+            "normalFloatingTextShadowsEnabled": false,
+            "normalFloatingTextShadowPercent": 113
+        }
+        ConfigItems.prunePunchiMenu(explicitItem)
+        compare(explicitItem.normalFloatingLabelShorteningEnabled, false)
+        compare(explicitItem.normalFloatingLabelVisibleCharacters, 6)
+        compare(explicitItem.normalFloatingTextShadowsEnabled, false)
+        compare(explicitItem.normalFloatingTextShadowPercent, 100)
+
+        const defaultItem = { "type": "punchimenu" }
+        ConfigItems.prunePunchiMenu(defaultItem)
+        verify(defaultItem.normalFloatingLabelShorteningEnabled === undefined)
+        compare(defaultItem.normalFloatingLabelVisibleCharacters, 10)
+        verify(defaultItem.normalFloatingTextShadowsEnabled === undefined)
+        compare(defaultItem.normalFloatingTextShadowPercent, 25)
+    }
 }

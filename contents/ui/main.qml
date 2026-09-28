@@ -264,6 +264,22 @@ PlasmoidItem {
             : 75
         return safePercent / 100
     }
+    readonly property bool configuredPunchiMenuNormalFloatingLabelShorteningEnabled:
+        !configuredPunchiMenuItem
+        || configuredPunchiMenuItem.normalFloatingLabelShorteningEnabled !== false
+    readonly property int configuredPunchiMenuNormalFloatingLabelVisibleCharacters:
+        ConfigItemsJS.normalizedPunchiMenuNormalFloatingLabelVisibleCharacters(
+            configuredPunchiMenuItem
+                ? configuredPunchiMenuItem.normalFloatingLabelVisibleCharacters
+                : 10)
+    readonly property bool configuredPunchiMenuNormalFloatingTextShadowsEnabled:
+        !configuredPunchiMenuItem
+        || configuredPunchiMenuItem.normalFloatingTextShadowsEnabled !== false
+    readonly property int configuredPunchiMenuNormalFloatingTextShadowPercent:
+        ConfigItemsJS.normalizedPunchiMenuNormalFloatingTextShadowPercent(
+            configuredPunchiMenuItem
+                ? configuredPunchiMenuItem.normalFloatingTextShadowPercent
+                : 25)
     readonly property var configuredPunchiMenuHiddenApplicationIds: {
         const source = configuredPunchiMenuItem
                 && configuredPunchiMenuItem.hiddenApplicationIds instanceof Array
@@ -1628,6 +1644,14 @@ PlasmoidItem {
                 backgroundBlurEnabled:
                     root.configuredPunchiMenuNormalBlurEnabled
                 backgroundOpacity: root.configuredPunchiMenuNormalBackgroundOpacity
+                normalFloatingLabelShorteningEnabled:
+                    root.configuredPunchiMenuNormalFloatingLabelShorteningEnabled
+                normalFloatingLabelVisibleCharacters:
+                    root.configuredPunchiMenuNormalFloatingLabelVisibleCharacters
+                normalFloatingTextShadowsEnabled:
+                    root.configuredPunchiMenuNormalFloatingTextShadowsEnabled
+                normalFloatingTextShadowPercent:
+                    root.configuredPunchiMenuNormalFloatingTextShadowPercent
                 normalPlacementMode:
                     root.configuredPunchiMenuNormalPlacementMode
                 normalPanelDistancePercent:

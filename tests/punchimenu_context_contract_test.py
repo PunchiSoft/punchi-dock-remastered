@@ -157,6 +157,10 @@ def main() -> int:
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuItemHighlight.qml"
     ).read_text(encoding="utf-8")
+    marquee_label_source = (
+        PROJECT_ROOT
+        / "contents/ui/components/punchimenu/PunchiMenuMarqueeLabel.qml"
+    ).read_text(encoding="utf-8")
     session_view_source = (
         PROJECT_ROOT
         / "contents/ui/components/punchimenu/PunchiMenuSessionView.qml"
@@ -1409,6 +1413,10 @@ def main() -> int:
         "gridIconScalePercent",
         "favoriteIconScalePercent",
         "normalPlacementMode",
+        "normalFloatingLabelShorteningEnabled",
+        "normalFloatingLabelVisibleCharacters",
+        "normalFloatingTextShadowsEnabled",
+        "normalFloatingTextShadowPercent",
         "normalPanelDistancePercent",
         "normalWidthPercent",
         "normalHeightPercent",
@@ -1454,6 +1462,11 @@ def main() -> int:
         '"normalFolderMaximumRows", value',
         "visible: root.anchoredMode",
         '"normalPlacementMode", modelData.value',
+        '"normalFloatingLabelShorteningEnabled", checked',
+        '"normalFloatingLabelVisibleCharacters",',
+        '"normalFloatingTextShadowsEnabled", checked',
+        '"normalFloatingTextShadowPercent",',
+        "visible: !root.anchoredMode",
         '"normalPanelDistancePercent", Math.round(value)',
         '"normalWidthPercent",',
         '"normalHeightPercent",',
@@ -1932,6 +1945,46 @@ def main() -> int:
         if marker not in source:
             print(
                 "PunchiMenu application labels: missing "
+                f"{description}: {marker}",
+                file=sys.stderr,
+            )
+            passed = False
+    floating_text_contract = (
+        (config_items_source,
+            "normalizedPunchiMenuNormalFloatingLabelVisibleCharacters",
+            "visible-character normalization"),
+        (config_items_source,
+            "normalizedPunchiMenuNormalFloatingTextShadowPercent",
+            "shadow-intensity normalization"),
+        (main_source,
+            "configuredPunchiMenuNormalFloatingLabelShorteningEnabled",
+            "reactive shortening projection"),
+        (main_source,
+            "configuredPunchiMenuNormalFloatingTextShadowPercent",
+            "reactive shadow projection"),
+        (normal_source,
+            'normalPlacementMode === "centered"',
+            "centered-only activation"),
+        (normal_source,
+            "PunchiMenuMarqueeLabel {",
+            "shared label use in Normal"),
+        (category_sections_source,
+            "PunchiMenuMarqueeLabel {",
+            "shared label use in grouped categories"),
+        (folder_tile_source,
+            "PunchiMenuMarqueeLabel {",
+            "shared label use for folders"),
+        (marquee_label_source,
+            "SmoothedAnimation {",
+            "retargetable text movement"),
+        (marquee_label_source,
+            "PunchiMenuTextShadowLabel {",
+            "shared configurable text shadow"),
+    )
+    for source, marker, description in floating_text_contract:
+        if marker not in source:
+            print(
+                "PunchiMenu floating text: missing "
                 f"{description}: {marker}",
                 file=sys.stderr,
             )

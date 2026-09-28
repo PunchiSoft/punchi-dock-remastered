@@ -25,6 +25,10 @@ FocusScope {
     property bool backgroundBlurEnabled: true
     property real backgroundOpacity: 0.75
     property string normalPlacementMode: "anchored"
+    property bool normalFloatingLabelShorteningEnabled: true
+    property int normalFloatingLabelVisibleCharacters: 10
+    property bool normalFloatingTextShadowsEnabled: true
+    property int normalFloatingTextShadowPercent: 25
     property int normalPanelDistancePercent: 25
     property int normalWidthPercent: 55
     property int normalHeightPercent: 65
@@ -98,6 +102,14 @@ FocusScope {
         contentViewActive === "settings"
     readonly property bool sessionViewActive:
         contentViewActive === "session"
+    readonly property bool floatingTextEffectsActive:
+        normalPlacementMode === "centered"
+    readonly property int safeFloatingLabelVisibleCharacters: Math.max(6,
+        Math.min(20, Math.round(Number(
+            normalFloatingLabelVisibleCharacters) || 10)))
+    readonly property int safeFloatingTextShadowPercent: Math.max(0,
+        Math.min(100, Math.round(Number(
+            normalFloatingTextShadowPercent) || 0)))
     readonly property real safeApplicationIconScale: {
         const requestedScale = Number(applicationIconScale)
         return Number.isFinite(requestedScale)
@@ -2201,6 +2213,14 @@ FocusScope {
                     folderNodes: root.categoryFolderNodes
                     showApplicationLabels: root.showApplicationLabels
                     motionEnabled: root.motionEnabled
+                    labelShorteningEnabled: root.floatingTextEffectsActive
+                        && root.normalFloatingLabelShorteningEnabled
+                    labelVisibleCharacters:
+                        root.safeFloatingLabelVisibleCharacters
+                    labelTextShadowEnabled: root.floatingTextEffectsActive
+                        && root.normalFloatingTextShadowsEnabled
+                    labelTextShadowPercent:
+                        root.safeFloatingTextShadowPercent
                     hoverEnabled: root.applicationHoverAllowed
                     hoverAnimation: root.hoverAnimation
                     iconScale: root.safeApplicationIconScale
@@ -2455,6 +2475,16 @@ FocusScope {
                             motionEnabled: root.motionEnabled
                             requestedIconSize: applicationDelegate.iconSize
                             hoverAnimation: root.hoverAnimation
+                            labelShorteningEnabled:
+                                root.floatingTextEffectsActive
+                                && root.normalFloatingLabelShorteningEnabled
+                            labelVisibleCharacters:
+                                root.safeFloatingLabelVisibleCharacters
+                            labelTextShadowEnabled:
+                                root.floatingTextEffectsActive
+                                && root.normalFloatingTextShadowsEnabled
+                            labelTextShadowPercent:
+                                root.safeFloatingTextShadowPercent
                             onActivated: applicationDelegate.launchApp()
                             onContextRequested: function(sourceItem, x, y) {
                                 applicationsGrid.currentIndex
@@ -2497,16 +2527,27 @@ FocusScope {
                                     source: applicationDelegate.appIcon
                                 }
 
-                                PlasmaComponents.Label {
+                                PunchiMenuMarqueeLabel {
                                     id: applicationLabel
                                     Layout.fillWidth: true
                                     visible: root.showApplicationLabels
                                     text: applicationDelegate.appName
-                                    textFormat: Text.PlainText
+                                    hovered: applicationDelegate.pointerHovered
+                                    focused: applicationDelegate.keyboardFocused
+                                    motionEnabled: root.motionEnabled
+                                    shorteningEnabled:
+                                        root.floatingTextEffectsActive
+                                        && root.normalFloatingLabelShorteningEnabled
+                                    visibleCharacterLimit:
+                                        root.safeFloatingLabelVisibleCharacters
+                                    shadowEnabled:
+                                        root.floatingTextEffectsActive
+                                        && root.normalFloatingTextShadowsEnabled
+                                    shadowPercent:
+                                        root.safeFloatingTextShadowPercent
                                     horizontalAlignment: Text.AlignHCenter
                                     maximumLineCount: 2
                                     wrapMode: Text.Wrap
-                                    elide: Text.ElideRight
                                 }
                             }
 
@@ -2524,7 +2565,8 @@ FocusScope {
                             PlasmaCore.ToolTipArea {
                                 anchors.fill: parent
                                 active: !root.showApplicationLabels
-                                    || applicationLabel.truncated
+                                    || (!applicationLabel.shorteningEnabled
+                                        && applicationLabel.truncated)
                                 mainText: applicationDelegate.appName
                             }
                         }
@@ -3078,14 +3120,29 @@ FocusScope {
                                         source: favoriteDelegate.appIcon
                                     }
 
-                                    PlasmaComponents.Label {
+                                    PunchiMenuMarqueeLabel {
                                         id: favoriteLabel
                                         Layout.fillWidth: true
                                         visible: root.showApplicationLabels
                                         text: favoriteDelegate.appName
+                                        hovered:
+                                            favoriteMouseArea.containsMouse
+                                        focused:
+                                            favoriteDelegate.keyboardFocused
+                                        motionEnabled: root.motionEnabled
+                                        shorteningEnabled:
+                                            root.floatingTextEffectsActive
+                                            && root.normalFloatingLabelShorteningEnabled
+                                        visibleCharacterLimit:
+                                            root.safeFloatingLabelVisibleCharacters
+                                        shadowEnabled:
+                                            root.floatingTextEffectsActive
+                                            && root.normalFloatingTextShadowsEnabled
+                                        shadowPercent:
+                                            root.safeFloatingTextShadowPercent
                                         horizontalAlignment: Text.AlignHCenter
                                         maximumLineCount: 1
-                                        elide: Text.ElideRight
+                                        wrapMode: Text.NoWrap
                                     }
                                 }
 
@@ -3103,7 +3160,8 @@ FocusScope {
                                 PlasmaCore.ToolTipArea {
                                     anchors.fill: parent
                                     active: !root.showApplicationLabels
-                                        || favoriteLabel.truncated
+                                        || (!favoriteLabel.shorteningEnabled
+                                            && favoriteLabel.truncated)
                                     mainText: favoriteDelegate.appName
 
                                     MouseArea {
@@ -3224,6 +3282,14 @@ FocusScope {
                         folderMaximumColumns: root.safeFolderMaximumColumns
                         folderMaximumRows: root.safeFolderMaximumRows
                         normalPlacementMode: root.normalPlacementMode
+                        normalFloatingLabelShorteningEnabled:
+                            root.normalFloatingLabelShorteningEnabled
+                        normalFloatingLabelVisibleCharacters:
+                            root.safeFloatingLabelVisibleCharacters
+                        normalFloatingTextShadowsEnabled:
+                            root.normalFloatingTextShadowsEnabled
+                        normalFloatingTextShadowPercent:
+                            root.safeFloatingTextShadowPercent
                         normalPanelDistancePercent:
                             root.normalPanelDistancePercent
                         normalWidthPercent: root.normalWidthPercent

@@ -12,6 +12,10 @@ var items = [
         "favoriteIconScalePercent": 100,
         "fullScreenBackgroundOpacityPercent": 50,
         "normalBackgroundOpacityPercent": 75,
+        "normalFloatingLabelShorteningEnabled": true,
+        "normalFloatingLabelVisibleCharacters": 10,
+        "normalFloatingTextShadowsEnabled": true,
+        "normalFloatingTextShadowPercent": 25,
         "normalWidthPercent": 55,
         "normalHeightPercent": 65,
         "normalPanelDistancePercent": 25

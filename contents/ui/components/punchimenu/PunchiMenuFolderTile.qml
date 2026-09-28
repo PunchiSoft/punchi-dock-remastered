@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
-import org.kde.plasma.components as PlasmaComponents
 
 // Translation helpers are supplied by the plasmoid context.
 // qmllint disable unqualified
@@ -16,6 +15,10 @@ FocusScope {
     property bool motionEnabled: true
     property string hoverAnimation: "pulse"
     property real requestedIconSize: Kirigami.Units.iconSizes.huge
+    property bool labelShorteningEnabled: false
+    property int labelVisibleCharacters: 10
+    property bool labelTextShadowEnabled: false
+    property int labelTextShadowPercent: 0
     readonly property alias hovered: pointer.containsMouse
 
     readonly property int previewSize: iconMetrics.effectiveSize
@@ -117,14 +120,19 @@ FocusScope {
             }
         }
 
-        PlasmaComponents.Label {
+        PunchiMenuMarqueeLabel {
             Layout.fillWidth: true
             text: root.effectiveLabel
-            textFormat: Text.PlainText
+            hovered: root.hovered
+            focused: root.activeFocus
+            motionEnabled: root.motionEnabled
+            shorteningEnabled: root.labelShorteningEnabled
+            visibleCharacterLimit: root.labelVisibleCharacters
+            shadowEnabled: root.labelTextShadowEnabled
+            shadowPercent: root.labelTextShadowPercent
             horizontalAlignment: Text.AlignHCenter
             maximumLineCount: 2
             wrapMode: Text.Wrap
-            elide: Text.ElideRight
             Accessible.ignored: true
         }
     }
