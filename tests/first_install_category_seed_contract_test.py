@@ -2,7 +2,7 @@
 
 """Contract for the first-install seeding of the shipped category containers.
 
-The defaults ship a category container in the fan presentation. On a first
+The defaults ship category containers with their approved presentations. On a first
 install its list must be filled from the installed launchers, and the result
 must become an ordinary editable container so the user can change it freely
 afterwards. A machine without that kind of application must keep the shipped
@@ -27,16 +27,29 @@ def require(condition: bool, message: str) -> None:
         raise AssertionError(message)
 
 
-# The shipped container that demonstrates the capability: fan presentation,
-# declared category and a fallback list, next to the untouched Graphics one.
+# The shipped Internet container demonstrates category discovery in the grid
+# presentation and keeps a fallback list. The other requested presentations are
+# locked here too, so a later seed change cannot silently homogenize them.
 require(
     '"name": "Internet",\n'
-    '        "icon": "applications-internet",\n'
-    '        "layout": "fan",\n'
+    '        "icon": "folder-html",\n'
+    '        "layout": "grid",\n'
     '        "sourceType": "category",\n'
     '        "sourceCategory": "Network",' in DEFAULTS,
-    "The defaults must ship an Internet category container in the fan "
+    "The defaults must ship an Internet category container in the grid "
     "presentation.",
+)
+require(
+    '"name": "Home",\n'
+    '        "icon": "user-home",\n'
+    '        "layout": "fan",' in DEFAULTS,
+    "The shipped Home container must retain the fan presentation.",
+)
+require(
+    '"name": "LibreOffice",\n'
+    '        "icon": "folder-documents",\n'
+    '        "layout": "detailed",' in DEFAULTS,
+    "The shipped LibreOffice container must retain the detailed presentation.",
 )
 require(
     '"name": "Graphics",\n'
@@ -44,7 +57,7 @@ require(
     '        "layout": "list",\n'
     '        "sourceType": "category",\n'
     '        "sourceCategory": "Graphics",' in DEFAULTS,
-    "The shipped Graphics container must stay unchanged.",
+    "The shipped Graphics container must retain the simple list presentation.",
 )
 require(
     '{ "type": "app", "name": "KMail", "icon": "kmail", "command": "kmail" }'

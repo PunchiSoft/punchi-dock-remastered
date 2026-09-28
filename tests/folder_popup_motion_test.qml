@@ -118,6 +118,32 @@ TestCase {
         }
     }
 
+    function test_classicLayoutsUseTheSharedLongNameViewport() {
+        const longName = "An extraordinarily long application name"
+        folderPopup.folderItem = ({
+            name: "Long names",
+            apps: [{name: longName, icon: "folder", command: "long-name"}]
+        })
+
+        const modes = ["grid", "list", "detailed"]
+        for (let index = 0; index < modes.length; index++) {
+            const mode = modes[index]
+            folderPopup.layoutMode = mode
+            wait(0)
+            const objectName = mode === "grid"
+                ? "folderPopupGridLabel-0"
+                : "folderPopupListLabel-0"
+            const label = findChild(folderPopup, objectName)
+            verify(label !== null,
+                mode + " must instantiate the shared popup caption")
+            compare(label.text, longName)
+            verify(label.overflowing,
+                mode + " must elide a name beyond the calculated viewport")
+            compare(label.revealFullText, false,
+                mode + " must start in its quiet resting state")
+        }
+    }
+
     function test_slideFollowsThePopupEdge() {
         if (!folderPopup.motionEnabled) {
             skip("The active Plasma animation preference disables motion")

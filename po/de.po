@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-27 12:10-0300\n"
+"POT-Creation-Date: 2026-09-27 17:27-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: German\n"
@@ -251,11 +251,11 @@ msgstr "%1 pt"
 msgid "%1 px"
 msgstr "%1 px"
 
-#: contents/ui/config/components/ActionDialog.qml:92
 #: contents/ui/config/ConfigItems.qml:1025
 #: contents/ui/config/ItemActionEditor.qml:45
 #: contents/ui/config/ItemActionEditor.qml:170
 #: contents/ui/config/ItemConfigurationDialog.qml:728
+#: contents/ui/config/components/ActionDialog.qml:92
 msgid "%1 rows"
 msgstr "%1 Zeilen"
 
@@ -330,8 +330,6 @@ msgstr "%1 — %2 — %3"
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:473
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:508
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:543
-#: contents/ui/config/components/PopupAnimationSettings.qml:82
-#: contents/ui/config/components/PopupAnimationSettings.qml:107
 #: contents/ui/config/ConfigFolderPopups.qml:237
 #: contents/ui/config/ConfigFolderPopups.qml:271
 #: contents/ui/config/ConfigFolderPopups.qml:315
@@ -344,6 +342,8 @@ msgstr "%1 — %2 — %3"
 #: contents/ui/config/ConfigPopups.qml:210
 #: contents/ui/config/ConfigPopups.qml:249
 #: contents/ui/config/ConfigPopups.qml:285
+#: contents/ui/config/components/PopupAnimationSettings.qml:82
+#: contents/ui/config/components/PopupAnimationSettings.qml:107
 #, javascript-format
 msgid "%1%"
 msgstr "%1%"
@@ -537,20 +537,6 @@ msgstr ""
 "unter den installierten Anwendungen und füllt die übrigen Felder; der Befehl "
 "wird als Shell-Befehlszeile ausgeführt."
 
-#: contents/ui/config/code/itemNotes.js:52
-msgctxt "@info <b> marks the note label"
-msgid ""
-"<b>Note:</b> Only one Control Center can be added to the Dock. It groups "
-"quick system controls — such as volume, brightness, networks and night light "
-"— and notifications. Use Configure above to choose which controls appear and "
-"adjust their layout."
-msgstr ""
-"<b>Hinweis:</b> Es kann nur ein Kontrollzentrum zum Dock hinzugefügt werden. "
-"Es fasst schnelle Systemsteuerungen – wie Lautstärke, Helligkeit, Netzwerke "
-"und Nachtlicht – sowie Benachrichtigungen zusammen. Über Konfigurieren oben "
-"wählst du aus, welche Steuerelemente angezeigt werden, und passt deren "
-"Anordnung an."
-
 #: contents/ui/config/code/itemNotes.js:67
 msgctxt "@info <b> marks the note label"
 msgid ""
@@ -595,6 +581,26 @@ msgstr ""
 "sich aus dem Menü auf das Dock oder auf eine andere Anwendung ziehen, um sie "
 "zu gruppieren, und das Menü einer Anwendung erstellt Ordner, verschiebt "
 "Anwendungen zwischen ihnen und markiert Favoriten."
+
+#: contents/ui/config/code/itemNotes.js:52
+#| msgctxt "@info <b> marks the note label"
+#| msgid ""
+#| "<b>Note:</b> Only one Control Center can be added to the Dock. It groups "
+#| "quick system controls — such as volume, brightness, networks and night "
+#| "light — and notifications. Use Configure above to choose which controls "
+#| "appear and adjust their layout."
+msgctxt "@info <b> marks the note label"
+msgid ""
+"<b>Preview:</b> The Control Center is not fully polished yet. Only one can "
+"be added to the Dock. It groups quick system controls — such as volume, "
+"brightness, networks and night light — and notifications. Use Configure "
+"above to choose which controls appear and adjust their layout."
+msgstr ""
+"<b>Vorschau:</b> Das Kontrollzentrum ist noch nicht vollständig ausgereift. "
+"Es kann nur eines zum Dock hinzugefügt werden. Es fasst schnelle "
+"Systemsteuerungen – wie Lautstärke, Helligkeit, Netzwerke und Nachtlicht – "
+"sowie Benachrichtigungen zusammen. Über Konfigurieren oben wählst du aus, "
+"welche Steuerelemente angezeigt werden, und passt deren Anordnung an."
 
 #: scripts-user/setup.sh:85
 msgid "==> Building the native QML module without developer tests..."
@@ -1428,8 +1434,8 @@ msgid "Bottom to top"
 msgstr "Von unten nach oben"
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:29
-#: contents/ui/config/components/PopupAnimationSettings.qml:19
 #: contents/ui/config/ConfigMouse.qml:52
+#: contents/ui/config/components/PopupAnimationSettings.qml:19
 msgid "Bounce"
 msgstr "Hüpfen"
 
@@ -1512,8 +1518,8 @@ msgstr "Kamera"
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml:108
 #: contents/ui/components/NotePopup.qml:289
+#: contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml:108
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:388
 #: contents/ui/config/ConfigAspect.qml:476
 #: contents/ui/config/ItemConfigurationDialog.qml:837
@@ -1658,8 +1664,8 @@ msgstr "Wählen Sie Sounddatei"
 msgid "Choose Window Count Badge Color"
 msgstr "Farbe des Fensteranzahl-Abzeichens auswählen"
 
-#: contents/ui/config/code/configItemsWorkflowHelper.js:97
 #: contents/ui/config/ConfigItems.qml:474
+#: contents/ui/config/code/configItemsWorkflowHelper.js:97
 msgid "Choose a folder first."
 msgstr "Wählen Sie zunächst einen Ordner."
 
@@ -1828,8 +1834,8 @@ msgstr "Reinigung abgeschlossen."
 msgid "Clean configuration file?"
 msgstr "Konfigurationsdatei bereinigen?"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
 #: contents/ui/components/NotePopup.qml:175
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
 msgid "Clear"
 msgstr "Klar"
 
@@ -2098,9 +2104,9 @@ msgctxt "@info:status"
 msgid "Connection failed"
 msgstr "Verbindung fehlgeschlagen"
 
-#: contents/ui/config/code/itemTypeCatalog.js:50
 #: contents/ui/config/ConfigItems.qml:1001
 #: contents/ui/config/ItemConfigurationDialog.qml:634
+#: contents/ui/config/code/itemTypeCatalog.js:50
 msgid "Container"
 msgstr "Behälter"
 
@@ -2152,8 +2158,8 @@ msgstr "Zielbreite des Kontextmenüs"
 msgid "Control Center"
 msgstr "Kontrollzentrum"
 
-#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:482
 #: contents/ui/components/DockItem.qml:50
+#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:482
 msgctxt "@title"
 msgid "Control Center"
 msgstr "Kontrollzentrum"
@@ -4286,10 +4292,10 @@ msgid "No virtual desktops were found."
 msgstr "Es wurden keine virtuellen Desktops gefunden."
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:26
-#: contents/ui/config/components/PopupAnimationSettings.qml:22
 #: contents/ui/config/ConfigAspect.qml:154
 #: contents/ui/config/ConfigMouse.qml:42 contents/ui/config/ConfigMouse.qml:49
 #: contents/ui/config/ConfigMouse.qml:56 contents/ui/config/ConfigPopups.qml:36
+#: contents/ui/config/components/PopupAnimationSettings.qml:22
 msgid "None"
 msgstr "Keine"
 
@@ -4349,9 +4355,9 @@ msgid "Not selected for the new folder"
 msgstr "Nicht für den neuen Ordner ausgewählt"
 
 #: contents/ui/components/NotePopup.qml:133
-#: contents/ui/config/code/itemTypeCatalog.js:55
 #: contents/ui/config/ConfigItems.qml:1006
 #: contents/ui/config/ItemConfigurationDialog.qml:639
+#: contents/ui/config/code/itemTypeCatalog.js:55
 msgid "Note"
 msgstr "Hinweis"
 
@@ -5516,9 +5522,9 @@ msgstr "Für den neuen Ordner ausgewählt"
 msgid "Selected package: %s\\n"
 msgstr "Ausgewähltes Paket: %s\\n"
 
-#: contents/ui/config/code/itemTypeCatalog.js:59
 #: contents/ui/config/ConfigItems.qml:1007
 #: contents/ui/config/ItemConfigurationDialog.qml:640
+#: contents/ui/config/code/itemTypeCatalog.js:59
 msgid "Separator"
 msgstr "Trennzeichen"
 
@@ -5825,9 +5831,9 @@ msgctxt "@title"
 msgid "Sound Volume"
 msgstr "Lautstärke"
 
-#: contents/ui/config/code/itemTypeCatalog.js:63
 #: contents/ui/config/ConfigItems.qml:1008
 #: contents/ui/config/ItemConfigurationDialog.qml:641
+#: contents/ui/config/code/itemTypeCatalog.js:63
 msgid "Spacer"
 msgstr "Abstandshalter"
 
@@ -7098,10 +7104,10 @@ msgstr "ungültige Anzahl paralleler Jobs: %s\\n"
 msgid "pacman is required on Arch-family distributions"
 msgstr "pacman ist auf Distributionen der Arch-Familie erforderlich"
 
-#: contents/ui/config/components/ActionDialog.qml:91
 #: contents/ui/config/ConfigItems.qml:1024
 #: contents/ui/config/ItemActionEditor.qml:44
 #: contents/ui/config/ItemConfigurationDialog.qml:727
+#: contents/ui/config/components/ActionDialog.qml:91
 msgid "rows"
 msgstr "Reihen"
 

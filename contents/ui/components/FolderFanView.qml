@@ -9,7 +9,7 @@ Item {
     id: root
 
     property var apps: []
-    property int iconSize: 44
+    property int iconSize: 42
     property int rowLimit: 6
     // Height the popup can give the arc, in pixels. Zero means it has no
     // ceiling: the fan then shows the number of rows it is configured with.
@@ -214,6 +214,12 @@ Item {
     readonly property real maximumNaturalLabelWidth: showLabels
         ? Math.ceil(labelWidthProbe.implicitWidth)
             + labelHorizontalPadding * 2 + labelRoundingMargin : 0
+    // Font-aware resting ceiling requested for popup names: roughly ten wide
+    // glyphs plus the pill padding. The full name remains in the model and the
+    // shared marquee reveals it without changing this geometry.
+    readonly property real maximumRestingLabelWidth: showLabels
+        ? Math.ceil(restingLabelWidthMetrics.advanceWidth)
+            + labelHorizontalPadding * 2 + labelRoundingMargin : 0
     // Width the fan reserves for one name, so a single long entry cannot widen
     // the popup on its own, derived from the reference as a share of the pitch.
     //
@@ -223,6 +229,8 @@ Item {
     // row count that the reservation itself decides.
     readonly property real maximumLabelWidth: Math.max(1,
         rowHeight * maximumLabelWidthPitchFactor)
+    readonly property real itemLabelWidthLimit: Math.min(maximumLabelWidth,
+        maximumRestingLabelWidth)
     // Width the closing row needs for its own text, from the variants it can show
     // and from the model alone. It is a floor of the reservation, so neither the
     // short label nor the count with the file manager is ever cut, even when
@@ -234,7 +242,7 @@ Item {
     // back to what one row may take, but never less than the closing row needs.
     readonly property real desiredLabelWidth: showLabels
         ? Math.max(actionCaptionWidth,
-            Math.min(maximumNaturalLabelWidth, maximumLabelWidth)) : 0
+            Math.min(maximumNaturalLabelWidth, itemLabelWidthLimit)) : 0
     // Widest row the fan shows (pill, gap and icon). A row turns about the
     // centre of its icon, so its pill leaves the row band with distance: the
     // room it needs is measured below, per row and per end, instead of guessed
@@ -351,6 +359,14 @@ Item {
         text: "Ag"
     }
 
+    TextMetrics {
+        id: restingLabelWidthMetrics
+        font.family: root.fontFamily
+        font.pointSize: root.fontSize
+        font.weight: Font.DemiBold
+        text: "MMMMMMMMMM"
+    }
+
     Text {
         id: labelWidthProbe
         visible: false
@@ -409,11 +425,6 @@ Item {
         text: ""
     }
 
-    // Display names of the entries, already fitted to the width the fan
-    // reserves. A long name is cut on a word boundary, so "Documentos del…"
-    // reads better than "Docum…yecto"; the full name stays available as the
-    // accessible name of its row.
-    property var labelDisplayNames: []
     // Label of the closing row when the fan omits nothing: the glyph beside it
     // opens the folder, so the text stays a short action word on purpose. When
     // the static fan really leaves entries out, the same row counts them the way
@@ -490,26 +501,17 @@ Item {
         return characters + "…"
     }
 
-    // Fits every caption the fan shows: the names of the entries and the fixed
-    // sentence of the closing row. Only called from handlers or from
-    // `Component.onCompleted`, never from a binding.
+    // Fits the fixed sentence of the closing row. Application names remain
+    // complete and are elided and revealed by PopupMarqueeLabel.
     function refreshFittedLabels() {
-        const items = apps || []
-        const names = []
-        for (let index = 0; index < items.length; index++) {
-            const app = items[index]
-            names.push(fitLabelToWidth(
-                app && app.name ? String(app.name) : "",
-                maximumLabelTextWidth))
-        }
-        labelDisplayNames = names
         locationActionDisplayName = fitLabelToWidth(locationActionLabelText,
             maximumLabelTextWidth)
     }
 
     function labelDisplayNameFor(index) {
-        return index >= 0 && index < labelDisplayNames.length
-            ? String(labelDisplayNames[index]) : ""
+        const items = apps || []
+        const app = index >= 0 && index < items.length ? items[index] : null
+        return app && app.name ? String(app.name) : ""
     }
 
     onAppsChanged: {
@@ -910,7 +912,7 @@ Item {
                         + root.labelRoundingMargin
                 readonly property real labelWidth: Math.min(
                     availableLabelWidth, naturalLabelWidth,
-                    root.desiredLabelWidth)
+                    root.itemLabelWidthLimit)
                 // The pill hugs its own name and sits next to the icon, so a name
                 // always reads inside the pill that carries it, beside its own
                 // icon, instead of at the far end of a row-wide surface.
@@ -923,8 +925,8 @@ Item {
                     font.family: root.fontFamily
                     font.pointSize: root.fontSize
                     font.weight: Font.DemiBold
-                    // Measures the name as it is shown, so the capsule hugs the
-                    // text that is really painted and never has to elide it.
+                    // Measure the full name; the pill applies the resting cap
+                    // and the shared label reveals this same source on hover.
                     text: root.labelDisplayNameFor(fanDelegate.index)
                 }
 
@@ -979,14 +981,17 @@ Item {
                         antialiasing: true
                         Accessible.ignored: true
 
-                        PunchiMenuComponents.PunchiMenuTextShadowLabel {
+                        PopupMarqueeLabel {
                             objectName: "folderFanLabel-" + fanDelegate.index
                             anchors.fill: parent
                             anchors.leftMargin: root.labelHorizontalPadding
                             anchors.rightMargin: root.labelHorizontalPadding
-                            // Already cut on a word boundary by the fan, so a
-                            // long name reads as "Documentos del…".
+                            // The source remains complete; the shared viewport
+                            // owns the resting ellipsis and hover/focus reveal.
                             text: root.labelDisplayNameFor(fanDelegate.index)
+                            hovered: fanPointer.containsMouse
+                            focused: fanDelegate.visualFocus
+                            motionEnabled: root.motionEnabled
                             color: Kirigami.Theme.textColor
                             // The leaned rows take the same graduated shadow as
                             // the rest of the popup: the arc turns the texture of
@@ -997,13 +1002,9 @@ Item {
                             font.family: root.fontFamily
                             font.pointSize: root.fontSize
                             font.weight: Font.DemiBold
-                            // ShadowedLabel defaults to Text.Wrap, which breaks
-                            // a word that does not fit and makes elide inert.
-                            wrapMode: Text.NoWrap
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: root.iconsOnRight
                                 ? Text.AlignRight : Text.AlignLeft
-                            elide: Text.ElideMiddle
                         }
                     }
 

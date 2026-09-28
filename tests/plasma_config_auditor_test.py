@@ -183,6 +183,41 @@ class PlasmaConfigAuditorTest(unittest.TestCase):
             )
             self.assertEqual("", result.stderr)
 
+    def test_duplicate_schema_and_unexpected_multiple_owners_fail(self) -> None:
+        """Ambiguous schema and KCM ownership cannot silently pass."""
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            duplicate_root = Path(temporary_directory) / "duplicate"
+            owners_root = Path(temporary_directory) / "owners"
+            self.create_project(
+                duplicate_root,
+                extra_entry=(
+                    '<entry name="iconSize" type="Int">'
+                    "<default>48</default></entry>"
+                ),
+            )
+            self.create_project(owners_root)
+            (owners_root / "contents/ui/config/ConfigMouse.qml").write_text(
+                "Item { property int cfg_iconSize: 32 }\n",
+                encoding="utf-8",
+            )
+            (owners_root / "contents/config/config.qml").write_text(
+                """ConfigModel {
+    ConfigCategory { source: "config/ConfigGeneral.qml" }
+    ConfigCategory { source: "config/ConfigMouse.qml" }
+}
+""",
+                encoding="utf-8",
+            )
+
+            duplicate_report = MODULE.audit_project(duplicate_root)
+            owners_report = MODULE.audit_project(owners_root)
+
+            self.assertIn("schema-duplicate", self.issue_codes(duplicate_report))
+            self.assertIn(
+                "unexpected-multiple-owners", self.issue_codes(owners_report)
+            )
+
 
 if __name__ == "__main__":
     unittest.main()

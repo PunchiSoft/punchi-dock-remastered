@@ -18,7 +18,7 @@
       <default></default>
     </entry>
     <entry name="iconSize" type="Int">
-      <default>32</default>
+      <default>42</default>
     </entry>
     <entry name="iconSpacing" type="Int">
       <default>8</default>
@@ -71,7 +71,7 @@
       <default>false</default>
     </entry>
     <entry name="popupTextShadowsEnabled" type="Bool">
-      <default>false</default>
+      <default>true</default>
     </entry>
     <entry name="menuTextShadowsEnabled" type="Bool">
       <default>false</default>
@@ -143,7 +143,7 @@
       <default>horizontal</default>
     </entry>
     <entry name="folderGridIconSize" type="Int">
-      <default>36</default>
+      <default>42</default>
     </entry>
     <entry name="folderGridColumns" type="Int">
       <default>3</default>
@@ -161,7 +161,7 @@
       <default>9</default>
     </entry>
     <entry name="folderListIconSize" type="Int">
-      <default>32</default>
+      <default>42</default>
     </entry>
     <entry name="folderListRows" type="Int">
       <default>4</default>
@@ -176,7 +176,7 @@
       <default>10</default>
     </entry>
     <entry name="folderDetailedIconSize" type="Int">
-      <default>32</default>
+      <default>42</default>
     </entry>
     <entry name="folderDetailedRows" type="Int">
       <default>4</default>
@@ -191,7 +191,7 @@
       <default>10</default>
     </entry>
     <entry name="folderFanIconSize" type="Int">
-      <default>44</default>
+      <default>42</default>
     </entry>
     <entry name="folderFanRows" type="Int">
       <default>6</default>
@@ -215,7 +215,7 @@
       <default>-1</default>
     </entry>
     <entry name="folderPopupScale" type="Double">
-      <default>1.0</default>
+      <default>1.5</default>
     </entry>
     <entry name="folderPopupBackgroundOpacityPercent" type="Int">
       <default>75</default>

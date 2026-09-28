@@ -108,6 +108,7 @@ Controls.Frame {
 
         ListView {
             id: itemList
+            objectName: "dockItemList"
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
@@ -118,6 +119,30 @@ Controls.Frame {
             model: root.itemModel
             currentIndex: root.controller.selectedIndex
             boundsBehavior: Flickable.StopAtBounds
+
+            // Focus alone is not a selection. Once the user presses a vertical
+            // navigation key, however, choose a predictable row and keep the
+            // controller (the source of truth for actions and notes) in sync.
+            Keys.onPressed: function(event) {
+                if (itemList.count <= 0) {
+                    return
+                }
+                if (event.key === Qt.Key_Down) {
+                    const nextIndex = root.controller.selectedIndex < 0
+                        ? 0
+                        : Math.min(root.controller.selectedIndex + 1,
+                            itemList.count - 1)
+                    root.controller.selectItem(nextIndex)
+                    event.accepted = true
+                } else if (event.key === Qt.Key_Up) {
+                    const previousIndex = root.controller.selectedIndex < 0
+                        ? itemList.count - 1
+                        : Math.max(root.controller.selectedIndex - 1, 0)
+                    root.controller.selectItem(previousIndex)
+                    event.accepted = true
+                }
+            }
+
             Controls.ScrollBar.vertical: Controls.ScrollBar {
                 policy: Controls.ScrollBar.AsNeeded
             }

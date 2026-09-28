@@ -14,23 +14,23 @@ Item {
         availableWidth: page.width
     }
 
-    property int cfg_folderGridIconSize: 36
+    property int cfg_folderGridIconSize: 42
     property int cfg_folderGridColumns: 3
     property int cfg_folderGridRows: 4
     property bool cfg_folderGridShowLabels: true
     property string cfg_folderGridFontFamily: ""
     property int cfg_folderGridFontSize: 9
-    property int cfg_folderListIconSize: 32
+    property int cfg_folderListIconSize: 42
     property int cfg_folderListRows: 4
     property bool cfg_folderListShowLabels: true
     property string cfg_folderListFontFamily: ""
     property int cfg_folderListFontSize: 10
-    property int cfg_folderDetailedIconSize: 32
+    property int cfg_folderDetailedIconSize: 42
     property int cfg_folderDetailedRows: 4
     property bool cfg_folderDetailedShowLabels: true
     property string cfg_folderDetailedFontFamily: ""
     property int cfg_folderDetailedFontSize: 10
-    property int cfg_folderFanIconSize: 44
+    property int cfg_folderFanIconSize: 42
     property int cfg_folderFanRows: 6
     property bool cfg_folderFanShowLabels: true
     property string cfg_folderFanFontFamily: ""
@@ -234,7 +234,7 @@ Item {
             }
 
             Controls.Label {
-                text: i18n("%1%", Math.round(Number(folderPopupScaleSlider.value || 1.0) * 100))
+                text: i18n("%1%", Math.round(Number(folderPopupScaleSlider.value || 1.5) * 100))
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: 56
             }

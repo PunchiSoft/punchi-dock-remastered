@@ -397,7 +397,11 @@ KCM.SimpleKCM {
 
     function setItems(nextItems, markAsChanged) {
         items = DockLogic.withSingletonItems(clone(nextItems))
-        selectedIndex = items.length > 0 ? Math.min(Math.max(selectedIndex, 0), items.length - 1) : -1
+        // Loading a non-empty model must not turn the explicit no-selection
+        // state into the first row. Add, move, remove and pending-edit flows set
+        // their intended index before reaching this normalization.
+        selectedIndex = ConfigItemsControllerJS.normalizedItemSelectionIndex(
+            selectedIndex, items.length)
         refreshFromItems(markAsChanged)
         consumePendingEditRequest()
     }

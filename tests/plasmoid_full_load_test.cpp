@@ -223,6 +223,7 @@ struct LoadResult {
     bool panelFlatGeometryValid = false;
     bool mediaCoverCentered = false;
     bool initialIconSizeCorrect = false;
+    bool initialFolderPopupDefaultsCorrect = false;
     bool dockItemsControllerAvailable = false;
     bool dynamicMoveBridgeAvailable = false;
     bool dynamicMoveRequestAccepted = false;
@@ -348,6 +349,8 @@ private Q_SLOTS:
             QVERIFY2(result.panelFlatGeometryValid, "The flat panel surface did not preserve its visible geometry");
             QVERIFY2(result.mediaCoverCentered, "The large horizontal media cover was not centered");
             QVERIFY2(result.initialIconSizeCorrect, "The icon size default or stored override was incorrect");
+            QVERIFY2(result.initialFolderPopupDefaultsCorrect,
+                     "The initial folder popup visual defaults were incorrect");
             QVERIFY2(result.dockItemsControllerAvailable, "The dock items controller is unavailable");
             QVERIFY2(result.dockItemCount > 0, "A clean first run did not load the default dock items");
             QVERIFY2(result.dynamicMoveBridgeAvailable,
@@ -410,7 +413,7 @@ private:
         beginRuntimeMessageCapture();
 
         // The second instance represents an existing user-selected size.
-        const int expectedIconSize = appletId == 1002U ? 64 : 32;
+        const int expectedIconSize = appletId == 1002U ? 64 : 42;
         if (appletId == 1002U) {
             auto stored = m_containment->config().group(QStringLiteral("Applets"))
                 .group(QString::number(appletId)).group(QStringLiteral("Configuration"))
@@ -431,7 +434,15 @@ private:
             auto *configuration = applet->configuration();
             result.initialIconSizeCorrect = configuration
                 && configuration->value(QStringLiteral("iconSize")).toInt() == expectedIconSize
-                && configuration->value(QStringLiteral("iconSizeDefault")).toInt() == 32;
+                && configuration->value(QStringLiteral("iconSizeDefault")).toInt() == 42;
+            result.initialFolderPopupDefaultsCorrect = configuration
+                && configuration->value(QStringLiteral("folderGridIconSize")).toInt() == 42
+                && configuration->value(QStringLiteral("folderListIconSize")).toInt() == 42
+                && configuration->value(QStringLiteral("folderDetailedIconSize")).toInt() == 42
+                && configuration->value(QStringLiteral("folderFanIconSize")).toInt() == 42
+                && configuration->value(QStringLiteral("folderPopupScale")).toDouble() == 1.5
+                && configuration->value(QStringLiteral("popupTextShadowsEnabled")).toBool()
+                && configuration->value(QStringLiteral("folderPopupTextShadowPercent")).toInt() == 25;
             result.containmentAssigned = applet->containment() == m_containment;
             result.pluginName = applet->pluginName();
             result.launchError = applet->launchErrorMessage();

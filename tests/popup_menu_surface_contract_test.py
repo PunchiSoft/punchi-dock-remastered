@@ -657,18 +657,24 @@ def main() -> int:
             "A label of the fan must not enable the fixed texture shadow of the "
             "shared label: the amount belongs to the configuration"
         )
-    # The chrome row of grid, list and detailed is an action, not the container:
-    # it shows the glyph of the reference and names the file manager the desktop
-    # opens a folder with, the way the closing row of the fan does.
+    # Grid integrates the action as its final cell; List and Detailed retain the
+    # chrome row, and Fan keeps its closing arc row. Every presentation names the
+    # file manager resolved by the desktop.
     for fragment, message in (
         ('i18nc("@action:button open the folder in the file manager"',
          "The chrome action must name the file manager that opens a folder"),
-        ("folderRoot.folderOpenerName.length > 0",
+        ("folderOpenerName.length > 0",
          "The chrome action must name the file manager the desktop resolved"),
         ('objectName: "folderOpenLocationGlyph"',
          "The chrome action must show the glyph of the reference"),
         ('objectName: "folderOpenLocationArrow"',
          "The glyph of the chrome action must carry the arrow of the reference"),
+        ('"_punchiOpenLocationAction": true',
+         "Grid must append a marked location action to its visual model"),
+        ('? "folderGridOpenLocationAction"',
+         "Grid must expose the location action as a normal final delegate"),
+        ('objectName: "folderGridOpenLocationArrow"',
+         "The Grid action must carry the arrow from the reference"),
     ):
         require(folder_popup_component, fragment, message)
     if "folderOpenLocationIcon" in folder_popup_component:
@@ -740,8 +746,8 @@ def main() -> int:
     )
     require(
         folder_popup_component,
-        '&& layoutMode !== "fan"',
-        "The Fan presentation must not retain conventional dialog chrome",
+        '&& (layoutMode === "list" || layoutMode === "detailed")',
+        "Only List and Detailed may reserve the separate location row",
     )
     for fragment, message in (
         ('folderPopupContent.layoutMode !== "fan"',
@@ -1047,23 +1053,29 @@ def main() -> int:
          "Folder popup content must not inherit the panel color set"),
         ("Kirigami.Theme.colorSet: Kirigami.Theme.Window",
          "Folder popup content must use the Window palette"),
-        ("property bool textShadowsEnabled: false",
-         "Folder popup text shadows must remain disabled by default"),
+        ("property bool textShadowsEnabled: true",
+         "Folder popup text shadows must remain enabled by default"),
     ):
         require(folder_popup_component, fragment, message)
 
     shadowed_labels = qml_object_bodies(
         folder_popup_component, "PunchiMenuComponents.PunchiMenuTextShadowLabel"
     )
-    # Four text surfaces: the folder title, the two cell captions (grid and
-    # list/detailed) and the container action that opens its folder in the file
-    # manager. The action label is a text surface of its own, so it is counted
-    # instead of being allowed to drift in unnoticed.
-    if len(shadowed_labels) != 4:
+    marquee_labels = qml_object_bodies(
+        folder_popup_component, "PopupMarqueeLabel"
+    )
+    # The title and container action remain direct shadow labels. The two app
+    # captions use the shared elided/marquee primitive so grid, list and detailed
+    # cannot drift into different long-name behaviours.
+    if len(shadowed_labels) != 2:
         raise AssertionError(
-            "Folder popup must retain exactly four themed shadow labels"
+            "Folder popup must retain exactly two direct themed shadow labels"
         )
-    for label in shadowed_labels:
+    if len(marquee_labels) != 2:
+        raise AssertionError(
+            "Folder popup must retain exactly two shared marquee labels"
+        )
+    for label in shadowed_labels + marquee_labels:
         require(
             label,
             "color: Kirigami.Theme.textColor",
@@ -1074,6 +1086,28 @@ def main() -> int:
             "shadowPercent: folderRoot.textShadowPercent",
             "Every folder popup shadow label must follow the configured amount",
         )
+
+    popup_marquee_label = (
+        PROJECT_ROOT / "contents/ui/components/PopupMarqueeLabel.qml"
+    ).read_text()
+    for fragment, message in (
+        ('text: "MMMMMMMMMM"',
+         "Popup names must derive their resting cap from ten wide glyphs"),
+        ("elide: Text.ElideRight",
+         "Popup names must show an ellipsis at rest"),
+        ("SmoothedAnimation {",
+         "Full popup names must reveal with a retargetable animation"),
+        ("Controls.ToolTip.visible: root.revealFullText && !root.motionEnabled",
+         "Reduced motion must expose the full popup name without movement"),
+    ):
+        require(popup_marquee_label, fragment, message)
+
+    for source, label in (
+        (folder_popup_component, "classic folder popup"),
+        (folder_fan_view, "folder fan"),
+    ):
+        require(source, "PopupMarqueeLabel {",
+                f"The {label} must use the shared long-name behaviour")
 
     for source, stale_fragment, message in (
         (config_items, "showContainerLabelsText",
@@ -1096,13 +1130,13 @@ def main() -> int:
     require(
         config_schema,
         '<entry name="popupTextShadowsEnabled" type="Bool">\n'
-        "      <default>false</default>",
-        "Popup text shadows must remain disabled in new configurations",
+        "      <default>true</default>",
+        "Popup text shadows must be enabled in new configurations",
     )
     require(
         dock_configuration,
-        "Plasmoid.configuration.popupTextShadowsEnabled === true",
-        "Runtime popup text shadows must remain opt-in",
+        "Plasmoid.configuration.popupTextShadowsEnabled !== false",
+        "Runtime popup text shadows must preserve the enabled default",
     )
     require(
         config_schema,
@@ -1111,6 +1145,35 @@ def main() -> int:
         "The folder popup must own the amount of its text shadow, with a mild "
         "default",
     )
+    for key in (
+        "folderGridIconSize",
+        "folderListIconSize",
+        "folderDetailedIconSize",
+        "folderFanIconSize",
+    ):
+        require(
+            config_schema,
+            f'<entry name="{key}" type="Int">\n'
+            "      <default>42</default>",
+            f"{key} must default to the shared 42 px popup icon size",
+        )
+    require(
+        config_schema,
+        '<entry name="folderPopupScale" type="Double">\n'
+        "      <default>1.5</default>",
+        "Folder popups must default to 150 percent scale",
+    )
+    for fragment, message in (
+        ("property int cfg_folderGridIconSize: 42",
+         "The grid KCM fallback must match the 42 px schema default"),
+        ("property int cfg_folderListIconSize: 42",
+         "The list KCM fallback must match the 42 px schema default"),
+        ("property int cfg_folderDetailedIconSize: 42",
+         "The detailed KCM fallback must match the 42 px schema default"),
+        ("property int cfg_folderFanIconSize: 42",
+         "The fan KCM fallback must match the 42 px schema default"),
+    ):
+        require(config_folder_popups, fragment, message)
     require(
         config_folder_popups,
         "cfg_folderPopupTextShadowPercent",

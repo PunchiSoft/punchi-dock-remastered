@@ -19,6 +19,15 @@ function displayFontName(value, automaticText) {
     return value && String(value).length > 0 ? String(value) : automaticText
 }
 
+function normalizedItemSelectionIndex(selectedIndex, itemCount) {
+    var count = Math.max(0, Math.floor(Number(itemCount) || 0))
+    var index = Number(selectedIndex)
+    if (count === 0 || !Number.isFinite(index) || index < 0) {
+        return -1
+    }
+    return Math.min(Math.floor(index), count - 1)
+}
+
 function compactListHeight(count, minRows, maxRows, rowHeight, footerHeight, framePadding) {
     var rows = Math.max(minRows, Math.min(maxRows, Math.max(1, count)))
     return rows * rowHeight + footerHeight + framePadding

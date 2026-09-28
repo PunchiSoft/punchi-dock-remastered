@@ -25,6 +25,36 @@ This repository is a modular rewrite of the original [Punchi Dock Plasmoid](http
 The current release is
 [v0.9.7.64](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64).
 
+## Current Development Highlights
+
+These changes are available in the repository after `0.9.7.64`; they are not a
+new tagged release yet.
+
+- **Four folder presentations**: Folder containers can use Grid, List,
+  Detailed, or the redesigned Fan view. Each presentation has its own global
+  icon, row, label, and typography profile. For containers backed by a real
+  folder, Grid includes “Open in Dolphin” as its final cell instead of adding a
+  separate footer.
+- **Better long-name handling**: Folder popup captions stay compact with an
+  ellipsis and reveal their complete name with a reversible hover or keyboard
+  focus animation. Reduced-motion environments use a stable tooltip instead.
+- **More useful first-run layout**: Home starts as a Fan, LibreOffice uses the
+  Detailed view, Graphics uses the simple List view, and Internet uses Grid
+  with a themed navigation-folder icon. Category-backed containers discover
+  the matching installed applications on first use.
+- **Larger floating defaults**: A new dock instance starts with 42 px dock
+  icons. Folder popup profiles start at 42 px, 150% global scale, and 25% text
+  shadows.
+- **Clearer item configuration**: Opening the Items page no longer selects the
+  first row implicitly. Pointer and keyboard navigation create an explicit
+  selection, and contextual notes explain every supported item type.
+- **Reproducible KConfig auditing**: The maintained configuration auditor checks
+  schema entries, KCM ownership, configuration pages, and reactive runtime
+  consumers with stable diagnostics and CI-friendly output.
+- **Control Center status made explicit**: The Control Center remains a preview
+  while its layouts, integrations, and interaction details continue to be
+  polished. It is not presented as a finished replacement for System Settings.
+
 ## What's New in 0.9.7.64
 
 - **Explanatory Notes for All Item Types**: Added contextual inline notes for all 11 item types in the configuration Items page, covering their behavior, constraints, and formatting guidelines. Notes are fully localized in Spanish, German, and Brazilian Portuguese.
@@ -74,42 +104,109 @@ notes and the validation performed for this version.
 See [the translation guide](po/README.md) for the catalog policy and
 contribution requirements.
 
-## Features
+## Capabilities
 
-- Floating dock and Plasma panel modes.
-- Pinned launchers and optional dynamic task entries.
-- Custom launchers with safe preservation of commands and arguments.
-- Window cards, live previews, and grouped-window controls, including a choice of cards, live thumbnails, or no preview popup.
-- Configurable folders with grid, list, and detail views, direct view switching
-  from the context menu, and launcher drag-and-drop from PunchiMenu or the
-  desktop, plus quick notes, trash, separators, and calendar items.
-- PunchiMenu application launcher with Normal and Fullscreen presentations,
-  search, categories, favorites, named application folders, selective hiding,
-  keyboard operation, a global shortcut, and native session actions. Compact
-  remains reserved for a future version.
-- Preliminary fullscreen Control Center with quick Wi-Fi and Bluetooth connections, display brightness and audio volume controls, Do Not Disturb, Light/Dark theme toggle, live Night Light temperature adjustment, and persistent notification history. This feature remains in development.
-- Optional PipeWire audio visualizer with six styles, dynamic or Plasma-themed colors, and up to 48 visual elements.
-- Plasma-themed popups with configurable opening animations, adaptive
-  theme-aware distance from the dock, smooth preview-to-menu transitions, and
-  continuous retargeting between dock items.
-- Native application and window actions in the context menus of pinned launchers and dynamic tasks.
-- Optional window-count badges for grouped applications with multiple windows.
-- Contextual MPRIS media cards with artwork, track information, playback controls, and an accessible mute or restore-volume action in every card layout.
-- A compact dock MPRIS item with selectable player, artwork fallback, vertical text modes, and launch-then-Play behavior.
-- Circular theme/custom color controls and configurable icon spacing with explicit visual units.
-- Persistent dock-item reordering by long press or keyboard, safe file
-  drag-and-drop onto pinned applications and the Trash, and item-aware unpin
-  actions for applications and folders.
-- An optional MPRIS card below live window previews, revealed after the preview to preserve visual continuity.
-- Asynchronous trash operations with activity, progress, completion sound, and themed KDE notifications.
-- External JSON background themes stored in a managed user library, with recursive folder import, removal, and safe Plasma fallback.
-- Flat 2D and shelf-style 2.5D renderers with theme-defined separators, borders, gradients, rims, and bounded glow.
-- Theme-adaptive clock and calendar shadows for readability over varying backgrounds.
-- Dynamic compatibility with TaskManager APIs exposed by different Plasma 6 versions.
-- Portable application window icons and task matching through both application IDs and launcher URLs.
-- Stable icon sizing when a Plasma panel switches between always-visible and auto-hide modes.
-- Standard XDG user storage compliance: User-imported JSON themes (`~/.local/share/punchi-dock-remastered/`) and instance item configurations (`~/.config/punchi-dock/`) use isolated, atomic-write storage to prevent desktop config corruption and preserve custom data across plasmoid upgrades.
-- Native C++ QML integration for application discovery, runtime services, audio analysis, and trash operations.
+### Dock, launchers, and running applications
+
+- Runs as a standalone floating dock or as part of a Plasma panel, in horizontal
+  or vertical orientation, with panel-aware sizing and input regions.
+- Combines pinned applications with an optional dynamic running-applications
+  section. Tasks support grouped windows, native application/window actions,
+  window-count badges, minimize effects, and current-desktop filtering.
+- Shows configurable window cards, live thumbnails, or no preview popup. An
+  optional MPRIS card can appear below a live window preview without replacing
+  the window controls.
+- Supports custom launchers while preserving commands and arguments, persistent
+  reordering by long press or keyboard, item-aware unpin actions, and safe file
+  drops onto applications and the Trash.
+- Matches tasks through application IDs and launcher URLs and adapts to the
+  TaskManager roles exposed by different Plasma 6 versions.
+
+### Dock items and folder containers
+
+- Supports applications, PunchiMenu, Konsole commands, folders, dynamic
+  applications, Control Center, Trash, calendar/clock, quick notes, media, and
+  visual separators. The Items page explains the behavior and limitations of
+  each type.
+- Folder containers offer Grid, List, Detailed, and Fan presentations. Profiles
+  control icon size, visible rows, labels, fonts, scale, opacity, blur, opening
+  motion, and text shadows globally for each presentation.
+- Containers can be filled manually or seeded from installed application
+  categories. They support direct layout switching and launcher drag-and-drop
+  from PunchiMenu or the desktop. A Grid backed by a filesystem location places
+  its file-manager action directly after the visible items; List, Detailed, and
+  Fan preserve presentation-specific action rows.
+- Long application names are elided without changing popup geometry and reveal
+  their full value on hover or keyboard focus. Accessible names always retain
+  the complete text.
+- The Fan presentation follows the dock edge, supports keyboard and pointer
+  operation, can optionally scroll, and offers a final action for opening the
+  backing folder when entries do not fit.
+
+### PunchiMenu application launcher
+
+- Normal and Fullscreen presentations with application search, categories,
+  favorites, named application folders, selective hiding, and native session
+  actions. Compact remains reserved for a future version.
+- Full keyboard navigation, visible focus, a configurable global shortcut, and
+  shared interaction states for pointer, focus, press, selection, and drag
+  targets.
+- Application-folder overlays preserve focus, outside-click dismissal, wheel
+  blocking, Escape handling, and theme-derived modal surfaces.
+
+### Popups, media, and desktop utilities
+
+- Plasma-themed folder, task, media, Trash, calendar, note, and action popups
+  with adaptive placement, configurable opening animations, theme-aware gaps,
+  blur where supported, and continuous retargeting between dock items.
+- Contextual MPRIS cards provide artwork, track metadata, playback controls,
+  player selection, artwork fallback, and accessible mute/restore-volume
+  actions. A compact dock media item supports horizontal and vertical layouts.
+- Trash operations run asynchronously with progress, activity feedback,
+  completion sound, and themed KDE notifications.
+- Calendar and clock surfaces use theme-adaptive text shadows, while notes keep
+  their own stored content and popup workflow.
+- An optional PipeWire audio spectrum offers six visual styles, dynamic or
+  Plasma-theme colors, configurable direction and intensity, and up to 48
+  visual elements.
+
+### Appearance and configuration
+
+- Uses Plasma theme colors and surfaces by default, including light/dark theme
+  adaptation, themed separators, borders, shadows, blur regions, and popup
+  backgrounds.
+- Includes flat 2D and shelf-style 2.5D dock renderers with gradients, rims,
+  reflections, bounded glow, indicators, labels, spacing, and hover motion.
+- Supports external JSON background themes in a managed user library, including
+  recursive import, safe removal, validation, and automatic Plasma fallback.
+- Configuration changes apply reactively without restarting `plasmashell`.
+  Apply, Cancel, defaults, per-profile controls, and persisted item data use the
+  Plasma KConfig/KCM contract.
+- Stores imported themes under
+  `~/.local/share/punchi-dock-remastered/` and instance item data under
+  `~/.config/punchi-dock/` using isolated, atomic-write storage.
+
+### Preliminary Control Center
+
+The Control Center is an in-development preview, not a finished replacement for
+KDE System Settings. It currently explores fullscreen and floating surfaces for
+Wi-Fi, Bluetooth, audio volume, display brightness, Do Not Disturb, Light/Dark
+theme switching, Night Light temperature, media, quick applications, and
+notification history. Some controls, integrations, placeholders, and layouts
+are still being refined and may change before the 1.0 release.
+
+### Native integration, accessibility, and reliability
+
+- Native C++ QML integration handles application discovery, task and window
+  services, category classification, audio analysis, Trash operations, theme
+  validation, popup blur, panel geometry, and input-region synchronization.
+- Designed primarily for Wayland with secondary X11 support, while preserving
+  keyboard navigation, accessible names and roles, visible focus, theme
+  contrast, display scaling, and reduced-motion behavior.
+- Development gates include full applet loading and teardown, component QML
+  runtime tests, native integration tests, translation validation, strict
+  `qmllint` baselines, package checks, temporary-environment cleanup, and a
+  reproducible KConfig/KCM connectivity auditor.
 
 ## Requirements
 
@@ -220,7 +317,7 @@ Designed for developers and contributors who want full codebase validation:
 ```
 
 - Runs `qmllint` static code checks according to the distribution baseline.
-- Configures CMake with `BUILD_TESTING=ON` and runs the complete 67-test CTest suite (architecture contracts, shaders, lifecycle, Plasma integration, and native backend).
+- Configures CMake with `BUILD_TESTING=ON` and runs the complete 133-test CTest suite (architecture contracts, QML runtime, lifecycle, Plasma integration, configuration auditing, and native backend).
 - Supports CLI options such as:
 
 ```bash

@@ -91,7 +91,7 @@ var items = [
         "sourceCategory": "Development"
     },
     {
-        "_comment": "Category container. Defaults to Graphics and can be refreshed from the user's installed launchers.",
+        "_comment": "Category container in the simple list presentation. Defaults to Graphics and can be refreshed from the user's installed launchers.",
         "type": "folder",
         "name": "Graphics",
         "icon": "folder-pictures",
@@ -116,11 +116,11 @@ var items = [
         ]
     },
     {
-        "_comment": "Category container in the fan presentation. Its list is filled from the user's installed launchers on the first install and becomes a normal editable container afterwards, so the category capability is visible out of the box.",
+        "_comment": "Category container in the grid presentation. Its list is filled from the user's installed launchers on the first install and becomes a normal editable container afterwards, so the category capability is visible out of the box.",
         "type": "folder",
         "name": "Internet",
-        "icon": "applications-internet",
-        "layout": "fan",
+        "icon": "folder-html",
+        "layout": "grid",
         "sourceType": "category",
         "sourceCategory": "Network",
         "columns": 0,

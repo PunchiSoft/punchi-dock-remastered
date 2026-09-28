@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.64\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-27 12:10-0300\n"
+"POT-Creation-Date: 2026-09-27 17:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -240,11 +240,11 @@ msgstr ""
 msgid "%1 px"
 msgstr ""
 
-#: contents/ui/config/components/ActionDialog.qml:92
 #: contents/ui/config/ConfigItems.qml:1025
 #: contents/ui/config/ItemActionEditor.qml:45
 #: contents/ui/config/ItemActionEditor.qml:170
 #: contents/ui/config/ItemConfigurationDialog.qml:728
+#: contents/ui/config/components/ActionDialog.qml:92
 msgid "%1 rows"
 msgstr ""
 
@@ -317,8 +317,6 @@ msgstr ""
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:473
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:508
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:543
-#: contents/ui/config/components/PopupAnimationSettings.qml:82
-#: contents/ui/config/components/PopupAnimationSettings.qml:107
 #: contents/ui/config/ConfigFolderPopups.qml:237
 #: contents/ui/config/ConfigFolderPopups.qml:271
 #: contents/ui/config/ConfigFolderPopups.qml:315
@@ -331,6 +329,8 @@ msgstr ""
 #: contents/ui/config/ConfigPopups.qml:210
 #: contents/ui/config/ConfigPopups.qml:249
 #: contents/ui/config/ConfigPopups.qml:285
+#: contents/ui/config/components/PopupAnimationSettings.qml:82
+#: contents/ui/config/components/PopupAnimationSettings.qml:107
 #, javascript-format
 msgid "%1%"
 msgstr ""
@@ -491,15 +491,6 @@ msgid ""
 "line."
 msgstr ""
 
-#: contents/ui/config/code/itemNotes.js:52
-msgctxt "@info <b> marks the note label"
-msgid ""
-"<b>Note:</b> Only one Control Center can be added to the Dock. It groups "
-"quick system controls — such as volume, brightness, networks and night light "
-"— and notifications. Use Configure above to choose which controls appear and "
-"adjust their layout."
-msgstr ""
-
 #: contents/ui/config/code/itemNotes.js:67
 msgctxt "@info <b> marks the note label"
 msgid ""
@@ -527,6 +518,15 @@ msgid ""
 "with a right click. Applications can be dragged out of the menu to the Dock "
 "or onto another application to group them, and an application's menu creates "
 "folders, moves applications between them and marks favorites."
+msgstr ""
+
+#: contents/ui/config/code/itemNotes.js:52
+msgctxt "@info <b> marks the note label"
+msgid ""
+"<b>Preview:</b> The Control Center is not fully polished yet. Only one can "
+"be added to the Dock. It groups quick system controls — such as volume, "
+"brightness, networks and night light — and notifications. Use Configure "
+"above to choose which controls appear and adjust their layout."
 msgstr ""
 
 #: scripts-user/setup.sh:85
@@ -1318,8 +1318,8 @@ msgid "Bottom to top"
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:29
-#: contents/ui/config/components/PopupAnimationSettings.qml:19
 #: contents/ui/config/ConfigMouse.qml:52
+#: contents/ui/config/components/PopupAnimationSettings.qml:19
 msgid "Bounce"
 msgstr ""
 
@@ -1383,8 +1383,8 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml:108
 #: contents/ui/components/NotePopup.qml:289
+#: contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml:108
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:388
 #: contents/ui/config/ConfigAspect.qml:476
 #: contents/ui/config/ItemConfigurationDialog.qml:837
@@ -1517,8 +1517,8 @@ msgstr ""
 msgid "Choose Window Count Badge Color"
 msgstr ""
 
-#: contents/ui/config/code/configItemsWorkflowHelper.js:97
 #: contents/ui/config/ConfigItems.qml:474
+#: contents/ui/config/code/configItemsWorkflowHelper.js:97
 msgid "Choose a folder first."
 msgstr ""
 
@@ -1672,8 +1672,8 @@ msgstr ""
 msgid "Clean configuration file?"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
 #: contents/ui/components/NotePopup.qml:175
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
 msgid "Clear"
 msgstr ""
 
@@ -1934,9 +1934,9 @@ msgctxt "@info:status"
 msgid "Connection failed"
 msgstr ""
 
-#: contents/ui/config/code/itemTypeCatalog.js:50
 #: contents/ui/config/ConfigItems.qml:1001
 #: contents/ui/config/ItemConfigurationDialog.qml:634
+#: contents/ui/config/code/itemTypeCatalog.js:50
 msgid "Container"
 msgstr ""
 
@@ -1988,8 +1988,8 @@ msgstr ""
 msgid "Control Center"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:482
 #: contents/ui/components/DockItem.qml:50
+#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:482
 msgctxt "@title"
 msgid "Control Center"
 msgstr ""
@@ -4010,10 +4010,10 @@ msgid "No virtual desktops were found."
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:26
-#: contents/ui/config/components/PopupAnimationSettings.qml:22
 #: contents/ui/config/ConfigAspect.qml:154
 #: contents/ui/config/ConfigMouse.qml:42 contents/ui/config/ConfigMouse.qml:49
 #: contents/ui/config/ConfigMouse.qml:56 contents/ui/config/ConfigPopups.qml:36
+#: contents/ui/config/components/PopupAnimationSettings.qml:22
 msgid "None"
 msgstr ""
 
@@ -4073,9 +4073,9 @@ msgid "Not selected for the new folder"
 msgstr ""
 
 #: contents/ui/components/NotePopup.qml:133
-#: contents/ui/config/code/itemTypeCatalog.js:55
 #: contents/ui/config/ConfigItems.qml:1006
 #: contents/ui/config/ItemConfigurationDialog.qml:639
+#: contents/ui/config/code/itemTypeCatalog.js:55
 msgid "Note"
 msgstr ""
 
@@ -5184,9 +5184,9 @@ msgstr ""
 msgid "Selected package: %s\\n"
 msgstr ""
 
-#: contents/ui/config/code/itemTypeCatalog.js:59
 #: contents/ui/config/ConfigItems.qml:1007
 #: contents/ui/config/ItemConfigurationDialog.qml:640
+#: contents/ui/config/code/itemTypeCatalog.js:59
 msgid "Separator"
 msgstr ""
 
@@ -5478,9 +5478,9 @@ msgctxt "@title"
 msgid "Sound Volume"
 msgstr ""
 
-#: contents/ui/config/code/itemTypeCatalog.js:63
 #: contents/ui/config/ConfigItems.qml:1008
 #: contents/ui/config/ItemConfigurationDialog.qml:641
+#: contents/ui/config/code/itemTypeCatalog.js:63
 msgid "Spacer"
 msgstr ""
 
@@ -6535,10 +6535,10 @@ msgstr ""
 msgid "pacman is required on Arch-family distributions"
 msgstr ""
 
-#: contents/ui/config/components/ActionDialog.qml:91
 #: contents/ui/config/ConfigItems.qml:1024
 #: contents/ui/config/ItemActionEditor.qml:44
 #: contents/ui/config/ItemConfigurationDialog.qml:727
+#: contents/ui/config/components/ActionDialog.qml:91
 msgid "rows"
 msgstr ""
 

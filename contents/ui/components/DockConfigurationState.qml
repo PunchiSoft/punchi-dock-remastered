@@ -85,7 +85,7 @@ QtObject {
     readonly property bool windowPreviewTextShadowsEnabled:
         Plasmoid.configuration.windowPreviewTextShadowsEnabled === true
     readonly property bool popupTextShadowsEnabled:
-        Plasmoid.configuration.popupTextShadowsEnabled === true
+        Plasmoid.configuration.popupTextShadowsEnabled !== false
     // Amount of the text shadow of the folder popups, in percent. Zero removes
     // the shadow completely, so the value cannot fall back on a default when it
     // is present: only a missing or unusable value does.
@@ -113,7 +113,7 @@ QtObject {
         Plasmoid.configuration.menuTextShadowsEnabled === true
 
     readonly property int folderGridIconSize: Math.max(24, Math.min(64,
-        Number(Plasmoid.configuration.folderGridIconSize || 36)))
+        Number(Plasmoid.configuration.folderGridIconSize || 42)))
     readonly property int folderGridColumns: Math.max(1, Math.min(8,
         Number(Plasmoid.configuration.folderGridColumns || 3)))
     readonly property int folderGridRows: Math.max(1, Math.min(8,
@@ -126,7 +126,7 @@ QtObject {
         Number(Plasmoid.configuration.folderGridFontSize || 9)))
 
     readonly property int folderListIconSize: Math.max(24, Math.min(64,
-        Number(Plasmoid.configuration.folderListIconSize || 32)))
+        Number(Plasmoid.configuration.folderListIconSize || 42)))
     readonly property int folderListRows: Math.max(1, Math.min(8,
         Number(Plasmoid.configuration.folderListRows || 4)))
     readonly property bool folderListShowLabels:
@@ -137,7 +137,7 @@ QtObject {
         Number(Plasmoid.configuration.folderListFontSize || 10)))
 
     readonly property int folderDetailedIconSize: Math.max(24, Math.min(64,
-        Number(Plasmoid.configuration.folderDetailedIconSize || 32)))
+        Number(Plasmoid.configuration.folderDetailedIconSize || 42)))
     readonly property int folderDetailedRows: Math.max(1, Math.min(8,
         Number(Plasmoid.configuration.folderDetailedRows || 4)))
     readonly property bool folderDetailedShowLabels:
@@ -148,7 +148,7 @@ QtObject {
         Number(Plasmoid.configuration.folderDetailedFontSize || 10)))
 
     readonly property int folderFanIconSize: Math.max(24, Math.min(64,
-        Number(Plasmoid.configuration.folderFanIconSize || 44)))
+        Number(Plasmoid.configuration.folderFanIconSize || 42)))
     readonly property int folderFanRows: Math.max(1, Math.min(8,
         Number(Plasmoid.configuration.folderFanRows || 6)))
     readonly property bool folderFanShowLabels:
@@ -169,7 +169,7 @@ QtObject {
             : root.legacyFolderPopupDistancePercent()
     }
     readonly property real folderPopupScale: Math.max(0.5, Math.min(3.0,
-        Number(Plasmoid.configuration.folderPopupScale || 1.0)))
+        Number(Plasmoid.configuration.folderPopupScale || 1.5)))
     readonly property real folderPopupBackgroundOpacity: {
         const requestedPercent = Number(
             Plasmoid.configuration.folderPopupBackgroundOpacityPercent)

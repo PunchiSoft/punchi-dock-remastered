@@ -202,6 +202,24 @@ TestCase {
         })
     }
 
+    function test_longNameKeepsFullSourceInsideCappedPill() {
+        const longName = "An extraordinarily long application name"
+        fanView.apps = makeNamedApps(3, longName)
+        settleLayout()
+
+        const first = delegateAt(0)
+        const pill = findChild(first, "folderFanPill-0")
+        const label = findChild(first, "folderFanLabel-0")
+        verify(pill !== null)
+        verify(label !== null)
+        verify(label.overflowing,
+            "A long fan name must use the shared elided viewport")
+        verify(pill.width <= fanView.itemLabelWidthLimit + 0.5,
+            "A long name must not widen its pill beyond the resting cap")
+        compare(label.text, longName + " 0",
+            "The marquee source must retain the complete accessible name")
+    }
+
     function test_curveOriginFollowsThePanelFacingEdge() {
         const first = delegateAt(0)
         const third = delegateAt(2)
@@ -443,8 +461,8 @@ TestCase {
         ]
         wait(0)
 
-        // Every pill renders its name on a single line, and the fan has cut
-        // every name enough that the pill never has to elide it.
+        // Every pill keeps a fixed single-line viewport. Long source names are
+        // preserved by the shared label and elided inside that viewport.
         for (let index = 0; index < fanView.itemCount; index++) {
             const label = findChild(fanView, "folderFanLabel-" + index)
             const pill = findChild(fanView, "folderFanPill-" + index)
@@ -452,13 +470,10 @@ TestCase {
             verify(label !== null, "Missing fan label " + index)
             verify(pill !== null, "Missing fan pill " + index)
             verify(icon !== null, "Missing fan icon " + index)
-            compare(label.wrapMode, Text.NoWrap,
-                "A pill must not wrap its word")
-            compare(label.lineCount, 1,
-                "Fan label " + index + " wrapped into several lines")
-            verify(label.implicitWidth <= label.width,
-                "Fan label " + index + " overflows its own pill: "
-                    + label.implicitWidth + " > " + label.width)
+            verify(label.viewportWidth <= label.width,
+                "Fan label " + index + " exceeds its fixed viewport")
+            verify(label.height <= pill.height,
+                "Fan label " + index + " exceeds its one-line pill")
             // The pill is the text plus its own padding, nothing else: the icon
             // has no surface of its own, exactly as in the reference.
             compare(pill.width, label.width
@@ -474,10 +489,10 @@ TestCase {
         }
 
         const oversized = findChild(fanView, "folderFanLabel-5")
-        verify(oversized.text.endsWith("\u2026"),
-            "A name wider than the envelope must be cut: " + oversized.text)
-        compare(oversized.lineCount, 1,
-            "A cut name must stay on one line")
+        compare(oversized.text,
+            "UnbrokenApplicationNameThatCannotFitInsideTheEnvelope")
+        verify(oversized.overflowing,
+            "A name wider than the envelope must be visually elided")
 
         const fitting = findChild(fanView, "folderFanLabel-3")
         compare(fitting.text, "Draw",
@@ -744,7 +759,7 @@ TestCase {
         return true
     }
 
-    function test_longNamesAreCutOnAWordBoundary() {
+    function test_longNamesKeepTheirSourceAndUseTheSharedEllipsis() {
         fanView.showLabels = true
         fanView.apps = [
             {name: "Documents of the whole project", icon: "folder"},
@@ -755,22 +770,11 @@ TestCase {
 
         const label = findChild(fanView, "folderFanLabel-0")
         verify(label !== null)
-        const shown = String(label.text)
-        verify(shown.length > 0, "A long name must still read something")
-        verify(shown.endsWith("\u2026"),
-            "A capped name must announce that it is cut: " + shown)
-        const kept = shown.slice(0, -1)
-        verify(kept.length > 0)
-        verify(String(fanView.apps[0].name).startsWith(kept),
-            "A capped name must keep a prefix of the real name")
-        // The cut lands on a word start, never inside one, so the name reads as
-        // whole words instead of stopping mid-word.
-        const words = String(fanView.apps[0].name).split(" ")
-        const keptWords = kept.split(" ")
-        compare(kept, words.slice(0, keptWords.length).join(" "),
-            "A capped name must stop on a word boundary")
-        verify(keptWords.length < words.length,
-            "A capped name must really leave words out: " + shown)
+        compare(label.text, "Documents of the whole project")
+        verify(label.overflowing,
+            "A capped name must activate the shared resting ellipsis")
+        verify(label.viewportWidth <= label.maximumRestingWidth,
+            "A capped name must stay within the calculated ten-glyph ceiling")
 
         // The full name stays available to readers.
         const delegate = delegateAt(0)
@@ -933,9 +937,6 @@ TestCase {
         fanView.revealProgress = 1
         settleLayout()
 
-        const settledScale = findChild(fanView,
-            "folderFanRowContent-0").scale
-
         fanView.revealProgress = 0
         wait(0)
 
@@ -968,8 +969,11 @@ TestCase {
         wait(0)
         fuzzyCompare(delegateAt(0).revealScale, 1,
             "A settled item must drop the unfold scale")
+        // Hover may start or settle its own pulse while this test changes the
+        // shared reveal progress. Compare against the live interactive scale,
+        // not against a value captured before that independent animation.
         fuzzyCompare(findChild(fanView, "folderFanRowContent-0").scale,
-            settledScale,
+            findChild(fanView, "folderFanHighlight-0").visualScale,
             "A settled item must keep only the interactive scale")
         fuzzyCompare(delegateAt(0).opacity, 1,
             "A settled item must be fully opaque")

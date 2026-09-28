@@ -14,6 +14,12 @@ LIST_EDITOR = (ROOT / "contents/ui/config/DockItemListEditor.qml").read_text(
 ITEM_NOTES = (ROOT / "contents/ui/config/code/itemNotes.js").read_text(
     encoding="utf-8"
 )
+CONFIG_ITEMS = (ROOT / "contents/ui/config/ConfigItems.qml").read_text(
+    encoding="utf-8"
+)
+CONFIG_ITEMS_CONTROLLER = (
+    ROOT / "contents/ui/config/code/configItemsController.js"
+).read_text(encoding="utf-8")
 RETIRED_PALETTE = ROOT / "contents/ui/config/AddItemPalette.qml"
 
 
@@ -29,6 +35,20 @@ def require_order(source: str, *fragments: str) -> None:
 
 
 require(not RETIRED_PALETTE.exists(), "The retired AddItemPalette file must stay absent.")
+
+require(
+    "ConfigItemsControllerJS.normalizedItemSelectionIndex(" in CONFIG_ITEMS,
+    "Loading the item model must preserve the explicit no-selection state.",
+)
+require(
+    "function normalizedItemSelectionIndex(selectedIndex, itemCount)"
+    in CONFIG_ITEMS_CONTROLLER,
+    "The item selection normalization contract is missing.",
+)
+require(
+    "Math.max(selectedIndex, 0)" not in CONFIG_ITEMS,
+    "Loading items must not coerce no selection to the first row.",
+)
 for obsolete in (
     "AddItemPalette",
     "addItemPalette",
@@ -153,6 +173,16 @@ for fragment in (
 
 require('Accessible.name: i18n("Items in Dock")' in LIST_EDITOR,
         "The list must retain its accessible name.")
+for fragment in (
+    'objectName: "dockItemList"',
+    "Keys.onPressed: function(event)",
+    "event.key === Qt.Key_Down",
+    "event.key === Qt.Key_Up",
+    "root.controller.selectItem(nextIndex)",
+    "root.controller.selectItem(previousIndex)",
+):
+    require(fragment in LIST_EDITOR,
+            f"The unselected list must remain keyboard-operable: {fragment}")
 require("function focusAtIndex(index)" in LIST_EDITOR,
         "The accepted item must expose a focus destination.")
 require("itemList.forceActiveFocus()" in LIST_EDITOR,

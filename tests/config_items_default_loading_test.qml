@@ -1,5 +1,6 @@
 import QtQuick
 import QtTest
+import "../contents/ui/config/code/configItemsController.js" as ConfigItemsControllerJS
 import "../contents/ui/config/code/configItems.js" as ConfigItemsJS
 import "../contents/ui/config/code/items.js" as ItemsJS
 import "../contents/ui/config/code/configItemsWorkflowHelper.js" as WorkflowHelper
@@ -88,6 +89,17 @@ TestCase {
         verify(diskItemsLoaded)
         compare(items.length, 0)
         compare(lastMarkAsChanged, false)
+    }
+
+    function test_itemSelectionNormalizationPreservesNoSelectionOnLoad() {
+        compare(ConfigItemsControllerJS.normalizedItemSelectionIndex(-1, 3), -1)
+        compare(ConfigItemsControllerJS.normalizedItemSelectionIndex(-2, 3), -1)
+        compare(ConfigItemsControllerJS.normalizedItemSelectionIndex(0, 0), -1)
+    }
+
+    function test_itemSelectionNormalizationPreservesAndBoundsExplicitSelection() {
+        compare(ConfigItemsControllerJS.normalizedItemSelectionIndex(1, 3), 1)
+        compare(ConfigItemsControllerJS.normalizedItemSelectionIndex(8, 3), 2)
     }
 
     function test_removingMarkerWaitsForConfirmationThenDisablesTasks() {

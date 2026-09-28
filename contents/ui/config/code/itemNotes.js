@@ -49,7 +49,7 @@ function noteFor(type) {
     case "control-center":
         // qmllint disable unqualified
         return i18nc("@info <b> marks the note label",
-            "<b>Note:</b> Only one Control Center can be added to the Dock. It groups quick system controls — such as volume, brightness, networks and night light — and notifications. Use Configure above to choose which controls appear and adjust their layout.")
+            "<b>Preview:</b> The Control Center is not fully polished yet. Only one can be added to the Dock. It groups quick system controls — such as volume, brightness, networks and night light — and notifications. Use Configure above to choose which controls appear and adjust their layout.")
         // qmllint enable unqualified
     case "calendar":
         // qmllint disable unqualified

@@ -63,6 +63,15 @@ TestCase {
         return action
     }
 
+    function gridAction() {
+        let action = null
+        tryVerify(function() {
+            action = findChild(folderPopup, "folderGridOpenLocationAction")
+            return action !== null
+        })
+        return action
+    }
+
     function folderWithLocation() {
         return {
             name: "Home",
@@ -74,15 +83,18 @@ TestCase {
 
     function init() {
         failOnWarning(/.?/)
-        folderPopup.layoutMode = "fan"
-        folderPopup.popupDirection = Qt.TopEdge
-        folderPopup.folderOpenerName = ""
-        folderPopup.profileFanScrollEnabled = false
+        // Restore the regular Array before re-enabling Fan. Some regression
+        // cases deliberately inject only the indexed contract consumed by the
+        // classic adapter and must not leak that test double into Fan bindings.
         folderPopup.folderItem = ({
             name: "Home",
             icon: "user-home",
             apps: sampleApps
         })
+        folderPopup.layoutMode = "fan"
+        folderPopup.popupDirection = Qt.TopEdge
+        folderPopup.folderOpenerName = ""
+        folderPopup.profileFanScrollEnabled = false
         folderPopup.revealProgress = 1
         openSpy.clear()
         wait(0)
@@ -216,15 +228,19 @@ TestCase {
 
         const fanView = findChild(folderPopup, "folderFanView")
         compare(fanView.itemCount, 12)
-        compare(fanView.visibleItemRows, 8)
-        compare(fanView.overflowItemCount, 4)
-        compare(fanView.omittedItemCount, 4)
-        // The static fan really truncates its model, so the four entries the
-        // row announces are not reachable inside the popup and the row is the
-        // only way to them.
+        verify(fanView.visibleItemRows > 0)
+        verify(fanView.visibleItemRows <= folderPopup.profileRows,
+            "The scaled fan must respect both the configured rows and screen ceiling")
+        compare(fanView.overflowItemCount,
+            fanView.itemCount - fanView.visibleItemRows)
+        compare(fanView.omittedItemCount, fanView.overflowItemCount)
+        // The static fan really truncates its model, so the entries the row
+        // announces are not reachable inside the popup and the row is the only
+        // way to them.
         compare(fanView.effectiveScrollEnabled, false)
-        compare(fanView.displayedItemCount, 8)
-        compare(findChild(folderPopup, "folderFanDelegate-8"), null,
+        compare(fanView.displayedItemCount, fanView.visibleItemRows)
+        compare(findChild(folderPopup,
+            "folderFanDelegate-" + fanView.visibleItemRows), null,
             "An omitted entry must not keep a delegate")
         const fanList = findChild(folderPopup, "folderFanList")
         compare(fanList.interactive, false)
@@ -232,7 +248,8 @@ TestCase {
         const action = fanAction()
         const label = findChild(action, "folderFanLocationLabel")
         verify(label !== null)
-        compare(String(label.text), "4 more in Dolphin",
+        compare(String(label.text),
+            fanView.overflowItemCount + " more in Dolphin",
             "The closing row must count what it leaves out and name where it "
                 + "opens: " + label.text)
         verify(!String(label.text).includes("…"),
@@ -244,7 +261,8 @@ TestCase {
         verify(action.Accessible.name
                 === "Open this folder in the file manager",
             "A count must not replace the accessible action")
-        verify(String(action.Accessible.description).indexOf("4") >= 0,
+        verify(String(action.Accessible.description).indexOf(
+                String(fanView.overflowItemCount)) >= 0,
             "The description must tell how many entries are left out: "
                 + action.Accessible.description)
 
@@ -252,7 +270,7 @@ TestCase {
         // shows a dangling destination.
         folderPopup.folderOpenerName = ""
         tryVerify(function() {
-            return String(label.text) === "4 more"
+            return String(label.text) === fanView.overflowItemCount + " more"
         })
 
         // Returning the scrolling restores the whole model and clears the
@@ -318,42 +336,147 @@ TestCase {
         compare(openSpy.signalArguments[0][0], "~")
     }
 
-    function test_otherPresentationsKeepTheChromeAction() {
+    function test_gridIntegratesTheLocationActionAsItsFinalCell() {
         folderPopup.layoutMode = "grid"
+        folderPopup.folderOpenerName = "Dolphin"
         folderPopup.folderItem = folderWithLocation()
         wait(0)
 
-        // The grid has no arc to close, so the action is chrome of the popup and
-        // the fan keeps waiting for a folder.
-        verify(folderPopup.openLocationRowHeight > 0)
-        verify(actionRow().enabled)
-        verify(actionSlot().parent !== null)
+        compare(folderPopup.openLocationRowHeight, 0,
+            "Grid must not reserve a separate footer row")
+        compare(folderPopup.classicItemCount, folderPopup.itemCount + 1,
+            "Grid must append exactly one location action to its visible model")
+        const action = gridAction()
+        compare(action.index, folderPopup.itemCount,
+            "The location action must be the final Grid cell")
+        compare(String(findChild(action,
+            "folderGridOpenLocationLabel").text), "Open in Dolphin")
+        compare(findChild(action, "folderGridOpenLocationArrow").source,
+            "go-next-symbolic")
+        verify(!actionRow().enabled,
+            "The hidden footer must not remain focusable in Grid")
         compare(findChild(folderPopup, "folderFanLocationAction"), null)
     }
 
-    // The chrome action of grid, list and detailed shows the glyph of the
-    // reference —a disc of the themed surface with an arrow inside— and names
-    // the file manager the desktop opens a folder with, so it reads like the
-    // closing row of the fan instead of reading like the container.
-    function test_theChromeActionNamesTheFileManager() {
+    function test_classicViewsRenderConfiguredApplications() {
+        const modes = ["grid", "list", "detailed"]
+        for (let index = 0; index < modes.length; index++) {
+            folderPopup.layoutMode = modes[index]
+            folderPopup.folderItem = {
+                name: "LibreOffice",
+                icon: "folder-documents",
+                apps: sampleApps
+            }
+            tryCompare(folderPopup, "classicItemCount", 2)
+            const firstDelegate = findChild(folderPopup,
+                "folderPopupDelegate-0")
+            verify(firstDelegate !== null,
+                modes[index] + " must render the first configured application")
+            compare(firstDelegate.displayName, "One")
+        }
+    }
+
+    function test_classicAdapterKeepsTheConfigurationModelIdentity() {
+        // A list supplied by another QML context can keep the indexed model
+        // contract without passing this component's Array identity check. The
+        // adapter must preserve that model instead of replacing it with [].
+        const configuredApps = {
+            0: {name: "Writer", icon: "libreoffice-writer",
+                command: "libreoffice --writer"},
+            1: {name: "Calc", icon: "libreoffice-calc",
+                command: "libreoffice --calc"},
+            length: 2
+        }
+        const modes = ["grid", "list", "detailed"]
+        const classicView = findChild(folderPopup, "folderPopupGridView")
+        verify(classicView !== null)
+        for (let index = 0; index < modes.length; index++) {
+            folderPopup.layoutMode = modes[index]
+            folderPopup.folderItem = {
+                name: "LibreOffice",
+                icon: "folder-documents",
+                apps: configuredApps
+            }
+            tryCompare(folderPopup, "classicItemCount", 2)
+            compare(classicView.model, configuredApps,
+                modes[index] + " must preserve the supplied model")
+        }
+    }
+
+    function test_gridLocationActionSupportsPointerAndKeyboardActivation() {
         folderPopup.layoutMode = "grid"
+        folderPopup.folderOpenerName = "Dolphin"
+        folderPopup.folderItem = folderWithLocation()
+        wait(0)
+
+        gridAction().activate()
+        tryCompare(openSpy, "count", 1)
+        compare(openSpy.signalArguments[0][0], "~")
+
+        openSpy.clear()
+        const pointer = findChild(folderPopup,
+            "folderGridOpenLocationPointer")
+        verify(pointer !== null)
+        pointer.forceActiveFocus(Qt.TabFocusReason)
+        keyClick(Qt.Key_Return)
+        tryCompare(openSpy, "count", 1)
+        compare(openSpy.signalArguments[0][0], "~")
+
+        openSpy.clear()
+        keyClick(Qt.Key_Space)
+        tryCompare(openSpy, "count", 1)
+        compare(openSpy.signalArguments[0][0], "~")
+        compare(pointer.Accessible.name, "Open in Dolphin")
+        compare(pointer.Accessible.description,
+            "Open this folder in the file manager")
+    }
+
+    function test_gridLocationDelegateCanBeDestroyedAndRecreated() {
+        folderPopup.layoutMode = "grid"
+        folderPopup.folderItem = folderWithLocation()
+        tryVerify(function() {
+            return findChild(folderPopup,
+                "folderGridOpenLocationAction") !== null
+        })
+
+        folderPopup.folderItem = ({
+            name: "Without location",
+            icon: "folder",
+            apps: sampleApps
+        })
+        tryVerify(function() {
+            return findChild(folderPopup,
+                "folderGridOpenLocationAction") === null
+        })
+        compare(folderPopup.classicItemCount, folderPopup.itemCount)
+
+        folderPopup.layoutMode = "list"
+        folderPopup.folderItem = folderWithLocation()
+        wait(0)
+        compare(findChild(folderPopup,
+            "folderGridOpenLocationAction"), null)
+        verify(actionRow().enabled)
+
+        folderPopup.layoutMode = "grid"
+        tryVerify(function() {
+            return findChild(folderPopup,
+                "folderGridOpenLocationAction") !== null
+        })
+        compare(folderPopup.classicItemCount, folderPopup.itemCount + 1)
+    }
+
+    // List and Detailed retain the separate row. Grid owns a final cell and Fan
+    // owns the final arc row, so neither of them may expose this footer.
+    function test_listAndDetailedKeepTheChromeAction() {
+        folderPopup.layoutMode = "list"
         folderPopup.folderOpenerName = ""
         folderPopup.folderItem = folderWithLocation()
         wait(0)
 
         const label = findChild(folderPopup, "folderOpenLocationLabel")
         verify(label !== null, "The chrome action needs its own caption")
-        compare(String(label.text), "Open",
-            "Without a known file manager the caption stays a short action word")
+        compare(String(label.text), "Open")
 
-        folderPopup.folderOpenerName = "Dolphin"
-        tryVerify(function() {
-            return String(label.text) === "Open in Dolphin"
-        })
-
-        // The container's icon is not used here any more: the row is an action.
-        compare(findChild(folderPopup, "folderOpenLocationIcon"), null,
-            "The chrome action must not show the icon of the container")
         const glyph = findChild(folderPopup, "folderOpenLocationGlyph")
         verify(glyph !== null, "The chrome action needs the glyph of the reference")
         const disc = findChild(folderPopup, "folderOpenLocationDisc")
@@ -366,8 +489,7 @@ TestCase {
         compare(arrow.source, "go-next-symbolic",
             "One action must keep one glyph in the chrome and in the fan")
 
-        // The three presentations without an arc share this row, and none of them
-        // falls back to the fan.
+        folderPopup.folderOpenerName = "Dolphin"
         for (let index = 0; index < 2; index++) {
             folderPopup.layoutMode = index === 0 ? "list" : "detailed"
             wait(0)
@@ -388,5 +510,10 @@ TestCase {
         wait(0)
         compare(folderPopup.openLocationRowHeight, 0,
             "The fan must not reserve the height of the chrome row")
+
+        folderPopup.layoutMode = "grid"
+        wait(0)
+        compare(folderPopup.openLocationRowHeight, 0,
+            "The Grid action must not reserve the chrome row")
     }
 }

@@ -24,7 +24,7 @@ Item {
     // Properties injected by the main UI.
     property var folderItem: ({})
     property string layoutMode: "grid"
-    property int profileIconSize: layoutMode === "grid" ? 36 : 32
+    property int profileIconSize: 42
     property int profileColumns: 3
     property int profileRows: 4
     property bool profileShowLabels: true
@@ -34,9 +34,9 @@ Item {
     // is truncated when this is off, so the popup keeps the value and hands it
     // to the fan alone.
     property bool profileFanScrollEnabled: false
-    property real profileScale: 1.0
+    property real profileScale: 1.5
     property bool showHeaderLabel: true
-    property bool textShadowsEnabled: false
+    property bool textShadowsEnabled: true
     // Amount of the text shadow of this popup, in percent. Zero removes it.
     property int textShadowPercent: 25
     property string animationStyle: "scale"
@@ -56,18 +56,39 @@ Item {
     // a location can offer to open it, which is what the foot action does.
     readonly property string folderPath: String(folderItem.sourcePath || "").trim()
     readonly property bool folderPathAvailable: folderPath.length > 0
+    // qmllint disable unqualified
+    readonly property string openLocationActionText:
+        folderOpenerName.length > 0
+            ? i18nc("@action:button open the folder in the file manager",
+                "Open in %1", folderOpenerName)
+            : i18nc("@action:button open the container", "Open")
+    // qmllint enable unqualified
 
     // Quick access entries.
     property var apps: folderItem.apps || []
-    property int itemCount: apps.length
+    property int itemCount: Math.max(0, Number(apps && apps.length) || 0)
+    // The reference integrates the location action as the final Grid cell. This
+    // derived model belongs only to Grid: List and Detailed keep consuming apps
+    // directly, and Fan keeps its dedicated model below.
+    readonly property var gridItems: {
+        const sourceItems = apps || []
+        if (!folderPathAvailable) {
+            return sourceItems
+        }
+        const visibleItems = sourceItems.slice()
+        visibleItems.push({ "_punchiOpenLocationAction": true })
+        return visibleItems
+    }
+    readonly property int classicItemCount: layoutMode === "grid"
+        ? gridItems.length : itemCount
     readonly property real effectiveScale: Math.max(0.5, Math.min(3.0,
-        Number(profileScale || 1.0)))
+        Number(profileScale || 1.5)))
     readonly property int classicMargin: Math.round(
         (layoutMode === "fan" ? 6 : 12) * effectiveScale)
     readonly property int classicSpacing: layoutMode === "fan"
         ? 0 : Math.round(8 * effectiveScale)
     readonly property int effectiveIconSize: Math.max(16, Math.min(192,
-        Math.round(Number(profileIconSize || (layoutMode === "grid" ? 36 : 32)) * effectiveScale)))
+        Math.round(Number(profileIconSize || 42) * effectiveScale)))
     readonly property int configuredColumnCount: Math.max(1, Math.min(8,
         Number(profileColumns || 3)))
     readonly property int configuredRowLimit: Math.max(1, Math.min(8,
@@ -106,7 +127,7 @@ Item {
             (Math.min(desiredGridWidth, safeMaximumWidth)
                 - classicMargin * 2) / gridCellWidth)))
     readonly property bool scrollRequired: layoutMode === "grid"
-        ? itemCount > configuredRowLimit * gridColumnsWithoutScrollBar
+        ? classicItemCount > configuredRowLimit * gridColumnsWithoutScrollBar
         : itemCount > configuredRowLimit
     readonly property int scrollBarGutter: scrollRequired
         ? Math.ceil(verticalScrollBar.implicitWidth)
@@ -119,17 +140,20 @@ Item {
             Math.floor(classicContentWidth / gridCellWidth)))
         : 1
     readonly property int classicRowCount: layoutMode === "grid"
-        ? Math.ceil(itemCount / gridColumnCount)
+        ? Math.ceil(classicItemCount / gridColumnCount)
         : itemCount
     readonly property int visibleClassicRows: layoutMode === "fan"
         ? fanView.visibleRowCount
         : Math.max(1, Math.min(classicRowCount, configuredRowLimit))
     readonly property bool effectiveShowHeaderLabel: showHeaderLabel
         && layoutMode !== "fan"
-    // The chrome action belongs to the presentations that have no arc to close:
-    // the fan carries the same action as its own far-end row.
+    // List and Detailed retain a chrome row. Grid includes the action in its
+    // model, and Fan carries it at the far end of its arc.
+    readonly property bool separateLocationRowActive: folderPathAvailable
+        && (layoutMode === "list" || layoutMode === "detailed")
     readonly property int openLocationRowHeight:
-        folderPathAvailable && layoutMode !== "fan" ? classicCellHeight : 0
+        separateLocationRowActive
+        ? classicCellHeight : 0
     readonly property int headerHeightEffect: effectiveShowHeaderLabel
         ? (classicHeader.implicitHeight + classicSpacing) : 0
     readonly property int classicChromeHeight: classicMargin * 2 + headerHeightEffect
@@ -327,7 +351,11 @@ Item {
                 ? gridView.width - folderRoot.scrollBarGutter
                 : folderRoot.gridCellWidth
             cellHeight: folderRoot.classicCellHeight
-            model: folderRoot.layoutMode !== "fan" ? folderRoot.apps : []
+            model: folderRoot.layoutMode === "grid"
+                ? folderRoot.gridItems
+                : ((folderRoot.layoutMode === "list"
+                    || folderRoot.layoutMode === "detailed")
+                    ? folderRoot.apps : [])
             clip: true
             boundsBehavior: Flickable.StopAtBounds
             Controls.ScrollBar.vertical: Controls.ScrollBar {
@@ -376,7 +404,18 @@ Item {
                 required property var modelData
                 required property int index
 
-                objectName: "folderPopupDelegate-" + index
+                readonly property bool isOpenLocationAction:
+                    !!(modelData && modelData._punchiOpenLocationAction)
+                readonly property string displayName: isOpenLocationAction
+                    ? folderRoot.openLocationActionText
+                    : ((modelData && modelData.name) ? modelData.name : "")
+                readonly property string displayIcon:
+                    (modelData && modelData.icon)
+                        ? modelData.icon : "application-x-executable"
+
+                objectName: isOpenLocationAction
+                    ? "folderGridOpenLocationAction"
+                    : "folderPopupDelegate-" + index
                 readonly property real revealOffsetX:
                     folderRoot.itemRevealOffsetX(index)
                 readonly property real revealOffsetY:
@@ -388,6 +427,14 @@ Item {
                 transform: Translate {
                     x: appDelegate.revealOffsetX
                     y: appDelegate.revealOffsetY
+                }
+
+                function activate() {
+                    if (isOpenLocationAction) {
+                        folderRoot.openLocationRequested(folderRoot.folderPath)
+                    } else {
+                        folderRoot.appLaunched(modelData)
+                    }
                 }
 
                 Item {
@@ -419,20 +466,23 @@ Item {
                     Kirigami.Icon {
                         Layout.preferredWidth: folderRoot.effectiveIconSize
                         Layout.preferredHeight: folderRoot.effectiveIconSize
-                        source: (appDelegate.modelData && appDelegate.modelData.icon) ? appDelegate.modelData.icon : "application-x-executable"
+                        source: appDelegate.displayIcon
                     }
                     Column {
                         Layout.fillWidth: true
                         visible: folderRoot.showItemLabels
-                        PunchiMenuComponents.PunchiMenuTextShadowLabel {
-                            text: (appDelegate.modelData && appDelegate.modelData.name) ? appDelegate.modelData.name : ""
+                        PopupMarqueeLabel {
+                            objectName: "folderPopupListLabel-" + appDelegate.index
+                            text: appDelegate.displayName
+                            hovered: itemMouse.containsMouse
+                            focused: itemMouse.activeFocus
+                            motionEnabled: folderRoot.motionEnabled
                             color: Kirigami.Theme.textColor
                             shadowEnabled: folderRoot.textShadowsEnabled
                             shadowPercent: folderRoot.textShadowPercent
                             font.family: folderRoot.effectiveFontFamily
                             font.pointSize: folderRoot.effectiveFontSize
                             font.weight: Font.DemiBold
-                            elide: Text.ElideRight
                             width: parent.width
                         }
                         PlasmaComponents.Label {
@@ -455,15 +505,51 @@ Item {
                     visible: folderRoot.layoutMode === "grid"
                     spacing: folderRoot.showItemLabels ? 4 : 0
 
-                    Kirigami.Icon {
+                    Item {
                         Layout.preferredWidth: folderRoot.effectiveIconSize
                         Layout.preferredHeight: folderRoot.effectiveIconSize
                         Layout.alignment: Qt.AlignCenter
-                        source: (appDelegate.modelData && appDelegate.modelData.icon) ? appDelegate.modelData.icon : "application-x-executable"
+
+                        Kirigami.Icon {
+                            anchors.fill: parent
+                            visible: !appDelegate.isOpenLocationAction
+                            source: appDelegate.displayIcon
+                            Accessible.ignored: true
+                        }
+
+                        Rectangle {
+                            objectName: "folderGridOpenLocationDisc"
+                            anchors.centerIn: parent
+                            visible: appDelegate.isOpenLocationAction
+                            width: Math.round(parent.width * 0.72)
+                            height: width
+                            radius: width / 2
+                            color: Qt.alpha(Kirigami.Theme.backgroundColor, 0.88)
+                            border.color: Qt.alpha(Kirigami.Theme.textColor, 0.24)
+                            border.width: 1
+                            antialiasing: true
+                        }
+
+                        Kirigami.Icon {
+                            objectName: "folderGridOpenLocationArrow"
+                            anchors.centerIn: parent
+                            visible: appDelegate.isOpenLocationAction
+                            width: Math.round(parent.width * 0.44)
+                            height: width
+                            source: "go-next-symbolic"
+                            color: Kirigami.Theme.textColor
+                            Accessible.ignored: true
+                        }
                     }
-                    PunchiMenuComponents.PunchiMenuTextShadowLabel {
+                    PopupMarqueeLabel {
+                        objectName: appDelegate.isOpenLocationAction
+                            ? "folderGridOpenLocationLabel"
+                            : "folderPopupGridLabel-" + appDelegate.index
                         visible: folderRoot.showItemLabels
-                        text: (appDelegate.modelData && appDelegate.modelData.name) ? appDelegate.modelData.name : ""
+                        text: appDelegate.displayName
+                        hovered: itemMouse.containsMouse
+                        focused: itemMouse.activeFocus
+                        motionEnabled: folderRoot.motionEnabled
                         color: Kirigami.Theme.textColor
                         shadowEnabled: folderRoot.textShadowsEnabled
                         shadowPercent: folderRoot.textShadowPercent
@@ -472,31 +558,43 @@ Item {
                         font.weight: Font.DemiBold
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
-                        elide: Text.ElideRight
                     }
                 }
             }
 
                 MouseArea {
                     id: itemMouse
+                    objectName: appDelegate.isOpenLocationAction
+                        ? "folderGridOpenLocationPointer"
+                        : "folderPopupPointer-" + appDelegate.index
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
-                    acceptedButtons: Qt.LeftButton | Qt.RightButton
+                    acceptedButtons: appDelegate.isOpenLocationAction
+                        ? Qt.LeftButton : Qt.LeftButton | Qt.RightButton
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
-                    Accessible.name: (appDelegate.modelData && appDelegate.modelData.name)
-                        ? appDelegate.modelData.name
+                    Accessible.name: appDelegate.displayName.length > 0
+                        ? appDelegate.displayName
                         : i18n("Application") // qmllint disable unqualified
+                    // qmllint disable unqualified
+                    Accessible.description: appDelegate.isOpenLocationAction
+                        ? i18nc("@info:accessible",
+                            "Open this folder in the file manager") : ""
+                    // qmllint enable unqualified
                     onClicked: function(mouse) {
+                        if (appDelegate.isOpenLocationAction) {
+                            appDelegate.activate()
+                            return
+                        }
                         if (mouse.button === Qt.RightButton) {
                             folderRoot.appContextMenuRequested(appDelegate.modelData)
                             return
                         }
-                        folderRoot.appLaunched(appDelegate.modelData)
+                        appDelegate.activate()
                     }
-                    Keys.onReturnPressed: folderRoot.appLaunched(appDelegate.modelData)
-                    Keys.onSpacePressed: folderRoot.appLaunched(appDelegate.modelData)
+                    Keys.onReturnPressed: appDelegate.activate()
+                    Keys.onSpacePressed: appDelegate.activate()
                     Keys.onPressed: function(event) {
                         if (event.key === Qt.Key_Menu
                                 || (event.key === Qt.Key_F10
@@ -550,9 +648,8 @@ Item {
             onCloseRequested: folderRoot.closeRequested()
         }
 
-        // Foot action: opens the folder the container points at, with the
-        // container's own icon so it reads as «this folder». macOS keeps the
-        // equivalent «Open in Finder» row at the foot of the stack popup.
+        // Foot action for List and Detailed. Grid integrates this action as its
+        // final cell, while Fan closes its arc with a specialized row.
         //
         // The slot owns the layout gate and gives the test a stable handle: the
         // offscreen harness reports `visible` as false for every item, so the
@@ -562,8 +659,7 @@ Item {
             id: openLocationSlot
 
             objectName: "folderOpenLocationSlot"
-            visible: folderRoot.folderPathAvailable
-                && folderRoot.layoutMode !== "fan"
+            visible: folderRoot.separateLocationRowActive
             Layout.fillWidth: true
             Layout.preferredHeight: visible
                 ? folderRoot.openLocationRowHeight : 0
@@ -573,8 +669,8 @@ Item {
 
                 anchors.fill: parent
                 objectName: "folderOpenLocationAction"
-                enabled: folderRoot.folderPathAvailable
-                activeFocusOnTab: folderRoot.folderPathAvailable
+                enabled: folderRoot.separateLocationRowActive
+                activeFocusOnTab: folderRoot.separateLocationRowActive
                 hoverEnabled: true
                 padding: 0
                 background: Item {}
@@ -665,12 +761,7 @@ Item {
                             // opens a folder with, the way the macOS reference
                             // names its Finder, and stays a short action word when
                             // that association is unknown.
-                            // qmllint disable unqualified
-                            text: folderRoot.folderOpenerName.length > 0
-                                ? i18nc("@action:button open the folder in the file manager",
-                                    "Open in %1", folderRoot.folderOpenerName)
-                                : i18nc("@action:button open the container", "Open")
-                            // qmllint enable unqualified
+                            text: folderRoot.openLocationActionText
                             color: Kirigami.Theme.textColor
                             shadowEnabled: folderRoot.textShadowsEnabled
                             shadowPercent: folderRoot.textShadowPercent

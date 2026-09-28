@@ -33,7 +33,10 @@ TestCase {
         property real listFramePadding: Kirigami.Units.largeSpacing * 2
         property real listScrollGutter: Kirigami.Units.gridUnit * 1.6
 
-        function selectItem() {}
+        function selectItem(index) {
+            selectedIndex = index
+            selectedItemType = index === 0 ? "app" : "punchimenu"
+        }
         function moveSelectedItem() {}
         function canConfigureSelectedItem() { return false }
         function configureSelectedItem() {}
@@ -67,9 +70,23 @@ TestCase {
 
     function init() {
         failOnWarning(/.?/)
-        controllerStub.items = []
+        controllerStub.items = [
+            { "type": "app" },
+            { "type": "punchimenu" }
+        ]
         controllerStub.selectedIndex = -1
         controllerStub.selectedItemType = "app"
+        itemModelStub.clear()
+        itemModelStub.append({
+            "title": "Application",
+            "subtitle": "Launch an application",
+            "iconName": "application-x-executable"
+        })
+        itemModelStub.append({
+            "title": "PunchiMenu",
+            "subtitle": "Open the application menu",
+            "iconName": "start-here-kde"
+        })
         hostWindowUnderTest = createTemporaryObject(windowComponent, testCase)
         verify(hostWindowUnderTest !== null)
         wait(0)
@@ -230,6 +247,33 @@ TestCase {
 
         compare(noteText(), "",
             "A note must not describe a type the list has not selected")
+    }
+
+    function test_keyboardFocusDoesNotSelectUntilDirectionalNavigation() {
+        const list = findChild(hostWindowUnderTest.view, "dockItemList")
+        verify(list !== null, "The item list must expose its keyboard surface")
+
+        list.forceActiveFocus()
+        wait(0)
+        compare(controllerStub.selectedIndex, -1,
+            "Focusing the list alone must preserve no selection")
+        compare(noteText(), "", "Focus alone must not reveal an item note")
+
+        keyClick(Qt.Key_Down)
+        compare(controllerStub.selectedIndex, 0,
+            "Down must deliberately select the first item")
+        compare(noteText(), String(ItemNotes.noteFor("app")))
+
+        keyClick(Qt.Key_Down)
+        compare(controllerStub.selectedIndex, 1,
+            "A second Down must advance the explicit selection")
+        compare(noteText(), String(ItemNotes.noteFor("punchimenu")))
+
+        controllerStub.selectedIndex = -1
+        wait(0)
+        keyClick(Qt.Key_Up)
+        compare(controllerStub.selectedIndex, 1,
+            "Up from no selection must deliberately select the last item")
     }
 
     function test_theCatalogueAnswersForTheTypeItKnows() {

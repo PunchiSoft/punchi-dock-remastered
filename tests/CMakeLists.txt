@@ -746,6 +746,10 @@ punchi_add_qml_test(
     folder_popup_motion_test.qml
 )
 punchi_add_qml_test(
+    popup_marquee_label_test
+    popup_marquee_label_test.qml
+)
+punchi_add_qml_test(
     folder_open_location_test
     folder_open_location_test.qml
 )
