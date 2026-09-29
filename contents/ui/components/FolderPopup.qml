@@ -25,6 +25,7 @@ Item {
     property var folderItem: ({})
     property string layoutMode: "grid"
     property int profileIconSize: 42
+    property bool profileAutoLayout: true
     property int profileColumns: 3
     property int profileRows: 4
     property bool profileShowLabels: true
@@ -117,17 +118,32 @@ Item {
             : (layoutMode === "list"
                 ? Math.max(Math.round(40 * effectiveScale), effectiveIconSize + Math.round(8 * effectiveScale))
                 : effectiveIconSize + effectiveFontSize + Math.round(24 * effectiveScale))))
-    readonly property int desiredGridWidth: classicMargin * 2
-        + configuredColumnCount * gridCellWidth
     readonly property int safeMaximumWidth: Math.max(
         classicMargin * 2 + gridCellWidth,
         Number(maximumAvailableWidth || 752))
+    readonly property int automaticMaximumColumnCount: Math.max(1,
+        Math.min(5, Math.floor((safeMaximumWidth - classicMargin * 2)
+            / gridCellWidth)))
+    readonly property int automaticRowLimit: Math.max(1, Math.min(8,
+        Math.floor((effectiveMaximumHeight - classicChromeHeight)
+            / classicCellHeight)))
+    readonly property int automaticColumnCount: automaticGridColumnCount(
+        classicItemCount, automaticMaximumColumnCount, automaticRowLimit)
+    readonly property int effectiveGridColumnRequest:
+        profileAutoLayout && layoutMode === "grid"
+            ? automaticColumnCount : configuredColumnCount
+    readonly property int effectiveClassicRowLimit:
+        profileAutoLayout && layoutMode === "grid"
+            ? automaticRowLimit : configuredRowLimit
+    readonly property int desiredGridWidth: classicMargin * 2
+        + effectiveGridColumnRequest * gridCellWidth
     readonly property int gridColumnsWithoutScrollBar: Math.max(1,
-        Math.min(configuredColumnCount, Math.floor(
+        Math.min(effectiveGridColumnRequest, Math.floor(
             (Math.min(desiredGridWidth, safeMaximumWidth)
                 - classicMargin * 2) / gridCellWidth)))
     readonly property bool scrollRequired: layoutMode === "grid"
-        ? classicItemCount > configuredRowLimit * gridColumnsWithoutScrollBar
+        ? classicItemCount > effectiveClassicRowLimit
+            * gridColumnsWithoutScrollBar
         : itemCount > configuredRowLimit
     readonly property int scrollBarGutter: scrollRequired
         ? Math.ceil(verticalScrollBar.implicitWidth)
@@ -136,7 +152,7 @@ Item {
     readonly property int classicContentWidth: implicitWidth
         - classicMargin * 2 - scrollBarGutter
     readonly property int gridColumnCount: layoutMode === "grid"
-        ? Math.max(1, Math.min(configuredColumnCount,
+        ? Math.max(1, Math.min(effectiveGridColumnRequest,
             Math.floor(classicContentWidth / gridCellWidth)))
         : 1
     readonly property int classicRowCount: layoutMode === "grid"
@@ -144,7 +160,9 @@ Item {
         : itemCount
     readonly property int visibleClassicRows: layoutMode === "fan"
         ? fanView.visibleRowCount
-        : Math.max(1, Math.min(classicRowCount, configuredRowLimit))
+        : Math.max(1, Math.min(classicRowCount,
+            layoutMode === "grid"
+                ? effectiveClassicRowLimit : configuredRowLimit))
     readonly property bool effectiveShowHeaderLabel: showHeaderLabel
         && layoutMode !== "fan"
     // List and Detailed retain a chrome row. Grid includes the action in its
@@ -205,6 +223,42 @@ Item {
         ? Kirigami.Units.shortDuration : 0
     readonly property real fanOriginIconCenterX: classicMargin
         + fanView.originIconCenterX
+
+    function automaticGridColumnCount(totalItems, maximumColumns,
+            maximumRows) {
+        const itemTotal = Math.max(0, Math.floor(Number(totalItems) || 0))
+        const columnCeiling = Math.max(1,
+            Math.min(5, Math.floor(Number(maximumColumns) || 1)))
+        const rowCeiling = Math.max(1,
+            Math.floor(Number(maximumRows) || 1))
+        if (itemTotal <= 0) {
+            return 1
+        }
+        if (itemTotal < 4 || columnCeiling < 4) {
+            return Math.min(itemTotal, columnCeiling)
+        }
+
+        let selectedColumns = 4
+        let selectedOverflow = Number.POSITIVE_INFINITY
+        let selectedWaste = Number.POSITIVE_INFINITY
+        for (let columns = 4; columns <= columnCeiling; columns++) {
+            const rows = Math.ceil(itemTotal / columns)
+            const overflow = Math.max(0, rows - rowCeiling)
+            const waste = columns * rows - itemTotal
+            if (overflow < selectedOverflow
+                    || (overflow === selectedOverflow
+                        && waste < selectedWaste)
+                    || (overflow === selectedOverflow
+                        && waste === selectedWaste
+                        && columns > selectedColumns)) {
+                selectedColumns = columns
+                selectedOverflow = overflow
+                selectedWaste = waste
+            }
+        }
+        return selectedColumns
+    }
+
     function revealOrder(index) {
         if (layoutMode !== "grid") {
             return index

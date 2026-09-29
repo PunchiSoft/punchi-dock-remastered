@@ -11,6 +11,19 @@ ColumnLayout {
     property var itemModel
     property var statusHideTimer
     property alias statusText: statusLabel.text
+    readonly property string selectedNoteType: {
+        if (!controller) {
+            return ""
+        }
+        const index = Number(controller.selectedIndex)
+        const sourceItems = controller.items
+        if (!Number.isInteger(index) || index < 0 || !sourceItems
+                || index >= sourceItems.length) {
+            return ""
+        }
+        const selectedItem = sourceItems[index]
+        return selectedItem ? String(selectedItem.type || "app") : ""
+    }
 
     signal addItemRequested()
 
@@ -95,17 +108,14 @@ ColumnLayout {
                         Layout.minimumWidth: 0
                         Layout.maximumWidth: Kirigami.Units.gridUnit * 40
                         Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-                        // The note describes the type the list has selected, so it
-                        // asks for it only when there is a selection. The text is
-                        // read through a function, which keeps a language change
-                        // reachable, and it arrives as styled text because only its
-                        // short label is bold: the sentence continues in normal
-                        // weight and must still wrap as one paragraph.
-                        text: root.controller
-                            && root.controller.selectedIndex >= 0
-                            ? ItemNotes.noteFor(
-                                String(root.controller.selectedItemType))
-                            : ""
+                        // The note reads the item behind the selected row directly.
+                        // Do not route it through the editor's selectedItemType
+                        // cache: that state can lag behind the list selection. The
+                        // text is read through a function, which keeps a language
+                        // change reachable, and it arrives as styled text because
+                        // only its short label is bold: the sentence continues in
+                        // normal weight and must still wrap as one paragraph.
+                        text: ItemNotes.noteFor(root.selectedNoteType)
                         visible: text.length > 0
                         // The tags that mark the label must not be announced, so the
                         // accessible name carries the words without their markup.

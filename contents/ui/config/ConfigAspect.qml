@@ -73,6 +73,7 @@ KCM.SimpleKCM {
     property alias cfg_windowPreviewAnimationSpeedPercent: popupAppearancePage.cfg_windowPreviewAnimationSpeedPercent
     property alias cfg_windowPreviewAnimationIntensity: popupAppearancePage.cfg_windowPreviewAnimationIntensity
     property alias cfg_folderGridIconSize: folderPopupPage.cfg_folderGridIconSize
+    property alias cfg_folderGridAutoLayout: folderPopupPage.cfg_folderGridAutoLayout
     property alias cfg_folderGridColumns: folderPopupPage.cfg_folderGridColumns
     property alias cfg_folderGridRows: folderPopupPage.cfg_folderGridRows
     property alias cfg_folderGridShowLabels: folderPopupPage.cfg_folderGridShowLabels

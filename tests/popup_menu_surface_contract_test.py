@@ -1168,6 +1168,12 @@ def main() -> int:
         )
     require(
         config_schema,
+        '<entry name="folderGridAutoLayout" type="Bool">\n'
+        "      <default>true</default>",
+        "Grid must use automatic arrangement by default",
+    )
+    require(
+        config_schema,
         '<entry name="folderPopupScale" type="Double">\n'
         "      <default>1.5</default>",
         "Folder popups must default to 150 percent scale",
@@ -1175,6 +1181,8 @@ def main() -> int:
     for fragment, message in (
         ("property int cfg_folderGridIconSize: 42",
          "The grid KCM fallback must match the 42 px schema default"),
+        ("property bool cfg_folderGridAutoLayout: true",
+         "The grid KCM must expose automatic arrangement as its default"),
         ("property int cfg_folderListIconSize: 42",
          "The list KCM fallback must match the 42 px schema default"),
         ("property int cfg_folderDetailedIconSize: 42",
@@ -1183,6 +1191,19 @@ def main() -> int:
          "The fan KCM fallback must match the 42 px schema default"),
     ):
         require(config_folder_popups, fragment, message)
+    for source, fragment, message in (
+        (config_aspect, "cfg_folderGridAutoLayout",
+         "The appearance page must forward the Grid arrangement mode"),
+        (dock_configuration, "folderGridAutoLayout",
+         "Runtime configuration must expose the Grid arrangement mode"),
+        (main_qml, "profileAutoLayout: dockConfig.folderGridAutoLayout",
+         "The live folder popup must receive the Grid arrangement mode"),
+        (folder_popup_component, "function automaticGridColumnCount(",
+         "Grid must derive its automatic columns from the item count"),
+        (config_folder_popups, 'objectName: "gridArrangementCombo"',
+         "The folder popup page must offer Automatic and Manual Grid modes"),
+    ):
+        require(source, fragment, message)
     require(
         config_folder_popups,
         "cfg_folderPopupTextShadowPercent",

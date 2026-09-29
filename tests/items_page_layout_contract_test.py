@@ -143,14 +143,26 @@ for forbidden in ("ItemEditorPanel", "ItemActionEditor", "cfg_", "i18n(",
             f"The right column must stay a note area: {forbidden}")
 for fragment in (
     'objectName: "itemTypeNote"',
-    "ItemNotes.noteFor(",
-    "root.controller.selectedIndex >= 0",
+    "ItemNotes.noteFor(root.selectedNoteType)",
     "textFormat: Text.StyledText",
     "Accessible.name: ItemNotes.plainText(text)",
     "wrapMode: Text.WordWrap",
     "Layout.maximumWidth: Kirigami.Units.gridUnit * 40",
 ):
     require(fragment in reserved, f"The selected-type note is incomplete: {fragment}")
+
+# The note must follow the selected row directly. The editor's cached type can lag
+# behind while the selection changes, which used to show the Application note for
+# PunchiMenu.
+for fragment in (
+    "readonly property string selectedNoteType:",
+    "const index = Number(controller.selectedIndex)",
+    "const sourceItems = controller.items",
+    "const selectedItem = sourceItems[index]",
+    'String(selectedItem.type || "app")',
+):
+    require(fragment in MAIN_VIEW,
+            f"The selected-type note must follow the selected item: {fragment}")
 
 for fragment in (
     "function plainText(markup)",

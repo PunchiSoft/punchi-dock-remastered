@@ -52,6 +52,13 @@ Controls.ComboBox {
     readonly property string selectedType: draftController
         ? String(draftController.draftType) : ""
     readonly property int entryHeight: Kirigami.Units.gridUnit * 3.2
+    readonly property int maximumVisibleEntries: 6
+    readonly property real maximumPopupHeight: entryHeight
+        * maximumVisibleEntries + popup.topPadding + popup.bottomPadding
+    // The concrete type belongs to the active Controls style. KDE's supported
+    // styles expose a ListView here, while ComboBox declares it generically as
+    // an Item; keep the style-owned object dynamic instead of replacing it.
+    readonly property var popupViewport: popup.contentItem
     readonly property var selectedRow: currentIndex >= 0
         && currentIndex < rows.length ? rows[currentIndex] : null
 
@@ -65,6 +72,18 @@ Controls.ComboBox {
     Accessible.name: i18nc("@info:accessibility", "Element type") // qmllint disable unqualified
     Accessible.description: selectedRow ? String(selectedRow.detail) : ""
 
+    // KDE's native ComboBox popup uses the complete catalogue as its implicit
+    // height. Keep that native surface and scrollbar, but give the list a real
+    // viewport so a long catalogue cannot take over the configuration window.
+    popup.height: Math.min(popup.implicitHeight, root.maximumPopupHeight)
+
+    Binding {
+        target: root.popupViewport
+        property: "interactive"
+        value: root.popupViewport
+            && root.popupViewport.contentHeight > root.popupViewport.height
+    }
+
     Connections {
         target: root.draftController
         enabled: root.draftController !== null
@@ -75,6 +94,19 @@ Controls.ComboBox {
 
         function onDraftTypeChanged() {
             root.synchronizeSelection()
+        }
+    }
+
+    Connections {
+        target: root.popup
+
+        function onOpened() {
+            const index = root.highlightedIndex >= 0
+                ? root.highlightedIndex : root.currentIndex
+            const viewport = root.popupViewport
+            if (index >= 0 && viewport) {
+                viewport.positionViewAtIndex(index, ListView.Contain)
+            }
         }
     }
 

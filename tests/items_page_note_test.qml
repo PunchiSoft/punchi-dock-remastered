@@ -107,6 +107,14 @@ TestCase {
         return String(note.text)
     }
 
+    function selectOnlyType(type, cachedType) {
+        controllerStub.items = [{ "type": type }]
+        controllerStub.selectedItemType = cachedType === undefined
+            ? type : cachedType
+        controllerStub.selectedIndex = 0
+        wait(0)
+    }
+
     // Every note opens with a short label in bold and continues in normal weight.
     // The checks are language independent: they look at the shape of the note, not
     // at a sentence that a catalogue could translate.
@@ -128,9 +136,7 @@ TestCase {
     }
 
     function test_thePunchiMenuNoteNamesTheTypeItDescribes() {
-        controllerStub.selectedIndex = 0
-        controllerStub.selectedItemType = "punchimenu"
-        wait(0)
+        selectOnlyType("punchimenu")
 
         const note = findChild(hostWindowUnderTest.view, "itemTypeNote")
         verify(note !== null)
@@ -140,10 +146,17 @@ TestCase {
         verifyNoteEmphasis(note)
     }
 
-    function test_theApplicationNoteDescribesTheLauncher() {
-        controllerStub.selectedIndex = 0
+    function test_noteUsesTheSelectedItemWhenTheCachedTypeLags() {
+        controllerStub.selectedIndex = 1
         controllerStub.selectedItemType = "app"
         wait(0)
+
+        compare(noteText(), String(ItemNotes.noteFor("punchimenu")),
+            "The selected row must own the note even if the cached editor type lags")
+    }
+
+    function test_theApplicationNoteDescribesTheLauncher() {
+        selectOnlyType("app")
 
         const note = findChild(hostWindowUnderTest.view, "itemTypeNote")
         verify(note !== null)
@@ -156,9 +169,7 @@ TestCase {
     }
 
     function test_theContainerNoteExplainsItsContent() {
-        controllerStub.selectedIndex = 0
-        controllerStub.selectedItemType = "folder"
-        wait(0)
+        selectOnlyType("folder")
 
         const note = findChild(hostWindowUnderTest.view, "itemTypeNote")
         verify(note !== null)
@@ -172,9 +183,7 @@ TestCase {
     }
 
     function test_theOpenApplicationsNoteExplainsTheMarker() {
-        controllerStub.selectedIndex = 0
-        controllerStub.selectedItemType = "dynamic-applications"
-        wait(0)
+        selectOnlyType("dynamic-applications")
 
         const note = findChild(hostWindowUnderTest.view, "itemTypeNote")
         verify(note !== null)
@@ -198,9 +207,7 @@ TestCase {
 
         for (let i = 0; i < types.length; i++) {
             const type = types[i]
-            controllerStub.selectedIndex = 0
-            controllerStub.selectedItemType = type
-            wait(0)
+            selectOnlyType(type)
 
             const note = findChild(hostWindowUnderTest.view, "itemTypeNote")
             verify(note !== null, "Note item must exist for " + type)
@@ -213,29 +220,32 @@ TestCase {
     }
 
     function test_aTypeWithoutANoteLeavesTheColumnEmpty() {
-        controllerStub.selectedIndex = 0
-        controllerStub.selectedItemType = "unknown-type"
-        wait(0)
+        selectOnlyType("unknown-type")
 
         compare(noteText(), "", "A type without a note must leave the column empty")
     }
 
     function test_theNoteFollowsTheSelection() {
+        controllerStub.items = [
+            { "type": "punchimenu" },
+            { "type": "trash" },
+            { "type": "unknown-type" }
+        ]
+        controllerStub.selectedItemType = "app"
         controllerStub.selectedIndex = 0
-        controllerStub.selectedItemType = "punchimenu"
         wait(0)
         verify(noteText().length > 0)
 
-        controllerStub.selectedItemType = "trash"
+        controllerStub.selectedIndex = 1
         wait(0)
         compare(noteText(), String(ItemNotes.noteFor("trash")),
             "Selecting trash must show trash note")
 
-        controllerStub.selectedItemType = "unknown-type"
+        controllerStub.selectedIndex = 2
         wait(0)
         compare(noteText(), "", "Selecting an unknown type must clear the note")
 
-        controllerStub.selectedItemType = "punchimenu"
+        controllerStub.selectedIndex = 0
         wait(0)
         verify(noteText().length > 0, "Returning to PunchiMenu must show it again")
     }

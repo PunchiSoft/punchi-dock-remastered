@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 import QtQuick
+import QtQuick.Controls as Controls
+import QtQuick.Window
 import QtTest
 import "../contents/ui/config" as Config
 import "../contents/ui/config/code/itemTypeCatalog.js" as ItemTypeCatalog
@@ -43,6 +45,27 @@ TestCase {
         id: typeSpy
         target: selector
         signalName: "typeRequested"
+    }
+
+    Component {
+        id: tallWindowComponent
+
+        Window {
+            width: 900
+            height: 800
+            visible: true
+
+            property alias selector: tallSelector
+
+            Config.ItemTypeSelector {
+                id: tallSelector
+
+                x: 120
+                y: 120
+                width: 340
+                draftController: stubController
+            }
+        }
     }
 
     function indexOfType(type) {
@@ -105,6 +128,78 @@ TestCase {
             return !selector.popup.visible
         })
         compare(selector.currentIndex, indexOfType("app"))
+    }
+
+    function test_popupUsesABoundedScrollableViewport() {
+        const host = createTemporaryObject(tallWindowComponent, testCase)
+        verify(host !== null)
+        tryVerify(function() {
+            return host.visible
+        })
+
+        const boundedSelector = host.selector
+        boundedSelector.refresh()
+        boundedSelector.popup.open()
+        tryVerify(function() {
+            return boundedSelector.popup.visible
+        })
+        wait(0)
+
+        const popup = boundedSelector.popup
+        const viewport = popup.contentItem
+        const maximumHeight = boundedSelector.entryHeight * 6
+            + popup.topPadding + popup.bottomPadding
+        verify(popup.height <= maximumHeight + 0.5,
+            "The type popup must not expand beyond six visible entries")
+        verify(viewport.contentHeight > viewport.height,
+            "The remaining entries must overflow into a scrolling viewport")
+        compare(viewport.interactive, true,
+            "Wheel, touch and scrollbar input must move the bounded list")
+
+        const scrollBar = viewport.Controls.ScrollBar.vertical
+        verify(scrollBar !== null,
+            "The bounded type list must expose a vertical scrollbar")
+        compare(scrollBar.policy, Controls.ScrollBar.AsNeeded)
+        verify(scrollBar.visible,
+            "The vertical scrollbar must be visible while entries overflow")
+
+        boundedSelector.popup.close()
+        host.destroy()
+        wait(0)
+    }
+
+    function test_popupScrollsTheCurrentDraftIntoView() {
+        stubController.draftType = "trash"
+        const host = createTemporaryObject(tallWindowComponent, testCase)
+        verify(host !== null)
+        tryVerify(function() {
+            return host.visible
+        })
+
+        const boundedSelector = host.selector
+        boundedSelector.refresh()
+        compare(boundedSelector.currentIndex, indexOfType("trash"))
+        boundedSelector.popup.open()
+        tryVerify(function() {
+            return boundedSelector.popup.visible
+        })
+        tryVerify(function() {
+            return boundedSelector.popup.contentItem.contentY > 0
+        })
+
+        const viewport = boundedSelector.popup.contentItem
+        const currentItem = viewport.itemAtIndex(boundedSelector.currentIndex)
+        verify(currentItem !== null,
+            "The current draft entry must be instantiated in the viewport")
+        verify(currentItem.y >= viewport.contentY - 0.5,
+            "The current draft entry must not remain above the viewport")
+        verify(currentItem.y + currentItem.height
+                <= viewport.contentY + viewport.height + 0.5,
+            "The current draft entry must remain fully visible after opening")
+
+        boundedSelector.popup.close()
+        host.destroy()
+        wait(0)
     }
 
     function test_anUnavailableOptionCannotBeRequested() {

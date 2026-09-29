@@ -114,6 +114,8 @@ QtObject {
 
     readonly property int folderGridIconSize: Math.max(24, Math.min(64,
         Number(Plasmoid.configuration.folderGridIconSize || 42)))
+    readonly property bool folderGridAutoLayout:
+        Plasmoid.configuration.folderGridAutoLayout !== false
     readonly property int folderGridColumns: Math.max(1, Math.min(8,
         Number(Plasmoid.configuration.folderGridColumns || 3)))
     readonly property int folderGridRows: Math.max(1, Math.min(8,

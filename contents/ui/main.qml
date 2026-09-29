@@ -3677,6 +3677,7 @@ PlasmoidItem {
                             : (folderPopupContent.layoutMode === "detailed"
                                 ? dockConfig.folderDetailedIconSize
                                 : dockConfig.folderGridIconSize))
+                        profileAutoLayout: dockConfig.folderGridAutoLayout
                         profileColumns: dockConfig.folderGridColumns
                         profileRows: folderPopupContent.layoutMode === "fan"
                             ? dockConfig.folderFanRows

@@ -779,6 +779,10 @@ punchi_add_qml_test(
     config_folder_popups_fan_scroll_test.qml
 )
 punchi_add_qml_test(
+    config_folder_popups_auto_layout_test
+    config_folder_popups_auto_layout_test.qml
+)
+punchi_add_qml_test(
     dynamic_applications_options_test
     dynamic_applications_options_test.qml
 )

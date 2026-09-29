@@ -15,6 +15,7 @@ Item {
     }
 
     property int cfg_folderGridIconSize: 42
+    property bool cfg_folderGridAutoLayout: true
     property int cfg_folderGridColumns: 3
     property int cfg_folderGridRows: 4
     property bool cfg_folderGridShowLabels: true
@@ -106,6 +107,10 @@ Item {
         { "text": i18nc("@item:inlistbox Folder popup layout", "List"), "value": "list" },
         { "text": i18nc("@item:inlistbox Folder popup layout", "Detailed"), "value": "detailed" },
         { "text": i18nc("@item:inlistbox Folder popup layout", "Fan"), "value": "fan" }
+    ]
+    readonly property var gridArrangementOptions: [
+        { "text": i18nc("@item:inlistbox Grid arrangement", "Automatic"), "value": true },
+        { "text": i18nc("@item:inlistbox Grid arrangement", "Manual"), "value": false }
     ]
     // qmllint enable unqualified
 
@@ -395,9 +400,31 @@ Item {
             }
         }
 
+        Controls.ComboBox {
+            id: gridArrangementCombo
+            objectName: "gridArrangementCombo"
+            visible: page.activeProfile === "grid"
+            Kirigami.FormData.label: i18n("Grid arrangement:")
+            Layout.preferredWidth: page.selectorWidthHint
+            Layout.maximumWidth: page.selectorWidthHint
+            textRole: "text"
+            valueRole: "value"
+            model: page.gridArrangementOptions
+            currentIndex: Math.max(0,
+                indexOfValue(page.cfg_folderGridAutoLayout))
+            Accessible.name: i18n("Grid arrangement")
+            onActivated: index => {
+                page.cfg_folderGridAutoLayout =
+                    page.gridArrangementOptions[index].value
+            }
+        }
+
         Controls.SpinBox {
             id: columnsSpin
+            objectName: "folderGridColumnsSpin"
             visible: page.activeProfile === "grid"
+                && !page.cfg_folderGridAutoLayout
+            enabled: !page.cfg_folderGridAutoLayout
             Kirigami.FormData.label: i18n("Visible columns:")
             from: 1
             to: 8
@@ -410,6 +437,11 @@ Item {
 
         Controls.SpinBox {
             id: rowsSpin
+            objectName: "folderPopupRowsSpin"
+            visible: page.activeProfile !== "grid"
+                || !page.cfg_folderGridAutoLayout
+            enabled: page.activeProfile !== "grid"
+                || !page.cfg_folderGridAutoLayout
             Kirigami.FormData.label: page.activeProfile === "fan"
                 ? i18n("Items before the opening row:")
                 : i18n("Visible rows:")

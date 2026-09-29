@@ -145,6 +145,9 @@
     <entry name="folderGridIconSize" type="Int">
       <default>42</default>
     </entry>
+    <entry name="folderGridAutoLayout" type="Bool">
+      <default>true</default>
+    </entry>
     <entry name="folderGridColumns" type="Int">
       <default>3</default>
     </entry>

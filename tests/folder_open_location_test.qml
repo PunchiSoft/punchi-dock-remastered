@@ -81,6 +81,25 @@ TestCase {
         }
     }
 
+    function folderWithGridCellCount(cellCount) {
+        const apps = []
+        // The last Grid cell belongs to the location action, as in the macOS
+        // reference. Build only the application cells here.
+        for (let index = 0; index < cellCount - 1; index++) {
+            apps.push({
+                name: "Entry " + index,
+                icon: "folder",
+                command: "entry" + index
+            })
+        }
+        return {
+            name: "Downloads",
+            icon: "folder-download",
+            sourcePath: "~/Downloads",
+            apps: apps
+        }
+    }
+
     function init() {
         failOnWarning(/.?/)
         // Restore the regular Array before re-enabling Fan. Some regression
@@ -94,7 +113,12 @@ TestCase {
         folderPopup.layoutMode = "fan"
         folderPopup.popupDirection = Qt.TopEdge
         folderPopup.folderOpenerName = ""
+        folderPopup.profileAutoLayout = true
+        folderPopup.profileColumns = 3
+        folderPopup.profileRows = 4
         folderPopup.profileFanScrollEnabled = false
+        folderPopup.maximumAvailableWidth = 752
+        folderPopup.maximumAvailableHeight = 640
         folderPopup.revealProgress = 1
         openSpy.clear()
         wait(0)
@@ -356,6 +380,58 @@ TestCase {
         verify(!actionRow().enabled,
             "The hidden footer must not remain focusable in Grid")
         compare(findChild(folderPopup, "folderFanLocationAction"), null)
+    }
+
+    function test_gridAutomaticallyMatchesTheReferenceCellDistribution() {
+        folderPopup.layoutMode = "grid"
+        folderPopup.maximumAvailableWidth = 752
+        folderPopup.maximumAvailableHeight = 640
+
+        const cases = [
+            {cells: 7, columns: 4, rows: 2},
+            {cells: 10, columns: 5, rows: 2},
+            {cells: 13, columns: 5, rows: 3},
+            {cells: 16, columns: 4, rows: 4},
+            {cells: 19, columns: 5, rows: 4}
+        ]
+        for (let index = 0; index < cases.length; index++) {
+            const expectation = cases[index]
+            folderPopup.folderItem = folderWithGridCellCount(
+                expectation.cells)
+            tryCompare(folderPopup, "classicItemCount", expectation.cells)
+            compare(folderPopup.gridColumnCount, expectation.columns,
+                expectation.cells + " cells must use the reference column count")
+            compare(folderPopup.classicRowCount, expectation.rows,
+                expectation.cells + " cells must use the reference row count")
+            verify(!folderPopup.scrollRequired,
+                expectation.cells + " cells must fit without premature scrolling")
+        }
+    }
+
+    function test_manualGridKeepsItsConfiguredRowsAndColumns() {
+        folderPopup.layoutMode = "grid"
+        folderPopup.profileAutoLayout = false
+        folderPopup.profileColumns = 3
+        folderPopup.profileRows = 2
+        folderPopup.folderItem = folderWithGridCellCount(10)
+        tryCompare(folderPopup, "classicItemCount", 10)
+
+        compare(folderPopup.gridColumnCount, 3)
+        compare(folderPopup.classicRowCount, 4)
+        compare(folderPopup.visibleClassicRows, 2)
+        verify(folderPopup.scrollRequired)
+
+        folderPopup.profileAutoLayout = true
+        tryCompare(folderPopup, "gridColumnCount", 5)
+        compare(folderPopup.classicRowCount, 2)
+        verify(!folderPopup.scrollRequired)
+
+        folderPopup.profileAutoLayout = false
+        tryCompare(folderPopup, "gridColumnCount", 3)
+        compare(folderPopup.profileColumns, 3,
+            "Automatic must not overwrite the manual column preference")
+        compare(folderPopup.profileRows, 2,
+            "Automatic must not overwrite the manual row preference")
     }
 
     function test_classicViewsRenderConfiguredApplications() {
