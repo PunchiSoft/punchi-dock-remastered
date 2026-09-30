@@ -121,6 +121,17 @@ Item {
     readonly property int safeMaximumWidth: Math.max(
         classicMargin * 2 + gridCellWidth,
         Number(maximumAvailableWidth || 752))
+    // Shape the automatic arrangement aims at, as columns divided by rows. The
+    // value reproduces the distribution of the folder popup: wider than tall,
+    // without collapsing into a single strip or into a narrow column.
+    property real automaticTargetRatio: 1.5
+    // Cost of a ragged last row: one application left alone on the final line.
+    // The elastic cell of a folder container cancels it, so both container
+    // kinds are told apart by the same cost and not by a special case.
+    property real automaticOrphanPenalty: 1
+    // Cost of one row that would not fit the height the popup offers. It stays
+    // far above the other terms, so scrolling is always the last resort.
+    property real automaticOverflowWeight: 10
     readonly property int automaticMaximumColumnCount: Math.max(1,
         Math.min(5, Math.floor((safeMaximumWidth - classicMargin * 2)
             / gridCellWidth)))
@@ -128,7 +139,10 @@ Item {
         Math.floor((effectiveMaximumHeight - classicChromeHeight)
             / classicCellHeight)))
     readonly property int automaticColumnCount: automaticGridColumnCount(
-        classicItemCount, automaticMaximumColumnCount, automaticRowLimit)
+        classicItemCount, itemCount, folderPathAvailable,
+        automaticMaximumColumnCount, automaticRowLimit,
+        automaticTargetRatio, automaticOrphanPenalty,
+        automaticOverflowWeight)
     readonly property int effectiveGridColumnRequest:
         profileAutoLayout && layoutMode === "grid"
             ? automaticColumnCount : configuredColumnCount
@@ -224,36 +238,82 @@ Item {
     readonly property real fanOriginIconCenterX: classicMargin
         + fanView.originIconCenterX
 
-    function automaticGridColumnCount(totalItems, maximumColumns,
-            maximumRows) {
-        const itemTotal = Math.max(0, Math.floor(Number(totalItems) || 0))
+    // Cost of arranging the cells of the popup in `columns` columns. It is the
+    // discrete counterpart of the empty area of the grid: the holes are the sum,
+    // row by row, of the cells a row does not use, so `holes / columns` is the
+    // relative slack of the last row. The kind of container enters through the
+    // elastic cell: the location action of a folder container takes the first
+    // free seat of that row, so a last row holding one application plus the
+    // action reads as complete and never counts as ragged.
+    function automaticGridCost(totalItems, applicationItems, hasLocationAction,
+            columns, maximumRows, targetRatio, orphanPenalty,
+            overflowWeight) {
+        const cellTotal = Math.max(0, Math.floor(Number(totalItems) || 0))
+        const applicationTotal = Math.max(0,
+            Math.floor(Number(applicationItems) || 0))
+        const safeColumns = Math.max(1, Math.floor(Number(columns) || 1))
+        const rows = Math.ceil(cellTotal / safeColumns)
+        const holes = safeColumns * rows - cellTotal
+        const overflow = Math.max(0, rows - maximumRows)
+        const shapeDelta = Math.log(safeColumns / rows)
+            - Math.log(targetRatio)
+        const lastApplicationRow = applicationTotal <= 0
+            ? 0 : ((applicationTotal - 1) % safeColumns) + 1
+        const ragged = lastApplicationRow === 1
+            && applicationTotal > safeColumns
+            && (!hasLocationAction || lastApplicationRow + 1 > safeColumns)
+        return overflowWeight * overflow
+            + holes / safeColumns
+            + shapeDelta * shapeDelta
+            + (ragged ? orphanPenalty : 0)
+    }
+
+    // Automatic column count of the Grid profile. One row wins whenever the
+    // cells fit in it, because a single line is the shortest arrangement and can
+    // never leave a ragged row behind. Otherwise the candidates run from two
+    // columns up to the ceiling the width allows, and the cheapest one wins with
+    // ties resolved towards the widest grid, which is how the reference
+    // distribution reads.
+    function automaticGridColumnCount(totalItems, applicationItems,
+            hasLocationAction, maximumColumns, maximumRows, targetRatio,
+            orphanPenalty, overflowWeight) {
+        const cellTotal = Math.max(0, Math.floor(Number(totalItems) || 0))
         const columnCeiling = Math.max(1,
-            Math.min(5, Math.floor(Number(maximumColumns) || 1)))
-        const rowCeiling = Math.max(1,
-            Math.floor(Number(maximumRows) || 1))
-        if (itemTotal <= 0) {
+            Math.floor(Number(maximumColumns) || 1))
+        const rowCeiling = Math.max(1, Math.floor(Number(maximumRows) || 1))
+        const requestedRatio = Number(targetRatio)
+        const safeTargetRatio = Number.isFinite(requestedRatio)
+                && requestedRatio > 0 ? requestedRatio : 1.5
+        const requestedOrphanPenalty = Number(orphanPenalty)
+        const safeOrphanPenalty = Number.isFinite(requestedOrphanPenalty)
+            ? Math.max(0, requestedOrphanPenalty) : 0
+        const requestedOverflowWeight = Number(overflowWeight)
+        const safeOverflowWeight = Number.isFinite(requestedOverflowWeight)
+            ? Math.max(0, requestedOverflowWeight) : 0
+        if (cellTotal <= 0) {
             return 1
         }
-        if (itemTotal < 4 || columnCeiling < 4) {
-            return Math.min(itemTotal, columnCeiling)
+        if (cellTotal <= columnCeiling) {
+            return cellTotal
+        }
+        if (columnCeiling < 2) {
+            return columnCeiling
         }
 
-        let selectedColumns = 4
-        let selectedOverflow = Number.POSITIVE_INFINITY
-        let selectedWaste = Number.POSITIVE_INFINITY
-        for (let columns = 4; columns <= columnCeiling; columns++) {
-            const rows = Math.ceil(itemTotal / columns)
-            const overflow = Math.max(0, rows - rowCeiling)
-            const waste = columns * rows - itemTotal
-            if (overflow < selectedOverflow
-                    || (overflow === selectedOverflow
-                        && waste < selectedWaste)
-                    || (overflow === selectedOverflow
-                        && waste === selectedWaste
+        let selectedColumns = 2
+        let selectedCost = Number.POSITIVE_INFINITY
+        for (let columns = 2; columns <= columnCeiling; columns++) {
+            const cost = automaticGridCost(cellTotal, applicationItems,
+                hasLocationAction, columns, rowCeiling, safeTargetRatio,
+                safeOrphanPenalty, safeOverflowWeight)
+            // Floating point costs that differ only below this step belong to
+            // the same arrangement, so the comparison stays stable.
+            const comparableCost = Math.round(cost * 1e9) / 1e9
+            if (comparableCost < selectedCost
+                    || (comparableCost === selectedCost
                         && columns > selectedColumns)) {
                 selectedColumns = columns
-                selectedOverflow = overflow
-                selectedWaste = waste
+                selectedCost = comparableCost
             }
         }
         return selectedColumns

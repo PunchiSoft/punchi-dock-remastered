@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64">
-    <img src="https://img.shields.io/badge/release-v0.9.7.64-4caf50" alt="Versão v0.9.7.64">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65">
+    <img src="https://img.shields.io/badge/release-v0.9.7.65-4caf50" alt="Versão v0.9.7.65">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0--or--later-blue" alt="Licença GPL-3.0-or-later">
@@ -23,7 +23,14 @@ Punchi Dock Remastered é um dock inicializador nativo e interface de tarefas pa
 Este repositório é uma reescrita modular do [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). O projeto prepara atualmente seu caminho rumo à versão estável 1.0.
 
 A versão atual é
-[v0.9.7.64](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64).
+[v0.9.7.65](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65).
+
+## Novidades em desenvolvimento
+
+Essas mudanças estão disponíveis no repositório depois de `0.9.7.64`; ainda não são uma versão etiquetada.
+
+- **Disposição automática de pastas**: Um contêiner de pasta no modo automático agora escolhe a forma de grade que desperdiça menos espaço, em vez de partir de um número fixo de colunas. Prefere a disposição mais curta, não deixa um elemento sozinho em uma última linha própria e só rola quando a altura do popup não comporta as linhas.
+- **Configuração de itens mais clara**: Abrir a página de Itens não seleciona mais a primeira linha implicitamente. A navegação com ponteiro e teclado cria uma seleção explícita, notas contextuais explicam cada tipo de item compatível e a página mostra uma nota de orientação enquanto nada está selecionado.
 
 ## Novidades na versão 0.9.7.64
 

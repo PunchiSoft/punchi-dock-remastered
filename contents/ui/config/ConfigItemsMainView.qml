@@ -25,6 +25,15 @@ ColumnLayout {
         return selectedItem ? String(selectedItem.type || "app") : ""
     }
 
+    // The note answers for the selected row. While there is none it orients the
+    // reader instead of leaving the column blank, which also covers a Dock with no
+    // items at all. A selected type the catalogue does not know still answers with
+    // an empty string, so this fallback hangs on the missing selection and never
+    // overrides the silence of a row.
+    readonly property string noteText: root.selectedNoteType.length === 0
+        ? ItemNotes.noSelectionNote()
+        : ItemNotes.noteFor(root.selectedNoteType)
+
     signal addItemRequested()
 
     function positionAtIndex(index) {
@@ -114,8 +123,10 @@ ColumnLayout {
                         // text is read through a function, which keeps a language
                         // change reachable, and it arrives as styled text because
                         // only its short label is bold: the sentence continues in
-                        // normal weight and must still wrap as one paragraph.
-                        text: ItemNotes.noteFor(root.selectedNoteType)
+                        // normal weight and must still wrap as one paragraph. The
+                        // orientation note of an unselected list travels the same
+                        // path, so the column always has something to say.
+                        text: root.noteText
                         visible: text.length > 0
                         // The tags that mark the label must not be announced, so the
                         // accessible name carries the words without their markup.

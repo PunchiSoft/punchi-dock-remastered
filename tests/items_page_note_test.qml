@@ -10,9 +10,10 @@ import "../contents/ui/config/code/itemNotes.js" as ItemNotes
 // Note of the selected type in the Items page.
 //
 // The note lives in the right column and follows the selection: it appears for a
-// type that has one, stays empty for the rest and reacts to a change of type. The
-// cases never compare against a full sentence, because the harness can resolve a
-// translated catalog; they check the shape, the type it names and its reactivity.
+// type that has one, stays empty for the rest and reacts to a change of type.
+// While no row is selected the column orients the reader instead of staying blank.
+// The cases never compare against a full sentence, because the harness can resolve
+// a translated catalog; they check the shape, the type it names and its reactivity.
 // The offscreen harness reports every item as not visible, so visibility is read
 // through the text that decides it.
 TestCase {
@@ -250,13 +251,51 @@ TestCase {
         verify(noteText().length > 0, "Returning to PunchiMenu must show it again")
     }
 
-    function test_noSelectionKeepsTheNoteEmpty() {
+    function test_noSelectionShowsTheOrientationNote() {
         controllerStub.selectedItemType = "punchimenu"
         controllerStub.selectedIndex = -1
         wait(0)
 
-        compare(noteText(), "",
-            "A note must not describe a type the list has not selected")
+        compare(noteText(), String(ItemNotes.noSelectionNote()),
+            "An unselected list must orient the reader instead of staying blank")
+        verify(noteText() !== String(ItemNotes.noteFor("app")),
+            "The orientation must not describe the type of another row")
+        verifyNoteEmphasis(findChild(hostWindowUnderTest.view, "itemTypeNote"))
+    }
+
+    function test_theEmptyDockShowsTheOrientationNote() {
+        controllerStub.items = []
+        itemModelStub.clear()
+        controllerStub.selectedIndex = -1
+        wait(0)
+
+        compare(noteText(), String(ItemNotes.noSelectionNote()),
+            "A Dock without items must explain how to start")
+    }
+
+    function test_theOrientationComesBackWhenTheSelectionIsUndone() {
+        selectOnlyType("trash")
+        verify(noteText().length > 0)
+
+        controllerStub.selectedIndex = -1
+        wait(0)
+        compare(noteText(), String(ItemNotes.noSelectionNote()),
+            "Undoing the selection must return to the orientation note")
+    }
+
+    function test_theOrientationNoteStandsApartFromTheTypeNotes() {
+        const orientation = String(ItemNotes.noSelectionNote())
+        verify(orientation.length > 0, "The orientation note must have text")
+
+        const types = [
+            "app", "folder", "dynamic-applications", "punchimenu",
+            "control-center", "calendar", "trash", "media", "note",
+            "separator", "spacer"
+        ]
+        for (let i = 0; i < types.length; i++) {
+            verify(orientation !== String(ItemNotes.noteFor(types[i])),
+                "The orientation must not duplicate the note of " + types[i])
+        }
     }
 
     function test_keyboardFocusDoesNotSelectUntilDirectionalNavigation() {
@@ -267,7 +306,8 @@ TestCase {
         wait(0)
         compare(controllerStub.selectedIndex, -1,
             "Focusing the list alone must preserve no selection")
-        compare(noteText(), "", "Focus alone must not reveal an item note")
+        compare(noteText(), String(ItemNotes.noSelectionNote()),
+            "Focus alone must not reveal an item note")
 
         keyClick(Qt.Key_Down)
         compare(controllerStub.selectedIndex, 0,

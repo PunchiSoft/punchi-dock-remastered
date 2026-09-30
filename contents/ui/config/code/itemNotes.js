@@ -3,7 +3,12 @@
 // One note per element type, read for the type the list has selected. The text is
 // returned by a function that calls i18nc when a binding asks for it, so a language
 // change reaches the page instead of being frozen at load time. A type without a
-// note returns an empty string, and the page then leaves the area empty.
+// note returns an empty string, and the page then leaves the area empty: that
+// silence belongs to a selected row the catalogue does not know, not to the page.
+//
+// While the list has no selected row, the page shows the orientation note below
+// instead: it names what the place is for and the first action, so an empty Dock
+// opens on a sentence rather than on a blank panel.
 //
 // The wording of every note is approved before it is written here: propose the text
 // with its emphasis and wait for the answer. A note explains what the item does and
@@ -84,4 +89,15 @@ function noteFor(type) {
     default:
         return ""
     }
+}
+
+// The orientation note the page shows while the list has no selected row, a Dock
+// without items included. It stands on its own and names the first action, so it
+// does not belong to noteFor(type): an unknown type with a selected row must keep
+// the column silent instead of describing the page.
+function noSelectionNote() {
+    // qmllint disable unqualified
+    return i18nc("@info <b> marks the note label",
+        "<b>Note:</b> Here you choose what the Dock shows and in which order. Add places an element; selecting one lets you configure, group, reorder or remove it.")
+    // qmllint enable unqualified
 }

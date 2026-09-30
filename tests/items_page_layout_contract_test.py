@@ -143,13 +143,25 @@ for forbidden in ("ItemEditorPanel", "ItemActionEditor", "cfg_", "i18n(",
             f"The right column must stay a note area: {forbidden}")
 for fragment in (
     'objectName: "itemTypeNote"',
-    "ItemNotes.noteFor(root.selectedNoteType)",
+    "text: root.noteText",
     "textFormat: Text.StyledText",
     "Accessible.name: ItemNotes.plainText(text)",
     "wrapMode: Text.WordWrap",
     "Layout.maximumWidth: Kirigami.Units.gridUnit * 40",
 ):
     require(fragment in reserved, f"The selected-type note is incomplete: {fragment}")
+
+# The column is never blank: while the list has no selected row it orients the
+# reader, and the sentence still comes from the note catalogue instead of being
+# written into the view.
+for fragment in (
+    "readonly property string noteText:",
+    "root.selectedNoteType.length === 0",
+    "ItemNotes.noSelectionNote()",
+    "ItemNotes.noteFor(root.selectedNoteType)",
+):
+    require(fragment in MAIN_VIEW,
+            f"The note of an unselected list is missing: {fragment}")
 
 # The note must follow the selected row directly. The editor's cached type can lag
 # behind while the selection changes, which used to show the Application note for
@@ -167,6 +179,8 @@ for fragment in (
 for fragment in (
     "function plainText(markup)",
     "function noteFor(type)",
+    "function noSelectionNote()",
+    "<b>Note:</b> Here you choose what the Dock shows and in which order.",
     'case "app":',
     'case "folder":',
     'case "dynamic-applications":',

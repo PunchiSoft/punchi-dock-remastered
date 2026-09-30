@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-09-28 15:03-0300\n"
+"POT-Creation-Date: 2026-09-30 18:24-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -252,11 +252,11 @@ msgstr "%1 pt"
 msgid "%1 px"
 msgstr "%1px"
 
+#: contents/ui/config/components/ActionDialog.qml:92
 #: contents/ui/config/ConfigItems.qml:1029
 #: contents/ui/config/ItemActionEditor.qml:45
 #: contents/ui/config/ItemActionEditor.qml:170
 #: contents/ui/config/ItemConfigurationDialog.qml:728
-#: contents/ui/config/components/ActionDialog.qml:92
 msgid "%1 rows"
 msgstr "%1 linhas"
 
@@ -330,6 +330,8 @@ msgstr "%1 — %2 — %3"
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:586
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:621
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:656
+#: contents/ui/config/components/PopupAnimationSettings.qml:82
+#: contents/ui/config/components/PopupAnimationSettings.qml:107
 #: contents/ui/config/ConfigFolderPopups.qml:242
 #: contents/ui/config/ConfigFolderPopups.qml:276
 #: contents/ui/config/ConfigFolderPopups.qml:320
@@ -342,8 +344,6 @@ msgstr "%1 — %2 — %3"
 #: contents/ui/config/ConfigPopups.qml:210
 #: contents/ui/config/ConfigPopups.qml:249
 #: contents/ui/config/ConfigPopups.qml:285
-#: contents/ui/config/components/PopupAnimationSettings.qml:82
-#: contents/ui/config/components/PopupAnimationSettings.qml:107
 #, javascript-format
 msgid "%1%"
 msgstr "%1%"
@@ -451,7 +451,7 @@ msgstr "48 barras"
 msgid "8 bars"
 msgstr "8 barras"
 
-#: contents/ui/config/code/itemNotes.js:57
+#: contents/ui/config/code/itemNotes.js:62
 msgctxt "@info <b> marks the note label"
 msgid ""
 "<b>Note:</b> A Calendar item displays date or time information directly on "
@@ -463,7 +463,7 @@ msgstr ""
 "Configurar acima para alternar entre as visualizações em bloco ou texto, "
 "formatar a data e personalizar cores."
 
-#: contents/ui/config/code/itemNotes.js:37
+#: contents/ui/config/code/itemNotes.js:42
 msgctxt "@info <b> marks the note label"
 msgid ""
 "<b>Note:</b> A Container groups applications and shows them when you click "
@@ -476,7 +476,7 @@ msgstr ""
 "—, uma Pasta no disco ou uma Categoria de aplicativo. Em um recipiente "
 "Manual você também pode soltar aplicativos do PunchiMenu."
 
-#: contents/ui/config/code/itemNotes.js:72
+#: contents/ui/config/code/itemNotes.js:77
 msgctxt "@info <b> marks the note label"
 msgid ""
 "<b>Note:</b> A Note item places a quick editable sticky note on the Dock. "
@@ -487,7 +487,7 @@ msgstr ""
 "clicar nele, abre-se uma janela onde você pode ler e escrever anotações "
 "pessoais sem precisar abrir um editor externo."
 
-#: contents/ui/config/code/itemNotes.js:77
+#: contents/ui/config/code/itemNotes.js:82
 msgctxt "@info <b> marks the note label"
 msgid ""
 "<b>Note:</b> A Separator draws a visual dividing line between dock items to "
@@ -498,7 +498,7 @@ msgstr ""
 "elementos do dock para organizá-los em grupos lógicos. Use Configurar acima "
 "para ajustar seu estilo, espessura e margens."
 
-#: contents/ui/config/code/itemNotes.js:82
+#: contents/ui/config/code/itemNotes.js:87
 msgctxt "@info <b> marks the note label"
 msgid ""
 "<b>Note:</b> A Spacer adds empty space between dock items to separate them "
@@ -509,7 +509,7 @@ msgstr ""
 "para separá-los sem desenhar uma linha visível. Use Configurar acima para "
 "ajustar seu tamanho em pixels."
 
-#: contents/ui/config/code/itemNotes.js:62
+#: contents/ui/config/code/itemNotes.js:67
 msgctxt "@info <b> marks the note label"
 msgid ""
 "<b>Note:</b> A Trash item shows the state of the system trash and lets you "
@@ -520,7 +520,7 @@ msgstr ""
 "permite abri-la ou esvaziá-la. Você pode arrastar e soltar arquivos sobre "
 "seu ícone no dock para enviá-los à lixeira."
 
-#: contents/ui/config/code/itemNotes.js:32
+#: contents/ui/config/code/itemNotes.js:37
 msgctxt "@info <b> marks the note label"
 msgid ""
 "<b>Note:</b> An Application item opens one program, and the Dock accepts as "
@@ -533,7 +533,18 @@ msgstr ""
 "instalados e preenche os demais campos; o Comando é executado como uma linha "
 "de comando."
 
-#: contents/ui/config/code/itemNotes.js:67
+#: contents/ui/config/code/itemNotes.js:101
+msgctxt "@info <b> marks the note label"
+msgid ""
+"<b>Note:</b> Here you choose what the Dock shows and in which order. Add "
+"places an element; selecting one lets you configure, group, reorder or "
+"remove it."
+msgstr ""
+"<b>Nota:</b> Aqui você escolhe o que o dock mostra e em que ordem. Adicionar "
+"coloca um elemento; ao selecioná-lo, você pode configurá-lo, agrupá-lo, "
+"reordená-lo ou removê-lo."
+
+#: contents/ui/config/code/itemNotes.js:72
 msgctxt "@info <b> marks the note label"
 msgid ""
 "<b>Note:</b> Only one Media player can be added to the Dock. It "
@@ -546,7 +557,7 @@ msgstr ""
 "mostra o estado da reprodução e oferece controles rápidos. Use Configurar "
 "acima para definir as informações da faixa e aparência."
 
-#: contents/ui/config/code/itemNotes.js:42
+#: contents/ui/config/code/itemNotes.js:47
 msgctxt "@info <b> marks the note label"
 msgid ""
 "<b>Note:</b> Only one Open applications item can be added to the Dock. It "
@@ -559,7 +570,7 @@ msgstr ""
 "lo também desativa Mostrar janelas ativas no dock, que pode ser ativado "
 "novamente nas configurações de Janelas."
 
-#: contents/ui/config/code/itemNotes.js:47
+#: contents/ui/config/code/itemNotes.js:52
 msgctxt "@info <b> marks the note label"
 msgid ""
 "<b>Note:</b> Only one PunchiMenu can be added to the Dock. Its menu mode can "
@@ -576,7 +587,7 @@ msgstr ""
 "do menu para o dock ou sobre outro aplicativo para agrupá-los, e o menu de "
 "um aplicativo cria pastas, move aplicativos entre elas e marca favoritos."
 
-#: contents/ui/config/code/itemNotes.js:52
+#: contents/ui/config/code/itemNotes.js:57
 msgctxt "@info <b> marks the note label"
 msgid ""
 "<b>Preview:</b> The Control Center is not fully polished yet. Only one can "
@@ -1012,7 +1023,7 @@ msgstr "Apenas miniaplicativos"
 #: contents/ui/components/DockItem.qml:1481
 #: contents/ui/components/DockItemsController.qml:792
 #: contents/ui/components/FolderFanView.qml:830
-#: contents/ui/components/FolderPopup.qml:633
+#: contents/ui/components/FolderPopup.qml:693
 #: contents/ui/config/code/itemTypeCatalog.js:45
 msgid "Application"
 msgstr "Aplicação"
@@ -1416,8 +1427,8 @@ msgid "Bottom to top"
 msgstr "De baixo para cima"
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:29
-#: contents/ui/config/ConfigMouse.qml:52
 #: contents/ui/config/components/PopupAnimationSettings.qml:19
+#: contents/ui/config/ConfigMouse.qml:52
 msgid "Bounce"
 msgstr "Saltar"
 
@@ -1499,8 +1510,8 @@ msgstr "Câmera"
 msgid "Cancel"
 msgstr "Dispensar"
 
-#: contents/ui/components/NotePopup.qml:289
 #: contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml:108
+#: contents/ui/components/NotePopup.qml:289
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:388
 #: contents/ui/config/ConfigAspect.qml:477
 #: contents/ui/config/ItemConfigurationDialog.qml:837
@@ -1645,8 +1656,8 @@ msgstr "Escolha o arquivo de som"
 msgid "Choose Window Count Badge Color"
 msgstr "Escolher a cor do emblema de quantidade de janelas"
 
-#: contents/ui/config/ConfigItems.qml:478
 #: contents/ui/config/code/configItemsWorkflowHelper.js:97
+#: contents/ui/config/ConfigItems.qml:478
 msgid "Choose a folder first."
 msgstr "Escolha uma pasta primeiro."
 
@@ -1813,8 +1824,8 @@ msgstr "Limpeza concluída."
 msgid "Clean configuration file?"
 msgstr "Limpar arquivo de configuração?"
 
-#: contents/ui/components/NotePopup.qml:175
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
+#: contents/ui/components/NotePopup.qml:175
 msgid "Clear"
 msgstr "Limpar"
 
@@ -1834,7 +1845,7 @@ msgstr "Efeito de clique:"
 #: contents/ui/components/AppActionsPopup.qml:132
 #: contents/ui/components/CalendarPopup.qml:325
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:219
-#: contents/ui/components/FolderPopup.qml:387
+#: contents/ui/components/FolderPopup.qml:447
 #: contents/ui/components/NotePopup.qml:259
 #: contents/ui/components/TaskModelController.qml:937
 #: contents/ui/components/TrashContextPopup.qml:136
@@ -2081,9 +2092,9 @@ msgctxt "@info:status"
 msgid "Connection failed"
 msgstr "Falha na conexão"
 
+#: contents/ui/config/code/itemTypeCatalog.js:50
 #: contents/ui/config/ConfigItems.qml:1005
 #: contents/ui/config/ItemConfigurationDialog.qml:634
-#: contents/ui/config/code/itemTypeCatalog.js:50
 msgid "Container"
 msgstr "Recipiente"
 
@@ -2135,8 +2146,8 @@ msgstr "Largura desejada do menu de contexto"
 msgid "Control Center"
 msgstr "Central de controle"
 
-#: contents/ui/components/DockItem.qml:50
 #: contents/ui/components/controlcenter/ControlCenterOverlay.qml:482
+#: contents/ui/components/DockItem.qml:50
 msgctxt "@title"
 msgid "Control Center"
 msgstr "Central de controle"
@@ -2937,7 +2948,7 @@ msgstr "Fluir para a esquerda"
 msgid "Flow to the right"
 msgstr "Fluir para a direita"
 
-#: contents/ui/components/FolderPopup.qml:360
+#: contents/ui/components/FolderPopup.qml:420
 #: contents/ui/config/ConfigItems.qml:1021
 #: contents/ui/config/ItemConfigurationDialog.qml:644
 msgid "Folder"
@@ -4277,10 +4288,10 @@ msgid "No virtual desktops were found."
 msgstr "Nenhum desktop virtual foi encontrado."
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:26
+#: contents/ui/config/components/PopupAnimationSettings.qml:22
 #: contents/ui/config/ConfigAspect.qml:155
 #: contents/ui/config/ConfigMouse.qml:42 contents/ui/config/ConfigMouse.qml:49
 #: contents/ui/config/ConfigMouse.qml:56 contents/ui/config/ConfigPopups.qml:36
-#: contents/ui/config/components/PopupAnimationSettings.qml:22
 msgid "None"
 msgstr "Nenhum"
 
@@ -4340,9 +4351,9 @@ msgid "Not selected for the new folder"
 msgstr "Não selecionado para a nova pasta"
 
 #: contents/ui/components/NotePopup.qml:133
+#: contents/ui/config/code/itemTypeCatalog.js:55
 #: contents/ui/config/ConfigItems.qml:1010
 #: contents/ui/config/ItemConfigurationDialog.qml:639
-#: contents/ui/config/code/itemTypeCatalog.js:55
 msgid "Note"
 msgstr "Nota"
 
@@ -4650,8 +4661,8 @@ msgid "Open this application folder"
 msgstr "Abrir esta pasta de aplicativos"
 
 #: contents/ui/components/FolderFanView.qml:1096
-#: contents/ui/components/FolderPopup.qml:637
-#: contents/ui/components/FolderPopup.qml:734
+#: contents/ui/components/FolderPopup.qml:697
+#: contents/ui/components/FolderPopup.qml:794
 msgctxt "@info:accessible"
 msgid "Open this folder in the file manager"
 msgstr "Abrir esta pasta no gerenciador de arquivos"
@@ -5501,9 +5512,9 @@ msgstr "Selecionado para a nova pasta"
 msgid "Selected package: %s\\n"
 msgstr "Pacote selecionado: %s\\n"
 
+#: contents/ui/config/code/itemTypeCatalog.js:59
 #: contents/ui/config/ConfigItems.qml:1011
 #: contents/ui/config/ItemConfigurationDialog.qml:640
-#: contents/ui/config/code/itemTypeCatalog.js:59
 msgid "Separator"
 msgstr "Separador"
 
@@ -5815,9 +5826,9 @@ msgctxt "@title"
 msgid "Sound Volume"
 msgstr "Volume do som"
 
+#: contents/ui/config/code/itemTypeCatalog.js:63
 #: contents/ui/config/ConfigItems.qml:1012
 #: contents/ui/config/ItemConfigurationDialog.qml:641
-#: contents/ui/config/code/itemTypeCatalog.js:63
 msgid "Spacer"
 msgstr "Espaçador"
 
@@ -7075,10 +7086,10 @@ msgstr "número de tarefas paralelas inválido: %s\\n"
 msgid "pacman is required on Arch-family distributions"
 msgstr "o pacman é obrigatório em distribuições da família Arch"
 
+#: contents/ui/config/components/ActionDialog.qml:91
 #: contents/ui/config/ConfigItems.qml:1028
 #: contents/ui/config/ItemActionEditor.qml:44
 #: contents/ui/config/ItemConfigurationDialog.qml:727
-#: contents/ui/config/components/ActionDialog.qml:91
 msgid "rows"
 msgstr "linhas"
 

@@ -100,6 +100,24 @@ TestCase {
         }
     }
 
+    function folderWithAppsWithoutLocation(appCount) {
+        const apps = []
+        for (let index = 0; index < appCount; index++) {
+            apps.push({
+                name: "Entry " + index,
+                icon: "folder",
+                command: "entry" + index
+            })
+        }
+        // No sourcePath: the container holds applications but cannot open a
+        // folder, so it contributes no location cell to the Grid model.
+        return {
+            name: "Applications",
+            icon: "folder-download",
+            apps: apps
+        }
+    }
+
     function init() {
         failOnWarning(/.?/)
         // Restore the regular Array before re-enabling Fan. Some regression
@@ -406,6 +424,62 @@ TestCase {
             verify(!folderPopup.scrollRequired,
                 expectation.cells + " cells must fit without premature scrolling")
         }
+    }
+
+    // A container without a folder has no elastic cell, so the arrangement has
+    // to close the rectangle with the applications alone instead of leaving the
+    // last row half empty.
+    function test_gridAutomaticallyOrdersAContainerWithoutALocationAction() {
+        folderPopup.layoutMode = "grid"
+        folderPopup.maximumAvailableWidth = 752
+        folderPopup.maximumAvailableHeight = 640
+        folderPopup.folderOpenerName = ""
+
+        const cases = [
+            {cells: 6, columns: 3, rows: 2},
+            {cells: 8, columns: 4, rows: 2},
+            {cells: 9, columns: 3, rows: 3},
+            {cells: 10, columns: 5, rows: 2},
+            {cells: 12, columns: 4, rows: 3}
+        ]
+        for (let index = 0; index < cases.length; index++) {
+            const expectation = cases[index]
+            folderPopup.folderItem = folderWithAppsWithoutLocation(
+                expectation.cells)
+            tryCompare(folderPopup, "classicItemCount", expectation.cells)
+            compare(folderPopup.openLocationRowHeight, 0,
+                "A container without a folder must not reserve a footer row")
+            compare(folderPopup.gridColumnCount, expectation.columns,
+                expectation.cells + " applications must fill the rectangle")
+            compare(folderPopup.classicRowCount, expectation.rows,
+                expectation.cells + " applications must use the closed shape")
+            verify(!folderPopup.scrollRequired,
+                expectation.cells + " applications must fit without premature scrolling")
+        }
+    }
+
+    // Both container kinds share one cost function. The elastic cell of a folder
+    // container is what tells them apart, so the same list of applications may
+    // legitimately close in a different shape.
+    function test_gridTellsBothContainerKindsApart() {
+        folderPopup.layoutMode = "grid"
+        folderPopup.maximumAvailableWidth = 752
+        folderPopup.maximumAvailableHeight = 640
+
+        folderPopup.folderItem = folderWithAppsWithoutLocation(6)
+        tryCompare(folderPopup, "classicItemCount", 6)
+        compare(folderPopup.gridColumnCount, 3,
+            "Six applications alone close a rectangle of three columns")
+
+        folderPopup.folderItem = ({
+            "name": "Home",
+            "icon": "user-home",
+            "sourcePath": "~",
+            "apps": folderWithAppsWithoutLocation(6).apps
+        })
+        tryCompare(folderPopup, "classicItemCount", 7)
+        compare(folderPopup.gridColumnCount, 4,
+            "The elastic location cell moves the same list to four columns")
     }
 
     function test_manualGridKeepsItsConfiguredRowsAndColumns() {

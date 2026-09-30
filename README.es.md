@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64">
-    <img src="https://img.shields.io/badge/release-v0.9.7.64-4caf50" alt="Versión v0.9.7.64">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65">
+    <img src="https://img.shields.io/badge/release-v0.9.7.65-4caf50" alt="Versión v0.9.7.65">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -23,7 +23,14 @@ Punchi Dock Remastered es un dock lanzador nativo e interfaz de tareas para KDE 
 Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). El proyecto prepara actualmente su camino hacia una versión 1.0 estable.
 
 La versión actual es
-[v0.9.7.64](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64).
+[v0.9.7.65](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65).
+
+## Novedades en desarrollo
+
+Estos cambios están disponibles en el repositorio después de `0.9.7.64`; todavía no son una versión etiquetada.
+
+- **Disposición automática de carpetas**: Un contenedor de carpeta en automático ahora elige la forma de cuadrícula que desperdicia menos espacio, en lugar de partir de un número fijo de columnas. Prefiere la disposición más corta, no deja un elemento solo en una última línea propia y solo recurre al desplazamiento cuando la altura del popup no admite las filas.
+- **Configuración de ítems más clara**: Abrir la página de Ítems ya no selecciona la primera fila implícitamente. La navegación con puntero y teclado crea una selección explícita, las notas contextuales explican cada tipo de ítem compatible y la página muestra una nota de orientación mientras no hay nada seleccionado.
 
 ## Novedades de la versión 0.9.7.64
 

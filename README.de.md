@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64">
-    <img src="https://img.shields.io/badge/release-v0.9.7.64-4caf50" alt="Version v0.9.7.64">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65">
+    <img src="https://img.shields.io/badge/release-v0.9.7.65-4caf50" alt="Version v0.9.7.65">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/lizenz-GPL--3.0--or--later-blue" alt="Lizenz GPL-3.0-or-later">
@@ -23,7 +23,14 @@ Punchi Dock Remastered ist ein natives Starter-Dock und eine Aufgabenleiste für
 Dieses Repository ist ein modularer Rewrite des ursprünglichen [Punchi Dock Plasmoids](https://github.com/PunchiSoft/punchi-dock-plasmoid). Das Projekt bereitet derzeit seinen Weg zur stabilen Version 1.0 vor.
 
 Die aktuelle Version ist
-[v0.9.7.64](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64).
+[v0.9.7.65](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65).
+
+## Neuigkeiten in Entwicklung
+
+Diese Änderungen sind nach `0.9.7.64` im Repository verfügbar; sie sind noch keine mit Tag versehene Version.
+
+- **Automatische Ordneranordnung**: Ein Ordner-Container im Automatikmodus wählt jetzt die Rasterform, die den wenigsten Platz verschwendet, statt von einer festen Spaltenzahl auszugehen. Sie bevorzugt die kürzeste Anordnung, lässt kein einzelnes Element allein in einer letzten Zeile zurück und scrollt erst, wenn die Popup-Höhe die Zeilen nicht fasst.
+- **Klarere Element-Konfiguration**: Beim Öffnen der Elemente-Seite wird die erste Zeile nicht mehr implizit ausgewählt. Maus- und Tastaturnavigation erzeugen eine ausdrückliche Auswahl, kontextuelle Hinweise erklären jeden unterstützten Element-Typ, und solange nichts ausgewählt ist, zeigt die Seite einen Orientierungshinweis.
 
 ## Neuigkeiten in Version 0.9.7.64
 

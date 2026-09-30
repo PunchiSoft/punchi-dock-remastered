@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64">
-    <img src="https://img.shields.io/badge/release-v0.9.7.64-4caf50" alt="Release v0.9.7.64">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65">
+    <img src="https://img.shields.io/badge/release-v0.9.7.65-4caf50" alt="Release v0.9.7.65">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,7 +23,7 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7.64](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.64).
+[v0.9.7.65](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65).
 
 ## Current Development Highlights
 
@@ -45,9 +45,15 @@ new tagged release yet.
 - **Larger floating defaults**: A new dock instance starts with 42 px dock
   icons. Folder popup profiles start at 42 px, 150% global scale, and 25% text
   shadows.
+- **Automatic folder arrangement**: A folder container set to automatic now
+  chooses the grid shape that wastes the least space instead of starting from a
+  fixed column count. It prefers the shortest arrangement, keeps a lone element
+  off a final line of its own, and only scrolls when the popup height cannot
+  hold the rows.
 - **Clearer item configuration**: Opening the Items page no longer selects the
   first row implicitly. Pointer and keyboard navigation create an explicit
-  selection, and contextual notes explain every supported item type.
+  selection, contextual notes explain every supported item type, and the page
+  shows an orientation note while nothing is selected.
 - **Reproducible KConfig auditing**: The maintained configuration auditor checks
   schema entries, KCM ownership, configuration pages, and reactive runtime
   consumers with stable diagnostics and CI-friendly output.
