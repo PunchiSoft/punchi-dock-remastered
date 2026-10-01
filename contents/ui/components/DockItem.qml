@@ -426,6 +426,7 @@ Item {
     property int taskIndicatorCount: 0
     property bool taskIsActive: false
     property bool taskDemandsAttention: false
+    property bool pinnedApplicationLauncher: false
     property bool suppressTooltip: false
     property bool supportsContextMenu: false
     property bool mediaHoverControlsEnabled: false
@@ -483,10 +484,12 @@ Item {
         }
         return false
     }
-    // The floating label is only offered where the item has no readable title of
-    // its own: the container and the special launchers. Plain application items
-    // already carry their own label and indicator.
-    readonly property bool tooltipEligibleItem: itemType === "folder"
+    // Pinned application launchers use the floating label only while they have
+    // no open windows. Once a task exists, its hover preview owns that space.
+    readonly property bool tooltipEligibleItem: (pinnedApplicationLauncher
+            && itemType === "app"
+            && taskIndicatorCount === 0)
+        || itemType === "folder"
         || itemType === "trash"
         || itemType === "punchimenu"
         || itemType === "control-center"

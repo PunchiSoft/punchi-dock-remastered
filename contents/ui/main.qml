@@ -3146,6 +3146,8 @@ PlasmoidItem {
                             : (dockItemDelegate.modelData.icon || "")
                         itemName: dockItemDelegate.modelData.name || ""
                         itemCommand: dockItemDelegate.modelData.command || ""
+                        pinnedApplicationLauncher:
+                            dockItemDelegate.modelData.type === "app"
                         taskIndicatorCount: taskState.count
                         taskIsActive: taskState.isActive
                         taskDemandsAttention: taskState.demandsAttention
