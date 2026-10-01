@@ -13,7 +13,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SCRIPT_PATH = PROJECT_ROOT / "scripts" / "audit-plasma-config.py"
+SCRIPT_PATH = PROJECT_ROOT / "scripts-dev" / "audit-plasma-config.py"
 SPEC = importlib.util.spec_from_file_location("audit_plasma_config", SCRIPT_PATH)
 if SPEC is None or SPEC.loader is None:
     raise RuntimeError(f"Cannot load {SCRIPT_PATH}")

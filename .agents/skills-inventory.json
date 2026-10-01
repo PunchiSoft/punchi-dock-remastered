@@ -1684,9 +1684,9 @@
           "exists": true,
           "kind": "repo_root",
           "origin": "map_override",
-          "resolved": "scripts/README.md",
+          "resolved": "scripts-dev/README.md",
           "source": "SKILL.md",
-          "value": "scripts/README.md"
+          "value": "scripts-dev/README.md"
         }
       ],
       "references": [
@@ -2227,34 +2227,26 @@
         {
           "exists": true,
           "kind": "repo_root",
+          "origin": "map_override",
+          "resolved": "scripts-dev/README.md",
+          "source": "SKILL.md",
+          "value": "scripts-dev/README.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "map_override",
+          "resolved": "scripts-dev/audit-plasma-config.py",
+          "source": "SKILL.md",
+          "value": "scripts-dev/audit-plasma-config.py"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
           "origin": "inline_code",
           "resolved": "scripts-user",
           "source": "SKILL.md",
           "value": "scripts-user/"
-        },
-        {
-          "exists": true,
-          "kind": "repo_root",
-          "origin": "map_override",
-          "resolved": "scripts",
-          "source": "SKILL.md",
-          "value": "scripts/"
-        },
-        {
-          "exists": true,
-          "kind": "repo_root",
-          "origin": "map_override",
-          "resolved": "scripts/README.md",
-          "source": "SKILL.md",
-          "value": "scripts/README.md"
-        },
-        {
-          "exists": true,
-          "kind": "repo_root",
-          "origin": "map_override",
-          "resolved": "scripts/audit-plasma-config.py",
-          "source": "SKILL.md",
-          "value": "scripts/audit-plasma-config.py"
         },
         {
           "exists": true,

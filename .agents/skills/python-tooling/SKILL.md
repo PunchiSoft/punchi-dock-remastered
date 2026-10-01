@@ -7,9 +7,9 @@ description: Activa esta skill cuando se solicite automatización, creación de 
 
 ## Instrucciones Detalladas
 Python se utiliza en este proyecto única y exclusivamente para crear herramientas auxiliares que mejoren la experiencia del desarrollador, automaticen tareas y realicen pruebas (fuera del código del plasmoide).
-1. Ubicar cada script donde el proyecto ya mantiene ese tipo de herramienta, según la política de `AGENTS.md`: `scripts-dev/` para el ciclo de desarrollo, `scripts/` para los auditores independientes (ver `scripts/README.md`) y `scripts-user/` para el flujo de usuario. No crear carpetas nuevas ni mover herramientas existentes.
+1. Ubicar cada script donde el proyecto ya mantiene ese tipo de herramienta, según la política de `AGENTS.md`: `scripts-dev/` para mantenimiento, validaciones y auditores, y `scripts-user/` para el flujo de usuario. No crear una tercera familia de scripts ni mover herramientas sin una decisión arquitectónica explícita.
 2. Utiliza bibliotecas estándar de Python siempre que sea posible para evitar dependencias innecesarias en los entornos de desarrollo.
-3. Si se requieren dependencias, decláralas junto al script siguiendo la convención documentada en el README de esa carpeta; `scripts/README.md` describe la suya.
+3. Si se requieren dependencias, decláralas junto al script siguiendo la convención documentada en el README de esa carpeta.
 4. Los scripts deben aceptar argumentos a través de CLI (usa `argparse`) y proveer ayuda detallada (`--help`).
 
 ## Checklist
@@ -34,9 +34,9 @@ Python se utiliza en este proyecto única y exclusivamente para crear herramient
 
 ## Herramienta mantenida de KConfig
 
-Al modificar `scripts/audit-plasma-config.py`:
+Al modificar `scripts-dev/audit-plasma-config.py`:
 
-- leer `scripts/README.md` y conservar sus salidas de texto y JSON, codigos de
+- leer `scripts-dev/README.md` y conservar sus salidas de texto y JSON, codigos de
   salida y limite de evidencia;
 - mantener biblioteca estandar, rutas relativas al proyecto y ausencia de
   efectos laterales sobre la configuracion personal;

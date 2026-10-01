@@ -26,6 +26,7 @@ Comandos comunes:
 ./scripts-dev/setup.sh --dependencies-only
 ./scripts-dev/setup.sh --lang es --help
 ./scripts-dev/check-build-environment.sh
+python3 ./scripts-dev/audit-plasma-config.py --project-root .
 python3 ./scripts-dev/skill_inventory.py --check
 ./scripts-dev/update-translations.sh
 ./scripts-dev/validar-empaquetado-limpio.sh
@@ -40,9 +41,32 @@ python3 ./scripts-dev/skill_inventory.py --check
   qmllint.
 - `qmllint*.py` y `qmllint-baseline*.env`: herramientas y perfiles de deuda
   estática.
+- `audit-plasma-config.py`: auditor estático del contrato entre KConfig, las
+  páginas KCM y los consumidores del runtime.
 - `skill_inventory.py`: valida las skills versionadas para agentes y mantiene
   su inventario generado.
 - `instalar-plasmoide.sh`: selector de paquetes generados localmente.
+
+## Auditor del contrato KConfig
+
+`audit-plasma-config.py` comprueba la ruta estática desde el esquema KConfig
+hasta las páginas KCM declaradas y el mapa de configuración del runtime. Debe
+ejecutarse desde la raíz del proyecto:
+
+```bash
+python3 scripts-dev/audit-plasma-config.py --project-root .
+```
+
+`--format json` produce una salida consumible por herramientas y `--verbose`
+enumera cada entrada del esquema y su propietario KCM. El comando termina con
+`0` cuando el contrato pasa y con `1` cuando encuentra un error estructural;
+CTest ejecuta tanto su suite aislada (`plasma_config_auditor_test`) como el gate
+del árbol real (`plasma_config_audit`).
+
+Debe ejecutarse al añadir, retirar, renombrar o mover una entrada KConfig, una
+propiedad `cfg_*`, una página de configuración o un acceso del runtime. Solo
+acredita conectividad estática: no demuestra Aplicar, Cancelar, persistencia,
+actualización reactiva ni comportamiento en Plasma.
 
 ## Inventario de skills
 

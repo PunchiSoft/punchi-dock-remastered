@@ -26,6 +26,7 @@ Common commands:
 ./scripts-dev/setup.sh --dependencies-only
 ./scripts-dev/setup.sh --lang es --help
 ./scripts-dev/check-build-environment.sh
+python3 ./scripts-dev/audit-plasma-config.py --project-root .
 python3 ./scripts-dev/skill_inventory.py --check
 ./scripts-dev/update-translations.sh
 ./scripts-dev/validar-empaquetado-limpio.sh
@@ -39,6 +40,8 @@ python3 ./scripts-dev/skill_inventory.py --check
 - `lib/`: developer-only logging, local-test, Plasma-version, and qmllint
   helpers.
 - `qmllint*.py` and `qmllint-baseline*.env`: static-debt tooling and profiles.
+- `audit-plasma-config.py`: static auditor for the KConfig, KCM-page, and
+  runtime-consumer contract.
 - `skill_inventory.py`: validates the versioned agent skills and maintains their
   generated inventory.
 - `test-integrity-guard.py` and `test-integrity/`: protects existing tests, the
@@ -46,6 +49,27 @@ python3 ./scripts-dev/skill_inventory.py --check
   policy lives in `AGENTS.md`; the operation is documented in
   [test-integrity/README.md](test-integrity/README.md).
 - `instalar-plasmoide.sh`: selector for locally produced packages.
+
+## KConfig contract auditor
+
+`audit-plasma-config.py` verifies the static path from the KConfig schema to
+the declared KCM pages and the runtime configuration map. Run it from the
+project root:
+
+```bash
+python3 scripts-dev/audit-plasma-config.py --project-root .
+```
+
+Use `--format json` for machine-readable output and `--verbose` to list every
+schema entry and its KCM owner. The command exits with `0` when the contract
+passes and `1` when it finds a structural error; CTest runs both its isolated
+regression suite (`plasma_config_auditor_test`) and the real-tree gate
+(`plasma_config_audit`).
+
+Run the auditor whenever a change adds, removes, renames, moves, or changes the
+ownership of a KConfig entry, a `cfg_*` property, a configuration page, or a
+runtime configuration access. It checks static connectivity only: passing does
+not prove Apply, Cancel, persistence, hot refresh, or behavior in Plasma.
 
 ## Skill inventory
 

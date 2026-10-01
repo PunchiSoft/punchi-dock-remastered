@@ -92,7 +92,8 @@ geometría, renderizado, DBus o integración con Plasma.
   accesibilidad o geometría según corresponda.
 - Cambio alcanzable desde `main.qml`, `Loader`, modelos o popups: ciclo de vida
   y carga integral del applet mediante `qml-runtime-load-review`.
-- Cambio KConfig/KCM: ejecutar `scripts/audit-plasma-config.py --project-root .`
+- Cambio KConfig/KCM: ejecutar
+  `scripts-dev/audit-plasma-config.py --project-root .`
   y los gates `plasma_config_auditor_test` y `plasma_config_audit`; despues
   comprobar defaults, Aplicar/Cancelar, hot refresh, persistencia y migración
   mediante `plasma-config-review`. El auditor solo acredita conectividad

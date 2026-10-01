@@ -269,7 +269,7 @@ path_overrides:
     kind: skill_root
   - skill: plasma-config-review
     source: SKILL.md
-    value: scripts/README.md
+    value: scripts-dev/README.md
     kind: repo_root
   - skill: plasmoid-packaging
     source: SKILL.md
@@ -277,13 +277,9 @@ path_overrides:
     kind: generated
   - skill: python-tooling
     source: SKILL.md
-    value: scripts/
+    value: scripts-dev/README.md
     kind: repo_root
   - skill: python-tooling
     source: SKILL.md
-    value: scripts/README.md
-    kind: repo_root
-  - skill: python-tooling
-    source: SKILL.md
-    value: scripts/audit-plasma-config.py
+    value: scripts-dev/audit-plasma-config.py
     kind: repo_root

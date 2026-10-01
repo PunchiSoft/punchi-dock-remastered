@@ -30,10 +30,11 @@ Plasma. Tratar el esquema, las paginas y el journal como un solo contrato.
 Comprobar primero si existe un auditor mantenido:
 
 ```bash
-test -f scripts/audit-plasma-config.py
+test -f scripts-dev/audit-plasma-config.py
 ```
 
-Si existe, ejecutar `python3 scripts/audit-plasma-config.py --project-root .`.
+Si existe, ejecutar
+`python3 scripts-dev/audit-plasma-config.py --project-root .`.
 Si no existe, no inventar el resultado ni bloquear toda la revision: registrar
 la brecha de automatizacion y construir el inventario desde `main.xml`,
 `config.qml`, paginas y consumidores `cfg_*` con busquedas dirigidas. Una tarea
@@ -41,7 +42,7 @@ posterior puede implementar el auditor con pruebas propias.
 
 Cuando exista el auditor mantenido:
 
-- leer `scripts/README.md` antes de cambiar su contrato o sus excepciones;
+- leer `scripts-dev/README.md` antes de cambiar su contrato o sus excepciones;
 - exigir `Result: PASS`, cero errores y el recuento esperado de esquema, paginas,
   superficies KCM y consumidores;
 - usar `--format json` solo cuando otra herramienta necesite consumir el
@@ -110,7 +111,7 @@ Abrir cada categoria al menos una vez y recorrer contenido perezoso. Si el
 auditor mantenido existe, analizar el registro con:
 
 ```bash
-python3 scripts/audit-plasma-config.py \
+python3 scripts-dev/audit-plasma-config.py \
   --project-root . \
   --journal /ruta/al/registro.log
 ```

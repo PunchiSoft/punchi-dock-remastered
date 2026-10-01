@@ -248,7 +248,7 @@ add_test(
 add_test(
     NAME plasma_config_audit
     COMMAND ${PYTHON3_EXECUTABLE}
-        ${CMAKE_SOURCE_DIR}/scripts/audit-plasma-config.py
+        ${CMAKE_SOURCE_DIR}/scripts-dev/audit-plasma-config.py
         --project-root ${CMAKE_SOURCE_DIR}
 )
 add_test(
