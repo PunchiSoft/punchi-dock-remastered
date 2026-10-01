@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diseño UX y movimiento"
+  short_description: "Coordina interacción y movimiento en Punchi Dock"
+  default_prompt: "Usa $ui-ux-motion-design para diagnosticar y diseñar esta interacción animada de Punchi Dock."

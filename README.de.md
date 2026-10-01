@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65">
-    <img src="https://img.shields.io/badge/release-v0.9.7.65-4caf50" alt="Version v0.9.7.65">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.66">
+    <img src="https://img.shields.io/badge/release-v0.9.7.66-4caf50" alt="Version v0.9.7.66">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/lizenz-GPL--3.0--or--later-blue" alt="Lizenz GPL-3.0-or-later">
@@ -23,7 +23,7 @@ Punchi Dock Remastered ist ein natives Starter-Dock und eine Aufgabenleiste für
 Dieses Repository ist ein modularer Rewrite des ursprünglichen [Punchi Dock Plasmoids](https://github.com/PunchiSoft/punchi-dock-plasmoid). Das Projekt bereitet derzeit seinen Weg zur stabilen Version 1.0 vor.
 
 Die aktuelle Version ist
-[v0.9.7.65](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65).
+[v0.9.7.66](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.66).
 
 ## Neuigkeiten in Entwicklung
 
@@ -227,7 +227,27 @@ Siehe [scripts-dev/README.md](scripts-dev/README.md) für zusätzliche Entwickle
 - `src/`: Natives C++-QML-Integrationsmodul.
 - `scripts-user/`: Benutzer-Installations- und Build-Assistent.
 - `scripts-dev/`: Strikte Entwicklungs-, Test- und Wartungswerkzeuge.
+- `.agents/`: Versionierte Richtlinien, spezialisierte Skills und Inventar für KI-Agenten.
+- `AGENTS.md`: Kanonische Projektanweisungen für Entwicklungsagenten.
 - `metadata.json`: KPackage-Metadaten und Plasma-Kompatibilitätsdeklaration.
+
+## KI-gestützte Entwicklung
+
+Punchi Dock Remastered enthält eine versionierte Infrastruktur für den Einsatz
+von KI-Agenten bei Entwicklung, Review, Tests und Dokumentation. Damit wird der
+Projektablauf an aktuelle KI-gestützte Entwicklungswerkzeuge angepasst, während
+Regeln zu Architektur, Kompatibilität, Validierung und Änderungsumfang
+ausdrücklich festgehalten bleiben.
+
+Die Anweisungen befinden sich in [AGENTS.md](AGENTS.md) und
+[`.agents/`](.agents/). Dort stehen die allgemeine Projektrichtlinie und
+spezialisierte Skills unter anderem für KDE Plasma, QML, Tests, Paketierung,
+Sicherheit, Lokalisierung und Code-Review. Durch die Versionierung sind
+Änderungen an diesen Anweisungen wie andere Projektänderungen reproduzierbar
+und überprüfbar.
+
+Agenten unterstützen die Entwicklung; Projekttests, Validierungen und Reviews
+bleiben die maßgeblichen Nachweise für das Ergebnis.
 
 ## Das Projekt unterstützen
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Preflight Security Review"
+  short_description: "Prevent data leaks before repository changes"
+  default_prompt: "Use $preflight-security-review to audit this change for data exposure and unsafe repository modifications before implementation."

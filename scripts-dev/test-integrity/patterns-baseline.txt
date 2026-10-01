@@ -1,0 +1,7 @@
+# Documented pre-existing occurrences of deactivation patterns.
+# A new occurrence stops the delivery and is reported for review; it is
+# recorded here only with explicit user authorization.
+
+cmake-skip-return-code  tests/CMakeLists.txt
+qt-skip-call  tests/folder_popup_motion_test.qml
+qt-skip-call  tests/media_dock_item_morph_test.qml

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Movimiento fluido en Plasma"
+  short_description: "Animaciones QML continuas, reversibles y sin reinicios"
+  default_prompt: "Usa $plasma-fluid-motion para implementar o corregir esta animación QML de Punchi Dock."

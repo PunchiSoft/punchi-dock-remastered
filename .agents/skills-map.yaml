@@ -1,0 +1,289 @@
+schema_version: 1
+
+families:
+  application-logic:
+    description: "Runtime-agnostic state, controller, service, and refactoring guidance"
+  delivery:
+    description: "Git, distribution, packaging, installation, and release workflows"
+  developer-tooling:
+    description: "Developer-only automation and validation tooling"
+  documentation-localization:
+    description: "Documentation, explanatory copy, and localization workflows"
+  governance:
+    description: "Architecture, review, security, and repository-safety policy"
+  interface:
+    description: "QML interface design, implementation, accessibility, and visual review"
+  kde-platform:
+    description: "KDE Plasma, Kirigami, SDK, and platform integration"
+  motion-effects:
+    description: "Animation, interaction motion, effects, and rendering cost"
+  quality-assurance:
+    description: "Testing, runtime loading, configuration, and static-debt validation"
+  workflow:
+    description: "Cross-domain review, modification, issue, and session workflows"
+
+skills:
+  - name: accessibility
+    family: interface
+    role: domain
+    references: [qml-ui-creation, ui-design]
+  - name: animations
+    family: motion-effects
+    role: domain
+    references: [accessibility, performance, plasma-fluid-motion, qml-runtime-load-review]
+  - name: architecture
+    family: governance
+    role: domain
+    references: []
+  - name: code-review
+    family: governance
+    role: domain
+    references: []
+  - name: control-connection-review
+    family: quality-assurance
+    role: domain
+    references: [plasma-config-review, safe-removal-review, testing]
+  - name: controllers
+    family: application-logic
+    role: domain
+    references: [js-plasma-backend, services]
+  - name: debugging
+    family: quality-assurance
+    role: domain
+    references: [logging, testing]
+  - name: distro-installer-scripts
+    family: delivery
+    role: domain
+    references: [plasmoid-packaging, python-tooling]
+  - name: documentation
+    family: documentation-localization
+    role: domain
+    references: []
+  - name: fedora
+    family: delivery
+    role: domain
+    references: [distro-installer-scripts]
+  - name: git
+    family: delivery
+    role: domain
+    references: []
+  - name: github-issue-response
+    family: workflow
+    role: domain
+    references: [modification-cycle, review-cycle]
+  - name: html-document-design
+    family: documentation-localization
+    role: domain
+    references: [documentation]
+  - name: icons
+    family: interface
+    role: domain
+    references: [kde-sdk-reference, qml-ui-creation]
+  - name: javascript
+    family: application-logic
+    role: alias
+    canonical: js-plasma-backend
+    references: []
+  - name: js-plasma-backend
+    family: application-logic
+    role: domain
+    references: [controllers, models, services]
+  - name: kde-official-applet-adaptation
+    family: kde-platform
+    role: domain
+    references: [kde-sdk-reference, qml-runtime-load-review, testing]
+  - name: kde-plasma-6-dev
+    family: kde-platform
+    role: domain
+    references: [architecture, js-plasma-backend, qml-ui-creation]
+  - name: kde-plasma6
+    family: kde-platform
+    role: alias
+    canonical: kde-plasma-6-dev
+    references: []
+  - name: kde-sdk-reference
+    family: kde-platform
+    role: domain
+    references: []
+  - name: kde-upstream-sync
+    family: kde-platform
+    role: domain
+    references: [kde-sdk-reference]
+  - name: ki18n-localization
+    family: documentation-localization
+    role: domain
+    references: [testing]
+  - name: kirigami
+    family: kde-platform
+    role: domain
+    references: [kde-sdk-reference, qml-ui-creation]
+  - name: localization
+    family: documentation-localization
+    role: alias
+    canonical: ki18n-localization
+    references: []
+  - name: logging
+    family: application-logic
+    role: domain
+    references: [debugging]
+  - name: models
+    family: application-logic
+    role: domain
+    references: [js-plasma-backend]
+  - name: modification-cycle
+    family: workflow
+    role: orchestrator
+    references: [controllers, js-plasma-backend, kde-sdk-reference, qml-ui-creation, testing, ui-design, visual-review]
+  - name: notice-copy-approval
+    family: documentation-localization
+    role: domain
+    references: [ki18n-localization, modification-cycle, ui-design, ux-review]
+  - name: packaging
+    family: delivery
+    role: alias
+    canonical: plasmoid-packaging
+    references: []
+  - name: performance
+    family: quality-assurance
+    role: domain
+    references: [testing]
+  - name: plasma-animation-performance
+    family: motion-effects
+    role: domain
+    references: [performance, plasma-fluid-motion, testing]
+  - name: plasma-config-review
+    family: quality-assurance
+    role: domain
+    references: [kde-sdk-reference, qml-runtime-load-review, testing]
+  - name: plasma-fluid-motion
+    family: motion-effects
+    role: domain
+    references: [animations, plasma-animation-performance, qml-runtime-load-review]
+  - name: plasma-liquid-effects
+    family: motion-effects
+    role: domain
+    references: [plasma-animation-performance, plasma-fluid-motion, qml-runtime-load-review, visual-review]
+  - name: plasma-motion-review
+    family: motion-effects
+    role: domain
+    references: [performance, plasma-animation-performance, plasma-fluid-motion, plasma-liquid-effects, visual-review]
+  - name: plasmoid-packaging
+    family: delivery
+    role: domain
+    references: [release, testing]
+  - name: preflight-security-review
+    family: governance
+    role: domain
+    references: [git, security]
+  - name: python-tooling
+    family: developer-tooling
+    role: domain
+    references: []
+  - name: qml
+    family: interface
+    role: alias
+    canonical: qml-ui-creation
+    references: []
+  - name: qml-runtime-load-review
+    family: quality-assurance
+    role: domain
+    references: [qml-ui-creation, testing]
+  - name: qml-ui-creation
+    family: interface
+    role: domain
+    references: [accessibility, kirigami, qml-runtime-load-review, ui-design]
+  - name: qmllint-debt-cycle
+    family: quality-assurance
+    role: domain
+    references: [testing]
+  - name: refactoring
+    family: application-logic
+    role: domain
+    references: [architecture, safe-removal-review, testing]
+  - name: release
+    family: delivery
+    role: domain
+    references: [git, plasmoid-packaging]
+  - name: review-cycle
+    family: workflow
+    role: orchestrator
+    references: [debugging, kde-sdk-reference, qml-ui-creation, ux-review, visual-review]
+  - name: safe-removal-review
+    family: governance
+    role: domain
+    references: [git, preflight-security-review]
+  - name: sdk-reference
+    family: kde-platform
+    role: alias
+    canonical: kde-sdk-reference
+    references: []
+  - name: security
+    family: governance
+    role: domain
+    references: [preflight-security-review, testing]
+  - name: services
+    family: application-logic
+    role: domain
+    references: [controllers, js-plasma-backend]
+  - name: session-closure
+    family: workflow
+    role: orchestrator
+    references: [git, release]
+  - name: taskmanager-api
+    family: kde-platform
+    role: domain
+    references: [kde-sdk-reference, models]
+  - name: testing
+    family: quality-assurance
+    role: domain
+    references: [preflight-security-review, qml-runtime-load-review]
+  - name: ui-design
+    family: interface
+    role: domain
+    references: [accessibility, qml-ui-creation, ux-review, visual-review]
+  - name: ui-ux-motion-design
+    family: motion-effects
+    role: orchestrator
+    references: [accessibility, animations, performance, plasma-fluid-motion, qml-runtime-load-review, ui-design, ux-review]
+  - name: ux-review
+    family: interface
+    role: domain
+    references: [accessibility, ui-design, visual-review]
+  - name: visual-review
+    family: interface
+    role: domain
+    references: [accessibility, qml-ui-creation, ux-review]
+
+path_overrides:
+  - skill: html-document-design
+    source: references/editorial-system.md
+    value: assets/editorial-icons.svg
+    kind: skill_root
+  - skill: plasma-motion-review
+    source: references/finding-catalog.md
+    value: ../plasma-fluid-motion/references/dock-magnification.md
+    kind: skill_root
+  - skill: plasma-motion-review
+    source: references/finding-catalog.md
+    value: ../plasma-liquid-effects/SKILL.md
+    kind: skill_root
+  - skill: plasma-config-review
+    source: SKILL.md
+    value: scripts/README.md
+    kind: repo_root
+  - skill: plasmoid-packaging
+    source: SKILL.md
+    value: contents/ui/org/punchi/dock/compat/
+    kind: generated
+  - skill: python-tooling
+    source: SKILL.md
+    value: scripts/
+    kind: repo_root
+  - skill: python-tooling
+    source: SKILL.md
+    value: scripts/README.md
+    kind: repo_root
+  - skill: python-tooling
+    source: SKILL.md
+    value: scripts/audit-plasma-config.py
+    kind: repo_root

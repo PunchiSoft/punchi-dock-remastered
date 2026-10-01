@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rendimiento de animaciones"
+  short_description: "Clasificar coste y proteger fluidez en el dock"
+  default_prompt: "Usa $plasma-animation-performance para clasificar el coste de esta modificación visual de Punchi Dock."

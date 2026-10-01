@@ -1,0 +1,7 @@
+interface:
+  display_name: "Control Connection Review"
+  short_description: "Rastrea controles hasta su efecto y detecta desconexiones"
+  default_prompt: "Usa $control-connection-review para rastrear los controles afectados hasta su efecto observable, identificar conexiones rotas y registrar la evidencia y los pendientes."
+
+policy:
+  allow_implicit_invocation: true

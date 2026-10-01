@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65">
-    <img src="https://img.shields.io/badge/release-v0.9.7.65-4caf50" alt="Versão v0.9.7.65">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.66">
+    <img src="https://img.shields.io/badge/release-v0.9.7.66-4caf50" alt="Versão v0.9.7.66">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0--or--later-blue" alt="Licença GPL-3.0-or-later">
@@ -23,7 +23,7 @@ Punchi Dock Remastered é um dock inicializador nativo e interface de tarefas pa
 Este repositório é uma reescrita modular do [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). O projeto prepara atualmente seu caminho rumo à versão estável 1.0.
 
 A versão atual é
-[v0.9.7.65](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65).
+[v0.9.7.66](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.66).
 
 ## Novidades em desenvolvimento
 
@@ -229,7 +229,26 @@ Consulte [scripts-dev/README.md](scripts-dev/README.md) para ferramentas adicion
 - `src/`: Módulo de integração nativo C++ QML.
 - `scripts-user/`: Assistente de instalação e compilação para usuários.
 - `scripts-dev/`: Ferramentas estritas de teste, empacotamento e manutenção.
+- `.agents/`: Políticas versionadas, skills especializadas e inventário para agentes de IA.
+- `AGENTS.md`: Instruções canônicas do projeto para agentes de desenvolvimento.
 - `metadata.json`: Metadados do KPackage e declaração de compatibilidade com o Plasma.
+
+## Desenvolvimento assistido por agentes de IA
+
+O Punchi Dock Remastered inclui uma infraestrutura versionada para usar agentes
+de inteligência artificial em tarefas de desenvolvimento, revisão, testes e
+documentação. Essa integração adapta o fluxo do projeto às ferramentas atuais
+de desenvolvimento assistido por IA, mantendo explícitas as regras de
+arquitetura, compatibilidade, validação e escopo das alterações.
+
+As instruções ficam em [AGENTS.md](AGENTS.md) e [`.agents/`](.agents/). Esses
+arquivos definem a política geral do projeto e skills especializadas para áreas
+como KDE Plasma, QML, testes, empacotamento, segurança, localização e revisão de
+código. O versionamento torna as alterações nessas instruções reproduzíveis e
+auditáveis como qualquer outra mudança do projeto.
+
+Os agentes apoiam o desenvolvimento; os testes, as validações e as revisões do
+projeto continuam sendo as fontes de verificação dos resultados.
 
 ## Apoie o Projeto
 

@@ -1,0 +1,5 @@
+interface:
+  display_name: "Plasma Config Review"
+  short_description: "Audita KConfig y páginas KCM de Plasma"
+  default_prompt: "Use $plasma-config-review para auditar la configuración KConfig/KCM de Punchi Dock."
+

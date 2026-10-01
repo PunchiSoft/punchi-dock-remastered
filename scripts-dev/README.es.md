@@ -26,6 +26,7 @@ Comandos comunes:
 ./scripts-dev/setup.sh --dependencies-only
 ./scripts-dev/setup.sh --lang es --help
 ./scripts-dev/check-build-environment.sh
+python3 ./scripts-dev/skill_inventory.py --check
 ./scripts-dev/update-translations.sh
 ./scripts-dev/validar-empaquetado-limpio.sh
 ./scripts-dev/watch-plasmoidviewer.sh
@@ -39,7 +40,25 @@ Comandos comunes:
   qmllint.
 - `qmllint*.py` y `qmllint-baseline*.env`: herramientas y perfiles de deuda
   estática.
+- `skill_inventory.py`: valida las skills versionadas para agentes y mantiene
+  su inventario generado.
 - `instalar-plasmoide.sh`: selector de paquetes generados localmente.
+
+## Inventario de skills
+
+La infraestructura de agentes separa tres fuentes y resultados:
+
+- `.agents/skills/` contiene las instrucciones y recursos reales de cada skill.
+- `.agents/skills-map.yaml` es la fuente manual de familias, roles, aliases,
+  referencias estructuradas entre skills y excepciones de rutas.
+- `.agents/skills-inventory.json` se genera de forma determinista desde el mapa
+  y el filesystem actual; no se edita manualmente.
+
+`python3 scripts-dev/skill_inventory.py --check` valida todo el contrato sin
+escribir archivos. `python3 scripts-dev/skill_inventory.py --update` valida las
+fuentes y reemplaza únicamente el inventario generado. Una skill nueva debe
+clasificarse en el mapa manual antes de que cualquiera de las dos operaciones
+pueda finalizar correctamente.
 
 El flujo de desarrollo reutiliza el motor compartido
 `scripts-user/lib/package-plasmoid.sh` con validación completa. El flujo para una

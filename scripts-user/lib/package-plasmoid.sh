@@ -277,6 +277,12 @@ echo "Build concurrency: $(punchi_concurrency_profile_label "$parallel_jobs")"
 punchi_progress_update 40 build
 cmake --build "$BUILD_DIR" --parallel "$parallel_jobs"
 if [[ "$PACKAGE_VALIDATION_MODE" == "full" ]]; then
+    require_command python3
+    punchi_progress_update 58 integrity
+    python3 "$PROJECT_ROOT/scripts-dev/test-integrity-guard.py" \
+        --check \
+        --root "$PROJECT_ROOT" \
+        --build-dir "$BUILD_DIR"
     punchi_progress_update 60 tests
     ctest --test-dir "$BUILD_DIR" --parallel "$parallel_jobs" --output-on-failure
 fi

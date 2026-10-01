@@ -1,0 +1,4 @@
+interface:
+  display_name: "Safe File and Feature Removal"
+  short_description: "Prevent destructive deletes, moves, and overwrites."
+  default_prompt: "Use $safe-removal-review to audit this deletion, move, batch rename, overwrite, or feature removal before any filesystem mutation."

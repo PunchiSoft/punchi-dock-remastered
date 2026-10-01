@@ -1,0 +1,4 @@
+interface:
+  display_name: "Diseño HTML editorial"
+  short_description: "Diseña manuales HTML profesionales y accesibles"
+  default_prompt: "Usa $html-document-design para diseñar o mejorar un manual HTML profesional, accesible y listo para impresión."

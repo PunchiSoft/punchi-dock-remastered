@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65">
-    <img src="https://img.shields.io/badge/release-v0.9.7.65-4caf50" alt="Release v0.9.7.65">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.66">
+    <img src="https://img.shields.io/badge/release-v0.9.7.66-4caf50" alt="Release v0.9.7.66">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="License GPL-3.0-or-later">
@@ -23,7 +23,7 @@ Punchi Dock Remastered is a native launcher dock and task interface for KDE Plas
 This repository is a modular rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid). The project is currently preparing its path toward a stable 1.0 release.
 
 The current release is
-[v0.9.7.65](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65).
+[v0.9.7.66](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.66).
 
 ## Current Development Highlights
 
@@ -345,9 +345,27 @@ See [scripts-dev/README.md](scripts-dev/README.md) for additional developer tool
 - `src/`: native C++ QML integration module.
 - `scripts-user/`: normal user build and installation flow.
 - `scripts-dev/`: strict testing, packaging, and maintenance tools.
+- `.agents/`: versioned AI-agent policies, specialized skills, and inventory.
+- `AGENTS.md`: canonical project instructions for development agents.
 - `metadata.json`: KPackage metadata and Plasma compatibility declaration.
 
 Internal development notes and audit logs are intentionally excluded from the public repository and release package.
+
+## AI-assisted development
+
+Punchi Dock Remastered includes versioned infrastructure for using artificial
+intelligence agents during development, review, testing, and documentation.
+This adapts the project workflow to current AI-assisted development tools while
+keeping architecture, compatibility, validation, and change scope explicit.
+
+The agent instructions live in [AGENTS.md](AGENTS.md) and
+[`.agents/`](.agents/). They include the general project policy and specialized
+skills for areas such as KDE Plasma, QML, testing, packaging, security,
+localization, and code review. Versioning these files makes changes to agent
+instructions reproducible and auditable like any other project change.
+
+Agents support development; project tests, validation, and review remain the
+sources of verification for the result.
 
 ## Support the Project
 

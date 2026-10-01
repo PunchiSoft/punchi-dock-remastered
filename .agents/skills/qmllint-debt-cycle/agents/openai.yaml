@@ -1,0 +1,4 @@
+interface:
+  display_name: "QMLLint Debt Cycle"
+  short_description: "Reduce deuda QML con inventario verificable"
+  default_prompt: "Usa $qmllint-debt-cycle para corregir y cerrar de forma transaccional un lote de advertencias QML sin aumentar el baseline."

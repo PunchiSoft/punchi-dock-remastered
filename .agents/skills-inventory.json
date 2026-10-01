@@ -1,0 +1,3303 @@
+{
+  "families": [
+    {
+      "description": "Runtime-agnostic state, controller, service, and refactoring guidance",
+      "name": "application-logic"
+    },
+    {
+      "description": "Git, distribution, packaging, installation, and release workflows",
+      "name": "delivery"
+    },
+    {
+      "description": "Developer-only automation and validation tooling",
+      "name": "developer-tooling"
+    },
+    {
+      "description": "Documentation, explanatory copy, and localization workflows",
+      "name": "documentation-localization"
+    },
+    {
+      "description": "Architecture, review, security, and repository-safety policy",
+      "name": "governance"
+    },
+    {
+      "description": "QML interface design, implementation, accessibility, and visual review",
+      "name": "interface"
+    },
+    {
+      "description": "KDE Plasma, Kirigami, SDK, and platform integration",
+      "name": "kde-platform"
+    },
+    {
+      "description": "Animation, interaction motion, effects, and rendering cost",
+      "name": "motion-effects"
+    },
+    {
+      "description": "Testing, runtime loading, configuration, and static-debt validation",
+      "name": "quality-assurance"
+    },
+    {
+      "description": "Cross-domain review, modification, issue, and session workflows",
+      "name": "workflow"
+    }
+  ],
+  "schema_version": 1,
+  "skill_count": 56,
+  "skills": [
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Diseñar, implementar o auditar accesibilidad en interfaces QML de Punchi Dock: navegación 2D por teclado, ciclo de foco, semántica accesible, lectores de pantalla, contraste, escalado, tamaño de objetivos y movimiento reducido. Usar cuando una tarea mencione accesibilidad o cuando una modificación visual cambie interacción, foco, menús, listas o comprensión; no sustituye una revisión general de UX.",
+      "family": "interface",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "accessibility",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/accessibility",
+      "paths": [],
+      "references": [
+        "qml-ui-creation",
+        "ui-design"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Diseñar, implementar y revisar motion UI en Punchi Dock: microinteracciones, transiciones QML, estados animados, entrada/salida de popups, continuidad espacial, feedback visual, reduccion de movimiento y coste de renderizado. Usar cuando una tarea pida mejorar animaciones, suavidad, fluidez, movimiento, transiciones, hover, focus, press, apertura/cierre, reordenamiento visual o ritmo de interfaz en Plasma 6.",
+      "family": "motion-effects",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "animations",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/animations",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/plasma-fluid-motion/references/motion-doctrine.md",
+          "source": "SKILL.md",
+          "value": "../plasma-fluid-motion/references/motion-doctrine.md"
+        }
+      ],
+      "references": [
+        "accessibility",
+        "performance",
+        "plasma-fluid-motion",
+        "qml-runtime-load-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para operar sobre aspectos relacionados con architecture.",
+      "family": "governance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "architecture",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/architecture",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para operar sobre aspectos relacionados con code-review.",
+      "family": "governance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "code-review",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/code-review",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Rastrear controles de Punchi Dock desde la interacción hasta su efecto observable para detectar controles desconectados, valores guardados sin efecto, consumidores inactivos y pérdida de reactividad. Usar al revisar estos fallos o modificar controles, señales, propiedades puente, configuración o componentes compartidos de su recorrido; acotar la revisión a las cadenas afectadas.",
+      "family": "quality-assurance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "control-connection-review",
+      "openai": {
+        "allow_implicit_invocation": true,
+        "default_prompt_skill_ref": "control-connection-review",
+        "display_name": "Control Connection Review",
+        "exists": true,
+        "short_description": "Rastrea controles hasta su efecto y detecta desconexiones"
+      },
+      "path": ".agents/skills/control-connection-review",
+      "paths": [
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "cfg_*"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/nuevas-modificaciones",
+          "source": "SKILL.md",
+          "value": "docs/nuevas-modificaciones/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/revisiones",
+          "source": "SKILL.md",
+          "value": "docs/revisiones/"
+        }
+      ],
+      "references": [
+        "plasma-config-review",
+        "safe-removal-review",
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para tareas relacionadas con: Implementación de controladores para intermediar entre vistas QML y servicios del sistema.",
+      "family": "application-logic",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "controllers",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/controllers",
+      "paths": [],
+      "references": [
+        "js-plasma-backend",
+        "services"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para operar sobre aspectos relacionados con debugging.",
+      "family": "quality-assurance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "debugging",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/debugging",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [
+        "logging",
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Crear, ordenar o refactorizar scripts por distribucion para compilar, empaquetar, instalar y probar Punchi Dock, incluidos chequeo de dependencias, artefactos publicables y artefactos local-test.",
+      "family": "delivery",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "distro-installer-scripts",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/distro-installer-scripts",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "CMakeLists.txt",
+          "source": "SKILL.md",
+          "value": "CMakeLists.txt"
+        },
+        {
+          "exists": null,
+          "kind": "generated",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "dist/0.8.9/"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "dist/<version>/"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "dist/punchi-dock-remastered-<version>-<distro>-<arch>-local-test.plasmoid"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "dist/punchi-dock-remastered-<version>-<distro>-<arch>.plasmoid"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev",
+          "source": "SKILL.md",
+          "value": "scripts-dev/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev/check-build-environment.sh",
+          "source": "SKILL.md",
+          "value": "scripts-dev/check-build-environment.sh"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev/distro",
+          "source": "SKILL.md",
+          "value": "scripts-dev/distro/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev/lib/install-local-test.sh",
+          "source": "SKILL.md",
+          "value": "scripts-dev/lib/install-local-test.sh"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-user/lib/package-plasmoid.sh",
+          "source": "SKILL.md",
+          "value": "scripts-user/lib/package-plasmoid.sh"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-user/setup.sh",
+          "source": "SKILL.md",
+          "value": "scripts-user/setup.sh"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "src/CMakeLists.txt",
+          "source": "SKILL.md",
+          "value": "src/CMakeLists.txt"
+        }
+      ],
+      "references": [
+        "plasmoid-packaging",
+        "python-tooling"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para operar sobre aspectos relacionados con documentation.",
+      "family": "documentation-localization",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "documentation",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/documentation",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "CHANGELOG.md",
+          "source": "SKILL.md",
+          "value": "CHANGELOG.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "README.md",
+          "source": "SKILL.md",
+          "value": "README.md"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "checklist-publicacion-<version>.md"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "post-kde-store-<version>.md"
+        }
+      ],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para tareas relacionadas con: Consideraciones específicas para pruebas y despliegue del widget en Fedora Linux.",
+      "family": "delivery",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "fedora",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/fedora",
+      "paths": [],
+      "references": [
+        "distro-installer-scripts"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para tareas relacionadas con: Reglas y flujos de trabajo de control de versiones con Git (commits, ramas).",
+      "family": "delivery",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "git",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/git",
+      "paths": [],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Analizar comentarios, preguntas y reportes externos sobre Punchi Dock cuando el usuario diga \"mira esto que me preguntaron\", \"esto me comentaron\", muestre un issue o pida preparar una respuesta; verificar el proyecto antes de clasificar el reporte y redactar una respuesta formal en singular, primero en ingles lista para copiar y luego traducida al español. No usar para implementar la solucion ni publicar el comentario salvo peticion explicita adicional.",
+      "family": "workflow",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "github-issue-response",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/github-issue-response",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [
+        "modification-cycle",
+        "review-cycle"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Diseñar, implementar y auditar documentación HTML profesional y autocontenida de Punchi Dock: arquitectura editorial, iconografía SVG, jerarquía visual, navegación, capturas, componentes semánticos, temas claro/oscuro, accesibilidad, adaptación móvil e impresión/PDF. Usar al crear o rediseñar manuales y guías públicas en `Documents/`, añadir iconos o secciones, integrar evidencia visual o revisar que un HTML resulte coherente y publicable; no usar para interfaces QML del plasmoide.",
+      "family": "documentation-localization",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "html-document-design",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": "html-document-design",
+        "display_name": "Diseño HTML editorial",
+        "exists": true,
+        "short_description": "Diseña manuales HTML profesionales y accesibles"
+      },
+      "path": ".agents/skills/html-document-design",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".agents",
+          "source": "SKILL.md",
+          "value": ".agents/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".agents/skills/html-document-design/assets/editorial-icons.svg",
+          "source": "SKILL.md",
+          "value": ".agents/skills/html-document-design/assets/editorial-icons.svg"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".agents/skills/html-document-design/references/editorial-system.md",
+          "source": "SKILL.md",
+          "value": ".agents/skills/html-document-design/references/editorial-system.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".agents",
+          "source": "references/editorial-system.md",
+          "value": ".agents/"
+        },
+        {
+          "exists": true,
+          "kind": "skill_root",
+          "origin": "map_override",
+          "resolved": ".agents/skills/html-document-design/assets/editorial-icons.svg",
+          "source": "references/editorial-system.md",
+          "value": "assets/editorial-icons.svg"
+        }
+      ],
+      "references": [
+        "documentation"
+      ],
+      "resources": {
+        "assets": [
+          "assets/editorial-icons.svg"
+        ],
+        "other": [],
+        "references": [
+          "references/editorial-system.md"
+        ],
+        "scripts": [
+          "scripts/audit_html.py"
+        ]
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para tareas relacionadas con: Diseño, exportación y uso de iconos SVG siguiendo las guías de Breeze.",
+      "family": "interface",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "icons",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/icons",
+      "paths": [],
+      "references": [
+        "kde-sdk-reference",
+        "qml-ui-creation"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": "js-plasma-backend",
+      "description": "Alias de compatibilidad para solicitudes que mencionen literalmente la skill `javascript`. Para lógica JavaScript del plasmoide, estado o integración con KDE Plasma, usar `js-plasma-backend`; no activar esta skill genérica en tareas nuevas.",
+      "family": "application-logic",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": true,
+      "name": "javascript",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/javascript",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "alias"
+    },
+    {
+      "aliases": [
+        "javascript"
+      ],
+      "canonical": null,
+      "description": "Implementar o refactorizar lógica JavaScript de Punchi Dock: transformación de datos, coordinación de estado, controladores y adaptación entre QML y APIs de Plasma. Usar para lógica no visual; combinar con una skill de dominio para tareas, servicios o procesos, y no usar para simples bindings de presentación.",
+      "family": "application-logic",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "js-plasma-backend",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/js-plasma-backend",
+      "paths": [],
+      "references": [
+        "controllers",
+        "models",
+        "services"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Adaptar o corregir funciones de Punchi Dock basándose en el contrato de un applet oficial de KDE Plasma. Usar cuando el usuario pida replicar, comparar o seguir cómo lo hace el applet oficial; no usar para consultas generales del SDK sin implementación o diagnóstico de equivalencia.",
+      "family": "kde-platform",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "kde-official-applet-adaptation",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/kde-official-applet-adaptation",
+      "paths": [
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "*.qmltypes"
+        }
+      ],
+      "references": [
+        "kde-sdk-reference",
+        "qml-runtime-load-review",
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [
+        "kde-plasma6"
+      ],
+      "canonical": null,
+      "description": "Instrucciones de experto Senior para desarrollo de plasmoides en KDE Plasma 6, con foco en diseño de interfaces avanzadas y modularización extrema. El entorno objetivo es el declarado en AGENTS.md, no una distribución concreta.",
+      "family": "kde-platform",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "kde-plasma-6-dev",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/kde-plasma-6-dev",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev",
+          "source": "SKILL.md",
+          "value": "scripts-dev/"
+        }
+      ],
+      "references": [
+        "architecture",
+        "js-plasma-backend",
+        "qml-ui-creation"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": "kde-plasma-6-dev",
+      "description": "Alias de compatibilidad para solicitudes que mencionen literalmente la skill `kde-plasma6`. Para desarrollo general del plasmoide en Plasma 6 usar `kde-plasma-6-dev`; no activar esta skill genérica en tareas nuevas.",
+      "family": "kde-platform",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": true,
+      "name": "kde-plasma6",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/kde-plasma6",
+      "paths": [],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "alias"
+    },
+    {
+      "aliases": [
+        "sdk-reference"
+      ],
+      "canonical": null,
+      "description": "Investigar APIs, tipos, ejemplos, pruebas y patrones oficiales en la copia local `kde-sdk/` para fundamentar decisiones sobre Plasma 6, KDE Frameworks y Kirigami. Usar cuando una tarea dependa de una API KDE, su disponibilidad o comportamiento; no usar para búsquedas genéricas sin relación con KDE.",
+      "family": "kde-platform",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "kde-sdk-reference",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/kde-sdk-reference",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para operar sobre aspectos relacionados con kde-upstream-sync.",
+      "family": "kde-platform",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "kde-upstream-sync",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/kde-upstream-sync",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [
+        "kde-sdk-reference"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [
+        "localization"
+      ],
+      "canonical": null,
+      "description": "Preparar y revisar textos traducibles de Punchi Dock con ki18n, incluidos contexto, pluralización, marcadores, extracción y catálogos. Usar siempre que se añada, cambie o retire cualquier texto visible, menú, label, botón, tooltip, placeholder, error, estado o mensaje accesible, y al modificar la infraestructura de traducción; no usar para documentación interna ajena a la interfaz.",
+      "family": "documentation-localization",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "ki18n-localization",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/ki18n-localization",
+      "paths": [
+        {
+          "exists": null,
+          "kind": "generated",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "contents/locale/"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "contents/locale/<idioma>/LC_MESSAGES/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "metadata.json",
+          "source": "SKILL.md",
+          "value": "metadata.json"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "po",
+          "source": "SKILL.md",
+          "value": "po/"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "po/<idioma>.po"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev/update-translations.sh",
+          "source": "SKILL.md",
+          "value": "scripts-dev/update-translations.sh"
+        }
+      ],
+      "references": [
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para operar sobre aspectos relacionados con kirigami.",
+      "family": "kde-platform",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "kirigami",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/kirigami",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [
+        "kde-sdk-reference",
+        "qml-ui-creation"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": "ki18n-localization",
+      "description": "Alias de compatibilidad para solicitudes que mencionen literalmente la skill `localization`. Para textos traducibles, pluralización, extracción y catálogos del plasmoide usar `ki18n-localization`; no activar esta skill genérica en tareas nuevas.",
+      "family": "documentation-localization",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": true,
+      "name": "localization",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/localization",
+      "paths": [],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "alias"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para tareas relacionadas con: Implementación de registros y trazas (logs) para facilitar la monitorización.",
+      "family": "application-logic",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "logging",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/logging",
+      "paths": [],
+      "references": [
+        "debugging"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para tareas relacionadas con: Gestión de modelos de datos (Data Models) para interactuar reactivamente con QML.",
+      "family": "application-logic",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "models",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/models",
+      "paths": [],
+      "references": [
+        "js-plasma-backend"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Conducir solicitudes de nuevas modificaciones de Punchi Dock siempre en el mismo orden, usando `docs/nuevas-modificaciones/` como fuente de verdad para registrar contexto, alcance confirmado, riesgos, plan, validacion, implementacion y decisiones futuras. Usar cuando el usuario proponga features, mejoras, nuevas opciones o ampliaciones del dock y no un bug correctivo.",
+      "family": "workflow",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "modification-cycle",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/modification-cycle",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".agents/AGENTS.md",
+          "source": "SKILL.md",
+          "value": ".agents/AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/nuevas-modificaciones",
+          "source": "SKILL.md",
+          "value": "docs/nuevas-modificaciones/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/nuevas-modificaciones/plantilla-modificacion.md",
+          "source": "SKILL.md",
+          "value": "docs/nuevas-modificaciones/plantilla-modificacion.md"
+        }
+      ],
+      "references": [
+        "controllers",
+        "js-plasma-backend",
+        "kde-sdk-reference",
+        "qml-ui-creation",
+        "testing",
+        "ui-design",
+        "visual-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "orchestrator"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Redactar y hacer aprobar por el usuario toda nota, aviso, advertencia o explicación dirigida a quien usa Punchi Dock antes de implementarla. Usar cuando una tarea añada o cambie un texto que explique una función, un modo, un límite o una precaución —notas de paneles de configuración, avisos y advertencias, tooltips explicativos, textos de ayuda bajo un control, estados vacíos con causa, mensajes de error explicativos, leyendas de manuales o capturas, y cualquier redacción donde el usuario pida \"algo así\" o \"mejóralo\"—, o cuando se decida el énfasis de ese texto (qué parte va en negrita). La propuesta se muestra y espera confirmación explícita antes de tocar código, catálogos o documentos. No usar para etiquetas, botones, títulos o nombres de opciones cuyo texto ya define la función, ni para documentación interna del proyecto.",
+      "family": "documentation-localization",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "notice-copy-approval",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/notice-copy-approval",
+      "paths": [
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "<b>"
+        }
+      ],
+      "references": [
+        "ki18n-localization",
+        "modification-cycle",
+        "ui-design",
+        "ux-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": "plasmoid-packaging",
+      "description": "Alias de compatibilidad para solicitudes que mencionen literalmente la skill `packaging`. Para metadata, estructura KPackage, instalación o creación del paquete del plasmoide usar `plasmoid-packaging`; no activar esta skill genérica en tareas nuevas.",
+      "family": "delivery",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": true,
+      "name": "packaging",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/packaging",
+      "paths": [],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "alias"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para operar sobre aspectos relacionados con performance.",
+      "family": "quality-assurance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "performance",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/performance",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Evitar que las mejoras visuales reduzcan la fluidez real de Punchi Dock: reglas por fotograma en Qt Quick, clasificación de coste BAJO/MEDIO/ALTO, prohibición de motores de animación con Timer o JavaScript, coste de delegates, blur, sombras, shaders y modelos de tareas, integración con las duraciones de Plasma y con la preferencia de velocidad de animación del usuario. Usar cuando una modificación visual pueda alterar fluidez, coste por fotograma o consumo con varias instancias del dock. No usar para el diagnóstico global del plasmoide (usar `performance`) ni para decidir el mecanismo de una animación (usar `plasma-fluid-motion`).",
+      "family": "motion-effects",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "plasma-animation-performance",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": "plasma-animation-performance",
+        "display_name": "Rendimiento de animaciones",
+        "exists": true,
+        "short_description": "Clasificar coste y proteger fluidez en el dock"
+      },
+      "path": ".agents/skills/plasma-animation-performance",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/plasma-fluid-motion/references/motion-doctrine.md",
+          "source": "SKILL.md",
+          "value": "../plasma-fluid-motion/references/motion-doctrine.md"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "Layout.*"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/Referencias/referencia-motion-plasma-qt.md",
+          "source": "SKILL.md",
+          "value": "docs/Referencias/referencia-motion-plasma-qt.md"
+        },
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/plasma-animation-performance/references/cost-classification.md",
+          "source": "SKILL.md",
+          "value": "references/cost-classification.md"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "references/cost-classification.md",
+          "value": "Layout.*"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/Referencias/referencia-motion-plasma-qt.md",
+          "source": "references/cost-classification.md",
+          "value": "docs/Referencias/referencia-motion-plasma-qt.md"
+        }
+      ],
+      "references": [
+        "performance",
+        "plasma-fluid-motion",
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [
+          "references/cost-classification.md"
+        ],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Auditar el contrato de configuracion KConfig/KCM de Punchi Dock, sus paginas Config*.qml y los errores de runtime del dialogo de configuracion. Usar al cambiar contents/config/main.xml, contents/config/config.qml, propiedades cfg_*, paginas de preferencias, Aplicar/Cancelar, actualizacion reactiva, o ante warnings de propiedades iniciales, anchors, tipos, bindings y carga del KCM; no sustituye la revision de la representacion principal del plasmoide.",
+      "family": "quality-assurance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "plasma-config-review",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": "plasma-config-review",
+        "display_name": "Plasma Config Review",
+        "exists": true,
+        "short_description": "Audita KConfig y páginas KCM de Plasma"
+      },
+      "path": ".agents/skills/plasma-config-review",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/testing/references/test-matrix.md",
+          "source": "SKILL.md",
+          "value": "../testing/references/test-matrix.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "cfg_*"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents/config/config.qml",
+          "source": "SKILL.md",
+          "value": "contents/config/config.qml"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents/config/main.xml",
+          "source": "SKILL.md",
+          "value": "contents/config/main.xml"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents/ui",
+          "source": "SKILL.md",
+          "value": "contents/ui/"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "contents/ui/config/Config*.qml"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/revisiones",
+          "source": "SKILL.md",
+          "value": "docs/revisiones/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "map_override",
+          "resolved": "scripts/README.md",
+          "source": "SKILL.md",
+          "value": "scripts/README.md"
+        }
+      ],
+      "references": [
+        "kde-sdk-reference",
+        "qml-runtime-load-review",
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Implementar la mecánica de movimiento fluido en QML para Punchi Dock: elección entre NumberAnimation, SmoothedAnimation, SpringAnimation, Behavior, Transition, SequentialAnimation y ParallelAnimation, easing, retargeting, continuidad de velocidad, reversibilidad, interrupción, movimiento continuo ligado al cursor y magnificación del dock. Usar al escribir o corregir una animación concreta de Plasma 6, Qt 6 y Wayland. No usar para decidir qué animar (usar `animations`), para auditar movimiento existente (usar `plasma-motion-review`) ni para medir coste por fotograma (usar `plasma-animation-performance`).",
+      "family": "motion-effects",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "plasma-fluid-motion",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": "plasma-fluid-motion",
+        "display_name": "Movimiento fluido en Plasma",
+        "exists": true,
+        "short_description": "Animaciones QML continuas, reversibles y sin reinicios"
+      },
+      "path": ".agents/skills/plasma-fluid-motion",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/plasma-fluid-motion/references/motion-doctrine.md",
+          "source": "SKILL.md",
+          "value": "../plasma-fluid-motion/references/motion-doctrine.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents/ui/components/DockItem.qml",
+          "source": "SKILL.md",
+          "value": "contents/ui/components/DockItem.qml"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/Referencias/referencia-motion-plasma-qt.md",
+          "source": "SKILL.md",
+          "value": "docs/Referencias/referencia-motion-plasma-qt.md"
+        },
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/plasma-fluid-motion/references/dock-magnification.md",
+          "source": "SKILL.md",
+          "value": "references/dock-magnification.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents/ui/components/DockItem.qml",
+          "source": "references/dock-magnification.md",
+          "value": "contents/ui/components/DockItem.qml"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "references/motion-doctrine.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/Referencias/referencia-motion-plasma-qt.md",
+          "source": "references/motion-doctrine.md",
+          "value": "docs/Referencias/referencia-motion-plasma-qt.md"
+        }
+      ],
+      "references": [
+        "animations",
+        "plasma-animation-performance",
+        "qml-runtime-load-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [
+          "references/dock-magnification.md",
+          "references/motion-doctrine.md"
+        ],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Evaluar e implementar material y efectos visuales en Punchi Dock: sensación líquida, vidrio, morphing, cápsulas, fusión de formas, blur, sombras, highlights, transparencia, refracción simulada y profundidad, por niveles de coste (QML barato, QtQuick.Effects/MultiEffect, ShaderEffect). Usar al decidir cómo representar un material o un efecto de acabado en Plasma 6 y Wayland. No usar para movimiento sin material (usar `plasma-fluid-motion`), ni para medir rendimiento global (usar `plasma-animation-performance`), ni para una auditoría de movimiento (usar `plasma-motion-review`).",
+      "family": "motion-effects",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "plasma-liquid-effects",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": "plasma-liquid-effects",
+        "display_name": "Efectos líquidos en Plasma",
+        "exists": true,
+        "short_description": "Material, blur, morphing y shaders por niveles de coste"
+      },
+      "path": ".agents/skills/plasma-liquid-effects",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/plasma-fluid-motion/references/motion-doctrine.md",
+          "source": "SKILL.md",
+          "value": "../plasma-fluid-motion/references/motion-doctrine.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/plasma-liquid-effects/references/effect-levels.md",
+          "source": "SKILL.md",
+          "value": "references/effect-levels.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "references/effect-levels.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [
+        "plasma-animation-performance",
+        "plasma-fluid-motion",
+        "qml-runtime-load-review",
+        "visual-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [
+          "references/effect-levels.md"
+        ],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Auditar el movimiento de Punchi Dock sin modificar código: localizar animaciones y efectos, clasificar cada hallazgo con el catálogo MOTION, priorizarlo por riesgo, coste y prioridad, y entregar un informe con archivo, línea, componente, síntoma, causa, clasificación, recomendación, riesgo, coste y prioridad. Usar antes de refactorizar animaciones existentes o cuando se pida revisar fluidez, continuidad, reversibilidad, sincronía, coste o respeto a la velocidad de animación del usuario. No usar para implementar la corrección; para eso, `plasma-fluid-motion`, `plasma-liquid-effects` o `plasma-animation-performance`.",
+      "family": "motion-effects",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "plasma-motion-review",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": "plasma-motion-review",
+        "display_name": "Auditoría de movimiento",
+        "exists": true,
+        "short_description": "Informe de hallazgos de animación sin tocar código"
+      },
+      "path": ".agents/skills/plasma-motion-review",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/plasma-motion-review/references/finding-catalog.md",
+          "source": "SKILL.md",
+          "value": "references/finding-catalog.md"
+        },
+        {
+          "exists": true,
+          "kind": "skill_root",
+          "origin": "map_override",
+          "resolved": ".agents/skills/plasma-fluid-motion/references/dock-magnification.md",
+          "source": "references/finding-catalog.md",
+          "value": "../plasma-fluid-motion/references/dock-magnification.md"
+        },
+        {
+          "exists": true,
+          "kind": "skill_root",
+          "origin": "map_override",
+          "resolved": ".agents/skills/plasma-liquid-effects/SKILL.md",
+          "source": "references/finding-catalog.md",
+          "value": "../plasma-liquid-effects/SKILL.md"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "references/finding-catalog.md",
+          "value": "In*"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "references/finding-catalog.md",
+          "value": "InOut*"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "references/finding-catalog.md",
+          "value": "Kirigami.Units.*"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "references/finding-catalog.md",
+          "value": "Layout.*"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "references/finding-catalog.md",
+          "value": "Out*"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/Referencias/referencia-motion-plasma-qt.md",
+          "source": "references/finding-catalog.md",
+          "value": "docs/Referencias/referencia-motion-plasma-qt.md"
+        }
+      ],
+      "references": [
+        "performance",
+        "plasma-animation-performance",
+        "plasma-fluid-motion",
+        "plasma-liquid-effects",
+        "visual-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [
+          "references/finding-catalog.md"
+        ],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [
+        "packaging"
+      ],
+      "canonical": null,
+      "description": "Revisar o modificar el empaquetado KPackage de Punchi Dock: metadata.json, estructura contents/, exclusiones, instalación local y artefactos .plasmoid. Usar para validar, instalar o preparar distribución; no usar para versionado Git o publicación de una release salvo como complemento de release.",
+      "family": "delivery",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "plasmoid-packaging",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/plasmoid-packaging",
+      "paths": [
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "-Wl,-soname,<nombre.so.6>"
+        },
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/testing/references/test-matrix.md",
+          "source": "SKILL.md",
+          "value": "../testing/references/test-matrix.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".agents",
+          "source": "SKILL.md",
+          "value": ".agents/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".kpackageignore",
+          "source": "SKILL.md",
+          "value": ".kpackageignore"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents",
+          "source": "SKILL.md",
+          "value": "contents/"
+        },
+        {
+          "exists": null,
+          "kind": "generated",
+          "origin": "map_override",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "contents/ui/org/punchi/dock/compat/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs",
+          "source": "SKILL.md",
+          "value": "docs/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "metadata.json",
+          "source": "SKILL.md",
+          "value": "metadata.json"
+        }
+      ],
+      "references": [
+        "release",
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Revisar preventivamente seguridad, privacidad y alcance antes de cualquier modificación, commit, empaquetado, instalación o push de Punchi Dock. Usar para detectar secretos, datos personales, telemetría, rutas o artefactos locales, permisos, red, comandos peligrosos y archivos inesperados antes de escribir o publicar cambios; repetir la revisión antes de subir a GitHub.",
+      "family": "governance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "preflight-security-review",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": "preflight-security-review",
+        "display_name": "Preflight Security Review",
+        "exists": true,
+        "short_description": "Prevent data leaks before repository changes"
+      },
+      "path": ".agents/skills/preflight-security-review",
+      "paths": [
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "*.pyc"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".gitignore",
+          "source": "SKILL.md",
+          "value": ".gitignore"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".kpackageignore",
+          "source": "SKILL.md",
+          "value": ".kpackageignore"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": null,
+          "kind": "generated",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "build/"
+        },
+        {
+          "exists": null,
+          "kind": "generated",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "dist/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs",
+          "source": "SKILL.md",
+          "value": "docs/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "tests",
+          "source": "SKILL.md",
+          "value": "tests/"
+        }
+      ],
+      "references": [
+        "git",
+        "security"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill cuando se solicite automatización, creación de scripts auxiliares, despliegue local, formateadores de código, linters, o herramientas de validación. Solo aplica para herramientas fuera del ciclo de ejecución principal del plasmoide.",
+      "family": "developer-tooling",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "python-tooling",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/python-tooling",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev",
+          "source": "SKILL.md",
+          "value": "scripts-dev/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-user",
+          "source": "SKILL.md",
+          "value": "scripts-user/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "map_override",
+          "resolved": "scripts",
+          "source": "SKILL.md",
+          "value": "scripts/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "map_override",
+          "resolved": "scripts/README.md",
+          "source": "SKILL.md",
+          "value": "scripts/README.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "map_override",
+          "resolved": "scripts/audit-plasma-config.py",
+          "source": "SKILL.md",
+          "value": "scripts/audit-plasma-config.py"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "tests/plasma_config_auditor_test.py",
+          "source": "SKILL.md",
+          "value": "tests/plasma_config_auditor_test.py"
+        }
+      ],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": "qml-ui-creation",
+      "description": "Alias de compatibilidad para solicitudes que mencionen literalmente la skill `qml`. Para crear o modificar interfaces del plasmoide, usar `qml-ui-creation`; no activar esta skill genérica en tareas nuevas.",
+      "family": "interface",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": true,
+      "name": "qml",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/qml",
+      "paths": [],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "alias"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Revisar y validar que Punchi Dock pueda instanciar, mutar y destruir sus componentes QML en Plasma real sin dejar la representacion vacia, emitir errores de ciclo de vida ni derribar plasmashell. Usar al modificar main.qml, imports, tipos QML, propiedades adjuntas, Loader, delegates, modelos, popups, KConfig expuesto a QML, modulos nativos o cualquier componente alcanzable desde la representacion principal; activar tambien ante fondo/iconos desaparecidos, menu contextual sin UI, errores de fullRepresentation/compactRepresentation, accesos nulos durante reconstrucciones o fallos que qmllint no reproduzca.",
+      "family": "quality-assurance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "qml-runtime-load-review",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": "qml-runtime-load-review",
+        "display_name": "Revisión de carga QML",
+        "exists": true,
+        "short_description": "Previene fallos de carga runtime en Plasma"
+      },
+      "path": ".agents/skills/qml-runtime-load-review",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/testing/references/test-matrix.md",
+          "source": "SKILL.md",
+          "value": "../testing/references/test-matrix.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents/ui/main.qml",
+          "source": "SKILL.md",
+          "value": "contents/ui/main.qml"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/revisiones",
+          "source": "SKILL.md",
+          "value": "docs/revisiones/"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "failOnWarning(/.?/)"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "scripts-dev/distro/<perfil>-package.sh"
+        }
+      ],
+      "references": [
+        "qml-ui-creation",
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [
+        "qml"
+      ],
+      "canonical": null,
+      "description": "Crear, modificar o refactorizar componentes visuales QML de Punchi Dock para Plasma 6, incluidos layouts, delegados, estados, interacciones y animaciones. Usar al implementar UI; complementar con `ui-design` cuando falten decisiones de diseño, con `accessibility` cuando cambien controles, foco o semántica y con `qml-runtime-load-review` cuando el cambio pueda afectar la carga de la representación.",
+      "family": "interface",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "qml-ui-creation",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/qml-ui-creation",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents/ui/config/components/ConfigLayoutMetrics.qml",
+          "source": "SKILL.md",
+          "value": "contents/ui/config/components/ConfigLayoutMetrics.qml"
+        },
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/qml-ui-creation/references/kcm-layout.md",
+          "source": "SKILL.md",
+          "value": "references/kcm-layout.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents/ui/config/components/ConfigLayoutMetrics.qml",
+          "source": "references/kcm-layout.md",
+          "value": "contents/ui/config/components/ConfigLayoutMetrics.qml"
+        }
+      ],
+      "references": [
+        "accessibility",
+        "kirigami",
+        "qml-runtime-load-review",
+        "ui-design"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [
+          "references/kcm-layout.md"
+        ],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Conducir el inventario, clasificación y reducción progresiva de advertencias qmllint de Punchi Dock sin aumentar baselines ni perder observaciones. Usar cuando se analicen, corrijan, supriman o cierren diagnósticos QML, se modifique QML con deuda existente, cambie una versión o perfil de qmllint, o se proponga actualizar un baseline.",
+      "family": "quality-assurance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "qmllint-debt-cycle",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": "qmllint-debt-cycle",
+        "display_name": "QMLLint Debt Cycle",
+        "exists": true,
+        "short_description": "Reduce deuda QML con inventario verificable"
+      },
+      "path": ".agents/skills/qmllint-debt-cycle",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents/ui",
+          "source": "SKILL.md",
+          "value": "contents/ui"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "contents/ui/**/*.qml"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/deuda-qmllint/README.md",
+          "source": "SKILL.md",
+          "value": "docs/deuda-qmllint/README.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/deuda-qmllint/recomendaciones.md",
+          "source": "SKILL.md",
+          "value": "docs/deuda-qmllint/recomendaciones.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev/qmllint-baseline-debian.env",
+          "source": "SKILL.md",
+          "value": "scripts-dev/qmllint-baseline-debian.env"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev/qmllint-baseline-fedora.env",
+          "source": "SKILL.md",
+          "value": "scripts-dev/qmllint-baseline-fedora.env"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev/qmllint_debt_inventory.py",
+          "source": "SKILL.md",
+          "value": "scripts-dev/qmllint_debt_inventory.py"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-user/lib/package-plasmoid.sh",
+          "source": "SKILL.md",
+          "value": "scripts-user/lib/package-plasmoid.sh"
+        }
+      ],
+      "references": [
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Erradicación de deuda técnica, rastreo estático de dependencias, refactorización profunda y eliminación de código muerto.",
+      "family": "application-logic",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "refactoring",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/refactoring",
+      "paths": [],
+      "references": [
+        "architecture",
+        "safe-removal-review",
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para tareas relacionadas con: Gestión de versiones, tags y despliegue para la publicación de releases.",
+      "family": "delivery",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "release",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/release",
+      "paths": [],
+      "references": [
+        "git",
+        "plasmoid-packaging"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Conducir una revision del usuario de Punchi Dock siempre en el mismo orden, usando `docs/revisiones/` como fuente de verdad para registrar contexto, hallazgos confirmados, plan, implementacion, validacion y soluciones ya intentadas. Usar cuando el usuario reporte pruebas locales, abra una nueva sesion de revision o pida convertir observaciones en una rutina repetible.",
+      "family": "workflow",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "review-cycle",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/review-cycle",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".agents/AGENTS.md",
+          "source": "SKILL.md",
+          "value": ".agents/AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/revisiones",
+          "source": "SKILL.md",
+          "value": "docs/revisiones/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/revisiones/plantilla-revision.md",
+          "source": "SKILL.md",
+          "value": "docs/revisiones/plantilla-revision.md"
+        }
+      ],
+      "references": [
+        "debugging",
+        "kde-sdk-reference",
+        "qml-ui-creation",
+        "ux-review",
+        "visual-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "orchestrator"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Revisar y ejecutar eliminaciones, sobrescrituras, movimientos, renombrados masivos y retiros de funciones sin perder datos ni dejar referencias huérfanas. Usar antes de borrar archivos o directorios, reemplazar destinos, normalizar nombres en lote, mover documentación ignorada por Git, retirar código, opciones, componentes, claves KConfig o dependencias de Punchi Dock.",
+      "family": "governance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "safe-removal-review",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": "safe-removal-review",
+        "display_name": "Safe File and Feature Removal",
+        "exists": true,
+        "short_description": "Prevent destructive deletes, moves, and overwrites."
+      },
+      "path": ".agents/skills/safe-removal-review",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".kpackageignore",
+          "source": "SKILL.md",
+          "value": ".kpackageignore"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "cfg_*"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents",
+          "source": "SKILL.md",
+          "value": "contents/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "tests",
+          "source": "SKILL.md",
+          "value": "tests/"
+        }
+      ],
+      "references": [
+        "git",
+        "preflight-security-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": "kde-sdk-reference",
+      "description": "Alias de compatibilidad para solicitudes que mencionen literalmente la skill `sdk-reference`. Para investigar APIs y patrones en el SDK local de KDE usar `kde-sdk-reference`; no activar esta skill genérica en tareas nuevas.",
+      "family": "kde-platform",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": true,
+      "name": "sdk-reference",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/sdk-reference",
+      "paths": [],
+      "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "alias"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Audit Punchi Dock security: command execution, untrusted JSON themes, configuration data, filesystem paths, KIO URLs, MPRIS metadata, resource limits, permissions, and package contents. Use when the user asks for a security audit, vulnerabilities, injection risks, untrusted input handling, local permissions, or security fixes. Do not apply generic web API authentication checks unless the task adds a server or remote API.",
+      "family": "governance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "security",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/security",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [
+        "preflight-security-review",
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para tareas relacionadas con: Creación y gestión de servicios asíncronos y llamadas externas.",
+      "family": "application-logic",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "services",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/services",
+      "paths": [],
+      "references": [
+        "controllers",
+        "js-plasma-backend"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Procedimiento automático para finalizar la sesión, redactar la bitácora y empaquetar commits en Git. Activar cuando el usuario indique terminar el día, finalizar la sesión o preparar subida.",
+      "family": "workflow",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "session-closure",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/session-closure",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": ".gitignore",
+          "source": "SKILL.md",
+          "value": ".gitignore"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "CHANGELOG.md",
+          "source": "SKILL.md",
+          "value": "CHANGELOG.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "CMakeLists.txt",
+          "source": "SKILL.md",
+          "value": "CMakeLists.txt"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "metadata.json",
+          "source": "SKILL.md",
+          "value": "metadata.json"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "po/*.po"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "v<version>"
+        }
+      ],
+      "references": [
+        "git",
+        "release"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "orchestrator"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Activa esta skill para operar sobre aspectos relacionados con taskmanager-api.",
+      "family": "kde-platform",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "taskmanager-api",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/taskmanager-api",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [
+        "kde-sdk-reference",
+        "models"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Diseñar, implementar o revisar pruebas de Punchi Dock por riesgo y nivel de evidencia: contratos, unidades, QML runtime, applet completo, integraciones KDE, estrés y matrices de compatibilidad. Usar al corregir una regresión, ampliar cobertura, definir gates o decidir entre pruebas offscreen, contenedores, Plasma anidado, máquinas virtuales y equipo físico; no usar para afirmar validación visual sin ejecutar Plasma.",
+      "family": "quality-assurance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "testing",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/testing",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "failOnWarning(/.?/)"
+        },
+        {
+          "exists": true,
+          "kind": "document_relative",
+          "origin": "markdown_link",
+          "resolved": ".agents/skills/testing/references/test-matrix.md",
+          "source": "SKILL.md",
+          "value": "references/test-matrix.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "tests",
+          "source": "SKILL.md",
+          "value": "tests/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "tests/CMakeLists.txt",
+          "source": "SKILL.md",
+          "value": "tests/CMakeLists.txt"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "references/test-matrix.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "references/test-matrix.md",
+          "value": "cfg_*"
+        }
+      ],
+      "references": [
+        "preflight-security-review",
+        "qml-runtime-load-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [
+          "references/test-matrix.md"
+        ],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Diseñar o rediseñar interfaces, componentes, jerarquía visual y estados de interacción para Punchi Dock antes de implementarlos. Usar al definir distribución, densidad, navegación, apariencia nativa de KDE o especificaciones visuales; no usar para una auditoría de una interfaz ya terminada ni para escribir QML sin decisiones de diseño.",
+      "family": "interface",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "ui-design",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/ui-design",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents/ui",
+          "source": "SKILL.md",
+          "value": "contents/ui/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/revisiones",
+          "source": "SKILL.md",
+          "value": "docs/revisiones/"
+        }
+      ],
+      "references": [
+        "accessibility",
+        "qml-ui-creation",
+        "ux-review",
+        "visual-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Coordinar diagnóstico, diseño y revisión de interacciones animadas de Punchi Dock cuando UX y movimiento deban resolverse juntos. Usar para carruseles, navegación repetida, acumulación de clics o teclas, retargeting de animaciones, gestos, hover que compite con selección, transiciones interrumpibles y continuidad entre estados; combinar las skills especializadas del proyecto y no usar para una animación visual aislada ni para una auditoría UX sin movimiento.",
+      "family": "motion-effects",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "ui-ux-motion-design",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": "ui-ux-motion-design",
+        "display_name": "Diseño UX y movimiento",
+        "exists": true,
+        "short_description": "Coordina interacción y movimiento en Punchi Dock"
+      },
+      "path": ".agents/skills/ui-ux-motion-design",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        }
+      ],
+      "references": [
+        "accessibility",
+        "animations",
+        "performance",
+        "plasma-fluid-motion",
+        "qml-runtime-load-review",
+        "ui-design",
+        "ux-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "orchestrator"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Auditar una interfaz o flujo existente de Punchi Dock para detectar fricción, acciones ambiguas, estados incompletos y problemas de usabilidad. Usar al revisar cómo una persona descubre, ejecuta y recupera una acción; no usar para valorar únicamente alineación o estética ni para diseñar desde cero.",
+      "family": "interface",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "ux-review",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/ux-review",
+      "paths": [],
+      "references": [
+        "accessibility",
+        "ui-design",
+        "visual-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Auditar una interfaz ya implementada de Punchi Dock para detectar problemas de alineación, espaciado, escala, jerarquía, iconografía, color, estados visuales y adaptación al tema. Usar con capturas o una vista ejecutable; no usar para evaluar el flujo de tareas ni para diseñar una interfaz desde cero.",
+      "family": "interface",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "visual-review",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/visual-review",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/revisiones",
+          "source": "SKILL.md",
+          "value": "docs/revisiones/"
+        }
+      ],
+      "references": [
+        "accessibility",
+        "qml-ui-creation",
+        "ux-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    }
+  ],
+  "skills_root": ".agents/skills"
+}

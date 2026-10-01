@@ -1,0 +1,4 @@
+interface:
+  display_name: "Efectos líquidos en Plasma"
+  short_description: "Material, blur, morphing y shaders por niveles de coste"
+  default_prompt: "Usa $plasma-liquid-effects para elegir el nivel técnico de este efecto visual de Punchi Dock."

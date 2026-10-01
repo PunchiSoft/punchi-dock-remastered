@@ -1,0 +1,4 @@
+interface:
+  display_name: "Revisión de carga QML"
+  short_description: "Previene fallos de carga runtime en Plasma"
+  default_prompt: "Usa $qml-runtime-load-review para comprobar que estos cambios QML cargan realmente en Plasma sin romper el plasmoide."

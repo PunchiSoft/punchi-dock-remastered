@@ -1,0 +1,4 @@
+interface:
+  display_name: "Auditoría de movimiento"
+  short_description: "Informe de hallazgos de animación sin tocar código"
+  default_prompt: "Usa $plasma-motion-review para auditar el movimiento de Punchi Dock y entregar el informe de hallazgos."

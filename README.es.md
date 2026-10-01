@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65">
-    <img src="https://img.shields.io/badge/release-v0.9.7.65-4caf50" alt="Versión v0.9.7.65">
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.66">
+    <img src="https://img.shields.io/badge/release-v0.9.7.66-4caf50" alt="Versión v0.9.7.66">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
@@ -23,7 +23,7 @@ Punchi Dock Remastered es un dock lanzador nativo e interfaz de tareas para KDE 
 Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). El proyecto prepara actualmente su camino hacia una versión 1.0 estable.
 
 La versión actual es
-[v0.9.7.65](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.65).
+[v0.9.7.66](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.66).
 
 ## Novedades en desarrollo
 
@@ -237,9 +237,30 @@ Consulta [scripts-dev/README.es.md](scripts-dev/README.es.md) para más herramie
 - `src/`: módulo nativo de integración QML en C++.
 - `scripts-user/`: flujo normal de compilación e instalación para usuarios.
 - `scripts-dev/`: pruebas estrictas, empaquetado y herramientas de mantenimiento.
+- `.agents/`: políticas versionadas para agentes de IA, skills especializadas e inventario.
+- `AGENTS.md`: instrucciones canónicas del proyecto para agentes de desarrollo.
 - `metadata.json`: metadata KPackage y compatibilidad declarada con Plasma.
 
 Las notas internas de desarrollo y los registros de auditoría se excluyen deliberadamente del repositorio público y del paquete distribuido.
+
+## Desarrollo asistido por agentes de IA
+
+Punchi Dock Remastered incorpora una infraestructura versionada para trabajar
+con agentes de inteligencia artificial durante tareas de desarrollo, revisión,
+pruebas y documentación. Esta integración adapta el flujo del proyecto a las
+herramientas actuales de desarrollo asistido por IA, manteniendo reglas
+explícitas sobre arquitectura, compatibilidad, validación y alcance de los
+cambios.
+
+Las instrucciones se mantienen en [AGENTS.md](AGENTS.md) y
+[`.agents/`](.agents/). Allí se definen la política general del proyecto y
+skills especializadas para áreas como KDE Plasma, QML, pruebas, empaquetado,
+seguridad, localización y revisión de código. Versionar estos archivos hace que
+los cambios en las instrucciones sean reproducibles y auditables como cualquier
+otra modificación del proyecto.
+
+Los agentes apoyan el desarrollo; las pruebas, validaciones y revisiones del
+proyecto siguen siendo las fuentes de verificación del resultado.
 
 ## Apoya el proyecto
 
