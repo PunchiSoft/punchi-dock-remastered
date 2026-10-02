@@ -2,6 +2,18 @@
 
 This directory contains visual reference material for Punchi Dock Remastered.
 
+- `dock-presentation-20261001.png`: Illustration: MPRIS, PunchiMenu, Fan folders,
+  and JSON themes with zoom.
+- `punchimenu-normal-20261001.png`: PunchiMenu Normal (2026-10-01).
+- `punchimenu-fullscreen-20261001.png`: PunchiMenu Fullscreen (2026-10-01).
+- `punchimenu-compact-20261001.png`: PunchiMenu Compact (2026-10-01).
+- `dock-layouts-20261001.png`: Vertical dock and two horizontal docks, with
+  and without a JSON theme (2026-10-01).
+- `dock-overview-20261001.png`: Floating Punchi Dock with launchers, media
+  controls, folders, Trash, notes, clock, and running applications.
+- `folder-presentations-20261001.png`: Illustrative composition of the Fan,
+  Detailed, List, and Grid presentations, based on desktop captures from
+  October 1, 2026.
 - `PunchiMenuNormal.png` is the primary 0.9.4 screenshot and presents the most
   polished PunchiMenu preview: search, categories, application grid, and
   favorites.

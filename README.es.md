@@ -1,272 +1,273 @@
 # Punchi Dock Remastered
 
 <p align="center">
-  <img src="contents/images/punchi-dock-remastered.svg" width="160" alt="Logo de Punchi Dock Remastered">
+  <img src="contents/images/punchi-dock-remastered.svg" width="120" alt="Logo de Punchi Dock Remastered">
 </p>
 
 <p align="center">
-  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.66">
-    <img src="https://img.shields.io/badge/release-v0.9.7.66-4caf50" alt="Versión v0.9.7.66">
-  </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/licencia-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later">
-  </a>
-  <a href="https://www.paypal.com/donate/?hosted_button_id=HXFSZU4K8C38W">
-    <img src="https://img.shields.io/badge/Donar-PayPal-0070ba" alt="Donar con PayPal">
-  </a>
+  <a href="https://github.com/PunchiSoft/punchi-dock-remastered/releases/latest"><img src="https://img.shields.io/github/v/release/PunchiSoft/punchi-dock-remastered?label=release" alt="Última versión publicada"></a>
+  <a href="metadata.json"><img src="https://img.shields.io/badge/KDE_Plasma-6-blue" alt="KDE Plasma 6"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0--or--later-blue" alt="Licencia GPL-3.0-or-later"></a>
 </p>
 
 [English](README.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt_BR.md)
 
-Punchi Dock Remastered es un dock lanzador nativo e interfaz de tareas para KDE Plasma 6, diseñado principalmente para Wayland. Puede operar como dock flotante o integrarse en un panel de Plasma siguiendo el tema visual activo.
+Punchi Dock Remastered reúne lanzadores de aplicaciones, ventanas abiertas,
+carpetas, controles multimedia y utilidades del escritorio en un dock
+personalizable para KDE Plasma 6. Úsalo como dock flotante o dentro de un panel
+de Plasma, en horizontal o vertical, con el tema Plasma activo o un fondo personalizado.
 
-Este repositorio es una reescritura modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid). El proyecto prepara actualmente su camino hacia una versión 1.0 estable.
+Incluye PunchiMenu para buscar y organizar aplicaciones y es una reescritura
+modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid).
+El proyecto está en desarrollo activo hacia la versión 1.0.
 
-La versión actual es
-[v0.9.7.66](https://github.com/PunchiSoft/punchi-dock-remastered/releases/tag/v0.9.7.66).
+[Funciones](#funciones) · [Capturas](#capturas) · [Instalación](#instalación) · [Compatibilidad](#compatibilidad) · [Pruebas](#pruebas-y-calidad) · [Soporte](#soporte-y-contribuciones)
 
-## Novedades en desarrollo
+<p align="center">
+  <img src="Images/dock-presentation-20261001.png" width="900" alt="Ilustración de Punchi Dock Remastered: MPRIS, PunchiMenu, carpetas Abanico y temas JSON con zoom">
+</p>
 
-Estos cambios están disponibles en el repositorio después de `0.9.7.64`; todavía no son una versión etiquetada.
+<p align="center"><em>Ilustración</em></p>
 
-- **Disposición automática de carpetas**: Un contenedor de carpeta en automático ahora elige la forma de cuadrícula que desperdicia menos espacio, en lugar de partir de un número fijo de columnas. Prefiere la disposición más corta, no deja un elemento solo en una última línea propia y solo recurre al desplazamiento cuando la altura del popup no admite las filas.
-- **Configuración de ítems más clara**: Abrir la página de Ítems ya no selecciona la primera fila implícitamente. La navegación con puntero y teclado crea una selección explícita, las notas contextuales explican cada tipo de ítem compatible y la página muestra una nota de orientación mientras no hay nada seleccionado.
+Este README describe el árbol de código actual. Los paquetes descargables siguen
+sus [notas de publicación](https://github.com/PunchiSoft/punchi-dock-remastered/releases);
+las funciones marcadas como desarrollo pueden no estar incluidas en la última versión publicada.
 
-## Novedades de la versión 0.9.7.64
+## Funciones
 
-- **Notas explicativas para todos los tipos de ítem**: Se añadieron notas contextuales en línea para los 11 tipos de ítem de la página de configuración de Ítems, cubriendo su comportamiento, restricciones y pautas de formato. Las notas están completamente localizadas al español, alemán y portugués de Brasil.
+### Aplicaciones y ventanas
 
-## Novedades de la versión 0.9.7.61
+- **Lanzadores y aplicaciones abiertas:** Ancla aplicaciones, añade lanzadores
+  personalizados o comandos de terminal, reordena elementos y muestra una sección
+  opcional de aplicaciones abiertas.
+- **Controles de ventanas:** Trabaja con ventanas agrupadas, acciones de aplicación,
+  indicadores de cantidad de ventanas, filtros por escritorio y tarjetas o miniaturas en vivo.
+- **Aplicaciones recientes — desarrollo:** Muestra opcionalmente hasta tres
+  aplicaciones recientes como iconos del dock o dentro de un contenedor. Se
+  excluyen las aplicaciones ancladas y las que tienen ventanas abiertas. La
+  función está desactivada por defecto y utiliza el historial registrado por KDE;
+  su disponibilidad depende de las aplicaciones que se reporten.
 
-- **Integración con el panel nativo de Plasma**: Controles directos de longitud, alineación, modo flotante, visibilidad, grosor y opacidad, además de geometría adaptativa y sincronización de la región de entrada.
-- **Popups y tareas de ventanas más fiables**: Anclas estables para grupos de ventanas, centrado de carpetas, distancia de popups nativos, límite de filas por aplicación y badges opcionales de conteo.
-- **Centro de control preliminar**: Ampliación del Centro de control en pantalla completa, aún en desarrollo, con Wi-Fi, Bluetooth, sonido, pantalla, Luz nocturna, notificaciones, multimedia y accesos rápidos. Algunos controles y espacios reservados todavía no son definitivos.
-- **Temas y espectro de audio**: Carpetas administradas para temas JSON externos con eliminación segura y reemplazo unificado del fondo por el espectro en modo panel.
-- **Interacción y multimedia más fluidas**: Mejoras en desplazamiento por categorías, limpieza de arrastres interrumpidos, morph del MPRIS compacto y fallbacks de Wi-Fi y Bluetooth entre versiones.
-- **Flujo de desarrollo más limpio**: Progreso coordinado en una sola línea, concurrencia segura, preflight temprano para sandbox y limpieza automática de cachés y temporales de pruebas.
+### Carpetas y colecciones de aplicaciones
 
-Consulta el [registro de cambios de 0.9.7.61](CHANGELOG.md#09761---2026-09-15) para ver las notas detalladas de la versión y la validación realizada.
+- **Cuatro presentaciones:** Elige Cuadrícula, Lista, Detalle o Abanico, con iconos,
+  etiquetas, tipografía, escala y animaciones de apertura configurables.
+- **Contenido flexible:** Crea colecciones manuales, complétalas desde categorías
+  de aplicaciones instaladas o abre elementos de una carpeta del sistema de archivos.
+- **Interacción directa:** Arrastra lanzadores desde PunchiMenu o el escritorio,
+  cambia la presentación desde el menú contextual y abre la carpeta de origen en Dolphin.
+
+### PunchiMenu
+
+- **Encuentra aplicaciones:** Busca, explora categorías, conserva favoritos,
+  organiza carpetas con nombre y oculta aplicaciones seleccionadas.
+- **Elige una disposición:** Usa un menú flotante Normal o la presentación en Pantalla completa.
+- **Acceso por teclado:** Navega con foco visible, utiliza un atajo global
+  configurable y accede a las acciones nativas de sesión de KDE.
+
+### Multimedia y utilidades del escritorio
+
+- **Controles multimedia:** Controla reproductores compatibles con MPRIS mediante
+  carátulas, información de pista, acciones de reproducción, selección de
+  reproductor y un elemento compacto en el dock.
+- **Visualización de audio:** Activa un espectro PipeWire con seis estilos visuales
+  y colores, dirección e intensidad configurables.
+- **Utilidades cotidianas:** Añade papelera, calendario y reloj, notas rápidas y
+  separadores. Las operaciones de papelera incluyen progreso y notificaciones de KDE.
+- **Centro de control — preliminar:** Accede a superficies de Wi-Fi, Bluetooth,
+  audio, brillo, Luz nocturna, notificaciones y acciones frecuentes del sistema.
+  Este componente continúa en desarrollo; las preferencias avanzadas utilizan
+  los módulos oficiales de KDE.
+
+### Apariencia e interacción
+
+- Soporte para el panel nativo de Plasma con zoom calculado automáticamente.
+- **Integración con Plasma:** Adaptación a temas claros y oscuros, con superficies
+  de popup temáticas, sombras y desenfoque cuando estén disponibles.
+- **Apariencia personalizada:** Elige fondos planos 2D o de repisa 2.5D, temas JSON
+  externos, indicadores, etiquetas, espaciado y efectos al pasar el puntero.
+- **Configuración inmediata:** Aplica preferencias sin reiniciar Plasma Shell,
+  conservando navegación por teclado, nombres accesibles, escalado y movimiento reducido.
+
+### Arrastrar y soltar
+
+- **Dock:** Reordena elementos, ancla lanzadores desde PunchiMenu o el escritorio, añade aplicaciones a contenedores manuales y suelta archivos locales sobre aplicaciones compatibles o la papelera.
+- **PunchiMenu:** En los modos Normal y Pantalla completa, reordena aplicaciones y carpetas con orden manual, crea carpetas soltando una aplicación sobre otra, añade aplicaciones a carpetas existentes y arrastra lanzadores al dock o al escritorio.
 
 ## Capturas
 
-| PunchiMenu Normal — vista preliminar recomendada |
-|:--:|
-| <img src="Images/PunchiMenuNormal.png?v=0.9.7" alt="PunchiMenu Normal con categorías, grilla de aplicaciones y favoritos" width="760"> |
+<p align="center">
+  <img src="Images/dock-layouts-20261001.png" width="900" alt="Dock vertical y dos docks horizontales, con y sin tema JSON">
+</p>
 
-| PunchiMenu Pantalla completa |
-|:--:|
-| <img src="Images/PunchiMenuFullScreen.png?v=0.9.7" alt="Lanzador de aplicaciones PunchiMenu en Pantalla completa" width="760"> |
+<p align="center">
+  <img src="Images/folder-presentations-20261001.png" width="900" alt="Composición ilustrativa de carpetas: Abanico arriba a la izquierda, Detalle arriba a la derecha, Lista abajo a la izquierda y Cuadrícula abajo a la derecha">
+</p>
 
-| Controles multimedia MPRIS |
-|:--:|
-| <img src="Images/MPRIS-Controls.png" alt="Formatos de popup MPRIS con carátula y controles de reproducción" width="760"> |
+Composición ilustrativa de las presentaciones Abanico, Detalle, Lista y Cuadrícula,
+basada en capturas del escritorio del 1 de octubre de 2026.
 
-| Disposiciones del dock |
-|:--:|
-| <img src="Images/desktop-layouts.png" alt="Punchi Dock en disposición horizontal, vertical y como panel de Plasma" width="760"> |
+<details>
+<summary>PunchiMenu, controles multimedia y disposiciones del escritorio</summary>
 
-| Carpeta en cuadrícula | Calendario y reloj |
+| PunchiMenu Normal | PunchiMenu Pantalla completa — vista preliminar |
 |:--:|:--:|
-| <img src="Images/MenuGrid.png" alt="Popup de carpeta en vista de cuadrícula" width="300"> | <img src="Images/Calendar_clock.png" alt="Popup de calendario y reloj" width="300"> |
+| <img src="Images/punchimenu-normal-20261001.png" width="430" alt="PunchiMenu Normal con búsqueda, aplicaciones y favoritos"> | <img src="Images/punchimenu-fullscreen-20261001.png" width="430" alt="Vista preliminar de PunchiMenu en Pantalla completa"> |
 
-## Características
+<p align="center">
+  <img src="Images/punchimenu-compact-20261001.png" width="260" alt="PunchiMenu Compacto">
+</p>
 
-- Modos dock flotante y panel de Plasma.
-- Lanzadores fijados y entradas dinámicas de tareas opcionales.
-- Lanzadores personalizados con preservación segura de comandos y argumentos.
-- Tarjetas de ventanas, miniaturas vivas y controles para ventanas agrupadas, con selección entre tarjetas, miniaturas en vivo o sin ventana emergente.
-- Carpetas configurables con vistas de rejilla, lista y detalle, cambio directo
-  de vista desde el menú contextual y arrastre de lanzadores desde PunchiMenu o
-  el escritorio, además de notas rápidas, papelera, separadores y calendario.
-- Lanzador de aplicaciones PunchiMenu con modos Normal y Pantalla completa,
-  búsqueda, categorías, favoritos, carpetas de aplicaciones con nombre,
-  ocultación selectiva, operación por teclado, atajo global y acciones de
-  sesión nativas. Compacto queda reservado para una versión futura.
-- Centro de control preliminar en pantalla completa con accesos directos para Wi-Fi y Bluetooth, controles de brillo y volumen, No molestar, tema claro/oscuro, temperatura de Luz nocturna con previsualización en vivo e historial de notificaciones. Esta función continúa en desarrollo.
-- Visualizador de audio PipeWire opcional con seis estilos, colores dinámicos o del tema Plasma y hasta 48 elementos visuales.
-- Popups adaptados al tema de Plasma con animaciones de apertura configurables,
-  distancia adaptativa respecto del dock, transiciones fluidas entre miniaturas
-  y menús, y retargeting continuo entre elementos del dock.
-- Acciones nativas de aplicacion y ventana en los menus contextuales de launchers fijados y tareas dinamicas.
-- Badges opcionales de conteo para aplicaciones agrupadas con varias ventanas.
-- Tarjetas multimedia MPRIS contextuales con caratula, informacion de pista, controles de reproduccion y una accion accesible para silenciar o restaurar el volumen en todos los formatos de tarjeta.
-- Item MPRIS compacto para el dock con reproductor seleccionable, fallback de caratula, modos de texto vertical y apertura seguida de Play.
-- Controles circulares de color Plasma/personalizado y separacion configurable entre iconos con unidades visuales explicitas.
-- Reordenamiento persistente de elementos del dock mediante pulsación prolongada
-  o teclado, arrastre seguro de archivos hacia aplicaciones fijadas y la
-  Papelera, y acciones de desanclado adaptadas a aplicaciones y carpetas.
-- Tarjeta MPRIS opcional bajo las miniaturas vivas, revelada despues de la vista previa para conservar la continuidad visual.
-- Operaciones asíncronas de papelera con actividad, progreso, sonido de finalización y notificaciones temáticas de KDE.
-- Temas externos JSON almacenados en una biblioteca administrada, con importación recursiva de carpetas, borrado y fallback seguro al fondo Plasma.
-- Renderers plano 2D y repisa 2.5D con separadores, bordes, gradientes, rims y glow acotado definidos por cada tema.
-- Reloj y calendario con sombras adaptadas al tema para conservar legibilidad sobre fondos variables.
-- Compatibilidad dinámica con APIs de TaskManager disponibles en distintas versiones de Plasma 6.
-- Iconos de ventanas para aplicaciones portables y asociación de tareas mediante identificadores de aplicación o URL de lanzador.
-- Tamaño estable de iconos al alternar un panel Plasma entre Siempre visible y Ocultar automáticamente.
-- Cumplimiento con estándares de almacenamiento de usuario XDG: Los temas JSON importados (`~/.local/share/punchi-dock-remastered/`) y la configuración de ítems por instancia (`~/.config/punchi-dock/`) utilizan almacenamiento aislado con escritura atómica para evitar la corrupción de `desktop-appletsrc` y conservar los datos del usuario al actualizar el plasmoide.
-- Integración QML nativa en C++ para descubrir aplicaciones, servicios de ejecución, análisis de audio y operaciones de papelera.
+<img src="Images/MPRIS-Controls.png" width="900" alt="Tarjetas multimedia MPRIS con carátulas y controles de reproducción">
 
-## Requisitos
+<img src="Images/desktop-layouts.png" width="900" alt="Disposiciones horizontal, vertical y en panel de Plasma">
 
-- KDE Plasma 6 o posterior.
-- Sesión Wayland recomendada (soporte secundario para X11).
-- PipeWire es necesario para el visualizador de audio opcional.
-- **Distribución de referencia oficial**: Fedora 44 `x86_64` con KDE Plasma 6+.
-- **Paquete Universal oficial**: Se compila en Debian 13 (Trixie) con proxies binarios C (`compat/`), permitiendo una instalación y ejecución directa en múltiples distribuciones modernas con Plasma 6 (Fedora, Arch Linux, Debian, Kubuntu y derivados).
-- **Compilación local desde código fuente**:
-  - Requiere CMake 3.22+, compilador C++20, Qt 6.6+, ECM/KF6 6.0+, Plasma 6.0+ y archivos de desarrollo de PipeWire (suministrados por los repositorios de tu propia distribución).
-  - Se incluyen asistentes automatizados con y sin pruebas para compilar e instalar en un solo paso.
+</details>
 
-## Instalar un paquete publicado
+## Instalación
 
-El usuario final puede instalar directamente un paquete `.plasmoid` precompilado oficial (ya sea el específico de su distribución o el paquete universal) sin necesidad de instalar compiladores ni herramientas de desarrollo.
+### Paquete precompilado
 
-Para instalar o actualizar mediante el asistente universal:
+Para utilizar un paquete precompilado, elige un archivo para tu sistema en
+[GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases).
+Instálalo o actualízalo desde una copia de este repositorio:
 
 ```bash
-./scripts-user/setup-universal.sh ruta/al/paquete.plasmoid
+./scripts-user/setup-universal.sh --no-restart path/to/package.plasmoid
 ```
 
-O manualmente mediante `kpackagetool6`:
+También puedes instalarlo con `kpackagetool6 --type Plasma/Applet --install path/to/package.plasmoid`;
+utiliza `--upgrade` en lugar de `--install` para actualizar una instalación existente.
+### Descargar, compilar e instalar desde el código fuente
+
+1. **Descargar el código fuente**
+
+   ```bash
+   git clone https://github.com/PunchiSoft/punchi-dock-remastered.git
+   ```
+
+2. **Entrar en la carpeta del proyecto**
+
+   ```bash
+   cd punchi-dock-remastered
+   ```
+
+3. **Comprobar las dependencias de compilación**
+
+   ```bash
+   ./scripts-user/setup.sh --check-deps
+   ```
+
+4. **Compilar e instalar**
+
+   ```bash
+   ./scripts-user/setup.sh --install --no-restart
+   ```
+
+Después añade Punchi Dock Remastered desde la interfaz Añadir elementos gráficos
+de Plasma. Si un módulo nativo actualizado sigue cargado, cierra y vuelve a iniciar
+sesión para cargar la nueva versión.
+
+### ¿Qué script debo utilizar?
+
+Ejecuta estos comandos desde la raíz del repositorio como tu usuario del escritorio.
+
+| Objetivo | Comando | Qué hace |
+|---|---|---|
+| Instalar un paquete descargado | `./scripts-user/setup-universal.sh --no-restart path/to/package.plasmoid` | Instala o actualiza el paquete sin reiniciar Plasma; no necesita compilador. |
+| Compilar e instalar desde código | `./scripts-user/setup.sh --install --no-restart` | Comprueba dependencias, compila e instala para el sistema actual sin ejecutar pruebas de desarrollo. |
+| Crear solamente un paquete | `./scripts-user/setup.sh --build-only --jobs 4` | Crea un paquete local en `dist/` sin instalarlo. |
+| Elegir una operación interactivamente | `./scripts-user/setup.sh` | Ofrece compilación, instalación de paquetes, desinstalación, reinicio y opciones de concurrencia. |
+| Utilizar el flujo de desarrollo | `./scripts-dev/setup.sh` | Abre el asistente estricto de compilación, validación y empaquetado; preparar dependencias puede requerir sudo. |
+| Probar una instalación en Plasma | `./scripts-dev/setup.sh --local-test` | Compila, valida, instala, reinicia Plasma Shell y recoge diagnósticos de arranque. |
+
+Las compilaciones locales se destinan al sistema actual; no son automáticamente
+paquetes universales. Las opciones completas y dependencias se documentan en
+[scripts de usuario](scripts-user/README.es.md) y [scripts de desarrollo](scripts-dev/README.es.md).
+
+## Compatibilidad
+
+- **Escritorio:** Linux con KDE Plasma 6; Wayland es el objetivo principal y X11
+  conserva una vía secundaria.
+- **Mínimos declarados de compilación:** CMake 3.22, compilador C++20, Qt 6.6,
+  KDE Frameworks 6.0 y Plasma 6.0, además de las bibliotecas de desarrollo requeridas.
+- **Compilación nativa:** La compilación de desarrollo está orientada principalmente a Fedora 44 y posteriores y utiliza las bibliotecas Qt y KDE del sistema anfitrión. También existen perfiles para Arch Linux y Debian 13.
+- **Paquete universal:** Las compilaciones universales oficiales se realizan en Debian 13. La compatibilidad binaria debe comprobarse con el mismo paquete en cada sistema objetivo.
+- **Pruebas de calidad:** El entorno de pruebas observado es Fedora 44, Qt 6.11.2, Plasma 6.7.5, KDE Frameworks 6.30.0, GCC 16.2.1 y CMake 4.3.0. Estos resultados corresponden a ese entorno; las versiones posteriores y otras distribuciones requieren su propia validación.
+- **Paquetes nativos:** Utiliza el paquete destinado a tu entorno. Los mínimos
+  declarados no certifican todas las combinaciones, y la compatibilidad binaria
+  entre distribuciones exige probar el mismo artefacto en cada sistema objetivo.
+- **Audio:** El visualizador opcional consume PipeWire; compilar desde código
+  requiere sus archivos de desarrollo.
+- **Idiomas:** Inglés como fuente y fallback; español mantenido. Alemán y
+  portugués brasileño se incluyen como traducciones iniciales pendientes de
+  revisión por hablantes nativos. Consulta [la guía de traducciones](po/README.es.md).
+
+## Pruebas y calidad
+
+Punchi Dock combina vistas QML, código nativo C++, configuración persistente y
+servicios KDE. Las pruebas ayudan a detectar regresiones como un plasmoide que
+no carga, una preferencia que pierde su efecto, actualizaciones incorrectas de
+modelos o un paquete al que le faltan archivos antes de que esos cambios lleguen a los usuarios.
+
+| Comprobación | Objetivo |
+|---|---|
+| CTest | Ejercita lógica nativa, interacción de componentes, carga y destrucción del plasmoide, contratos de configuración e integración con proveedores controlados. |
+| Lint QML | Detecta imports, propiedades y bindings sin resolver; el flujo de desarrollo rechaza aumentos sobre el baseline de advertencias del entorno. |
+| Traducciones | Comprueba catálogos completos, marcadores de formato y reglas de traducción del proyecto. |
+| Integridad de pruebas | Detecta cambios en pruebas protegidas, nombres canónicos y cantidad mínima de la suite. |
+| Empaquetado | Verifica el módulo y las traducciones preparados y mantiene los archivos de desarrollo fuera del plasmoide instalado. |
+
+Estas comprobaciones complementan las pruebas manuales en Plasma. Aprobar
+pruebas aisladas no demuestra corrección visual, comportamiento del compositor
+ni compatibilidad con todas las distribuciones. Los resultados de validación
+corresponden a su versión y entorno concretos.
+
+Para ejecutar CTest sin instalar el plasmoide ni reiniciar Plasma, prepara las
+dependencias de compilación y ejecuta:
 
 ```bash
-# Instalación inicial
-kpackagetool6 --type Plasma/Applet --install ./punchi-dock-remastered-<versión>-<distro>-x86_64.plasmoid
-
-# Actualización
-kpackagetool6 --type Plasma/Applet --upgrade ./punchi-dock-remastered-<versión>-<distro>-x86_64.plasmoid
+cmake -S . -B build -DBUILD_TESTING=ON
+cmake --build build --parallel 2
+ctest --test-dir build --output-on-failure
 ```
 
-Cierra y vuelve a iniciar sesión, o reinicia Plasma Shell, si el plasmoide actualizado no se carga inmediatamente.
+Esto ejecuta la suite CTest configurada; el flujo completo de mantenimiento
+también aplica las comprobaciones independientes de lint, catálogos, integridad
+y empaquetado. Consulta [scripts de desarrollo](scripts-dev/README.es.md) e
+[integridad de pruebas](scripts-dev/test-integrity/README.md).
 
-## Compilar desde fuentes
+## Soporte y contribuciones
 
-El plasmoide contiene un módulo nativo en C++ para integrarse con Plasma 6, PipeWire y el sistema de tareas. Se puede compilar fácilmente en cualquier distribución moderna con Plasma 6.
+Reporta problemas en [GitHub Issues](https://github.com/PunchiSoft/punchi-dock-remastered/issues).
+Incluye las versiones de Plasma y Qt, distribución, sesión Wayland o X11,
+origen del paquete, pasos de reproducción y comportamiento esperado y observado.
+Las capturas y los logs concretos ayudan siempre que no expongan información privada.
 
-### Dependencias de compilación por distribución
+Son bienvenidas las contribuciones de código, pruebas reproducibles, mejoras de
+documentación y revisiones de traducción. Consulta el [flujo de desarrollo](scripts-dev/README.es.md)
+y la [guía de traducciones](po/README.es.md).
 
-El asistente `setup.sh` comprueba e informa automáticamente los paquetes faltantes en tu sistema, pero si prefieres instalarlos manualmente:
+<details>
+<summary>Estructura del proyecto</summary>
 
-#### Fedora / RHEL / Nobara
-```bash
-sudo dnf install \
-    gcc-c++ cmake extra-cmake-modules \
-    qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtshadertools \
-    plasma-workspace-devel pipewire-devel \
-    kf6-kconfig-devel kf6-ki18n-devel kf6-kio-devel \
-    gettext zip unzip
-```
+- `contents/`: QML, JavaScript, configuración y recursos del runtime.
+- `src/`: integración nativa C++.
+- `tests/`: pruebas de comportamiento, runtime, integración y contratos.
+- `scripts-user/`: herramientas de compilación e instalación para usuarios.
+- `scripts-dev/`: herramientas de validación, empaquetado y mantenimiento.
+- `metadata.json`: identidad del paquete y compatibilidad Plasma declarada.
 
-#### Arch Linux / Manjaro / EndeavourOS
-```bash
-sudo pacman -S --needed \
-    base-devel cmake extra-cmake-modules \
-    qt6-base qt6-declarative qt6-shadertools \
-    plasma-workspace pipewire \
-    kconfig ki18n kio kservice
-```
+Las notas internas, archivos de desarrollo y herramientas de pruebas quedan fuera del paquete instalado.
 
-#### Debian 13 (Trixie) / Kubuntu / Ubuntu
-```bash
-sudo apt update && sudo apt install \
-    build-essential cmake extra-cmake-modules \
-    qt6-base-dev qt6-declarative-dev qt6-shader-baker \
-    libplasma-dev libpipewire-0.3-dev \
-    libkf6config-dev libkf6i18n-dev libkf6kio-dev \
-    gettext zip unzip
-```
+</details>
 
-### Asistentes de compilación incluidos
+### Desarrollo asistido por IA
 
-El repositorio incluye asistentes automatizados listos para usar según la necesidad:
+Los agentes de IA son un apoyo integral al desarrollo para agilizar la programación, investigar problemas, apoyar refactorizaciones y preparar documentación y pruebas. Sus instrucciones se versionan en [AGENTS.md](AGENTS.md) y [`.agents/`](.agents/). Los mantenedores conservan la responsabilidad de las decisiones técnicas, la revisión y la validación.
 
-#### 1. Asistente para usuarios (Rápido y Seguro, sin tests)
-
-Diseñado para compilar e instalar localmente en segundos sin ejecutar comprobaciones de desarrollo:
-
-```bash
-./scripts-user/setup.sh
-```
-
-- Configura CMake con `BUILD_TESTING=OFF` (no ejecuta `qmllint` ni CTest).
-- Detecta automáticamente tu distribución (Fedora, Arch Linux, Debian, Kubuntu y derivados) y comprueba las dependencias necesarias.
-- Permite configurar interactivamente la **concurrencia de compilación y memoria** (Modo Seguro de 1 núcleo para máquinas virtuales o equipos con <= 4 GB RAM, Modo Balanceado, Rápido o Personalizado).
-- También admite ejecución directa por línea de comandos:
-
-```bash
-# Compilar e instalar localmente limitando a 1 núcleo (Modo Seguro para MV o poca RAM)
-./scripts-user/setup.sh --install -j 1
-
-# Crear solo el paquete .plasmoid local usando 4 hilos en paralelo
-./scripts-user/setup.sh --build-only --jobs 4
-
-# Desinstalar el plasmoide del escritorio actual
-./scripts-user/setup.sh --uninstall
-```
-
-El paquete generado se ubica en `dist/punchi-dock-remastered-<versión>-<distro>-<arch>-local-build.plasmoid`. Consulta [scripts-user/README.es.md](scripts-user/README.es.md) para más detalles.
-
-### 2. Asistente maestro para desarrolladores (Validación estricta con tests)
-
-Diseñado para desarrolladores y colaboradores que deseen validar exhaustivamente el código:
-
-```bash
-./scripts-dev/setup.sh
-```
-
-- Ejecuta `qmllint` para verificación estática de QML según el baseline de la distribución.
-- Configura CMake con `BUILD_TESTING=ON` y ejecuta la suite completa de tests con CTest (contratos de arquitectura, shaders, ciclo de vida, integración Plasma y backend nativo).
-- Admite opciones CLI como:
-
-```bash
-./scripts-dev/setup.sh --local-test           # Compilar, validar tests e instalar en Plasma local
-./scripts-dev/setup.sh --local-test -j 1      # Modo seguro (1 núcleo) para máquinas virtuales
-./scripts-dev/setup.sh --local-test --jobs 8 # Modo rápido con 8 hilos en paralelo
-./scripts-dev/setup.sh --clean-install         # Reinstalación limpia desde cero
-./scripts-dev/setup.sh --dependencies-only    # Instalar dependencias oficiales de la distribución
-./scripts-dev/setup.sh --lang es --help       # Ayuda en español
-```
-
-Consulta [scripts-dev/README.es.md](scripts-dev/README.es.md) para más herramientas de desarrollo (`check-build-environment.sh`, `update-translations.sh`, `validar-empaquetado-limpio.sh`).
-
-## Estructura del proyecto
-
-- `contents/`: paquete ejecutable del plasmoide.
-- `contents/ui/components/`: componentes reutilizables de la interfaz QML.
-- `contents/code/`: lógica JavaScript compartida y valores predeterminados.
-- `src/`: módulo nativo de integración QML en C++.
-- `scripts-user/`: flujo normal de compilación e instalación para usuarios.
-- `scripts-dev/`: pruebas estrictas, empaquetado y herramientas de mantenimiento.
-- `.agents/`: políticas versionadas para agentes de IA, skills especializadas e inventario.
-- `AGENTS.md`: instrucciones canónicas del proyecto para agentes de desarrollo.
-- `metadata.json`: metadata KPackage y compatibilidad declarada con Plasma.
-
-Las notas internas de desarrollo y los registros de auditoría se excluyen deliberadamente del repositorio público y del paquete distribuido.
-
-## Desarrollo asistido por agentes de IA
-
-Punchi Dock Remastered incorpora una infraestructura versionada para trabajar
-con agentes de inteligencia artificial durante tareas de desarrollo, revisión,
-pruebas y documentación. Esta integración adapta el flujo del proyecto a las
-herramientas actuales de desarrollo asistido por IA, manteniendo reglas
-explícitas sobre arquitectura, compatibilidad, validación y alcance de los
-cambios.
-
-Las instrucciones se mantienen en [AGENTS.md](AGENTS.md) y
-[`.agents/`](.agents/). Allí se definen la política general del proyecto y
-skills especializadas para áreas como KDE Plasma, QML, pruebas, empaquetado,
-seguridad, localización y revisión de código. Versionar estos archivos hace que
-los cambios en las instrucciones sean reproducibles y auditables como cualquier
-otra modificación del proyecto.
-
-Los agentes apoyan el desarrollo; las pruebas, validaciones y revisiones del
-proyecto siguen siendo las fuentes de verificación del resultado.
-
-## Apoya el proyecto
-
-Punchi Dock Remastered es software libre. Los reportes de errores, resultados de pruebas reproducibles, mejoras de documentación, traducciones y contribuciones de código son formas valiosas de apoyar el proyecto.
-
-Las donaciones económicas son voluntarias y nunca son necesarias para utilizar el proyecto. Puedes apoyar Punchi Dock Remastered mediante la [página oficial de donaciones de PayPal](https://www.paypal.com/donate/?hosted_button_id=HXFSZU4K8C38W).
+El apoyo económico es opcional: [donaciones mediante PayPal](https://www.paypal.com/donate/?hosted_button_id=HXFSZU4K8C38W).
+Nunca es necesario donar para utilizar el proyecto.
 
 ## Licencia
 
@@ -279,3 +280,6 @@ no elimina ni reemplaza la obligación de cumplir la licencia GPL-3.0-or-later,
 conservar los avisos requeridos, proporcionar el código fuente correspondiente
 cuando sea obligatorio y atribuir a Punchi Dock Remastered y sus contribuidores
 cuando corresponda.
+
+Para el historial de cambios, consulta [CHANGELOG.md](CHANGELOG.md) y
+[GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases).
