@@ -67,8 +67,7 @@ features marked as development may not be included in the latest release.
 
 - **Media controls:** Control compatible MPRIS players with artwork, track
   information, playback actions, player selection, and a compact dock item.
-- **Audio visualization:** Enable a PipeWire spectrum with six visual styles and
-  configurable colors, direction, and intensity.
+- **Audio visualizer (EQ):** Displays the system's output spectrum through PipeWire behind the dock icons, in floating and Plasma panel modes, horizontally or vertically. Choose six visual styles, Plasma theme or dynamic colors, intensity, and movement direction. It can appear over the Plasma background or replace it with the spectrum alone. This is a visual effect; it does not change the sound.
 - **Everyday utilities:** Add Trash, calendar and clock, quick notes, and separators.
   Trash operations include progress and KDE notifications.
 - **Control Center — preliminary:** Access surfaces for Wi-Fi, Bluetooth, audio,
@@ -96,12 +95,21 @@ features marked as development may not be included in the latest release.
   <img src="Images/dock-layouts-20261001.png" width="900" alt="Vertical dock and two horizontal docks, with and without a JSON theme">
 </p>
 
+### MPRIS
+
 <p align="center">
-  <img src="Images/folder-presentations-20261001.png" width="900" alt="Illustrated overview of folder presentations: Fan at upper left, Detailed at upper right, List at lower left, and Grid at lower right">
+  <img src="Images/mpris-presentations-eq-20261002.png" width="900" alt="MPRIS media cards with artwork and playback controls">
 </p>
 
-Illustrative composition of the Fan, Detailed, List, and Grid presentations,
-based on desktop captures from October 1, 2026.
+<p align="center"><em>Illustration</em></p>
+
+### Folder popups
+
+<p align="center">
+  <img src="Images/popup-presentations-20261002.png" width="900" alt="Illustrated overview of folder presentations: Fan at upper left, Detailed at upper right, List at lower left, and Grid at lower right">
+</p>
+
+<p align="center"><em>Illustration</em></p>
 
 <details>
 <summary>PunchiMenu, media controls, and desktop layouts</summary>
@@ -114,9 +122,12 @@ based on desktop captures from October 1, 2026.
   <img src="Images/punchimenu-compact-20261001.png" width="260" alt="PunchiMenu Compact">
 </p>
 
-<img src="Images/MPRIS-Controls.png" width="900" alt="MPRIS media cards with artwork and playback controls">
+<p align="center">
+  <img src="Images/folder-presentations-20261001.png" width="900" alt="Illustrated overview of folder presentations: Fan at upper left, Detailed at upper right, List at lower left, and Grid at lower right">
+</p>
 
-<img src="Images/desktop-layouts.png" width="900" alt="Horizontal, vertical, and Plasma panel dock layouts">
+Illustrative composition of the Fan, Detailed, List, and Grid presentations,
+based on desktop captures from October 1, 2026.
 
 </details>
 
@@ -164,6 +175,9 @@ Then add Punchi Dock Remastered through Plasma's Add Widgets interface. If an
 updated native module remains loaded, log out and back in to load the new version.
 
 ### Which script should I use?
+
+- **User scripts (`scripts-user/`):** Build, package, or install the dock for everyday use, without running developer tests or QML lint. Build dependencies and package checks still apply.
+- **Developer scripts (`scripts-dev/`):** Validate changes before contribution or distribution, with QML lint, CTest, translation, test-integrity, and package checks.
 
 Run these commands from the repository root as your desktop user.
 
@@ -217,6 +231,8 @@ These checks complement manual testing in Plasma. Passing isolated tests does
 not establish visual correctness, compositor behavior, or compatibility with
 every distribution. Validation results belong to their specific release and environment.
 
+For reproducible validation, use the dependencies and lint baseline for your platform, rebuild with the current toolchain, and run tests with isolated configuration and sessions. Stale build artifacts, missing services, or a mismatched baseline can cause failures. Protected tests must pass the integrity check; uncommitted Git changes alone do not invalidate a run.
+
 To run CTest without installing the plasmoid or restarting Plasma, prepare the
 build dependencies and run:
 
@@ -258,6 +274,8 @@ Internal notes, development files, and test tools are excluded from the installe
 ### AI-assisted development
 
 AI agents are an integral development aid for accelerating programming, investigating issues, supporting refactoring, and preparing documentation and tests. Their instructions are versioned in [AGENTS.md](AGENTS.md) and [`.agents/`](.agents/). Maintainers remain responsible for technical decisions, review, and validation.
+
+The agent instructions and skills were created and configured by the author of Punchi Dock Remastered through independent research, reading online resources, Wikipedia, and Reddit discussions. These instructions are tailored to the project's architecture and development workflow.
 
 Financial support is optional: [donate through PayPal](https://www.paypal.com/donate/?hosted_button_id=HXFSZU4K8C38W).
 Donations are never required to use the project.

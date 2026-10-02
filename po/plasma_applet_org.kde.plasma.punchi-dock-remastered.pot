@@ -6,7 +6,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.7.66\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7.68\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
 "POT-Creation-Date: 2026-09-30 23:56-0300\n"

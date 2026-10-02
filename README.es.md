@@ -70,8 +70,7 @@ las funciones marcadas como desarrollo pueden no estar incluidas en la última v
 - **Controles multimedia:** Controla reproductores compatibles con MPRIS mediante
   carátulas, información de pista, acciones de reproducción, selección de
   reproductor y un elemento compacto en el dock.
-- **Visualización de audio:** Activa un espectro PipeWire con seis estilos visuales
-  y colores, dirección e intensidad configurables.
+- **Visualizador de audio (EQ):** Muestra el espectro de la salida de audio del sistema mediante PipeWire detrás de los iconos del dock, en modo flotante y panel de Plasma, horizontal o vertical. Permite elegir seis estilos visuales, colores del tema Plasma o dinámicos, intensidad y dirección de movimiento. Puede mostrarse sobre el fondo de Plasma o sustituirlo por el espectro. Es un efecto visual; no modifica el sonido.
 - **Utilidades cotidianas:** Añade papelera, calendario y reloj, notas rápidas y
   separadores. Las operaciones de papelera incluyen progreso y notificaciones de KDE.
 - **Centro de control — preliminar:** Accede a superficies de Wi-Fi, Bluetooth,
@@ -100,12 +99,21 @@ las funciones marcadas como desarrollo pueden no estar incluidas en la última v
   <img src="Images/dock-layouts-20261001.png" width="900" alt="Dock vertical y dos docks horizontales, con y sin tema JSON">
 </p>
 
+### MPRIS
+
 <p align="center">
-  <img src="Images/folder-presentations-20261001.png" width="900" alt="Composición ilustrativa de carpetas: Abanico arriba a la izquierda, Detalle arriba a la derecha, Lista abajo a la izquierda y Cuadrícula abajo a la derecha">
+  <img src="Images/mpris-presentations-eq-20261002.png" width="900" alt="Tarjetas multimedia MPRIS con carátulas y controles de reproducción">
 </p>
 
-Composición ilustrativa de las presentaciones Abanico, Detalle, Lista y Cuadrícula,
-basada en capturas del escritorio del 1 de octubre de 2026.
+<p align="center"><em>Ilustración</em></p>
+
+### Popups de carpetas
+
+<p align="center">
+  <img src="Images/popup-presentations-20261002.png" width="900" alt="Composición ilustrativa de carpetas: Abanico arriba a la izquierda, Detalle arriba a la derecha, Lista abajo a la izquierda y Cuadrícula abajo a la derecha">
+</p>
+
+<p align="center"><em>Ilustración</em></p>
 
 <details>
 <summary>PunchiMenu, controles multimedia y disposiciones del escritorio</summary>
@@ -118,9 +126,12 @@ basada en capturas del escritorio del 1 de octubre de 2026.
   <img src="Images/punchimenu-compact-20261001.png" width="260" alt="PunchiMenu Compacto">
 </p>
 
-<img src="Images/MPRIS-Controls.png" width="900" alt="Tarjetas multimedia MPRIS con carátulas y controles de reproducción">
+<p align="center">
+  <img src="Images/folder-presentations-20261001.png" width="900" alt="Composición ilustrativa de carpetas: Abanico arriba a la izquierda, Detalle arriba a la derecha, Lista abajo a la izquierda y Cuadrícula abajo a la derecha">
+</p>
 
-<img src="Images/desktop-layouts.png" width="900" alt="Disposiciones horizontal, vertical y en panel de Plasma">
+Composición ilustrativa de las presentaciones Abanico, Detalle, Lista y Cuadrícula,
+basada en capturas del escritorio del 1 de octubre de 2026.
 
 </details>
 
@@ -169,6 +180,9 @@ de Plasma. Si un módulo nativo actualizado sigue cargado, cierra y vuelve a ini
 sesión para cargar la nueva versión.
 
 ### ¿Qué script debo utilizar?
+
+- **Scripts de usuario (`scripts-user/`):** Compilan, empaquetan o instalan el dock para uso cotidiano, sin ejecutar pruebas de desarrollo ni QML lint. Se mantienen las dependencias de compilación y las comprobaciones del paquete.
+- **Scripts de desarrollo (`scripts-dev/`):** Validan cambios antes de contribuir o distribuir, mediante QML lint, CTest y comprobaciones de traducciones, integridad de pruebas y empaquetado.
 
 Ejecuta estos comandos desde la raíz del repositorio como tu usuario del escritorio.
 
@@ -223,6 +237,8 @@ pruebas aisladas no demuestra corrección visual, comportamiento del compositor
 ni compatibilidad con todas las distribuciones. Los resultados de validación
 corresponden a su versión y entorno concretos.
 
+Para una validación reproducible, utiliza las dependencias y el baseline de lint de tu plataforma, recompila con las herramientas actuales y ejecuta las pruebas con configuración y sesiones aisladas. Los artefactos de compilaciones anteriores, los servicios ausentes o un baseline distinto pueden causar fallos. Las pruebas protegidas deben superar el control de integridad; tener cambios pendientes de Git no invalida por sí solo una ejecución.
+
 Para ejecutar CTest sin instalar el plasmoide ni reiniciar Plasma, prepara las
 dependencias de compilación y ejecuta:
 
@@ -265,6 +281,8 @@ Las notas internas, archivos de desarrollo y herramientas de pruebas quedan fuer
 ### Desarrollo asistido por IA
 
 Los agentes de IA son un apoyo integral al desarrollo para agilizar la programación, investigar problemas, apoyar refactorizaciones y preparar documentación y pruebas. Sus instrucciones se versionan en [AGENTS.md](AGENTS.md) y [`.agents/`](.agents/). Los mantenedores conservan la responsabilidad de las decisiones técnicas, la revisión y la validación.
+
+Las instrucciones para los agentes y sus skills fueron creadas y configuradas por el autor de Punchi Dock Remastered a partir de investigación propia, lectura de recursos en internet, Wikipedia y debates en Reddit. Estas instrucciones se adaptan a la arquitectura y al flujo de desarrollo del proyecto.
 
 El apoyo económico es opcional: [donaciones mediante PayPal](https://www.paypal.com/donate/?hosted_button_id=HXFSZU4K8C38W).
 Nunca es necesario donar para utilizar el proyecto.

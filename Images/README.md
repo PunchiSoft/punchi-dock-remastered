@@ -4,6 +4,9 @@ This directory contains visual reference material for Punchi Dock Remastered.
 
 - `dock-presentation-20261001.png`: Illustration: MPRIS, PunchiMenu, Fan folders,
   and JSON themes with zoom.
+- `mpris-presentations-eq-20261002.png`: Illustration: MPRIS, EQ.
+- `MPRIS-Controls.png`: Illustration: MPRIS.
+- `popup-presentations-20261002.png`: Illustration: Fan, Detailed, List, Grid.
 - `punchimenu-normal-20261001.png`: PunchiMenu Normal (2026-10-01).
 - `punchimenu-fullscreen-20261001.png`: PunchiMenu Fullscreen (2026-10-01).
 - `punchimenu-compact-20261001.png`: PunchiMenu Compact (2026-10-01).
@@ -19,9 +22,7 @@ This directory contains visual reference material for Punchi Dock Remastered.
   favorites.
 - `PunchiMenuFullScreen.png` presents the preliminary Full Screen carousel. It
   must continue to be labeled as an early preview.
-- `MPRIS-Controls.png` presents the contextual media-card layouts and follows
-  the PunchiMenu screenshots in current release documentation.
-- `desktop-layouts.png` documents floating, vertical, and Plasma panel layouts.
+- `desktop-layouts.png` shows dock layouts, including audio spectrum examples in a floating dock and a Plasma panel.
 - `banner_093.png` is the historical 0.9.3 smart-popup overview.
 - `banner_00.png` documents the earlier general remastered overview.
 - `banner_config.png` is a configuration reference captured while the About

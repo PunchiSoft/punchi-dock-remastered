@@ -69,8 +69,7 @@ als in Entwicklung gekennzeichnete Funktionen können in der neuesten Veröffent
 
 - **Mediensteuerung:** Steuere MPRIS-kompatible Player mit Coverbildern,
   Titelinformationen, Wiedergabeaktionen, Player-Auswahl und einem kompakten Dock-Element.
-- **Audiovisualisierung:** Aktiviere ein PipeWire-Spektrum mit sechs visuellen
-  Stilen und einstellbaren Farben, Richtung und Intensität.
+- **Audiovisualisierer (EQ):** Zeigt das Spektrum der Systemaudioausgabe über PipeWire hinter den Dock-Symbolen an, im schwebenden Dock und im Plasma-Panel, horizontal oder vertikal. Wähle sechs visuelle Stile, Plasma-Designfarben oder dynamische Farben, Intensität und Bewegungsrichtung. Das Spektrum kann über dem Plasma-Hintergrund erscheinen oder ihn ersetzen. Dies ist ein visueller Effekt; er verändert den Klang nicht.
 - **Alltagswerkzeuge:** Füge Papierkorb, Kalender und Uhr, schnelle Notizen und
   Trennelemente hinzu. Papierkorbaktionen bieten Fortschrittsanzeigen und KDE-Benachrichtigungen.
 - **Kontrollzentrum — vorläufig:** Greife auf Oberflächen für WLAN, Bluetooth,
@@ -99,12 +98,21 @@ als in Entwicklung gekennzeichnete Funktionen können in der neuesten Veröffent
   <img src="Images/dock-layouts-20261001.png" width="900" alt="Vertikales Dock und zwei horizontale Docks, mit und ohne JSON-Design">
 </p>
 
+### MPRIS
+
 <p align="center">
-  <img src="Images/folder-presentations-20261001.png" width="900" alt="Illustrative Übersicht der Ordnerdarstellungen: Fächer oben links, Detail oben rechts, Liste unten links und Raster unten rechts">
+  <img src="Images/mpris-presentations-eq-20261002.png" width="900" alt="MPRIS-Medienkarten mit Coverbildern und Wiedergabesteuerung">
 </p>
 
-Illustrative Zusammenstellung der Darstellungen Fächer, Detail, Liste und Raster,
-basierend auf Desktop-Aufnahmen vom 1. Oktober 2026.
+<p align="center"><em>Illustration</em></p>
+
+### Ordner-Popups
+
+<p align="center">
+  <img src="Images/popup-presentations-20261002.png" width="900" alt="Illustrative Übersicht der Ordnerdarstellungen: Fächer oben links, Detail oben rechts, Liste unten links und Raster unten rechts">
+</p>
+
+<p align="center"><em>Illustration</em></p>
 
 <details>
 <summary>PunchiMenu, Mediensteuerung und Desktop-Anordnungen</summary>
@@ -117,9 +125,12 @@ basierend auf Desktop-Aufnahmen vom 1. Oktober 2026.
   <img src="Images/punchimenu-compact-20261001.png" width="260" alt="PunchiMenu Kompakt">
 </p>
 
-<img src="Images/MPRIS-Controls.png" width="900" alt="MPRIS-Medienkarten mit Coverbildern und Wiedergabesteuerung">
+<p align="center">
+  <img src="Images/folder-presentations-20261001.png" width="900" alt="Illustrative Übersicht der Ordnerdarstellungen: Fächer oben links, Detail oben rechts, Liste unten links und Raster unten rechts">
+</p>
 
-<img src="Images/desktop-layouts.png" width="900" alt="Horizontale und vertikale Docks sowie Plasma-Panel-Anordnungen">
+Illustrative Zusammenstellung der Darstellungen Fächer, Detail, Liste und Raster,
+basierend auf Desktop-Aufnahmen vom 1. Oktober 2026.
 
 </details>
 
@@ -168,6 +179,9 @@ von Miniprogrammen hinzu. Falls ein aktualisiertes natives Modul weiterhin gelad
 ist, melde dich ab und wieder an, um die neue Version zu laden.
 
 ### Welches Skript sollte ich verwenden?
+
+- **Benutzerskripte (`scripts-user/`):** Kompilieren, paketieren oder installieren den Dock für den täglichen Gebrauch, ohne Entwicklertests oder QML-Lint auszuführen. Build-Abhängigkeiten und Paketprüfungen bleiben erforderlich.
+- **Entwicklerskripte (`scripts-dev/`):** Validieren Änderungen vor einem Beitrag oder der Distribution mit QML-Lint, CTest sowie Prüfungen für Übersetzungen, Testintegrität und Pakete.
 
 Führe diese Befehle als Desktop-Benutzer im Stammverzeichnis des Repositorys aus.
 
@@ -222,6 +236,8 @@ belegen weder visuelle Korrektheit noch das Verhalten des Compositors oder
 Kompatibilität mit jeder Distribution. Validierungsergebnisse beziehen sich
 auf ihre konkrete Version und Umgebung.
 
+Für reproduzierbare Validierung verwende die Abhängigkeiten und die Lint-Baseline deiner Plattform, kompiliere mit der aktuellen Toolchain neu und führe Tests mit isolierter Konfiguration und isolierten Sitzungen aus. Veraltete Build-Artefakte, fehlende Dienste oder eine abweichende Baseline können Fehler verursachen. Geschützte Tests müssen die Integritätsprüfung bestehen; nicht committete Git-Änderungen allein machen einen Testlauf nicht ungültig.
+
 Um CTest ohne Installation des Plasmoids oder Neustart von Plasma auszuführen,
 bereite die Build-Abhängigkeiten vor und führe Folgendes aus:
 
@@ -264,6 +280,8 @@ Interne Notizen, Entwicklungsdateien und Testwerkzeuge werden nicht in das insta
 ### KI-gestützte Entwicklung
 
 KI-Agenten sind eine integrale Entwicklungshilfe, um Programmierung zu beschleunigen, Probleme zu untersuchen, Refactorings zu unterstützen und Dokumentation sowie Tests vorzubereiten. Ihre Anweisungen werden in [AGENTS.md](AGENTS.md) und [`.agents/`](.agents/) versioniert. Die Projektverantwortlichen bleiben für technische Entscheidungen, Überprüfung und Validierung verantwortlich.
+
+Die Agentenanweisungen und Skills wurden vom Autor von Punchi Dock Remastered durch eigene Recherche, das Lesen von Online-Ressourcen, Wikipedia und Reddit-Diskussionen erstellt und konfiguriert. Diese Anweisungen sind auf die Architektur und den Entwicklungsablauf des Projekts abgestimmt.
 
 Finanzielle Unterstützung ist freiwillig: [Spenden über PayPal](https://www.paypal.com/donate/?hosted_button_id=HXFSZU4K8C38W).
 Eine Spende ist niemals Voraussetzung für die Nutzung des Projekts.
