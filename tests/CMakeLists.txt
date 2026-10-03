@@ -651,6 +651,29 @@ set_tests_properties(decoration_close_button_test PROPERTIES
     FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
     TIMEOUT 30)
 
+foreach(animation_profile IN ITEMS 4 0)
+    if(animation_profile EQUAL 4)
+        set(folder_motion_test_name folder_navigation_close_motion_test)
+        set(folder_motion_test_functions "")
+    else()
+        set(folder_motion_test_name folder_navigation_close_instant_test)
+        set(folder_motion_test_functions FolderNavigationCloseMotion::test_theme_motion_contract)
+    endif()
+    add_test(NAME ${folder_motion_test_name}
+        COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+            ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+            -- ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_folder_navigation_test.py
+            ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_folder_motion_profile.py ${animation_profile}
+            $<TARGET_FILE:punchi_qmltestrunner>
+            -import ${CMAKE_BINARY_DIR}/bin
+            -input ${CMAKE_CURRENT_SOURCE_DIR}/folder_navigation_close_motion_test.qml
+            ${folder_motion_test_functions})
+    set_tests_properties(${folder_motion_test_name} PROPERTIES
+        ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PYTHONDONTWRITEBYTECODE=1;LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/bin:$ENV{LD_LIBRARY_PATH}"
+        FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+        TIMEOUT 30)
+endforeach()
+
 punchi_add_qml_test(recent_applications_ui_test recent_applications_ui_test.qml)
 punchi_add_qml_test(recent_container_context_test recent_container_context_test.qml)
 add_test(NAME recent_application_tooltip_test

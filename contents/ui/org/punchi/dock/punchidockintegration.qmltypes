@@ -709,6 +709,56 @@ Module {
         Method { name: "reload"; lineNumber: 45 }
     }
     Component {
+        file: "folderpopupentriesmodel.h"
+        lineNumber: 12
+        name: "FolderPopupEntriesModel"
+        accessSemantics: "reference"
+        prototype: "QAbstractListModel"
+        exports: ["org.punchi.dock/FolderPopupEntriesModel 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "sourceModel"
+            type: "QAbstractItemModel"
+            isPointer: true
+            read: "sourceModel"
+            write: "setSourceModel"
+            notify: "sourceModelChanged"
+            index: 0
+            lineNumber: 16
+        }
+        Property {
+            name: "entries"
+            type: "QVariantList"
+            read: "entries"
+            write: "setEntries"
+            notify: "entriesChanged"
+            index: 1
+            lineNumber: 17
+        }
+        Property {
+            name: "appendOpenLocation"
+            type: "bool"
+            read: "appendOpenLocation"
+            write: "setAppendOpenLocation"
+            notify: "appendOpenLocationChanged"
+            index: 2
+            lineNumber: 18
+        }
+        Property {
+            name: "count"
+            type: "int"
+            read: "count"
+            notify: "countChanged"
+            index: 3
+            lineNumber: 19
+            isReadonly: true
+        }
+        Signal { name: "sourceModelChanged"; lineNumber: 97 }
+        Signal { name: "entriesChanged"; lineNumber: 98 }
+        Signal { name: "appendOpenLocationChanged"; lineNumber: 99 }
+        Signal { name: "countChanged"; lineNumber: 100 }
+    }
+    Component {
         file: "launcherdragcontroller.h"
         lineNumber: 9
         name: "LauncherDragController"

@@ -36,6 +36,16 @@ ColumnLayout {
     property alias actionIconText: actionIcon.text
     property alias actionCommandText: actionCommand.text
     property int actionCount: actionList.count
+    // The applications frame reserves room for four rows plus the toolbar so its
+    // rows keep a stable size while it grows. A container that has no applications
+    // yet only needs room for its drop prompt, so the empty state stays compact and
+    // does not dominate the form; as soon as one application exists it returns to
+    // the full height. Any other mode keeps the full height untouched.
+    readonly property bool emptyContainerPrompt: root.itemModeValue === "container"
+        && root.applicationLauncherDropEnabled && root.actionCount === 0
+    readonly property real frameHeight: root.emptyContainerPrompt
+        ? root.rowHeight * 2.5 + root.footerHeight + root.framePadding
+        : root.rowHeight * 4 + root.footerHeight + root.framePadding
 
     property string rightClickCommandsText: "Right-click commands"
     property string containerApplicationsText: "Container applications"
@@ -179,8 +189,8 @@ ColumnLayout {
 
     ColumnLayout {
         Layout.fillWidth: true
-        Layout.preferredHeight: root.rowHeight * 4 + root.footerHeight + root.framePadding
-        Layout.maximumHeight: root.rowHeight * 4 + root.footerHeight + root.framePadding
+        Layout.preferredHeight: root.frameHeight
+        Layout.maximumHeight: root.frameHeight
         enabled: root.itemModeValue === "container" || actionMenuEnabled.checked
 
         Item {

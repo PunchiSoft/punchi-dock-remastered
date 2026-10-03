@@ -5,6 +5,9 @@ import "../org/punchi/dock" as Punchi
 QtObject {
     id: root
     property bool enabled: false
+    // The view may retain the last child listing during its exit transition.
+    // Session cancellation still releases it immediately through enabled.
+    property bool retainChildModel: false
     property string rootPath: ""
     property string rootName: ""
     property var history: []
@@ -29,7 +32,7 @@ QtObject {
         }
     }
     readonly property Punchi.FolderNavigationModel childModel: Punchi.FolderNavigationModel {
-        enabled: root.enabled && root.hasChild
+        enabled: root.enabled && (root.hasChild || root.retainChildModel)
         rootPath: root.rootPath
         onStateChanged: {
             if (!loading && root.pendingRestore) {

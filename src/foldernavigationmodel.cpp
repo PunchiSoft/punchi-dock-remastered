@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 #include "foldernavigationmodel.h"
 #include "desktoplauncherresolver.h"
+#include "folderentryicon.h"
 
 #include <KIO/ListJob>
 #include <KIO/UDSEntry>
@@ -86,9 +87,9 @@ void FolderNavigationModel::cancel()
 void FolderNavigationModel::clear()
 {
     if (m_entries.isEmpty()) { return; }
-    beginResetModel();
+    beginRemoveRows({}, 0, m_entries.size() - 1);
     m_entries.clear();
-    endResetModel();
+    endRemoveRows();
     Q_EMIT countChanged();
 }
 void FolderNavigationModel::setRootPath(const QString &path)
@@ -154,7 +155,7 @@ void FolderNavigationModel::reload()
                     if (registered && registered->isApplication()) { storageId = registered->storageId(); }
                 } else if (icon.isEmpty()) { icon = QStringLiteral("application-x-desktop"); }
             }
-            if (icon.isEmpty()) { icon = isDirectory ? QStringLiteral("folder") : QStringLiteral("text-x-generic"); }
+            if (icon.isEmpty()) { icon = FolderEntryIcon::resolve(entry, QUrl(url)); }
             QVariantMap row{
                 {QStringLiteral("type"), QStringLiteral("app")},
                 {QStringLiteral("name"), title.isEmpty() ? name : title},

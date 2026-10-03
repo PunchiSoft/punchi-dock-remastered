@@ -11,6 +11,7 @@
 #include "desktoplauncherresolver.h"
 #include "desktopshortcutwriter.h"
 #include "dropurlpolicy.h"
+#include "folderentryicon.h"
 
 #include <KApplicationTrader>
 #include <KIO/ApplicationLauncherJob>
@@ -491,9 +492,7 @@ void SystemDiscovery::requestFolderEntries(const QString &path)
             QString iconName = entry.stringValue(KIO::UDSEntry::UDS_ICON_NAME);
             QString storageId;
 
-            if (directory) {
-                iconName = QStringLiteral("folder");
-            } else if (name.endsWith(QLatin1String(".desktop"), Qt::CaseInsensitive)) {
+            if (!directory && name.endsWith(QLatin1String(".desktop"), Qt::CaseInsensitive)) {
                 const QString localPath = entryUrl.toLocalFile();
                 const DesktopLauncherResolver::Resolution launcher
                     = DesktopLauncherResolver::resolveLocalFile(localPath);
@@ -512,8 +511,9 @@ void SystemDiscovery::requestFolderEntries(const QString &path)
                 } else if (iconName.isEmpty()) {
                     iconName = QStringLiteral("application-x-desktop");
                 }
-            } else if (iconName.isEmpty()) {
-                iconName = QStringLiteral("text-x-generic");
+            }
+            if (iconName.isEmpty()) {
+                iconName = FolderEntryIcon::resolve(entry, entryUrl);
             }
 
             QVariantMap itemMap{

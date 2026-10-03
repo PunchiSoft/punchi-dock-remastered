@@ -657,55 +657,70 @@ def main() -> int:
             "A label of the fan must not enable the fixed texture shadow of the "
             "shared label: the amount belongs to the configuration"
         )
-    # Grid integrates the action as its final cell; List and Detailed retain the
-    # chrome row, and Fan keeps its closing arc row. Every presentation names the
-    # file manager resolved by the desktop.
+    # All presentations integrate the location action into their collection.
+    # The file manager name and glyph remain shared across presentations.
     for fragment, message in (
         ('i18nc("@action:button open the folder in the file manager"',
-         "The chrome action must name the file manager that opens a folder"),
+         "The location action must name the file manager that opens a folder"),
         ("folderOpenerName.length > 0",
-         "The chrome action must name the file manager the desktop resolved"),
-        ('objectName: "folderOpenLocationGlyph"',
-         "The chrome action must show the glyph of the reference"),
-        ('objectName: "folderOpenLocationArrow"',
-         "The glyph of the chrome action must carry the arrow of the reference"),
+         "The location action must name the file manager the desktop resolved"),
+        ('? "folderOpenLocationGlyph"',
+         "The list action must show the glyph of the reference"),
+        ('? "folderOpenLocationArrow"',
+         "The list action must carry the arrow of the reference"),
         ('"_punchiOpenLocationAction": true',
          "Grid must append a marked location action to its visual model"),
         ('? "folderGridOpenLocationAction"',
          "Grid must expose the location action as a normal final delegate"),
         ('objectName: "folderGridOpenLocationArrow"',
          "The Grid action must carry the arrow from the reference"),
+        ("readonly property int openLocationRowHeight: 0",
+         "The location action must not reserve a fixed footer"),
+        ("? folderRoot.listItems : folderRoot.apps",
+         "List and Detailed must consume the presentation model for folders"),
     ):
         require(folder_popup_component, fragment, message)
-    if "folderOpenLocationIcon" in folder_popup_component:
-        raise AssertionError(
-            "The chrome action must not fall back to the icon of the container: "
-            "the row is an action and has to read the same in every presentation "
-            "that offers it"
-        )
-    # Every row that opens the container is a button whose click belongs to its
-    # delegate, so the pointer cursor has to be asked for without taking that
-    # click away: a hover handler, not a mouse area.
-    for source, surface in (
-        (folder_popup_component, "folder popup"),
-        (folder_fan_view, "folder fan"),
+    for retired_footer in ("folderOpenLocationIcon", "openLocationSlot",
+                           "separateLocationRowActive"):
+        if retired_footer in folder_popup_component:
+            raise AssertionError("The folder popup must not retain its separate footer")
+    # The presentation model is a typed property rather than a visual child.
+    models = qml_object_bodies(folder_popup_component, "Punchi.FolderPopupEntriesModel")
+    if len(models) != 1:
+        raise AssertionError("The list action must share one presentation model")
+    for fragment, message in (
+        ("sourceModel: folderRoot.directoryModel",
+         "Native folder rows must stay connected to their source"),
+        ("appendOpenLocation: folderRoot.folderPathAvailable",
+         "Only a folder with a location may append its opening action"),
+        ('&& (folderRoot.layoutMode === "list" || folderRoot.layoutMode === "detailed")',
+         "Only List and Detailed may use the list presentation adapter"),
     ):
-        opening_rows = [
-            body
-            for body in qml_object_bodies(source, "Controls.ItemDelegate")
-            if "openLocationRequested" in body
-        ]
-        if not opening_rows:
-            raise AssertionError(
-                f"The {surface} must keep the row that opens the container"
-            )
-        for body in opening_rows:
-            require(
-                body,
-                "cursorShape: Qt.PointingHandCursor",
-                f"The row that opens the container of the {surface} must show "
-                "the hand cursor",
-            )
+        require(models[0], fragment, message)
+    delegate = qml_object_body_by_id(folder_popup_component, "Item", "appDelegate")
+    require(delegate, "folderRoot.openLocationRequested(folderRoot.folderPath)",
+            "The location row must request the current folder through the shared delegate")
+    pointer = qml_object_body_by_id(delegate, "MouseArea", "itemMouse")
+    for fragment, message in (
+        ("cursorShape: Qt.PointingHandCursor", "The collection action must show the hand cursor"),
+        ('"folderOpenLocationAction"', "The list action must expose its pointer delegate"),
+        ("Accessible.role: Accessible.Button", "The location action must remain an accessible button"),
+        ("Accessible.name: appDelegate.displayName", "The action must expose its visible caption"),
+        ('"Open this folder in the file manager"', "The action must describe its purpose accessibly"),
+        ("Keys.onReturnPressed: appDelegate.activate()", "Return must activate the collection row"),
+        ("Keys.onEnterPressed: appDelegate.activate()", "Enter must activate the collection row"),
+        ("Keys.onSpacePressed: appDelegate.activate()", "Space must activate the collection row"),
+        ("appDelegate.activate()", "Pointer activation must use the shared collection action"),
+    ):
+        require(pointer, fragment, message)
+    # The fan retains its existing control and cursor contract.
+    opening_rows = [body for body in qml_object_bodies(folder_fan_view, "Controls.ItemDelegate")
+                    if "openLocationRequested" in body]
+    if not opening_rows:
+        raise AssertionError("The folder fan must keep the row that opens the container")
+    for body in opening_rows:
+        require(body, "cursorShape: Qt.PointingHandCursor",
+                "The closing row of the folder fan must show the hand cursor")
     require(
         folder_popup_component,
         'visible: folderRoot.layoutMode === "fan"',
@@ -743,11 +758,6 @@ def main() -> int:
         items_controller,
         "readonly property string folderOpenerName",
         "The items controller must expose the file manager in use",
-    )
-    require(
-        folder_popup_component,
-        '&& (layoutMode === "list" || layoutMode === "detailed")',
-        "Only List and Detailed may reserve the separate location row",
     )
     for fragment, message in (
         ('folderPopupContent.layoutMode !== "fan"',
@@ -1064,17 +1074,29 @@ def main() -> int:
     marquee_labels = qml_object_bodies(
         folder_popup_component, "PopupMarqueeLabel"
     )
-    # The title and container action remain direct shadow labels. The two app
-    # captions use the shared elided/marquee primitive so grid, list and detailed
-    # cannot drift into different long-name behaviours.
-    if len(shadowed_labels) != 2:
+    # Only the title remains a direct shadow label. The collection action shares
+    # the app captions' elided/marquee primitive in List and Detailed.
+    if len(shadowed_labels) != 1:
         raise AssertionError(
-            "Folder popup must retain exactly two direct themed shadow labels"
+            "Folder popup must retain one direct themed shadow label for its title"
         )
+    require(shadowed_labels[0], "id: classicHeaderLabel",
+            "The direct shadow label must belong to the folder title")
     if len(marquee_labels) != 2:
         raise AssertionError(
             "Folder popup must retain exactly two shared marquee labels"
         )
+    action_captions = [label for label in marquee_labels
+                      if '"folderOpenLocationLabel"' in label]
+    if len(action_captions) != 1:
+        raise AssertionError("The list action must share its collection caption")
+    for fragment, message in (
+        ("text: appDelegate.displayName", "The location row must use its action caption"),
+        ("hovered: itemMouse.containsMouse", "The action caption must follow valid pointer hover"),
+        ("focused: itemMouse.activeFocus", "The action caption must follow keyboard focus"),
+        ("motionEnabled: folderRoot.motionEnabled", "The action caption must respect reduced motion"),
+    ):
+        require(action_captions[0], fragment, message)
     for label in shadowed_labels + marquee_labels:
         require(
             label,

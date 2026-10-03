@@ -18,11 +18,10 @@ Item {
             ? Math.min(fanView.implicitWidth + classicMargin * 2,
                 safeMaximumWidth)
             : Math.min(Math.round(280 * effectiveScale), safeMaximumWidth))
-    implicitWidth: presentationWidth + (lateralNavigation
-        ? presentationWidth + Kirigami.Units.smallSpacing : 0)
-    implicitHeight: lateralNavigation
-        ? Math.max(classicPopupHeight, navigationPane.item
-            ? (navigationPane.item as FolderPopup).implicitHeight : 0) : classicPopupHeight
+    implicitWidth: presentationWidth + lateralRevealExtent
+    implicitHeight: classicPopupHeight + lateralRevealProgress * Math.max(0,
+        (navigationPane.item ? (navigationPane.item as FolderPopup).implicitHeight
+            : classicPopupHeight) - classicPopupHeight)
     width: implicitWidth
     height: implicitHeight
 
@@ -35,16 +34,32 @@ Item {
     property string titleOverride: ""
     property bool directoryNavigationEnabled: navigationActive
     property bool showCloseButton: true
+    property real headerCloseButtonReserve: showCloseButton ? classicCloseButton.width : 0
     property bool backAvailable: narrowNavigation
     property int navigationDepth: navigator.history.length
     readonly property bool navigationActive: !embeddedNavigationPane
         && folderItem.browseSubfolders === true
         && folderItem.sourceType === "folder"
         && (layoutMode === "list" || layoutMode === "detailed")
+    readonly property bool lateralNavigationAvailable:
+        maximumAvailableWidth >= presentationWidth * 2 + Kirigami.Units.smallSpacing
     readonly property bool lateralNavigation: navigationActive && navigator.hasChild
-        && maximumAvailableWidth >= presentationWidth * 2 + Kirigami.Units.smallSpacing
+        && lateralNavigationAvailable
     readonly property bool narrowNavigation: navigationActive && navigator.hasChild
-        && !lateralNavigation
+        && !lateralNavigationAvailable
+    // Like the Wi-Fi section, one progress owns the surface geometry, the
+    // content reveal and the position of the global close control.
+    readonly property bool navigationMotionEnabled: revealMotionEnabled
+        && navigationActive && sessionActive
+    readonly property real lateralRevealProgress: navigationReveal.progress
+    readonly property real lateralRevealExtent:
+        (presentationWidth + Kirigami.Units.smallSpacing) * lateralRevealProgress
+    property string retainedNavigationTitle: ""
+    FolderNavigationReveal {
+        id: navigationReveal
+        expanded: folderRoot.lateralNavigation
+        motionEnabled: folderRoot.navigationMotionEnabled
+    }
     readonly property Punchi.FolderNavigationModel directoryModel: modelOverride
         ? modelOverride : (navigationActive
             ? (narrowNavigation ? navigator.childModel : navigator.rootModel) : null)
@@ -58,8 +73,15 @@ Item {
     FolderNavigationController {
         id: navigator
         enabled: folderRoot.navigationActive && folderRoot.sessionActive
+        retainChildModel: folderRoot.lateralRevealProgress > 0
+            && folderRoot.navigationMotionEnabled
         rootPath: String(folderRoot.folderItem.sourcePath || "")
         rootName: String(folderRoot.folderItem.name || "")
+        onNavigationChanged: {
+            if (navigator.hasChild) {
+                folderRoot.retainedNavigationTitle = navigator.breadcrumb
+            }
+        }
         onRestoreRequested: function(primary, index, scroll) {
             if (primary || !folderRoot.lateralNavigation) {
                 folderRoot.restoreView(index, scroll)
@@ -117,8 +139,8 @@ Item {
     property int itemCount: directoryModel ? directoryModel.count
         : Math.max(0, Number(apps && apps.length) || 0)
     // The reference integrates the location action as the final Grid cell. This
-    // derived model belongs only to Grid: List and Detailed keep consuming apps
-    // directly, and Fan keeps its dedicated model below.
+    // derived array belongs only to Grid. List and Detailed adapt native rows
+    // without copying them; Fan keeps its dedicated model below.
     readonly property var gridItems: {
         const sourceItems = apps || []
         if (!folderPathAvailable) {
@@ -128,8 +150,17 @@ Item {
         visibleItems.push({ "_punchiOpenLocationAction": true })
         return visibleItems
     }
+    readonly property Punchi.FolderPopupEntriesModel listItems: Punchi.FolderPopupEntriesModel {
+        sourceModel: folderRoot.directoryModel
+        entries: !folderRoot.directoryModel && folderRoot.folderPathAvailable
+            && (folderRoot.layoutMode === "list" || folderRoot.layoutMode === "detailed")
+            ? folderRoot.apps : []
+        appendOpenLocation: folderRoot.folderPathAvailable
+            && (folderRoot.layoutMode === "list" || folderRoot.layoutMode === "detailed")
+    }
     readonly property int classicItemCount: layoutMode === "grid"
-        ? gridItems.length : itemCount
+        ? gridItems.length : ((layoutMode === "list" || layoutMode === "detailed")
+            ? (directoryModel || folderPathAvailable ? listItems.count : itemCount) : itemCount)
     readonly property real effectiveScale: Math.max(0.5, Math.min(3.0,
         Number(profileScale || 1.5)))
     readonly property int classicMargin: Math.round(
@@ -206,12 +237,12 @@ Item {
     readonly property bool scrollRequired: layoutMode === "grid"
         ? classicItemCount > effectiveClassicRowLimit
             * gridColumnsWithoutScrollBar
-        : itemCount > configuredRowLimit
+        : classicItemCount > configuredRowLimit
     readonly property int scrollBarGutter: scrollRequired
         ? Math.ceil(verticalScrollBar.implicitWidth)
             + Kirigami.Units.smallSpacing
         : 0
-    readonly property int classicContentWidth: (lateralNavigation ? presentationWidth : implicitWidth)
+    readonly property int classicContentWidth: (navigationActive ? presentationWidth : implicitWidth)
         - classicMargin * 2 - scrollBarGutter
     readonly property int gridColumnCount: layoutMode === "grid"
         ? Math.max(1, Math.min(effectiveGridColumnRequest,
@@ -219,7 +250,7 @@ Item {
         : 1
     readonly property int classicRowCount: layoutMode === "grid"
         ? Math.ceil(classicItemCount / gridColumnCount)
-        : itemCount
+        : classicItemCount
     readonly property int visibleClassicRows: layoutMode === "fan"
         ? fanView.visibleRowCount
         : Math.max(1, Math.min(classicRowCount,
@@ -227,18 +258,11 @@ Item {
                 ? effectiveClassicRowLimit : configuredRowLimit))
     readonly property bool effectiveShowHeaderLabel: (showHeaderLabel || directoryNavigationEnabled)
         && layoutMode !== "fan"
-    // List and Detailed retain a chrome row. Grid includes the action in its
-    // model, and Fan carries it at the far end of its arc.
-    readonly property bool separateLocationRowActive: folderPathAvailable
-        && (layoutMode === "list" || layoutMode === "detailed")
-    readonly property int openLocationRowHeight:
-        separateLocationRowActive
-        ? classicCellHeight : 0
+    // Every presentation places the location action inside its collection.
+    readonly property int openLocationRowHeight: 0
     readonly property int headerHeightEffect: effectiveShowHeaderLabel
         ? (classicHeader.implicitHeight + classicSpacing) : 0
     readonly property int classicChromeHeight: classicMargin * 2 + headerHeightEffect
-        + (openLocationRowHeight > 0
-            ? openLocationRowHeight + classicSpacing : 0)
     // The fan reserves inside its own list the room its leaning pills need, so
     // the popup takes the height the component declares instead of adding a
     // second reserve on top of it.
@@ -455,7 +479,7 @@ Item {
     }
 
     function applyViewRestore() {
-        if (folderRoot.pendingViewIndex < 0 || (folderRoot.directoryModel
+        if (!folderRoot.enabled || folderRoot.pendingViewIndex < 0 || (folderRoot.directoryModel
                 && folderRoot.directoryModel.loading)) {
             return
         }
@@ -490,43 +514,61 @@ Item {
         }
     }
 
-    Loader {
-        id: navigationPane
-        objectName: "folderNavigationPaneLoader"
-        active: folderRoot.lateralNavigation
-        anchors.top: parent.top
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-        width: folderRoot.presentationWidth
-        // Dynamic loading reuses the view without recursively instantiating its QML type.
-        // The embedded pane disables its own navigation loader.
-        source: active ? "FolderPopup.qml" : ""
-        onLoaded: {
-            const pane = navigationPane.item as FolderPopup
-            pane.embeddedNavigationPane = true
-            pane.directoryNavigationEnabled = true
-            pane.showCloseButton = false
-            pane.backAvailable = true
-            pane.navigationDepth = Qt.binding(function() { return navigator.history.length })
-            pane.sessionActive = Qt.binding(function() { return folderRoot.sessionActive })
-            pane.folderItem = Qt.binding(function() { return folderRoot.folderItem })
-            pane.layoutMode = Qt.binding(function() { return folderRoot.layoutMode })
-            pane.modelOverride = navigator.childModel
-            pane.pathOverride = Qt.binding(function() { return navigator.childModel.location })
-            pane.titleOverride = Qt.binding(function() { return navigator.breadcrumb })
-            pane.profileIconSize = Qt.binding(function() { return folderRoot.profileIconSize })
-            pane.profileRows = Qt.binding(function() { return folderRoot.profileRows })
-            pane.profileShowLabels = Qt.binding(function() { return folderRoot.profileShowLabels })
-            pane.profileFontFamily = Qt.binding(function() { return folderRoot.profileFontFamily })
-            pane.profileFontSize = Qt.binding(function() { return folderRoot.profileFontSize })
-            pane.profileScale = Qt.binding(function() { return folderRoot.profileScale })
-            pane.textShadowsEnabled = Qt.binding(function() { return folderRoot.textShadowsEnabled })
-            pane.textShadowPercent = Qt.binding(function() { return folderRoot.textShadowPercent })
-            pane.maximumAvailableWidth = Qt.binding(function() { return folderRoot.presentationWidth })
-            pane.maximumAvailableHeight = Qt.binding(function() { return folderRoot.maximumAvailableHeight })
-            pane.folderOpenerName = Qt.binding(function() { return folderRoot.folderOpenerName })
-            pane.animationStyle = "none"
-            pane.restoreView(navigator.pendingIndex, navigator.pendingScroll)
+    Item {
+        // Clip the incoming pane rather than resizing its list delegates.
+        x: navigationPane.active ? folderRoot.presentationWidth + Kirigami.Units.smallSpacing : 0
+        width: Math.max(0, folderRoot.lateralRevealExtent - Kirigami.Units.smallSpacing)
+        height: folderRoot.height
+        clip: true
+
+        Loader {
+            id: navigationPane
+            objectName: "folderNavigationPaneLoader"
+            active: folderRoot.lateralNavigation || (folderRoot.lateralRevealProgress > 0
+                && folderRoot.navigationMotionEnabled)
+            enabled: folderRoot.lateralNavigation && folderRoot.lateralRevealProgress === 1
+            Accessible.ignored: !enabled
+            opacity: folderRoot.lateralRevealProgress
+            x: (1 - folderRoot.lateralRevealProgress) * Kirigami.Units.gridUnit
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            width: folderRoot.presentationWidth
+            // Dynamic loading reuses the view without recursively instantiating its QML type.
+            // The embedded pane disables its own navigation loader.
+            source: active ? "FolderPopup.qml" : ""
+            onLoaded: {
+                const pane = navigationPane.item as FolderPopup
+                pane.embeddedNavigationPane = true
+                pane.directoryNavigationEnabled = true
+                pane.showCloseButton = false
+                pane.headerCloseButtonReserve = Qt.binding(function() { return folderRoot.headerCloseButtonReserve })
+                pane.backAvailable = true
+                pane.navigationDepth = Qt.binding(function() { return navigator.history.length })
+                pane.sessionActive = Qt.binding(function() { return folderRoot.sessionActive })
+                pane.folderItem = Qt.binding(function() { return folderRoot.folderItem })
+                pane.layoutMode = Qt.binding(function() { return folderRoot.layoutMode })
+                pane.modelOverride = navigator.childModel
+                pane.pathOverride = Qt.binding(function() { return navigator.childModel.location })
+                pane.titleOverride = Qt.binding(function() { return folderRoot.retainedNavigationTitle })
+                pane.profileIconSize = Qt.binding(function() { return folderRoot.profileIconSize })
+                pane.profileRows = Qt.binding(function() { return folderRoot.profileRows })
+                pane.profileShowLabels = Qt.binding(function() { return folderRoot.profileShowLabels })
+                pane.profileFontFamily = Qt.binding(function() { return folderRoot.profileFontFamily })
+                pane.profileFontSize = Qt.binding(function() { return folderRoot.profileFontSize })
+                pane.profileScale = Qt.binding(function() { return folderRoot.profileScale })
+                pane.textShadowsEnabled = Qt.binding(function() { return folderRoot.textShadowsEnabled })
+                pane.textShadowPercent = Qt.binding(function() { return folderRoot.textShadowPercent })
+                pane.maximumAvailableWidth = Qt.binding(function() { return folderRoot.presentationWidth })
+                pane.maximumAvailableHeight = Qt.binding(function() { return folderRoot.maximumAvailableHeight })
+                pane.folderOpenerName = Qt.binding(function() { return folderRoot.folderOpenerName })
+                pane.animationStyle = "none"
+                pane.restoreView(navigator.pendingIndex, navigator.pendingScroll)
+            }
+            onEnabledChanged: {
+                if (enabled && navigationPane.item) {
+                    Qt.callLater((navigationPane.item as FolderPopup).applyViewRestore)
+                }
+            }
         }
     }
     Connections {
@@ -541,11 +583,21 @@ Item {
         function onCloseRequested() { folderRoot.closeRequested() }
     }
 
+    DecorationCloseButton {
+        id: classicCloseButton
+        objectName: "folderPopupCloseButton"
+        anchors.right: parent.right
+        anchors.rightMargin: folderRoot.classicMargin
+        y: folderRoot.classicMargin + (classicHeader.height - height) / 2
+        z: 1
+        visible: folderRoot.showCloseButton && folderRoot.effectiveShowHeaderLabel
+        onClicked: folderRoot.closeRequested()
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: folderRoot.classicMargin
-        anchors.rightMargin: folderRoot.classicMargin + (folderRoot.lateralNavigation
-            ? folderRoot.presentationWidth + Kirigami.Units.smallSpacing : 0)
+        anchors.rightMargin: folderRoot.classicMargin + folderRoot.lateralRevealExtent
         spacing: folderRoot.classicSpacing
 
         // Folder title, centered on the popup and in the theme font weight. The
@@ -566,7 +618,8 @@ Item {
                 elide: Text.ElideMiddle
                 anchors.leftMargin: folderRoot.backAvailable ? backButton.width : 0
                 anchors.rightMargin: folderRoot.directoryNavigationEnabled
-                    && folderRoot.showCloseButton ? classicCloseButton.width : 0
+                    ? Math.max(0, folderRoot.headerCloseButtonReserve
+                        - folderRoot.lateralRevealExtent) : 0
                 horizontalAlignment: Text.AlignHCenter
                 color: Kirigami.Theme.textColor
                 shadowEnabled: folderRoot.textShadowsEnabled
@@ -576,15 +629,6 @@ Item {
                 font.family: folderRoot.effectiveFontFamily
                 font.pointSize: folderRoot.effectiveFontSize
                 font.weight: Font.DemiBold
-            }
-            // Close button.
-            DecorationCloseButton {
-                id: classicCloseButton
-                objectName: "folderPopupCloseButton"
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                onClicked: folderRoot.closeRequested()
-                visible: folderRoot.showCloseButton
             }
             Controls.ToolButton {
                 id: backButton
@@ -618,7 +662,8 @@ Item {
                 ? folderRoot.gridItems
                 : ((folderRoot.layoutMode === "list"
                     || folderRoot.layoutMode === "detailed")
-                    ? (folderRoot.directoryModel || folderRoot.apps) : [])
+                    ? (folderRoot.directoryModel || folderRoot.folderPathAvailable
+                        ? folderRoot.listItems : folderRoot.apps) : [])
             onCountChanged: Qt.callLater(folderRoot.applyViewRestore)
             Controls.BusyIndicator {
                 anchors.centerIn: parent
@@ -698,7 +743,8 @@ Item {
                         ? modelData.icon : "application-x-executable"
 
                 objectName: isOpenLocationAction
-                    ? "folderGridOpenLocationAction"
+                    ? (folderRoot.layoutMode === "grid"
+                        ? "folderGridOpenLocationAction" : "folderOpenLocationRow")
                     : "folderPopupDelegate-" + index
                 readonly property real revealOffsetX:
                     folderRoot.itemRevealOffsetX(index)
@@ -714,10 +760,10 @@ Item {
                 }
 
                 function activate() {
+                    gridView.currentIndex = index
                     if (isOpenLocationAction) {
                         folderRoot.openLocationRequested(folderRoot.folderPath)
                     } else {
-                        gridView.currentIndex = index
                         if (browsableDirectory) {
                             folderRoot.directoryActivated(modelData, index, gridView.contentY)
                         } else {
@@ -752,16 +798,46 @@ Item {
                         || folderRoot.layoutMode === "detailed"
                     spacing: 8
 
-                    Kirigami.Icon {
+                    Item {
+                        objectName: appDelegate.isOpenLocationAction ? "folderOpenLocationGlyph" : "folderEntryGlyph"
                         Layout.preferredWidth: folderRoot.effectiveIconSize
                         Layout.preferredHeight: folderRoot.effectiveIconSize
-                        source: appDelegate.displayIcon
+                        Kirigami.Icon {
+                            anchors.fill: parent
+                            visible: !appDelegate.isOpenLocationAction
+                            source: appDelegate.displayIcon
+                            Accessible.ignored: true
+                        }
+                        Rectangle {
+                            objectName: appDelegate.isOpenLocationAction ? "folderOpenLocationDisc" : ""
+                            anchors.centerIn: parent
+                            visible: appDelegate.isOpenLocationAction
+                            width: Math.round(parent.width * 0.6)
+                            height: width
+                            radius: width / 2
+                            color: Qt.alpha(Kirigami.Theme.backgroundColor, 0.88)
+                            border.color: Qt.alpha(Kirigami.Theme.textColor, 0.12)
+                            border.width: 1
+                            antialiasing: true
+                            Accessible.ignored: true
+                        }
+                        Kirigami.Icon {
+                            objectName: appDelegate.isOpenLocationAction ? "folderOpenLocationArrow" : ""
+                            anchors.centerIn: parent
+                            visible: appDelegate.isOpenLocationAction
+                            width: Math.round(parent.width * 0.34)
+                            height: width
+                            source: "go-next-symbolic"
+                            color: Kirigami.Theme.textColor
+                            Accessible.ignored: true
+                        }
                     }
                     Column {
                         Layout.fillWidth: true
                         visible: folderRoot.showItemLabels
                         PopupMarqueeLabel {
-                            objectName: "folderPopupListLabel-" + appDelegate.index
+                            objectName: appDelegate.isOpenLocationAction
+                                ? "folderOpenLocationLabel" : "folderPopupListLabel-" + appDelegate.index
                             text: appDelegate.displayName
                             hovered: itemMouse.containsMouse
                             focused: itemMouse.activeFocus
@@ -783,7 +859,7 @@ Item {
                             opacity: 0.6
                             elide: Text.ElideRight
                             width: parent.width
-                            visible: folderRoot.layoutMode === "detailed"
+                            visible: folderRoot.layoutMode === "detailed" && !appDelegate.isOpenLocationAction
                         }
                     }
                     Kirigami.Icon {
@@ -862,7 +938,8 @@ Item {
                 MouseArea {
                     id: itemMouse
                     objectName: appDelegate.isOpenLocationAction
-                        ? "folderGridOpenLocationPointer"
+                        ? (folderRoot.layoutMode === "grid"
+                            ? "folderGridOpenLocationPointer" : "folderOpenLocationAction")
                         : "folderPopupPointer-" + appDelegate.index
                     anchors.fill: parent
                     hoverEnabled: true
@@ -906,9 +983,9 @@ Item {
                             }
                             event.accepted = true
                         }
-                        if (event.key === Qt.Key_Menu
+                        if (!appDelegate.isOpenLocationAction && (event.key === Qt.Key_Menu
                                 || (event.key === Qt.Key_F10
-                                    && (event.modifiers & Qt.ShiftModifier))) {
+                                    && (event.modifiers & Qt.ShiftModifier)))) {
                             folderRoot.appContextMenuRequested(appDelegate.modelData)
                             event.accepted = true
                         }
@@ -958,139 +1035,6 @@ Item {
             onCloseRequested: folderRoot.closeRequested()
         }
 
-        // Foot action for List and Detailed. Grid integrates this action as its
-        // final cell, while Fan closes its arc with a specialized row.
-        //
-        // The slot owns the layout gate and gives the test a stable handle: the
-        // offscreen harness reports `visible` as false for every item, so the
-        // hidden state is checked through the slot, `enabled`, the focus flag
-        // and the reserved height instead.
-        Item {
-            id: openLocationSlot
-
-            objectName: "folderOpenLocationSlot"
-            visible: folderRoot.separateLocationRowActive
-            Layout.fillWidth: true
-            Layout.preferredHeight: visible
-                ? folderRoot.openLocationRowHeight : 0
-
-            Controls.ItemDelegate {
-                id: openLocationDelegate
-
-                anchors.fill: parent
-                objectName: "folderOpenLocationAction"
-                enabled: folderRoot.separateLocationRowActive
-                activeFocusOnTab: folderRoot.separateLocationRowActive
-                hoverEnabled: true
-                padding: 0
-                background: Item {}
-                Accessible.name: openLocationLabel.text
-                // qmllint disable unqualified
-                Accessible.description: i18nc("@info:accessible",
-                    "Open this folder in the file manager")
-                // qmllint enable unqualified
-                onClicked: folderRoot.openLocationRequested(folderRoot.folderPath)
-                Keys.onReturnPressed:
-                    folderRoot.openLocationRequested(folderRoot.folderPath)
-                Keys.onEnterPressed:
-                    folderRoot.openLocationRequested(folderRoot.folderPath)
-                Keys.onSpacePressed:
-                    folderRoot.openLocationRequested(folderRoot.folderPath)
-                // Same as the fan: the delegate owns the click, so the hand is
-                // asked for with a hover handler instead of a mouse area.
-                HoverHandler {
-                    objectName: "folderOpenLocationCursor"
-                    cursorShape: Qt.PointingHandCursor
-                }
-
-                contentItem: Item {
-                    id: openLocationContent
-
-                    // The glyph box is as wide as an item icon, so the disc inside
-                    // keeps the proportion the closing row of the fan uses.
-                    readonly property int actionIconSize: Math.max(16,
-                        Math.round(folderRoot.effectiveIconSize))
-
-                    PunchiMenuComponents.PunchiMenuItemHighlight {
-                        objectName: "folderOpenLocationHighlight"
-                        anchors.fill: parent
-                        anchors.margins: Kirigami.Units.smallSpacing / 2
-                        radius: Kirigami.Units.cornerRadius * 2
-                        hovered: openLocationDelegate.hovered
-                        focused: openLocationDelegate.visualFocus
-                        pressed: openLocationDelegate.pressed
-                        motionEnabled: folderRoot.motionEnabled
-                        transformSelf: false
-                    }
-
-                    RowLayout {
-                        anchors.centerIn: parent
-                        spacing: Kirigami.Units.smallSpacing
-
-                        // Glyph of the action, the same shape the closing row of
-                        // the fan shows: a disc of the themed surface with an
-                        // arrow inside. The icon of the container is not used here
-                        // any more, because this row is an action and has to read
-                        // the same in every presentation that offers it. The
-                        // colours come from the theme, so a light and a dark theme
-                        // both stay readable.
-                        Item {
-                            objectName: "folderOpenLocationGlyph"
-                            Layout.preferredWidth: openLocationContent.actionIconSize
-                            Layout.preferredHeight: openLocationContent.actionIconSize
-
-                            Rectangle {
-                                objectName: "folderOpenLocationDisc"
-                                anchors.centerIn: parent
-                                width: Math.round(parent.width * 0.6)
-                                height: width
-                                radius: width / 2
-                                color: Qt.alpha(Kirigami.Theme.backgroundColor, 0.88)
-                                border.color: Qt.alpha(Kirigami.Theme.textColor, 0.12)
-                                border.width: 1
-                                antialiasing: true
-                            }
-
-                            Kirigami.Icon {
-                                objectName: "folderOpenLocationArrow"
-                                anchors.centerIn: parent
-                                width: Math.round(parent.width * 0.34)
-                                height: width
-                                // Same source as the closing row of the fan: one
-                                // action, one glyph.
-                                source: "go-next-symbolic"
-                                color: Kirigami.Theme.textColor
-                                Accessible.ignored: true
-                            }
-                        }
-
-                        PunchiMenuComponents.PunchiMenuTextShadowLabel {
-                            id: openLocationLabel
-                            objectName: "folderOpenLocationLabel"
-                            // The row names the file manager the desktop really
-                            // opens a folder with, the way the macOS reference
-                            // names its Finder, and stays a short action word when
-                            // that association is unknown.
-                            text: folderRoot.openLocationActionText
-                            color: Kirigami.Theme.textColor
-                            shadowEnabled: folderRoot.textShadowsEnabled
-                            shadowPercent: folderRoot.textShadowPercent
-                            font.family: folderRoot.effectiveFontFamily
-                            font.pointSize: folderRoot.effectiveFontSize
-                            // Same weight as the item labels and as the closing row
-                            // of the fan, which plays this same role.
-                            font.weight: Font.DemiBold
-                            wrapMode: Text.NoWrap
-                            elide: Text.ElideMiddle
-                            Layout.maximumWidth: Math.max(0,
-                                openLocationContent.width
-                                    - openLocationContent.actionIconSize
-                                    - Kirigami.Units.smallSpacing * 4)
-                        }
-                    }
-                }
-            }
-        }
     }
 
 }

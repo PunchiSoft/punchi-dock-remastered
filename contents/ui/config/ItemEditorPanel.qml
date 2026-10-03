@@ -190,11 +190,11 @@ GridLayout {
 
         Layout.fillWidth: true
         Layout.columnSpan: root.showTypeSelector ? 1 : 2
-        // When the caller owns the type, this row has no content except for a
-        // Container's view selector. Keeping an empty row in the two-column grid
-        // shifts every following label and field by one cell.
-        visible: !root.dynamicApplicationsItem
-            && (root.showTypeSelector || root.itemModeValue === "container")
+        // The caller may own the type, as the add dialog does. When it does, the
+        // row disappears so the two-column grid gains no empty cell. Every other
+        // choice of the type lives in its own row below, so a single row never
+        // carries two unrelated choices.
+        visible: !root.dynamicApplicationsItem && root.showTypeSelector
         spacing: Kirigami.Units.smallSpacing
 
         Controls.ComboBox {
@@ -212,29 +212,6 @@ GridLayout {
                 { "text": root.spacerText, "value": "spacer" }
             ]
             onActivated: root.itemModeChanged(currentValue)
-        }
-
-        Controls.Label {
-            visible: root.itemModeValue === "container"
-            text: root.viewLabel
-            opacity: 0.75
-            verticalAlignment: Text.AlignVCenter
-        }
-
-        Controls.ComboBox {
-            id: containerLayout
-            Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-            visible: root.itemModeValue === "container"
-            enabled: root.selectedItemType === "folder"
-            textRole: "text"
-            valueRole: "value"
-            model: [
-                { "text": root.gridText, "value": "grid" },
-                { "text": root.listText, "value": "list" },
-                { "text": root.detailedText, "value": "detailed" },
-                { "text": root.fanText, "value": "fan" }
-            ]
-            onActivated: root.containerLayoutChanged(currentValue)
         }
     }
 
@@ -297,12 +274,29 @@ GridLayout {
             onAccepted: root.formChanged()
             onEditingFinished: root.formChanged()
         }
+    }
 
-        Controls.Label {
-            text: root.iconLabel
-            opacity: 0.75
-            verticalAlignment: Text.AlignVCenter
-        }
+    // The icon gets its own row, aligned with the labels above, instead of a
+    // caption pinned to the right of the name field. The value is editable, as in
+    // the trash options, and the button opens the shared picker.
+    Controls.Label {
+        objectName: "itemEditorIconLabel"
+
+        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+        Layout.preferredWidth: Kirigami.Units.gridUnit * 5
+        visible: root.itemModeValue === "app" || root.itemModeValue === "container" || root.itemModeValue === "note"
+        text: root.iconLabel
+        horizontalAlignment: Text.AlignLeft
+        opacity: 0.75
+    }
+
+    RowLayout {
+        objectName: "itemEditorIconRow"
+
+        Layout.fillWidth: true
+        visible: root.itemModeValue === "app" || root.itemModeValue === "container" || root.itemModeValue === "note"
+        enabled: root.selectedItemType === "app" || root.selectedItemType === "folder" || root.selectedItemType === "note"
+        spacing: Kirigami.Units.smallSpacing
 
         Controls.Button {
             HoverHandler { cursorShape: Qt.PointingHandCursor }
@@ -317,7 +311,7 @@ GridLayout {
 
         Controls.TextField {
             id: appIconName
-            visible: false
+            Layout.fillWidth: true
             placeholderText: "firefox"
             onEditingFinished: root.formChanged()
         }
@@ -407,6 +401,34 @@ GridLayout {
     }
 
     Controls.Label {
+        objectName: "itemEditorViewLabel"
+
+        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+        Layout.preferredWidth: Kirigami.Units.gridUnit * 5
+        visible: root.itemModeValue === "container"
+        text: root.viewLabel
+        horizontalAlignment: Text.AlignLeft
+        opacity: 0.75
+    }
+
+    Controls.ComboBox {
+        id: containerLayout
+        Layout.alignment: Qt.AlignLeft
+        Layout.preferredWidth: Kirigami.Units.gridUnit * 8
+        visible: root.itemModeValue === "container"
+        enabled: root.selectedItemType === "folder"
+        textRole: "text"
+        valueRole: "value"
+        model: [
+            { "text": root.gridText, "value": "grid" },
+            { "text": root.listText, "value": "list" },
+            { "text": root.detailedText, "value": "detailed" },
+            { "text": root.fanText, "value": "fan" }
+        ]
+        onActivated: root.containerLayoutChanged(currentValue)
+    }
+
+    Controls.Label {
         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         Layout.preferredWidth: Kirigami.Units.gridUnit * 5
         visible: root.itemModeValue === "container"
@@ -434,8 +456,11 @@ GridLayout {
             onActivated: root.containerSourceChanged(currentValue)
         }
 
+        // A reload only makes sense for a content source that is discovered; with
+        // the manual source it would only sit disabled, so it is hidden.
         Controls.Button {
             HoverHandler { cursorShape: Qt.PointingHandCursor }
+            visible: root.selectedItemType === "folder" && containerSource.currentValue !== "manual"
             text: root.refreshContentText
             icon.name: "view-refresh-symbolic"
             enabled: root.selectedItemType === "folder" && containerSource.currentValue !== "manual"

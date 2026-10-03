@@ -525,6 +525,12 @@ Item {
     onVisibleRowCountChanged: scheduleSettleAtBeginning()
     onScrollEnabledChanged: reconcileAfterModelChange()
     onDisplayedItemCountChanged: reconcileAfterModelChange()
+    onEnabledChanged: {
+        if (enabled) {
+            root.reconcileAfterModelChange()
+        }
+    }
+    Component.onDestruction: root.enabled = false
     Component.onCompleted: {
         refreshFittedLabels()
         scheduleSettleAtBeginning()
@@ -697,16 +703,23 @@ Item {
     // has to lay its content out again first, so the correction is deferred like
     // the resting position.
     function reconcileAfterModelChange() {
-        Qt.callLater(function() {
-            if (displayedItemCount <= 0) {
-                fanList.currentIndex = -1
-                root.focusedItemIndex = -1
-            } else if (root.focusedItemIndex >= displayedItemCount) {
-                root.focusItem(displayedItemCount - 1,
-                    Qt.OtherFocusReason)
-            }
-            scheduleSettleAtBeginning()
-        })
+        if (root.enabled) {
+            Qt.callLater(root.applyModelChange)
+        }
+    }
+
+    function applyModelChange() {
+        if (!root.enabled) {
+            return
+        }
+        if (displayedItemCount <= 0) {
+            fanList.currentIndex = -1
+            root.focusedItemIndex = -1
+        } else if (root.focusedItemIndex >= displayedItemCount) {
+            root.focusItem(displayedItemCount - 1,
+                Qt.OtherFocusReason)
+        }
+        root.scheduleSettleAtBeginning()
     }
 
     // Resting position of the content: the band starts after the reserve of the
@@ -717,15 +730,18 @@ Item {
     // It holds whether or not the content overflows its viewport: the reserve is
     // part of the list content, so the offset that shows it is never clipped.
     function settleAtBeginning() {
-        fanList.contentY = -(leadingOverhang + bandStartOffset)
+        if (root.enabled) {
+            fanList.contentY = -(leadingOverhang + bandStartOffset)
+        }
     }
 
     // The list lays its content out again after a model or a row change, so the
     // resting position is applied once that pass is over.
     function scheduleSettleAtBeginning() {
-        Qt.callLater(function() {
-            settleAtBeginning()
-        })
+        // An inactive presentation must not enqueue work during pane teardown.
+        if (root.enabled) {
+            Qt.callLater(root.settleAtBeginning)
+        }
     }
 
     ListView {

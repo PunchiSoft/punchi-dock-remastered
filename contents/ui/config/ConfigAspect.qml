@@ -555,14 +555,6 @@ KCM.SimpleKCM {
             text: i18n("Dock background theme")
         }
 
-        Kirigami.InlineMessage {
-            visible: !page.inPanel
-            type: Kirigami.MessageType.Information
-            text: i18n("Imported themes are stored in the Punchi Dock Remastered user library and currently apply only to a floating dock. Plasma panels keep their native background.")
-            Layout.fillWidth: true
-            Layout.maximumWidth: page.contentWidthHint
-        }
-
         // qmllint disable unqualified
         RowLayout {
             Kirigami.FormData.label: i18n("Dock orientation:")
@@ -583,7 +575,7 @@ KCM.SimpleKCM {
         }
 
         RowLayout {
-            Kirigami.FormData.label: i18n("Background:")
+            Kirigami.FormData.label: i18n("Background theme:")
             Layout.maximumWidth: page.contentWidthHint
 
             Controls.ComboBox {
@@ -600,6 +592,14 @@ KCM.SimpleKCM {
                 }
 
             }
+        }
+
+        Kirigami.InlineMessage {
+            visible: !page.inPanel
+            type: Kirigami.MessageType.Information
+            text: i18n("Imported themes are stored in the Punchi Dock Remastered user library and currently apply only to a floating dock. Plasma panels keep their native background.")
+            Layout.fillWidth: true
+            Layout.maximumWidth: page.contentWidthHint
         }
         // qmllint enable unqualified
 

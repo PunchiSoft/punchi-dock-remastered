@@ -62,6 +62,7 @@ target_sources(punchidockintegration PRIVATE
     dropurlpolicy.h
     foldernavigationmodel.cpp
     foldernavigationmodel.h
+    folderpopupentriesmodel.h
     mediaartworkresolver.cpp
     mediaartworkresolver.h
     launcherdragcontroller.cpp

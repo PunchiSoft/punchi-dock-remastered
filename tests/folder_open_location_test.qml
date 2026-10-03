@@ -10,6 +10,7 @@ TestCase {
 
     name: "FolderOpenLocation"
     when: windowShown
+    visible: true
     width: 640
     height: 480
 
@@ -43,15 +44,6 @@ TestCase {
             return row !== null
         })
         return row
-    }
-
-    function actionSlot() {
-        let slot = null
-        tryVerify(function() {
-            slot = findChild(folderPopup, "folderOpenLocationSlot")
-            return slot !== null
-        })
-        return slot
     }
 
     function fanAction() {
@@ -395,8 +387,8 @@ TestCase {
             "folderGridOpenLocationLabel").text), "Open in Dolphin")
         compare(findChild(action, "folderGridOpenLocationArrow").source,
             "go-next-symbolic")
-        verify(!actionRow().enabled,
-            "The hidden footer must not remain focusable in Grid")
+        compare(findChild(folderPopup, "folderOpenLocationAction"), null,
+            "Grid must not expose a second location action outside its model")
         compare(findChild(folderPopup, "folderFanLocationAction"), null)
     }
 
@@ -615,55 +607,97 @@ TestCase {
         compare(folderPopup.classicItemCount, folderPopup.itemCount + 1)
     }
 
-    // List and Detailed retain the separate row. Grid owns a final cell and Fan
-    // owns the final arc row, so neither of them may expose this footer.
-    function test_listAndDetailedKeepTheChromeAction() {
-        folderPopup.layoutMode = "list"
-        folderPopup.folderOpenerName = ""
+    function test_listAndDetailedAppendTheActionToTheCollection() {
         folderPopup.folderItem = folderWithLocation()
-        wait(0)
+        for (const mode of ["list", "detailed"]) {
+            folderPopup.layoutMode = mode
+            folderPopup.folderOpenerName = ""
+            const pointer = actionRow()
+            const grid = findChild(folderPopup, "folderPopupGridView")
+            const row = findChild(folderPopup, "folderOpenLocationRow")
+            compare(folderPopup.openLocationRowHeight, 0,
+                "The action must not reserve a fixed footer")
+            compare(folderPopup.classicItemCount, folderPopup.itemCount + 1)
+            tryCompare(grid, "count", folderPopup.itemCount + 1)
+            compare(row.index, folderPopup.itemCount,
+                "The location action must be the final collection row")
+            compare(row.parent, grid.contentItem,
+                "The action must scroll with the collection")
+            compare(findChild(folderPopup, "folderOpenLocationSlot"), null)
+            compare(String(findChild(row, "folderOpenLocationLabel").text), "Open")
+            folderPopup.folderOpenerName = "Dolphin"
+            compare(String(findChild(row, "folderOpenLocationLabel").text), "Open in Dolphin")
+            verify(findChild(row, "folderOpenLocationGlyph") !== null)
+            compare(String(findChild(row, "folderOpenLocationDisc").color),
+                String(Qt.alpha(Kirigami.Theme.backgroundColor, 0.88)))
+            compare(findChild(row, "folderOpenLocationArrow").source, "go-next-symbolic")
+            verify(pointer.activeFocusOnTab)
+            compare(pointer.Accessible.name, "Open in Dolphin")
+            compare(pointer.Accessible.description, "Open this folder in the file manager")
+            compare(findChild(folderPopup, "folderFanLocationAction"), null)
 
-        const label = findChild(folderPopup, "folderOpenLocationLabel")
-        verify(label !== null, "The chrome action needs its own caption")
-        compare(String(label.text), "Open")
-
-        const glyph = findChild(folderPopup, "folderOpenLocationGlyph")
-        verify(glyph !== null, "The chrome action needs the glyph of the reference")
-        const disc = findChild(folderPopup, "folderOpenLocationDisc")
-        verify(disc !== null, "The glyph needs the disc of the reference")
-        compare(String(disc.color),
-            String(Qt.alpha(Kirigami.Theme.backgroundColor, 0.88)),
-            "The glyph disc must be the same themed surface as the fan glyph")
-        const arrow = findChild(folderPopup, "folderOpenLocationArrow")
-        verify(arrow !== null, "The glyph needs the arrow of the reference")
-        compare(arrow.source, "go-next-symbolic",
-            "One action must keep one glyph in the chrome and in the fan")
-
-        folderPopup.folderOpenerName = "Dolphin"
-        for (let index = 0; index < 2; index++) {
-            folderPopup.layoutMode = index === 0 ? "list" : "detailed"
-            wait(0)
-            verify(folderPopup.openLocationRowHeight > 0,
-                "The " + folderPopup.layoutMode
-                    + " presentation must keep the row")
-            compare(String(findChild(folderPopup,
-                    "folderOpenLocationLabel").text), "Open in Dolphin",
-                "The " + folderPopup.layoutMode
-                    + " presentation must share the caption of the action")
-            compare(findChild(folderPopup, "folderFanLocationAction"), null,
-                "Only the fan presentation may render the fan action")
+            const previous = findChild(folderPopup, "folderPopupPointer-1")
+            previous.forceActiveFocus()
+            keyClick(Qt.Key_Down)
+            tryCompare(grid, "currentIndex", row.index)
+            tryCompare(pointer, "activeFocus", true)
+            openSpy.clear()
+            keyClick(Qt.Key_Return)
+            compare(openSpy.count, 1)
+            compare(openSpy.signalArguments[0][0], "~")
+            keyClick(Qt.Key_Up)
+            tryCompare(grid, "currentIndex", 1)
+            tryCompare(previous, "activeFocus", true)
+            openSpy.clear()
+            waitForRendering(pointer)
+            mouseMove(pointer, pointer.width / 2, pointer.height / 2)
+            mouseClick(pointer, pointer.width / 2, pointer.height / 2)
+            tryCompare(openSpy, "count", 1)
+            compare(openSpy.signalArguments[0][0], "~")
+            compare(grid.currentIndex, row.index)
         }
+        for (const mode of ["fan", "grid"]) {
+            folderPopup.layoutMode = mode
+            wait(0)
+            compare(folderPopup.openLocationRowHeight, 0)
+            compare(findChild(folderPopup, "folderOpenLocationAction"), null)
+        }
+    }
 
-        // The fan keeps its own closing row: the chrome row of the other
-        // presentations reserves no height there.
-        folderPopup.layoutMode = "fan"
-        wait(0)
-        compare(folderPopup.openLocationRowHeight, 0,
-            "The fan must not reserve the height of the chrome row")
-
-        folderPopup.layoutMode = "grid"
-        wait(0)
-        compare(folderPopup.openLocationRowHeight, 0,
-            "The Grid action must not reserve the chrome row")
+    function test_listAndDetailedScrollToTheFinalAction() {
+        for (const mode of ["list", "detailed"]) {
+            folderPopup.layoutMode = mode
+            folderPopup.profileAutoLayout = false
+            folderPopup.profileRows = 3
+            folderPopup.maximumAvailableHeight = 300
+            folderPopup.folderItem = folderWithGridCellCount(25)
+            const grid = findChild(folderPopup, "folderPopupGridView")
+            tryCompare(grid, "count", 25)
+            verify(folderPopup.scrollRequired)
+            grid.positionViewAtBeginning()
+            let first = null
+            tryVerify(function() {
+                first = findChild(folderPopup, "folderPopupPointer-0")
+                return first !== null
+            })
+            waitForRendering(first)
+            first.forceActiveFocus()
+            for (let index = 1; index < grid.count; ++index) {
+                keyClick(Qt.Key_Down)
+                tryCompare(grid, "currentIndex", index)
+            }
+            const row = findChild(folderPopup, "folderOpenLocationRow")
+            const pointer = actionRow()
+            compare(row.index, 24)
+            tryCompare(pointer, "activeFocus", true)
+            verify(grid.contentY > 0)
+            const position = row.mapToItem(grid, 0, 0)
+            verify(position.y >= -1 && position.y + row.height <= grid.height + 1,
+                "The final action must fit inside the scrolled viewport")
+            openSpy.clear()
+            keyClick(Qt.Key_Space)
+            compare(openSpy.count, 1)
+            compare(openSpy.signalArguments[0][0], "~/Downloads")
+        }
     }
 }

@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.7.69\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7.70\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-02 23:54-0300\n"
+"POT-Creation-Date: 2026-10-03 16:55-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -185,7 +185,7 @@ msgid_plural "%1 more"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/components/FolderFanView.qml:1098
+#: contents/ui/components/FolderFanView.qml:1114
 msgid "%1 more entry is not shown"
 msgid_plural "%1 more entries are not shown"
 msgstr[0] ""
@@ -247,8 +247,8 @@ msgid "%1 px"
 msgstr ""
 
 #: contents/ui/config/ConfigItems.qml:1045
-#: contents/ui/config/ItemActionEditor.qml:45
-#: contents/ui/config/ItemActionEditor.qml:170
+#: contents/ui/config/ItemActionEditor.qml:55
+#: contents/ui/config/ItemActionEditor.qml:180
 #: contents/ui/config/ItemConfigurationDialog.qml:781
 #: contents/ui/config/components/ActionDialog.qml:94
 msgid "%1 rows"
@@ -945,8 +945,8 @@ msgstr ""
 #: contents/ui/components/DockItem.qml:1479
 #: contents/ui/components/DockItem.qml:1486
 #: contents/ui/components/DockItemsController.qml:792
-#: contents/ui/components/FolderFanView.qml:830
-#: contents/ui/components/FolderPopup.qml:876
+#: contents/ui/components/FolderFanView.qml:846
+#: contents/ui/components/FolderPopup.qml:953
 #: contents/ui/config/code/itemTypeCatalog.js:45
 msgid "Application"
 msgstr ""
@@ -1209,7 +1209,7 @@ msgctxt "@action:button"
 msgid "Back"
 msgstr ""
 
-#: contents/ui/components/FolderPopup.qml:597
+#: contents/ui/components/FolderPopup.qml:641
 msgctxt "@action:button folder navigation"
 msgid "Back"
 msgstr ""
@@ -1262,8 +1262,8 @@ msgctxt "@label:slider"
 msgid "Background opacity:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:586
-msgid "Background:"
+#: contents/ui/config/ConfigAspect.qml:578
+msgid "Background theme:"
 msgstr ""
 
 #: contents/ui/config/ConfigAspect.qml:1095
@@ -1358,7 +1358,7 @@ msgstr ""
 msgid "Bring window to front"
 msgstr ""
 
-#: contents/ui/config/ItemEditorPanel.qml:456
+#: contents/ui/config/ItemEditorPanel.qml:481
 msgctxt "@option:check folder container"
 msgid "Browse subfolders"
 msgstr ""
@@ -2423,11 +2423,11 @@ msgstr ""
 msgid "Dock motion speed:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:580
+#: contents/ui/config/ConfigAspect.qml:572
 msgid "Dock orientation"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:568
+#: contents/ui/config/ConfigAspect.qml:560
 msgid "Dock orientation:"
 msgstr ""
 
@@ -2809,7 +2809,7 @@ msgstr ""
 msgid "Flow to the right"
 msgstr ""
 
-#: contents/ui/components/FolderPopup.qml:565
+#: contents/ui/components/FolderPopup.qml:617
 #: contents/ui/config/ConfigItems.qml:1037
 #: contents/ui/config/ItemConfigurationDialog.qml:686
 msgid "Folder"
@@ -3244,7 +3244,7 @@ msgstr ""
 msgid "Import..."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:561
+#: contents/ui/config/ConfigAspect.qml:600
 msgid ""
 "Imported themes are stored in the Punchi Dock Remastered user library and "
 "currently apply only to a floating dock. Plasma panels keep their native "
@@ -3468,7 +3468,7 @@ msgstr ""
 msgid "Launch app"
 msgstr ""
 
-#: contents/ui/components/FolderFanView.qml:833
+#: contents/ui/components/FolderFanView.qml:849
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:476
 #: contents/ui/components/punchimenu/PunchiMenuFolderView.qml:284
 msgctxt "@info:accessible"
@@ -4334,7 +4334,7 @@ msgid "Opaque"
 msgstr ""
 
 #: contents/ui/components/FolderFanView.qml:433
-#: contents/ui/components/FolderPopup.qml:112
+#: contents/ui/components/FolderPopup.qml:134
 msgctxt "@action:button open the container"
 msgid "Open"
 msgstr ""
@@ -4386,7 +4386,7 @@ msgctxt "@action:button"
 msgid "Open display settings"
 msgstr ""
 
-#: contents/ui/components/FolderPopup.qml:111
+#: contents/ui/components/FolderPopup.qml:133
 msgctxt "@action:button open the folder in the file manager"
 msgid "Open in %1"
 msgstr ""
@@ -4452,9 +4452,8 @@ msgctxt "@info:accessible"
 msgid "Open this application folder"
 msgstr ""
 
-#: contents/ui/components/FolderFanView.qml:1096
-#: contents/ui/components/FolderPopup.qml:880
-#: contents/ui/components/FolderPopup.qml:990
+#: contents/ui/components/FolderFanView.qml:1112
+#: contents/ui/components/FolderPopup.qml:957
 msgctxt "@info:accessible"
 msgid "Open this folder in the file manager"
 msgstr ""
@@ -5462,7 +5461,7 @@ msgstr ""
 msgid "Show reflections below dock items"
 msgstr ""
 
-#: contents/ui/config/ItemEditorPanel.qml:392
+#: contents/ui/config/ItemEditorPanel.qml:386
 msgid "Show separator"
 msgstr ""
 
@@ -5866,7 +5865,7 @@ msgctxt "@info"
 msgid "The folder change could not be applied. Please try again."
 msgstr ""
 
-#: src/systemdiscovery.cpp:464 src/systemdiscovery.cpp:866
+#: src/systemdiscovery.cpp:465 src/systemdiscovery.cpp:866
 msgid "The folder location is invalid."
 msgstr ""
 
@@ -6671,7 +6670,7 @@ msgid "pacman is required on Arch-family distributions"
 msgstr ""
 
 #: contents/ui/config/ConfigItems.qml:1044
-#: contents/ui/config/ItemActionEditor.qml:44
+#: contents/ui/config/ItemActionEditor.qml:54
 #: contents/ui/config/ItemConfigurationDialog.qml:780
 #: contents/ui/config/components/ActionDialog.qml:93
 msgid "rows"

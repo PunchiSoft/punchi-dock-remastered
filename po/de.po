@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.29\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-02 23:38-0300\n"
+"POT-Creation-Date: 2026-10-03 16:55-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: German\n"
@@ -193,7 +193,7 @@ msgid_plural "%1 more"
 msgstr[0] "%1 weitere"
 msgstr[1] "%1 weitere"
 
-#: contents/ui/components/FolderFanView.qml:1098
+#: contents/ui/components/FolderFanView.qml:1114
 msgid "%1 more entry is not shown"
 msgid_plural "%1 more entries are not shown"
 msgstr[0] "%1 weiterer Eintrag wird nicht angezeigt"
@@ -258,8 +258,8 @@ msgid "%1 px"
 msgstr "%1 px"
 
 #: contents/ui/config/ConfigItems.qml:1045
-#: contents/ui/config/ItemActionEditor.qml:45
-#: contents/ui/config/ItemActionEditor.qml:170
+#: contents/ui/config/ItemActionEditor.qml:55
+#: contents/ui/config/ItemActionEditor.qml:180
 #: contents/ui/config/ItemConfigurationDialog.qml:781
 #: contents/ui/config/components/ActionDialog.qml:94
 msgid "%1 rows"
@@ -1044,8 +1044,8 @@ msgstr "Nur Miniprogramme"
 #: contents/ui/components/DockItem.qml:1479
 #: contents/ui/components/DockItem.qml:1486
 #: contents/ui/components/DockItemsController.qml:792
-#: contents/ui/components/FolderFanView.qml:830
-#: contents/ui/components/FolderPopup.qml:876
+#: contents/ui/components/FolderFanView.qml:846
+#: contents/ui/components/FolderPopup.qml:953
 #: contents/ui/config/code/itemTypeCatalog.js:45
 msgid "Application"
 msgstr "Bewerbung"
@@ -1319,7 +1319,7 @@ msgctxt "@action:button"
 msgid "Back"
 msgstr "Zurück"
 
-#: contents/ui/components/FolderPopup.qml:597
+#: contents/ui/components/FolderPopup.qml:641
 msgctxt "@action:button folder navigation"
 msgid "Back"
 msgstr "Zurück"
@@ -1373,9 +1373,9 @@ msgctxt "@label:slider"
 msgid "Background opacity:"
 msgstr "Hintergrunddeckkraft:"
 
-#: contents/ui/config/ConfigAspect.qml:586
-msgid "Background:"
-msgstr "Hintergrund:"
+#: contents/ui/config/ConfigAspect.qml:578
+msgid "Background theme:"
+msgstr "Hintergrunddesign:"
 
 #: contents/ui/config/ConfigAspect.qml:1095
 msgid "Badge color:"
@@ -1471,7 +1471,7 @@ msgstr "Hüpfen"
 msgid "Bring window to front"
 msgstr "Fenster nach vorne bringen"
 
-#: contents/ui/config/ItemEditorPanel.qml:456
+#: contents/ui/config/ItemEditorPanel.qml:481
 msgctxt "@option:check folder container"
 msgid "Browse subfolders"
 msgstr "Unterordner durchsuchen"
@@ -2613,11 +2613,11 @@ msgstr "Bewegungsgeschwindigkeit des Docks"
 msgid "Dock motion speed:"
 msgstr "Bewegungsgeschwindigkeit des Docks:"
 
-#: contents/ui/config/ConfigAspect.qml:580
+#: contents/ui/config/ConfigAspect.qml:572
 msgid "Dock orientation"
 msgstr "Dockausrichtung"
 
-#: contents/ui/config/ConfigAspect.qml:568
+#: contents/ui/config/ConfigAspect.qml:560
 msgid "Dock orientation:"
 msgstr "Dockausrichtung:"
 
@@ -3029,7 +3029,7 @@ msgstr "Nach links fließen"
 msgid "Flow to the right"
 msgstr "Nach rechts fließen"
 
-#: contents/ui/components/FolderPopup.qml:565
+#: contents/ui/components/FolderPopup.qml:617
 #: contents/ui/config/ConfigItems.qml:1037
 #: contents/ui/config/ItemConfigurationDialog.qml:686
 msgid "Folder"
@@ -3487,7 +3487,7 @@ msgstr "Importieren Sie ein Punchi Dock JSON-Design"
 msgid "Import..."
 msgstr "Importieren..."
 
-#: contents/ui/config/ConfigAspect.qml:561
+#: contents/ui/config/ConfigAspect.qml:600
 msgid ""
 "Imported themes are stored in the Punchi Dock Remastered user library and "
 "currently apply only to a floating dock. Plasma panels keep their native "
@@ -3724,7 +3724,7 @@ msgstr "Eine Anwendung starten"
 msgid "Launch app"
 msgstr "App starten"
 
-#: contents/ui/components/FolderFanView.qml:833
+#: contents/ui/components/FolderFanView.qml:849
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:476
 #: contents/ui/components/punchimenu/PunchiMenuFolderView.qml:284
 msgctxt "@info:accessible"
@@ -4626,7 +4626,7 @@ msgid "Opaque"
 msgstr "Undurchsichtig"
 
 #: contents/ui/components/FolderFanView.qml:433
-#: contents/ui/components/FolderPopup.qml:112
+#: contents/ui/components/FolderPopup.qml:134
 msgctxt "@action:button open the container"
 msgid "Open"
 msgstr "Öffnen"
@@ -4681,7 +4681,7 @@ msgctxt "@action:button"
 msgid "Open display settings"
 msgstr "Anzeigeeinstellungen öffnen"
 
-#: contents/ui/components/FolderPopup.qml:111
+#: contents/ui/components/FolderPopup.qml:133
 msgctxt "@action:button open the folder in the file manager"
 msgid "Open in %1"
 msgstr "In %1 öffnen"
@@ -4752,9 +4752,8 @@ msgctxt "@info:accessible"
 msgid "Open this application folder"
 msgstr "Diesen Anwendungsordner öffnen"
 
-#: contents/ui/components/FolderFanView.qml:1096
-#: contents/ui/components/FolderPopup.qml:880
-#: contents/ui/components/FolderPopup.qml:990
+#: contents/ui/components/FolderFanView.qml:1112
+#: contents/ui/components/FolderPopup.qml:957
 msgctxt "@info:accessible"
 msgid "Open this folder in the file manager"
 msgstr "Diesen Ordner im Dateiverwalter öffnen"
@@ -5800,7 +5799,7 @@ msgstr "Zuletzt verwendete Anwendungen anzeigen"
 msgid "Show reflections below dock items"
 msgstr "Reflexionen unter Dock-Elementen anzeigen"
 
-#: contents/ui/config/ItemEditorPanel.qml:392
+#: contents/ui/config/ItemEditorPanel.qml:386
 msgid "Show separator"
 msgstr "Trennzeichen anzeigen"
 
@@ -6245,7 +6244,7 @@ msgid "The folder change could not be applied. Please try again."
 msgstr ""
 "Die Ordneränderung konnte nicht angewendet werden. Versuchen Sie es erneut."
 
-#: src/systemdiscovery.cpp:464 src/systemdiscovery.cpp:866
+#: src/systemdiscovery.cpp:465 src/systemdiscovery.cpp:866
 msgid "The folder location is invalid."
 msgstr "Der Ordnerspeicherort ist ungültig."
 
@@ -7237,7 +7236,7 @@ msgid "pacman is required on Arch-family distributions"
 msgstr "pacman ist auf Distributionen der Arch-Familie erforderlich"
 
 #: contents/ui/config/ConfigItems.qml:1044
-#: contents/ui/config/ItemActionEditor.qml:44
+#: contents/ui/config/ItemActionEditor.qml:54
 #: contents/ui/config/ItemConfigurationDialog.qml:780
 #: contents/ui/config/components/ActionDialog.qml:93
 msgid "rows"
