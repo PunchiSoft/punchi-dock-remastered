@@ -240,7 +240,7 @@ QtObject {
     readonly property int dockLabelAreaHeight: dockShowLabels
         ? (dockLabelFontSize + 12)
         : 0
-    readonly property string dockClickEffect: String(Plasmoid.configuration.clickEffect || "none")
+    readonly property string dockClickEffect: String(Plasmoid.configuration.clickEffect || "bounce")
     readonly property string dockWindowMinimizeEffect: {
         const configuredEffect = String(Plasmoid.configuration.windowMinimizeEffect || "none")
         return ["none", "slowBounce", "lateralRipple"].indexOf(configuredEffect) >= 0

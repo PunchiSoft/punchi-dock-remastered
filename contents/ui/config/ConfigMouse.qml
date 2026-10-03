@@ -18,7 +18,7 @@ KCM.SimpleKCM {
 
     property string cfg_hoverAnimation: "wave"
     property alias cfg_hoverScale: hoverScaleSlider.value
-    property string cfg_clickEffect: "none"
+    property string cfg_clickEffect: "bounce"
     property string cfg_windowMinimizeEffect: "none"
     property alias cfg_dockMotionSpeedPercent: dockMotionSpeedSlider.value
     property alias cfg_enableAppDragAndDrop: enableAppDragAndDropCheck.checked

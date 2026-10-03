@@ -4325,6 +4325,7 @@ PlasmoidItem {
 
             mainItem: PopupAnimatedContent {
                 id: taskPopupAnimatedContent
+                spatialBounceEnabled: true
                 popupVisible: taskWindowsDialog.visible
                 // qmllint disable unqualified
                 animationStyle: dockConfig.windowPreviewAnimationStyle
@@ -4355,7 +4356,11 @@ PlasmoidItem {
                     minimumSurfaceWidth: Kirigami.Units.smallSpacing
                     minimumSurfaceHeight: Kirigami.Units.smallSpacing
                     maximumSurfaceWidth: dockGeometry.taskPopupAvailableWidth
+                        - Math.min(taskPopupAnimatedContent.bounceHorizontalMargin,
+                            dockGeometry.taskPopupAvailableWidth - 1)
                     maximumSurfaceHeight: dockGeometry.taskPopupAvailableHeight
+                        - Math.min(taskPopupAnimatedContent.bounceVerticalMargin,
+                            dockGeometry.taskPopupAvailableHeight - 1)
                     onContainsMouseChanged: {
                         popupCoordinator.setTaskPopupHovered(containsMouse)
                     }

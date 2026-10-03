@@ -982,6 +982,42 @@ punchi_add_qml_test(
     dock_item_tooltip_anchor_test
     dock_item_tooltip_anchor_test.qml
 )
+add_test(NAME dock_item_click_feedback_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_qml_tooltip_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:punchi_qmltestrunner>
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/dock_item_click_feedback_test.qml)
+add_test(NAME dock_item_click_instant_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_qml_tooltip_test.py
+        ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_folder_motion_profile.py 0
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:punchi_qmltestrunner>
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/dock_item_click_feedback_test.qml
+        DockItemClickFeedback::test_themeInstantProfile)
+set_tests_properties(dock_item_click_feedback_test dock_item_click_instant_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};QT_QUICK_BACKEND=software"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30)
+add_test(NAME popup_two_hop_bounce_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_qml_tooltip_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:punchi_qmltestrunner>
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/popup_two_hop_bounce_test.qml)
+add_test(NAME popup_two_hop_instant_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_qml_tooltip_test.py
+        ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_folder_motion_profile.py 0
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:punchi_qmltestrunner>
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/popup_two_hop_bounce_test.qml
+        PopupTwoHopBounce::test_themeInstantProfile)
+set_tests_properties(popup_two_hop_bounce_test popup_two_hop_instant_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};QT_QUICK_BACKEND=software"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30)
 add_test(
     NAME item_action_editor_drop_test
     COMMAND ${CMAKE_COMMAND}

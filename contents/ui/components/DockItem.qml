@@ -224,7 +224,16 @@ Item {
         }
         return iconSize + 12
     }
-    property real clickAnimationScale: 1.0
+    property real clickAnimationScale: clickFeedback.visualScale
+    property bool keyboardFeedbackPressed: false
+
+    function activateItem() {
+        if (separatorItem || spacerItem) {
+            return
+        }
+        clickFeedback.play()
+        itemClicked(itemCommand)
+    }
     function mediaAdjustedWaveScale(candidateScale) {
         if (!mediaItem) {
             return candidateScale
@@ -575,6 +584,7 @@ Item {
     function releasePersistentReorderInteraction() {
         suppressClickAfterReorder = false
         resetSelectionPulse()
+        keyboardFeedbackPressed = false
         persistentReorderInteractionResetPending = true
         persistentReorderInteractionResetTimer.restart()
     }
@@ -1043,16 +1053,20 @@ Item {
 
     Item {
         id: visualArea
+        objectName: "dockItemVisualArea"
         anchors.top: parent.top
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width
         height: dockItemContainer.visualAreaHeight
         scale: dockItemContainer.clickAnimationScale * dockItemContainer.entryScale
+        opacity: clickFeedback.visualOpacity
         transform: Translate {
             x: minimizeItemReaction.horizontalOffset
+                + clickFeedback.horizontalOffset
                 + (dockItemContainer.verticalPanelMode
                     ? 0.0 : dockItemContainer.waveMainAxisShift)
             y: minimizeItemReaction.verticalOffset
+                + clickFeedback.verticalOffset
                 + (dockItemContainer.verticalPanelMode
                     ? dockItemContainer.waveMainAxisShift : 0.0)
         }
@@ -1272,6 +1286,7 @@ Item {
             visualOffsetY: dockItemContainer.hoverOffsetY
             vertical: dockItemContainer.verticalPanelMode
             motionEnabled: dockItemContainer.mediaMotionEnabled
+            externalClickFeedback: true
             motionSpeedPercent: dockItemContainer.resolvedDockMotionSpeedPercent
             autoCollapseDelaySeconds: dockItemContainer.resolvedMediaAutoCollapseDelaySeconds
             contextMenuEnabled: dockItemContainer.supportsContextMenu
@@ -1281,6 +1296,7 @@ Item {
             textMode: dockItemContainer.mediaTextMode
             displayMode: dockItemContainer.mediaDisplayMode
             expandedMainAxisLength: dockItemContainer.mediaMainAxisLength
+            onInteractionActivated: clickFeedback.play()
             onLaunchRequested: dockItemContainer.mediaLaunchRequested()
             onPlaybackLaunchRequested: dockItemContainer.mediaPlaybackLaunchRequested()
             onContextMenuRequested: function(keyboardInvoked) {
@@ -1364,68 +1380,23 @@ Item {
         }
     }
 
-    SequentialAnimation {
-        id: clickPulseAnimation
-        running: false
-        PropertyAnimation {
-            target: dockItemContainer
-            property: "clickAnimationScale"
-            to: 0.9
-            duration: 55
-            easing.type: Easing.OutCubic
-        }
-        PropertyAnimation {
-            target: dockItemContainer
-            property: "clickAnimationScale"
-            to: 1.0
-            duration: 140
-            easing.type: Easing.OutBack
-        }
-    }
-
-    SequentialAnimation {
-        id: clickBounceAnimation
-        running: false
-        PropertyAnimation {
-            target: dockItemContainer
-            property: "clickAnimationScale"
-            to: 0.92
-            duration: 45
-            easing.type: Easing.OutQuad
-        }
-        PropertyAnimation {
-            target: dockItemContainer
-            property: "clickAnimationScale"
-            to: 1.08
-            duration: 110
-            easing.type: Easing.OutQuad
-        }
-        PropertyAnimation {
-            target: dockItemContainer
-            property: "clickAnimationScale"
-            to: 1.0
-            duration: 130
-            easing.type: Easing.OutBack
-        }
-    }
-
-    SequentialAnimation {
-        id: clickPressAnimation
-        running: false
-        PropertyAnimation {
-            target: dockItemContainer
-            property: "clickAnimationScale"
-            to: 0.86
-            duration: 60
-            easing.type: Easing.OutCubic
-        }
-        PropertyAnimation {
-            target: dockItemContainer
-            property: "clickAnimationScale"
-            to: 1.0
-            duration: 95
-            easing.type: Easing.OutCubic
-        }
+    DockItemClickFeedback {
+        id: clickFeedback
+        objectName: "dockItemClickFeedback"
+        effect: dockItemContainer.clickEffect
+        iconSize: dockItemContainer.iconSize
+        motionSpeedPercent: dockItemContainer.resolvedDockMotionSpeedPercent
+        verticalPanel: dockItemContainer.verticalPanelMode
+        direction: dockItemContainer.panelLocation === PlasmaCore.Types.RightEdge
+            || dockItemContainer.panelLocation === PlasmaCore.Types.BottomEdge
+            || !dockItemContainer.inPanel ? -1 : 1
+        feedbackEnabled: dockItemContainer.visible && dockItemContainer.enabled
+            && !dockItemContainer.structuralWaveItem
+            && !dockItemContainer.persistentReorderActive
+        pressed: dockItemContainer.mediaItem
+            ? mediaDockItem.interactionPressed
+            : ((mouseArea.pressed && mouseArea.pressedButtons & Qt.LeftButton)
+                || dockItemContainer.keyboardFeedbackPressed)
     }
 
     Timer {
@@ -1633,17 +1604,28 @@ Item {
             if (mouse.button === Qt.RightButton) {
                 return
             }
-            if (dockItemContainer.clickEffect === "pulse") {
-                clickPulseAnimation.restart()
-            } else if (dockItemContainer.clickEffect === "bounce") {
-                clickBounceAnimation.restart()
-            } else if (dockItemContainer.clickEffect === "press") {
-                clickPressAnimation.restart()
-            }
-            dockItemContainer.itemClicked(dockItemContainer.itemCommand)
+            dockItemContainer.activateItem()
         }
-        Keys.onReturnPressed: if (!dockItemContainer.separatorItem && !dockItemContainer.spacerItem) dockItemContainer.itemClicked(dockItemContainer.itemCommand)
-        Keys.onSpacePressed: if (!dockItemContainer.separatorItem && !dockItemContainer.spacerItem) dockItemContainer.itemClicked(dockItemContainer.itemCommand)
+        Keys.onReturnPressed: {
+            dockItemContainer.keyboardFeedbackPressed = true
+            dockItemContainer.activateItem()
+        }
+        Keys.onSpacePressed: {
+            dockItemContainer.keyboardFeedbackPressed = true
+            dockItemContainer.activateItem()
+        }
+        Keys.onReleased: function(event) {
+            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
+                    || event.key === Qt.Key_Space) {
+                dockItemContainer.keyboardFeedbackPressed = false
+            }
+        }
+        onActiveFocusChanged: {
+            if (!activeFocus) {
+                dockItemContainer.keyboardFeedbackPressed = false
+            }
+        }
+        Accessible.onPressAction: dockItemContainer.activateItem()
         Keys.onPressed: function(event) {
             if (dockItemContainer.persistentMoveHandleVisible
                     && event.key === Qt.Key_Escape) {

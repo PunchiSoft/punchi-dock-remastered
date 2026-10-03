@@ -14,9 +14,11 @@ Item {
     property int animationSpeedPercent: 100
     property int animationIntensityPercent: 100
     property int popupDirection: Qt.BottomEdge
+    property bool spatialBounceEnabled: false
     property real openingProgress: 0
     property bool openingPending: false
     property bool closing: false
+    property bool progressResetActive: false
 
     readonly property Item contentItem: animatedSurface.children.length > 0
         ? animatedSurface.children[0]
@@ -27,6 +29,16 @@ Item {
         ? Math.round(Kirigami.Units.longDuration * 100
             / Math.max(10, Math.min(200, animationSpeedPercent)))
         : 0
+    readonly property bool spatialBounceActive: spatialBounceEnabled
+        && animationStyle === "bounce" && animationDuration > 0
+    readonly property real bounceDistance: spatialBounceActive
+        ? Math.round(Kirigami.Units.gridUnit * intensityFactor) : 0
+    readonly property real bounceHorizontalMargin: spatialBounceActive
+        && (popupDirection === Qt.LeftEdge || popupDirection === Qt.RightEdge)
+        ? bounceDistance : 0
+    readonly property real bounceVerticalMargin: spatialBounceActive
+        && (popupDirection === Qt.TopEdge || popupDirection === Qt.BottomEdge)
+        ? bounceDistance : 0
     // Exits run on a shorter budget than entries, as the shared motion doctrine
     // requires. The factor scales the same theme-derived duration, so the user
     // animation speed preference keeps governing both directions.
@@ -52,6 +64,10 @@ Item {
 
     signal closeAnimationFinished()
     readonly property real slideX: {
+        if (spatialBounceActive) {
+            return bounceHorizontalMargin * spatialBounce.progress
+                * (popupDirection === Qt.LeftEdge ? -1 : 1)
+        }
         if (animationStyle !== "slide") {
             return 0
         }
@@ -64,6 +80,10 @@ Item {
         return 0
     }
     readonly property real slideY: {
+        if (spatialBounceActive) {
+            return bounceVerticalMargin * spatialBounce.progress
+                * (popupDirection === Qt.TopEdge ? -1 : 1)
+        }
         if (animationStyle !== "slide") {
             return 0
         }
@@ -76,8 +96,8 @@ Item {
         return 0
     }
 
-    implicitWidth: contentItem ? contentItem.implicitWidth : 0
-    implicitHeight: contentItem ? contentItem.implicitHeight : 0
+    implicitWidth: (contentItem ? contentItem.implicitWidth : 0) + bounceHorizontalMargin
+    implicitHeight: (contentItem ? contentItem.implicitHeight : 0) + bounceVerticalMargin
     // PlasmaQuick::Dialog asserts on a zero-sized mainItem before it can map
     // the window. Keep the real geometry valid while guarded dialogs wait for
     // their content's implicit geometry to become ready.
@@ -96,10 +116,13 @@ Item {
         openingPending = false
         openingFallback.stop()
         openingProgress = 1
+        if (spatialBounceActive) {
+            spatialBounce.play()
+        }
     }
 
     function finishClosing() {
-        if (!closing) {
+        if (!closing || openingProgress > 0.001 || spatialBounce.running) {
             return
         }
         closeAnimationFinished()
@@ -113,8 +136,12 @@ Item {
         openingFallback.stop()
         openingPending = false
         closing = true
+        if (spatialBounceActive) {
+            spatialBounce.settle(effectiveAnimationDuration)
+        }
         if (animationStyle === "none" || animationDuration <= 0
                 || openingProgress <= 0.001) {
+            spatialBounce.reset()
             openingProgress = 0
             Qt.callLater(function() {
                 root.finishClosing()
@@ -138,22 +165,29 @@ Item {
         openingFallback.stop()
         openingPending = false
         closing = false
+        spatialBounce.reset()
 
         if (!popupVisible) {
-            openingProgress = 0
+            resetOpeningProgress(0)
             return
         }
 
         if (animationStyle === "none" || animationDuration <= 0) {
-            openingProgress = 1
+            resetOpeningProgress(1)
             return
         }
 
         // Present the initial state once before starting, otherwise complex popup
         // contents can consume the complete animation while their window maps.
-        openingProgress = 0
+        resetOpeningProgress(0)
         openingPending = true
         openingFallback.restart()
+    }
+
+    function resetOpeningProgress(value) {
+        progressResetActive = true
+        openingProgress = value
+        progressResetActive = false
     }
 
     onPopupVisibleChanged: scheduleOpening()
@@ -162,16 +196,46 @@ Item {
             scheduleOpening()
         }
     }
+    onSpatialBounceActiveChanged: {
+        if (!spatialBounceActive) {
+            spatialBounce.reset()
+        }
+    }
+    onAnimationDurationChanged: {
+        if (animationDuration <= 0 && popupVisible) {
+            openingFallback.stop()
+            openingPending = false
+            spatialBounce.reset()
+            resetOpeningProgress(closing ? 0 : 1)
+            if (closing) {
+                Qt.callLater(root.finishClosing)
+            }
+        }
+    }
     Component.onCompleted: scheduleOpening()
 
+    readonly property TwoHopBounce bounceMotion: TwoHopBounce {
+        id: spatialBounce
+        // A popup uses one hop within the surface's opening budget.
+        secondaryHopEnabled: false
+        duration: Math.round(root.animationDuration * 0.4)
+        onRunningChanged: {
+            if (!running && root.closing) {
+                root.finishClosing()
+            }
+        }
+    }
+
     Behavior on openingProgress {
-        enabled: root.popupVisible && root.animationStyle !== "none"
+        enabled: !root.progressResetActive && root.popupVisible
+            && root.animationStyle !== "none"
 
         NumberAnimation {
+            id: revealAnimation
             duration: root.effectiveAnimationDuration
             easing.type: root.closing
                 ? Easing.InCubic
-                : (root.animationStyle === "bounce"
+                : (root.animationStyle === "bounce" && !root.spatialBounceActive
                     ? Easing.OutBack
                     : Easing.OutCubic)
             easing.overshoot: root.animationStyle === "bounce"
@@ -203,7 +267,11 @@ Item {
 
     Item {
         id: animatedSurface
-        anchors.fill: parent
+        // popupDirection is the growth direction, opposite to the dock edge.
+        x: root.popupDirection === Qt.LeftEdge ? root.bounceHorizontalMargin : 0
+        y: root.popupDirection === Qt.TopEdge ? root.bounceVerticalMargin : 0
+        width: root.width - root.bounceHorizontalMargin
+        height: root.height - root.bounceVerticalMargin
         transformOrigin: {
             if (root.popupDirection === Qt.BottomEdge) {
                 return Item.Bottom
@@ -225,7 +293,7 @@ Item {
                 + (root.openingProgress * (1 - root.initialOpacity)))
         scale: root.animationStyle === "scale"
             ? 1 - (0.16 * root.intensityFactor * (1 - root.openingProgress))
-            : root.animationStyle === "bounce"
+            : root.animationStyle === "bounce" && !root.spatialBounceActive
                 ? 1 - (0.22 * root.intensityFactor * (1 - root.openingProgress))
                 : 1
         transform: Translate {

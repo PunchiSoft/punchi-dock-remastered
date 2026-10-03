@@ -109,17 +109,23 @@ FocusScope {
     signal expansionChanged(bool expanded, int transitionDuration)
     signal launchRequested()
     signal playbackLaunchRequested()
+    signal interactionActivated()
+    property bool externalClickFeedback: false
+    readonly property bool interactionPressed: compactLaunchTap.pressed
+        || artworkLaunchTap.pressed || previousButton.pressed
+        || playPauseButton.pressed || nextButton.pressed
 
     Accessible.role: Accessible.Grouping
     Accessible.name: i18nc("@info:accessible", "Media player controls")
     Accessible.description: accessibleDescription
 
-    property real clickScale: 1.0
+    property real clickScale: !externalClickFeedback && interactionPressed ? 0.94 : 1.0
 
     Behavior on clickScale {
-        enabled: root.motionEnabled && Kirigami.Units.longDuration > 0
+        enabled: root.motionEnabled && Kirigami.Units.longDuration > 1
         NumberAnimation {
-            duration: 120
+            duration: Math.round(Kirigami.Units.shortDuration * 1.2
+                * 100 / root.resolvedMotionSpeedPercent)
             easing.type: Easing.OutQuad
         }
     }
@@ -407,10 +413,13 @@ FocusScope {
         }
 
         TapHandler {
+            id: compactLaunchTap
             acceptedButtons: Qt.LeftButton
             enabled: root.launchAvailable && !root.available && root.compactMode
-            onPressedChanged: root.clickScale = pressed ? 0.94 : 1.0
-            onTapped: root.launchRequested()
+            onTapped: {
+                root.interactionActivated()
+                root.launchRequested()
+            }
         }
     }
 
@@ -498,10 +507,13 @@ FocusScope {
                 }
 
                 TapHandler {
+                    id: artworkLaunchTap
                     acceptedButtons: Qt.LeftButton
                     enabled: root.launchAvailable && !root.available
-                    onPressedChanged: root.clickScale = pressed ? 0.94 : 1.0
-                    onTapped: root.launchRequested()
+                    onTapped: {
+                        root.interactionActivated()
+                        root.launchRequested()
+                    }
                 }
             }
 
@@ -582,6 +594,7 @@ FocusScope {
 
             PlasmaComponents.ToolButton {
                 id: previousButton
+                objectName: "mediaPreviousButton"
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: root.controlExtent
                 Layout.preferredHeight: root.controlExtent
@@ -593,12 +606,16 @@ FocusScope {
                 enabled: root.available && root.controller.canControl
                     && root.controller.canGoPrevious
                 Accessible.name: text
-                onClicked: root.controller.previous()
+                onClicked: {
+                    root.interactionActivated()
+                    root.controller.previous()
+                }
                 KeyNavigation.tab: playPauseButton
             }
 
             PlasmaComponents.ToolButton {
                 id: playPauseButton
+                objectName: "mediaPlayPauseButton"
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: root.controlExtent
                 Layout.preferredHeight: root.controlExtent
@@ -618,6 +635,7 @@ FocusScope {
                     ? root.launchActionText
                     : ""
                 onClicked: {
+                    root.interactionActivated()
                     if (!root.available && root.launchAvailable) {
                         root.playbackLaunchRequested()
                     } else {
@@ -629,6 +647,7 @@ FocusScope {
 
             PlasmaComponents.ToolButton {
                 id: nextButton
+                objectName: "mediaNextButton"
                 Layout.alignment: Qt.AlignCenter
                 Layout.preferredWidth: root.controlExtent
                 Layout.preferredHeight: root.controlExtent
@@ -640,7 +659,10 @@ FocusScope {
                 enabled: root.available && root.controller.canControl
                     && root.controller.canGoNext
                 Accessible.name: text
-                onClicked: root.controller.next()
+                onClicked: {
+                    root.interactionActivated()
+                    root.controller.next()
+                }
                 KeyNavigation.tab: previousButton
             }
         }

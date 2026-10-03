@@ -273,7 +273,7 @@
       <default>wave</default>
     </entry>
     <entry name="clickEffect" type="String">
-      <default>none</default>
+      <default>bounce</default>
     </entry>
     <entry name="windowMinimizeEffect" type="String">
       <default>none</default>
