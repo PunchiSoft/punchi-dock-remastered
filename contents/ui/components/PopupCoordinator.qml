@@ -37,6 +37,21 @@ Item {
     property var contextActionsResolver: null
 
     property var activeFolderData: ({})
+    property int activeFolderModelIndex: -1
+    property var folderItemsControllerRef: null
+    Connections {
+        target: root.folderItemsControllerRef
+        function onConfigurationChanged() {
+            if (root.activeFolderModelIndex < 0) { return }
+            const item = root.folderItemsControllerRef.dockItems[root.activeFolderModelIndex]
+            if (item && item.type === "folder") {
+                root.activeFolderData = item
+            } else {
+                root.activeFolderModelIndex = -1
+                root.hidePopupDialog(root.folderPopupDialogRef)
+            }
+        }
+    }
     property var activeCalendarData: ({})
     property var activeNoteData: ({})
     property int activeNoteIndex: -1
@@ -459,6 +474,9 @@ Item {
         const wasActive = root.popupDialogActive(folderPopupDialogRef)
         closeAllPopups(folderPopupDialogRef)
         activeFolderData = itemData
+        activeFolderModelIndex = visualParent
+            && Number.isInteger(Number(visualParent.index))
+            ? Number(visualParent.index) : -1
         root.assignPopupAnchor(folderPopupDialogRef,
             preparePopupAnchor(visualParent))
         if (wasActive) {

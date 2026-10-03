@@ -69,6 +69,7 @@ function fieldsFor(draft, panel, type) {
             "layout": String(panel.containerLayoutValue || "grid"),
             "sourceType": String(panel.containerSourceValue || "manual"),
             "sourcePath": String(panel.containerPathText || ""),
+            "browseSubfolders": panel.containerBrowseSubfoldersChecked === true,
             "sourceCategory": String(panel.containerCategoryValue || "Development")
         }
     }
@@ -271,6 +272,9 @@ function applyToPanel(draft, panel, type) {
     panel.appDescriptionText = String(item.description || "")
     panel.appCommandText = String(item.command || "")
     panel.containerPathText = String(item.sourcePath || "")
+    if (panel.containerBrowseSubfoldersChecked !== undefined) {
+        panel.containerBrowseSubfoldersChecked = item.browseSubfolders === true
+    }
     if (kind === "folder") {
         panel.containerLayoutIndex =
             panel.layoutIndexFor(String(item.layout || "grid"))

@@ -84,7 +84,7 @@ KCM.SimpleKCM {
                         || ConfigItemsJS.categoryIcon(category)
                     itemDraftController.applyContainerApplications(
                         Number(operation.generation), apps, iconName)
-                    itemConfigurationDialog.refreshEditorFields()
+                    itemConfigurationDialog.refreshEditorFields(true)
                 }
                 return
             }
@@ -104,7 +104,7 @@ KCM.SimpleKCM {
                 }
                 itemDraftController.applyContainerApplications(
                     Number(operation.generation), entries, "")
-                itemConfigurationDialog.refreshEditorFields()
+                itemConfigurationDialog.refreshEditorFields(true)
                 return
             }
             page.applyContainerApps(entries)
@@ -125,13 +125,7 @@ KCM.SimpleKCM {
         }
         // qmllint disable unqualified
         onOperationFailed: function(operation, message, requestId) {
-            if (requestId > 0) {
-                if (itemDraftController.takeExternalOperation(
-                        "", requestId) === null) {
-                    return
-                }
-            }
-            mainView.showStatus(i18n("System operation failed: %1", message), Kirigami.MessageType.Error)
+            page.showDiscoveryFailure(message, requestId)
         }
         // qmllint enable unqualified
     }
@@ -465,7 +459,27 @@ KCM.SimpleKCM {
         }
     }
 
+    function showDiscoveryFailure(message, requestId) {
+        if (requestId > 0) {
+            const operation = itemDraftController.takeExternalOperation("", requestId)
+            if (operation === null) {
+                return
+            }
+            if (String(operation.kind) === "container-folder"
+                    || String(operation.kind) === "container-applications") {
+                // Draft feedback belongs to its modal, never to the page below it.
+                itemConfigurationDialog.showContainerLoadStatus(
+                    i18n("System operation failed: %1", message), // qmllint disable unqualified
+                    Kirigami.MessageType.Error)
+                return
+            }
+        }
+        mainView.showStatus(i18n("System operation failed: %1", message), // qmllint disable unqualified
+            Kirigami.MessageType.Error)
+    }
+
     function requestDraftContainerContent() {
+        itemConfigurationDialog.clearContainerLoadStatus()
         const draft = itemDraftController.draft
         if (!draft || String(itemDraftController.draftType) !== "folder") {
             return
@@ -475,7 +489,7 @@ KCM.SimpleKCM {
             const path = String(draft.sourcePath || "").trim()
             if (path.length === 0) {
                 // qmllint disable unqualified
-                mainView.showStatus(i18n("Choose a folder first."),
+                itemConfigurationDialog.showContainerLoadStatus(i18n("Choose a folder first."),
                     Kirigami.MessageType.Warning)
                 // qmllint enable unqualified
                 return
@@ -531,6 +545,7 @@ KCM.SimpleKCM {
         const operation = itemDraftController.takeExternalOperation(
             "folder-picker")
         if (operation !== null) {
+            itemConfigurationDialog.invalidateContainerLoad()
             itemDraftController.applyExternalValue(
                 Number(operation.generation), "folder", "sourcePath",
                 String(path || ""))
@@ -1007,6 +1022,7 @@ KCM.SimpleKCM {
         gridText: i18n("Grid")
         listText: i18n("List")
         detailedText: i18n("Detailed")
+        fanText: i18nc("@item:inlistbox Folder popup layout", "Fan")
         noteText: i18n("Note")
         separatorText: i18n("Separator")
         spacerText: i18n("Spacer")
@@ -1153,6 +1169,7 @@ KCM.SimpleKCM {
 
     ConfigItemsMainView {
         id: mainView
+        objectName: "itemsConfigurationMainView"
         controller: page
         itemModel: itemModel
         statusHideTimer: statusHideTimer

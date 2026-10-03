@@ -2,6 +2,14 @@ find_package(Qt6 6.6 REQUIRED COMPONENTS QuickTest Test)
 find_package(PlasmaQuick 6.0 REQUIRED)
 find_package(Python3 REQUIRED COMPONENTS Interpreter)
 
+add_executable(recentapplicationsmodel_test
+    recentapplicationsmodel_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/recentapplicationsmodel.cpp
+)
+target_include_directories(recentapplicationsmodel_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(recentapplicationsmodel_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml Qt6::Test)
+add_test(NAME recentapplicationsmodel_test COMMAND recentapplicationsmodel_test)
+
 add_executable(spectrumanalyzer_test
     spectrumanalyzer_test.cpp
     ${CMAKE_SOURCE_DIR}/src/spectrumanalyzer.cpp
@@ -493,6 +501,32 @@ set_tests_properties(trashintegration_test PROPERTIES SKIP_RETURN_CODE 77)
 
 find_program(PUNCHI_DBUS_RUN_SESSION NAMES dbus-run-session REQUIRED)
 
+add_executable(decorationbuttonprovider_test
+    decorationbuttonprovider_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/decorationbuttonprovider.cpp
+)
+target_include_directories(decorationbuttonprovider_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(decorationbuttonprovider_test PRIVATE Qt6::Core Qt6::Qml Qt6::Test KF6::ConfigCore)
+add_test(NAME decorationbuttonprovider_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:decorationbuttonprovider_test>)
+set_tests_properties(decorationbuttonprovider_test PROPERTIES TIMEOUT 30)
+
+add_executable(recentapplicationsadapter_test
+    recentapplicationsadapter_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/recentapplicationsadapter.cpp
+    ${CMAKE_SOURCE_DIR}/src/recentapplicationsmodel.cpp
+)
+target_include_directories(recentapplicationsadapter_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(recentapplicationsadapter_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml Qt6::Test
+    KF6::Service Plasma::Activities Plasma::ActivitiesStats)
+add_test(NAME recentapplicationsadapter_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:recentapplicationsadapter_test>)
+set_tests_properties(recentapplicationsadapter_test PROPERTIES TIMEOUT 30)
+
 add_executable(dockthemetrash_test
     dockthemetrash_test.cpp
     ${CMAKE_SOURCE_DIR}/src/dockthemerepository.cpp
@@ -509,6 +543,23 @@ set_tests_properties(dockthemetrash_test PROPERTIES TIMEOUT 30)
 
 
 add_executable(plasmoid_full_load_test plasmoid_full_load_test.cpp)
+add_executable(recent_applications_full_load_test recent_applications_full_load_test.cpp)
+add_dependencies(recent_applications_full_load_test punchidockintegrationplugin)
+target_include_directories(recent_applications_full_load_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_compile_definitions(recent_applications_full_load_test PRIVATE
+    PUNCHI_PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    PUNCHI_INTEGRATION_LIBRARY="$<TARGET_FILE:punchidockintegration>"
+    PUNCHI_INTEGRATION_PLUGIN="$<TARGET_FILE:punchidockintegrationplugin>"
+    PUNCHI_INTEGRATION_QMLDIR="${CMAKE_BINARY_DIR}/bin/org/punchi/dock/qmldir"
+    PUNCHI_INTEGRATION_QMLTYPES="${CMAKE_BINARY_DIR}/bin/org/punchi/dock/punchidockintegration.qmltypes"
+)
+target_link_libraries(recent_applications_full_load_test PRIVATE Qt6::Gui Qt6::Quick Qt6::Test
+    KF6::ConfigQml KF6::CoreAddons KF6::Package Plasma::Plasma Plasma::PlasmaQuick)
+add_test(NAME recent_applications_full_load_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:recent_applications_full_load_test>)
+set_tests_properties(recent_applications_full_load_test PROPERTIES TIMEOUT 30)
 add_dependencies(plasmoid_full_load_test
     punchidockintegration
     punchidockintegrationplugin
@@ -587,6 +638,31 @@ function(punchi_add_qml_test test_name qml_file)
         TIMEOUT 30
     )
 endfunction()
+
+add_test(NAME decoration_close_button_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_decoration_qml_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:punchi_qmltestrunner>
+        -import ${CMAKE_BINARY_DIR}/bin
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/decoration_close_button_test.qml)
+set_tests_properties(decoration_close_button_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT}"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30)
+
+punchi_add_qml_test(recent_applications_ui_test recent_applications_ui_test.qml)
+punchi_add_qml_test(recent_container_context_test recent_container_context_test.qml)
+add_test(NAME recent_application_tooltip_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_qml_tooltip_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:punchi_qmltestrunner>
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/recent_application_tooltip_test.qml)
+set_tests_properties(recent_application_tooltip_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT}"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30)
 
 punchi_add_qml_test(
     popup_coordinator_state_test
@@ -774,6 +850,36 @@ punchi_add_qml_test(
     config_items_default_loading_test
     config_items_default_loading_test.qml
 )
+add_test(NAME container_native_discovery_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_container_discovery_test.py
+        $<TARGET_FILE:punchi_qmltestrunner>
+        -import ${CMAKE_BINARY_DIR}/bin
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/container_native_discovery_test.qml)
+set_tests_properties(container_native_discovery_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PYTHONDONTWRITEBYTECODE=1"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30)
+add_test(NAME container_load_feedback_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_container_discovery_test.py
+        $<TARGET_FILE:config_items_qml_test_runner>
+        -import ${CMAKE_BINARY_DIR}/bin
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/container_load_feedback_test.qml)
+set_tests_properties(container_load_feedback_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PYTHONDONTWRITEBYTECODE=1"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30)
+add_executable(config_items_qml_test_runner config_items_qml_test_runner.cpp)
+target_link_libraries(config_items_qml_test_runner PRIVATE
+    Qt6::QuickTest Qt6::Qml Qt6::Quick Qt6::Widgets KF6::I18n)
+if(TARGET KF6::I18nQml)
+    target_link_libraries(config_items_qml_test_runner PRIVATE KF6::I18nQml)
+    target_compile_definitions(config_items_qml_test_runner PRIVATE
+        PUNCHI_HAS_KLOCALIZED_QML_CONTEXT=1)
+endif()
 punchi_add_qml_test(
     config_folder_popups_fan_scroll_test
     config_folder_popups_fan_scroll_test.qml
@@ -830,6 +936,16 @@ set_tests_properties(native_popup_spacing_test PROPERTIES
     FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
     TIMEOUT 30
 )
+add_test(NAME vertical_popup_anchor_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_qml_tooltip_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:punchi_qmltestrunner>
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/vertical_popup_anchor_test.qml)
+set_tests_properties(vertical_popup_anchor_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PUNCHI_TEST_NATIVE_POPUP=1"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30)
 
 punchi_add_qml_test(
     dock_item_launcher_drop_state_test

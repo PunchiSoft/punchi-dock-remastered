@@ -49,7 +49,6 @@ TestCase {
         id: contextController
         taskController: fakeTaskController
         dockItemsController: fakeDockItemsController
-        editDockItemHandler: function() { return true }
         configureDockHandler: function() { return true }
     }
 
@@ -82,6 +81,11 @@ TestCase {
 
     function test_folderMenuExposesExclusiveViewsAndCurrentDetail() {
         const actions = contextController.actionsForItem(folder, [], "pinned", 0)
+        compare(actionByKind(actions, "editDockItem"), null)
+        const configureAction = actionByKind(actions, "configureDock")
+        verify(configureAction !== null)
+        verify(contextController.triggerAction(configureAction))
+        verify(actionByKind(actions, "unpinFromDock") !== null)
         const submenu = actionByKind(actions, "submenu")
         verify(submenu !== null)
         compare(submenu.name, "Folder view")

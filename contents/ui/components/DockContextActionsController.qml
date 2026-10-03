@@ -7,11 +7,12 @@ QtObject {
     property var systemDiscovery: null
     property var taskController: null
     property var dockItemsController: null
-    property var editDockItemHandler: null
     property var configureDockHandler: null
     property var moveDynamicApplicationsHandler: null
-    property bool showEditDockItemAction: true
     property bool showConfigureDockAction: true
+    property bool recentContainerActive: false
+    property var disableRecentApplicationsHandler: null
+    property var setRecentContainerViewHandler: null
 
     function removablePinnedItem(item) {
         if (!item) {
@@ -20,17 +21,6 @@ QtObject {
         const type = String(item.type || "app")
         return type === "app" || type === "folder" || type === "media"
             || type === "punchimenu"
-    }
-
-    function editablePinnedItem(item, persistentIndex) {
-        if (!item) {
-            return false
-        }
-        const type = String(item.type || "app")
-        return Number.isInteger(persistentIndex) && persistentIndex >= 0
-            && (type === "app" || type === "folder" || type === "media"
-                || type === "punchimenu")
-            && typeof root.editDockItemHandler === "function"
     }
 
     function applicationIdentityForItem(item) {
@@ -114,6 +104,11 @@ QtObject {
         }
 
         const itemType = String(item.type || "app")
+        const recentContainer = itemType === "folder"
+            && itemOrigin === "recent-container" && item.entryRole === "recent-container"
+        if (recentContainer && !root.recentContainerActive) {
+            return []
+        }
         if (itemType === "control-center" && itemOrigin === "pinned") {
             return root.controlCenterActions(item, persistentIndex)
         }
@@ -130,8 +125,8 @@ QtObject {
                 "enabled": true,
                 "targetItem": item
             }], seenNames)
-        } else if (itemType === "app" && itemOrigin === "dynamic") {
-            if (typeof root.moveDynamicApplicationsHandler === "function") {
+        } else if (itemType === "app" && (itemOrigin === "dynamic" || itemOrigin === "recent")) {
+            if (itemOrigin === "dynamic" && typeof root.moveDynamicApplicationsHandler === "function") {
                 root.appendUniqueActions(actions, [{
                     // Plasma injects translation functions into the applet context.
                     // qmllint disable unqualified
@@ -155,19 +150,9 @@ QtObject {
                     "pinDescriptor": pinDescriptor
                 }], seenNames)
             }
-        } else if (itemOrigin === "pinned" && root.removablePinnedItem(item)) {
+        } else if (recentContainer
+                || (itemOrigin === "pinned" && root.removablePinnedItem(item))) {
             const itemActions = []
-            if (root.showEditDockItemAction && root.editablePinnedItem(item, persistentIndex)) {
-                itemActions.push({
-                    // qmllint disable unqualified
-                    "name": i18nc("@action:context", "Edit item…"),
-                    // qmllint enable unqualified
-                    "icon": "document-edit",
-                    "kind": "editDockItem",
-                    "enabled": true,
-                    "targetIndex": persistentIndex
-                })
-            }
             if (root.showConfigureDockAction && typeof root.configureDockHandler === "function") {
                 itemActions.push({
                     // qmllint disable unqualified
@@ -272,7 +257,7 @@ QtObject {
                 const expectedFolderText = typeof root.dockItemsController.canonicalJsonText
                         === "function"
                     ? root.dockItemsController.canonicalJsonText(item) : ""
-                itemActions.push({
+                const folderViewAction = {
                     // qmllint disable unqualified
                     "name": i18nc("@title:menu", "Folder view"),
                     "detail": activeFolderViewDetail,
@@ -330,23 +315,43 @@ QtObject {
                             "expectedFolderText": expectedFolderText
                         }
                     ]
+                }
+                if (recentContainer) {
+                    folderViewAction.name = i18nc("@title:menu", "Container view") // qmllint disable unqualified
+                    for (let index = 0; index < folderViewAction.children.length; index++) {
+                        const child = folderViewAction.children[index]
+                        child.kind = "setRecentContainerView"
+                        child.enabled = typeof root.setRecentContainerViewHandler === "function"
+                        delete child.targetIndex
+                        delete child.expectedFolderText
+                    }
+                }
+                itemActions.push(folderViewAction)
+            }
+            if (recentContainer) {
+                itemActions.push({
+                    "name": i18nc("@action:context", "Disable recent applications"), // qmllint disable unqualified
+                    "icon": "view-hidden",
+                    "kind": "disableRecentApplications",
+                    "enabled": typeof root.disableRecentApplicationsHandler === "function"
+                })
+            } else {
+                itemActions.push({
+                    // qmllint disable unqualified
+                    "name": i18nc("@action:context", "Unpin from Dock"),
+                    // qmllint enable unqualified
+                    "icon": "window-pin",
+                    "kind": "unpinFromDock",
+                    "enabled": true,
+                    "targetIndex": persistentIndex,
+                    "targetApplicationId": itemType === "app"
+                        ? root.taskController.dockItemApplicationId(item)
+                        : "",
+                    "targetLauncherUrl": itemType === "app"
+                        ? root.taskController.dockItemLauncherUrl(item)
+                        : ""
                 })
             }
-            itemActions.push({
-                // qmllint disable unqualified
-                "name": i18nc("@action:context", "Unpin from Dock"),
-                // qmllint enable unqualified
-                "icon": "window-pin",
-                "kind": "unpinFromDock",
-                "enabled": true,
-                "targetIndex": persistentIndex,
-                "targetApplicationId": itemType === "app"
-                    ? root.taskController.dockItemApplicationId(item)
-                    : "",
-                "targetLauncherUrl": itemType === "app"
-                    ? root.taskController.dockItemLauncherUrl(item)
-                    : ""
-            })
             root.appendUniqueActions(actions, itemActions, seenNames)
         }
 
@@ -393,6 +398,12 @@ QtObject {
             return false
         }
         const itemType = String(item.type || "app")
+        if (itemOrigin === "recent-container" && itemType === "folder"
+                && item.entryRole === "recent-container") {
+            return root.recentContainerActive
+                && (typeof root.disableRecentApplicationsHandler === "function"
+                    || typeof root.setRecentContainerViewHandler === "function")
+        }
         if (itemType !== "app") {
             return (itemOrigin === "pinned"
                     && (root.removablePinnedItem(item) || itemType === "control-center"))
@@ -412,6 +423,17 @@ QtObject {
         if (!action || action.enabled === false || !root.dockItemsController) {
             return false
         }
+        if (action.kind === "disableRecentApplications") {
+            return root.recentContainerActive
+                && typeof root.disableRecentApplicationsHandler === "function"
+                ? root.disableRecentApplicationsHandler() : false
+        }
+        if (action.kind === "setRecentContainerView") {
+            return root.recentContainerActive
+                && ["grid", "list", "detailed", "fan"].indexOf(action.layout) >= 0
+                && typeof root.setRecentContainerViewHandler === "function"
+                ? root.setRecentContainerViewHandler(action.layout) : false
+        }
         if (action.kind === "launchDockItem") {
             root.dockItemsController.launchDockItem(action.targetItem)
             return true
@@ -422,11 +444,6 @@ QtObject {
         if (action.kind === "unpinFromDock") {
             return root.dockItemsController.unpinItemFromDock(action.targetIndex,
                 action.targetApplicationId, action.targetLauncherUrl)
-        }
-        if (action.kind === "editDockItem") {
-            return root.editDockItemHandler
-                ? root.editDockItemHandler(action.targetIndex)
-                : false
         }
         if (action.kind === "configureDock") {
             return root.configureDockHandler

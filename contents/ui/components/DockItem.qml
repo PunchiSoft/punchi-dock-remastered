@@ -427,6 +427,7 @@ Item {
     property bool taskIsActive: false
     property bool taskDemandsAttention: false
     property bool pinnedApplicationLauncher: false
+    property bool recentApplicationLauncher: false
     property bool suppressTooltip: false
     property bool supportsContextMenu: false
     property bool mediaHoverControlsEnabled: false
@@ -484,9 +485,10 @@ Item {
         }
         return false
     }
-    // Pinned application launchers use the floating label only while they have
+    // Pinned and recent launchers use the floating label only while they have
     // no open windows. Once a task exists, its hover preview owns that space.
-    readonly property bool tooltipEligibleItem: (pinnedApplicationLauncher
+    readonly property bool tooltipEligibleItem: ((pinnedApplicationLauncher
+            || recentApplicationLauncher)
             && itemType === "app"
             && taskIndicatorCount === 0)
         || itemType === "folder"

@@ -207,6 +207,8 @@ punchi_user_missing_dependencies() {
                 qt6-declarative
                 qt6-shadertools
                 plasma-workspace
+                plasma-activities
+                plasma-activities-stats
                 pipewire
                 kconfig
                 ki18n
@@ -232,6 +234,8 @@ punchi_user_missing_dependencies() {
                 qt6-declarative-dev
                 qt6-shader-baker
                 libplasma-dev
+                libplasmaactivities-dev
+                libplasmaactivitiesstats-dev
                 libpipewire-0.3-dev
                 libkf6config-dev
                 libkf6i18n-dev
@@ -256,6 +260,8 @@ punchi_user_missing_dependencies() {
                 qt6-qtdeclarative-devel
                 qt6-qtshadertools
                 plasma-workspace-devel
+                plasma-activities-devel
+                plasma-activities-stats-devel
                 pipewire-devel
                 kf6-kconfig-devel
                 kf6-ki18n-devel

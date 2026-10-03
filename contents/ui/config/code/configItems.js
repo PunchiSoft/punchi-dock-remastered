@@ -1010,6 +1010,9 @@ function pruneApp(item) {
 }
 
 function pruneFolder(item) {
+    if (item.browseSubfolders !== true) {
+        delete item.browseSubfolders
+    }
     delete item.actionPopupMaxVisibleRows
     removeKeys(item, ["command", "actions", "actionsEnabled"])
     removeKeys(item, ["radialBackground", "radialIconSlots", "radialDistance", "fanCenterDistance"])

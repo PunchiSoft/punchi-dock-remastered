@@ -35,6 +35,8 @@ PACMAN_PACKAGES=(
     ninja
     pkgconf
     plasma-workspace
+    plasma-activities
+    plasma-activities-stats
     qt6-base
     qt6-declarative
     qt6-shadertools

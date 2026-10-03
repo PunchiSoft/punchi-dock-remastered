@@ -3,6 +3,7 @@
 # user authorization; see AGENTS.md, "Test integrity".
 
 appstreamtest
+recentapplicationsmodel_test
 spectrumanalyzer_test
 commandclassification_test
 controlcenternightlightadapter_test
@@ -69,9 +70,16 @@ build_concurrency_test
 plasma_shell_control_test
 systemdiscovery_test
 trashintegration_test
+decorationbuttonprovider_test
+recentapplicationsadapter_test
 dockthemetrash_test
+recent_applications_full_load_test
 plasmoid_full_load_test
 test_environment_cleanup_test
+decoration_close_button_test
+recent_applications_ui_test
+recent_container_context_test
+recent_application_tooltip_test
 popup_coordinator_state_test
 task_popup_anchor_proxy_test
 items_add_button_test
@@ -118,6 +126,8 @@ app_actions_popup_runtime_test
 punchimenu_application_state_test
 dynamic_applications_marker_logic_test
 config_items_default_loading_test
+container_native_discovery_test
+container_load_feedback_test
 config_folder_popups_fan_scroll_test
 config_folder_popups_auto_layout_test
 dynamic_applications_options_test
@@ -130,6 +140,7 @@ popup_spacing_metrics_test
 plasma_panel_sizing_test
 media_dock_item_morph_test
 native_popup_spacing_test
+vertical_popup_anchor_test
 dock_item_launcher_drop_state_test
 dock_item_reorder_group_opacity_test
 dock_item_tooltip_anchor_test

@@ -58,6 +58,35 @@ Controls.Dialog {
     // The initial synchronization shows the draft in the panel. That is not an
     // edit of the user, so it is guarded and never marks the draft as edited.
     property bool syncingForm: false
+    property string containerLoadStatusText: ""
+    property int containerLoadStatusType: Kirigami.MessageType.Warning
+
+    function clearContainerLoadStatus() {
+        root.containerLoadStatusText = ""
+    }
+
+    function showContainerLoadStatus(message, type) {
+        if (!root.visible || !root.draftAvailable
+                || String(root.draftController.draftType) !== "folder") {
+            return
+        }
+        root.containerLoadStatusType = type
+        root.containerLoadStatusText = String(message || "")
+    }
+
+    // Input edits invalidate only content discovery, not shared icon/picker work.
+    function invalidateContainerLoad() {
+        root.clearContainerLoadStatus()
+        if (root.draftController === null) {
+            return
+        }
+        const operation = root.draftController.pendingExternalOperation
+        if (operation !== null
+                && (String(operation.kind) === "container-folder"
+                    || String(operation.kind) === "container-applications")) {
+            root.draftController.clearExternalOperation()
+        }
+    }
 
     // Mapping the catalogue key to the component that renders it.
     function componentForEditor(key) {
@@ -162,6 +191,7 @@ Controls.Dialog {
     // state of the previous draft behind: the fields follow the new draft and the
     // nested list is rebuilt from it with no selection.
     function synchronizeForm() {
+        root.clearContainerLoadStatus()
         root.syncingForm = true
         try {
             if (root.formEditorVisible) {
@@ -183,9 +213,11 @@ Controls.Dialog {
     }
 
     // External pickers and discovery results update the draft through the
-    // controller. Only the ordinary item form needs an explicit refresh; the
-    // extracted option panels already follow draftRevision reactively.
-    function refreshEditorFields() {
+    // controller. Discovery replaces container contents, so its callers also
+    // rebuild the list projection and clear the previous content's selection.
+    // Other pickers leave the nested selection alone. Extracted option panels
+    // already follow draftRevision reactively.
+    function refreshEditorFields(refreshNestedContent) {
         if (!root.formEditorVisible || !root.draftAvailable) {
             return
         }
@@ -195,6 +227,11 @@ Controls.Dialog {
                 editorPanel, root.draftController.draftType)
         } finally {
             root.syncingForm = false
+        }
+        if (refreshNestedContent === true) {
+            root.clearContainerLoadStatus()
+            root.resetNestedList()
+            root.rebuildNestedRows()
         }
     }
 
@@ -335,9 +372,11 @@ Controls.Dialog {
         selector.refresh()
         selector.focusFirstAvailable()
     }
+    onAboutToHide: root.clearContainerLoadStatus()
     // Escape, the close button and the Cancel button all end here. `accept()`
     // leaves the controller without a draft, so this guard cannot cancel twice.
     onClosed: {
+        root.clearContainerLoadStatus()
         if (root.draftAvailable
                 && root.draftController.generation === root.openedGeneration) {
             root.draftController.cancel()
@@ -624,6 +663,8 @@ Controls.Dialog {
                         Layout.fillWidth: true
                         visible: root.formEditorVisible
                         showTypeSelector: false
+                        containerLoadStatusText: root.containerLoadStatusText
+                        containerLoadStatusType: root.containerLoadStatusType
                         // qmllint disable unqualified
                         nameLabel: i18n("Name:")
                         aliasLabel: i18n("Alias:")
@@ -636,6 +677,7 @@ Controls.Dialog {
                         gridText: i18n("Grid")
                         listText: i18n("List")
                         detailedText: i18n("Detailed")
+                        fanText: i18nc("@item:inlistbox Folder popup layout", "Fan")
                         noteText: i18n("Note")
                         separatorText: i18n("Separator")
                         spacerText: i18n("Spacer")
@@ -655,8 +697,15 @@ Controls.Dialog {
                         onFormChanged: root.formChanged()
                         onItemModeChanged: root.formChanged()
                         onContainerLayoutChanged: root.formChanged()
-                        onContainerSourceChanged: root.formChanged()
-                        onContainerCategoryChanged: root.formChanged()
+                        onContainerSourceChanged: {
+                            root.invalidateContainerLoad()
+                            root.formChanged()
+                        }
+                        onContainerCategoryChanged: {
+                            root.invalidateContainerLoad()
+                            root.formChanged()
+                        }
+                        onContainerPathEdited: root.invalidateContainerLoad()
                         onAppCommandEdited: root.formChanged()
                         // The dialog announces requests that the owning page routes
                         // to shared services and pickers.
@@ -667,7 +716,11 @@ Controls.Dialog {
                             root.applicationSearchRequested(String(alias))
                         }
                         onFolderPickerRequested: root.folderPickerRequested()
-                        onContainerRefreshRequested: root.contentLoadRequested()
+                        onContainerRefreshRequested: {
+                            root.clearContainerLoadStatus()
+                            root.formChanged()
+                            root.contentLoadRequested()
+                        }
                     }
 
                     // Options of a type whose configuration was extracted from its

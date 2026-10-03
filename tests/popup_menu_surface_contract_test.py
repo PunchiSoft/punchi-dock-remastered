@@ -1255,11 +1255,26 @@ def main() -> int:
         "Plasmoid.configuration.menuTextShadowsEnabled === true",
         "Runtime menu text shadows must remain opt-in",
     )
+    context_actions = (
+        PROJECT_ROOT / "contents/ui/components/DockContextActionsController.qml"
+    ).read_text()
+    for source in (config_schema, config_menus, config_aspect, main_qml,
+                   context_actions):
+        for retired_symbol in ("showEditDockItemAction", "editDockItemHandler",
+                               "editablePinnedItem", '"editDockItem"'):
+            if retired_symbol in source:
+                raise AssertionError(
+                    f"The retired context action must not retain {retired_symbol}"
+                )
+    require(
+        main_qml,
+        "function openDockItemEditor(index)",
+        "PunchiMenu must retain its shared item editor entry point",
+    )
     require(
         config_schema,
-        '<entry name="showEditDockItemAction" type="Bool">\n'
-        "      <default>true</default>",
-        "showEditDockItemAction must default to true in schema",
+        '<entry name="pendingEditDockItemIndex" type="Int">',
+        "PunchiMenu must retain its shared item editor handoff",
     )
     require(
         config_schema,
@@ -1345,18 +1360,8 @@ def main() -> int:
             )
     require(
         main_qml,
-        "showEditDockItemAction: Plasmoid.configuration.showEditDockItemAction !== false",
-        "Runtime edit dock item action must bind to configuration",
-    )
-    require(
-        main_qml,
         "showConfigureDockAction: Plasmoid.configuration.showConfigureDockAction !== false",
         "Runtime configure dock action must bind to configuration",
-    )
-    require(
-        config_menus,
-        "property alias cfg_showEditDockItemAction: showEditDockItemActionSwitch.checked",
-        "ConfigMenus must expose showEditDockItemAction alias",
     )
     require(
         config_menus,
@@ -1382,11 +1387,6 @@ def main() -> int:
         config_folder_popups,
         "value: page.effectiveFolderPopupDistancePercent",
         "Folder popup settings must display migrated legacy values",
-    )
-    require(
-        config_aspect,
-        "property alias cfg_showEditDockItemAction: menuAppearancePage.cfg_showEditDockItemAction",
-        "ConfigAspect must expose showEditDockItemAction alias to KCM root",
     )
     require(
         config_aspect,

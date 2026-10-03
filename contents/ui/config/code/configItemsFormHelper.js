@@ -76,6 +76,9 @@ function refreshItemForm() {
     actionDialog.spacerSizeValue = item.size || 24
     actionDialog.containerSourceIndex = actionDialog.sourceIndexFor(item.sourceType || "manual")
     actionDialog.containerPathText = item.sourcePath || ""
+    if (actionDialog.containerBrowseSubfoldersChecked !== undefined) {
+        actionDialog.containerBrowseSubfoldersChecked = item.browseSubfolders === true
+    }
     actionDialog.containerCategoryIndex = actionDialog.categoryIndexFor(item.sourceCategory || "Development")
     trashDialog.nameText = item.name || ""
     trashDialog.emptyIconText = item.icon || ""
@@ -235,6 +238,7 @@ function applyItemForm(force) {
         item.layout = actionDialog.containerLayoutValue || "grid"
         item.sourceType = actionDialog.containerSourceValue || "manual"
         item.sourcePath = actionDialog.containerPathText || ""
+        item.browseSubfolders = actionDialog.containerBrowseSubfoldersChecked === true
         item.sourceCategory = actionDialog.containerCategoryValue || "Development"
         item.apps = item.apps instanceof Array ? item.apps : []
         ConfigItemsJS.pruneFolder(item)

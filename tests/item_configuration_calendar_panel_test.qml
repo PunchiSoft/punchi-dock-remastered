@@ -157,12 +157,15 @@ TestCase {
 
         const timeScale = findChild(panel, "calendarTimeTextScaleSlider")
         timeScale.value = 1.35
+        timeScale.moved()
         compare(Number(draftValue("timeTextScale")), 1.35)
         const dateScale = findChild(panel, "calendarDateTextScaleSlider")
         dateScale.value = 1.2
+        dateScale.moved()
         compare(Number(draftValue("dateTextScale")), 1.2)
         const popupScale = findChild(panel, "calendarPopupScaleSlider")
         popupScale.value = 1.45
+        popupScale.moved()
         compare(Number(draftValue("popupScale")), 1.45)
 
         // The canonical rule of the type owns the range: the draft is clamped even if
@@ -226,7 +229,9 @@ TestCase {
         const nameField = findChild(calendarPanel(), "timedNameField")
         nameField.text = "Mi calendario"
         nameField.editingFinished()
-        findChild(calendarPanel(), "calendarPopupScaleSlider").value = 2.0
+        const popupScale = findChild(calendarPanel(), "calendarPopupScaleSlider")
+        popupScale.value = 2.0
+        popupScale.moved()
         compare(String(draftValue("name")), "Mi calendario")
 
         dialog.cancelDraft()
@@ -277,15 +282,21 @@ TestCase {
         format.editText = "dd/MM/yyyy HH:mm"
         format.accepted()
         panel.calendarTextColorControl.text = "#336699"
-        findChild(panel, "calendarTimeTextScaleSlider").value = 1.15
-        findChild(panel, "calendarDateTextScaleSlider").value = 1.05
+        const timeScale = findChild(panel, "calendarTimeTextScaleSlider")
+        timeScale.value = 1.15
+        timeScale.moved()
+        const dateScale = findChild(panel, "calendarDateTextScaleSlider")
+        dateScale.value = 1.05
+        dateScale.moved()
         const shadows = findChild(panel, "calendarTextShadowsCheckBox")
         shadows.checked = false
         shadows.toggled()
         const weekNumbers = findChild(panel, "calendarShowWeekNumbersCheckBox")
         weekNumbers.checked = false
         weekNumbers.toggled()
-        findChild(panel, "calendarPopupScaleSlider").value = 1.5
+        const popupScale = findChild(panel, "calendarPopupScaleSlider")
+        popupScale.value = 1.5
+        popupScale.moved()
 
         verify(dialog.acceptDraft())
         compare(acceptedSpy.count, 1, "Accepting must announce exactly one element")

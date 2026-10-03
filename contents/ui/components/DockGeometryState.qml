@@ -25,6 +25,7 @@ QtObject {
     property bool dockShowLabels: false
     property int dockLabelAreaHeight: 0
     property var dockItems: []
+    property var supplementalDockItems: []
     property bool mediaItemExpanded: true
     property int visibleTaskCount: 0
     property int overflowTaskCount: 0
@@ -416,7 +417,19 @@ QtObject {
     }
     readonly property int renderedDynamicItemCount: root.visibleTaskCount
         + (root.overflowTaskCount > 0 ? 1 : 0)
-    readonly property int panelCompactContentLength: {
+    readonly property int supplementalContentLength: {
+        const items = root.supplementalDockItems || []
+        let extent = 0
+        for (let i = 0; i < items.length; ++i) {
+            extent += root.panelMainAxisExtentForDockItem(items[i])
+        }
+        // Follow the actual preceding footprint, including a temporarily
+        // revealed move handle, rather than counting hidden structural items.
+        const precedingExtent = root.panelBaseCompactContentLength
+        return Math.ceil(extent + Math.max(0, items.length - (precedingExtent > 0 ? 0 : 1)) * root.dockSpacing)
+    }
+    readonly property int panelCompactContentLength: root.panelBaseCompactContentLength + root.supplementalContentLength
+    readonly property int panelBaseCompactContentLength: {
         const boundarySpacing = root.visibleFixedDockItemCount > 0 && renderedDynamicItemCount > 0
             ? dockSpacing
             : 0

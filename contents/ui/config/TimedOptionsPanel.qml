@@ -251,7 +251,7 @@ ColumnLayout {
                 to: 1.8
                 stepSize: 0.05
                 snapMode: Controls.Slider.SnapAlways
-                onValueChanged: root.announce()
+                onMoved: root.announce()
             }
 
             Controls.Label {
@@ -314,7 +314,7 @@ ColumnLayout {
                 stepSize: 0.05
                 snapMode: Controls.Slider.SnapAlways
                 enabled: root.editable
-                onValueChanged: root.announce()
+                onMoved: root.announce()
                 Accessible.name: i18n("Time text scale")
             }
 
@@ -346,7 +346,7 @@ ColumnLayout {
                 stepSize: 0.05
                 snapMode: Controls.Slider.SnapAlways
                 enabled: root.editable
-                onValueChanged: root.announce()
+                onMoved: root.announce()
                 Accessible.name: i18n("Date text scale")
             }
 
@@ -402,7 +402,7 @@ ColumnLayout {
                 stepSize: 0.05
                 snapMode: Controls.Slider.SnapAlways
                 enabled: root.editable
-                onValueChanged: root.announce()
+                onMoved: root.announce()
                 Accessible.name: i18n("Calendar popup scale")
                 Accessible.description: i18n("Adjusts the calendar popup scale between 50 and 300 percent.")
             }

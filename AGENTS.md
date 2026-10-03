@@ -824,6 +824,14 @@ No declarar que algo funciona en runtime si solo fue inspeccionado estáticament
   indique explícitamente otra versión.
 - Sincronizar el valor en todos los archivos canónicos de versión antes del
   commit y no crear un tag o una release salvo solicitud expresa.
+- Los campos que deben coincidir son `KPlugin.Version` de `metadata.json`,
+  `project(... VERSION ...)` de `CMakeLists.txt` y `Project-Id-Version` de
+  `po/plasma_applet_org.kde.plasma.punchi-dock-remastered.pot`. El POT también
+  debe sincronizarse cuando el incremento acompañe solo documentación.
+- Si el único cambio de internacionalización es la versión, actualizar la
+  cabecera del POT y comprobar la igualdad exacta de esos tres campos antes
+  del commit. Esta comprobación de coherencia no implica repetir suites ya
+  validadas. Si cambian textos extraíbles, aplicar el ciclo ki18n completo.
 
 Cualquier asistente de IA o agente autónomo (ej. Antigravity, Codex, Copilot) debe obedecer este protocolo estricto cuando el usuario solicite terminar la sesión de trabajo, finalizar el día o preparar el código para subir:
 

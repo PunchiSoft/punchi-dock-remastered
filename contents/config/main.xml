@@ -32,6 +32,20 @@
     <entry name="targetVirtualDesktop" type="String">
       <default></default>
     </entry>
+    <entry name="showRecentApplications" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="recentApplicationsCount" type="Int">
+      <default>3</default>
+      <min>1</min>
+      <max>20</max>
+    </entry>
+    <entry name="recentApplicationsMode" type="String">
+      <default>container</default>
+    </entry>
+    <entry name="recentApplicationsContainerLayout" type="String">
+      <default>grid</default>
+    </entry>
     <entry name="showActiveTasks" type="Bool">
       <default>true</default>
     </entry>
@@ -75,9 +89,6 @@
     </entry>
     <entry name="menuTextShadowsEnabled" type="Bool">
       <default>false</default>
-    </entry>
-    <entry name="showEditDockItemAction" type="Bool">
-      <default>true</default>
     </entry>
     <entry name="showConfigureDockAction" type="Bool">
       <default>true</default>

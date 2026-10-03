@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="16">
+  <rect id="active-center" x="0" y="0" width="16" height="16" fill="#e84f4f"/>
+  <rect id="inactive-center" x="16" y="0" width="16" height="16" fill="#888888"/>
+  <rect id="hover-center" x="32" y="0" width="16" height="16" fill="#ee7777"/>
+  <rect id="pressed-center" x="48" y="0" width="16" height="16" fill="#aa2222"/>
+  <rect id="deactivated-center" x="64" y="0" width="16" height="16" fill="#555555"/>
+  <rect id="hover-inactive-center" x="80" y="0" width="16" height="16" fill="#aaaaaa"/>
+  <rect id="pressed-inactive-center" x="96" y="0" width="16" height="16" fill="#666666"/>
+  <rect id="deactivated-inactive-center" x="112" y="0" width="16" height="16" fill="#444444"/>
+</svg>

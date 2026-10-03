@@ -44,6 +44,7 @@ Item {
     // Tip position along the surface axis, in window coordinates. A non-finite
     // value centers the tail on the surface.
     property real edgeTailTipOffset: NaN
+    property bool constrainEdgeTailTip: false
     readonly property Item contentItem: contentHost.children.length > 0
         ? contentHost.children[0]
         : null
@@ -386,6 +387,7 @@ Item {
         location: root.edgeTailLocation
         surfaceOpacity: menuBackground.opacity
         tipOffset: root.edgeTailTipOffset
+        constrainTip: root.constrainEdgeTailTip
         anchorExtent: root.edgeTailAnchorExtent
         frameInsetLeft: menuBackground.inset.left
         frameInsetTop: menuBackground.inset.top
@@ -448,7 +450,11 @@ Item {
         // the card instead of resizing it.
         x: menuBackground.x + root.contentFramePadding
         y: menuBackground.y + root.contentFramePadding
-        width: Math.max(0, menuBackground.width - root.contentFramePadding * 2)
+        // Keep content geometry independent of the padding calculated from it.
+        // A wider media card still supplies the shared minimum frame width.
+        width: root.mediaSurfacePresent
+            ? Math.max(0, menuBackground.width - root.contentFramePadding * 2)
+            : root.surfaceContentWidth
         height: root.surfaceContentHeight
         visible: !root.mediaOnly
     }

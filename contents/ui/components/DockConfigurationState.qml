@@ -29,6 +29,38 @@ QtObject {
     property int effectiveIconSize: 48
     property bool themeRepositoryValid: false
     property var theme: ({})
+    readonly property bool showRecentApplications: Plasmoid.configuration.showRecentApplications !== false
+    readonly property int recentApplicationsCount: {
+        const count = Number(Plasmoid.configuration.recentApplicationsCount)
+        return Number.isFinite(count) ? Math.max(1, Math.min(20, Math.round(count))) : 3
+    }
+    readonly property string recentApplicationsMode: Plasmoid.configuration.recentApplicationsMode === "inline"
+        ? "inline" : "container"
+    readonly property string recentApplicationsContainerLayout: {
+        const layout = String(Plasmoid.configuration.recentApplicationsContainerLayout || "grid")
+        return ["grid", "list", "detailed", "fan"].indexOf(layout) >= 0 ? layout : "grid"
+    }
+
+    function disableRecentApplications() {
+        if (!root.showRecentApplications) {
+            return false
+        }
+        Plasmoid.configuration.showRecentApplications = false
+        const writeConfig = Plasmoid.configuration.writeConfig
+        writeConfig()
+        return true
+    }
+
+    function setRecentApplicationsContainerLayout(layout) {
+        if (!root.showRecentApplications || root.recentApplicationsMode !== "container"
+                || ["grid", "list", "detailed", "fan"].indexOf(layout) < 0) {
+            return false
+        }
+        Plasmoid.configuration.recentApplicationsContainerLayout = layout
+        const writeConfig = Plasmoid.configuration.writeConfig
+        writeConfig()
+        return true
+    }
 
     readonly property string windowPreviewStyle: String(Plasmoid.configuration.windowPreviewStyle || "card")
     readonly property string mediaControlsMode: {

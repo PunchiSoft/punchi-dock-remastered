@@ -5,24 +5,69 @@ import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
+import "../org/punchi/dock" as Punchi
 import "punchimenu" as PunchiMenuComponents
 
 Item {
     id: folderRoot
     Kirigami.Theme.inherit: false
     Kirigami.Theme.colorSet: Kirigami.Theme.Window
-    implicitWidth: layoutMode === "grid"
+    readonly property real presentationWidth: layoutMode === "grid"
         ? Math.min(desiredGridWidth + scrollBarGutter, safeMaximumWidth)
         : (layoutMode === "fan"
             ? Math.min(fanView.implicitWidth + classicMargin * 2,
                 safeMaximumWidth)
             : Math.min(Math.round(280 * effectiveScale), safeMaximumWidth))
-    implicitHeight: classicPopupHeight
+    implicitWidth: presentationWidth + (lateralNavigation
+        ? presentationWidth + Kirigami.Units.smallSpacing : 0)
+    implicitHeight: lateralNavigation
+        ? Math.max(classicPopupHeight, navigationPane.item
+            ? (navigationPane.item as FolderPopup).implicitHeight : 0) : classicPopupHeight
     width: implicitWidth
     height: implicitHeight
 
     // Properties injected by the main UI.
     property var folderItem: ({})
+    property bool embeddedNavigationPane: false
+    property bool sessionActive: true
+    property Punchi.FolderNavigationModel modelOverride: null
+    property string pathOverride: ""
+    property string titleOverride: ""
+    property bool directoryNavigationEnabled: navigationActive
+    property bool showCloseButton: true
+    property bool backAvailable: narrowNavigation
+    property int navigationDepth: navigator.history.length
+    readonly property bool navigationActive: !embeddedNavigationPane
+        && folderItem.browseSubfolders === true
+        && folderItem.sourceType === "folder"
+        && (layoutMode === "list" || layoutMode === "detailed")
+    readonly property bool lateralNavigation: navigationActive && navigator.hasChild
+        && maximumAvailableWidth >= presentationWidth * 2 + Kirigami.Units.smallSpacing
+    readonly property bool narrowNavigation: navigationActive && navigator.hasChild
+        && !lateralNavigation
+    readonly property Punchi.FolderNavigationModel directoryModel: modelOverride
+        ? modelOverride : (navigationActive
+            ? (narrowNavigation ? navigator.childModel : navigator.rootModel) : null)
+    readonly property string headerTitle: titleOverride.length > 0
+        ? titleOverride : (narrowNavigation ? navigator.breadcrumb
+            : String(folderItem.name || ""))
+    readonly property FolderNavigationController navigationController: navigator
+    property int pendingViewIndex: -1
+    property real pendingViewScroll: 0
+
+    FolderNavigationController {
+        id: navigator
+        enabled: folderRoot.navigationActive && folderRoot.sessionActive
+        rootPath: String(folderRoot.folderItem.sourcePath || "")
+        rootName: String(folderRoot.folderItem.name || "")
+        onRestoreRequested: function(primary, index, scroll) {
+            if (primary || !folderRoot.lateralNavigation) {
+                folderRoot.restoreView(index, scroll)
+            } else if (navigationPane.item) {
+                (navigationPane.item as FolderPopup).restoreView(index, scroll)
+            }
+        }
+    }
     property string layoutMode: "grid"
     property int profileIconSize: 42
     property bool profileAutoLayout: true
@@ -55,7 +100,9 @@ Item {
 
     // Folder the container points at, when it has one. Only a container bound to
     // a location can offer to open it, which is what the foot action does.
-    readonly property string folderPath: String(folderItem.sourcePath || "").trim()
+    readonly property string folderPath: pathOverride.length > 0
+        ? pathOverride : (navigationActive && directoryModel
+            ? directoryModel.location : String(folderItem.sourcePath || "").trim())
     readonly property bool folderPathAvailable: folderPath.length > 0
     // qmllint disable unqualified
     readonly property string openLocationActionText:
@@ -67,7 +114,8 @@ Item {
 
     // Quick access entries.
     property var apps: folderItem.apps || []
-    property int itemCount: Math.max(0, Number(apps && apps.length) || 0)
+    property int itemCount: directoryModel ? directoryModel.count
+        : Math.max(0, Number(apps && apps.length) || 0)
     // The reference integrates the location action as the final Grid cell. This
     // derived model belongs only to Grid: List and Detailed keep consuming apps
     // directly, and Fan keeps its dedicated model below.
@@ -163,7 +211,7 @@ Item {
         ? Math.ceil(verticalScrollBar.implicitWidth)
             + Kirigami.Units.smallSpacing
         : 0
-    readonly property int classicContentWidth: implicitWidth
+    readonly property int classicContentWidth: (lateralNavigation ? presentationWidth : implicitWidth)
         - classicMargin * 2 - scrollBarGutter
     readonly property int gridColumnCount: layoutMode === "grid"
         ? Math.max(1, Math.min(effectiveGridColumnRequest,
@@ -177,7 +225,7 @@ Item {
         : Math.max(1, Math.min(classicRowCount,
             layoutMode === "grid"
                 ? effectiveClassicRowLimit : configuredRowLimit))
-    readonly property bool effectiveShowHeaderLabel: showHeaderLabel
+    readonly property bool effectiveShowHeaderLabel: (showHeaderLabel || directoryNavigationEnabled)
         && layoutMode !== "fan"
     // List and Detailed retain a chrome row. Grid includes the action in its
     // model, and Fan carries it at the far end of its arc.
@@ -397,10 +445,107 @@ Item {
     signal closeRequested()
     // Requests the file manager to open the folder the container points at.
     signal openLocationRequested(string path)
+    signal directoryActivated(var entry, int index, real scroll)
+    signal backRequested()
+
+    function restoreView(index, scroll) {
+        folderRoot.pendingViewIndex = index
+        folderRoot.pendingViewScroll = scroll
+        Qt.callLater(folderRoot.applyViewRestore)
+    }
+
+    function applyViewRestore() {
+        if (folderRoot.pendingViewIndex < 0 || (folderRoot.directoryModel
+                && folderRoot.directoryModel.loading)) {
+            return
+        }
+        const index = Math.min(folderRoot.pendingViewIndex, gridView.count - 1)
+        gridView.currentIndex = index
+        gridView.contentY = Math.max(0, Math.min(folderRoot.pendingViewScroll,
+            Math.max(0, gridView.contentHeight - gridView.height)))
+        folderRoot.pendingViewIndex = -1
+        if (gridView.currentItem) {
+            gridView.currentItem.forceActiveFocus()
+        } else if (folderRoot.backAvailable) {
+            backButton.forceActiveFocus()
+        } else {
+            classicCloseButton.forceActiveFocus()
+        }
+    }
+
+    onDirectoryActivated: function(entry, index, scroll) {
+        if (!embeddedNavigationPane) {
+            navigator.enter(entry, index, scroll, !narrowNavigation)
+        }
+    }
+    onBackRequested: {
+        if (!embeddedNavigationPane) {
+            navigator.back()
+        }
+    }
+    Keys.onEscapePressed: folderRoot.closeRequested()
+    Keys.onLeftPressed: {
+        if (folderRoot.backAvailable) {
+            folderRoot.backRequested()
+        }
+    }
+
+    Loader {
+        id: navigationPane
+        objectName: "folderNavigationPaneLoader"
+        active: folderRoot.lateralNavigation
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        width: folderRoot.presentationWidth
+        // Dynamic loading reuses the view without recursively instantiating its QML type.
+        // The embedded pane disables its own navigation loader.
+        source: active ? "FolderPopup.qml" : ""
+        onLoaded: {
+            const pane = navigationPane.item as FolderPopup
+            pane.embeddedNavigationPane = true
+            pane.directoryNavigationEnabled = true
+            pane.showCloseButton = false
+            pane.backAvailable = true
+            pane.navigationDepth = Qt.binding(function() { return navigator.history.length })
+            pane.sessionActive = Qt.binding(function() { return folderRoot.sessionActive })
+            pane.folderItem = Qt.binding(function() { return folderRoot.folderItem })
+            pane.layoutMode = Qt.binding(function() { return folderRoot.layoutMode })
+            pane.modelOverride = navigator.childModel
+            pane.pathOverride = Qt.binding(function() { return navigator.childModel.location })
+            pane.titleOverride = Qt.binding(function() { return navigator.breadcrumb })
+            pane.profileIconSize = Qt.binding(function() { return folderRoot.profileIconSize })
+            pane.profileRows = Qt.binding(function() { return folderRoot.profileRows })
+            pane.profileShowLabels = Qt.binding(function() { return folderRoot.profileShowLabels })
+            pane.profileFontFamily = Qt.binding(function() { return folderRoot.profileFontFamily })
+            pane.profileFontSize = Qt.binding(function() { return folderRoot.profileFontSize })
+            pane.profileScale = Qt.binding(function() { return folderRoot.profileScale })
+            pane.textShadowsEnabled = Qt.binding(function() { return folderRoot.textShadowsEnabled })
+            pane.textShadowPercent = Qt.binding(function() { return folderRoot.textShadowPercent })
+            pane.maximumAvailableWidth = Qt.binding(function() { return folderRoot.presentationWidth })
+            pane.maximumAvailableHeight = Qt.binding(function() { return folderRoot.maximumAvailableHeight })
+            pane.folderOpenerName = Qt.binding(function() { return folderRoot.folderOpenerName })
+            pane.animationStyle = "none"
+            pane.restoreView(navigator.pendingIndex, navigator.pendingScroll)
+        }
+    }
+    Connections {
+        target: navigationPane.item
+        function onDirectoryActivated(entry, index, scroll) {
+            navigator.enter(entry, index, scroll, false)
+        }
+        function onBackRequested() { navigator.back() }
+        function onAppLaunched(app) { folderRoot.appLaunched(app) }
+        function onAppContextMenuRequested(app) { folderRoot.appContextMenuRequested(app) }
+        function onOpenLocationRequested(path) { folderRoot.openLocationRequested(path) }
+        function onCloseRequested() { folderRoot.closeRequested() }
+    }
 
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: folderRoot.classicMargin
+        anchors.rightMargin: folderRoot.classicMargin + (folderRoot.lateralNavigation
+            ? folderRoot.presentationWidth + Kirigami.Units.smallSpacing : 0)
         spacing: folderRoot.classicSpacing
 
         // Folder title, centered on the popup and in the theme font weight. The
@@ -417,7 +562,11 @@ Item {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                text: folderRoot.folderItem.name || i18n("Folder") // qmllint disable unqualified
+                text: folderRoot.headerTitle || i18n("Folder") // qmllint disable unqualified
+                elide: Text.ElideMiddle
+                anchors.leftMargin: folderRoot.backAvailable ? backButton.width : 0
+                anchors.rightMargin: folderRoot.directoryNavigationEnabled
+                    && folderRoot.showCloseButton ? classicCloseButton.width : 0
                 horizontalAlignment: Text.AlignHCenter
                 color: Kirigami.Theme.textColor
                 shadowEnabled: folderRoot.textShadowsEnabled
@@ -429,26 +578,26 @@ Item {
                 font.weight: Font.DemiBold
             }
             // Close button.
-            Rectangle {
+            DecorationCloseButton {
                 id: classicCloseButton
+                objectName: "folderPopupCloseButton"
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
-                width: 20
-                height: 20
-                radius: 10
-                color: closeMouse.containsMouse || closeMouse.activeFocus ? Kirigami.Theme.negativeTextColor : Kirigami.Theme.backgroundColor
-                PlasmaComponents.Label { text: "×"; anchors.centerIn: parent; color: Kirigami.Theme.textColor }
-                MouseArea {
-                    id: closeMouse
-                    anchors.fill: parent; hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    activeFocusOnTab: true
-                    Accessible.role: Accessible.Button
-                    Accessible.name: i18n("Close") // qmllint disable unqualified
-                    onClicked: folderRoot.closeRequested()
-                    Keys.onReturnPressed: folderRoot.closeRequested()
-                    Keys.onSpacePressed: folderRoot.closeRequested()
-                }
+                onClicked: folderRoot.closeRequested()
+                visible: folderRoot.showCloseButton
+            }
+            Controls.ToolButton {
+                id: backButton
+                objectName: "folderNavigationBack"
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                visible: folderRoot.backAvailable
+                enabled: visible
+                icon.name: "go-previous-symbolic"
+                text: i18nc("@action:button folder navigation", "Back") // qmllint disable unqualified
+                display: Controls.AbstractButton.IconOnly
+                Accessible.name: text
+                onClicked: folderRoot.backRequested()
             }
         }
 
@@ -469,7 +618,21 @@ Item {
                 ? folderRoot.gridItems
                 : ((folderRoot.layoutMode === "list"
                     || folderRoot.layoutMode === "detailed")
-                    ? folderRoot.apps : [])
+                    ? (folderRoot.directoryModel || folderRoot.apps) : [])
+            onCountChanged: Qt.callLater(folderRoot.applyViewRestore)
+            Controls.BusyIndicator {
+                anchors.centerIn: parent
+                running: !!folderRoot.directoryModel && folderRoot.directoryModel.loading
+                visible: running
+            }
+            Controls.Label {
+                anchors.fill: parent
+                text: folderRoot.directoryModel ? folderRoot.directoryModel.error : ""
+                visible: text.length > 0
+                wrapMode: Text.Wrap
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
+            }
             clip: true
             boundsBehavior: Flickable.StopAtBounds
             Controls.ScrollBar.vertical: Controls.ScrollBar {
@@ -517,6 +680,13 @@ Item {
                 id: appDelegate
                 required property var modelData
                 required property int index
+                onActiveFocusChanged: {
+                    if (activeFocus) { itemMouse.forceActiveFocus() }
+                }
+                readonly property bool browsableDirectory: folderRoot.directoryNavigationEnabled
+                    && !!(modelData && modelData.navigable)
+                    && (!(folderRoot.embeddedNavigationPane || folderRoot.narrowNavigation)
+                        || folderRoot.navigationDepth < 3)
 
                 readonly property bool isOpenLocationAction:
                     !!(modelData && modelData._punchiOpenLocationAction)
@@ -547,7 +717,12 @@ Item {
                     if (isOpenLocationAction) {
                         folderRoot.openLocationRequested(folderRoot.folderPath)
                     } else {
-                        folderRoot.appLaunched(modelData)
+                        gridView.currentIndex = index
+                        if (browsableDirectory) {
+                            folderRoot.directoryActivated(modelData, index, gridView.contentY)
+                        } else {
+                            folderRoot.appLaunched(modelData)
+                        }
                     }
                 }
 
@@ -600,7 +775,8 @@ Item {
                             width: parent.width
                         }
                         PlasmaComponents.Label {
-                            text: (appDelegate.modelData && appDelegate.modelData.command) ? appDelegate.modelData.command : ""
+                            text: appDelegate.modelData
+                                ? (appDelegate.modelData.description || appDelegate.modelData.command || "") : ""
                             font.family: folderRoot.effectiveFontFamily
                             font.pointSize: Math.max(8, folderRoot.effectiveFontSize - 1)
                             color: Kirigami.Theme.textColor
@@ -609,6 +785,13 @@ Item {
                             width: parent.width
                             visible: folderRoot.layoutMode === "detailed"
                         }
+                    }
+                    Kirigami.Icon {
+                        visible: appDelegate.browsableDirectory
+                        source: "go-next-symbolic"
+                        Layout.preferredWidth: Kirigami.Units.iconSizes.small
+                        Layout.preferredHeight: Layout.preferredWidth
+                        Accessible.ignored: true
                     }
                 }
 
@@ -708,8 +891,21 @@ Item {
                         appDelegate.activate()
                     }
                     Keys.onReturnPressed: appDelegate.activate()
+                    Keys.onEnterPressed: appDelegate.activate()
                     Keys.onSpacePressed: appDelegate.activate()
                     Keys.onPressed: function(event) {
+                        if (event.key === Qt.Key_Right && appDelegate.browsableDirectory) {
+                            appDelegate.activate()
+                            event.accepted = true
+                        } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
+                            gridView.currentIndex = Math.max(0, Math.min(gridView.count - 1,
+                                appDelegate.index + (event.key === Qt.Key_Up ? -1 : 1)))
+                            gridView.positionViewAtIndex(gridView.currentIndex, GridView.Contain)
+                            if (gridView.currentItem) {
+                                gridView.currentItem.forceActiveFocus()
+                            }
+                            event.accepted = true
+                        }
                         if (event.key === Qt.Key_Menu
                                 || (event.key === Qt.Key_F10
                                     && (event.modifiers & Qt.ShiftModifier))) {

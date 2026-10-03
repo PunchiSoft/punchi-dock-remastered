@@ -45,6 +45,8 @@ target_sources(punchidockintegration PRIVATE
     desktopshortcutwriter.h
     desktoplauncherresolver.cpp
     desktoplauncherresolver.h
+    decorationbuttonprovider.cpp
+    decorationbuttonprovider.h
     dockthemeremoval.cpp
     dockthemerepository.cpp
     dockthemerepository.h
@@ -58,6 +60,8 @@ target_sources(punchidockintegration PRIVATE
     dockruntimeservice.h
     dropurlpolicy.cpp
     dropurlpolicy.h
+    foldernavigationmodel.cpp
+    foldernavigationmodel.h
     mediaartworkresolver.cpp
     mediaartworkresolver.h
     launcherdragcontroller.cpp
@@ -84,6 +88,10 @@ target_sources(punchidockintegration PRIVATE
     punchimenulayoutmodel.h
     punchimenushortcutcontroller.cpp
     punchimenushortcutcontroller.h
+    recentapplicationsmodel.cpp
+    recentapplicationsmodel.h
+    recentapplicationsadapter.cpp
+    recentapplicationsadapter.h
     sessionactionscontroller.cpp
     sessionactionscontroller.h
     spectrumanalyzer.cpp
@@ -171,6 +179,8 @@ target_link_libraries(punchidockintegration
         PkgConfig::PipeWire
         Plasma::Plasma
         Plasma::PlasmaQuick
+        Plasma::Activities
+        Plasma::ActivitiesStats
         PW::KWorkspace
 )
 

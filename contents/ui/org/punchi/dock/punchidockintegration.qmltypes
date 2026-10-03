@@ -350,6 +350,46 @@ Module {
         Method { name: "refresh"; lineNumber: 26 }
     }
     Component {
+        file: "decorationbuttonprovider.h"
+        lineNumber: 14
+        name: "DecorationButtonProvider"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/DecorationButtonProvider 1.0"]
+        isCreatable: false
+        isSingleton: true
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "closeButtonPath"
+            type: "QString"
+            read: "closeButtonPath"
+            notify: "appearanceChanged"
+            index: 0
+            lineNumber: 19
+            isReadonly: true
+        }
+        Property {
+            name: "buttonSize"
+            type: "QSizeF"
+            read: "buttonSize"
+            notify: "appearanceChanged"
+            index: 1
+            lineNumber: 20
+            isReadonly: true
+        }
+        Property {
+            name: "themeName"
+            type: "QString"
+            read: "themeName"
+            notify: "appearanceChanged"
+            index: 2
+            lineNumber: 21
+            isReadonly: true
+        }
+        Signal { name: "appearanceChanged"; lineNumber: 33 }
+        Method { name: "refresh"; lineNumber: 30 }
+    }
+    Component {
         file: "dockitemspersistenceadapter.h"
         lineNumber: 13
         name: "DockItemsPersistenceAdapter"
@@ -566,6 +606,107 @@ Module {
         Method { name: "cancelRemoval"; lineNumber: 52 }
         Method { name: "refreshThemes"; lineNumber: 53 }
         Method { name: "clearError"; lineNumber: 54 }
+    }
+    Component {
+        file: "foldernavigationmodel.h"
+        lineNumber: 14
+        name: "FolderNavigationModel"
+        accessSemantics: "reference"
+        prototype: "QAbstractListModel"
+        exports: ["org.punchi.dock/FolderNavigationModel 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "rootPath"
+            type: "QString"
+            read: "rootPath"
+            write: "setRootPath"
+            notify: "rootPathChanged"
+            index: 0
+            lineNumber: 18
+        }
+        Property {
+            name: "location"
+            type: "QString"
+            read: "location"
+            write: "setLocation"
+            notify: "locationChanged"
+            index: 1
+            lineNumber: 19
+        }
+        Property {
+            name: "enabled"
+            type: "bool"
+            read: "enabled"
+            write: "setEnabled"
+            notify: "enabledChanged"
+            index: 2
+            lineNumber: 20
+        }
+        Property {
+            name: "loading"
+            type: "bool"
+            read: "loading"
+            notify: "stateChanged"
+            index: 3
+            lineNumber: 21
+            isReadonly: true
+        }
+        Property {
+            name: "error"
+            type: "QString"
+            read: "error"
+            notify: "stateChanged"
+            index: 4
+            lineNumber: 22
+            isReadonly: true
+        }
+        Property {
+            name: "count"
+            type: "int"
+            read: "count"
+            notify: "countChanged"
+            index: 5
+            lineNumber: 23
+            isReadonly: true
+        }
+        Property {
+            name: "depth"
+            type: "int"
+            read: "depth"
+            notify: "locationChanged"
+            index: 6
+            lineNumber: 24
+            isReadonly: true
+        }
+        Property {
+            name: "maximumDepth"
+            type: "int"
+            read: "maximumDepth"
+            index: 7
+            lineNumber: 25
+            isReadonly: true
+            isPropertyConstant: true
+        }
+        Signal { name: "rootPathChanged"; lineNumber: 47 }
+        Signal { name: "locationChanged"; lineNumber: 48 }
+        Signal { name: "enabledChanged"; lineNumber: 49 }
+        Signal { name: "stateChanged"; lineNumber: 50 }
+        Signal { name: "countChanged"; lineNumber: 51 }
+        Method {
+            name: "get"
+            type: "QVariantMap"
+            isMethodConstant: true
+            lineNumber: 43
+            Parameter { name: "row"; type: "int" }
+        }
+        Method {
+            name: "directoryTarget"
+            type: "QString"
+            isMethodConstant: true
+            lineNumber: 44
+            Parameter { name: "entry"; type: "QVariantMap" }
+        }
+        Method { name: "reload"; lineNumber: 45 }
     }
     Component {
         file: "launcherdragcontroller.h"
@@ -2149,6 +2290,367 @@ Module {
         prototype: "QAbstractItemModel"
     }
     Component {
+        file: "qabstractproxymodel.h"
+        lineNumber: 17
+        name: "QAbstractProxyModel"
+        accessSemantics: "reference"
+        prototype: "QAbstractItemModel"
+        Property {
+            name: "sourceModel"
+            type: "QAbstractItemModel"
+            isPointer: true
+            bindable: "bindableSourceModel"
+            read: "sourceModel"
+            write: "setSourceModel"
+            notify: "sourceModelChanged"
+            index: 0
+            lineNumber: 20
+        }
+        Signal { name: "sourceModelChanged"; lineNumber: 69 }
+        Method { name: "_q_sourceModelDestroyed"; lineNumber: 78 }
+        Method {
+            name: "_q_sourceModelRowsAboutToBeInserted"
+            lineNumber: 79
+            Parameter { type: "QModelIndex" }
+            Parameter { type: "int" }
+            Parameter { type: "int" }
+        }
+        Method {
+            name: "_q_sourceModelRowsInserted"
+            lineNumber: 80
+            Parameter { type: "QModelIndex" }
+            Parameter { type: "int" }
+            Parameter { type: "int" }
+        }
+        Method {
+            name: "_q_sourceModelRowsRemoved"
+            lineNumber: 81
+            Parameter { type: "QModelIndex" }
+            Parameter { type: "int" }
+            Parameter { type: "int" }
+        }
+        Method {
+            name: "_q_sourceModelColumnsAboutToBeInserted"
+            lineNumber: 82
+            Parameter { type: "QModelIndex" }
+            Parameter { type: "int" }
+            Parameter { type: "int" }
+        }
+        Method {
+            name: "_q_sourceModelColumnsInserted"
+            lineNumber: 83
+            Parameter { type: "QModelIndex" }
+            Parameter { type: "int" }
+            Parameter { type: "int" }
+        }
+        Method {
+            name: "_q_sourceModelColumnsRemoved"
+            lineNumber: 84
+            Parameter { type: "QModelIndex" }
+            Parameter { type: "int" }
+            Parameter { type: "int" }
+        }
+        Method {
+            name: "mapToSource"
+            type: "QModelIndex"
+            isMethodConstant: true
+            lineNumber: 31
+            Parameter { name: "proxyIndex"; type: "QModelIndex" }
+        }
+        Method {
+            name: "mapFromSource"
+            type: "QModelIndex"
+            isMethodConstant: true
+            lineNumber: 32
+            Parameter { name: "sourceIndex"; type: "QModelIndex" }
+        }
+        Method {
+            name: "mapSelectionToSource"
+            type: "QItemSelection"
+            isMethodConstant: true
+            lineNumber: 34
+            Parameter { name: "selection"; type: "QItemSelection" }
+        }
+        Method {
+            name: "mapSelectionFromSource"
+            type: "QItemSelection"
+            isMethodConstant: true
+            lineNumber: 35
+            Parameter { name: "selection"; type: "QItemSelection" }
+        }
+    }
+    Component {
+        file: "qidentityproxymodel.h"
+        lineNumber: 17
+        name: "QIdentityProxyModel"
+        accessSemantics: "reference"
+        prototype: "QAbstractProxyModel"
+    }
+    Component {
+        file: "qsortfilterproxymodel.h"
+        lineNumber: 21
+        name: "QSortFilterProxyModel"
+        accessSemantics: "reference"
+        prototype: "QAbstractProxyModel"
+        Property {
+            name: "filterRegularExpression"
+            type: "QRegularExpression"
+            bindable: "bindableFilterRegularExpression"
+            read: "filterRegularExpression"
+            write: "setFilterRegularExpression"
+            index: 0
+            lineNumber: 27
+        }
+        Property {
+            name: "filterKeyColumn"
+            type: "int"
+            bindable: "bindableFilterKeyColumn"
+            read: "filterKeyColumn"
+            write: "setFilterKeyColumn"
+            index: 1
+            lineNumber: 29
+        }
+        Property {
+            name: "dynamicSortFilter"
+            type: "bool"
+            bindable: "bindableDynamicSortFilter"
+            read: "dynamicSortFilter"
+            write: "setDynamicSortFilter"
+            index: 2
+            lineNumber: 31
+        }
+        Property {
+            name: "filterCaseSensitivity"
+            type: "Qt::CaseSensitivity"
+            bindable: "bindableFilterCaseSensitivity"
+            read: "filterCaseSensitivity"
+            write: "setFilterCaseSensitivity"
+            notify: "filterCaseSensitivityChanged"
+            index: 3
+            lineNumber: 33
+        }
+        Property {
+            name: "sortCaseSensitivity"
+            type: "Qt::CaseSensitivity"
+            bindable: "bindableSortCaseSensitivity"
+            read: "sortCaseSensitivity"
+            write: "setSortCaseSensitivity"
+            notify: "sortCaseSensitivityChanged"
+            index: 4
+            lineNumber: 36
+        }
+        Property {
+            name: "isSortLocaleAware"
+            type: "bool"
+            bindable: "bindableIsSortLocaleAware"
+            read: "isSortLocaleAware"
+            write: "setSortLocaleAware"
+            notify: "sortLocaleAwareChanged"
+            index: 5
+            lineNumber: 39
+        }
+        Property {
+            name: "sortRole"
+            type: "int"
+            bindable: "bindableSortRole"
+            read: "sortRole"
+            write: "setSortRole"
+            notify: "sortRoleChanged"
+            index: 6
+            lineNumber: 41
+        }
+        Property {
+            name: "filterRole"
+            type: "int"
+            bindable: "bindableFilterRole"
+            read: "filterRole"
+            write: "setFilterRole"
+            notify: "filterRoleChanged"
+            index: 7
+            lineNumber: 43
+        }
+        Property {
+            name: "recursiveFilteringEnabled"
+            type: "bool"
+            bindable: "bindableRecursiveFilteringEnabled"
+            read: "isRecursiveFilteringEnabled"
+            write: "setRecursiveFilteringEnabled"
+            notify: "recursiveFilteringEnabledChanged"
+            index: 8
+            lineNumber: 45
+        }
+        Property {
+            name: "autoAcceptChildRows"
+            type: "bool"
+            bindable: "bindableAutoAcceptChildRows"
+            read: "autoAcceptChildRows"
+            write: "setAutoAcceptChildRows"
+            notify: "autoAcceptChildRowsChanged"
+            index: 9
+            lineNumber: 48
+        }
+        Signal {
+            name: "dynamicSortFilterChanged"
+            lineNumber: 178
+            Parameter { name: "dynamicSortFilter"; type: "bool" }
+        }
+        Signal {
+            name: "filterCaseSensitivityChanged"
+            lineNumber: 179
+            Parameter { name: "filterCaseSensitivity"; type: "Qt::CaseSensitivity" }
+        }
+        Signal {
+            name: "sortCaseSensitivityChanged"
+            lineNumber: 180
+            Parameter { name: "sortCaseSensitivity"; type: "Qt::CaseSensitivity" }
+        }
+        Signal {
+            name: "sortLocaleAwareChanged"
+            lineNumber: 181
+            Parameter { name: "sortLocaleAware"; type: "bool" }
+        }
+        Signal {
+            name: "sortRoleChanged"
+            lineNumber: 182
+            Parameter { name: "sortRole"; type: "int" }
+        }
+        Signal {
+            name: "filterRoleChanged"
+            lineNumber: 183
+            Parameter { name: "filterRole"; type: "int" }
+        }
+        Signal {
+            name: "recursiveFilteringEnabledChanged"
+            lineNumber: 184
+            Parameter { name: "recursiveFilteringEnabled"; type: "bool" }
+        }
+        Signal {
+            name: "autoAcceptChildRowsChanged"
+            lineNumber: 185
+            Parameter { name: "autoAcceptChildRows"; type: "bool" }
+        }
+        Method {
+            name: "setFilterRegularExpression"
+            lineNumber: 113
+            Parameter { name: "pattern"; type: "QString" }
+        }
+        Method {
+            name: "setFilterRegularExpression"
+            lineNumber: 114
+            Parameter { name: "regularExpression"; type: "QRegularExpression" }
+        }
+        Method {
+            name: "setFilterWildcard"
+            lineNumber: 115
+            Parameter { name: "pattern"; type: "QString" }
+        }
+        Method {
+            name: "setFilterFixedString"
+            lineNumber: 116
+            Parameter { name: "pattern"; type: "QString" }
+        }
+        Method { name: "invalidate"; lineNumber: 117 }
+    }
+    Component {
+        file: "recentapplicationsadapter.h"
+        lineNumber: 12
+        name: "RecentApplicationsAdapter"
+        accessSemantics: "reference"
+        prototype: "QIdentityProxyModel"
+        exports: ["org.punchi.dock/RecentApplicationsAdapter 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "enabled"
+            type: "bool"
+            read: "enabled"
+            write: "setEnabled"
+            notify: "enabledChanged"
+            index: 0
+            lineNumber: 16
+        }
+        Property {
+            name: "available"
+            type: "bool"
+            read: "available"
+            notify: "availabilityChanged"
+            index: 1
+            lineNumber: 17
+            isReadonly: true
+        }
+        Signal { name: "enabledChanged"; lineNumber: 33 }
+        Signal { name: "availabilityChanged"; lineNumber: 34 }
+        Method {
+            name: "recordAccess"
+            lineNumber: 30
+            Parameter { name: "storageId"; type: "QString" }
+        }
+    }
+    Component {
+        file: "recentapplicationsmodel.h"
+        lineNumber: 14
+        name: "RecentApplicationsModel"
+        accessSemantics: "reference"
+        prototype: "QSortFilterProxyModel"
+        exports: ["org.punchi.dock/RecentApplicationsModel 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "enabled"
+            type: "bool"
+            read: "enabled"
+            write: "setEnabled"
+            notify: "enabledChanged"
+            index: 0
+            lineNumber: 18
+        }
+        Property {
+            name: "maximumItems"
+            type: "int"
+            read: "maximumItems"
+            write: "setMaximumItems"
+            notify: "maximumItemsChanged"
+            index: 1
+            lineNumber: 19
+        }
+        Property {
+            name: "excludedStorageIds"
+            type: "QStringList"
+            read: "excludedStorageIds"
+            write: "setExcludedStorageIds"
+            notify: "excludedStorageIdsChanged"
+            index: 2
+            lineNumber: 20
+        }
+        Property {
+            name: "count"
+            type: "int"
+            read: "count"
+            notify: "itemsChanged"
+            index: 3
+            lineNumber: 21
+            isReadonly: true
+        }
+        Property {
+            name: "items"
+            type: "QVariantList"
+            read: "items"
+            notify: "itemsChanged"
+            index: 4
+            lineNumber: 22
+            isReadonly: true
+        }
+        Signal { name: "enabledChanged"; lineNumber: 45 }
+        Signal { name: "maximumItemsChanged"; lineNumber: 46 }
+        Signal { name: "excludedStorageIdsChanged"; lineNumber: 47 }
+        Signal { name: "itemsChanged"; lineNumber: 48 }
+        Method {
+            name: "get"
+            type: "QVariantMap"
+            isMethodConstant: true
+            lineNumber: 42
+            Parameter { name: "row"; type: "int" }
+        }
+    }
+    Component {
         file: "sessionactionscontroller.h"
         lineNumber: 10
         name: "SessionActionsController"
@@ -2250,8 +2752,13 @@ Module {
             Parameter { name: "message"; type: "QString" }
         }
         Signal {
-            name: "operationFailed"
+            name: "applicationAccessed"
             lineNumber: 67
+            Parameter { name: "storageId"; type: "QString" }
+        }
+        Signal {
+            name: "operationFailed"
+            lineNumber: 68
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }

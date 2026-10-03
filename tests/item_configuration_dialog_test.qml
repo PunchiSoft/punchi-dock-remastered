@@ -436,6 +436,86 @@ TestCase {
         })
     }
 
+    function test_loadedContainerContentRefreshesTheVisibleRows_data() {
+        return [
+            {"tag": "category", "source": "category"},
+            {"tag": "folder", "source": "folder"}
+        ]
+    }
+
+    function test_loadedContainerContentRefreshesTheVisibleRows(data) {
+        const generation = dialog.openFor("folder")
+        tryVerify(function() { return dialog.opened })
+        try {
+            controller.setDraftValues({
+                "sourceType": data.source,
+                "sourceCategory": "Network",
+                "sourcePath": "/test/applications"
+            })
+            dialog.refreshEditorFields(true)
+            compare(actionEditor().actionModel.count, 0)
+
+            verify(controller.applyContainerApplications(generation, [
+                {"type": "app", "name": "Browser", "command": "browser"},
+                {"type": "app", "name": "Mail", "command": "mail"}
+            ], "applications-internet"))
+            dialog.refreshEditorFields(true)
+            compare(controller.nestedCount(), 2)
+            compare(actionEditor().actionModel.count, 2,
+                "Loaded applications must appear without closing the dialog")
+            compare(actionEditor().actionModel.get(0).title, "Browser")
+
+            dialog.selectedActionIndex = 1
+            verify(controller.applyContainerApplications(generation, [
+                {"type": "app", "name": "Files", "command": "files"}
+            ], ""))
+            dialog.refreshEditorFields(true)
+            compare(actionEditor().actionModel.count, 1)
+            compare(actionEditor().actionModel.get(0).title, "Files")
+            compare(dialog.selectedActionIndex, -1,
+                "Replacing content must discard the previous selection")
+
+            verify(controller.applyContainerApplications(generation, [], ""))
+            dialog.refreshEditorFields(true)
+            compare(actionEditor().actionModel.count, 0)
+            compare(controller.items.length, 0)
+        } finally {
+            dialog.cancelDraft()
+        }
+        tryVerify(function() { return !dialog.opened })
+        compare(controller.applyContainerApplications(generation, [
+            {"type": "app", "name": "Late", "command": "late"}
+        ], ""), false)
+        dialog.openFor("folder")
+        compare(actionEditor().actionModel.count, 0,
+            "Reopening must not retain the previous discovery result")
+        dialog.cancelDraft()
+    }
+
+    function test_containerFanSelectionSurvivesRefreshAndAcceptance() {
+        dialog.openFor("folder")
+        tryVerify(function() { return dialog.opened })
+        try {
+            const panel = editorPanel()
+            const fanIndex = panel.layoutIndexFor("fan")
+            compare(fanIndex, 3, "Fan must be the fourth container view")
+            panel.containerLayoutIndex = fanIndex
+            panel.containerLayoutChanged("fan")
+            compare(panel.containerLayoutValue, "fan")
+            compare(controller.draft.layout, "fan")
+            dialog.refreshEditorFields(true)
+            compare(panel.containerLayoutValue, "fan")
+            addButton().clicked()
+            compare(acceptedSpy.count, 1)
+            compare(acceptedSpy.signalArguments[0][0].layout, "fan")
+            compare(controller.items.length, 0)
+        } finally {
+            if (dialog.opened) {
+                dialog.cancelDraft()
+            }
+        }
+    }
+
     function test_theContainerApplicationsFollowTheDraft() {
         dialog.openFor("folder")
         tryVerify(function() {

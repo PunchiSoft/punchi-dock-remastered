@@ -696,12 +696,13 @@ void SystemDiscovery::launchApplication(const QString &storageId)
 
     auto *job = new KIO::ApplicationLauncherJob(service, this);
     job->setUiDelegate(nullptr);
-    connect(job, &KJob::result, this, [this, job]() {
+    connect(job, &KJob::result, this, [this, job, storageId = service->storageId()]() {
         if (job->error()) {
             Q_EMIT applicationLaunchFinished(false, job->errorString());
             Q_EMIT operationFailed(QStringLiteral("launch"), job->errorString());
         } else {
             Q_EMIT applicationLaunchFinished(true, QString());
+            Q_EMIT applicationAccessed(storageId);
         }
     });
     job->start();
@@ -740,9 +741,11 @@ bool SystemDiscovery::launchApplicationWithUrls(const QString &applicationId, co
     auto *job = new KIO::ApplicationLauncherJob(service, this);
     job->setUrls(validatedUrls.urls);
     job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoErrorHandlingEnabled));
-    connect(job, &KJob::result, this, [this, job]() {
+    connect(job, &KJob::result, this, [this, job, storageId = service->storageId()]() {
         if (job->error()) {
             Q_EMIT operationFailed(QStringLiteral("dropLaunch"), job->errorString());
+        } else {
+            Q_EMIT applicationAccessed(storageId);
         }
     });
     job->start();
@@ -783,9 +786,11 @@ bool SystemDiscovery::launchApplicationAction(const QString &applicationId, cons
 
         auto *job = new KIO::ApplicationLauncherJob(action, this);
         job->setUiDelegate(nullptr);
-        connect(job, &KJob::result, this, [this, job]() {
+        connect(job, &KJob::result, this, [this, job, storageId = service->storageId()]() {
             if (job->error()) {
                 Q_EMIT operationFailed(QStringLiteral("launchAction"), job->errorString());
+            } else {
+                Q_EMIT applicationAccessed(storageId);
             }
         });
         job->start();
@@ -809,9 +814,11 @@ bool SystemDiscovery::launchApplicationByCommand(const QString &command)
 
     auto *job = new KIO::ApplicationLauncherJob(service, this);
     job->setUiDelegate(nullptr);
-    connect(job, &KJob::result, this, [this, job]() {
+    connect(job, &KJob::result, this, [this, job, storageId = service->storageId()]() {
         if (job->error()) {
             Q_EMIT operationFailed(QStringLiteral("launch"), job->errorString());
+        } else {
+            Q_EMIT applicationAccessed(storageId);
         }
     });
     job->start();
@@ -828,9 +835,11 @@ void SystemDiscovery::openUrl(const QString &url)
         if (launcher.service) {
             auto *job = new KIO::ApplicationLauncherJob(launcher.service, this);
             job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoErrorHandlingEnabled));
-            connect(job, &KJob::result, this, [this, job]() {
+            connect(job, &KJob::result, this, [this, job, storageId = launcher.service->storageId()]() {
                 if (job->error()) {
                     Q_EMIT operationFailed(QStringLiteral("openUrl"), job->errorString());
+                } else {
+                    Q_EMIT applicationAccessed(storageId);
                 }
             });
             job->start();

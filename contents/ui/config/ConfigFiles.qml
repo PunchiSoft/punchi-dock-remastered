@@ -25,10 +25,30 @@ KCM.SimpleKCM {
     property string pendingOperation: "load"
     property bool syncing: false
     property bool loadingFromDisk: false
+    property bool editorReady: false
     property alias statusMessage: statusLabel
 
     function initialJson() {
         return ItemsJS.defaultJson()
+    }
+
+    function loadEditorText(text) {
+        let displayText = text.length > 0 ? text : initialJson()
+        if (displayText.length <= DockLogic.maximumDockItemsJsonLength) {
+            try {
+                const formatted = JSON.stringify(JSON.parse(displayText), null, 4)
+                if (formatted.length <= DockLogic.maximumDockItemsJsonLength) {
+                    displayText = formatted
+                }
+            } catch (error) {
+                // Keep invalid input intact so it can be corrected in the editor.
+            }
+        }
+        syncing = true
+        advancedJsonEditor.text = displayText
+        // Track the source value, not its presentation, for KCM change detection.
+        editorDockItemsJson = text
+        syncing = false
     }
 
     function setEditorText(text) {
@@ -124,7 +144,6 @@ KCM.SimpleKCM {
     }
     
     function exportJsonRequested() {
-        advancedJsonEditor.text = cfg_dockItemsJson
         // Since we cannot write to arbitrary disk paths from pure QML in Plasma 6 due to security constraints,
         // we copy the configuration to the clipboard, allowing the user to paste it into any text file they want.
         // We select the text first so the user also sees what's happening.
@@ -135,19 +154,13 @@ KCM.SimpleKCM {
     }
 
     Component.onCompleted: {
-        if (cfg_dockItemsJson && cfg_dockItemsJson.length > 0) {
-            setEditorText(cfg_dockItemsJson)
-        } else {
-            setEditorText(initialJson())
-        }
+        editorReady = true
+        loadEditorText(cfg_dockItemsJson)
     }
     
     onCfg_dockItemsJsonChanged: {
-        if (!syncing && cfg_dockItemsJson !== editorDockItemsJson) {
-            syncing = true
-            advancedJsonEditor.text = cfg_dockItemsJson
-            editorDockItemsJson = cfg_dockItemsJson
-            syncing = false
+        if (editorReady && !syncing && cfg_dockItemsJson !== editorDockItemsJson) {
+            loadEditorText(cfg_dockItemsJson)
         }
     }
 

@@ -4,8 +4,11 @@ import "../contents/ui/config/code/configItemsController.js" as ConfigItemsContr
 import "../contents/ui/config/code/configItems.js" as ConfigItemsJS
 import "../contents/ui/config/code/items.js" as ItemsJS
 import "../contents/ui/config/code/configItemsWorkflowHelper.js" as WorkflowHelper
+import "../contents/ui/config/code/configItemsStateHelper.js" as StateHelper
+import "fixtures/config_items_selection_form_stub.js" as FormHelper
 
 TestCase {
+    id: testCase
     name: "ConfigItemsDefaultLoading"
 
     property string cfg_dockItemsJson: ""
@@ -19,6 +22,38 @@ TestCase {
     property bool cfg_showActiveTasks: true
     property string defaultTrashEmptySound: ""
     property string selectedItemType: "app"
+    property bool syncing: false
+    property int selectedActionIndex: -1
+    property var selectionRefreshes: []
+    property string failingSelectionPhase: ""
+    property int selectionEditCount: 0
+
+    onSelectedIndexChanged: {
+        if (!syncing) {
+            selectionEditCount += 1
+        }
+    }
+
+    QtObject {
+        id: mainView
+        property int lastPosition: -1
+        property int positionCount: 0
+        function positionAtIndex(index) {
+            lastPosition = index
+            positionCount += 1
+        }
+    }
+
+    function recordSelectionRefresh(phase) {
+        selectionRefreshes = selectionRefreshes.concat([{phase: phase, guarded: syncing}])
+        if (!syncing) {
+            selectionEditCount += 1
+            cfg_dockItemsJson = "unexpected edit"
+        }
+        if (failingSelectionPhase === phase) {
+            throw new Error("Selection refresh failed")
+        }
+    }
 
     QtObject {
         id: dynamicApplicationsRemovalDialog
@@ -67,6 +102,71 @@ TestCase {
         dynamicApplicationsRemovalDialog.openCount = 0
         controlCenterDialog.controlCenterMode = "floating"
         controlCenterDialog.openCount = 0
+        syncing = false
+        selectedActionIndex = -1
+        selectionRefreshes = []
+        failingSelectionPhase = ""
+        selectionEditCount = 0
+        mainView.lastPosition = -1
+        mainView.positionCount = 0
+    }
+
+    function test_selectionLoadsWithoutChangingConfiguration() {
+        items = [{type: "calendar", timeTextScale: 1.35},
+            {type: "app", name: "Pinned"}, {type: "folder", apps: []},
+            {type: "trash"}, {type: "clock", textScale: 1.2}]
+        const before = JSON.stringify(items)
+        cfg_dockItemsJson = before
+        const indices = [0, 1, 2, 3, 4, 0, 0, -1]
+        for (let index = 0; index < indices.length; ++index) {
+            selectedActionIndex = 2
+            StateHelper.selectItem(indices[index])
+            compare(selectedIndex, indices[index])
+            compare(selectedActionIndex, -1)
+            compare(syncing, false)
+            compare(cfg_dockItemsJson, before)
+            compare(JSON.stringify(items), before)
+            compare(selectionEditCount, 0,
+                "Selection bindings and form loading must not announce edits")
+        }
+        compare(selectionRefreshes.length, indices.length * 2)
+        for (let index = 0; index < selectionRefreshes.length; ++index) {
+            compare(selectionRefreshes[index].guarded, true)
+            compare(selectionRefreshes[index].phase, index % 2 === 0 ? "form" : "actions")
+        }
+        compare(mainView.lastPosition, 0)
+        compare(mainView.positionCount, indices.length - 1)
+    }
+
+    function test_selectionRestoresOuterSynchronization() {
+        syncing = true
+        StateHelper.selectItem(0)
+        compare(syncing, true, "An outer synchronization must remain active")
+        compare(selectionEditCount, 0)
+        compare(mainView.lastPosition, 0)
+    }
+
+    function test_selectionRestoresSynchronizationAfterFailure_data() {
+        return [{tag: "form-editable", phase: "form", outer: false},
+            {tag: "form-syncing", phase: "form", outer: true},
+            {tag: "actions-editable", phase: "actions", outer: false},
+            {tag: "actions-syncing", phase: "actions", outer: true}]
+    }
+
+    function test_selectionRestoresSynchronizationAfterFailure(data) {
+        syncing = data.outer
+        failingSelectionPhase = data.phase
+        let caught = false
+        try {
+            StateHelper.selectItem(0)
+        } catch (error) {
+            compare(error.message, "Selection refresh failed")
+            caught = true
+        }
+        verify(caught, "The refresh failure must propagate")
+        compare(syncing, data.outer, "Failure must restore the previous guard")
+        compare(selectionEditCount, 0)
+        compare(mainView.positionCount, 0)
     }
 
     function test_missingConfigurationLoadsDefaults() {

@@ -24,7 +24,6 @@ Item {
     property alias cfg_contextMenuBackgroundOpacityPercent: contextMenuBackgroundOpacitySlider.value
     property alias cfg_contextMenuBackgroundBlurEnabled: contextMenuBackgroundBlurSwitch.checked
     property alias cfg_menuTextShadowsEnabled: menuTextShadowsSwitch.checked
-    property alias cfg_showEditDockItemAction: showEditDockItemActionSwitch.checked
     property alias cfg_showConfigureDockAction: showConfigureDockActionSwitch.checked
     property alias cfg_menuAnimation: menuAnimationSettings.animationStyle
     property alias cfg_menuAnimationSpeedPercent: menuAnimationSettings.animationSpeedPercent
@@ -295,16 +294,8 @@ Item {
         }
 
         Controls.Switch {
-            id: showEditDockItemActionSwitch
-            Kirigami.FormData.label: i18n("Menu actions:")
-            text: i18n("Show \"Edit item…\"")
-            Accessible.name: text
-            Accessible.description: i18n("Shows the quick item editor action in dock context menus.")
-
-        }
-
-        Controls.Switch {
             id: showConfigureDockActionSwitch
+            Kirigami.FormData.label: i18n("Menu actions:")
             text: i18n("Show \"Configure Punchi Dock…\"")
             Accessible.name: text
             Accessible.description: i18n("Shows the general Punchi Dock preferences action in dock context menus.")

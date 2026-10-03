@@ -145,7 +145,7 @@ KCM.SimpleKCM {
             // qmllint disable unqualified
             text: page.hoverEnlargementDisabled
                 ? i18n("At 0%, the hover enlargement animation is disabled.")
-                : i18n("Plasma panels limit hover enlargement to 65% and reduce it further when the custom panel size requires it.")
+                : i18n("Plasma panels limit hover enlargement to 65% and reduce it further when the custom panel size requires it. With an active custom JSON theme, these limits do not apply.")
             // qmllint enable unqualified
         }
 

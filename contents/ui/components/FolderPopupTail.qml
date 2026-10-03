@@ -38,6 +38,7 @@ Item {
     // Position of the tip along the surface axis, in window coordinates. A
     // non-finite value centers the tail on the surface.
     property real tipOffset: NaN
+    property bool constrainTip: false
 
     readonly property bool horizontal: root.location === Qt.TopEdge
         || root.location === Qt.BottomEdge
@@ -92,7 +93,16 @@ Item {
     readonly property real tipPosition: {
         const requested = Number(root.tipOffset)
         if (Number.isFinite(requested)) {
-            return requested
+            if (!root.constrainTip) {
+                return requested
+            }
+            const extent = root.horizontal ? root.width : root.height
+            const startInset = root.horizontal ? root.frameInsetLeft : root.frameInsetTop
+            const endInset = root.horizontal ? root.frameInsetRight : root.frameInsetBottom
+            const clearance = root.halfBase + Kirigami.Units.smallSpacing
+            const minimum = Math.min(extent / 2, Math.max(0, startInset) + clearance)
+            const maximum = Math.max(minimum, extent - Math.max(0, endInset) - clearance)
+            return Math.max(minimum, Math.min(maximum, requested))
         }
         return root.horizontal ? root.width / 2 : root.height / 2
     }

@@ -40,8 +40,11 @@ GridLayout {
     readonly property string containerSourceValue: containerSource.currentValue || "manual"
     property alias containerSourceIndex: containerSource.currentIndex
     property alias containerPathText: containerPath.text
+    property alias containerBrowseSubfoldersChecked: browseSubfolders.checked
     readonly property string containerCategoryValue: containerCategory.currentValue || "Development"
     property alias containerCategoryIndex: containerCategory.currentIndex
+    property string containerLoadStatusText: ""
+    property int containerLoadStatusType: Kirigami.MessageType.Warning
 
     property string nameLabel: "Name:"
     property string aliasLabel: "Alias:"
@@ -54,6 +57,7 @@ GridLayout {
     property string gridText: "Grid"
     property string listText: "List"
     property string detailedText: "Detailed"
+    property string fanText: i18nc("@item:inlistbox Folder popup layout", "Fan") // qmllint disable unqualified
     property string noteText: "Note"
     property string separatorText: "Separator"
     property string spacerText: "Spacer"
@@ -74,6 +78,7 @@ GridLayout {
     signal containerLayoutChanged(string layout)
     signal containerSourceChanged(string source)
     signal containerCategoryChanged(string category)
+    signal containerPathEdited()
     signal folderPickerRequested()
     signal containerRefreshRequested()
     signal appCommandEdited()
@@ -226,7 +231,8 @@ GridLayout {
             model: [
                 { "text": root.gridText, "value": "grid" },
                 { "text": root.listText, "value": "list" },
-                { "text": root.detailedText, "value": "detailed" }
+                { "text": root.detailedText, "value": "detailed" },
+                { "text": root.fanText, "value": "fan" }
             ]
             onActivated: root.containerLayoutChanged(currentValue)
         }
@@ -437,6 +443,20 @@ GridLayout {
         }
     }
 
+    Controls.CheckBox {
+        id: browseSubfolders
+        objectName: "containerBrowseSubfoldersCheckBox"
+        Layout.columnSpan: 2
+        Layout.fillWidth: true
+        visible: root.itemModeValue === "container"
+            && root.containerSourceValue === "folder"
+            && (root.containerLayoutValue === "list"
+                || root.containerLayoutValue === "detailed")
+        enabled: root.selectedItemType === "folder"
+        text: i18nc("@option:check folder container", "Browse subfolders") // qmllint disable unqualified
+        onToggled: root.formChanged()
+    }
+
     Controls.Label {
         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         Layout.preferredWidth: Kirigami.Units.gridUnit * 5
@@ -453,8 +473,10 @@ GridLayout {
 
         Controls.TextField {
             id: containerPath
+            objectName: "containerPathField"
             Layout.fillWidth: true
             enabled: root.selectedItemType === "folder"
+            onTextEdited: root.containerPathEdited()
             onAccepted: root.formChanged()
             onEditingFinished: root.formChanged()
         }
@@ -495,5 +517,17 @@ GridLayout {
             { "text": "Graphics", "value": "Graphics" }
         ]
         onActivated: root.containerCategoryChanged(currentValue)
+    }
+
+    Kirigami.InlineMessage {
+        objectName: "containerLoadStatusMessage"
+        Layout.columnSpan: 2
+        Layout.fillWidth: true
+        Layout.minimumWidth: 0
+        visible: root.itemModeValue === "container"
+            && root.containerSourceValue !== "manual"
+            && root.containerLoadStatusText.length > 0
+        text: root.containerLoadStatusText
+        type: root.containerLoadStatusType
     }
 }

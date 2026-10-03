@@ -20,21 +20,30 @@ ColumnLayout {
 
     spacing: Kirigami.Units.smallSpacing
 
-    Controls.TextArea {
-        id: editor
+    Controls.ScrollView {
+        id: editorScrollView
+        objectName: "jsonEditorScrollView"
         Layout.fillWidth: true
         Layout.fillHeight: true
-        wrapMode: TextEdit.NoWrap
-        textFormat: TextEdit.PlainText
-        font.family: "monospace"
-        selectByMouse: true
-        persistentSelection: true
-        onTextChanged: {
-            if (!root.controller.syncing && !root.controller.loadingFromDisk && root.active) {
-                if (root.controller.advancedJsonChanged) {
-                    root.controller.advancedJsonChanged(text)
-                } else {
-                    root.controller.cfg_dockItemsJson = text
+        clip: true
+        Controls.ScrollBar.vertical.policy: Controls.ScrollBar.AsNeeded
+        Controls.ScrollBar.horizontal.policy: Controls.ScrollBar.AsNeeded
+
+        Controls.TextArea {
+            id: editor
+            objectName: "jsonEditorTextArea"
+            wrapMode: TextEdit.NoWrap
+            textFormat: TextEdit.PlainText
+            font.family: "monospace"
+            selectByMouse: true
+            persistentSelection: true
+            onTextChanged: {
+                if (!root.controller.syncing && !root.controller.loadingFromDisk && root.active) {
+                    if (root.controller.advancedJsonChanged) {
+                        root.controller.advancedJsonChanged(text)
+                    } else {
+                        root.controller.cfg_dockItemsJson = text
+                    }
                 }
             }
         }

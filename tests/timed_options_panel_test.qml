@@ -232,14 +232,61 @@ TestCase {
         compare(panelFormSpy.count, 3)
         compare(panel.calendarShowWeekNumbersControl.checked, nextWeekNumbers)
 
-        // A slider announces the form on every change of its value, which is what the
-        // dialog already did; what must never be announced is a synchronization.
+        // Assigning a value loads state; only the interaction signal announces an edit.
         const popupScale = control(panel, "calendarPopupScaleSlider")
         const announced = panelFormSpy.count
         popupScale.value = 1.4
+        compare(panelFormSpy.count, announced,
+            "A programmatic slider change must stay silent")
+        popupScale.moved()
         compare(panelFormSpy.count, announced + 1,
             "One change of a slider, one announcement")
         compare(panel.calendarPopupScaleControl.value, 1.4)
+    }
+
+    function test_programmaticSliderChangesStaySilentEvenInHiddenDialog() {
+        const host = createTemporaryObject(windowComponent, testCase)
+        verify(host !== null)
+        attachPanelSpies(host.panel)
+        const hiddenPanel = findChild(host.dialog, "timedOptionsPanel")
+        verify(hiddenPanel !== null)
+        compare(host.dialog.visible, false)
+        pageController.selectedItemType = "app"
+        const names = ["timedTextScaleSlider", "calendarTimeTextScaleSlider",
+            "calendarDateTextScaleSlider", "calendarPopupScaleSlider"]
+        for (let index = 0; index < names.length; ++index) {
+            control(host.panel, names[index]).value = 1.35
+            control(hiddenPanel, names[index]).value = 1.45
+        }
+        wait(0)
+        compare(panelFormSpy.count, 0, "Loading slider values is not an edit")
+        compare(pageController.applyCount, 0,
+            "A hidden dialog must not apply its programmatic values")
+    }
+
+    function test_sliderKeyboardAndPointerInteractionAnnounceEdits() {
+        const host = createTemporaryObject(windowComponent, testCase)
+        verify(host !== null)
+        host.requestActivate()
+        tryVerify(function() { return host.active })
+        const panel = host.panel
+        attachPanelSpies(panel)
+        const names = ["calendarTimeTextScaleSlider", "calendarDateTextScaleSlider",
+            "calendarPopupScaleSlider"]
+        for (let index = 0; index < names.length; ++index) {
+            const slider = control(panel, names[index])
+            slider.value = 1.0
+            slider.forceActiveFocus()
+            tryVerify(function() { return slider.activeFocus })
+            panelFormSpy.clear()
+            keyClick(Qt.Key_Right)
+            compare(panelFormSpy.count, 1, "A keyboard step announces one edit")
+            verify(Math.abs(slider.value - 1.05) < 0.00001)
+            panelFormSpy.clear()
+            mouseClick(slider, slider.width * 0.8, slider.height / 2)
+            verify(slider.value > 1.05, "The pointer must change the slider value")
+            verify(panelFormSpy.count > 0, "Pointer interaction must announce the edit")
+        }
     }
 
     function test_formatCanBeWrittenAndSelected() {

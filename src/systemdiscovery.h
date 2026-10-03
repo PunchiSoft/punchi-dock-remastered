@@ -64,5 +64,6 @@ Q_SIGNALS:
     void applicationCatalogReady(const QVariantList &applications);
     void applicationReady(const QVariantMap &application);
     void applicationLaunchFinished(bool succeeded, const QString &message);
+    void applicationAccessed(const QString &storageId);
     void operationFailed(const QString &operation, const QString &message);
 };

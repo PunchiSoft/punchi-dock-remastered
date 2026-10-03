@@ -32,10 +32,16 @@ function showSelectedAction() {
 }
 
 function selectItem(index) {
-    selectedIndex = index
-    selectedActionIndex = -1
-    FormHelper.refreshItemForm()
-    FormHelper.refreshActions()
+    const previousSyncing = syncing
+    syncing = true
+    try {
+        selectedIndex = index
+        selectedActionIndex = -1
+        FormHelper.refreshItemForm()
+        FormHelper.refreshActions()
+    } finally {
+        syncing = previousSyncing
+    }
     showSelectedItem()
 }
 

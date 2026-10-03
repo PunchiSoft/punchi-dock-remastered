@@ -29,6 +29,8 @@ DNF_PACKAGES=(
     kf6-kservice-devel
     libplasma-devel
     plasma-workspace-devel
+    plasma-activities-devel
+    plasma-activities-stats-devel
     ninja-build
     pipewire-devel
     pkgconf-pkg-config

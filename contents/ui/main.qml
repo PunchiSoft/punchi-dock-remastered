@@ -405,6 +405,35 @@ PlasmoidItem {
             : dockItemsController.dockItems.length
     }
 
+    readonly property var recentApplications: {
+        const controller = recentApplicationsLoader.item as RecentApplicationsController
+        return controller ? controller.items : []
+    }
+    property int recentApplicationCapacity: -1
+    readonly property int visibleRecentApplicationCount: Math.min(root.recentApplications.length,
+        root.recentApplicationCapacity < 0 ? dockConfig.recentApplicationsCount : root.recentApplicationCapacity)
+    readonly property bool recentContainerVisible: dockConfig.recentApplicationsMode === "container"
+        && root.visibleRecentApplicationCount > 0
+    readonly property bool recentSeparatorVisible: root.visibleRecentApplicationCount > 0
+        && dockGeometry.panelBaseCompactContentLength > 0
+    readonly property var recentContainerDescriptor: ({
+        "type": "folder", "entryRole": "recent-container", "key": "recent-container",
+        "name": i18nc("@title", "Recent applications"), // qmllint disable unqualified
+        "icon": "folder-temp", "layout": dockConfig.recentApplicationsContainerLayout,
+        "apps": root.recentApplications
+    })
+    readonly property var recentPresentationItems: {
+        if (root.visibleRecentApplicationCount === 0) { return [] }
+        const result = root.recentSeparatorVisible ? [{ "type": "separator" }] : []
+        return result.concat(root.recentContainerVisible
+            ? [root.recentContainerDescriptor]
+            : root.recentApplications.slice(0, root.visibleRecentApplicationCount))
+    }
+    function recentVisualIndex(offset) {
+        return dockItemsController.dockItems.length + root.visibleTaskRows.length
+            + root.renderedOverflowItemCount + offset
+    }
+
     function dockItemReorderIconName(item) {
         const itemData = item || ({})
         const configuredIcon = String(itemData.icon || "")
@@ -604,6 +633,7 @@ PlasmoidItem {
         dockLabelAreaHeight: dockConfig.dockLabelAreaHeight
         dockItems: dockItemsController.dockItems
         mediaItemExpanded: root.mediaItemExpanded
+        supplementalDockItems: root.recentPresentationItems
         visibleTaskCount: root.visibleTaskRows.length
         overflowTaskCount: root.overflowTaskRows.length
         totalDynamicGroups: taskController.totalDynamicGroups
@@ -1973,6 +2003,15 @@ PlasmoidItem {
         systemDiscovery: systemDiscovery
         onStructureChanged: root.taskStructureChanged()
     }
+    Loader {
+        id: recentApplicationsLoader
+        active: dockConfig.showRecentApplications
+        sourceComponent: RecentApplicationsController {
+            maximumItems: dockConfig.recentApplicationsCount
+            dockItems: dockItemsController.dockItems
+            systemDiscovery: systemDiscovery
+        }
+    }
     function invalidatePunchiMenuInstance() {
         if (punchiMenuDialogInstance && !punchiMenuDialogInstance.visible) {
             punchiMenuDialogInstance.destroy()
@@ -2019,19 +2058,24 @@ PlasmoidItem {
     }
     DockContextActionsController {
         id: dockContextActionsController
+        objectName: "dockContextActionsController"
         systemDiscovery: systemDiscovery
         taskController: taskController
         dockItemsController: dockItemsController
-        showEditDockItemAction: Plasmoid.configuration.showEditDockItemAction !== false
         showConfigureDockAction: Plasmoid.configuration.showConfigureDockAction !== false
-        editDockItemHandler: function(index) {
-            return root.openDockItemEditor(index)
-        }
         configureDockHandler: function() {
             return root.openDockConfiguration()
         }
         moveDynamicApplicationsHandler: function() {
             return root.requestDynamicApplicationsMoveMode()
+        }
+        recentContainerActive: dockConfig.showRecentApplications
+            && dockConfig.recentApplicationsMode === "container"
+        disableRecentApplicationsHandler: function() {
+            return dockConfig.disableRecentApplications()
+        }
+        setRecentContainerViewHandler: function(layout) {
+            return dockConfig.setRecentApplicationsContainerLayout(layout)
         }
     }
     DropFeedbackPopup {
@@ -2274,6 +2318,8 @@ PlasmoidItem {
 
         PopupCoordinator {
             id: popupCoordinator
+            objectName: "popupCoordinator"
+            folderItemsControllerRef: root.dockItemsControllerService
             inPanel: root.inPanel
             panelPopupDirection: dockGeometry.popupDirection
             availableScreenRect: root.availableScreenRect
@@ -2418,6 +2464,29 @@ PlasmoidItem {
                 target: root
                 property: "panelDynamicGroupCapacity"
                 value: dockWrapper.dynamicTaskSlotCapacity
+                restoreMode: Binding.RestoreBindingOrValue
+            }
+            readonly property int recentSlotCapacity: {
+                if (dynamicTaskCapacityLength < 0) { return -1 }
+                const isVertical = dockGeometry.verticalPanel
+                const padding = isVertical ? dockGeometry.dockBackgroundVerticalPadding * 2
+                    : dockGeometry.dockBackgroundHorizontalPadding * 2
+                const hasPrecedingItems = dockGeometry.panelBaseCompactContentLength > 0
+                const separatorExtent = hasPrecedingItems
+                    ? dockGeometry.panelMainAxisExtentForDockItem({ "type": "separator" }) + dockGeometry.dockSpacing * 2
+                    : 0
+                const remaining = dynamicTaskCapacityLength - padding
+                    - dockGeometry.panelBaseCompactContentLength - separatorExtent
+                const itemExtent = isVertical ? dockGeometry.panelItemHeight : dockGeometry.panelItemWidth
+                const slots = Math.max(0, Math.floor((remaining + dockGeometry.dockSpacing)
+                    / (itemExtent + dockGeometry.dockSpacing)))
+                return dockConfig.recentApplicationsMode === "container"
+                    ? (slots > 0 ? dockConfig.recentApplicationsCount : 0) : slots
+            }
+            Binding {
+                target: root
+                property: "recentApplicationCapacity"
+                value: dockWrapper.recentSlotCapacity
                 restoreMode: Binding.RestoreBindingOrValue
             }
             // qmllint enable unqualified
@@ -3481,7 +3550,7 @@ PlasmoidItem {
                     }
                 }
 
-                // Overflow is a synthetic terminal entry. It participates in
+                // Overflow is a synthetic entry. It participates in
                 // the same layout as regular dock items but never enters the
                 // persistent or reorderable dock-items model.
                 // qmllint disable unqualified
@@ -3553,6 +3622,80 @@ PlasmoidItem {
                             urls, root.dynamicLauncherInsertionIndex())
                     }
                 }
+                RecentApplicationDockItem {
+                    id: recentSeparator
+                    objectName: "recentApplicationsSeparator"
+                    visible: root.recentSeparatorVisible
+                    descriptor: ({ "type": "separator" })
+                    configState: dockConfig
+                    geometryState: dockGeometry
+                    layoutController: dockLayout
+                    itemIndex: root.recentVisualIndex(0)
+                    Layout.column: dockGeometry.verticalPanel ? 0 : itemIndex
+                    Layout.row: dockGeometry.verticalPanel ? itemIndex : 0
+                    hoveredIndex: dockLayout.hoveredIndex
+                    hoverAnimationMode: dockLayout.effectiveHoverAnimationMode
+                    hoverZoomProgress: dockLayout.hoverZoomProgress
+                    lastHoveredIndex: dockLayout.lastHoveredIndex
+                    lastMouseOffset: dockLayout.lastMouseOffset
+                }
+                RecentApplicationDockItem {
+                    id: recentContainer
+                    objectName: "recentApplicationsContainer"
+                    visible: root.recentContainerVisible
+                    descriptor: root.recentContainerDescriptor
+                    configState: dockConfig
+                    geometryState: dockGeometry
+                    layoutController: dockLayout
+                    itemIndex: root.recentVisualIndex(root.recentSeparatorVisible ? 1 : 0)
+                    Layout.column: dockGeometry.verticalPanel ? 0 : itemIndex
+                    Layout.row: dockGeometry.verticalPanel ? itemIndex : 0
+                    hoveredIndex: dockLayout.hoveredIndex
+                    hoverAnimationMode: dockLayout.effectiveHoverAnimationMode
+                    hoverZoomProgress: dockLayout.hoverZoomProgress
+                    lastHoveredIndex: dockLayout.lastHoveredIndex
+                    lastMouseOffset: dockLayout.lastMouseOffset
+                    supportsContextMenu: dockContextActionsController.itemHasContextMenu(
+                        descriptor, [], "recent-container")
+                    suppressTooltip: mainContainer.contextMenuVisible
+                    onItemClicked: popupCoordinator.openFolderPopup(descriptor, recentContainer)
+                    onContextMenuRequested: function(visualParent) {
+                        popupCoordinator.openAppContextMenu(descriptor, visualParent,
+                            [], "recent-container", -1)
+                    }
+                    onVisibleChanged: {
+                        if (!visible && popupCoordinator.activeFolderData.entryRole === "recent-container") {
+                            popupCoordinator.hidePopupDialog(folderPopupDialog)
+                        }
+                    }
+                }
+                Repeater {
+                    model: dockConfig.showRecentApplications ? dockConfig.recentApplicationsCount : 0
+                    delegate: RecentApplicationDockItem {
+                        id: recentItem
+                        required property int index
+                        objectName: "recentApplication-" + index
+                        visible: !root.recentContainerVisible && index < root.visibleRecentApplicationCount
+                        descriptor: root.recentApplications[index] || ({})
+                        configState: dockConfig
+                        geometryState: dockGeometry
+                        layoutController: dockLayout
+                        itemIndex: root.recentVisualIndex((root.recentSeparatorVisible ? 1 : 0) + index)
+                        Layout.column: dockGeometry.verticalPanel ? 0 : itemIndex
+                        Layout.row: dockGeometry.verticalPanel ? itemIndex : 0
+                        hoveredIndex: dockLayout.hoveredIndex
+                        hoverAnimationMode: dockLayout.effectiveHoverAnimationMode
+                        hoverZoomProgress: dockLayout.hoverZoomProgress
+                        lastHoveredIndex: dockLayout.lastHoveredIndex
+                        lastMouseOffset: dockLayout.lastMouseOffset
+                        supportsContextMenu: true
+                        suppressTooltip: mainContainer.contextMenuVisible
+                        onItemClicked: dockItemsController.handleDockItemActivation(descriptor)
+                        onContextMenuRequested: function(visualParent) {
+                            popupCoordinator.openAppContextMenu(descriptor, visualParent, [], "recent", -1)
+                        }
+                    }
+                }
                 // qmllint enable unqualified
 
             }
@@ -3583,6 +3726,10 @@ PlasmoidItem {
                 gap: dockGeometry.folderPopupGap
                 location: folderPopupDialog.location
                 preserveHorizontalAnchorCenter: true
+                preserveVerticalAnchorCenter: true
+                targetSurface: folderSurfaceStack
+                targetTranslationX: folderPopupAnimatedContent.contentTranslationX
+                targetTranslationY: folderPopupAnimatedContent.contentTranslationY
                 horizontalAnchorOffset:
                     folderPopupContent.layoutMode === "fan"
                     ? folderSurfaceStack.width / 2
@@ -3646,6 +3793,9 @@ PlasmoidItem {
                     // away from and would put the tail at the far side of the popup.
                     edgeTailEnabled: ["grid", "list", "detailed"].indexOf(folderPopupContent.layoutMode) >= 0
                     edgeTailLocation: dockGeometry.spectrumOriginEdge
+                    constrainEdgeTailTip: !folderSurfaceStack.edgeTailHorizontal
+                    edgeTailTipOffset: !folderSurfaceStack.edgeTailHorizontal
+                        ? folderPopupDialog.popupSpacing.sourceCenterInTarget.y : NaN
                     // The tail is as wide as the dock item it points at.
                     edgeTailAnchorExtent: folderPopupDialog.sourceAnchor
                         ? Math.min(
@@ -3662,14 +3812,17 @@ PlasmoidItem {
 
                     FolderPopup {
                         id: folderPopupContent
-                        folderItem: popupCoordinator.activeFolderData
+                        objectName: "folderPopupContent"
+                        sessionActive: folderPopupDialog.visible
+                        folderItem: popupCoordinator.activeFolderData.entryRole === "recent-container"
+                            ? root.recentContainerDescriptor : popupCoordinator.activeFolderData
                         animationStyle: folderPopupAnimatedContent.animationStyle
                         animationIntensityPercent:
                             folderPopupAnimatedContent.animationIntensityPercent
                         popupDirection: folderPopupAnimatedContent.popupDirection
                         revealProgress: folderPopupAnimatedContent.openingProgress
-                        layoutMode: ["list", "detailed", "fan"].indexOf(popupCoordinator.activeFolderData.layout) >= 0
-                            ? popupCoordinator.activeFolderData.layout
+                        layoutMode: ["list", "detailed", "fan"].indexOf(folderPopupContent.folderItem.layout) >= 0
+                            ? folderPopupContent.folderItem.layout
                             : "grid"
                         // qmllint disable unqualified
                         profileIconSize: folderPopupContent.layoutMode === "fan"
@@ -3731,7 +3884,7 @@ PlasmoidItem {
                         onAppContextMenuRequested: function(app) {
                             popupCoordinator.openAppContextMenu(app,
                                 folderPopupDialog.sourceAnchor, undefined,
-                                "folder", -1)
+                                app.entryRole === "recent" ? "recent" : "folder", -1)
                         }
 
                         // The container opens its own folder in the file manager.

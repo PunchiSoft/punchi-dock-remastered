@@ -372,9 +372,10 @@ QtObject {
                 || String(root.draftType) !== "folder") {
             return false
         }
+        // Native QVariantList sequences are not JavaScript arrays until cloned.
+        const applicationRows = ConfigItemsJS.clone(applications || [])
         const values = {
-            "apps": Array.isArray(applications)
-                ? ConfigItemsJS.clone(applications) : []
+            "apps": Array.isArray(applicationRows) ? applicationRows : []
         }
         if (String(iconName || "").length > 0) {
             values.icon = String(iconName)

@@ -30,6 +30,8 @@ APT_PACKAGES=(
     libkf6service-dev
     libpipewire-0.3-dev
     libplasma-dev
+    libplasmaactivities-dev
+    libplasmaactivitiesstats-dev
     plasma-workspace
     plasma-workspace-dev
     ninja-build

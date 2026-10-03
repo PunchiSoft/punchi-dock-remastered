@@ -47,6 +47,7 @@ Controls.Dialog {
     readonly property string containerSourceValue: itemEditor.containerSourceValue
     property alias containerSourceIndex: itemEditor.containerSourceIndex
     property alias containerPathText: itemEditor.containerPathText
+    property alias containerBrowseSubfoldersChecked: itemEditor.containerBrowseSubfoldersChecked
     readonly property string containerCategoryValue: itemEditor.containerCategoryValue
     property alias containerCategoryIndex: itemEditor.containerCategoryIndex
     property int actionCount: actionEditor.actionCount
@@ -70,6 +71,7 @@ Controls.Dialog {
     property string gridText: "Grid"
     property string listText: "List"
     property string detailedText: "Detailed"
+    property string fanText: i18nc("@item:inlistbox Folder popup layout", "Fan") // qmllint disable unqualified
     property string noteText: "Note"
     property string separatorText: "Separator"
     property string spacerText: "Spacer"
@@ -190,6 +192,7 @@ Controls.Dialog {
             gridText: root.gridText
             listText: root.listText
             detailedText: root.detailedText
+            fanText: root.fanText
             noteText: root.noteText
             separatorText: root.separatorText
             spacerText: root.spacerText
