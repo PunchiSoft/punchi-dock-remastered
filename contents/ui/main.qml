@@ -2669,6 +2669,13 @@ PlasmoidItem {
 
             GridLayout {
                 id: dockLayout
+                readonly property DockClickCollision clickCollision: DockClickCollision {
+                    layoutItem: dockLayout
+                    verticalPanel: dockGeometry.verticalPanel // qmllint disable unqualified
+                    motionSpeedPercent: dockConfig.dockMotionSpeedPercent // qmllint disable unqualified
+                    enabled: dockConfig.dockClickEffect === "collision" // qmllint disable unqualified
+                        && !dockLayout.persistentDragActive
+                }
                 Binding {
                     target: dockGeometry // qmllint disable unqualified
                     property: "panelHoverAnimation"
@@ -3073,6 +3080,7 @@ PlasmoidItem {
                         required property var modelData
                         required property int index
                         layoutController: dockLayout
+                        clickCollisionController: dockLayout.clickCollision
                         Layout.column: dockGeometry.verticalPanel
                             ? 0 : root.persistentVisualIndex(dockItemDelegate.index)
                         Layout.row: dockGeometry.verticalPanel
@@ -3385,6 +3393,7 @@ PlasmoidItem {
                     delegate: DockItem {
                         id: taskDockItemDelegate
                         layoutController: dockLayout
+                        clickCollisionController: dockLayout.clickCollision
                         required property var modelData
                         required property int index
                         readonly property int taskRevision: root.taskVisualRevision
@@ -3558,6 +3567,7 @@ PlasmoidItem {
                     id: taskOverflowDockItem
                     visible: root.overflowTaskRows.length > 0
                     layoutController: dockLayout
+                    clickCollisionController: dockLayout.clickCollision
                     Layout.column: dockGeometry.verticalPanel
                         ? 0 : root.dynamicVisualIndex(root.visibleTaskRows.length)
                     Layout.row: dockGeometry.verticalPanel
@@ -3630,6 +3640,7 @@ PlasmoidItem {
                     configState: dockConfig
                     geometryState: dockGeometry
                     layoutController: dockLayout
+                    clickCollisionController: dockLayout.clickCollision
                     itemIndex: root.recentVisualIndex(0)
                     Layout.column: dockGeometry.verticalPanel ? 0 : itemIndex
                     Layout.row: dockGeometry.verticalPanel ? itemIndex : 0
@@ -3647,6 +3658,7 @@ PlasmoidItem {
                     configState: dockConfig
                     geometryState: dockGeometry
                     layoutController: dockLayout
+                    clickCollisionController: dockLayout.clickCollision
                     itemIndex: root.recentVisualIndex(root.recentSeparatorVisible ? 1 : 0)
                     Layout.column: dockGeometry.verticalPanel ? 0 : itemIndex
                     Layout.row: dockGeometry.verticalPanel ? itemIndex : 0
@@ -3680,6 +3692,7 @@ PlasmoidItem {
                         configState: dockConfig
                         geometryState: dockGeometry
                         layoutController: dockLayout
+                        clickCollisionController: dockLayout.clickCollision
                         itemIndex: root.recentVisualIndex((root.recentSeparatorVisible ? 1 : 0) + index)
                         Layout.column: dockGeometry.verticalPanel ? 0 : itemIndex
                         Layout.row: dockGeometry.verticalPanel ? itemIndex : 0
@@ -4408,9 +4421,6 @@ PlasmoidItem {
                         onActivateRequested: function(taskRow) {
                             taskWindowsDialog.closeSafely()
                             taskController.activateTaskRow(taskRow)
-                        }
-                        onPresentWindowRequested: function(taskRow) {
-                            taskController.requestWindowPresentation(taskRow)
                         }
                         onMinimizeWindowRequested: function(taskRow) {
                             taskController.minimizeTaskRow(taskRow)

@@ -235,9 +235,17 @@ def main() -> int:
     ):
         require(card, fragment, message)
 
-    if card.count("WindowPreviewActionButton {") != 4:
+    if card.count("WindowPreviewActionButton {") != 3:
         raise AssertionError(
             "Every current thumbnail action must use the shared themed button"
+        )
+    for control in ("previewMinimizeButton", "previewMaximizeButton",
+                    "previewCloseButton"):
+        require(card, f'objectName: "{control}"',
+                f"The {control} control must remain in the thumbnail row")
+    if "previewPresentButton" in card or "presentWindowRequested" in card:
+        raise AssertionError(
+            "The separate bring-to-front action must stay removed from the row"
         )
     if "Controls.ToolTip" in card:
         raise AssertionError(

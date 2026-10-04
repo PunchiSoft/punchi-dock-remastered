@@ -1,16 +1,23 @@
 import QtQuick
 import QtTest
-import "../contents/ui/config" as ConfigPages
 import "../contents/ui/components" as Components
 
 TestCase {
     id: testCase
     name: "RecentApplicationsUi"
     when: windowShown
+    visible: true
     width: 640
     height: 800
 
-    ConfigPages.ConfigWindows { id: page; width: 600; height: 760 }
+    property var page: null
+    function initTestCase() {
+        page = recentGeneralTestSupport.createPage(testCase)
+        verify(page !== null)
+        page.width = 600
+        page.height = 760
+    }
+    function cleanupTestCase() { recentGeneralTestSupport.destroyPage(page) }
     Components.DockGeometryState {
         id: geometry
         inPanel: true
@@ -36,12 +43,18 @@ TestCase {
         failOnWarning(/.?/)
         page.cfg_showRecentApplications = false
         page.cfg_recentApplicationsMode = "inline"
+        page.cfg_recentApplicationsCount = 3
+        page.cfg_recentApplicationsContainerLayout = "grid"
         geometry.supplementalDockItems = []
         geometry.horizontalPanel = true
         geometry.verticalPanel = false
         geometry.dockItems = [{ "type": "app" }]
         geometry.visibleTaskCount = 2
         geometry.overflowTaskCount = 1
+        const tabs = findChild(page, "generalTabs")
+        verify(tabs !== null)
+        tabs.currentIndex = 1
+        verify(waitForPolish(page))
     }
     function test_settingsAreReactiveAndKeyboardAccessible() {
         const combo = findChild(page, "recentApplicationsModeCombo")
@@ -56,6 +69,53 @@ TestCase {
         compare(page.cfg_recentApplicationsMode, "inline")
         verify(combo.activeFocusOnTab)
         verify(String(combo.Accessible.name).length > 0)
+    }
+    function test_switchTogglesAvailabilityAndPreservesValues() {
+        const toggle = findChild(page, "showRecentApplicationsSwitch")
+        const mode = findChild(page, "recentApplicationsModeCombo")
+        const count = findChild(page, "recentApplicationsCountSpin")
+        const view = findChild(page, "recentApplicationsContainerLayoutCombo")
+        verify(recentGeneralTestSupport.isSwitch(toggle), String(toggle))
+        verify(toggle.activeFocusOnTab)
+        verify(String(toggle.Accessible.name).length > 0)
+        verify(mode.visible && count.visible && view.visible)
+        verify(!mode.enabled && !count.enabled && !view.enabled)
+        page.cfg_recentApplicationsCount = 7
+        page.cfg_recentApplicationsContainerLayout = "fan"
+        verify(waitForPolish(page))
+        mouseClick(toggle, toggle.width / 2, toggle.height / 2)
+        compare(page.cfg_showRecentApplications, true)
+        verify(mode.enabled && count.enabled)
+        compare(view.enabled, false)
+        page.cfg_recentApplicationsMode = "container"
+        compare(view.enabled, true)
+        toggle.forceActiveFocus()
+        tryCompare(toggle, "activeFocus", true)
+        keyClick(Qt.Key_Space)
+        compare(page.cfg_showRecentApplications, false)
+        verify(mode.visible && count.visible && view.visible)
+        verify(!mode.enabled && !count.enabled && !view.enabled)
+        compare(page.cfg_recentApplicationsCount, 7)
+        compare(page.cfg_recentApplicationsContainerLayout, "fan")
+        keyClick(Qt.Key_Space)
+        compare(page.cfg_showRecentApplications, true)
+        verify(mode.enabled && count.enabled && view.enabled)
+        compare(count.value, 7)
+        compare(view.currentValue, "fan")
+    }
+    function test_windowsNoLongerOwnsRecentOptions() {
+        const windows = Qt.createComponent("../contents/ui/config/ConfigWindows.qml")
+        compare(windows.status, Component.Ready)
+        const oldPage = createTemporaryObject(windows, testCase)
+        verify(oldPage !== null)
+        for (const name of ["cfg_showRecentApplications", "cfg_recentApplicationsCount",
+                "cfg_recentApplicationsMode", "cfg_recentApplicationsContainerLayout"]) {
+            verify(!oldPage.hasOwnProperty(name))
+        }
+        compare(findChild(oldPage, "showRecentApplicationsCheck"), null)
+        compare(findChild(oldPage, "recentApplicationsModeCombo"), null)
+        compare(findChild(oldPage, "recentApplicationsCountSpin"), null)
+        compare(findChild(oldPage, "recentApplicationsContainerLayoutCombo"), null)
     }
     function test_recentGeometryDoesNotReduceDynamicCapacity() {
         const fixedLength = geometry.panelFixedContentLength

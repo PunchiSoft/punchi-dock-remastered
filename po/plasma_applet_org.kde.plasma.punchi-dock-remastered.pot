@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.7.71\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7.72\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-03 20:06-0300\n"
+"POT-Creation-Date: 2026-10-04 12:55-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -156,12 +156,12 @@ msgctxt "@info:media"
 msgid "%1 is not running"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1439
+#: contents/ui/components/DockItem.qml:1479
 msgctxt "@info:accessible"
 msgid "%1 is now in front; release to open the local files"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1463
+#: contents/ui/components/DockItem.qml:1503
 msgctxt "@info:accessible"
 msgid "%1 is updated automatically and cannot accept applications"
 msgstr ""
@@ -198,7 +198,7 @@ msgid_plural "%1 more in %2"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/main.qml:3601
+#: contents/ui/main.qml:3611
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] ""
@@ -217,14 +217,14 @@ msgstr ""
 msgid "%1 of %2 items"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1485
+#: contents/ui/components/DockItem.qml:1525
 #: contents/ui/components/TaskOverflowPopup.qml:111
 msgid "%1 open window"
 msgid_plural "%1 open windows"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/components/DockItem.qml:1481
+#: contents/ui/components/DockItem.qml:1521
 msgid "%1 open window. Press M to open media controls."
 msgid_plural "%1 open windows. Press M to open media controls."
 msgstr[0] ""
@@ -246,11 +246,11 @@ msgstr ""
 msgid "%1 px"
 msgstr ""
 
+#: contents/ui/config/components/ActionDialog.qml:94
 #: contents/ui/config/ConfigItems.qml:1045
 #: contents/ui/config/ItemActionEditor.qml:55
 #: contents/ui/config/ItemActionEditor.qml:180
 #: contents/ui/config/ItemConfigurationDialog.qml:781
-#: contents/ui/config/components/ActionDialog.qml:94
 msgid "%1 rows"
 msgstr ""
 
@@ -324,6 +324,8 @@ msgstr ""
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:586
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:621
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:656
+#: contents/ui/config/components/PopupAnimationSettings.qml:82
+#: contents/ui/config/components/PopupAnimationSettings.qml:107
 #: contents/ui/config/ConfigFolderPopups.qml:242
 #: contents/ui/config/ConfigFolderPopups.qml:276
 #: contents/ui/config/ConfigFolderPopups.qml:320
@@ -331,13 +333,11 @@ msgstr ""
 #: contents/ui/config/ConfigMenus.qml:231
 #: contents/ui/config/ConfigMenus.qml:265
 #: contents/ui/config/ConfigMenus.qml:340
-#: contents/ui/config/ConfigMouse.qml:132
-#: contents/ui/config/ConfigMouse.qml:170
+#: contents/ui/config/ConfigMouse.qml:133
+#: contents/ui/config/ConfigMouse.qml:171
 #: contents/ui/config/ConfigPopups.qml:210
 #: contents/ui/config/ConfigPopups.qml:249
 #: contents/ui/config/ConfigPopups.qml:285
-#: contents/ui/config/components/PopupAnimationSettings.qml:82
-#: contents/ui/config/components/PopupAnimationSettings.qml:107
 #, javascript-format
 msgid "%1%"
 msgstr ""
@@ -406,7 +406,7 @@ msgid ""
 "aspect ratio and remain limited by the available screen space."
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:177
+#: contents/ui/config/ConfigMouse.qml:178
 msgid ""
 "100% preserves the current timing. Lower values are slower and higher values "
 "are faster."
@@ -674,7 +674,7 @@ msgstr ""
 msgid "Active window"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:107
+#: contents/ui/config/ConfigGeneral.qml:111
 msgid "Adaptive"
 msgstr ""
 
@@ -788,7 +788,7 @@ msgctxt "@info"
 msgid "Adjust the warmth of the screen filter"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:125
+#: contents/ui/config/ConfigMouse.qml:126
 msgid "Adjusts additional hover enlargement between 0 and 100 percent."
 msgstr ""
 
@@ -816,7 +816,7 @@ msgstr ""
 msgid "Adjusts the indicator thickness between 2 and 10 pixels."
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:496
+#: contents/ui/config/ConfigGeneral.qml:560
 msgid "Adjusts the spacing between dock icons from 0 to 24 pixels."
 msgstr ""
 
@@ -849,7 +849,7 @@ msgstr ""
 msgid "All Arch build packages are already installed"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:565
+#: contents/ui/config/ConfigGeneral.qml:629
 msgid "All desktops"
 msgstr ""
 
@@ -885,7 +885,7 @@ msgctxt "@option:media-track-information"
 msgid "Always show"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:101
+#: contents/ui/config/ConfigGeneral.qml:105
 msgid "Always visible"
 msgstr ""
 
@@ -897,7 +897,7 @@ msgid ""
 "name."
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:227
+#: contents/ui/config/ConfigMouse.qml:228
 msgid ""
 "Animates the matching dock item when a window is minimized. Lateral ripple "
 "also moves the nearest items."
@@ -937,16 +937,16 @@ msgstr ""
 msgid "Appearance:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:97
+#: contents/ui/config/ConfigGeneral.qml:101
 msgid "Applets only"
 msgstr ""
 
 #: contents/ui/components/AppActionsPopup.qml:95
-#: contents/ui/components/DockItem.qml:1450
-#: contents/ui/components/DockItem.qml:1457
+#: contents/ui/components/DockItem.qml:1490
+#: contents/ui/components/DockItem.qml:1497
 #: contents/ui/components/DockItemsController.qml:792
 #: contents/ui/components/FolderFanView.qml:846
-#: contents/ui/components/FolderPopup.qml:953
+#: contents/ui/components/FolderPopup.qml:985
 #: contents/ui/config/code/itemTypeCatalog.js:45
 msgid "Application"
 msgstr ""
@@ -981,7 +981,7 @@ msgctxt "@info:status"
 msgid "Application could not be opened: %1"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:240
+#: contents/ui/config/ConfigMouse.qml:241
 msgid "Application file drop:"
 msgstr ""
 
@@ -1045,8 +1045,8 @@ msgctxt "@info:accessible"
 msgid "Applications grouped by category"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:103
-#: contents/ui/config/ConfigWindows.qml:104
+#: contents/ui/config/components/RecentApplicationsSettings.qml:81
+#: contents/ui/config/components/RecentApplicationsSettings.qml:82
 msgctxt "@label:spinbox"
 msgid "Applications to show:"
 msgstr ""
@@ -1087,7 +1087,7 @@ msgstr ""
 msgid "Assembling package..."
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:147
+#: contents/ui/config/ConfigMouse.qml:148
 msgid "At 0%, the hover enlargement animation is disabled."
 msgstr ""
 
@@ -1146,7 +1146,7 @@ msgstr ""
 msgid "Audio visualizer style"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:102
+#: contents/ui/config/ConfigGeneral.qml:106
 msgid "Auto hide"
 msgstr ""
 
@@ -1166,7 +1166,7 @@ msgctxt "@item:inlistbox Grid arrangement"
 msgid "Automatic"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:113
+#: contents/ui/config/ConfigGeneral.qml:117
 msgid "Automatic (Recommended)"
 msgstr ""
 
@@ -1186,7 +1186,7 @@ msgid ""
 "remain available in the tooltip."
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:528
+#: contents/ui/config/ConfigGeneral.qml:592
 msgid "Automatic sizing enabled (panel adapts to icons)"
 msgstr ""
 
@@ -1209,7 +1209,7 @@ msgctxt "@action:button"
 msgid "Back"
 msgstr ""
 
-#: contents/ui/components/FolderPopup.qml:641
+#: contents/ui/components/FolderPopup.qml:656
 msgctxt "@action:button folder navigation"
 msgid "Back"
 msgstr ""
@@ -1327,7 +1327,7 @@ msgstr ""
 msgid "Blur context menus when available"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:89
+#: contents/ui/config/ConfigGeneral.qml:93
 msgid "Bottom"
 msgstr ""
 
@@ -1349,13 +1349,9 @@ msgid "Bottom to top"
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:29
-#: contents/ui/config/ConfigMouse.qml:52
 #: contents/ui/config/components/PopupAnimationSettings.qml:19
+#: contents/ui/config/ConfigMouse.qml:52
 msgid "Bounce"
-msgstr ""
-
-#: contents/ui/components/WindowPreviewCard.qml:197
-msgid "Bring window to front"
 msgstr ""
 
 #: contents/ui/config/ItemEditorPanel.qml:481
@@ -1419,8 +1415,8 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: contents/ui/components/NotePopup.qml:289
 #: contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml:108
+#: contents/ui/components/NotePopup.qml:289
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:388
 #: contents/ui/config/ConfigAspect.qml:476
 #: contents/ui/config/ItemConfigurationDialog.qml:890
@@ -1460,8 +1456,8 @@ msgstr ""
 msgid "Center"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:88
 #: contents/ui/config/ConfigGeneral.qml:92
+#: contents/ui/config/ConfigGeneral.qml:96
 msgid "Center (Recommended)"
 msgstr ""
 
@@ -1553,8 +1549,8 @@ msgstr ""
 msgid "Choose Window Count Badge Color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:492
 #: contents/ui/config/code/configItemsWorkflowHelper.js:97
+#: contents/ui/config/ConfigItems.qml:492
 msgid "Choose a folder first."
 msgstr ""
 
@@ -1708,8 +1704,8 @@ msgstr ""
 msgid "Clean configuration file?"
 msgstr ""
 
-#: contents/ui/components/NotePopup.qml:175
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
+#: contents/ui/components/NotePopup.qml:175
 msgid "Clear"
 msgstr ""
 
@@ -1722,14 +1718,14 @@ msgstr ""
 msgid "Cleared"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:186
+#: contents/ui/config/ConfigMouse.qml:187
 msgid "Click effect:"
 msgstr ""
 
 #: contents/ui/components/AppActionsPopup.qml:132
 #: contents/ui/components/CalendarPopup.qml:325
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:219
-#: contents/ui/components/DecorationCloseButton.qml:28
+#: contents/ui/components/DecorationCloseButton.qml:26
 #: contents/ui/components/NotePopup.qml:259
 #: contents/ui/components/TaskModelController.qml:937
 #: contents/ui/components/TrashContextPopup.qml:136
@@ -1760,7 +1756,7 @@ msgid "Close button:"
 msgstr ""
 
 #: contents/ui/components/TaskOverflowPopup.qml:175
-#: contents/ui/components/WindowPreviewCard.qml:241
+#: contents/ui/components/WindowPreviewCard.qml:235
 msgid "Close window"
 msgstr ""
 
@@ -1915,7 +1911,7 @@ msgstr ""
 msgid "Configuring CMake..."
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:456
+#: contents/ui/config/ConfigGeneral.qml:520
 msgid ""
 "Configuring a custom panel size may cause icons to be clipped during wave "
 "magnification or create disproportionate margins if the height is not "
@@ -1970,13 +1966,13 @@ msgctxt "@info:status"
 msgid "Connection failed"
 msgstr ""
 
+#: contents/ui/config/code/itemTypeCatalog.js:50
 #: contents/ui/config/ConfigItems.qml:1020
 #: contents/ui/config/ItemConfigurationDialog.qml:675
-#: contents/ui/config/code/itemTypeCatalog.js:50
 msgid "Container"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:28
+#: contents/ui/config/components/RecentApplicationsSettings.qml:18
 msgctxt "@option:recent-applications"
 msgid "Container"
 msgstr ""
@@ -1996,7 +1992,7 @@ msgctxt "@title:menu"
 msgid "Container view"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:117
+#: contents/ui/config/components/RecentApplicationsSettings.qml:96
 msgctxt "@label:listbox"
 msgid "Container view:"
 msgstr ""
@@ -2039,8 +2035,8 @@ msgstr ""
 msgid "Control Center"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:50
 #: contents/ui/components/controlcenter/ControlCenterOverlay.qml:482
+#: contents/ui/components/DockItem.qml:50
 msgctxt "@title"
 msgid "Control Center"
 msgstr ""
@@ -2054,11 +2050,11 @@ msgstr ""
 msgid "Control Center item"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:389
+#: contents/ui/config/ConfigGeneral.qml:453
 msgid "Controlled by the active custom JSON theme (No background)."
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:165
+#: contents/ui/config/ConfigMouse.qml:166
 msgid ""
 "Controls how quickly dock items enter, move, and resize. It does not change "
 "popup or menu animations."
@@ -2112,14 +2108,14 @@ msgstr ""
 msgid "Current concurrency: %s\\n"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:631
+#: contents/ui/config/ConfigGeneral.qml:240
 msgctxt "@info:status <b> marks the current dock mode"
 msgid ""
 "Current dock state: <b>Floating mode</b>.<br>Panel-only sizing and "
 "integration options are unavailable."
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:634
+#: contents/ui/config/ConfigGeneral.qml:243
 msgctxt "@info:status <b> marks the current dock mode"
 msgid ""
 "Current dock state: <b>Horizontal panel</b>.<br>Fill free panel space is "
@@ -2127,7 +2123,7 @@ msgid ""
 "Dock remains compact."
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:633
+#: contents/ui/config/ConfigGeneral.qml:242
 msgctxt "@info:status <b> marks the current dock mode"
 msgid ""
 "Current dock state: <b>Vertical panel</b>.<br>Fill free panel space is "
@@ -2140,8 +2136,8 @@ msgctxt "@info:accessibility"
 msgid "Current icon: %1"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:84
-#: contents/ui/config/ConfigGeneral.qml:114
+#: contents/ui/config/ConfigGeneral.qml:88
+#: contents/ui/config/ConfigGeneral.qml:118
 msgid "Custom"
 msgstr ""
 
@@ -2163,19 +2159,19 @@ msgstr ""
 msgid "Custom folder:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:426
+#: contents/ui/config/ConfigGeneral.qml:490
 msgid "Custom height:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:446
+#: contents/ui/config/ConfigGeneral.qml:510
 msgid "Custom panel height"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:446
+#: contents/ui/config/ConfigGeneral.qml:510
 msgid "Custom panel width"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:426
+#: contents/ui/config/ConfigGeneral.qml:490
 msgid "Custom width:"
 msgstr ""
 
@@ -2235,11 +2231,11 @@ msgstr ""
 msgid "Description:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:124
+#: contents/ui/config/ConfigGeneral.qml:128
 msgid "Desktop %1"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:555
+#: contents/ui/config/ConfigGeneral.qml:619
 msgid "Desktop visibility:"
 msgstr ""
 
@@ -2250,8 +2246,8 @@ msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:252
 #: contents/ui/components/DockContextActionsController.qml:295
+#: contents/ui/config/components/RecentApplicationsSettings.qml:23
 #: contents/ui/config/ConfigFolderPopups.qml:108
-#: contents/ui/config/ConfigWindows.qml:33
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
 msgstr ""
@@ -2302,7 +2298,7 @@ msgctxt "@action:context"
 msgid "Disable recent applications"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:96
+#: contents/ui/config/ConfigGeneral.qml:100
 msgid "Disabled"
 msgstr ""
 
@@ -2316,7 +2312,7 @@ msgctxt "@item:inlistbox Media player hover mode"
 msgid "Disabled"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:268
+#: contents/ui/config/ConfigMouse.qml:269
 msgid ""
 "Disabled by default because Plasma uses press and hold to enter widget "
 "editing in floating mode."
@@ -2396,6 +2392,7 @@ msgid "Do you want to empty the trash?"
 msgstr ""
 
 #: contents/ui/config/ConfigAspect.qml:175
+#: contents/ui/config/ConfigGeneral.qml:202
 msgid "Dock"
 msgstr ""
 
@@ -2415,11 +2412,11 @@ msgstr ""
 msgid "Dock context menu distance"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:164
+#: contents/ui/config/ConfigMouse.qml:165
 msgid "Dock motion speed"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:153
+#: contents/ui/config/ConfigMouse.qml:154
 msgid "Dock motion speed:"
 msgstr ""
 
@@ -2439,7 +2436,7 @@ msgstr ""
 msgid "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:103
+#: contents/ui/config/ConfigGeneral.qml:107
 msgid "Dodge windows (Recommended)"
 msgstr ""
 
@@ -2456,7 +2453,7 @@ msgstr ""
 msgid "Drag files"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1432
+#: contents/ui/components/DockItem.qml:1472
 msgctxt "@info:accessible"
 msgid ""
 "Drag to move the open applications section. Use an arrow key to move it one "
@@ -2478,11 +2475,11 @@ msgstr ""
 msgid "Dry run: post-install command verification skipped"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:158
+#: contents/ui/config/ConfigWindows.qml:82
 msgid "Dynamic groups:"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:229
+#: contents/ui/config/ConfigWindows.qml:153
 msgid ""
 "Dynamic task entries share one dock item per application, while pinned "
 "launchers keep their current grouped behavior."
@@ -2492,7 +2489,7 @@ msgstr ""
 msgid "EQ theme:"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:230
+#: contents/ui/config/ConfigWindows.qml:154
 msgid ""
 "Each dynamic window gets its own dock item, while pinned launchers still "
 "accumulate their matching windows by application."
@@ -2519,7 +2516,7 @@ msgctxt "@title:category"
 msgid "Education"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:510
+#: contents/ui/config/ConfigGeneral.qml:574
 msgid "Effective icon size: %1 px; maximum hover enlargement: %2%"
 msgstr ""
 
@@ -2558,11 +2555,11 @@ msgctxt "@option:check"
 msgid "Enable background blur (BlurBehind)"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:241
+#: contents/ui/config/ConfigMouse.qml:242
 msgid "Enable file drag and drop onto application icons"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:261
+#: contents/ui/config/ConfigMouse.qml:262
 msgid "Enable press-and-hold item reordering"
 msgstr ""
 
@@ -2704,7 +2701,7 @@ msgstr ""
 msgid "Error: unknown option or invalid package path: %s\\n"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:530
+#: contents/ui/config/ConfigGeneral.qml:594
 msgid "Estimated panel-safe maximum: %1 px"
 msgstr ""
 
@@ -2720,6 +2717,10 @@ msgstr ""
 msgid "External JSON theme"
 msgstr ""
 
+#: contents/ui/config/ConfigGeneral.qml:206
+msgid "Extras"
+msgstr ""
+
 #: contents/ui/config/components/PopupAnimationSettings.qml:20
 msgid "Fade"
 msgstr ""
@@ -2730,12 +2731,12 @@ msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:254
 #: contents/ui/components/DockContextActionsController.qml:307
+#: contents/ui/config/components/ActionDialog.qml:74
+#: contents/ui/config/components/RecentApplicationsSettings.qml:24
 #: contents/ui/config/ConfigFolderPopups.qml:109
 #: contents/ui/config/ConfigItems.qml:1025
-#: contents/ui/config/ConfigWindows.qml:34
 #: contents/ui/config/ItemConfigurationDialog.qml:680
 #: contents/ui/config/ItemEditorPanel.qml:60
-#: contents/ui/config/components/ActionDialog.qml:74
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Fan"
 msgstr ""
@@ -2763,15 +2764,15 @@ msgstr ""
 msgid "Files"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:83
+#: contents/ui/config/ConfigGeneral.qml:87
 msgid "Fill height"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:83
+#: contents/ui/config/ConfigGeneral.qml:87
 msgid "Fill width"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:82
+#: contents/ui/config/ConfigGeneral.qml:86
 msgid "Fit content (Recommended)"
 msgstr ""
 
@@ -2781,7 +2782,7 @@ msgctxt "@option:control-center-mode"
 msgid "Floating"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:259
+#: contents/ui/config/ConfigMouse.qml:260
 msgid "Floating Dock reordering:"
 msgstr ""
 
@@ -2789,7 +2790,7 @@ msgstr ""
 msgid "Floating capsules"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:462
+#: contents/ui/config/ConfigGeneral.qml:526
 msgid "Floating icon size:"
 msgstr ""
 
@@ -2809,7 +2810,7 @@ msgstr ""
 msgid "Flow to the right"
 msgstr ""
 
-#: contents/ui/components/FolderPopup.qml:617
+#: contents/ui/components/FolderPopup.qml:632
 #: contents/ui/config/ConfigItems.qml:1037
 #: contents/ui/config/ItemConfigurationDialog.qml:686
 msgid "Folder"
@@ -3016,6 +3017,10 @@ msgstr ""
 msgid "General popup animation"
 msgstr ""
 
+#: contents/ui/config/ConfigGeneral.qml:199
+msgid "General sections"
+msgstr ""
+
 #: contents/ui/components/controlcenter/ControlCenterAudioPage.qml:114
 msgctxt "@action:button"
 msgid "Global sound options"
@@ -3043,8 +3048,8 @@ msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:255
 #: contents/ui/components/DockContextActionsController.qml:271
+#: contents/ui/config/components/RecentApplicationsSettings.qml:21
 #: contents/ui/config/ConfigFolderPopups.qml:106
-#: contents/ui/config/ConfigWindows.qml:31
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Grid"
 msgstr ""
@@ -3066,11 +3071,11 @@ msgctxt "@info:short description of the container item type"
 msgid "Group applications in a folder"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:42
+#: contents/ui/config/ConfigWindows.qml:28
 msgid "Group by application"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:203
+#: contents/ui/config/ConfigWindows.qml:127
 msgid "Grouping and limits"
 msgstr ""
 
@@ -3137,7 +3142,7 @@ msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:215
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:344
-#: contents/ui/config/ConfigMouse.qml:90
+#: contents/ui/config/ConfigMouse.qml:91
 msgid "Hover animation:"
 msgstr ""
 
@@ -3150,11 +3155,11 @@ msgstr ""
 msgid "Hover background:"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:124
+#: contents/ui/config/ConfigMouse.qml:125
 msgid "Hover enlargement"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:112
+#: contents/ui/config/ConfigMouse.qml:113
 msgid "Hover enlargement:"
 msgstr ""
 
@@ -3185,11 +3190,11 @@ msgstr ""
 msgid "Icon size:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:495
+#: contents/ui/config/ConfigGeneral.qml:559
 msgid "Icon spacing"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:485
+#: contents/ui/config/ConfigGeneral.qml:549
 msgid "Icon spacing:"
 msgstr ""
 
@@ -3199,7 +3204,7 @@ msgstr ""
 msgid "Icon:"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:27
+#: contents/ui/config/components/RecentApplicationsSettings.qml:17
 msgctxt "@option:recent-applications"
 msgid "Icons"
 msgstr ""
@@ -3419,7 +3424,7 @@ msgctxt "@action:button"
 msgid "Keep editing"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1435
+#: contents/ui/components/DockItem.qml:1475
 msgctxt "@info:accessible"
 msgid "Keep holding to bring %1 to the front"
 msgstr ""
@@ -3454,7 +3459,7 @@ msgctxt "@item:inlistbox Context menu size"
 msgid "Large"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:58
+#: contents/ui/config/ConfigMouse.qml:59
 msgid "Lateral ripple"
 msgstr ""
 
@@ -3483,7 +3488,7 @@ msgstr ""
 msgid "Layout profile:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:91
+#: contents/ui/config/ConfigGeneral.qml:95
 msgid "Left"
 msgstr ""
 
@@ -3506,11 +3511,11 @@ msgstr ""
 msgid "Limit menu rows"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:521
+#: contents/ui/config/ConfigGeneral.qml:585
 msgid "Limit:"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:168
+#: contents/ui/config/ConfigWindows.qml:92
 msgid ""
 "Limits the number of dynamic task groups shown directly in the dock. "
 "Additional groups that exceed this limit or available space remain "
@@ -3540,8 +3545,8 @@ msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:250
 #: contents/ui/components/DockContextActionsController.qml:283
+#: contents/ui/config/components/RecentApplicationsSettings.qml:22
 #: contents/ui/config/ConfigFolderPopups.qml:107
-#: contents/ui/config/ConfigWindows.qml:32
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
 msgstr ""
@@ -3653,7 +3658,7 @@ msgid "Maximize"
 msgstr ""
 
 #: contents/ui/components/TaskOverflowPopup.qml:163
-#: contents/ui/components/WindowPreviewCard.qml:227
+#: contents/ui/components/WindowPreviewCard.qml:218
 msgid "Maximize window"
 msgstr ""
 
@@ -3667,7 +3672,7 @@ msgstr ""
 msgid "Maximum application rows inside folders"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:163
+#: contents/ui/config/ConfigWindows.qml:87
 msgid "Maximum dynamic groups shown in the dock"
 msgstr ""
 
@@ -3834,7 +3839,7 @@ msgid "Minimize"
 msgstr ""
 
 #: contents/ui/components/TaskOverflowPopup.qml:148
-#: contents/ui/components/WindowPreviewCard.qml:212
+#: contents/ui/components/WindowPreviewCard.qml:200
 msgid "Minimize window"
 msgstr ""
 
@@ -4094,19 +4099,19 @@ msgstr ""
 msgid "No sound player or usable sound was found."
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:618
+#: contents/ui/config/ConfigGeneral.qml:682
 msgid "No virtual desktops were found."
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:26
+#: contents/ui/config/components/PopupAnimationSettings.qml:22
 #: contents/ui/config/ConfigAspect.qml:154
 #: contents/ui/config/ConfigMouse.qml:42 contents/ui/config/ConfigMouse.qml:49
-#: contents/ui/config/ConfigMouse.qml:56 contents/ui/config/ConfigPopups.qml:36
-#: contents/ui/config/components/PopupAnimationSettings.qml:22
+#: contents/ui/config/ConfigMouse.qml:57 contents/ui/config/ConfigPopups.qml:36
 msgid "None"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:110
+#: contents/ui/config/ConfigGeneral.qml:114
 msgid "None (No background)"
 msgstr ""
 
@@ -4162,9 +4167,9 @@ msgid "Not selected for the new folder"
 msgstr ""
 
 #: contents/ui/components/NotePopup.qml:133
+#: contents/ui/config/code/itemTypeCatalog.js:55
 #: contents/ui/config/ConfigItems.qml:1026
 #: contents/ui/config/ItemConfigurationDialog.qml:681
-#: contents/ui/config/code/itemTypeCatalog.js:55
 msgid "Note"
 msgstr ""
 
@@ -4293,7 +4298,7 @@ msgstr ""
 msgid "Only one open applications item is allowed in the dock configuration."
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:187
+#: contents/ui/config/ConfigWindows.qml:111
 msgid "Only tasks on the current desktop will appear."
 msgstr ""
 
@@ -4329,7 +4334,7 @@ msgstr ""
 msgid "Opacity:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:108
+#: contents/ui/config/ConfigGeneral.qml:112
 msgid "Opaque"
 msgstr ""
 
@@ -4453,7 +4458,7 @@ msgid "Open this application folder"
 msgstr ""
 
 #: contents/ui/components/FolderFanView.qml:1112
-#: contents/ui/components/FolderPopup.qml:957
+#: contents/ui/components/FolderPopup.qml:989
 msgctxt "@info:accessible"
 msgid "Open this folder in the file manager"
 msgstr ""
@@ -4537,15 +4542,15 @@ msgctxt "@info"
 msgid "Pair a device with the official Bluetooth wizard."
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:253
+#: contents/ui/config/ConfigGeneral.qml:317
 msgid "Panel alignment"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:223
+#: contents/ui/config/ConfigGeneral.qml:287
 msgid "Panel alignment:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:98
+#: contents/ui/config/ConfigGeneral.qml:102
 msgid "Panel and applets (Recommended)"
 msgstr ""
 
@@ -4554,51 +4559,51 @@ msgstr ""
 msgid "Panel distance:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:290
+#: contents/ui/config/ConfigGeneral.qml:354
 msgid "Panel floating mode"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:260
+#: contents/ui/config/ConfigGeneral.qml:324
 msgid "Panel floating mode:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:216
-#: contents/ui/config/ConfigGeneral.qml:419
+#: contents/ui/config/ConfigGeneral.qml:280
+#: contents/ui/config/ConfigGeneral.qml:483
 msgid "Panel height"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:186
-#: contents/ui/config/ConfigGeneral.qml:399
+#: contents/ui/config/ConfigGeneral.qml:250
+#: contents/ui/config/ConfigGeneral.qml:463
 msgid "Panel height:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:462
+#: contents/ui/config/ConfigGeneral.qml:526
 msgid "Panel icon size:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:383
+#: contents/ui/config/ConfigGeneral.qml:447
 msgid "Panel opacity"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:343
+#: contents/ui/config/ConfigGeneral.qml:407
 msgid "Panel opacity:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:336
+#: contents/ui/config/ConfigGeneral.qml:400
 msgid "Panel visibility"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:297
+#: contents/ui/config/ConfigGeneral.qml:361
 msgid "Panel visibility:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:216
-#: contents/ui/config/ConfigGeneral.qml:419
+#: contents/ui/config/ConfigGeneral.qml:280
+#: contents/ui/config/ConfigGeneral.qml:483
 msgid "Panel width"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:186
-#: contents/ui/config/ConfigGeneral.qml:399
+#: contents/ui/config/ConfigGeneral.qml:250
+#: contents/ui/config/ConfigGeneral.qml:463
 msgid "Panel width:"
 msgstr ""
 
@@ -4645,7 +4650,7 @@ msgctxt "@action:inmenu"
 msgid "Pin to Dock"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:147
+#: contents/ui/config/ConfigWindows.qml:71
 msgid ""
 "Pinned launchers can act as task entries when their application is already "
 "open."
@@ -4676,7 +4681,7 @@ msgstr ""
 msgid "Plasma color"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:148
+#: contents/ui/config/ConfigMouse.qml:149
 msgid ""
 "Plasma panels limit hover enlargement to 65% and reduce it further when the "
 "custom panel size requires it. With an active custom JSON theme, these "
@@ -4733,7 +4738,7 @@ msgstr ""
 msgid "Preparing environment..."
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:88
+#: contents/ui/config/components/RecentApplicationsSettings.qml:64
 msgctxt "@label:listbox"
 msgid "Presentation:"
 msgstr ""
@@ -4742,12 +4747,12 @@ msgstr ""
 msgid "Press"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1489
+#: contents/ui/components/DockItem.qml:1529
 msgctxt "@info:accessible"
 msgid "Press M to open media controls"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1471
+#: contents/ui/components/DockItem.qml:1511
 msgctxt "@info:accessible"
 msgid ""
 "Press and hold to move this Dock item. Use Control+Shift with an arrow key "
@@ -4916,17 +4921,17 @@ msgctxt "@title"
 msgid "Recent applications"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:77
+#: contents/ui/config/components/RecentApplicationsSettings.qml:48
 msgctxt "@title:group"
 msgid "Recent applications"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:118
+#: contents/ui/config/components/RecentApplicationsSettings.qml:97
 msgctxt "@label:listbox"
 msgid "Recent applications container view"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:89
+#: contents/ui/config/components/RecentApplicationsSettings.qml:65
 msgctxt "@label:listbox"
 msgid "Recent applications presentation"
 msgstr ""
@@ -4948,17 +4953,17 @@ msgstr ""
 msgid "Reflection:"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1454
+#: contents/ui/components/DockItem.qml:1494
 msgctxt "@info:accessible"
 msgid "Release to add %1 to %2"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1447
+#: contents/ui/components/DockItem.qml:1487
 msgctxt "@info:accessible"
 msgid "Release to insert %1 in the Dock"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1443
+#: contents/ui/components/DockItem.qml:1483
 msgctxt "@info:accessible"
 msgid "Release to open local files with %1"
 msgstr ""
@@ -5005,7 +5010,7 @@ msgstr ""
 msgid "Remove open applications from the dock?"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:540
+#: contents/ui/config/ConfigGeneral.qml:604
 msgid "Remove safe limits"
 msgstr ""
 
@@ -5117,7 +5122,7 @@ msgid "Restore from maximized"
 msgstr ""
 
 #: contents/ui/components/TaskOverflowPopup.qml:147
-#: contents/ui/components/WindowPreviewCard.qml:211
+#: contents/ui/components/WindowPreviewCard.qml:199
 msgid "Restore from minimized state"
 msgstr ""
 
@@ -5126,12 +5131,12 @@ msgctxt "@action:button"
 msgid "Restore media volume"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:539
+#: contents/ui/config/ConfigGeneral.qml:603
 msgid "Restore safe limit"
 msgstr ""
 
 #: contents/ui/components/TaskOverflowPopup.qml:162
-#: contents/ui/components/WindowPreviewCard.qml:226
+#: contents/ui/components/WindowPreviewCard.qml:217
 msgid "Restore window size"
 msgstr ""
 
@@ -5143,7 +5148,7 @@ msgstr ""
 msgid "Rhythmic movement:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:93
+#: contents/ui/config/ConfigGeneral.qml:97
 msgid "Right"
 msgstr ""
 
@@ -5182,7 +5187,7 @@ msgstr ""
 msgid "Safe Mode"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:526
+#: contents/ui/config/ConfigGeneral.qml:590
 msgid "Safe limits disabled (up to 96 px)"
 msgstr ""
 
@@ -5205,7 +5210,7 @@ msgctxt "@action:button"
 msgid "Scan for networks"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:179
+#: contents/ui/config/ConfigWindows.qml:103
 msgid "Scope:"
 msgstr ""
 
@@ -5299,9 +5304,9 @@ msgstr ""
 msgid "Selected package: %s\\n"
 msgstr ""
 
+#: contents/ui/config/code/itemTypeCatalog.js:59
 #: contents/ui/config/ConfigItems.qml:1027
 #: contents/ui/config/ItemConfigurationDialog.qml:682
-#: contents/ui/config/code/itemTypeCatalog.js:59
 msgid "Separator"
 msgstr ""
 
@@ -5371,7 +5376,7 @@ msgstr ""
 msgid "Show a themed background behind items"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:142
+#: contents/ui/config/ConfigWindows.qml:66
 msgid "Show active windows in the dock"
 msgstr ""
 
@@ -5408,7 +5413,7 @@ msgstr ""
 msgid "Show distribution name in full screen"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:43
+#: contents/ui/config/ConfigWindows.qml:29
 msgid "Show each window"
 msgstr ""
 
@@ -5444,7 +5449,7 @@ msgctxt "@item:inlistbox Media player hover mode"
 msgid "Show media card below window previews"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:180
+#: contents/ui/config/ConfigWindows.qml:104
 msgid "Show only windows from the current virtual desktop"
 msgstr ""
 
@@ -5452,7 +5457,7 @@ msgstr ""
 msgid "Show page navigation arrows"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:82
+#: contents/ui/config/components/RecentApplicationsSettings.qml:54
 msgctxt "@option:check"
 msgid "Show recent applications"
 msgstr ""
@@ -5548,11 +5553,16 @@ msgctxt "@action:button"
 msgid "Shut Down"
 msgstr ""
 
+#: contents/ui/config/ConfigMouse.qml:53
+msgctxt "@item:inlistbox click effect"
+msgid "Side collision"
+msgstr ""
+
 #: contents/ui/config/ConfigMouse.qml:44
 msgid "Single"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:566
+#: contents/ui/config/ConfigGeneral.qml:630
 msgid "Single desktop"
 msgstr ""
 
@@ -5568,7 +5578,7 @@ msgstr ""
 msgid "Slide from the dock"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:57
+#: contents/ui/config/ConfigMouse.qml:58
 msgid "Slow bounce"
 msgstr ""
 
@@ -5595,9 +5605,9 @@ msgctxt "@title"
 msgid "Sound Volume"
 msgstr ""
 
+#: contents/ui/config/code/itemTypeCatalog.js:63
 #: contents/ui/config/ConfigItems.qml:1028
 #: contents/ui/config/ItemConfigurationDialog.qml:683
-#: contents/ui/config/code/itemTypeCatalog.js:63
 msgid "Spacer"
 msgstr ""
 
@@ -5661,19 +5671,19 @@ msgstr ""
 msgid "System operation failed: %1"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:584
+#: contents/ui/config/ConfigGeneral.qml:648
 msgid "Target desktop:"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:135
+#: contents/ui/config/ConfigWindows.qml:59
 msgid "Task visibility"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:188
+#: contents/ui/config/ConfigWindows.qml:112
 msgid "Tasks from all virtual desktops can appear."
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:141
+#: contents/ui/config/ConfigWindows.qml:65
 msgid "Tasks:"
 msgstr ""
 
@@ -5892,7 +5902,7 @@ msgid ""
 "is limited to a safe maximum distance."
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:531
+#: contents/ui/config/ConfigGeneral.qml:595
 msgid ""
 "The real panel thickness is not available in this view, so a safe fallback "
 "limit is being used."
@@ -5925,7 +5935,7 @@ msgid ""
 "install packages."
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:619
+#: contents/ui/config/ConfigGeneral.qml:683
 msgid "The selected desktop no longer exists. Choose another desktop."
 msgstr ""
 
@@ -6024,7 +6034,7 @@ msgctxt "@info:status"
 msgid "This application could not be resolved safely."
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1467
+#: contents/ui/components/DockItem.qml:1507
 msgctxt "@info:accessible"
 msgid "This file drop cannot be accepted"
 msgstr ""
@@ -6084,7 +6094,7 @@ msgstr ""
 msgid "To install a prebuilt .plasmoid, use: ./scripts-user/setup-universal.sh"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:87
+#: contents/ui/config/ConfigGeneral.qml:91
 msgid "Top"
 msgstr ""
 
@@ -6118,7 +6128,7 @@ msgstr ""
 msgid "Track information:"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:109
+#: contents/ui/config/ConfigGeneral.qml:113
 msgid "Translucent"
 msgstr ""
 
@@ -6362,7 +6372,7 @@ msgctxt "@action:button %1 is an audio device name"
 msgid "Use %1 as the default device"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1475
+#: contents/ui/components/DockItem.qml:1515
 msgctxt "@info:accessible"
 msgid "Use Control+Shift with an arrow key to move this Dock item."
 msgstr ""
@@ -6507,7 +6517,7 @@ msgstr ""
 msgid "What would you like to do?"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:247
+#: contents/ui/config/ConfigMouse.qml:248
 msgid ""
 "When disabled, application icons ignore dragged files. The Trash can still "
 "receive files."
@@ -6547,7 +6557,7 @@ msgstr ""
 msgid "Window"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:207
+#: contents/ui/config/ConfigWindows.qml:131
 msgid "Window behavior:"
 msgstr ""
 
@@ -6559,7 +6569,7 @@ msgstr ""
 msgid "Window indicators remain visible when the item background is hidden."
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:207
+#: contents/ui/config/ConfigMouse.qml:208
 msgid "Window minimize effect:"
 msgstr ""
 
@@ -6613,7 +6623,7 @@ msgstr ""
 msgid "Windows"
 msgstr ""
 
-#: contents/ui/config/ConfigGeneral.qml:104
+#: contents/ui/config/ConfigGeneral.qml:108
 msgid "Windows go below"
 msgstr ""
 
@@ -6669,10 +6679,10 @@ msgstr ""
 msgid "pacman is required on Arch-family distributions"
 msgstr ""
 
+#: contents/ui/config/components/ActionDialog.qml:93
 #: contents/ui/config/ConfigItems.qml:1044
 #: contents/ui/config/ItemActionEditor.qml:54
 #: contents/ui/config/ItemConfigurationDialog.qml:780
-#: contents/ui/config/components/ActionDialog.qml:93
 msgid "rows"
 msgstr ""
 

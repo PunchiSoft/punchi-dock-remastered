@@ -351,7 +351,7 @@ Module {
     }
     Component {
         file: "decorationbuttonprovider.h"
-        lineNumber: 14
+        lineNumber: 15
         name: "DecorationButtonProvider"
         accessSemantics: "reference"
         prototype: "QObject"
@@ -365,7 +365,16 @@ Module {
             read: "closeButtonPath"
             notify: "appearanceChanged"
             index: 0
-            lineNumber: 19
+            lineNumber: 20
+            isReadonly: true
+        }
+        Property {
+            name: "buttonPaths"
+            type: "QVariantMap"
+            read: "buttonPaths"
+            notify: "appearanceChanged"
+            index: 1
+            lineNumber: 21
             isReadonly: true
         }
         Property {
@@ -373,8 +382,8 @@ Module {
             type: "QSizeF"
             read: "buttonSize"
             notify: "appearanceChanged"
-            index: 1
-            lineNumber: 20
+            index: 2
+            lineNumber: 22
             isReadonly: true
         }
         Property {
@@ -382,12 +391,12 @@ Module {
             type: "QString"
             read: "themeName"
             notify: "appearanceChanged"
-            index: 2
-            lineNumber: 21
+            index: 3
+            lineNumber: 23
             isReadonly: true
         }
-        Signal { name: "appearanceChanged"; lineNumber: 33 }
-        Method { name: "refresh"; lineNumber: 30 }
+        Signal { name: "appearanceChanged"; lineNumber: 36 }
+        Method { name: "refresh"; lineNumber: 33 }
     }
     Component {
         file: "dockitemspersistenceadapter.h"

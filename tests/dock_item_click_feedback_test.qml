@@ -156,10 +156,14 @@ TestCase {
 
     function test_direction_data() {
         return [
-            {tag: "bottom", edge: PlasmaCore.Types.BottomEdge, vertical: false, sign: -1},
-            {tag: "top", edge: PlasmaCore.Types.TopEdge, vertical: false, sign: 1},
-            {tag: "left", edge: PlasmaCore.Types.LeftEdge, vertical: true, sign: 1},
-            {tag: "right", edge: PlasmaCore.Types.RightEdge, vertical: true, sign: -1}
+            {tag: "bottom", edge: PlasmaCore.Types.BottomEdge, inPanel: true, sign: -1},
+            {tag: "top", edge: PlasmaCore.Types.TopEdge, inPanel: true, sign: 1},
+            {tag: "left", edge: PlasmaCore.Types.LeftEdge, inPanel: true, sign: -1},
+            {tag: "right", edge: PlasmaCore.Types.RightEdge, inPanel: true, sign: -1},
+            {tag: "bottom-floating", edge: PlasmaCore.Types.BottomEdge, inPanel: false, sign: -1},
+            {tag: "top-floating", edge: PlasmaCore.Types.TopEdge, inPanel: false, sign: -1},
+            {tag: "left-floating", edge: PlasmaCore.Types.LeftEdge, inPanel: false, sign: -1},
+            {tag: "right-floating", edge: PlasmaCore.Types.RightEdge, inPanel: false, sign: -1}
         ]
     }
 
@@ -167,16 +171,27 @@ TestCase {
         const host = createHost("app")
         const item = host.dockItem
         item.panelLocation = data.edge
+        item.inPanel = data.inPanel
+        verify(waitForPolish(item))
         const feedback = feedbackFor(item)
         const visual = findChild(item, "dockItemVisualArea")
         const origin = visual.mapToItem(item, 0, 0)
+        const width = item.width
+        const height = item.height
         item.activateItem()
         tryVerify(function() {
             const mapped = visual.mapToItem(item, 0, 0)
-            return (data.vertical ? mapped.x - origin.x : mapped.y - origin.y) * data.sign > 1
+            return (mapped.y - origin.y) * data.sign > 1
         })
-        compare(data.vertical ? feedback.verticalOffset : feedback.horizontalOffset, 0)
+        compare(feedback.horizontalOffset, 0)
+        fuzzyCompare(visual.mapToItem(item, 0, 0).x, origin.x, 0.001)
+        compare(item.width, width)
+        compare(item.height, height)
+        compare(host.actionCount, 1)
         feedback.reset()
+        verifySettled(feedback)
+        fuzzyCompare(visual.mapToItem(item, 0, 0).x, origin.x, 0.001)
+        fuzzyCompare(visual.mapToItem(item, 0, 0).y, origin.y, 0.001)
     }
 
     function test_repeatedClicksDoNotQueueFeedback() {

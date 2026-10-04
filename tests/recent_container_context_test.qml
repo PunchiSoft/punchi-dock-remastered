@@ -2,7 +2,6 @@
 
 import QtQuick
 import QtTest
-import "../contents/ui/config" as Config
 import "../contents/ui/components" as Components
 
 TestCase {
@@ -49,10 +48,6 @@ TestCase {
             return true
         }
     }
-    Component {
-        id: pageComponent
-        Config.ConfigWindows { width: 650; height: 780 }
-    }
 
     function descriptor() {
         return {type: "folder", entryRole: "recent-container", layout: testCase.layout,
@@ -70,9 +65,14 @@ TestCase {
         layout = "grid"
         viewCalls = 0
         disableCalls = 0
-        page = createTemporaryObject(pageComponent, testCase)
+        page = recentGeneralTestSupport.createPage(testCase)
         verify(page !== null)
+        const tabs = findChild(page, "generalTabs")
+        verify(tabs !== null)
+        tabs.currentIndex = 1
+        verify(waitForPolish(page))
     }
+    function cleanup() { recentGeneralTestSupport.destroyPage(page) }
     function test_defaultsAndSettingsStayReactive() {
         const view = findChild(page, "recentApplicationsContainerLayoutCombo")
         const mode = findChild(page, "recentApplicationsModeCombo")
@@ -80,6 +80,7 @@ TestCase {
         compare(page.cfg_recentApplicationsMode, "container")
         compare(page.cfg_recentApplicationsContainerLayout, "grid")
         verify(view.enabled)
+        verify(view.visible)
         compare(view.count, 4)
         verify(view.activeFocusOnTab)
         verify(String(view.Accessible.name).length > 0)
@@ -97,9 +98,13 @@ TestCase {
         page.cfg_recentApplicationsMode = "container"
         page.cfg_showRecentApplications = false
         compare(view.enabled, false)
+        compare(view.visible, true)
+        compare(mode.visible, true)
+        compare(findChild(page, "recentApplicationsCountSpin").visible, true)
         compare(page.cfg_recentApplicationsContainerLayout, "list")
         page.cfg_showRecentApplications = true
         compare(view.enabled, true)
+        verify(view.visible && mode.visible)
     }
     function test_menuExposesOnlyRecentOperationsAndOneCheckedView() {
         const values = ["grid", "list", "detailed", "fan"]

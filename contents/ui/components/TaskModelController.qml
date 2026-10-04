@@ -1078,15 +1078,6 @@ Item {
         return true
     }
 
-    function requestWindowPresentation(row) {
-        const taskIndex = tasksModel.index(row, 0)
-        if (!taskIndex.valid) {
-            return
-        }
-
-        tasksModel.requestActivate(taskIndex)
-    }
-
     function minimizeTaskRow(row) {
         const taskIndex = tasksModel.index(row, 0)
         if (!taskIndex.valid || !tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimizable)) {

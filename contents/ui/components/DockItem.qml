@@ -68,6 +68,16 @@ Item {
     property real hoverScaleSetting: 1.65
     property string hoverAnimationMode: "wave"
     property string clickEffect: "none"
+    property var clickCollisionController: null
+    readonly property bool clickCollisionEligible: visible && enabled
+        && !structuralWaveItem && !persistentReorderActive
+    readonly property real clickCollisionOffset: !clickCollisionController ? 0
+        : clickCollisionController.originItem === dockItemContainer
+            ? clickCollisionController.originOffset
+        : clickCollisionController.positiveItem === dockItemContainer
+            ? clickCollisionController.positiveOffset
+        : clickCollisionController.negativeItem === dockItemContainer
+            ? clickCollisionController.negativeOffset : 0
     property string windowMinimizeEffect: "none"
     property int taskMinimizedCount: 0
     property int minimizeReactionRevision: 0
@@ -231,8 +241,38 @@ Item {
         if (separatorItem || spacerItem) {
             return
         }
-        clickFeedback.play()
+        playClickFeedback()
         itemClicked(itemCommand)
+    }
+
+    function playClickFeedback() {
+        if (clickEffect === "collision" && clickCollisionController) {
+            clickCollisionController.play(dockItemContainer)
+        } else {
+            clickFeedback.play()
+        }
+    }
+
+    function collisionVisualBounds() {
+        if (mediaItem) {
+            return mediaDockItem.mapToItem(layoutController,
+                Qt.rect(0, 0, mediaDockItem.width, mediaDockItem.height))
+        }
+        const size = iconSize * waveScale
+        return visualArea.mapToItem(layoutController, Qt.rect(
+            (visualArea.width - size) / 2 + hoverOffsetX,
+            (visualArea.height - size) / 2 + hoverOffsetY, size, size))
+    }
+
+    onClickCollisionEligibleChanged: {
+        if (!clickCollisionEligible && clickCollisionController) {
+            clickCollisionController.cancelFor(dockItemContainer)
+        }
+    }
+    onClickEffectChanged: {
+        if (clickCollisionController) {
+            clickCollisionController.cancelFor(dockItemContainer)
+        }
     }
     function mediaAdjustedWaveScale(candidateScale) {
         if (!mediaItem) {
@@ -1063,10 +1103,12 @@ Item {
         transform: Translate {
             x: minimizeItemReaction.horizontalOffset
                 + clickFeedback.horizontalOffset
+                + (dockItemContainer.verticalPanelMode ? 0 : dockItemContainer.clickCollisionOffset)
                 + (dockItemContainer.verticalPanelMode
                     ? 0.0 : dockItemContainer.waveMainAxisShift)
             y: minimizeItemReaction.verticalOffset
                 + clickFeedback.verticalOffset
+                + (dockItemContainer.verticalPanelMode ? dockItemContainer.clickCollisionOffset : 0)
                 + (dockItemContainer.verticalPanelMode
                     ? dockItemContainer.waveMainAxisShift : 0.0)
         }
@@ -1296,7 +1338,7 @@ Item {
             textMode: dockItemContainer.mediaTextMode
             displayMode: dockItemContainer.mediaDisplayMode
             expandedMainAxisLength: dockItemContainer.mediaMainAxisLength
-            onInteractionActivated: clickFeedback.play()
+            onInteractionActivated: dockItemContainer.playClickFeedback()
             onLaunchRequested: dockItemContainer.mediaLaunchRequested()
             onPlaybackLaunchRequested: dockItemContainer.mediaPlaybackLaunchRequested()
             onContextMenuRequested: function(keyboardInvoked) {
@@ -1386,10 +1428,8 @@ Item {
         effect: dockItemContainer.clickEffect
         iconSize: dockItemContainer.iconSize
         motionSpeedPercent: dockItemContainer.resolvedDockMotionSpeedPercent
-        verticalPanel: dockItemContainer.verticalPanelMode
-        direction: dockItemContainer.panelLocation === PlasmaCore.Types.RightEdge
-            || dockItemContainer.panelLocation === PlasmaCore.Types.BottomEdge
-            || !dockItemContainer.inPanel ? -1 : 1
+        direction: dockItemContainer.inPanel
+            && dockItemContainer.panelLocation === PlasmaCore.Types.TopEdge ? 1 : -1
         feedbackEnabled: dockItemContainer.visible && dockItemContainer.enabled
             && !dockItemContainer.structuralWaveItem
             && !dockItemContainer.persistentReorderActive

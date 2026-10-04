@@ -66,7 +66,6 @@ Controls.ItemDelegate {
     Accessible.description: windowData.active ? i18n("Active window") : i18n("Activate window") // qmllint disable unqualified
 
     signal activateRequested(int taskRow)
-    signal presentWindowRequested(int taskRow)
     signal minimizeWindowRequested(int taskRow)
     signal maximizeWindowRequested(int taskRow)
     signal closeWindowRequested(int taskRow)
@@ -188,25 +187,14 @@ Controls.ItemDelegate {
                     spacing: 2
 
                     WindowPreviewActionButton {
-                        id: presentButton
-                        visible: !root.windowData.active
-                        enabled: !root.minimized
-                        Layout.preferredWidth: 28
-                        Layout.preferredHeight: 28
-                        visualRadius: root.actionButtonRadius
-                        text: i18n("Bring window to front") // qmllint disable unqualified
-                        icon.name: "go-up"
-                        icon.width: 16
-                        icon.height: 16
-                        onClicked: root.presentWindowRequested(root.taskRow)
-                    }
-
-                    WindowPreviewActionButton {
                         id: minimizeButton
+                        objectName: "previewMinimizeButton"
                         enabled: root.canMinimize
                         Layout.preferredWidth: 28
                         Layout.preferredHeight: 28
                         visualRadius: root.actionButtonRadius
+                        decorationRole: root.minimized ? "restore" : "minimize"
+                        decorationActive: !!root.windowData.active
                         text: root.minimized
                             ? i18n("Restore from minimized state") // qmllint disable unqualified
                             : i18n("Minimize window") // qmllint disable unqualified
@@ -218,10 +206,13 @@ Controls.ItemDelegate {
 
                     WindowPreviewActionButton {
                         id: maximizeButton
+                        objectName: "previewMaximizeButton"
                         enabled: root.canMaximize
                         Layout.preferredWidth: 28
                         Layout.preferredHeight: 28
                         visualRadius: root.actionButtonRadius
+                        decorationRole: root.maximized ? "restore" : "maximize"
+                        decorationActive: !!root.windowData.active
                         text: root.maximized
                             ? i18n("Restore window size") // qmllint disable unqualified
                             : i18n("Maximize window") // qmllint disable unqualified
@@ -233,10 +224,13 @@ Controls.ItemDelegate {
 
                     WindowPreviewActionButton {
                         id: closeButton
+                        objectName: "previewCloseButton"
                         enabled: root.canClose
                         Layout.preferredWidth: 28
                         Layout.preferredHeight: 28
                         visualRadius: root.actionButtonRadius
+                        decorationRole: "close"
+                        decorationActive: !!root.windowData.active
                         destructive: true
                         text: i18n("Close window") // qmllint disable unqualified
                         icon.name: "window-close"

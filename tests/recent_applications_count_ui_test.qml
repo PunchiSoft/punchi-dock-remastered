@@ -1,22 +1,34 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import QtQuick
 import QtTest
-import "../contents/ui/config" as Config
 
 TestCase {
     id: testCase
     name: "RecentApplicationsCountUi"
     when: windowShown
-    Config.ConfigWindows { id: page; width: 650; height: 780 }
+    visible: true
+    width: 700
+    height: 800
+    property var page: null
+    function initTestCase() {
+        page = recentGeneralTestSupport.createPage(testCase)
+        verify(page !== null)
+    }
+    function cleanupTestCase() { recentGeneralTestSupport.destroyPage(page) }
     function init() {
         failOnWarning(/.?/)
         page.cfg_showRecentApplications = true
         page.cfg_recentApplicationsCount = 3
         page.cfg_recentApplicationsMode = "container"
+        const tabs = findChild(page, "generalTabs")
+        verify(tabs !== null)
+        tabs.currentIndex = 1
+        verify(waitForPolish(page))
     }
     function test_default_and_two_way_control() {
         const spin = findChild(page, "recentApplicationsCountSpin")
         verify(spin !== null)
+        verify(spin.visible)
         compare(spin.value, 3)
         compare(spin.from, 1)
         compare(spin.to, 20)
@@ -41,9 +53,11 @@ TestCase {
         }
         page.cfg_showRecentApplications = false
         compare(spin.enabled, false)
+        compare(spin.visible, true)
         compare(spin.value, 9)
         page.cfg_showRecentApplications = true
         compare(spin.enabled, true)
+        compare(spin.visible, true)
         compare(spin.value, 9)
     }
 }

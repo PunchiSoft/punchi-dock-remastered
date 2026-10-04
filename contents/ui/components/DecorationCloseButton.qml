@@ -3,7 +3,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Window
-import org.kde.ksvg as KSvg
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.components as PlasmaComponents
 import "../org/punchi/dock" as PunchiDock
@@ -15,9 +14,8 @@ PlasmaComponents.ToolButton {
     property string decorationImagePath: PunchiDock.DecorationButtonProvider.closeButtonPath
     property size decorationButtonSize: PunchiDock.DecorationButtonProvider.buttonSize
     property bool decorationActive: Window.window ? Window.window.active : true
-    readonly property bool usingDecoration: themedButton.imagePath.length > 0
-        && themedButton.hasElementPrefix("active")
-    readonly property string renderedPrefix: themedButton.usedPrefix
+    readonly property bool usingDecoration: glyph.usingDecoration
+    readonly property string renderedPrefix: glyph.renderedPrefix
 
     implicitWidth: Math.max(20, decorationButtonSize.width + Kirigami.Units.smallSpacing * 2)
     implicitHeight: Math.max(20, decorationButtonSize.height + Kirigami.Units.smallSpacing * 2)
@@ -43,32 +41,16 @@ PlasmaComponents.ToolButton {
         when: root.background !== null
     }
 
-    contentItem: Item {
-        KSvg.FrameSvgItem {
-            id: themedButton
-            anchors.centerIn: parent
-            width: root.decorationButtonSize.width
-            height: root.decorationButtonSize.height
-            imagePath: root.decorationImagePath
-            enabledBorders: KSvg.FrameSvg.NoBorder
-            visible: root.usingDecoration
-            prefix: !root.enabled
-                ? [root.decorationActive ? "deactivated" : "deactivated-inactive", "inactive", "active"]
-                : (root.down
-                    ? [root.decorationActive ? "pressed" : "pressed-inactive", "pressed", "active"]
-                    : (root.hovered
-                        ? [root.decorationActive ? "hover" : "hover-inactive", "hover", "active"]
-                        : [root.decorationActive ? "active" : "inactive", "active"]))
-            Accessible.ignored: true
-        }
-        Kirigami.Icon {
-            anchors.centerIn: parent
-            width: Kirigami.Units.iconSizes.small
-            height: width
-            source: "window-close"
-            visible: !root.usingDecoration
-            Accessible.ignored: true
-        }
+    contentItem: DecorationButtonGlyph {
+        id: glyph
+        imagePath: root.decorationImagePath
+        buttonSize: root.decorationButtonSize
+        decorationActive: root.decorationActive
+        glyphEnabled: root.enabled
+        glyphHovered: root.hovered
+        glyphPressed: root.down
+        fallbackIconName: "window-close"
+        fallbackIconSize: Kirigami.Units.iconSizes.small
     }
 
     Rectangle {

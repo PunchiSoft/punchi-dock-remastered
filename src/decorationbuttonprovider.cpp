@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QHash>
 #include <QStandardPaths>
 #include <QXmlStreamReader>
 
@@ -46,6 +47,17 @@ void addExistingPath(QStringList &paths, const QString &path)
 }
 }
 
+const QHash<QString, QString> &DecorationButtonProvider::roleFiles()
+{
+    static const QHash<QString, QString> roles {
+        { QStringLiteral("close"), QStringLiteral("close.svg") },
+        { QStringLiteral("minimize"), QStringLiteral("minimize.svg") },
+        { QStringLiteral("maximize"), QStringLiteral("maximize.svg") },
+        { QStringLiteral("restore"), QStringLiteral("restore.svg") },
+    };
+    return roles;
+}
+
 DecorationButtonProvider::DecorationButtonProvider(QObject *parent)
     : QObject(parent)
     , m_config(KSharedConfig::openConfig(QStringLiteral("kwinrc")))
@@ -70,7 +82,7 @@ void DecorationButtonProvider::refresh()
     const QString theme = decoration.readEntry("theme", QString());
     const QString prefix = QStringLiteral("__aurorae__svg__");
     QString themeName;
-    QString imagePath;
+    QVariantMap buttonPaths;
     QSizeF buttonSize(16, 16);
     QStringList watchPaths;
 
@@ -93,16 +105,28 @@ void DecorationButtonProvider::refresh()
                 relativeDirectory, QStandardPaths::LocateDirectory);
             if (!directory.isEmpty()) {
                 const QString canonicalDirectory = QFileInfo(directory).canonicalFilePath();
-                const QString closePath = directory + QStringLiteral("/close.svg");
-                const QString canonicalClosePath = QFileInfo(closePath).canonicalFilePath();
                 const QString rcPath = directory + QLatin1Char('/') + themeName + QStringLiteral("rc");
                 addExistingPath(watchPaths, directory);
-                addExistingPath(watchPaths, closePath);
                 addExistingPath(watchPaths, rcPath);
-                if (!canonicalDirectory.isEmpty()
-                    && canonicalClosePath.startsWith(canonicalDirectory + QLatin1Char('/'))
-                    && isButtonSvg(canonicalClosePath)) {
-                    imagePath = canonicalClosePath;
+
+                // Each role is validated on its own so a theme that ships only
+                // some buttons keeps the Plasma fallback for the rest.
+                const QHash<QString, QString> &roles = roleFiles();
+                for (auto iterator = roles.constBegin(); iterator != roles.constEnd(); ++iterator) {
+                    const QString candidate = directory + QLatin1Char('/') + iterator.value();
+                    addExistingPath(watchPaths, candidate);
+                    if (canonicalDirectory.isEmpty()) {
+                        continue;
+                    }
+                    const QString canonicalPath = QFileInfo(candidate).canonicalFilePath();
+                    if (!canonicalPath.startsWith(canonicalDirectory + QLatin1Char('/'))
+                        || !isButtonSvg(canonicalPath)) {
+                        continue;
+                    }
+                    buttonPaths.insert(iterator.key(), canonicalPath);
+                }
+
+                if (!buttonPaths.isEmpty()) {
                     KConfig themeConfig(rcPath, KConfig::SimpleConfig);
                     const KConfigGroup layout(&themeConfig, QStringLiteral("Layout"));
                     buttonSize = QSizeF(qBound(8, layout.readEntry("ButtonWidth", 16), 64),
@@ -120,10 +144,10 @@ void DecorationButtonProvider::refresh()
     if (!watchPaths.isEmpty()) {
         m_files.addPaths(watchPaths);
     }
-    if (m_closeButtonPath == imagePath && m_themeName == themeName && m_buttonSize == buttonSize) {
+    if (m_buttonPaths == buttonPaths && m_themeName == themeName && m_buttonSize == buttonSize) {
         return;
     }
-    m_closeButtonPath = imagePath;
+    m_buttonPaths = buttonPaths;
     m_themeName = themeName;
     m_buttonSize = buttonSize;
     Q_EMIT appearanceChanged();

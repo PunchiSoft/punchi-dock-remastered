@@ -479,14 +479,29 @@ Item {
     }
 
     function applyViewRestore() {
-        if (!folderRoot.enabled || folderRoot.pendingViewIndex < 0 || (folderRoot.directoryModel
-                && folderRoot.directoryModel.loading)) {
+        if (!folderRoot.enabled || !folderRoot.sessionActive || !gridView.visible
+                || gridView.count <= 0 || gridView.width <= 0 || gridView.height <= 0
+                || (folderRoot.directoryModel && folderRoot.directoryModel.loading)) {
             return
         }
+
+        // Insertions and removals can move the view's origin without moving
+        // its viewport. Reconcile only invalid positions, never valid scrolling.
+        const minimumScroll = gridView.originY
+        const maximumScroll = minimumScroll
+            + Math.max(0, gridView.contentHeight - gridView.height)
+        if (folderRoot.pendingViewIndex < 0) {
+            if (folderRoot.directoryNavigationEnabled && !gridView.moving) {
+                gridView.contentY = Math.max(minimumScroll,
+                    Math.min(gridView.contentY, maximumScroll))
+            }
+            return
+        }
+
         const index = Math.min(folderRoot.pendingViewIndex, gridView.count - 1)
         gridView.currentIndex = index
-        gridView.contentY = Math.max(0, Math.min(folderRoot.pendingViewScroll,
-            Math.max(0, gridView.contentHeight - gridView.height)))
+        gridView.contentY = minimumScroll + Math.max(0,
+            Math.min(folderRoot.pendingViewScroll, maximumScroll - minimumScroll))
         folderRoot.pendingViewIndex = -1
         if (gridView.currentItem) {
             gridView.currentItem.forceActiveFocus()
@@ -665,6 +680,22 @@ Item {
                     ? (folderRoot.directoryModel || folderRoot.folderPathAvailable
                         ? folderRoot.listItems : folderRoot.apps) : [])
             onCountChanged: Qt.callLater(folderRoot.applyViewRestore)
+            onOriginYChanged: Qt.callLater(folderRoot.applyViewRestore)
+            onContentHeightChanged: Qt.callLater(folderRoot.applyViewRestore)
+            onWidthChanged: Qt.callLater(folderRoot.applyViewRestore)
+            onHeightChanged: Qt.callLater(folderRoot.applyViewRestore)
+            onMovingChanged: {
+                if (!moving) { Qt.callLater(folderRoot.applyViewRestore) }
+            }
+            // Directory sessions cancel their rows while the window is hidden.
+            // Keep only visible delegates so no background incubation request
+            // retains an index belonging to the previous directory.
+            Binding {
+                target: gridView
+                property: "cacheBuffer"
+                value: 0
+                when: folderRoot.directoryNavigationEnabled
+            }
             Controls.BusyIndicator {
                 anchors.centerIn: parent
                 running: !!folderRoot.directoryModel && folderRoot.directoryModel.loading
@@ -765,7 +796,8 @@ Item {
                         folderRoot.openLocationRequested(folderRoot.folderPath)
                     } else {
                         if (browsableDirectory) {
-                            folderRoot.directoryActivated(modelData, index, gridView.contentY)
+                            folderRoot.directoryActivated(modelData, index,
+                                gridView.contentY - gridView.originY)
                         } else {
                             folderRoot.appLaunched(modelData)
                         }

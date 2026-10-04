@@ -22,6 +22,10 @@ KCM.SimpleKCM {
     // Variables prefixed with "cfg_" map automatically to KConfig (main.xml).
     property alias cfg_iconSize: iconSizeSlider.value
     property alias cfg_iconSpacing: iconSpacingSlider.value
+    property alias cfg_showRecentApplications: recentApplicationsSettings.showApplications
+    property alias cfg_recentApplicationsCount: recentApplicationsSettings.maximumApplications
+    property alias cfg_recentApplicationsMode: recentApplicationsSettings.presentationMode
+    property alias cfg_recentApplicationsContainerLayout: recentApplicationsSettings.containerLayout
     property string cfg_virtualDesktopMode: "all"
     property string cfg_targetVirtualDesktop: ""
     property string cfg_panelLengthMode: "system"
@@ -173,12 +177,72 @@ KCM.SimpleKCM {
         }
     }
 
-    ColumnLayout {
-        spacing: Kirigami.Units.largeSpacing
-        Layout.fillWidth: true
+    // The dock-state notice is announced when the page opens and then collapses
+    // by itself, so it stops pushing the interactive controls down.
+    // Kirigami.InlineMessage animates its own fade and height and keeps the
+    // animation disabled when the user turns off animations system-wide.
+    readonly property int statusNoticeDuration: 5000
+    property bool statusNoticeVisible: true
 
+    Timer {
+        id: statusNoticeTimer
+        interval: page.statusNoticeDuration
+        repeat: false
+        running: true
+        onTriggered: page.statusNoticeVisible = false
+    }
+
+    // qmllint disable unqualified
+    header: Controls.TabBar {
+        id: generalTabs
+        objectName: "generalTabs"
+        Accessible.name: i18n("General sections")
+
+        Controls.TabButton {
+            text: i18n("Dock")
+        }
+
+        Controls.TabButton {
+            text: i18n("Extras")
+        }
+    }
+    // qmllint enable unqualified
+
+    // Both tab forms stay instantiated and visible so that
+    // Kirigami.FormLayout can share a single label and control column through
+    // twinFormLayouts. A form hidden with visible: false stops contributing its
+    // label widths to that shared column, which shifted the controls between
+    // tabs. Only the active form keeps its height; the inactive one is
+    // collapsed to zero height, clipped, disabled and hidden from assistive
+    // technologies.
+    ColumnLayout {
+        id: generalStack
+        spacing: 0
+
+        // Dock tab: dock, panel, icon and virtual desktop settings.
         Kirigami.FormLayout {
+            id: dockSettingsForm
             Layout.fillWidth: true
+            Layout.preferredHeight: generalTabs.currentIndex === 0 ? implicitHeight : 0
+            clip: true
+            enabled: generalTabs.currentIndex === 0
+            Accessible.ignored: generalTabs.currentIndex !== 0
+            twinFormLayouts: [recentApplicationsSettings]
+
+            Kirigami.InlineMessage {
+                id: statusInlineMessage
+                Kirigami.FormData.isSection: true
+                visible: page.statusNoticeVisible
+                Layout.fillWidth: true
+                type: Kirigami.MessageType.Information
+                showCloseButton: false
+                text: !page.inPanel
+                    ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Floating mode</b>.<br>Panel-only sizing and integration options are unavailable.") // qmllint disable unqualified
+                    : page.verticalPanel
+                        ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Vertical panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.") // qmllint disable unqualified
+                        : i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Horizontal panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.") // qmllint disable unqualified
+                Accessible.name: text.replace("<br>", " ").replace("<b>", "").replace("</b>", "")
+            }
 
             // qmllint disable unqualified
             RowLayout {
@@ -620,19 +684,16 @@ KCM.SimpleKCM {
             }
         }
 
-        Kirigami.InlineMessage {
-            id: statusInlineMessage
-            visible: true
+        // Extras tab: secondary features kept out of the dock settings.
+        RecentApplicationsSettings {
+            id: recentApplicationsSettings
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignHCenter
-            type: Kirigami.MessageType.Information
-            showCloseButton: false
-            text: !page.inPanel
-                ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Floating mode</b>.<br>Panel-only sizing and integration options are unavailable.") // qmllint disable unqualified
-                : page.verticalPanel
-                    ? i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Vertical panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.") // qmllint disable unqualified
-                    : i18nc("@info:status <b> marks the current dock mode", "Current dock state: <b>Horizontal panel</b>.<br>Fill free panel space is active only when the Plasma panel is set to Fill available; otherwise Punchi Dock remains compact.") // qmllint disable unqualified
-            Accessible.name: text.replace("<br>", " ").replace("<b>", "").replace("</b>", "")
+            Layout.preferredHeight: generalTabs.currentIndex === 1 ? implicitHeight : 0
+            clip: true
+            enabled: generalTabs.currentIndex === 1
+            Accessible.ignored: generalTabs.currentIndex !== 1
+            selectorWidth: page.selectorWidthHint
+            contentWidth: page.contentWidthHint
         }
     }
 }

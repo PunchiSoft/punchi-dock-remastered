@@ -10,7 +10,6 @@ Item {
     property bool motionEnabled: Kirigami.Units.longDuration > 1
     property int motionSpeedPercent: 100
     property int iconSize: 48
-    property bool verticalPanel: false
     property real direction: -1
 
     readonly property int duration: Math.round(Kirigami.Units.longDuration
@@ -18,10 +17,8 @@ Item {
     readonly property bool running: bounceAnimation.running
         || pulseAnimation.running || pressAnimation.running
     readonly property real visualScale: animationScale
-    readonly property real horizontalOffset: verticalPanel
-        ? bounceProgress * iconSize * 0.45 * direction : 0
-    readonly property real verticalOffset: !verticalPanel
-        ? bounceProgress * iconSize * 0.45 * direction : 0
+    readonly property real horizontalOffset: 0
+    readonly property real verticalOffset: bounceProgress * iconSize * 0.45 * direction
     readonly property real visualOpacity: feedbackEnabled && pressed && effect !== "none"
         ? 0.72 : 1.0
     property real animationScale: 1
@@ -33,7 +30,6 @@ Item {
     onEffectChanged: reset()
     onFeedbackEnabledChanged: if (!feedbackEnabled) reset()
     onMotionEnabledChanged: if (!motionEnabled) reset()
-    onVerticalPanelChanged: reset()
     onDirectionChanged: reset()
 
     function reset() {

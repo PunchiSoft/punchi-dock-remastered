@@ -49,7 +49,8 @@ KCM.SimpleKCM {
         { "text": i18n("None"), "value": "none" }, // qmllint disable unqualified
         { "text": i18n("Pulse"), "value": "pulse" }, // qmllint disable unqualified
         { "text": i18n("Press"), "value": "press" }, // qmllint disable unqualified
-        { "text": i18n("Bounce"), "value": "bounce" } // qmllint disable unqualified
+        { "text": i18n("Bounce"), "value": "bounce" }, // qmllint disable unqualified
+        { "text": i18nc("@item:inlistbox click effect", "Side collision"), "value": "collision" } // qmllint disable unqualified
     ]
     // qmllint disable unqualified
     readonly property var windowMinimizeEffectOptions: [

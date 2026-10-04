@@ -115,7 +115,6 @@ Item {
     clip: true
 
     signal activateRequested(int taskRow)
-    signal presentWindowRequested(int taskRow)
     signal minimizeWindowRequested(int taskRow)
     signal maximizeWindowRequested(int taskRow)
     signal closeWindowRequested(int taskRow)
@@ -190,7 +189,6 @@ Item {
                     maximumAvailableHeight: root.maximumAvailableHeight
 
                     onActivateRequested: taskRow => root.activateRequested(taskRow)
-                    onPresentWindowRequested: taskRow => root.presentWindowRequested(taskRow)
                     onMinimizeWindowRequested: taskRow => root.minimizeWindowRequested(taskRow)
                     onMaximizeWindowRequested: taskRow => root.maximizeWindowRequested(taskRow)
                     onCloseWindowRequested: taskRow => root.closeWindowRequested(taskRow)
