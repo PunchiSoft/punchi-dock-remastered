@@ -21,6 +21,13 @@ class SystemDiscovery : public QObject
     // Name of the file manager the desktop hands folders to. It lets the fan name
     // where a container opens instead of hardcoding one application.
     Q_PROPERTY(QString folderOpenerName READ folderOpenerName CONSTANT)
+    // KWin version reported by the running compositor, e.g. "6.3.6". Empty while
+    // the version has not been resolved or when the session has no KWin.
+    Q_PROPERTY(QString kwinVersion READ kwinVersion NOTIFY kwinVersionChanged)
+    // Whether the running KWin can render background blur without the partial
+    // repaint artifact that flickers into the themed shadow band. False for
+    // KWin < 6.6, true for newer versions and while the version is unknown.
+    Q_PROPERTY(bool kwinBlurSafe READ kwinBlurSafe NOTIFY kwinBlurSafeChanged)
 
 public:
     explicit SystemDiscovery(QObject *parent = nullptr);
@@ -28,6 +35,8 @@ public:
     QString distributionName() const;
     QString distributionLogo() const;
     QString folderOpenerName() const;
+    QString kwinVersion() const;
+    bool kwinBlurSafe() const;
 
     Q_INVOKABLE void requestFolderEntries(const QString &path);
     Q_INVOKABLE void requestApplications(const QString &category = {});
@@ -66,4 +75,10 @@ Q_SIGNALS:
     void applicationLaunchFinished(bool succeeded, const QString &message);
     void applicationAccessed(const QString &storageId);
     void operationFailed(const QString &operation, const QString &message);
+    void kwinVersionChanged();
+    void kwinBlurSafeChanged();
+
+private:
+    QString m_kwinVersion;
+    bool m_kwinBlurSafe = true;
 };

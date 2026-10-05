@@ -3770,6 +3770,7 @@ PlasmoidItem {
                         && folderSurfaceStack.backgroundBlurEnabled
                         && folderSurfaceStack.backgroundBlurMaskPresent
                         && dockConfig.popupBackgroundBlurEnabled
+                        && systemDiscovery.kwinBlurSafe
                 }
 
             mainItem: PopupAnimatedContent {

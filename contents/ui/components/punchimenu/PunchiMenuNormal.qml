@@ -1350,14 +1350,14 @@ FocusScope {
 
     function focusPrimaryContent() {
         if (sessionViewActive) {
-            const loadedView = sessionViewLoader.item
+            const loadedView = sessionViewLoader.item as PunchiMenuSessionView
             if (loadedView) {
                 loadedView.focusInitialAction(Qt.TabFocusReason)
             }
             return
         }
         if (settingsViewActive) {
-            const loadedView = settingsViewLoader.item
+            const loadedView = settingsViewLoader.item as PunchiMenuNormalSettingsView
             if (loadedView) {
                 loadedView.focusInitialAction()
             }

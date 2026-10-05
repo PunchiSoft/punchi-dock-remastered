@@ -2784,93 +2784,119 @@ Module {
             isReadonly: true
             isPropertyConstant: true
         }
+        Property {
+            name: "kwinVersion"
+            type: "QString"
+            read: "kwinVersion"
+            notify: "kwinVersionChanged"
+            index: 3
+            lineNumber: 26
+            isReadonly: true
+        }
+        Property {
+            name: "kwinBlurSafe"
+            type: "bool"
+            read: "kwinBlurSafe"
+            notify: "kwinBlurSafeChanged"
+            index: 4
+            lineNumber: 30
+            isReadonly: true
+        }
         Signal {
             name: "folderEntriesReady"
-            lineNumber: 62
+            lineNumber: 71
             Parameter { name: "entries"; type: "QVariantList" }
         }
         Signal {
             name: "applicationsReady"
-            lineNumber: 63
+            lineNumber: 72
             Parameter { name: "applications"; type: "QVariantList" }
         }
         Signal {
             name: "applicationCatalogReady"
-            lineNumber: 64
+            lineNumber: 73
             Parameter { name: "applications"; type: "QVariantList" }
         }
         Signal {
             name: "applicationReady"
-            lineNumber: 65
+            lineNumber: 74
             Parameter { name: "application"; type: "QVariantMap" }
         }
         Signal {
             name: "applicationLaunchFinished"
-            lineNumber: 66
+            lineNumber: 75
             Parameter { name: "succeeded"; type: "bool" }
             Parameter { name: "message"; type: "QString" }
         }
         Signal {
             name: "applicationAccessed"
-            lineNumber: 67
+            lineNumber: 76
             Parameter { name: "storageId"; type: "QString" }
         }
         Signal {
             name: "operationFailed"
-            lineNumber: 68
+            lineNumber: 77
             Parameter { name: "operation"; type: "QString" }
             Parameter { name: "message"; type: "QString" }
         }
+        Signal {
+            name: "kwinVersionChanged"
+            lineNumber: 78
+        }
+        Signal {
+            name: "kwinBlurSafeChanged"
+            lineNumber: 79
+        }
         Method {
             name: "requestFolderEntries"
-            lineNumber: 32
+            lineNumber: 41
             Parameter { name: "path"; type: "QString" }
         }
         Method {
             name: "requestApplications"
-            lineNumber: 33
+            lineNumber: 42
             Parameter { name: "category"; type: "QString" }
         }
-        Method { name: "requestApplications"; isCloned: true; lineNumber: 33 }
+        Method { name: "requestApplications"; isCloned: true; lineNumber: 42 }
         Method {
             name: "applicationsForCategory"
             type: "QVariantList"
             isMethodConstant: true
-            lineNumber: 36
+            lineNumber: 45
             Parameter { name: "category"; type: "QString" }
         }
-        Method { name: "requestApplicationCatalog"; lineNumber: 38 }
+        Method { name: "requestApplicationCatalog"; lineNumber: 47 }
         Method {
             name: "requestApplication"
-            lineNumber: 39
+            lineNumber: 48
             Parameter { name: "query"; type: "QString" }
         }
         Method {
             name: "iconForApplication"
             type: "QString"
             isMethodConstant: true
-            lineNumber: 40
+            lineNumber: 49
             Parameter { name: "applicationId"; type: "QString" }
         }
         Method {
             name: "iconForCategory"
             type: "QString"
             isMethodConstant: true
-            lineNumber: 41
+            lineNumber: 50
             Parameter { name: "category"; type: "QString" }
         }
         Method {
             name: "applicationIdForCommand"
             type: "QString"
             isMethodConstant: true
-            lineNumber: 42
+            lineNumber: 51
             Parameter { name: "command"; type: "QString" }
         }
         Method {
             name: "applicationForLauncher"
             type: "QVariantMap"
             isMethodConstant: true
-            lineNumber: 43
+            lineNumber: 52
             Parameter { name: "applicationId"; type: "QString" }
             Parameter { name: "launcherUrl"; type: "QString" }
         }
@@ -2878,7 +2904,7 @@ Module {
             name: "resolveApplication"
             type: "QVariantMap"
             isMethodConstant: true
-            lineNumber: 44
+            lineNumber: 53
             Parameter { name: "storageId"; type: "QString" }
             Parameter { name: "command"; type: "QString" }
             Parameter { name: "launcherUrl"; type: "QString" }
@@ -2888,7 +2914,7 @@ Module {
             type: "QVariantMap"
             isCloned: true
             isMethodConstant: true
-            lineNumber: 44
+            lineNumber: 53
             Parameter { name: "storageId"; type: "QString" }
             Parameter { name: "command"; type: "QString" }
         }
@@ -2897,39 +2923,39 @@ Module {
             type: "QVariantMap"
             isCloned: true
             isMethodConstant: true
-            lineNumber: 44
+            lineNumber: 53
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
             name: "applicationActions"
             type: "QVariantList"
             isMethodConstant: true
-            lineNumber: 46
+            lineNumber: 55
             Parameter { name: "applicationId"; type: "QString" }
         }
         Method {
             name: "validateDroppedUrls"
             type: "QVariantMap"
             isMethodConstant: true
-            lineNumber: 47
+            lineNumber: 56
             Parameter { name: "urls"; type: "QVariantList" }
         }
         Method {
             name: "validateApplicationLauncherDrop"
             type: "QVariantMap"
             isMethodConstant: true
-            lineNumber: 48
+            lineNumber: 57
             Parameter { name: "urls"; type: "QVariantList" }
         }
         Method {
             name: "launchApplication"
-            lineNumber: 49
+            lineNumber: 58
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
             name: "createDesktopShortcut"
             type: "QVariantMap"
-            lineNumber: 50
+            lineNumber: 59
             Parameter { name: "storageId"; type: "QString" }
             Parameter { name: "command"; type: "QString" }
         }
@@ -2937,13 +2963,13 @@ Module {
             name: "createDesktopShortcut"
             type: "QVariantMap"
             isCloned: true
-            lineNumber: 50
+            lineNumber: 59
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
             name: "launchApplicationWithUrls"
             type: "bool"
-            lineNumber: 51
+            lineNumber: 60
             Parameter { name: "applicationId"; type: "QString" }
             Parameter { name: "command"; type: "QString" }
             Parameter { name: "launcherUrl"; type: "QString" }
@@ -2952,24 +2978,24 @@ Module {
         Method {
             name: "launchApplicationAction"
             type: "bool"
-            lineNumber: 53
+            lineNumber: 62
             Parameter { name: "applicationId"; type: "QString" }
             Parameter { name: "actionId"; type: "QString" }
         }
         Method {
             name: "launchApplicationByCommand"
             type: "bool"
-            lineNumber: 54
+            lineNumber: 63
             Parameter { name: "command"; type: "QString" }
         }
         Method {
             name: "openUrl"
-            lineNumber: 55
+            lineNumber: 64
             Parameter { name: "url"; type: "QString" }
         }
         Method {
             name: "openLocation"
-            lineNumber: 59
+            lineNumber: 68
             Parameter { name: "path"; type: "QString" }
         }
     }

@@ -159,7 +159,12 @@ def contaminations(lines: Sequence[str], path: Path) -> list[Contamination]:
 
 
 def placeholder_mismatches(lines: Sequence[str], path: Path) -> list[PlaceholderMismatch]:
-    """Return plural translations that lose or add positional placeholders."""
+    """Return translations that lose or add positional placeholders.
+
+    Both singular and plural entries are inspected. msgfmt only validates printf
+    conversions, so a ki18n marker such as ``%1`` that appears in a translation
+    but not in its source stays invisible to the compiler and reaches the UI.
+    """
 
     issues: list[PlaceholderMismatch] = []
     for start, end in entry_ranges(lines):
@@ -167,13 +172,19 @@ def placeholder_mismatches(lines: Sequence[str], path: Path) -> list[Placeholder
         values = {field.name: field.value for field in relative_fields}
         singular = values.get("msgid", "")
         plural = values.get("msgid_plural", "")
-        if not singular or not plural:
+        if not singular:
             continue
 
         for relative_field in relative_fields:
             if not relative_field.name.startswith("msgstr") or not relative_field.value:
                 continue
-            source = singular if relative_field.name in ("msgstr", "msgstr[0]") else plural
+            if relative_field.name in ("msgstr", "msgstr[0]"):
+                source = singular
+            elif plural:
+                source = plural
+            else:
+                # A singular entry carries no plural source to compare against.
+                continue
             if Counter(PLACEHOLDER_PATTERN.findall(relative_field.value)) == Counter(
                 PLACEHOLDER_PATTERN.findall(source)
             ):
@@ -270,6 +281,19 @@ def self_test() -> None:
     placeholder_issues = placeholder_mismatches(placeholder_fixture, fixture_path)
     if len(placeholder_issues) != 1 or placeholder_issues[0].field.name != "msgstr[1]":
         raise AssertionError("expected a missing plural placeholder to be detected")
+
+    singular_placeholder_fixture = [
+        'msgid "Media controls auto-collapse delay"\n',
+        'msgstr "Controles multimedia para %1"\n',
+        "\n",
+        'msgid "The maximum is %1."\n',
+        'msgstr "El máximo es %1."\n',
+    ]
+    singular_issues = placeholder_mismatches(singular_placeholder_fixture, fixture_path)
+    if len(singular_issues) != 1 or singular_issues[0].field.name != "msgstr":
+        raise AssertionError("expected a stray singular placeholder to be detected")
+    if singular_issues[0].source != "Media controls auto-collapse delay":
+        raise AssertionError("expected the singular mismatch to report its msgid")
 
 
 def parse_arguments() -> argparse.Namespace:

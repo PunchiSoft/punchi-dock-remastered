@@ -1042,7 +1042,7 @@ KCM.SimpleKCM {
         enableRightClickMenuText: i18n("Enable right-click menu")
         limitContextMenuRowsText: i18n("Limit menu rows")
         rowsText: i18n("rows")
-        rowsValueText: i18n("%1 rows")
+        rowsValueText: i18n("%1 rows", "%1")
         actionNameLabel: page.selectedItemType === "folder" ? i18n("App name:") : i18n("Action name:")
         actionIconLabel: page.selectedItemType === "folder" ? i18n("App icon:") : i18n("Action icon:")
         actionCommandLabel: page.selectedItemType === "folder" ? i18n("App command:") : i18n("Action command:")

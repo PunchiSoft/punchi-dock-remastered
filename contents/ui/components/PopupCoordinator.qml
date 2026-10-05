@@ -62,7 +62,8 @@ Item {
     property var pendingTaskPopupRows: []
     property var taskPopupVisualParent: null
     property bool taskPopupUsesStableAnchor: false
-    property Item pendingDynamicTaskPopupOwner: null
+    // Delegates expose taskPopupAnchorItem beyond the base Item interface.
+    property var pendingDynamicTaskPopupOwner: null
     property var pendingDynamicTaskPopupRows: []
     property rect pendingDynamicTaskPopupGeometry: Qt.rect(0, 0, 0, 0)
     property int pendingDynamicTaskPopupStableSamples: 0

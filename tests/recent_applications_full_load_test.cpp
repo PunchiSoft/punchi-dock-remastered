@@ -70,6 +70,10 @@ QVariantMap objectMap(const QVariant &value)
 {
     return value.canConvert<QJSValue>() ? value.value<QJSValue>().toVariant().toMap() : value.toMap();
 }
+QObject *objectPointer(const QVariant &value)
+{
+    return value.canConvert<QJSValue>() ? value.value<QJSValue>().toQObject() : value.value<QObject *>();
+}
 KConfigGroup storedGroup(KConfig *config, const KConfigGroup &source)
 {
     const auto parent = source.parent();
@@ -189,9 +193,7 @@ private Q_SLOTS:
             auto *representation = item->fullRepresentationItem();
             auto *recentIcon = findVisual(representation, QStringLiteral("recentApplication-0"));
             QVERIFY(recentIcon);
-            const auto descriptor = recentIcon->property("descriptor");
-            const QVariantMap app = descriptor.canConvert<QJSValue>()
-                ? descriptor.value<QJSValue>().toVariant().toMap() : descriptor.toMap();
+            const QVariantMap app = objectMap(recentIcon->property("descriptor"));
             QCOMPARE(app.value(QStringLiteral("storageId")).toString(), QStringLiteral("org.example.Recent2.desktop"));
             QVERIFY(recentIcon->property("visible").toBool());
             config->insert(QStringLiteral("recentApplicationsMode"), QStringLiteral("container"));
@@ -208,22 +210,15 @@ private Q_SLOTS:
             auto *coordinator = findVisual(representation, QStringLiteral("popupCoordinator"));
             QVERIFY(context);
             QVERIFY(coordinator);
-            const auto dialogValue = coordinator->property("folderPopupDialogRef");
-            auto *folderDialog = dialogValue.canConvert<QJSValue>()
-                ? dialogValue.value<QJSValue>().toQObject() : dialogValue.value<QObject *>();
+            auto *folderDialog = objectPointer(coordinator->property("folderPopupDialogRef"));
             QVERIFY(folderDialog);
             auto *folder = folderDialog->findChild<QObject *>(QStringLiteral("folderPopupContent"));
             QVERIFY(folder);
-            const auto spacingValue = folderDialog->property("popupSpacing");
-            auto *spacing = spacingValue.canConvert<QJSValue>()
-                ? spacingValue.value<QJSValue>().toQObject() : spacingValue.value<QObject *>();
+            auto *spacing = objectPointer(folderDialog->property("popupSpacing"));
             QVERIFY(spacing);
             QVERIFY(spacing->property("preserveHorizontalAnchorCenter").toBool());
             QVERIFY(spacing->property("preserveVerticalAnchorCenter").toBool());
-            const auto surfaceValue = spacing->property("targetSurface");
-            auto *surface = surfaceValue.canConvert<QJSValue>()
-                ? qobject_cast<QQuickItem *>(surfaceValue.value<QJSValue>().toQObject())
-                : surfaceValue.value<QQuickItem *>();
+            auto *surface = qobject_cast<QQuickItem *>(objectPointer(spacing->property("targetSurface")));
             QVERIFY(surface);
             QVERIFY(container->property("supportsContextMenu").toBool());
             auto *input = container->nextItemInFocusChain(true);

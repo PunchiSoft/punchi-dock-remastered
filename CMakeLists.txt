@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(punchi-dock-remastered VERSION 0.9.7.72 LANGUAGES CXX)
+project(punchi-dock-remastered VERSION 0.9.7.73 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

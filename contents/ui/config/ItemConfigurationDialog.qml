@@ -778,7 +778,7 @@ Controls.Dialog {
                         enableRightClickMenuText: i18n("Enable right-click menu")
                         limitContextMenuRowsText: i18n("Limit menu rows")
                         rowsText: i18n("rows")
-                        rowsValueText: i18n("%1 rows")
+                        rowsValueText: i18n("%1 rows", "%1")
                         actionNameLabel: i18n("Action name:")
                         actionIconLabel: i18n("Action icon:")
                         actionCommandLabel: i18n("Action command:")

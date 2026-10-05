@@ -49,6 +49,8 @@ Item {
                 nodeId: waylandItem.supportsObjectSerial ? 0 : screencastingRequest.nodeId
                 readonly property bool supportsObjectSerial: "objectSerial" in waylandItem
                     && "objectSerial" in screencastingRequest
+                // Plasma versions before objectSerial use nodeId exclusively.
+                readonly property var serialRequest: screencastingRequest
 
                 Binding {
                     target: root
@@ -60,7 +62,8 @@ Item {
                 Binding {
                     target: waylandItem
                     property: "objectSerial"
-                    value: screencastingRequest.objectSerial
+                    value: waylandItem.supportsObjectSerial
+                        ? waylandItem.serialRequest.objectSerial : 0
                     when: waylandItem.supportsObjectSerial
                     restoreMode: Binding.RestoreBindingOrValue
                 }

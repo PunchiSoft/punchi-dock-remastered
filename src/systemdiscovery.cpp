@@ -23,6 +23,10 @@
 #include <KShell>
 #include <KSycoca>
 
+#include <QDBusConnection>
+#include <QDBusMessage>
+#include <QDBusPendingCallWatcher>
+#include <QDBusPendingReply>
 #include <QDir>
 #include <QFileInfo>
 #include <QSettings>
@@ -40,6 +44,45 @@ constexpr auto TranslationDomain = "plasma_applet_org.kde.plasma.punchi-dock-rem
 constexpr qsizetype maximumFolderResults = 80;
 constexpr qsizetype maximumApplicationResults = 80;
 constexpr qsizetype maximumPunchiMenuCatalogResults = 1024;
+
+constexpr auto s_kwinService = "org.kde.KWin";
+constexpr auto s_kwinPath = "/KWin";
+constexpr auto s_kwinInterface = "org.kde.KWin";
+// KWin < 6.6 renders background blur partially when a repaint only covers a
+// sub-region, leaking a flickering halo into the themed shadow band. The fix
+// landed on the Plasma/6.6 branch, so only 6.6 and newer are safe.
+constexpr int s_kwinBlurSafeMajor = 6;
+constexpr int s_kwinBlurSafeMinor = 6;
+
+struct KWinVersion
+{
+    bool valid = false;
+    int major = 0;
+    int minor = 0;
+    int patch = 0;
+    QString text;
+};
+
+// Workspace::supportInformation() emits a literal "KWin version: <major>.<minor>"
+// line. The method is the only stable way to learn the running compositor
+// version, because the org.kde.KWin interface exposes no version property.
+KWinVersion parseKWinVersion(const QString &supportInformation)
+{
+    KWinVersion result;
+    static const QRegularExpression versionPattern(
+        QStringLiteral("KWin version:\\s*(\\d+)\\.(\\d+)(?:\\.(\\d+))?"));
+    const QRegularExpressionMatch match = versionPattern.match(supportInformation);
+    if (!match.hasMatch()) {
+        return result;
+    }
+    result.valid = true;
+    result.major = match.captured(1).toInt();
+    result.minor = match.captured(2).toInt();
+    result.patch = match.captured(3).isEmpty() ? 0 : match.captured(3).toInt();
+    result.text = QStringLiteral("%1.%2.%3")
+        .arg(result.major).arg(result.minor).arg(result.patch);
+    return result;
+}
 
 QString serviceExecLookupKey(const KService::Ptr &service);
 
@@ -411,6 +454,38 @@ SystemDiscovery::SystemDiscovery(QObject *parent)
     connect(KSycoca::self(), &KSycoca::databaseChanged, this, [this]() {
         requestApplicationCatalog();
     });
+
+    // Resolve the compositor version asynchronously so plasmashell startup is
+    // not blocked. Blur stays enabled (kwinBlurSafe defaults to true) until the
+    // reply arrives; the folder popup only opens long after this resolves.
+    const QDBusMessage message = QDBusMessage::createMethodCall(
+        QString::fromLatin1(s_kwinService),
+        QString::fromLatin1(s_kwinPath),
+        QString::fromLatin1(s_kwinInterface),
+        QStringLiteral("supportInformation"));
+    auto *watcher = new QDBusPendingCallWatcher(
+        QDBusConnection::sessionBus().asyncCall(message), this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this,
+            [this](QDBusPendingCallWatcher *finishedWatcher) {
+        finishedWatcher->deleteLater();
+        const QDBusPendingReply<QString> reply = *finishedWatcher;
+        if (reply.isError()) {
+            return;
+        }
+        const KWinVersion version = parseKWinVersion(reply.value());
+        if (!version.valid) {
+            return;
+        }
+        m_kwinVersion = version.text;
+        Q_EMIT kwinVersionChanged();
+        const bool blurSafe = version.major > s_kwinBlurSafeMajor
+            || (version.major == s_kwinBlurSafeMajor
+                && version.minor >= s_kwinBlurSafeMinor);
+        if (m_kwinBlurSafe != blurSafe) {
+            m_kwinBlurSafe = blurSafe;
+            Q_EMIT kwinBlurSafeChanged();
+        }
+    });
 }
 
 QString SystemDiscovery::distributionName() const
@@ -438,6 +513,16 @@ QString SystemDiscovery::folderOpenerName() const
         return service->name().trimmed();
     }
     return {};
+}
+
+QString SystemDiscovery::kwinVersion() const
+{
+    return m_kwinVersion;
+}
+
+bool SystemDiscovery::kwinBlurSafe() const
+{
+    return m_kwinBlurSafe;
 }
 
 namespace {

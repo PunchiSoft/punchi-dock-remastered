@@ -39,7 +39,13 @@ default_build_root="${XDG_CACHE_HOME:-$HOME/.cache}/punchi-dock-remastered"
 export BUILD_DIR="${BUILD_DIR:-$default_build_root/debian${platform_version}-${package_arch}}"
 export PACKAGE_OUTPUT_FILE="${PACKAGE_OUTPUT_FILE:-$PROJECT_ROOT/dist/punchi-dock-remastered-${package_version}-${platform_label}.plasmoid}"
 export QMLLINT_BASELINE_FILE="${QMLLINT_BASELINE_FILE:-$SCRIPTS_DIR/qmllint-baseline-debian.env}"
-export QMLLINT_BIN="${QMLLINT_BIN:-/usr/lib/qt6/bin/qmllint}"
+configured_qmllint="${QMLLINT_BIN:-/usr/lib/qt6/bin/qmllint}"
+if [[ "${configured_qmllint##*/}" != "debian-qmllint.py" ]]; then
+    export PUNCHI_DEBIAN_QMLLINT_BIN="$configured_qmllint"
+fi
+# Plasma 6.3 registers plasmoid types at runtime. The Debian adapter supplies
+# reflected tooling metadata and the native module from this build only.
+export QMLLINT_BIN="$SCRIPTS_DIR/debian-qmllint.py"
 export PUNCHI_PACKAGE_CORE=1
 
 if [[ ! -f "$QMLLINT_BASELINE_FILE" && "${QMLLINT_RECORD_BASELINE:-0}" != "1" ]]; then
@@ -50,4 +56,8 @@ if [[ ! -f "$QMLLINT_BASELINE_FILE" && "${QMLLINT_RECORD_BASELINE:-0}" != "1" ]]
 fi
 
 export PUNCHI_PACKAGE_VALIDATION_MODE=full
+if [[ "${ID:-}" == "debian" && "${PUNCHI_DEBIAN_QT68_COPY:-0}" != "1" ]] \
+    && [[ "$("${PUNCHI_DEBIAN_QMLLINT_BIN:-/usr/lib/qt6/bin/qmllint}" --version)" =~ ^qmllint[[:space:]]6\.8\. ]]; then
+    exec python3 "$SCRIPTS_DIR/debian-qt68-build.py" --project-root "$PROJECT_ROOT"
+fi
 exec "$PUBLIC_SCRIPTS_DIR/lib/package-plasmoid.sh"

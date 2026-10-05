@@ -3956,7 +3956,7 @@ msgstr "Opacidade do cartão de mídia:"
 
 #: contents/ui/config/MediaPlayerOptionsPanel.qml:303
 msgid "Media controls auto-collapse delay"
-msgstr "Controles de mídia para %1"
+msgstr "Atraso do recolhimento automático dos controles de mídia"
 
 #: contents/ui/components/MediaControlsCard.qml:139
 msgctxt "@info:accessible"
@@ -4593,7 +4593,7 @@ msgstr "Abrir"
 #: contents/ui/components/DockContextActionsController.qml:121
 msgctxt "@action:context"
 msgid "Open"
-msgstr "Abrir %1"
+msgstr "Abrir"
 
 #: contents/ui/components/MediaDockItem.qml:51
 msgctxt "@action:button"

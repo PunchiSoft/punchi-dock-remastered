@@ -188,10 +188,21 @@ if [[ "$PACKAGE_VALIDATION_MODE" == "full" ]]; then
     echo "==> Validating QML (developer mode)"
     echo "Using: $QMLLINT_BIN ($QMLLINT_VERSION)"
     mkdir -p "$BUILD_DIR"
-    mapfile -d '' qml_files < <(find "$PROJECT_ROOT/contents/ui" -name "*.qml" -print0 | sort -z)
-    if ! "$QMLLINT_BIN" "${qml_files[@]}" >"$QMLLINT_LOG" 2>&1; then
-        cat "$QMLLINT_LOG" >&2
-        exit 1
+    if [[ "${PUNCHI_DEBIAN_QT68_COPY:-0}" == "1" ]]; then
+        # The Debian parent already built this disposable tree with native Qt.
+        # Keep the original lint/build sequence for every other entry point.
+        # shellcheck source=../../scripts-dev/lib/lint-built-qml.sh
+        source "$DEV_SCRIPTS_DIR/lib/lint-built-qml.sh"
+        if ! punchi_lint_built_qml "$PROJECT_ROOT" "$BUILD_DIR" "$QMLLINT_BIN" "$QMLLINT_LOG"; then
+            cat "$QMLLINT_LOG" >&2
+            exit 1
+        fi
+    else
+        mapfile -d '' qml_files < <(find "$PROJECT_ROOT/contents/ui" -name "*.qml" -print0 | sort -z)
+        if ! "$QMLLINT_BIN" "${qml_files[@]}" >"$QMLLINT_LOG" 2>&1; then
+            cat "$QMLLINT_LOG" >&2
+            exit 1
+        fi
     fi
 
     warning_total="$(grep -c '^Warning:' "$QMLLINT_LOG" || true)"

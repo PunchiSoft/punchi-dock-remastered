@@ -3990,7 +3990,7 @@ msgstr "Opacidad de la tarjeta multimedia:"
 
 #: contents/ui/config/MediaPlayerOptionsPanel.qml:303
 msgid "Media controls auto-collapse delay"
-msgstr "Controles multimedia para %1"
+msgstr "Retardo de contracción automática de los controles multimedia"
 
 #: contents/ui/components/MediaControlsCard.qml:139
 msgctxt "@info:accessible"
@@ -6173,8 +6173,7 @@ msgstr "El origen del acceso directo del escritorio no es seguro."
 #: contents/ui/config/ConfigFiles.qml:96 contents/ui/config/ConfigFiles.qml:223
 msgid "The dock configuration contains too many items. The maximum is %1."
 msgstr ""
-"La configuración del dock contiene demasiados elementos. El máximo es %1.La "
-"configuración del dock contiene demasiados elementos. El máximo es %1."
+"La configuración del dock contiene demasiados elementos. El máximo es %1."
 
 #: src/dockruntimeservice.cpp:50
 msgid "The dock configuration is too large."

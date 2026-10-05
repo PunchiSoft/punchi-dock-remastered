@@ -40,6 +40,7 @@ APT_PACKAGES=(
     qt6-base-dev-tools
     qt6-declarative-dev
     qt6-declarative-dev-tools
+    qt6-declarative-private-dev
     qt6-qmltooling-plugins
     qt6-shader-baker
     unzip

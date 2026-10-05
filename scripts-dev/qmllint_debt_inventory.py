@@ -17,6 +17,14 @@ WARNING_RE = re.compile(
     r"^Warning: (?P<path>.*?):(?P<line>\d+):(?P<column>\d+): "
     r"(?P<message>.*?)(?: \[(?P<category>[^\]]+)\])?$"
 )
+UNPOSITIONED_WARNING_RE = re.compile(
+    r"^Warning: (?P<path>.*?\.qml): (?P<message>.*?)"
+    r"(?: \[(?P<category>[^\]]+)\])?$"
+)
+IMPORT_DETAIL_WARNING_RE = re.compile(
+    r"^Warning: (?P<line>\d+):(?P<column>\d+): (?P<message>.*?)"
+    r"(?: \[(?P<category>[^\]]+)\])?$"
+)
 TABLE_ROW_RE = re.compile(r"^\| (?P<body>.*) \|$")
 
 CATEGORY_EXPLANATIONS = {
@@ -132,15 +140,32 @@ def parse_log(log_path: Path, project_root: Path) -> tuple[list[WarningDiagnosti
     diagnostics: list[WarningDiagnostic] = []
     occurrences: defaultdict[tuple[str, str, str], int] = defaultdict(int)
     info_count = 0
+    previous_path = ""
 
     for raw_line in log_path.read_text(encoding="utf-8", errors="replace").splitlines():
         if raw_line.startswith("Info:"):
             info_count += 1
             continue
         match = WARNING_RE.match(raw_line)
+        if match:
+            path = normalize_project_path(match.group("path"), project_root)
+            line, column = int(match.group("line")), int(match.group("column"))
+            previous_path = path
+        else:
+            match = UNPOSITIONED_WARNING_RE.match(raw_line)
+            if match:
+                path = normalize_project_path(match.group("path"), project_root)
+                line, column = 0, 0
+                previous_path = path
+            else:
+                match = IMPORT_DETAIL_WARNING_RE.match(raw_line)
+                if match and previous_path:
+                    path = previous_path
+                    line, column = int(match.group("line")), int(match.group("column"))
+                else:
+                    match = None
         if not match:
             continue
-        path = normalize_project_path(match.group("path"), project_root)
         category = match.group("category") or "uncategorized"
         message = match.group("message").strip()
         key = (path, category, message)
@@ -149,8 +174,8 @@ def parse_log(log_path: Path, project_root: Path) -> tuple[list[WarningDiagnosti
             WarningDiagnostic(
                 identifier=stable_identifier(*key, occurrences[key]),
                 path=path,
-                line=int(match.group("line")),
-                column=int(match.group("column")),
+                line=line,
+                column=column,
                 category=category,
                 message=message,
             )

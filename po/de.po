@@ -4002,7 +4002,7 @@ msgstr "Deckkraft der Medienkarte:"
 
 #: contents/ui/config/MediaPlayerOptionsPanel.qml:303
 msgid "Media controls auto-collapse delay"
-msgstr "Mediensteuerelemente für %1"
+msgstr "Verzögerung bis zum automatischen Einklappen der Mediensteuerung"
 
 #: contents/ui/components/MediaControlsCard.qml:139
 msgctxt "@info:accessible"
@@ -4639,7 +4639,7 @@ msgstr "Öffnen"
 #: contents/ui/components/DockContextActionsController.qml:121
 msgctxt "@action:context"
 msgid "Open"
-msgstr "%1 öffnen"
+msgstr "Öffnen"
 
 #: contents/ui/components/MediaDockItem.qml:51
 msgctxt "@action:button"
