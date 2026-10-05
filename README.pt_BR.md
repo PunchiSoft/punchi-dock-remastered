@@ -43,11 +43,11 @@ recursos marcados como em desenvolvimento podem não estar incluídos na versão
 - **Controles de janelas:** Trabalhe com janelas agrupadas, ações de aplicativos,
   indicadores de quantidade de janelas, filtros por área de trabalho e cartões
   configuráveis ou miniaturas de janelas ao vivo.
-- **Aplicativos recentes — em desenvolvimento:** Exiba opcionalmente até três
-  aplicativos recentes como ícones na dock ou em um contêiner. Aplicativos
-  fixados e aqueles com janelas abertas são excluídos. O recurso vem desativado
-  por padrão e usa o histórico registrado pelo KDE; a disponibilidade depende
-  dos aplicativos reportados.
+- **Aplicativos recentes:** Exiba aplicativos recentes como ícones na dock ou em
+  um contêiner. Novas configurações ativam um contêiner Leque com capacidade para
+  cinco aplicativos. Aplicativos fixados e aqueles com janelas abertas são
+  excluídos. O recurso usa o histórico registrado pelo KDE; a disponibilidade
+  depende dos aplicativos reportados.
 
 ### Pastas e coleções de aplicativos
 

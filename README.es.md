@@ -42,11 +42,11 @@ las funciones marcadas como desarrollo pueden no estar incluidas en la última v
   opcional de aplicaciones abiertas.
 - **Controles de ventanas:** Trabaja con ventanas agrupadas, acciones de aplicación,
   indicadores de cantidad de ventanas, filtros por escritorio y tarjetas o miniaturas en vivo.
-- **Aplicaciones recientes — desarrollo:** Muestra opcionalmente hasta tres
-  aplicaciones recientes como iconos del dock o dentro de un contenedor. Se
-  excluyen las aplicaciones ancladas y las que tienen ventanas abiertas. La
-  función está desactivada por defecto y utiliza el historial registrado por KDE;
-  su disponibilidad depende de las aplicaciones que se reporten.
+- **Aplicaciones recientes:** Muestra aplicaciones recientes como iconos del dock
+  o dentro de un contenedor. Las configuraciones nuevas activan un contenedor
+  Abanico con capacidad para cinco. Se excluyen las aplicaciones ancladas y las
+  que tienen ventanas abiertas. La función utiliza el historial registrado por
+  KDE; su disponibilidad depende de las aplicaciones que se reporten.
 
 ### Carpetas y colecciones de aplicaciones
 

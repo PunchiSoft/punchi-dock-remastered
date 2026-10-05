@@ -41,10 +41,10 @@ features marked as development may not be included in the latest release.
   or terminal commands, reorder items, and display an optional running-app section.
 - **Window controls:** Work with grouped windows, application actions, window-count
   badges, desktop filtering, and configurable cards or live window thumbnails.
-- **Recent applications — development:** Optionally show up to three recent
-  applications as dock icons or in a container. Pinned applications and those
-  with open windows are excluded. The feature is off by default and uses the
-  history recorded by KDE; availability depends on the applications reported.
+- **Recent applications:** Show recent applications as dock icons or in a
+  container. New configurations enable a Fan container with a capacity of five.
+  Pinned applications and those with open windows are excluded. The feature uses
+  KDE's recorded history; availability depends on the applications reported.
 
 ### Folders and application collections
 

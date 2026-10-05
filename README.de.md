@@ -42,11 +42,12 @@ als in Entwicklung gekennzeichnete Funktionen können in der neuesten Veröffent
   für geöffnete Anwendungen an.
 - **Fenstersteuerung:** Nutze gruppierte Fenster, Anwendungsaktionen,
   Fensteranzahl-Anzeigen, Arbeitsflächenfilter und konfigurierbare Karten oder Live-Vorschaubilder.
-- **Zuletzt verwendete Anwendungen — in Entwicklung:** Zeige optional bis zu drei
-  zuletzt verwendete Anwendungen als Dock-Symbole oder in einem Container an.
-  Angeheftete Anwendungen und Anwendungen mit geöffneten Fenstern werden ausgeschlossen.
-  Die Funktion ist standardmäßig ausgeschaltet und verwendet den von KDE erfassten
-  Verlauf; die Verfügbarkeit hängt von den gemeldeten Anwendungen ab.
+- **Zuletzt verwendete Anwendungen:** Zeige zuletzt verwendete Anwendungen als
+  Dock-Symbole oder in einem Container an. Neue Konfigurationen aktivieren einen
+  Fächer-Container mit Platz für fünf Anwendungen. Angeheftete Anwendungen und
+  Anwendungen mit geöffneten Fenstern werden ausgeschlossen. Die Funktion
+  verwendet den von KDE erfassten Verlauf; die Verfügbarkeit hängt von den
+  gemeldeten Anwendungen ab.
 
 ### Ordner und Anwendungssammlungen
 

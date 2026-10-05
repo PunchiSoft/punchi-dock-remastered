@@ -1,3 +1,27 @@
+## [0.9.7.74] - 2026-10-05
+
+### Cambios desde 0.9.7.61
+
+- Añadidas aplicaciones recientes configurables, con un contenedor Abanico de cinco aplicaciones activado en configuraciones nuevas.
+- Mejoradas la navegación de carpetas, la cuadrícula automática, las etiquetas de popups y la configuración de elementos.
+- Corregidos el feedback de clic del dock, el rebote de las vistas previas y las etiquetas de lanzadores sin ventanas abiertas.
+- Añadidos botones de decoración de ventanas del tema y la acción Desanclar del dock para notas.
+- Corregidas la compilación en Debian Qt 6.8 y la compatibilidad con APIs anteriores de Plasma. Los valores iniciales de popups en Qt 6.8 usan opacidad completa sin blur y conservan las preferencias guardadas.
+- Actualizadas la guía de instalación y la galería de capturas.
+
+### Validación del release
+
+- Build universal: Debian 13 (Trixie), Qt 6.8.2, Plasma 6.3.6, KF 6.13.0, x86_64.
+- CTest Debian: 157/157 aprobadas, 0 fallos, 45,07 s.
+- Baseline qmllint Debian: total 161, unqualified 119, missing-property 4, layout 0, import 5; sin incrementos.
+- Catálogos es/de/pt_BR completos, sin vacíos ni difusos; formato, semántica y catálogos MO del paquete verificados.
+- Integridad de pruebas: PASS en el gate Debian, con las adaptaciones autorizadas de fixtures en la copia temporal.
+- Auditoría del paquete: 222 entradas ZIP, tres proxies ELF con SONAME y constructor dlopen, sin symlinks ni contenido de desarrollo.
+- Instalación limpia y actualización desde 0.9.7.61 verificadas con kpackagetool6 en rutas temporales de Fedora 44; configuración de prueba conservada y contenido instalado idéntico al ZIP.
+- Revisión en Plasma real Debian confirmada por el usuario. Runtime del mismo artefacto en otras distribuciones: pendiente de comprobación.
+- Artefacto: `punchi-dock-remastered-0.9.7.74-universal.plasmoid`, 1112138 bytes.
+- SHA-256: `078d24e8178526cfc83ad1ab8c1a1175bd45c3b4507465c280b1f0d816241538`.
+
 ## [0.9.7.61] - 2026-09-15
 
 Esta versión reúne los cambios realizados después de `0.9.7.52`. El Centro de
