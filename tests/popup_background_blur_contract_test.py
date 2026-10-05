@@ -399,7 +399,9 @@ def assert_preference_is_wired(config_xml: str, page: str, aspect: str, state: s
     require(
         re.search(
             r"readonly property bool popupBackgroundBlurEnabled: "
-            r"Plasmoid\.configuration\.popupBackgroundBlurEnabled !== false",
+            r"Plasmoid\.configuration\.popupBackgroundBlurEnabled === undefined "
+            r"\? !root\.appearanceDefaults\.opaquePopupsByDefault "
+            r": Plasmoid\.configuration\.popupBackgroundBlurEnabled === true",
             compact(state),
         )
         is not None,
@@ -417,8 +419,8 @@ def assert_menu_preference_is_wired(config_xml: str, page: str, aspect: str, sta
     )
     require(entry_match is not None, "Missing the context menu blur KConfig entry.")
     require(
-        "<default>true</default>" in compact(entry_match.group(1)),
-        "Context menu blur must be enabled by default.",
+        "<default>false</default>" in compact(entry_match.group(1)),
+        "Opaque context menus must disable blur by default.",
     )
     require(
         "property alias cfg_contextMenuBackgroundBlurEnabled: "
@@ -450,7 +452,7 @@ def assert_menu_preference_is_wired(config_xml: str, page: str, aspect: str, sta
     )
     require(
         "readonly property bool contextMenuBackgroundBlurEnabled: "
-        "Plasmoid.configuration.contextMenuBackgroundBlurEnabled !== false"
+        "Plasmoid.configuration.contextMenuBackgroundBlurEnabled === true"
         in compact(state),
         "The runtime state must read the menu blur preference reactively.",
     )

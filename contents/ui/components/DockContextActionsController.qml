@@ -20,7 +20,7 @@ QtObject {
         }
         const type = String(item.type || "app")
         return type === "app" || type === "folder" || type === "media"
-            || type === "punchimenu"
+            || type === "punchimenu" || type === "note"
     }
 
     function applicationIdentityForItem(item) {

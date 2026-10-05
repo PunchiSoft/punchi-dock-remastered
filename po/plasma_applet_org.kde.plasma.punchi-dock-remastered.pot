@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.7.73\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7.74\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-04 12:55-0300\n"
+"POT-Creation-Date: 2026-10-05 18:13-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -235,22 +235,22 @@ msgctxt "@info:accessibility Percentage value"
 msgid "%1 percent"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:536
+#: contents/ui/config/ConfigFolderPopups.qml:539
 msgid "%1 pt"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:396
+#: contents/ui/config/ConfigFolderPopups.qml:399
 #: contents/ui/config/ConfigMenus.qml:149
 #: contents/ui/config/ConfigMenus.qml:173
 #: contents/ui/config/ConfigMenus.qml:197
 msgid "%1 px"
 msgstr ""
 
-#: contents/ui/config/components/ActionDialog.qml:94
 #: contents/ui/config/ConfigItems.qml:1045
 #: contents/ui/config/ItemActionEditor.qml:55
 #: contents/ui/config/ItemActionEditor.qml:180
 #: contents/ui/config/ItemConfigurationDialog.qml:781
+#: contents/ui/config/components/ActionDialog.qml:94
 msgid "%1 rows"
 msgstr ""
 
@@ -324,20 +324,20 @@ msgstr ""
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:586
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:621
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:656
-#: contents/ui/config/components/PopupAnimationSettings.qml:82
-#: contents/ui/config/components/PopupAnimationSettings.qml:107
-#: contents/ui/config/ConfigFolderPopups.qml:242
-#: contents/ui/config/ConfigFolderPopups.qml:276
-#: contents/ui/config/ConfigFolderPopups.qml:320
-#: contents/ui/config/ConfigFolderPopups.qml:593
+#: contents/ui/config/ConfigFolderPopups.qml:245
+#: contents/ui/config/ConfigFolderPopups.qml:279
+#: contents/ui/config/ConfigFolderPopups.qml:323
+#: contents/ui/config/ConfigFolderPopups.qml:596
 #: contents/ui/config/ConfigMenus.qml:231
 #: contents/ui/config/ConfigMenus.qml:265
 #: contents/ui/config/ConfigMenus.qml:340
 #: contents/ui/config/ConfigMouse.qml:133
 #: contents/ui/config/ConfigMouse.qml:171
-#: contents/ui/config/ConfigPopups.qml:210
-#: contents/ui/config/ConfigPopups.qml:249
-#: contents/ui/config/ConfigPopups.qml:285
+#: contents/ui/config/ConfigPopups.qml:213
+#: contents/ui/config/ConfigPopups.qml:252
+#: contents/ui/config/ConfigPopups.qml:288
+#: contents/ui/config/components/PopupAnimationSettings.qml:82
+#: contents/ui/config/components/PopupAnimationSettings.qml:107
 #, javascript-format
 msgid "%1%"
 msgstr ""
@@ -400,7 +400,7 @@ msgstr ""
 msgid "1 core"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:256
+#: contents/ui/config/ConfigPopups.qml:259
 msgid ""
 "100 percent uses the recommended base size. Larger previews keep their "
 "aspect ratio and remain limited by the available screen space."
@@ -619,7 +619,7 @@ msgstr ""
 msgid "==> [3/3] Collecting startup diagnostics..."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:548
+#: contents/ui/config/ConfigFolderPopups.qml:551
 msgid ""
 "A container without a folder keeps scrolling enabled, so no application "
 "becomes unreachable."
@@ -659,7 +659,7 @@ msgstr ""
 msgid "Activate window"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:145
+#: contents/ui/config/ConfigPopups.qml:148
 msgid ""
 "Active applications do not show hover previews or grouped-window popups."
 msgstr ""
@@ -747,17 +747,17 @@ msgstr ""
 msgid "Additional Shortcuts"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:549
+#: contents/ui/config/ConfigFolderPopups.qml:552
 msgid "Additional applications remain available by scrolling."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:545
+#: contents/ui/config/ConfigFolderPopups.qml:548
 msgid ""
 "Additional applications remain available by scrolling. On narrow screens, "
 "the popup safely reduces the number of columns."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:857
+#: contents/ui/config/ConfigAspect.qml:861
 msgid "Adds a short decorative reflection below icons in a floating dock."
 msgstr ""
 
@@ -765,12 +765,12 @@ msgstr ""
 msgid "Adds adaptive spacing between dock items and their context menus."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:856
+#: contents/ui/config/ConfigAspect.qml:860
 msgid ""
 "Adds an adaptive decorative reflection below icons in a horizontal panel."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:313
+#: contents/ui/config/ConfigFolderPopups.qml:316
 msgid "Adds safe spacing between the dock item and folder popups."
 msgstr ""
 
@@ -792,15 +792,15 @@ msgstr ""
 msgid "Adjusts additional hover enlargement between 0 and 100 percent."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1125
+#: contents/ui/config/ConfigAspect.qml:1129
 msgid "Adjusts badge visibility between 60 and 100 percent."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:879
+#: contents/ui/config/ConfigAspect.qml:883
 msgid "Adjusts how strongly icon reflections appear."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1150
+#: contents/ui/config/ConfigAspect.qml:1154
 msgid "Adjusts the badge scale between 80 and 120 percent of its default size."
 msgstr ""
 
@@ -808,11 +808,11 @@ msgstr ""
 msgid "Adjusts the calendar popup scale between 50 and 300 percent."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:237
+#: contents/ui/config/ConfigFolderPopups.qml:240
 msgid "Adjusts the folder popup content scale between 50 and 300 percent."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1032
+#: contents/ui/config/ConfigAspect.qml:1036
 msgid "Adjusts the indicator thickness between 2 and 10 pixels."
 msgstr ""
 
@@ -820,7 +820,7 @@ msgstr ""
 msgid "Adjusts the spacing between dock icons from 0 to 24 pixels."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:244
+#: contents/ui/config/ConfigPopups.qml:247
 msgid "Adjusts the window preview scale between 100 and 300 percent."
 msgstr ""
 
@@ -853,7 +853,7 @@ msgstr ""
 msgid "All desktops"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:407
+#: contents/ui/config/ConfigAspect.qml:411
 #: contents/ui/config/ConfigItems.qml:1164
 #: contents/ui/config/SoundFileDialog.qml:9
 msgid "All files"
@@ -863,8 +863,8 @@ msgstr ""
 msgid "All items were permanently removed."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:483
-#: contents/ui/config/ConfigFolderPopups.qml:484
+#: contents/ui/config/ConfigFolderPopups.qml:486
+#: contents/ui/config/ConfigFolderPopups.qml:487
 msgid "Allow scrolling in the fan"
 msgstr ""
 
@@ -929,7 +929,7 @@ msgctxt "@title:group"
 msgid "Appearance & Background"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:172
+#: contents/ui/config/ConfigAspect.qml:176
 msgid "Appearance sections"
 msgstr ""
 
@@ -1061,11 +1061,11 @@ msgstr ""
 msgid "Applies to context menu headers, action labels and secondary details."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:570
+#: contents/ui/config/ConfigFolderPopups.qml:573
 msgid "Applies to folder popup labels and note popup titles."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:374
+#: contents/ui/config/ConfigPopups.qml:377
 msgid "Applies to window titles, window details and overflow group labels."
 msgstr ""
 
@@ -1118,7 +1118,7 @@ msgstr ""
 msgid "Audio files"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:191
+#: contents/ui/config/ConfigAspect.qml:195
 msgid "Audio visualizer"
 msgstr ""
 
@@ -1150,7 +1150,7 @@ msgstr ""
 msgid "Auto hide"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:179
+#: contents/ui/config/ConfigFolderPopups.qml:182
 #: contents/ui/config/ConfigItems.qml:304
 #: contents/ui/config/ConfigItems.qml:321
 #: contents/ui/config/ConfigItems.qml:325
@@ -1161,7 +1161,7 @@ msgstr ""
 msgid "Automatic"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:112
+#: contents/ui/config/ConfigFolderPopups.qml:115
 msgctxt "@item:inlistbox Grid arrangement"
 msgid "Automatic"
 msgstr ""
@@ -1194,7 +1194,7 @@ msgstr ""
 msgid "Automatically select the active player"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:824
+#: contents/ui/config/ConfigAspect.qml:828
 msgid "Available when dock item names are shown."
 msgstr ""
 
@@ -1240,20 +1240,20 @@ msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:123
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:111
-#: contents/ui/config/ConfigFolderPopups.qml:294
+#: contents/ui/config/ConfigFolderPopups.qml:297
 #: contents/ui/config/ConfigMenus.qml:283
 msgid "Background blur:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:303
+#: contents/ui/config/ConfigPopups.qml:306
 msgid "Background frame:"
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:144
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:132
-#: contents/ui/config/ConfigFolderPopups.qml:258
+#: contents/ui/config/ConfigFolderPopups.qml:261
 #: contents/ui/config/ConfigMenus.qml:247
-#: contents/ui/config/ConfigPopups.qml:266
+#: contents/ui/config/ConfigPopups.qml:269
 msgid "Background opacity:"
 msgstr ""
 
@@ -1262,35 +1262,35 @@ msgctxt "@label:slider"
 msgid "Background opacity:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:578
+#: contents/ui/config/ConfigAspect.qml:582
 msgid "Background theme:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1095
+#: contents/ui/config/ConfigAspect.qml:1099
 msgid "Badge color:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1124
+#: contents/ui/config/ConfigAspect.qml:1128
 msgid "Badge opacity"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1112
+#: contents/ui/config/ConfigAspect.qml:1116
 msgid "Badge opacity:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1074
+#: contents/ui/config/ConfigAspect.qml:1078
 msgid "Badge position:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1149
+#: contents/ui/config/ConfigAspect.qml:1153
 msgid "Badge scale"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1137
+#: contents/ui/config/ConfigAspect.qml:1141
 msgid "Badge scale:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1054
+#: contents/ui/config/ConfigAspect.qml:1058
 msgid "Badge:"
 msgstr ""
 
@@ -1331,16 +1331,16 @@ msgstr ""
 msgid "Bottom"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:157
+#: contents/ui/config/ConfigAspect.qml:161
 msgctxt "Indicator position"
 msgid "Bottom"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:163
+#: contents/ui/config/ConfigAspect.qml:167
 msgid "Bottom left"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:164
+#: contents/ui/config/ConfigAspect.qml:168
 msgid "Bottom right"
 msgstr ""
 
@@ -1349,8 +1349,8 @@ msgid "Bottom to top"
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:29
-#: contents/ui/config/components/PopupAnimationSettings.qml:19
 #: contents/ui/config/ConfigMouse.qml:52
+#: contents/ui/config/components/PopupAnimationSettings.qml:19
 msgid "Bounce"
 msgstr ""
 
@@ -1415,16 +1415,16 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml:108
 #: contents/ui/components/NotePopup.qml:289
+#: contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml:108
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:388
-#: contents/ui/config/ConfigAspect.qml:476
+#: contents/ui/config/ConfigAspect.qml:480
 #: contents/ui/config/ItemConfigurationDialog.qml:890
 msgctxt "@action:button"
 msgid "Cancel"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:34
+#: contents/ui/config/ConfigPopups.qml:37
 msgid "Cards (recommended)"
 msgstr ""
 
@@ -1452,7 +1452,7 @@ msgstr ""
 msgid "Category:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:165
+#: contents/ui/config/ConfigAspect.qml:169
 msgid "Center"
 msgstr ""
 
@@ -1524,7 +1524,7 @@ msgid ""
 "keep the full controls visible."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:518
+#: contents/ui/config/ConfigAspect.qml:522
 msgid "Choose Custom Themes Folder"
 msgstr ""
 
@@ -1532,7 +1532,7 @@ msgstr ""
 msgid "Choose Folder"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:381
+#: contents/ui/config/ConfigAspect.qml:385
 msgid "Choose Indicator Color"
 msgstr ""
 
@@ -1545,24 +1545,24 @@ msgstr ""
 msgid "Choose Sound File"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:393
+#: contents/ui/config/ConfigAspect.qml:397
 msgid "Choose Window Count Badge Color"
 msgstr ""
 
-#: contents/ui/config/code/configItemsWorkflowHelper.js:97
 #: contents/ui/config/ConfigItems.qml:492
+#: contents/ui/config/code/configItemsWorkflowHelper.js:97
 msgid "Choose a folder first."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:697
+#: contents/ui/config/ConfigAspect.qml:701
 msgid "Choose a folder…"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:280
+#: contents/ui/config/ConfigAspect.qml:284
 msgid "Choose a local JSON file."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:299
+#: contents/ui/config/ConfigAspect.qml:303
 msgid "Choose a local folder containing JSON themes."
 msgstr ""
 
@@ -1665,18 +1665,18 @@ msgstr ""
 msgid "Choose where open apps appear"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:645
+#: contents/ui/config/ConfigAspect.qml:649
 msgid ""
 "Choose whether to import one JSON theme or all JSON themes from a folder."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:657
+#: contents/ui/config/ConfigAspect.qml:661
 msgid ""
 "Choose whether to move the selected theme or all installed themes to the "
 "Trash."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:360
+#: contents/ui/config/ConfigPopups.qml:363
 msgid ""
 "Choose whether window previews show the app icon with window details, only "
 "the icon, or no information overlay."
@@ -1704,8 +1704,8 @@ msgstr ""
 msgid "Clean configuration file?"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
 #: contents/ui/components/NotePopup.qml:175
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
 msgid "Clear"
 msgstr ""
 
@@ -1966,9 +1966,9 @@ msgctxt "@info:status"
 msgid "Connection failed"
 msgstr ""
 
-#: contents/ui/config/code/itemTypeCatalog.js:50
 #: contents/ui/config/ConfigItems.qml:1020
 #: contents/ui/config/ItemConfigurationDialog.qml:675
+#: contents/ui/config/code/itemTypeCatalog.js:50
 msgid "Container"
 msgstr ""
 
@@ -2035,8 +2035,8 @@ msgstr ""
 msgid "Control Center"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:482
 #: contents/ui/components/DockItem.qml:50
+#: contents/ui/components/controlcenter/ControlCenterOverlay.qml:482
 msgctxt "@title"
 msgid "Control Center"
 msgstr ""
@@ -2060,8 +2060,8 @@ msgid ""
 "popup or menu animations."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:316
-#: contents/ui/config/ConfigPopups.qml:327
+#: contents/ui/config/ConfigPopups.qml:319
+#: contents/ui/config/ConfigPopups.qml:330
 msgid ""
 "Controls the themed space around window previews without changing their size."
 msgstr ""
@@ -2155,7 +2155,7 @@ msgstr ""
 msgid "Custom color"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:668
+#: contents/ui/config/ConfigAspect.qml:672
 msgid "Custom folder:"
 msgstr ""
 
@@ -2246,8 +2246,8 @@ msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:252
 #: contents/ui/components/DockContextActionsController.qml:295
+#: contents/ui/config/ConfigFolderPopups.qml:111
 #: contents/ui/config/components/RecentApplicationsSettings.qml:23
-#: contents/ui/config/ConfigFolderPopups.qml:108
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
 msgstr ""
@@ -2307,7 +2307,7 @@ msgctxt "@info Window live preview state"
 msgid "Disabled"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:61
+#: contents/ui/config/ConfigPopups.qml:64
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Disabled"
 msgstr ""
@@ -2318,7 +2318,7 @@ msgid ""
 "editing in floating mode."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:940
+#: contents/ui/config/ConfigAspect.qml:944
 msgid "Disables the active-window indicator entirely."
 msgstr ""
 
@@ -2352,7 +2352,7 @@ msgctxt "@label:listbox"
 msgid "Display mode:"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:339
+#: contents/ui/config/ConfigFolderPopups.qml:342
 msgid ""
 "Displays the folder title header label and close button at the top of the "
 "popup."
@@ -2391,7 +2391,7 @@ msgstr ""
 msgid "Do you want to empty the trash?"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:175
+#: contents/ui/config/ConfigAspect.qml:179
 #: contents/ui/config/ConfigGeneral.qml:202
 msgid "Dock"
 msgstr ""
@@ -2400,7 +2400,7 @@ msgstr ""
 msgid "Dock Items Configuration"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:555
+#: contents/ui/config/ConfigAspect.qml:559
 msgid "Dock background theme"
 msgstr ""
 
@@ -2420,11 +2420,11 @@ msgstr ""
 msgid "Dock motion speed:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:572
+#: contents/ui/config/ConfigAspect.qml:576
 msgid "Dock orientation"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:560
+#: contents/ui/config/ConfigAspect.qml:564
 msgid "Dock orientation:"
 msgstr ""
 
@@ -2440,7 +2440,7 @@ msgstr ""
 msgid "Dodge windows (Recommended)"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:151
+#: contents/ui/config/ConfigAspect.qml:155
 msgid "Dot"
 msgstr ""
 
@@ -2495,7 +2495,7 @@ msgid ""
 "accumulate their matching windows by application."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:367
+#: contents/ui/config/ConfigFolderPopups.qml:370
 msgid ""
 "Each profile applies to every folder that uses that layout. Choose a profile "
 "here to edit it; folder layouts are selected in Items."
@@ -2520,7 +2520,7 @@ msgstr ""
 msgid "Effective icon size: %1 px; maximum hover enlargement: %2%"
 msgstr ""
 
-#: contents/ui/config/ItemTypeSelector.qml:72
+#: contents/ui/config/ItemTypeSelector.qml:76
 msgctxt "@info:accessibility"
 msgid "Element type"
 msgstr ""
@@ -2713,7 +2713,7 @@ msgstr ""
 msgid "Export..."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:197 contents/ui/main.qml:63
+#: contents/ui/config/ConfigAspect.qml:201 contents/ui/main.qml:63
 msgid "External JSON theme"
 msgstr ""
 
@@ -2731,17 +2731,17 @@ msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:254
 #: contents/ui/components/DockContextActionsController.qml:307
-#: contents/ui/config/components/ActionDialog.qml:74
-#: contents/ui/config/components/RecentApplicationsSettings.qml:24
-#: contents/ui/config/ConfigFolderPopups.qml:109
+#: contents/ui/config/ConfigFolderPopups.qml:112
 #: contents/ui/config/ConfigItems.qml:1025
 #: contents/ui/config/ItemConfigurationDialog.qml:680
 #: contents/ui/config/ItemEditorPanel.qml:60
+#: contents/ui/config/components/ActionDialog.qml:74
+#: contents/ui/config/components/RecentApplicationsSettings.qml:24
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Fan"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:482
+#: contents/ui/config/ConfigFolderPopups.qml:485
 msgid "Fan scrolling:"
 msgstr ""
 
@@ -2821,18 +2821,18 @@ msgid ""
 "Folder configuration was removed temporarily while it is rebuilt safely."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:326
+#: contents/ui/config/ConfigAspect.qml:330
 msgid ""
 "Folder import finished — added: %1, already installed: %2, rejected: %3, not "
 "processed because of the 256-theme limit: %4."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:330
+#: contents/ui/config/ConfigAspect.qml:334
 msgid ""
 "Folder import finished — added: %1, already installed: %2, rejected: %3."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:322
+#: contents/ui/config/ConfigAspect.qml:326
 msgid ""
 "Folder import reached the 256-theme safety limit — added: %1, already "
 "installed: %2, rejected: %3. Additional themes were not processed."
@@ -2844,39 +2844,39 @@ msgctxt "@label:textbox"
 msgid "Folder name"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:270
+#: contents/ui/config/ConfigFolderPopups.qml:273
 msgid "Folder popup background opacity"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:312
+#: contents/ui/config/ConfigFolderPopups.qml:315
 msgid "Folder popup distance"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:509
+#: contents/ui/config/ConfigFolderPopups.qml:512
 msgid "Folder popup font family"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:531
+#: contents/ui/config/ConfigFolderPopups.qml:534
 msgid "Folder popup font size"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:391
+#: contents/ui/config/ConfigFolderPopups.qml:394
 msgid "Folder popup icon size"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:361
+#: contents/ui/config/ConfigFolderPopups.qml:364
 msgid "Folder popup layout profile"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:236
+#: contents/ui/config/ConfigFolderPopups.qml:239
 msgid "Folder popup scale"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:587
+#: contents/ui/config/ConfigFolderPopups.qml:590
 msgid "Folder popup text shadow intensity"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:219
+#: contents/ui/config/ConfigFolderPopups.qml:222
 msgid "Folder popups"
 msgstr ""
 
@@ -2890,7 +2890,7 @@ msgstr ""
 msgid "Folder:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:470
+#: contents/ui/config/ConfigAspect.qml:474
 msgid ""
 "Folder: %1\n"
 "You can recover these themes from the Trash. If the active theme is moved, "
@@ -2903,27 +2903,27 @@ msgctxt "@title:application-category"
 msgid "Folders"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:500
+#: contents/ui/config/ConfigFolderPopups.qml:503
 msgid "Font family:"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:518
+#: contents/ui/config/ConfigFolderPopups.qml:521
 msgid "Font size:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:176
+#: contents/ui/config/ConfigPopups.qml:179
 msgid ""
 "For MPRIS-compatible applications, displays media playback controls below "
 "the window preview list."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:178
+#: contents/ui/config/ConfigPopups.qml:181
 msgid ""
 "For MPRIS-compatible applications, replaces the window preview with a full "
 "cover background media card."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:180
+#: contents/ui/config/ConfigPopups.qml:183
 msgid ""
 "For MPRIS-compatible applications, replaces the window preview with artwork, "
 "playback controls, and volume card."
@@ -3013,7 +3013,7 @@ msgstr ""
 msgid "General"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:619
+#: contents/ui/config/ConfigFolderPopups.qml:622
 msgid "General popup animation"
 msgstr ""
 
@@ -3048,17 +3048,17 @@ msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:255
 #: contents/ui/components/DockContextActionsController.qml:271
+#: contents/ui/config/ConfigFolderPopups.qml:109
 #: contents/ui/config/components/RecentApplicationsSettings.qml:21
-#: contents/ui/config/ConfigFolderPopups.qml:106
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Grid"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:415
+#: contents/ui/config/ConfigFolderPopups.qml:418
 msgid "Grid arrangement"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:407
+#: contents/ui/config/ConfigFolderPopups.qml:410
 msgid "Grid arrangement:"
 msgstr ""
 
@@ -3093,7 +3093,7 @@ msgstr ""
 msgid "Height:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:42
+#: contents/ui/config/ConfigPopups.qml:45
 msgctxt "@item:inlistbox Window preview information"
 msgid "Hidden"
 msgstr ""
@@ -3132,11 +3132,11 @@ msgctxt "@action:button"
 msgid "Hide hidden applications"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:896
+#: contents/ui/config/ConfigAspect.qml:900
 msgid "Hide item names to use icon reflections."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:200
+#: contents/ui/config/ConfigAspect.qml:204
 msgid "Horizontal"
 msgstr ""
 
@@ -3151,7 +3151,7 @@ msgctxt "@label:listbox"
 msgid "Hover animation:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:786
+#: contents/ui/config/ConfigAspect.qml:790
 msgid "Hover background:"
 msgstr ""
 
@@ -3163,29 +3163,29 @@ msgstr ""
 msgid "Hover enlargement:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:40
+#: contents/ui/config/ConfigPopups.qml:43
 msgctxt "@item:inlistbox Window preview information"
 msgid "Icon and text"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:41
+#: contents/ui/config/ConfigPopups.qml:44
 msgctxt "@item:inlistbox Window preview information"
 msgid "Icon only"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:844
+#: contents/ui/config/ConfigAspect.qml:848
 msgid "Icon reflections"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:894
+#: contents/ui/config/ConfigAspect.qml:898
 msgid "Icon reflections are not available in vertical panels."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:854
+#: contents/ui/config/ConfigAspect.qml:858
 msgid "Icon reflections are unavailable in vertical panels."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:376
+#: contents/ui/config/ConfigFolderPopups.qml:379
 #: contents/ui/config/ConfigMenus.qml:156
 msgid "Icon size:"
 msgstr ""
@@ -3213,35 +3213,35 @@ msgstr ""
 msgid "Import JSON Configuration"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:644
+#: contents/ui/config/ConfigAspect.qml:648
 msgid "Import Punchi Dock JSON themes"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:405
+#: contents/ui/config/ConfigAspect.qml:409
 msgid "Import Punchi Dock Theme"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:423
+#: contents/ui/config/ConfigAspect.qml:427
 msgid "Import Punchi Dock Theme Folder"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:723
+#: contents/ui/config/ConfigAspect.qml:727
 msgid "Import a JSON theme to add it to your Punchi Dock Remastered library."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:456
+#: contents/ui/config/ConfigAspect.qml:460
 msgid "Import all Punchi Dock JSON themes from a folder and its subfolders"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:443
+#: contents/ui/config/ConfigAspect.qml:447
 msgid "Import file…"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:454
+#: contents/ui/config/ConfigAspect.qml:458
 msgid "Import folder…"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:445
+#: contents/ui/config/ConfigAspect.qml:449
 msgid "Import one Punchi Dock JSON theme"
 msgstr ""
 
@@ -3249,14 +3249,14 @@ msgstr ""
 msgid "Import..."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:600
+#: contents/ui/config/ConfigAspect.qml:604
 msgid ""
 "Imported themes are stored in the Punchi Dock Remastered user library and "
 "currently apply only to a floating dock. Plasma panels keep their native "
 "background."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:642
+#: contents/ui/config/ConfigAspect.qml:646
 msgid "Import…"
 msgstr ""
 
@@ -3266,7 +3266,7 @@ msgid ""
 "mode, the spectrum replaces the panel background and keeps the same fit."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:757
+#: contents/ui/config/ConfigAspect.qml:761
 msgid ""
 "In panel mode, custom JSON themes automatically set the native panel to \"No "
 "background\" so the theme's custom shape, borders, and shadows are fully "
@@ -3277,31 +3277,31 @@ msgstr ""
 msgid "In progress"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:914
+#: contents/ui/config/ConfigAspect.qml:918
 msgid "Indicator"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:983
+#: contents/ui/config/ConfigAspect.qml:987
 msgid "Indicator color:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1000
+#: contents/ui/config/ConfigAspect.qml:1004
 msgid "Indicator opacity:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:952
+#: contents/ui/config/ConfigAspect.qml:956
 msgid "Indicator position:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:918
+#: contents/ui/config/ConfigAspect.qml:922
 msgid "Indicator shape:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1031
+#: contents/ui/config/ConfigAspect.qml:1035
 msgid "Indicator thickness"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1021
+#: contents/ui/config/ConfigAspect.qml:1025
 msgid "Indicator thickness:"
 msgstr ""
 
@@ -3332,7 +3332,7 @@ msgstr ""
 msgid "Installation or update completed successfully."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:624
+#: contents/ui/config/ConfigAspect.qml:628
 msgid "Installed Punchi Dock theme"
 msgstr ""
 
@@ -3341,7 +3341,7 @@ msgstr ""
 msgid "Installed package: %s\\n"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:607
+#: contents/ui/config/ConfigAspect.qml:611
 msgid "Installed theme:"
 msgstr ""
 
@@ -3377,11 +3377,11 @@ msgstr ""
 msgid "Item height:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:781
+#: contents/ui/config/ConfigAspect.qml:785
 msgid "Item highlight"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:490
+#: contents/ui/config/ConfigFolderPopups.qml:493
 msgid "Item text:"
 msgstr ""
 
@@ -3395,7 +3395,7 @@ msgstr ""
 msgid "Items"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:446
+#: contents/ui/config/ConfigFolderPopups.qml:449
 msgid "Items before the opening row:"
 msgstr ""
 
@@ -3411,7 +3411,7 @@ msgstr ""
 msgid "JSON looks valid."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:407
+#: contents/ui/config/ConfigAspect.qml:411
 msgid "JSON theme files"
 msgstr ""
 
@@ -3440,17 +3440,17 @@ msgctxt "@info:status Bluetooth device type"
 msgid "Keyboard"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:808
+#: contents/ui/config/ConfigAspect.qml:812
 msgid "Labels"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:830
+#: contents/ui/config/ConfigAspect.qml:834
 msgid ""
 "Labels use a compact single-line style so the dock can remain readable "
 "without turning every item into a large card."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:813
+#: contents/ui/config/ConfigAspect.qml:817
 msgid "Labels:"
 msgstr ""
 
@@ -3480,11 +3480,11 @@ msgctxt "@info:accessible"
 msgid "Launch this application"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:349
+#: contents/ui/config/ConfigFolderPopups.qml:352
 msgid "Layout customization"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:354
+#: contents/ui/config/ConfigFolderPopups.qml:357
 msgid "Layout profile:"
 msgstr ""
 
@@ -3522,17 +3522,17 @@ msgid ""
 "accessible from the overflow item."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:390
+#: contents/ui/config/ConfigPopups.qml:393
 msgid ""
 "Limits visible popup rows; additional entries remain accessible by scrolling."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:150
+#: contents/ui/config/ConfigAspect.qml:154
 #: contents/ui/config/SeparatorOptions.qml:115
 msgid "Line"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:941
+#: contents/ui/config/ConfigAspect.qml:945
 msgid ""
 "Line, dot, small ring and rounded square can be placed at the top or bottom "
 "edge of the icon."
@@ -3545,8 +3545,8 @@ msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:250
 #: contents/ui/components/DockContextActionsController.qml:283
+#: contents/ui/config/ConfigFolderPopups.qml:110
 #: contents/ui/config/components/RecentApplicationsSettings.qml:22
-#: contents/ui/config/ConfigFolderPopups.qml:107
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
 msgstr ""
@@ -3634,7 +3634,7 @@ msgctxt "@info"
 msgid "Manage system updates"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:635
+#: contents/ui/config/ConfigAspect.qml:639
 msgid "Manage themes:"
 msgstr ""
 
@@ -3643,7 +3643,7 @@ msgstr ""
 msgid "Manual"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:113
+#: contents/ui/config/ConfigFolderPopups.qml:116
 msgctxt "@item:inlistbox Grid arrangement"
 msgid "Manual"
 msgstr ""
@@ -3686,7 +3686,7 @@ msgstr ""
 msgid "Maximum folder rows:"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:454
+#: contents/ui/config/ConfigFolderPopups.qml:457
 msgid "Maximum items the folder fan shows before its opening row"
 msgstr ""
 
@@ -3698,15 +3698,15 @@ msgstr ""
 msgid "Maximum visible context menu actions"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:434
+#: contents/ui/config/ConfigFolderPopups.qml:437
 msgid "Maximum visible folder popup columns"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:455
+#: contents/ui/config/ConfigFolderPopups.qml:458
 msgid "Maximum visible folder popup rows"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:385
+#: contents/ui/config/ConfigPopups.qml:388
 msgid "Maximum visible popup rows"
 msgstr ""
 
@@ -3716,17 +3716,17 @@ msgctxt "@info:accessible"
 msgid "Media application"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:181
+#: contents/ui/config/ConfigPopups.qml:184
 msgid ""
 "Media applications behave like standard windows without showing media "
 "controls on hover."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:204
+#: contents/ui/config/ConfigPopups.qml:207
 msgid "Media card background opacity"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:190
+#: contents/ui/config/ConfigPopups.qml:193
 msgid "Media card opacity:"
 msgstr ""
 
@@ -3762,7 +3762,7 @@ msgstr ""
 msgid "Media player item"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:154
+#: contents/ui/config/ConfigPopups.qml:157
 msgid "Media players:"
 msgstr ""
 
@@ -3771,7 +3771,7 @@ msgctxt "@label:slider"
 msgid "Media volume"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:46
+#: contents/ui/config/ConfigPopups.qml:49
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Medium"
 msgstr ""
@@ -3824,7 +3824,7 @@ msgstr ""
 msgid "Menu width:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:187
+#: contents/ui/config/ConfigAspect.qml:191
 msgid "Menus"
 msgstr ""
 
@@ -3876,13 +3876,13 @@ msgctxt "@action:button"
 msgid "Move"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:468
+#: contents/ui/config/ConfigAspect.qml:472
 msgid "Move %1 Theme to the Trash?"
 msgid_plural "Move %1 Themes to the Trash?"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/config/ConfigAspect.qml:509
+#: contents/ui/config/ConfigAspect.qml:513
 msgid "Move all themes to the Trash…"
 msgstr ""
 
@@ -3891,11 +3891,11 @@ msgctxt "@action:context"
 msgid "Move open applications section"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:499
+#: contents/ui/config/ConfigAspect.qml:503
 msgid "Move selected theme to the Trash…"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:662
+#: contents/ui/config/ConfigAspect.qml:666
 msgid "Move themes to the Trash…"
 msgstr ""
 
@@ -3905,12 +3905,12 @@ msgctxt "@action:inmenu"
 msgid "Move to Folder…"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:481
+#: contents/ui/config/ConfigAspect.qml:485
 msgctxt "@action:button"
 msgid "Move to Trash"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:653
+#: contents/ui/config/ConfigAspect.qml:657
 msgctxt "@action:button"
 msgid "Move to Trash…"
 msgstr ""
@@ -3920,11 +3920,11 @@ msgctxt "@title"
 msgid "Move to a folder"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:498
+#: contents/ui/config/ConfigAspect.qml:502
 msgid "Move “%1” to the Trash…"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:766
+#: contents/ui/config/ConfigAspect.qml:770
 msgid "Moving themes to the Trash…"
 msgstr ""
 
@@ -4062,11 +4062,11 @@ msgctxt "@info"
 msgid "No devices paired"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:696
+#: contents/ui/config/ConfigAspect.qml:700
 msgid "No folder selected"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:623
+#: contents/ui/config/ConfigAspect.qml:627
 msgid "No imported themes"
 msgstr ""
 
@@ -4104,10 +4104,10 @@ msgid "No virtual desktops were found."
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:26
-#: contents/ui/config/components/PopupAnimationSettings.qml:22
-#: contents/ui/config/ConfigAspect.qml:154
+#: contents/ui/config/ConfigAspect.qml:158
 #: contents/ui/config/ConfigMouse.qml:42 contents/ui/config/ConfigMouse.qml:49
-#: contents/ui/config/ConfigMouse.qml:57 contents/ui/config/ConfigPopups.qml:36
+#: contents/ui/config/ConfigMouse.qml:57 contents/ui/config/ConfigPopups.qml:39
+#: contents/ui/config/components/PopupAnimationSettings.qml:22
 msgid "None"
 msgstr ""
 
@@ -4167,9 +4167,9 @@ msgid "Not selected for the new folder"
 msgstr ""
 
 #: contents/ui/components/NotePopup.qml:133
-#: contents/ui/config/code/itemTypeCatalog.js:55
 #: contents/ui/config/ConfigItems.qml:1026
 #: contents/ui/config/ItemConfigurationDialog.qml:681
+#: contents/ui/config/code/itemTypeCatalog.js:55
 msgid "Note"
 msgstr ""
 
@@ -4309,22 +4309,22 @@ msgid ""
 "fully opaque."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:271
-#: contents/ui/config/ConfigFolderPopups.qml:284
+#: contents/ui/config/ConfigFolderPopups.qml:274
+#: contents/ui/config/ConfigFolderPopups.qml:287
 msgid ""
 "Only the folder popup background changes; applications, icons, controls and "
 "text remain fully opaque."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:205
-#: contents/ui/config/ConfigPopups.qml:218
+#: contents/ui/config/ConfigPopups.qml:208
+#: contents/ui/config/ConfigPopups.qml:221
 msgid ""
 "Only the media card background changes; artwork, controls and text remain "
 "fully opaque."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:280
-#: contents/ui/config/ConfigPopups.qml:293
+#: contents/ui/config/ConfigPopups.qml:283
+#: contents/ui/config/ConfigPopups.qml:296
 msgid ""
 "Only the popup background changes; thumbnails, window content, controls and "
 "text remain fully opaque."
@@ -4364,7 +4364,7 @@ msgctxt "@info"
 msgid "Open Night Light settings"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:768
+#: contents/ui/config/ConfigAspect.qml:772
 msgid "Open Trash"
 msgstr ""
 
@@ -4688,7 +4688,7 @@ msgid ""
 "limits do not apply."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:196 contents/ui/main.qml:55
+#: contents/ui/config/ConfigAspect.qml:200 contents/ui/main.qml:55
 msgid "Plasma theme"
 msgstr ""
 
@@ -4709,28 +4709,28 @@ msgctxt "@title:group"
 msgid "Playing Audio"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:300
+#: contents/ui/config/ConfigFolderPopups.qml:303
 msgid "Popup distance:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:380
+#: contents/ui/config/ConfigPopups.qml:383
 msgid "Popup rows:"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:223
+#: contents/ui/config/ConfigFolderPopups.qml:226
 #: contents/ui/config/TimedOptionsPanel.qml:386
 msgid "Popup scale:"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:563
+#: contents/ui/config/ConfigFolderPopups.qml:566
 msgid "Popup text appearance"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:183
+#: contents/ui/config/ConfigAspect.qml:187
 msgid "Popups"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:974
+#: contents/ui/config/ConfigAspect.qml:978
 msgid "Position is not used with the current indicator shape."
 msgstr ""
 
@@ -4759,15 +4759,15 @@ msgid ""
 "to move it from the keyboard."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:337
+#: contents/ui/config/ConfigPopups.qml:340
 msgid "Preview information:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:120
+#: contents/ui/config/ConfigPopups.qml:123
 msgid "Preview popup:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:229
+#: contents/ui/config/ConfigPopups.qml:232
 msgid "Preview scale:"
 msgstr ""
 
@@ -4824,13 +4824,13 @@ msgstr ""
 msgid "Punchi Dock Remastered · Setup"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:305
+#: contents/ui/config/ConfigAspect.qml:309
 msgid ""
 "Punchi Dock cannot import themes here for security reasons: the selected "
 "folder is read-only or requires administrator permissions."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:297
+#: contents/ui/config/ConfigAspect.qml:301
 msgid "Punchi Dock could not store the imported theme."
 msgstr ""
 
@@ -4941,15 +4941,15 @@ msgctxt "@title:group"
 msgid "Recording Audio"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:878
+#: contents/ui/config/ConfigAspect.qml:882
 msgid "Reflection opacity"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:867
+#: contents/ui/config/ConfigAspect.qml:871
 msgid "Reflection opacity:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:850
+#: contents/ui/config/ConfigAspect.qml:854
 msgid "Reflection:"
 msgstr ""
 
@@ -5058,12 +5058,12 @@ msgctxt "@action:button"
 msgid "Repeat track"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:52
+#: contents/ui/config/ConfigPopups.qml:55
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with full cover media card"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:51
+#: contents/ui/config/ConfigPopups.qml:54
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with media card"
 msgstr ""
@@ -5073,7 +5073,7 @@ msgid ""
 "Requests desktop blur behind context menus when the compositor provides it."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:296
+#: contents/ui/config/ConfigFolderPopups.qml:299
 msgid ""
 "Requests the desktop blur effect behind dock popups when the compositor "
 "provides it."
@@ -5171,7 +5171,7 @@ msgstr ""
 msgid "Rounded pill"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:153
+#: contents/ui/config/ConfigAspect.qml:157
 msgid "Rounded square"
 msgstr ""
 
@@ -5274,7 +5274,7 @@ msgstr ""
 msgid "Select a performance profile:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:622
+#: contents/ui/config/ConfigAspect.qml:626
 msgid "Select a theme"
 msgstr ""
 
@@ -5286,11 +5286,11 @@ msgstr ""
 msgid "Select an option [1-9]: "
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:711
+#: contents/ui/config/ConfigAspect.qml:715
 msgid "Select custom themes folder"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:715
+#: contents/ui/config/ConfigAspect.qml:719
 msgid "Select folder…"
 msgstr ""
 
@@ -5304,9 +5304,9 @@ msgstr ""
 msgid "Selected package: %s\\n"
 msgstr ""
 
-#: contents/ui/config/code/itemTypeCatalog.js:59
 #: contents/ui/config/ConfigItems.qml:1027
 #: contents/ui/config/ItemConfigurationDialog.qml:682
+#: contents/ui/config/code/itemTypeCatalog.js:59
 msgid "Separator"
 msgstr ""
 
@@ -5347,7 +5347,7 @@ msgid "Settings and help"
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:276
-#: contents/ui/config/ConfigFolderPopups.qml:576
+#: contents/ui/config/ConfigFolderPopups.qml:579
 msgid "Shadow intensity:"
 msgstr ""
 
@@ -5372,7 +5372,7 @@ msgctxt "@action:button"
 msgid "Show Plasma volume indicator"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:787
+#: contents/ui/config/ConfigAspect.qml:791
 msgid "Show a themed background behind items"
 msgstr ""
 
@@ -5385,7 +5385,7 @@ msgstr ""
 msgid "Show application names"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:491
+#: contents/ui/config/ConfigFolderPopups.qml:494
 msgid "Show application names and details"
 msgstr ""
 
@@ -5422,7 +5422,7 @@ msgctxt "@option:check"
 msgid "Show favorites row"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:338
+#: contents/ui/config/ConfigFolderPopups.qml:341
 msgid "Show folder name header at top of popups"
 msgstr ""
 
@@ -5440,11 +5440,11 @@ msgctxt "@action:inmenu"
 msgid "Show in listing"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:814
+#: contents/ui/config/ConfigAspect.qml:818
 msgid "Show item names in the dock"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:56
+#: contents/ui/config/ConfigPopups.qml:59
 msgctxt "@item:inlistbox Media player hover mode"
 msgid "Show media card below window previews"
 msgstr ""
@@ -5462,7 +5462,7 @@ msgctxt "@option:check"
 msgid "Show recent applications"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:851
+#: contents/ui/config/ConfigAspect.qml:855
 msgid "Show reflections below dock items"
 msgstr ""
 
@@ -5480,7 +5480,7 @@ msgstr ""
 msgid "Show shadows on clock and date text"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:821
+#: contents/ui/config/ConfigAspect.qml:825
 msgid "Show subtle shadows on dock labels"
 msgstr ""
 
@@ -5488,15 +5488,15 @@ msgstr ""
 msgid "Show subtle shadows on menu text"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:569
+#: contents/ui/config/ConfigFolderPopups.qml:572
 msgid "Show subtle shadows on popup text"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:372
+#: contents/ui/config/ConfigPopups.qml:375
 msgid "Show subtle shadows on window preview text"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1059
+#: contents/ui/config/ConfigAspect.qml:1063
 msgid "Show the number of open windows"
 msgstr ""
 
@@ -5520,13 +5520,13 @@ msgid ""
 "Favorites."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:493
+#: contents/ui/config/ConfigFolderPopups.qml:496
 msgid ""
 "Shows application names in every layout and command details in the detailed "
 "layout."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:788
+#: contents/ui/config/ConfigAspect.qml:792
 msgid ""
 "Shows the Plasma highlight background when an item is hovered or its "
 "application is active."
@@ -5582,7 +5582,7 @@ msgstr ""
 msgid "Slow bounce"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:152
+#: contents/ui/config/ConfigAspect.qml:156
 msgid "Small ring"
 msgstr ""
 
@@ -5605,9 +5605,9 @@ msgctxt "@title"
 msgid "Sound Volume"
 msgstr ""
 
-#: contents/ui/config/code/itemTypeCatalog.js:63
 #: contents/ui/config/ConfigItems.qml:1028
 #: contents/ui/config/ItemConfigurationDialog.qml:683
+#: contents/ui/config/code/itemTypeCatalog.js:63
 msgid "Spacer"
 msgstr ""
 
@@ -5709,10 +5709,10 @@ msgstr ""
 msgid "Text shadow:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:820
-#: contents/ui/config/ConfigFolderPopups.qml:568
+#: contents/ui/config/ConfigAspect.qml:824
+#: contents/ui/config/ConfigFolderPopups.qml:571
 #: contents/ui/config/ConfigMenus.qml:290
-#: contents/ui/config/ConfigPopups.qml:371
+#: contents/ui/config/ConfigPopups.qml:374
 msgid "Text shadows:"
 msgstr ""
 
@@ -5722,13 +5722,13 @@ msgctxt "@info:status"
 msgid "The Dock configuration could not be saved."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:601
+#: contents/ui/config/ConfigFolderPopups.qml:604
 msgid ""
 "The amount applies to the labels of the folder popups. Zero removes the "
 "shadow completely, so the text keeps only its surface behind it."
 msgstr ""
 
-#: src/systemdiscovery.cpp:800
+#: src/systemdiscovery.cpp:885
 msgid "The application action could not be found."
 msgstr ""
 
@@ -5737,7 +5737,7 @@ msgctxt "@info:status"
 msgid "The application could not be added to the container."
 msgstr ""
 
-#: src/systemdiscovery.cpp:691
+#: src/systemdiscovery.cpp:776
 msgid "The application could not be found."
 msgstr ""
 
@@ -5773,7 +5773,7 @@ msgid ""
 "controls how much content behind the menu remains visible."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1065
+#: contents/ui/config/ConfigAspect.qml:1069
 msgid ""
 "The badge appears from two grouped windows and is hidden when window "
 "grouping is disabled."
@@ -5791,7 +5791,7 @@ msgstr ""
 msgid "The configuration directory is unavailable."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:294
+#: contents/ui/config/ConfigAspect.qml:298
 msgid ""
 "The configured external theme is unavailable. The Plasma background will be "
 "used."
@@ -5858,13 +5858,13 @@ msgctxt "@info:status"
 msgid "The dropped launcher could not be resolved safely."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:467
+#: contents/ui/config/ConfigFolderPopups.qml:470
 msgid ""
 "The fan shows only the items that fit, up to eight. The closing row opens "
 "the folder and says how many entries are left out."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:466
+#: contents/ui/config/ConfigFolderPopups.qml:469
 msgid ""
 "The fan shows the items that fit, up to eight, and scrolls to reach the "
 "rest. The closing row opens the folder."
@@ -5875,7 +5875,7 @@ msgctxt "@info"
 msgid "The folder change could not be applied. Please try again."
 msgstr ""
 
-#: src/systemdiscovery.cpp:465 src/systemdiscovery.cpp:866
+#: src/systemdiscovery.cpp:550 src/systemdiscovery.cpp:951
 msgid "The folder location is invalid."
 msgstr ""
 
@@ -5896,7 +5896,7 @@ msgid ""
 "distance."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:327
+#: contents/ui/config/ConfigFolderPopups.qml:330
 msgid ""
 "The percentage scales with Plasma metrics. It only affects folder popups and "
 "is limited to a safe maximum distance."
@@ -5908,13 +5908,13 @@ msgid ""
 "limit is being used."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:898
+#: contents/ui/config/ConfigAspect.qml:902
 msgid ""
 "The reflection adapts to the available panel thickness and is hidden when "
 "there is not enough space."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:899
+#: contents/ui/config/ConfigAspect.qml:903
 msgid ""
 "The reflection is decorative and does not change the size or interaction "
 "area of dock items."
@@ -5939,39 +5939,39 @@ msgstr ""
 msgid "The selected desktop no longer exists. Choose another desktop."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:288
+#: contents/ui/config/ConfigAspect.qml:292
 msgid "The selected file does not contain valid JSON."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:309
+#: contents/ui/config/ConfigAspect.qml:313
 msgid "The selected file is not a supported Punchi Dock theme."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:318
+#: contents/ui/config/ConfigAspect.qml:322
 msgid "The selected folder and its subfolders do not contain JSON theme files."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:303
+#: contents/ui/config/ConfigAspect.qml:307
 msgid "The selected installed theme has an invalid identifier."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:282
+#: contents/ui/config/ConfigAspect.qml:286
 msgid "The selected theme file could not be read."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:284
+#: contents/ui/config/ConfigAspect.qml:288
 msgid "The selected theme file is empty."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:301
+#: contents/ui/config/ConfigAspect.qml:305
 msgid "The selected theme folder could not be read."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:286
+#: contents/ui/config/ConfigAspect.qml:290
 msgid "The selected theme is larger than the 64 KiB limit."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:290
+#: contents/ui/config/ConfigAspect.qml:294
 msgid "The selected theme uses an unsupported schema version."
 msgstr ""
 
@@ -5989,7 +5989,7 @@ msgctxt "@info:status"
 msgid "The target container changed before the application could be added."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:307
+#: contents/ui/config/ConfigAspect.qml:311
 msgid "The theme library changed. Review the themes and try again."
 msgstr ""
 
@@ -5997,11 +5997,11 @@ msgstr ""
 msgid "The trash could not be emptied."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:656
+#: contents/ui/config/ConfigAspect.qml:660
 msgid "Theme deletion options"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:262
+#: contents/ui/config/ConfigAspect.qml:266
 msgid "Themes moved to the Trash: %1. Themes that could not be moved: %2."
 msgstr ""
 
@@ -6014,7 +6014,7 @@ msgstr ""
 msgid "Thickness:"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:45
+#: contents/ui/config/ConfigPopups.qml:48
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Thin"
 msgstr ""
@@ -6044,7 +6044,7 @@ msgctxt "@info"
 msgid "This folder is empty"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:249
+#: contents/ui/config/ConfigFolderPopups.qml:252
 msgid ""
 "This global scale applies to all folder popup layout profiles while "
 "maintaining fixed window geometry."
@@ -6062,7 +6062,7 @@ msgstr ""
 msgid "This shortcut is independent from Plasma's widget activation shortcut."
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:292
+#: contents/ui/config/ConfigAspect.qml:296
 msgid ""
 "This version of Punchi Dock does not support the renderer requested by the "
 "theme."
@@ -6082,7 +6082,7 @@ msgstr ""
 msgid "Time text scale:"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:337
+#: contents/ui/config/ConfigFolderPopups.qml:340
 msgid "Title header:"
 msgstr ""
 
@@ -6098,16 +6098,16 @@ msgstr ""
 msgid "Top"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:158
+#: contents/ui/config/ConfigAspect.qml:162
 msgctxt "Indicator position"
 msgid "Top"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:161
+#: contents/ui/config/ConfigAspect.qml:165
 msgid "Top left"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:162
+#: contents/ui/config/ConfigAspect.qml:166
 msgid "Top right"
 msgstr ""
 
@@ -6383,11 +6383,11 @@ msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:124
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:112
-#: contents/ui/config/ConfigFolderPopups.qml:295
+#: contents/ui/config/ConfigFolderPopups.qml:298
 msgid "Use background blur when available"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:675
+#: contents/ui/config/ConfigAspect.qml:679
 msgid "Use custom folder"
 msgstr ""
 
@@ -6434,7 +6434,7 @@ msgstr ""
 msgid "Version %s | %s | %s"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:201
+#: contents/ui/config/ConfigAspect.qml:205
 msgid "Vertical"
 msgstr ""
 
@@ -6455,11 +6455,11 @@ msgstr ""
 msgid "Visible characters:"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:428
+#: contents/ui/config/ConfigFolderPopups.qml:431
 msgid "Visible columns:"
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:447
+#: contents/ui/config/ConfigFolderPopups.qml:450
 msgid "Visible rows:"
 msgstr ""
 
@@ -6523,7 +6523,7 @@ msgid ""
 "receive files."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:485
+#: contents/ui/config/ConfigFolderPopups.qml:488
 msgid ""
 "When disabled, the fan shows only the configured number of items. Use the "
 "final row to open the remaining items in the file manager."
@@ -6544,7 +6544,7 @@ msgctxt "@info"
 msgid "Wi-Fi is turned off"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:47
+#: contents/ui/config/ConfigPopups.qml:50
 msgctxt "@item:inlistbox Window preview background frame"
 msgid "Wide"
 msgstr ""
@@ -6561,11 +6561,11 @@ msgstr ""
 msgid "Window behavior:"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:1050
+#: contents/ui/config/ConfigAspect.qml:1054
 msgid "Window count badge"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:793
+#: contents/ui/config/ConfigAspect.qml:797
 msgid "Window indicators remain visible when the item background is hidden."
 msgstr ""
 
@@ -6581,39 +6581,39 @@ msgstr ""
 msgid "Window preview"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:406
+#: contents/ui/config/ConfigPopups.qml:409
 msgid "Window preview animation"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:315
+#: contents/ui/config/ConfigPopups.qml:318
 msgid "Window preview background frame"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:279
+#: contents/ui/config/ConfigPopups.qml:282
 msgid "Window preview background opacity"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:349
+#: contents/ui/config/ConfigPopups.qml:352
 msgid "Window preview information"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:243
+#: contents/ui/config/ConfigPopups.qml:246
 msgid "Window preview scale"
 msgstr ""
 
-#: contents/ui/config/ConfigAspect.qml:179
-#: contents/ui/config/ConfigPopups.qml:35
-#: contents/ui/config/ConfigPopups.qml:116
+#: contents/ui/config/ConfigAspect.qml:183
+#: contents/ui/config/ConfigPopups.qml:38
+#: contents/ui/config/ConfigPopups.qml:119
 msgid "Window previews"
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:144
+#: contents/ui/config/ConfigPopups.qml:147
 msgid ""
 "Window selectors and hover previews use cards with the app icon and no live "
 "window content."
 msgstr ""
 
-#: contents/ui/config/ConfigPopups.qml:142
+#: contents/ui/config/ConfigPopups.qml:145
 msgid ""
 "Window selectors and hover previews use live thumbnails when the compositor "
 "can provide them."
@@ -6651,7 +6651,7 @@ msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr ""
 
-#: contents/ui/config/ConfigFolderPopups.qml:588
+#: contents/ui/config/ConfigFolderPopups.qml:591
 msgid ""
 "Zero leaves the text with no shadow at all; one hundred approaches the "
 "shadow Plasma draws by default."
@@ -6679,10 +6679,10 @@ msgstr ""
 msgid "pacman is required on Arch-family distributions"
 msgstr ""
 
-#: contents/ui/config/components/ActionDialog.qml:93
 #: contents/ui/config/ConfigItems.qml:1044
 #: contents/ui/config/ItemActionEditor.qml:54
 #: contents/ui/config/ItemConfigurationDialog.qml:780
+#: contents/ui/config/components/ActionDialog.qml:93
 msgid "rows"
 msgstr ""
 

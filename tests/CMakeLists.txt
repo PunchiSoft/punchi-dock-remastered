@@ -1100,6 +1100,22 @@ punchi_add_qml_test(
 
 # Tests must not leave Python bytecode caches in the source tree. Applying this
 # to every test also covers Python helpers launched indirectly by shell tests.
+
+add_executable(popup_appearance_defaults_test
+    popup_appearance_defaults_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/popupappearancedefaults.cpp
+    ${CMAKE_SOURCE_DIR}/src/popupappearancedefaults.h
+)
+target_include_directories(popup_appearance_defaults_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_compile_definitions(popup_appearance_defaults_test PRIVATE
+    PUNCHI_PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+)
+target_link_libraries(popup_appearance_defaults_test PRIVATE
+    Qt6::Gui Qt6::Qml Qt6::Test KF6::ConfigCore KF6::ConfigGui KF6::ConfigQml Plasma::Plasma
+)
+add_test(NAME popup_appearance_defaults_test COMMAND popup_appearance_defaults_test)
+punchi_add_qml_test(dock_note_context_test dock_note_context_test.qml)
+
 get_property(PUNCHI_ALL_TESTS DIRECTORY PROPERTY TESTS)
 set_property(TEST ${PUNCHI_ALL_TESTS} APPEND PROPERTY
     ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1"

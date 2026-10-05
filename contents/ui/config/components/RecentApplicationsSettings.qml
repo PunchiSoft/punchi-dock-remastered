@@ -11,7 +11,7 @@ Kirigami.FormLayout {
     property alias showApplications: showRecentApplicationsSwitch.checked
     property alias maximumApplications: recentApplicationsCountSpin.value
     property string presentationMode: "container"
-    property string containerLayout: "grid"
+    property string containerLayout: "fan"
 
     readonly property var modeOptions: [
         { "text": i18nc("@option:recent-applications", "Icons"), "value": "inline" }, // qmllint disable unqualified
@@ -83,7 +83,7 @@ Kirigami.FormLayout {
         enabled: showRecentApplicationsSwitch.checked
         from: 1
         to: 20
-        value: 3
+        value: 5
         editable: true
         activeFocusOnTab: true
         Layout.preferredWidth: root.selectorWidth

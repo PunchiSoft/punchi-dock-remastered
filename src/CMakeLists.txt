@@ -89,6 +89,8 @@ target_sources(punchidockintegration PRIVATE
     punchimenulayoutmodel.h
     punchimenushortcutcontroller.cpp
     punchimenushortcutcontroller.h
+    popupappearancedefaults.cpp
+    popupappearancedefaults.h
     recentapplicationsmodel.cpp
     recentapplicationsmodel.h
     recentapplicationsadapter.cpp
@@ -168,6 +170,7 @@ target_link_libraries(punchidockintegration
         Qt6::Quick
         KF6::ConfigCore
         KF6::ConfigGui
+        KF6::ConfigQml
         KF6::CoreAddons
         KF6::GlobalAccel
         KF6::I18n

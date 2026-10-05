@@ -253,7 +253,7 @@ Item {
                 to: 100
                 stepSize: 5
                 snapMode: Controls.Slider.SnapAlways
-                value: 75
+                value: 100
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Context menu background opacity")

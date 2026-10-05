@@ -105,7 +105,7 @@ private Q_SLOTS:
         QVERIFY(copyFile(QStringLiteral(PUNCHI_INTEGRATION_QMLTYPES), module + QStringLiteral("punchidockintegration.qmltypes")));
         const QString applications = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
         QVERIFY(QDir().mkpath(applications));
-        for (int i = 1; i <= 5; ++i) {
+        for (int i = 1; i <= 6; ++i) {
             QFile fixture(applications + QStringLiteral("/org.example.Recent%1.desktop").arg(i));
             QVERIFY(fixture.open(QIODevice::WriteOnly));
             const QByteArray entry = "[Desktop Entry]\nType=Application\nName=Recent Fixture\nIcon=system-run\nExec=/bin/true\n";
@@ -141,7 +141,8 @@ private Q_SLOTS:
             QVERIFY(config);
             QCOMPARE(config->value(QStringLiteral("showRecentApplications")).toBool(), true);
             QCOMPARE(config->value(QStringLiteral("recentApplicationsMode")).toString(), QStringLiteral("container"));
-            QCOMPARE(config->value(QStringLiteral("recentApplicationsContainerLayout")).toString(), QStringLiteral("grid"));
+            QCOMPARE(config->value(QStringLiteral("recentApplicationsContainerLayout")).toString(), QStringLiteral("fan"));
+            QCOMPARE(config->value(QStringLiteral("recentApplicationsCount")).toInt(), 5);
             config->insert(QStringLiteral("showActiveTasks"), false);
             const QString pinned = QStringLiteral("[{\"type\":\"app\",\"name\":\"Pinned Fixture\",\"icon\":\"system-run\",\"storageId\":\"org.example.Recent1.desktop\"}]");
             config->insert(QStringLiteral("dockItemsJson"), pinned);
@@ -173,7 +174,7 @@ private Q_SLOTS:
             QTest::qWait(50);
             QStandardItemModel provider;
             provider.setItemRoleNames({{Qt::UserRole, "resource"}});
-            for (int i = 1; i <= 5; ++i) {
+            for (int i = 1; i <= 6; ++i) {
                 auto *row = new QStandardItem;
                 row->setData(QStringLiteral("applications:org.example.Recent%1.desktop").arg(i), Qt::UserRole);
                 provider.appendRow(row);
@@ -181,10 +182,13 @@ private Q_SLOTS:
             QVERIFY(history->setProperty("sourceModel", QVariant::fromValue<QAbstractItemModel *>(&provider)));
             auto *historyModel = qobject_cast<QAbstractItemModel *>(history);
             QVERIFY(historyModel);
-            QCOMPARE(historyModel->rowCount(), 5);
+            QCOMPARE(historyModel->rowCount(), 6);
             QCOMPARE(historyModel->index(1, 0).data(Qt::UserRole + 100).toString(), QStringLiteral("org.example.Recent2.desktop"));
             auto *selection = root->findChild<QAbstractItemModel *>(QStringLiteral("recentApplicationsSelection"));
             QVERIFY(selection);
+            QTRY_COMPARE(selection->rowCount(), 5);
+            // Explicitly saved limits remain honored with the new installation defaults.
+            config->insert(QStringLiteral("recentApplicationsCount"), 3);
             QTRY_COMPARE(selection->rowCount(), 3);
             QVERIFY2(root->property("visibleRecentApplicationCount").toInt() == 3,
                 qPrintable(QStringLiteral("Presentation state: capacity=%1, controllerItems=%2")
@@ -259,7 +263,7 @@ private Q_SLOTS:
                 QCOMPARE(config->value(QStringLiteral("dockItemsJson")).toString(), pinned);
                 KConfig stored(applet->config().config()->name(), KConfig::SimpleConfig);
                 const KConfigGroup general = storedGroup(&stored, applet->config()).group(QStringLiteral("General"));
-                QCOMPARE(general.readEntry(QStringLiteral("recentApplicationsContainerLayout"), QStringLiteral("grid")), layout);
+                QCOMPARE(general.readEntry(QStringLiteral("recentApplicationsContainerLayout"), QStringLiteral("fan")), layout);
             }
             if (vertical) {
                 config->insert(QStringLiteral("recentApplicationsContainerLayout"), QStringLiteral("grid"));

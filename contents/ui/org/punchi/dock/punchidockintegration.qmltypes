@@ -3175,4 +3175,42 @@ Module {
         Method { name: "emptyTrash"; lineNumber: 45 }
         Method { name: "resetOperationState"; lineNumber: 46 }
     }
+    Component {
+        file: "popupappearancedefaults.h"
+        lineNumber: 12
+        name: "PopupAppearanceDefaults"
+        accessSemantics: "reference"
+        prototype: "QObject"
+        exports: ["org.punchi.dock/PopupAppearanceDefaults 1.0"]
+        exportMetaObjectRevisions: [256]
+        Property {
+            name: "applet"
+            type: "QObject"
+            isPointer: true
+            read: "applet"
+            write: "setApplet"
+            notify: "appletChanged"
+            index: 0
+            lineNumber: 16
+        }
+        Property {
+            name: "opaquePopupsByDefault"
+            type: "bool"
+            read: "opaquePopupsByDefault"
+            index: 1
+            lineNumber: 17
+            isReadonly: true
+            isPropertyConstant: true
+        }
+        Property {
+            name: "popupOpacityPercent"
+            type: "int"
+            read: "popupOpacityPercent"
+            index: 2
+            lineNumber: 18
+            isReadonly: true
+            isPropertyConstant: true
+        }
+        Signal { name: "appletChanged"; lineNumber: 30 }
+    }
 }

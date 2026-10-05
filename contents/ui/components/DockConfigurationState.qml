@@ -1,8 +1,13 @@
 import QtQuick
 import org.kde.plasma.plasmoid
+import "../org/punchi/dock" as Punchi
 
 QtObject {
     id: root
+
+    readonly property Punchi.PopupAppearanceDefaults appearanceDefaults: Punchi.PopupAppearanceDefaults {
+        applet: Plasmoid
+    }
 
     function normalizedPopupDistancePercent(value, fallbackValue) {
         const requestedPercent = Number(value)
@@ -32,13 +37,13 @@ QtObject {
     readonly property bool showRecentApplications: Plasmoid.configuration.showRecentApplications !== false
     readonly property int recentApplicationsCount: {
         const count = Number(Plasmoid.configuration.recentApplicationsCount)
-        return Number.isFinite(count) ? Math.max(1, Math.min(20, Math.round(count))) : 3
+        return Number.isFinite(count) ? Math.max(1, Math.min(20, Math.round(count))) : 5
     }
     readonly property string recentApplicationsMode: Plasmoid.configuration.recentApplicationsMode === "inline"
         ? "inline" : "container"
     readonly property string recentApplicationsContainerLayout: {
-        const layout = String(Plasmoid.configuration.recentApplicationsContainerLayout || "grid")
-        return ["grid", "list", "detailed", "fan"].indexOf(layout) >= 0 ? layout : "grid"
+        const layout = String(Plasmoid.configuration.recentApplicationsContainerLayout || "fan")
+        return ["grid", "list", "detailed", "fan"].indexOf(layout) >= 0 ? layout : "fan"
     }
 
     function disableRecentApplications() {
@@ -88,7 +93,7 @@ QtObject {
         const safePercent = Number.isFinite(requestedPercent)
             ? Math.max(50, Math.min(100,
                 Math.round(requestedPercent / 5) * 5))
-            : 75
+            : root.appearanceDefaults.popupOpacityPercent
         return safePercent / 100
     }
     readonly property real mediaCardBackgroundOpacity: {
@@ -97,7 +102,7 @@ QtObject {
         const safePercent = Number.isFinite(requestedPercent)
             ? Math.max(50, Math.min(100,
                 Math.round(requestedPercent / 5) * 5))
-            : 75
+            : root.appearanceDefaults.popupOpacityPercent
         return safePercent / 100
     }
     readonly property string windowPreviewFrameSize: {
@@ -136,11 +141,11 @@ QtObject {
         const safePercent = Number.isFinite(requestedPercent)
             ? Math.max(50, Math.min(100,
                 Math.round(requestedPercent / 5) * 5))
-            : 75
+            : 100
         return safePercent / 100
     }
     readonly property bool contextMenuBackgroundBlurEnabled:
-        Plasmoid.configuration.contextMenuBackgroundBlurEnabled !== false
+        Plasmoid.configuration.contextMenuBackgroundBlurEnabled === true
     readonly property bool menuTextShadowsEnabled:
         Plasmoid.configuration.menuTextShadowsEnabled === true
 
@@ -210,7 +215,7 @@ QtObject {
         const safePercent = Number.isFinite(requestedPercent)
             ? Math.max(50, Math.min(100,
                 Math.round(requestedPercent / 5) * 5))
-            : 75
+            : root.appearanceDefaults.popupOpacityPercent
         return safePercent / 100
     }
     readonly property bool folderPopupShowHeader:
@@ -218,7 +223,9 @@ QtObject {
     // Blur is requested only when the compositor provides it; the controller
     // reports availability separately and degrades to a plain themed surface.
     readonly property bool popupBackgroundBlurEnabled:
-        Plasmoid.configuration.popupBackgroundBlurEnabled !== false
+        Plasmoid.configuration.popupBackgroundBlurEnabled === undefined
+            ? !root.appearanceDefaults.opaquePopupsByDefault
+            : Plasmoid.configuration.popupBackgroundBlurEnabled === true
 
     readonly property bool dockShowLabels: !!Plasmoid.configuration.showLabels
     readonly property bool dockTextShadowsEnabled:

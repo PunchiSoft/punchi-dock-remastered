@@ -2,10 +2,13 @@ import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
+import "../org/punchi/dock" as Punchi
 import "components"
 
 Item {
     id: page
+
+    Punchi.PopupAppearanceDefaults { id: appearanceDefaults }
     implicitWidth: layoutMetrics.pageImplicitWidth
     implicitHeight: popupColumn.implicitHeight
 
@@ -198,7 +201,7 @@ Item {
                 to: 100
                 stepSize: 5
                 snapMode: Controls.Slider.SnapAlways
-                value: 75
+                value: appearanceDefaults.popupOpacityPercent
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Media card background opacity")
@@ -273,7 +276,7 @@ Item {
                 to: 100
                 stepSize: 5
                 snapMode: Controls.Slider.SnapAlways
-                value: 75
+                value: appearanceDefaults.popupOpacityPercent
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Window preview background opacity")

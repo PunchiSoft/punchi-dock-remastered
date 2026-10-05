@@ -13,6 +13,10 @@ KCM.SimpleKCM {
     id: page
     implicitWidth: layoutMetrics.pageImplicitWidth
 
+    Punchi.PopupAppearanceDefaults {
+        applet: Plasmoid
+    }
+
     signal configurationChanged()
 
     ConfigLayoutMetrics {

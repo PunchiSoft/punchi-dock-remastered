@@ -127,7 +127,7 @@ private Q_SLOTS:
             QVERIFY(applet); containment->addApplet(applet);
             QVERIFY(applet->launchErrorMessage().isEmpty());
             auto *config = applet->configuration();
-            QCOMPARE(config->value(QStringLiteral("recentApplicationsCount")).toInt(), 3);
+            QCOMPARE(config->value(QStringLiteral("recentApplicationsCount")).toInt(), 5);
             config->insert(QStringLiteral("showActiveTasks"), false);
             config->insert(QStringLiteral("dockItemsJson"), QStringLiteral("[{\"type\":\"app\",\"name\":\"Pinned\",\"storageId\":\"org.example.Recent1.desktop\",\"icon\":\"system-run\"}]"));
             auto *item = PlasmaQuick::AppletQuickItem::itemForApplet(applet);
@@ -154,7 +154,7 @@ private Q_SLOTS:
             QVERIFY(history->setProperty("sourceModel", QVariant::fromValue<QAbstractItemModel *>(&provider)));
             auto *selection = root->findChild<QAbstractItemModel *>(QStringLiteral("recentApplicationsSelection"));
             QVERIFY(selection);
-            QTRY_COMPARE(selection->rowCount(), 3);
+            QTRY_COMPARE(selection->rowCount(), 5);
             config->insert(QStringLiteral("recentApplicationsCount"), 6);
             QTRY_COMPARE(selection->rowCount(), 6);
             QTRY_COMPARE(root->property("visibleRecentApplicationCount").toInt(), 6);

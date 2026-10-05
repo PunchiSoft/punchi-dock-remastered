@@ -179,6 +179,8 @@ Después añade Punchi Dock Remastered desde la interfaz Añadir elementos gráf
 de Plasma. Si un módulo nativo actualizado sigue cargado, cierra y vuelve a iniciar
 sesión para cargar la nueva versión.
 
+Recomendamos `./scripts-user/setup.sh --install --no-restart` para compilar el módulo nativo con las bibliotecas Qt y KDE de tu equipo. Este flujo requiere KDE Plasma 6 y las dependencias de desarrollo del proyecto. Las pruebas locales documentadas de este ciclo corresponden a Fedora 44 y Debian 13.
+
 ### ¿Qué script debo utilizar?
 
 - **Scripts de usuario (`scripts-user/`):** Compilan, empaquetan o instalan el dock para uso cotidiano, sin ejecutar pruebas de desarrollo ni QML lint. Se mantienen las dependencias de compilación y las comprobaciones del paquete.
@@ -199,15 +201,83 @@ Las compilaciones locales se destinan al sistema actual; no son automáticamente
 paquetes universales. Las opciones completas y dependencias se documentan en
 [scripts de usuario](scripts-user/README.es.md) y [scripts de desarrollo](scripts-dev/README.es.md).
 
+### Dependencias de compilación por distribución
+
+Compilar desde el código fuente requiere CMake 3.22 o posterior, un compilador C++20, Qt 6.6 o posterior, KDE Frameworks 6.0 o posterior, Plasma 6.0 o posterior y las bibliotecas de desarrollo indicadas abajo. El flujo de usuario compila sin la suite de pruebas de desarrollo.
+
+Las siguientes listas cubren los requisitos de compilación nativa y empaquetado declarados por CMake y utilizados por `scripts-user`. Ejecuta los comandos de tu distribución para instalar las dependencias que falten.
+
+`./scripts-user/setup.sh --check-deps` comprueba listas de paquetes para Arch, Debian/Ubuntu y Fedora/RHEL. Prepara manualmente las dependencias en KDE neon y openSUSE; el script actual no tiene una comprobación específica de paquetes para estos sistemas.
+
+<details>
+<summary>Debian 13/14, Kubuntu 26.04 y KDE neon</summary>
+
+```bash
+sudo apt-get update
+sudo apt-get install \
+    binutils build-essential cmake extra-cmake-modules gettext git pkg-config \
+    qt6-base-dev qt6-base-dev-tools qt6-declarative-dev qt6-declarative-dev-tools qt6-shader-baker \
+    libkf6config-dev libkf6coreaddons-dev libkf6globalaccel-dev libkf6i18n-dev \
+    libkf6jobwidgets-dev libkf6kio-dev libkf6package-dev libkf6service-dev libkf6windowsystem-dev \
+    libplasma-dev plasma-workspace-dev libplasmaactivities-dev libplasmaactivitiesstats-dev \
+    libpipewire-0.3-dev kpackagetool6 unzip zip
+```
+
+</details>
+
+<details>
+<summary>Fedora 44</summary>
+
+```bash
+sudo dnf install \
+    binutils cmake make extra-cmake-modules gcc-c++ gettext git pkgconf-pkg-config \
+    qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtshadertools \
+    kf6-kconfig-devel kf6-kcoreaddons-devel kf6-kglobalaccel-devel kf6-ki18n-devel \
+    kf6-kjobwidgets-devel kf6-kio-devel kf6-kpackage-devel kf6-kservice-devel kf6-kwindowsystem-devel \
+    libplasma-devel plasma-workspace-devel plasma-activities-devel plasma-activities-stats-devel \
+    pipewire-devel kf6-kpackage unzip zip
+```
+
+</details>
+
+<details>
+<summary>Arch Linux y derivados</summary>
+
+```bash
+sudo pacman -S --needed \
+    base-devel binutils cmake extra-cmake-modules gettext git pkgconf \
+    qt6-base qt6-declarative qt6-shadertools \
+    kconfig kcoreaddons kglobalaccel ki18n kjobwidgets kio kpackage kservice kwindowsystem \
+    libplasma plasma-workspace plasma-activities plasma-activities-stats \
+    libpipewire unzip zip
+```
+
+</details>
+
+<details>
+<summary>openSUSE Leap 16.0 / Tumbleweed</summary>
+
+```bash
+sudo zypper install \
+    binutils cmake make gcc-c++ kf6-extra-cmake-modules gettext-tools git pkgconf-pkg-config \
+    qt6-base-devel qt6-declarative-devel qt6-shadertools \
+    kf6-kconfig-devel kf6-kcoreaddons-devel kf6-kglobalaccel-devel kf6-ki18n-devel \
+    kf6-kjobwidgets-devel kf6-kio-devel kf6-kpackage-devel kf6-kservice-devel kf6-kwindowsystem-devel \
+    libplasma6-devel plasma6-workspace-devel plasma6-activities-devel plasma6-activities-stats-devel \
+    pipewire-devel kf6-kpackage unzip zip
+```
+
+</details>
+
 ## Compatibilidad
 
 - **Escritorio:** Linux con KDE Plasma 6; Wayland es el objetivo principal y X11
   conserva una vía secundaria.
 - **Mínimos declarados de compilación:** CMake 3.22, compilador C++20, Qt 6.6,
   KDE Frameworks 6.0 y Plasma 6.0, además de las bibliotecas de desarrollo requeridas.
-- **Compilación nativa:** La compilación de desarrollo está orientada principalmente a Fedora 44 y posteriores y utiliza las bibliotecas Qt y KDE del sistema anfitrión. También existen perfiles para Arch Linux y Debian 13.
+- **Compilación nativa:** Las compilaciones desde código utilizan las bibliotecas Qt y KDE del sistema anfitrión. Existen perfiles de desarrollo para Fedora, Debian y Arch Linux.
 - **Paquete universal:** Las compilaciones universales oficiales se realizan en Debian 13. La compatibilidad binaria debe comprobarse con el mismo paquete en cada sistema objetivo.
-- **Pruebas de calidad:** El entorno de pruebas observado es Fedora 44, Qt 6.11.2, Plasma 6.7.5, KDE Frameworks 6.30.0, GCC 16.2.1 y CMake 4.3.0. Estos resultados corresponden a ese entorno; las versiones posteriores y otras distribuciones requieren su propia validación.
+- **Pruebas de calidad:** Se ha registrado validación local en Fedora 44 y Debian 13. La tabla siguiente distingue los entornos probados de otras distribuciones cuyas versiones de paquetes se consultaron.
 - **Paquetes nativos:** Utiliza el paquete destinado a tu entorno. Los mínimos
   declarados no certifican todas las combinaciones, y la compatibilidad binaria
   entre distribuciones exige probar el mismo artefacto en cada sistema objetivo.
@@ -217,12 +287,49 @@ paquetes universales. Las opciones completas y dependencias se documentan en
   portugués brasileño se incluyen como traducciones iniciales pendientes de
   revisión por hablantes nativos. Consulta [la guía de traducciones](po/README.es.md).
 
+### Entornos de compilación observados
+
+| Entorno de compilación | Fedora 44 | Debian 13 |
+|---|---|---|
+| Qt | 6.11.2 | 6.8.2 |
+| KDE Plasma | 6.7.5 | 6.3.6 |
+| KDE Frameworks | 6.30.0 | 6.13.0 |
+| Compilación nativa | Bibliotecas del sistema Fedora | Bibliotecas del sistema Debian |
+| Validación de desarrollo | Flujo nativo Fedora | Copia temporal adaptada para Qt 6.8 |
+| Paquete universal oficial | Prueba del mismo paquete pendiente | Entorno de compilación |
+
+**Qt 6.8.x**
+
+En sistemas con Qt 6.8.x, el blur está desactivado por defecto y la opacidad del fondo se establece al 100 % en popups y menús contextuales. Estos valores predeterminados ayudan a reducir el riesgo de conflictos gráficos o fallos visuales con algunos controladores gráficos. Se aplican únicamente a estas superficies; los ajustes de apariencia guardados se conservan.
+
 ## Pruebas y calidad
 
 Punchi Dock combina vistas QML, código nativo C++, configuración persistente y
 servicios KDE. Las pruebas ayudan a detectar regresiones como un plasmoide que
 no carga, una preferencia que pierde su efecto, actualizaciones incorrectas de
 modelos o un paquete al que le faltan archivos antes de que esos cambios lleguen a los usuarios.
+
+### Entornos de pruebas locales y objetivos adicionales
+
+Versiones consultadas el 5 de octubre de 2026. Fedora 44 y Debian 13 describen los entornos observados localmente; las demás filas describen los repositorios de las distribuciones indicados abajo. Las distribuciones de actualización continua y las actualizaciones pueden cambiar estas versiones.
+
+| SO | Qt | Plasma | Frameworks | Test |
+|---|---|---|---|:---:|
+| Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ |
+| Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ |
+| Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | ❌ |
+| Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ❌ |
+| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ❌ |
+| Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | ❌ |
+| KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | ❌ |
+| openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | ❌ |
+| openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | ❌ |
+
+✅ Probado localmente en este ciclo. ❌ Sin prueba local en este ciclo.
+
+La columna Test registra la validación local del plasmoide. No certifica el paquete universal compilado en Debian en cada sistema. Una versión posterior de Qt puede admitir binarios compilados con una versión anterior de Qt 6, pero las dependencias de Qt, KDE y las bibliotecas del sistema deben comprobarse con el mismo paquete.
+
+Fuentes de repositorio: [Debian 14 Qt](https://packages.debian.org/forky/qt6-base-dev) · [Debian 14 Plasma](https://packages.debian.org/forky/plasma-desktop) · [Debian 14 Frameworks](https://packages.debian.org/forky/libkf6coreaddons6) · [Kubuntu Qt](https://packages.ubuntu.com/resolute/libdevel/qt6-base-dev) · [Actualizaciones de Plasma en Kubuntu](https://packages.ubuntu.com/resolute-updates/kde/plasma-desktop) · [Kubuntu Frameworks](https://packages.ubuntu.com/resolute/libs/libkf6coreaddons6) · [Arch Qt](https://archlinux.org/packages/extra/x86_64/qt6-base/) · [Arch Plasma](https://archlinux.org/packages/extra/x86_64/plasma-desktop/) · [Arch Frameworks](https://archlinux.org/packages/extra/x86_64/kcoreaddons/) · [Metadatos de paquetes Manjaro stable](https://repo.manjaro.org/repo/stable/extra/x86_64/extra.db) · [Metadatos de paquetes KDE neon User Edition](https://archive.neon.kde.org/user/dists/noble/main/binary-amd64/Packages.gz) · [Paquetes openSUSE Leap 16.0](https://download.opensuse.org/distribution/leap/16.0/repo/oss/x86_64/) · [openSUSE Tumbleweed Qt](https://news.opensuse.org/2026/09/02/tw-monthly-update-august/) · [openSUSE Tumbleweed Plasma / Frameworks](https://news.opensuse.org/2026/10/01/tw-monthly-update-september/).
 
 | Comprobación | Objetivo |
 |---|---|
