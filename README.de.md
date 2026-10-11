@@ -277,7 +277,7 @@ sudo zypper install \
   Qt 6.6, KDE Frameworks 6.0 und Plasma 6.0 sowie die erforderlichen Entwicklungsbibliotheken.
 - **Native Builds:** Quellcode-Builds verwenden die Qt- und KDE-Bibliotheken des Hostsystems. Entwicklungsprofile sind für Fedora, Debian und Arch Linux verfügbar.
 - **Universelles Paket:** Offizielle universelle Builds werden unter Debian 13 gegen die niedrigsten unterstützten Versionen von Qt und KDE Frameworks kompiliert. Die niedrigste Version als Ziel begünstigt die Kompatibilität mit neueren Systemen, während neuere APIs in diesem Build fehlen. Die Binärkompatibilität muss mit demselben Paket auf jedem Zielsystem geprüft werden.
-- **Qualitätsprüfungen:** Lokale Validierungen wurden unter Fedora 44 und Debian 13 aufgezeichnet. Die folgende Tabelle unterscheidet getestete Umgebungen von weiteren Distributionen, deren Paketversionen geprüft wurden.
+- **Qualitätsprüfungen:** Lokale Validierungen wurden unter Fedora 44, Debian 13 und Arch Linux aufgezeichnet. Die folgende Tabelle unterscheidet getestete Umgebungen von weiteren Distributionen, deren Paketversionen geprüft wurden.
 - **Native Pakete:** Verwende das für deine Umgebung bestimmte Paket. Deklarierte
   Mindestversionen bestätigen nicht jede Kombination; distributionsübergreifende
   Binärkompatibilität erfordert Tests desselben Artefakts auf jedem Zielsystem.

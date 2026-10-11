@@ -276,7 +276,7 @@ sudo zypper install \
   KDE Frameworks 6.0 e Plasma 6.0, além das bibliotecas de desenvolvimento necessárias.
 - **Compilação nativa:** As compilações a partir do código usam as bibliotecas Qt e KDE do sistema anfitrião. Há perfis de desenvolvimento para Fedora, Debian e Arch Linux.
 - **Pacote universal:** As compilações universais oficiais são feitas no Debian 13 contra as versões mínimas suportadas de Qt e KDE Frameworks. Mirar a versão mínima favorece a compatibilidade com sistemas mais novos, enquanto as APIs mais recentes ficam fora desta compilação. A compatibilidade binária deve ser verificada com o mesmo pacote em cada sistema de destino.
-- **Testes de qualidade:** Foi registrada validação local no Fedora 44 e no Debian 13. A tabela a seguir distingue os ambientes testados de outras distribuições cujas versões de pacotes foram consultadas.
+- **Testes de qualidade:** Foi registrada validação local no Fedora 44, no Debian 13 e no Arch Linux. A tabela a seguir distingue os ambientes testados de outras distribuições cujas versões de pacotes foram consultadas.
 - **Pacotes nativos:** Use o pacote destinado ao seu ambiente. Os mínimos
   declarados não certificam todas as combinações, e a compatibilidade binária
   entre distribuições exige testar o mesmo artefato em cada sistema de destino.
