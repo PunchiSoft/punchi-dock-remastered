@@ -315,7 +315,7 @@ Versões consultadas em 5 de outubro de 2026. Fedora 44 e Debian 13 descrevem os
 | SO | Qt | Plasma | Frameworks | Compilação local | universal do Debian 13 | pacote do Fedora 44 |
 |---|---|---|---|:---:|:---:|:---:|
 | Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
-| Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | ⏳ |
+| Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | ❌ |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | ⏳ | ⏳ | ⏳ |
 | Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ⏳ | ⏳ | ⏳ |
 | Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |

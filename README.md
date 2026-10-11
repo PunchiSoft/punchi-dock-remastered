@@ -311,7 +311,7 @@ Versions checked on October 5, 2026. Fedora 44 and Debian 13 describe the locall
 | OS | Qt | Plasma | Frameworks | Local build | Debian 13 universal | Fedora 44 package |
 |---|---|---|---|:---:|:---:|:---:|
 | Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
-| Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | ⏳ |
+| Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | ❌ |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | ⏳ | ⏳ | ⏳ |
 | Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ⏳ | ⏳ | ⏳ |
 | Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
