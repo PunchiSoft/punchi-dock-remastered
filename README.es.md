@@ -313,21 +313,21 @@ modelos o un paquete al que le faltan archivos antes de que esos cambios lleguen
 
 Versiones consultadas el 5 de octubre de 2026. Fedora 44 y Debian 13 describen los entornos observados localmente; las demás filas describen los repositorios de las distribuciones indicados abajo. Las distribuciones de actualización continua y las actualizaciones pueden cambiar estas versiones.
 
-| SO | Qt | Plasma | Frameworks | Test |
-|---|---|---|---|:---:|
-| Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ |
-| Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ |
-| Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | ❌ |
-| Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ❌ |
-| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ |
-| Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | ❌ |
-| KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | ❌ |
-| openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | ❌ |
-| openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | ❌ |
+| SO | Qt | Plasma | Frameworks | Prueba local | universal de Debian 13 | paquete de Fedora 44 |
+|---|---|---|:---:|:---:|:---:|
+| Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | — | ✅ |
+| Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | — |
+| Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | — | — | — |
+| Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | — | — | — |
+| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
+| Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | — | — | — |
+| KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | — | — | — |
+| openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | — | — | — |
+| openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | — | — | — |
 
-✅ Probado localmente en este ciclo. ❌ Sin prueba local en este ciclo.
+✅ Probado y funcional. ❌ Probado con fallos. — Sin probar.
 
-La columna Test registra la validación local del plasmoide. No certifica el paquete universal compilado en Debian en cada sistema. Una versión posterior de Qt puede admitir binarios compilados con una versión anterior de Qt 6, pero las dependencias de Qt, KDE y las bibliotecas del sistema deben comprobarse con el mismo paquete.
+La columna Prueba local registra la validación local del plasmoide; las columnas universal de Debian 13 y paquete de Fedora 44 indican si ese mismo paquete se comprobó en ese sistema. No certifica el paquete universal compilado en Debian en cada sistema. Una versión posterior de Qt puede admitir binarios compilados con una versión anterior de Qt 6, pero las dependencias de Qt, KDE y las bibliotecas del sistema deben comprobarse con el mismo paquete.
 
 **Observaciones**
 

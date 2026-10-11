@@ -308,21 +308,21 @@ required files before those changes reach users.
 
 Versions checked on October 5, 2026. Fedora 44 and Debian 13 describe the locally observed environments; other rows describe the distribution repositories listed below. Rolling distributions and updates can change these versions.
 
-| OS | Qt | Plasma | Frameworks | Test |
-|---|---|---|---|:---:|
-| Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ |
-| Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ |
-| Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | ❌ |
-| Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ❌ |
-| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ |
-| Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | ❌ |
-| KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | ❌ |
-| openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | ❌ |
-| openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | ❌ |
+| OS | Qt | Plasma | Frameworks | Local test | Debian 13 universal | Fedora 44 package |
+|---|---|---|:---:|:---:|:---:|
+| Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | — | ✅ |
+| Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | — |
+| Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | — | — | — |
+| Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | — | — | — |
+| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
+| Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | — | — | — |
+| KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | — | — | — |
+| openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | — | — | — |
+| openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | — | — | — |
 
-✅ Tested locally in this cycle. ❌ Not tested locally in this cycle.
+✅ Tested and working. ❌ Tested with failures. — Not tested.
 
-The Test column records local plasmoid validation. It does not certify the Debian-built universal package on each system. A newer Qt version can support binaries built with an older Qt 6 version, but matching Qt, KDE and system-library dependencies still need to be checked with the same package.
+The Local test column records local plasmoid validation; the Debian 13 universal and Fedora 44 package columns record whether that same package was checked on that system. It does not certify the Debian-built universal package on each system. A newer Qt version can support binaries built with an older Qt 6 version, but matching Qt, KDE and system-library dependencies still need to be checked with the same package.
 
 **Observations**
 
