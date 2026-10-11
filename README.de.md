@@ -314,7 +314,7 @@ Paketdateien zu erkennen, bevor solche Änderungen die Benutzer erreichen.
 Versionen geprüft am 5. Oktober 2026. Fedora 44 und Debian 13 beschreiben die lokal beobachteten Umgebungen; die weiteren Zeilen beschreiben die unten verlinkten Distributionsrepositorys. Rolling-Release-Distributionen und Aktualisierungen können diese Versionen ändern.
 
 | Betriebssystem | Qt | Plasma | Frameworks | Lokaler Test | Debian 13 universal | Fedora-44-Paket |
-|---|---|---|:---:|:---:|:---:|
+|---|---|---|---|:---:|:---:|:---:|
 | Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | — | ✅ |
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | — |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | — | — | — |

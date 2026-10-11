@@ -314,7 +314,7 @@ modelos o un paquete al que le faltan archivos antes de que esos cambios lleguen
 Versiones consultadas el 5 de octubre de 2026. Fedora 44 y Debian 13 describen los entornos observados localmente; las demás filas describen los repositorios de las distribuciones indicados abajo. Las distribuciones de actualización continua y las actualizaciones pueden cambiar estas versiones.
 
 | SO | Qt | Plasma | Frameworks | Prueba local | universal de Debian 13 | paquete de Fedora 44 |
-|---|---|---|:---:|:---:|:---:|
+|---|---|---|---|:---:|:---:|:---:|
 | Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | — | ✅ |
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | — |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | — | — | — |

@@ -309,7 +309,7 @@ required files before those changes reach users.
 Versions checked on October 5, 2026. Fedora 44 and Debian 13 describe the locally observed environments; other rows describe the distribution repositories listed below. Rolling distributions and updates can change these versions.
 
 | OS | Qt | Plasma | Frameworks | Local test | Debian 13 universal | Fedora 44 package |
-|---|---|---|:---:|:---:|:---:|
+|---|---|---|---|:---:|:---:|:---:|
 | Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | — | ✅ |
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | — |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | — | — | — |
