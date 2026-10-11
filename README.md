@@ -314,13 +314,15 @@ Versions checked on October 5, 2026. Fedora 44 and Debian 13 describe the locall
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | ❌ |
 | Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ❌ |
-| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ❌ |
+| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ |
 | Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | ❌ |
 | KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | ❌ |
 | openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | ❌ |
 | openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | ❌ |
 
 ✅ Tested locally in this cycle. ❌ Not tested locally in this cycle.
+
+Arch Linux was tested on October 10, 2026 with the Fedora 44 package, the universal package built on Debian 13, and a build from source against the system Qt and KDE libraries. In all three cases the applet installed, loaded and stayed functional.
 
 The Test column records local plasmoid validation. It does not certify the Debian-built universal package on each system. A newer Qt version can support binaries built with an older Qt 6 version, but matching Qt, KDE and system-library dependencies still need to be checked with the same package.
 

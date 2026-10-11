@@ -319,13 +319,15 @@ Versiones consultadas el 5 de octubre de 2026. Fedora 44 y Debian 13 describen l
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | ❌ |
 | Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ❌ |
-| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ❌ |
+| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ |
 | Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | ❌ |
 | KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | ❌ |
 | openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | ❌ |
 | openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | ❌ |
 
 ✅ Probado localmente en este ciclo. ❌ Sin prueba local en este ciclo.
+
+Arch Linux se probó el 10 de octubre de 2026 con el paquete de Fedora 44, el paquete universal compilado en Debian 13 y una compilación desde fuentes con las bibliotecas Qt y KDE del sistema. En los tres casos el plasmoide se instaló, cargó y se mantuvo funcional.
 
 La columna Test registra la validación local del plasmoide. No certifica el paquete universal compilado en Debian en cada sistema. Una versión posterior de Qt puede admitir binarios compilados con una versión anterior de Qt 6, pero las dependencias de Qt, KDE y las bibliotecas del sistema deben comprobarse con el mismo paquete.
 

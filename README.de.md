@@ -319,13 +319,15 @@ Versionen geprüft am 5. Oktober 2026. Fedora 44 und Debian 13 beschreiben die l
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | ❌ |
 | Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ❌ |
-| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ❌ |
+| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ |
 | Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | ❌ |
 | KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | ❌ |
 | openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | ❌ |
 | openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | ❌ |
 
 ✅ In diesem Zyklus lokal getestet. ❌ In diesem Zyklus nicht lokal getestet.
+
+Arch Linux wurde am 10. Oktober 2026 mit dem Fedora-44-Paket, dem unter Debian 13 erstellten universellen Paket und einer Quelltextkompilierung gegen die systemeigenen Qt- und KDE-Bibliotheken geprüft. In allen drei Fällen ließ sich das Applet installieren, laden und blieb funktionsfähig.
 
 Die Spalte Test dokumentiert die lokale Validierung des Plasmoids. Sie bestätigt nicht das unter Debian kompilierte universelle Paket auf jedem System. Eine neuere Qt-Version kann Binärdateien unterstützen, die mit einer älteren Qt-6-Version kompiliert wurden; die Qt-, KDE- und Systembibliotheksabhängigkeiten müssen jedoch mit demselben Paket geprüft werden.
 
