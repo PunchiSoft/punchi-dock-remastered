@@ -252,6 +252,9 @@ function itemTitle(item, translate) {
     if (item.type === "separator") {
         return translate("Separator")
     }
+    if (item.type === "recent-applications") {
+        return translate("Recent applications")
+    }
     if (item.type === "dynamic-applications") {
         return translate("Open applications")
     }
@@ -287,6 +290,9 @@ function itemTitle(item, translate) {
 }
 
 function itemTypeTitle(type, translate) {
+    if (type === "recent-applications") {
+        return translate("Recent applications")
+    }
     if (type === "separator") {
         return translate("Separator")
     }
@@ -322,6 +328,9 @@ function itemTypeTitle(type, translate) {
 
 function itemSubtitle(item, translate, translatePlural) {
     if (!item) {
+        return ""
+    }
+    if (item.type === "recent-applications") {
         return ""
     }
     if (item.type === "app") {
@@ -363,6 +372,7 @@ function itemIcon(item) {
     if (!item) {
         return "application-x-executable"
     }
+    if (item.type === "recent-applications") { return "folder-temp" }
     if (item.type === "folder") {
         return item.icon || "folder"
     }

@@ -46,6 +46,28 @@ QtObject {
         return ["grid", "list", "detailed", "fan"].indexOf(layout) >= 0 ? layout : "fan"
     }
 
+    readonly property bool recentApplicationsShowSeparator:
+        Plasmoid.configuration.recentApplicationsShowSeparator !== false
+    readonly property var recentApplicationsSeparatorDescriptor: ({
+        "type": "separator",
+        "separatorAppearanceSource": String(Plasmoid.configuration.recentApplicationsSeparatorAppearanceSource || "theme"),
+        "separatorStyle": String(Plasmoid.configuration.recentApplicationsSeparatorStyle || "line"),
+        "separatorThickness": Plasmoid.configuration.recentApplicationsSeparatorThickness,
+        "separatorLengthRatio": Plasmoid.configuration.recentApplicationsSeparatorLengthRatio,
+        "separatorOpacity": Plasmoid.configuration.recentApplicationsSeparatorOpacity,
+        "separatorGlowEnabled": Plasmoid.configuration.recentApplicationsSeparatorGlowEnabled === true
+    })
+
+    function setRecentApplicationsSeparatorVisible(visible) {
+        if (!root.showRecentApplications || typeof visible !== "boolean") {
+            return false
+        }
+        Plasmoid.configuration.recentApplicationsShowSeparator = visible
+        const writeConfig = Plasmoid.configuration.writeConfig
+        writeConfig()
+        return true
+    }
+
     function disableRecentApplications() {
         if (!root.showRecentApplications) {
             return false

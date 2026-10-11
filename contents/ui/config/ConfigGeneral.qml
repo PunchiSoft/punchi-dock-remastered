@@ -26,6 +26,13 @@ KCM.SimpleKCM {
     property alias cfg_recentApplicationsCount: recentApplicationsSettings.maximumApplications
     property alias cfg_recentApplicationsMode: recentApplicationsSettings.presentationMode
     property alias cfg_recentApplicationsContainerLayout: recentApplicationsSettings.containerLayout
+    property alias cfg_recentApplicationsShowSeparator: recentApplicationsSettings.showSeparator
+    property alias cfg_recentApplicationsSeparatorAppearanceSource: recentApplicationsSettings.separatorAppearanceSource
+    property alias cfg_recentApplicationsSeparatorStyle: recentApplicationsSettings.separatorStyle
+    property alias cfg_recentApplicationsSeparatorThickness: recentApplicationsSettings.separatorThickness
+    property alias cfg_recentApplicationsSeparatorLengthRatio: recentApplicationsSettings.separatorLengthRatio
+    property alias cfg_recentApplicationsSeparatorOpacity: recentApplicationsSettings.separatorOpacity
+    property alias cfg_recentApplicationsSeparatorGlowEnabled: recentApplicationsSettings.separatorGlowEnabled
     property string cfg_virtualDesktopMode: "all"
     property string cfg_targetVirtualDesktop: ""
     property string cfg_panelLengthMode: "system"

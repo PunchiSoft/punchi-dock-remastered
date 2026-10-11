@@ -114,6 +114,7 @@ function openAppActionsDialog(index) {
     if (!item || (item.type !== "folder" && item.type !== "note"
             && item.type !== "separator" && item.type !== "spacer"
             && item.type !== "dynamic-applications"
+            && item.type !== "recent-applications"
             && (item.type || "app") !== "app")) {
         return
     }
@@ -408,6 +409,9 @@ function selectedConfigureTitle() {
     if (selectedItemType === "dynamic-applications") {
         return i18n("Configure open applications")
     }
+    if (selectedItemType === "recent-applications") {
+        return i18n("Configure recent applications")
+    }
     if (selectedItemType === "spacer") {
         return i18n("Configure spacer")
     }
@@ -493,6 +497,10 @@ function confirmDynamicApplicationsRemoval() {
 }
 
 function removeItemAtIndex(targetIndex, disableActiveTasks) {
+    if (items[targetIndex] && items[targetIndex].type === "recent-applications") {
+        removeRecentApplicationsFromDraft(targetIndex)
+        return
+    }
     var result = ConfigItemsJS.removeItem(items, targetIndex)
     selectedIndex = result.selectedIndex
     setItems(result.items)

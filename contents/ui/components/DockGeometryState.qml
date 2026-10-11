@@ -374,6 +374,9 @@ QtObject {
 
     function panelMainAxisExtentForDockItem(item) {
         const itemType = item && item.type ? String(item.type) : "app"
+        if (itemType === "recent-applications") {
+            return 0
+        }
         if (itemType === "dynamic-applications"
                 && root.dynamicApplicationsMoveModeActive) {
             return root.dynamicApplicationsMoveHandleExtent
@@ -400,7 +403,8 @@ QtObject {
         let count = 0
         const items = root.dockItems || []
         for (let index = 0; index < items.length; index++) {
-            if (!root.dynamicApplicationsMarkerCollapsed(items[index])) {
+            if (items[index].type !== "recent-applications"
+                    && !root.dynamicApplicationsMarkerCollapsed(items[index])) {
                 count += 1
             }
         }

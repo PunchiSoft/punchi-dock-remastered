@@ -17,6 +17,7 @@ import "code/configItemsStateHelper.js" as StateHelper
 import "code/configItemsFormHelper.js" as FormHelper
 import "code/configItemsWorkflowHelper.js" as WorkflowHelper
 import "../../code/logic.js" as DockLogic
+import "../../code/recentApplicationsPlacement.js" as RecentPlacement
 import "components"
 
 import org.kde.kcmutils as KCM
@@ -53,6 +54,15 @@ KCM.SimpleKCM {
     property string cfg_dockItemsJson: ""
     property int cfg_pendingEditDockItemIndex: -1
     property bool cfg_showActiveTasks: true
+    property bool cfg_showRecentApplications: true
+    property bool cfg_recentApplicationsShowSeparator: true
+    property string cfg_recentApplicationsSeparatorAppearanceSource: "theme"
+    property string cfg_recentApplicationsSeparatorStyle: "line"
+    property int cfg_recentApplicationsSeparatorThickness: 2
+    property real cfg_recentApplicationsSeparatorLengthRatio: 0.72
+    property real cfg_recentApplicationsSeparatorOpacity: 0.34
+    property bool cfg_recentApplicationsSeparatorGlowEnabled: false
+    property string cfg_recentApplicationsPosition: ""
     property bool pendingEditConsumed: false
     property string iconPickerTarget: "item"
     property bool focusNewItemAfterDialogClose: false
@@ -400,6 +410,22 @@ KCM.SimpleKCM {
         consumePendingEditRequest()
     }
 
+    function synchronizeRecentApplicationsItems() {
+        if (!page.diskItemsLoaded || page.syncing || page.loadingFromDisk) { return }
+        const update = RecentPlacement.reconcile(page.items,
+            page.cfg_showRecentApplications, page.cfg_recentApplicationsPosition,
+            DockLogic.maximumDockItemCount)
+        page.cfg_recentApplicationsPosition = update.position
+        if (update.changed) { page.setItems(update.items) }
+    }
+
+    function removeRecentApplicationsFromDraft(index) {
+        page.cfg_recentApplicationsPosition = RecentPlacement.capture(page.items)
+        page.selectedIndex = Math.min(index, page.items.length - 2)
+        page.cfg_showRecentApplications = false
+        page.synchronizeRecentApplicationsItems()
+    }
+
     function openAddItemDialog() {
         focusNewItemAfterDialogClose = false
         itemConfigurationDialog.mediaApplications = []
@@ -634,6 +660,8 @@ KCM.SimpleKCM {
 
     function markChanged() {
         if (!syncing) {
+            const position = RecentPlacement.capture(page.items)
+            if (position) { page.cfg_recentApplicationsPosition = position }
             updatingConfigJson = true
             cfg_dockItemsJson = JSON.stringify(items, null, 4)
             Qt.callLater(function() {
@@ -850,10 +878,15 @@ KCM.SimpleKCM {
 
     Component.onCompleted: {
         loadItems()
+        page.synchronizeRecentApplicationsItems()
     }
 
-    onCfg_dockItemsJsonChanged: syncItemsFromConfigJson()
+    onCfg_dockItemsJsonChanged: {
+        syncItemsFromConfigJson()
+        page.synchronizeRecentApplicationsItems()
+    }
     onCfg_pendingEditDockItemIndexChanged: consumePendingEditRequest()
+    onCfg_showRecentApplicationsChanged: page.synchronizeRecentApplicationsItems()
     onDiskItemsLoadedChanged: {
         if (diskItemsLoaded) {
             consumePendingEditRequest()
@@ -995,6 +1028,7 @@ KCM.SimpleKCM {
     // qmllint disable unqualified
     ActionDialog {
         id: actionDialog
+        objectName: "itemActionsDialog"
         title: page.selectedConfigureTitle()
         width: Math.min(page.width - Kirigami.Units.largeSpacing * 2, Kirigami.Units.gridUnit * 32)
         actionModel: actionModel

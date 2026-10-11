@@ -1,6 +1,7 @@
 import QtQuick
 import org.kde.plasma.plasmoid
 import "../../code/logic.js" as Logic
+import "../../code/recentApplicationsPlacement.js" as RecentPlacement
 import "../config/code/configItems.js" as ConfigItemsJS
 
 Item {
@@ -17,6 +18,8 @@ Item {
     property var trashIntegration: null
     property string minimizeEffect: "none"
     property bool dynamicApplicationsEnabled: false
+    property bool recentApplicationsEnabled: false
+    property string recentApplicationsPosition: ""
 
     property var dockItems: []
     property bool dockItemsLoaded: false
@@ -52,6 +55,24 @@ Item {
 
     onDynamicApplicationsEnabledChanged: root.scheduleDynamicApplicationsMarker()
 
+    Timer {
+        id: recentPlacementTimer
+        interval: 0
+        repeat: false
+        onTriggered: root.synchronizeRecentApplicationsPlacement()
+    }
+
+    onRecentApplicationsEnabledChanged: {
+        // Turning the feature off must remove its item in the same transition
+        // as its presentation. Other writes are coalesced after the KCM batch.
+        if (!root.recentApplicationsEnabled && root.dockItemsLoaded) {
+            root.synchronizeRecentApplicationsPlacement()
+        } else {
+            root.scheduleRecentApplicationsPlacement()
+        }
+    }
+    onRecentApplicationsPositionChanged: root.scheduleRecentApplicationsPlacement()
+
     Connections {
         target: Plasmoid.configuration
 
@@ -63,6 +84,7 @@ Item {
                 root.dockItems = Logic.loadItems(raw)
             }
             root.scheduleDynamicApplicationsMarker()
+            root.scheduleRecentApplicationsPlacement()
             if (root.runtimeService) {
                 root.runtimeService.persistDockItemsJson(raw, root.configInstanceId())
             }
@@ -92,6 +114,7 @@ Item {
         root.dockItems = seed.items
         root.dockItemsLoaded = true
         root.scheduleDynamicApplicationsMarker()
+        root.scheduleRecentApplicationsPlacement()
         if (root.trashIntegration) {
             root.trashIntegration.refresh()
         }
@@ -298,7 +321,44 @@ Item {
     }
 
     function syncDockItemsConfiguration() {
-        return root.persistItems(root.dockItems)
+        if (!root.persistItems(root.dockItems)) { return false }
+        root.rememberRecentApplicationsPosition()
+        return true
+    }
+
+    function rememberRecentApplicationsPosition() {
+        const position = RecentPlacement.capture(root.dockItems)
+        if (position && position !== root.recentApplicationsPosition) {
+            Plasmoid.configuration.recentApplicationsPosition = position
+            const writeConfig = Plasmoid.configuration.writeConfig
+            writeConfig()
+        }
+    }
+
+    function scheduleRecentApplicationsPlacement() {
+        if (root.dockItemsLoaded) { recentPlacementTimer.restart() }
+    }
+
+    function synchronizeRecentApplicationsPlacement() {
+        if (!root.dockItemsLoaded) { return false }
+        const previousItems = root.dockItems
+        const update = RecentPlacement.reconcile(previousItems,
+            root.recentApplicationsEnabled, root.recentApplicationsPosition,
+            Logic.maximumDockItemCount)
+        if (update.changed) {
+            root.dockItems = update.items
+            if (!root.persistItems(root.dockItems)) {
+                root.dockItems = previousItems
+                console.warn("Punchi Dock: Failed to persist the recent-applications position.")
+                return false
+            }
+        }
+        if (update.position !== root.recentApplicationsPosition) {
+            Plasmoid.configuration.recentApplicationsPosition = update.position
+            const writeConfig = Plasmoid.configuration.writeConfig
+            writeConfig()
+        }
+        return update.errorCode.length === 0
     }
 
     function scheduleDynamicApplicationsMarker() {

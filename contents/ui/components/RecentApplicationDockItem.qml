@@ -8,6 +8,8 @@ DockItem {
     required property DockConfigurationState configState
     required property DockGeometryState geometryState
     property var descriptor: ({})
+    property bool sectionBeingReordered: false
+    persistentReorderGroupMember: root.sectionBeingReordered
     itemType: String(root.descriptor.type || "app")
     iconName: String(root.descriptor.icon || "application-x-executable")
     itemName: String(root.descriptor.name || "")
@@ -26,6 +28,15 @@ DockItem {
     iconReflectionAvailableExtent: root.geometryState.panelReflectionAvailableExtent
     customSeparatorEnabled: root.configState.customDockSeparatorActive
     separatorTheme: root.configState.customDockSeparatorTheme
+    separatorAppearanceSourceSetting: String(root.descriptor.separatorAppearanceSource || "theme")
+    separatorStyleSetting: String(root.descriptor.separatorStyle || "line")
+    separatorThicknessSetting: root.descriptor.separatorThickness === undefined
+        ? 2 : Number(root.descriptor.separatorThickness)
+    separatorLengthRatioSetting: root.descriptor.separatorLengthRatio === undefined
+        ? 0.72 : Number(root.descriptor.separatorLengthRatio)
+    separatorOpacitySetting: root.descriptor.separatorOpacity === undefined
+        ? 0.34 : Number(root.descriptor.separatorOpacity)
+    separatorGlowSetting: root.descriptor.separatorGlowEnabled === true
     persistentReorderEnabled: false
     pinnedApplicationLauncher: false
     recentApplicationLauncher: root.descriptor.entryRole === "recent"

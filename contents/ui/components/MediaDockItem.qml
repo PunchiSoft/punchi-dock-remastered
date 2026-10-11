@@ -239,11 +239,13 @@ FocusScope {
         }
         onMovementKeyChanged: {
             offset = 0
-            Qt.callLater(function() {
-                if (marqueeRoot.shouldMove) {
-                    marqueeAnimation.restart()
-                }
-            })
+            Qt.callLater(marqueeRoot.restartMovement)
+        }
+
+        function restartMovement() {
+            if (marqueeRoot.shouldMove) {
+                marqueeAnimation.restart()
+            }
         }
 
         Item {

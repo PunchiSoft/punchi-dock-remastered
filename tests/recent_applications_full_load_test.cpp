@@ -145,6 +145,7 @@ private Q_SLOTS:
             QCOMPARE(config->value(QStringLiteral("recentApplicationsCount")).toInt(), 5);
             config->insert(QStringLiteral("showActiveTasks"), false);
             const QString pinned = QStringLiteral("[{\"type\":\"app\",\"name\":\"Pinned Fixture\",\"icon\":\"system-run\",\"storageId\":\"org.example.Recent1.desktop\"}]");
+            const QString pinnedWithRecentMarker = pinned.chopped(1) + QStringLiteral(",{\"type\":\"recent-applications\",\"name\":\"Recent applications\"}]");
             config->insert(QStringLiteral("dockItemsJson"), pinned);
             auto *item = PlasmaQuick::AppletQuickItem::itemForApplet(applet);
             QVERIFY(item);
@@ -260,7 +261,7 @@ private Q_SLOTS:
                 QCOMPARE(config->value(QStringLiteral("recentApplicationsContainerLayout")).toString(), layout);
                 QCOMPARE(objectMap(root->property("recentContainerDescriptor")).value(QStringLiteral("layout")).toString(), layout);
                 QCOMPARE(root->property("visibleRecentApplicationCount").toInt(), 3);
-                QCOMPARE(config->value(QStringLiteral("dockItemsJson")).toString(), pinned);
+                QCOMPARE(config->value(QStringLiteral("dockItemsJson")).toString(), pinnedWithRecentMarker);
                 KConfig stored(applet->config().config()->name(), KConfig::SimpleConfig);
                 const KConfigGroup general = storedGroup(&stored, applet->config()).group(QStringLiteral("General"));
                 QCOMPARE(general.readEntry(QStringLiteral("recentApplicationsContainerLayout"), QStringLiteral("fan")), layout);
@@ -284,7 +285,7 @@ private Q_SLOTS:
                 QTRY_VERIFY(std::isfinite(surface->property("edgeTailTipOffset").toDouble()));
                 const auto mapped = container->mapToItem(surface, QPointF(container->width() / 2, container->height() / 2));
                 QVERIFY(qAbs(surface->property("edgeTailTipOffset").toDouble() - mapped.y()) < 0.1);
-                QCOMPARE(config->value(QStringLiteral("dockItemsJson")).toString(), pinned);
+                QCOMPARE(config->value(QStringLiteral("dockItemsJson")).toString(), pinnedWithRecentMarker);
             }
             QVERIFY(QMetaObject::invokeMethod(folderDialog, "closeSafely"));
             config->insert(QStringLiteral("recentApplicationsContainerLayout"), QStringLiteral("fan"));

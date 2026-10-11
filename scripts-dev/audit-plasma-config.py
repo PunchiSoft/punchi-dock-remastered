@@ -23,6 +23,14 @@ EXPECTED_MULTI_PAGE_OWNERS = {
     "dockItemsJson": {"ConfigFiles.qml", "ConfigItems.qml"},
     "dockThemeMode": {"ConfigAspect.qml", "ConfigGeneral.qml", "ConfigMouse.qml"},
     "showActiveTasks": {"ConfigItems.qml", "ConfigWindows.qml"},
+    "showRecentApplications": {"ConfigGeneral.qml", "ConfigItems.qml"},
+    "recentApplicationsShowSeparator": {"ConfigGeneral.qml", "ConfigItems.qml"},
+    "recentApplicationsSeparatorAppearanceSource": {"ConfigGeneral.qml", "ConfigItems.qml"},
+    "recentApplicationsSeparatorStyle": {"ConfigGeneral.qml", "ConfigItems.qml"},
+    "recentApplicationsSeparatorThickness": {"ConfigGeneral.qml", "ConfigItems.qml"},
+    "recentApplicationsSeparatorLengthRatio": {"ConfigGeneral.qml", "ConfigItems.qml"},
+    "recentApplicationsSeparatorOpacity": {"ConfigGeneral.qml", "ConfigItems.qml"},
+    "recentApplicationsSeparatorGlowEnabled": {"ConfigGeneral.qml", "ConfigItems.qml"},
 }
 
 QML_SOURCE_PATTERN = re.compile(r"\bsource\s*:\s*\"([^\"]+)\"")

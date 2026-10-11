@@ -7,6 +7,8 @@ ColumnLayout {
     id: root
 
     property var controller
+    property bool showDescription: true
+    property bool hideInactiveAppearanceControls: false
     readonly property string separatorAppearanceSourceValue:
         String(separatorAppearanceSourceCombo.currentValue || "theme")
     readonly property bool itemAppearanceSelected:
@@ -84,7 +86,7 @@ ColumnLayout {
     Kirigami.InlineMessage {
         Layout.fillWidth: true
         type: Kirigami.MessageType.Information
-        visible: true
+        visible: root.showDescription
         // qmllint disable unqualified
         text: root.itemAppearanceSelected
             ? i18n("Separators help group items on your dock. Shape, size, and glow adapt automatically to your Plasma theme.")
@@ -97,6 +99,7 @@ ColumnLayout {
         objectName: "separatorAppearanceControls"
         Layout.fillWidth: true
         enabled: root.itemAppearanceSelected
+        visible: !root.hideInactiveAppearanceControls || root.itemAppearanceSelected
         columns: 2
         columnSpacing: Kirigami.Units.smallSpacing
         rowSpacing: Kirigami.Units.smallSpacing

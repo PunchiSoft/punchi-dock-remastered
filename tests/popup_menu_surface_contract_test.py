@@ -512,8 +512,8 @@ def main() -> int:
          "Folder popup launchers must reuse the canonical highlight"),
         ("hovered: itemMouse.containsMouse",
          "Folder popup hover must follow pointer presence"),
-        ("focused: itemMouse.activeFocus",
-         "Folder popup focus must remain independent from hover"),
+        ("focused: itemMouse.keyboardFocusVisible",
+         "Folder popup focus must reflect visible keyboard input independently from hover"),
         ("pressed: itemMouse.pressed",
          "Folder popup press feedback must remain interruptible"),
         ("motionEnabled: folderRoot.motionEnabled",
@@ -700,19 +700,33 @@ def main() -> int:
     delegate = qml_object_body_by_id(folder_popup_component, "Item", "appDelegate")
     require(delegate, "folderRoot.openLocationRequested(folderRoot.folderPath)",
             "The location row must request the current folder through the shared delegate")
-    pointer = qml_object_body_by_id(delegate, "MouseArea", "itemMouse")
+    pointer = qml_object_body_by_id(delegate, "Controls.Control", "itemMouse")
     for fragment, message in (
         ("cursorShape: Qt.PointingHandCursor", "The collection action must show the hand cursor"),
         ('"folderOpenLocationAction"', "The list action must expose its pointer delegate"),
         ("Accessible.role: Accessible.Button", "The location action must remain an accessible button"),
         ("Accessible.name: appDelegate.displayName", "The action must expose its visible caption"),
         ('"Open this folder in the file manager"', "The action must describe its purpose accessibly"),
-        ("Keys.onReturnPressed: appDelegate.activate()", "Return must activate the collection row"),
-        ("Keys.onEnterPressed: appDelegate.activate()", "Enter must activate the collection row"),
-        ("Keys.onSpacePressed: appDelegate.activate()", "Space must activate the collection row"),
-        ("appDelegate.activate()", "Pointer activation must use the shared collection action"),
+        ("Keys.onReturnPressed: appDelegate.activate(Qt.TabFocusReason)", "Return must activate the collection row"),
+        ("Keys.onEnterPressed: appDelegate.activate(Qt.TabFocusReason)", "Enter must activate the collection row"),
+        ("Keys.onSpacePressed: appDelegate.activate(Qt.TabFocusReason)", "Space must activate the collection row"),
+        ("appDelegate.activate(Qt.MouseFocusReason)", "Pointer activation must use the shared collection action with mouse focus"),
     ):
         require(pointer, fragment, message)
+    for fragment, message in (
+        ("focusPolicy: Qt.TabFocus", "Pointer activation must not synthesize keyboard focus"),
+        ("readonly property bool keyboardFocusVisible: activeFocus", "Visible focus must retain the real logical focus"),
+        ("visualFocus || requestedFocusReason === Qt.TabFocusReason", "Arrow navigation must retain its explicit keyboard reason"),
+        ("requestedFocusReason === Qt.BacktabFocusReason", "Backward keyboard navigation must retain visible focus"),
+        ("requestedFocusReason === Qt.ShortcutFocusReason", "Shortcut focus must remain visible"),
+    ):
+        require(pointer, fragment, message)
+    pointer_input = qml_object_body_by_id(pointer, "MouseArea", "itemPointer")
+    require(pointer_input, "hoverEnabled: true", "The pointer input must retain hover detection")
+    require(pointer_input, "Accessible.ignored: true", "The pointer input must not duplicate the accessible control")
+    require(pointer_input, "appDelegate.activate(Qt.MouseFocusReason)", "Mouse activation must retain its input reason")
+    if "focused: itemMouse.activeFocus" in folder_popup_component:
+        raise AssertionError("Automatic logical focus must not paint the launcher or its caption")
     # The fan retains its existing control and cursor contract.
     opening_rows = [body for body in qml_object_bodies(folder_fan_view, "Controls.ItemDelegate")
                     if "openLocationRequested" in body]
@@ -1093,7 +1107,7 @@ def main() -> int:
     for fragment, message in (
         ("text: appDelegate.displayName", "The location row must use its action caption"),
         ("hovered: itemMouse.containsMouse", "The action caption must follow valid pointer hover"),
-        ("focused: itemMouse.activeFocus", "The action caption must follow keyboard focus"),
+        ("focused: itemMouse.keyboardFocusVisible", "The action caption must follow keyboard focus"),
         ("motionEnabled: folderRoot.motionEnabled", "The action caption must respect reduced motion"),
     ):
         require(action_captions[0], fragment, message)

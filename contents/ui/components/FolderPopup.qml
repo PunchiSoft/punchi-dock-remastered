@@ -69,6 +69,9 @@ Item {
     readonly property FolderNavigationController navigationController: navigator
     property int pendingViewIndex: -1
     property real pendingViewScroll: 0
+    property int navigationFocusReason: Qt.PopupFocusReason
+    property int pendingViewFocusReason: Qt.PopupFocusReason
+    onSessionActiveChanged: navigationFocusReason = Qt.PopupFocusReason
 
     FolderNavigationController {
         id: navigator
@@ -84,9 +87,10 @@ Item {
         }
         onRestoreRequested: function(primary, index, scroll) {
             if (primary || !folderRoot.lateralNavigation) {
-                folderRoot.restoreView(index, scroll)
+                folderRoot.restoreView(index, scroll, folderRoot.navigationFocusReason)
             } else if (navigationPane.item) {
-                (navigationPane.item as FolderPopup).restoreView(index, scroll)
+                (navigationPane.item as FolderPopup).restoreView(index, scroll,
+                    folderRoot.navigationFocusReason)
             }
         }
     }
@@ -472,9 +476,11 @@ Item {
     signal directoryActivated(var entry, int index, real scroll)
     signal backRequested()
 
-    function restoreView(index, scroll) {
+    function restoreView(index, scroll, reason) {
         folderRoot.pendingViewIndex = index
         folderRoot.pendingViewScroll = scroll
+        folderRoot.pendingViewFocusReason = reason === undefined
+            ? Qt.PopupFocusReason : reason
         Qt.callLater(folderRoot.applyViewRestore)
     }
 
@@ -504,11 +510,11 @@ Item {
             Math.min(folderRoot.pendingViewScroll, maximumScroll - minimumScroll))
         folderRoot.pendingViewIndex = -1
         if (gridView.currentItem) {
-            gridView.currentItem.forceActiveFocus()
+            (gridView.currentItem as FolderPopupEntry).focusEntry(folderRoot.pendingViewFocusReason)
         } else if (folderRoot.backAvailable) {
-            backButton.forceActiveFocus()
+            backButton.forceActiveFocus(folderRoot.pendingViewFocusReason)
         } else {
-            classicCloseButton.forceActiveFocus()
+            classicCloseButton.forceActiveFocus(folderRoot.pendingViewFocusReason)
         }
     }
 
@@ -525,6 +531,7 @@ Item {
     Keys.onEscapePressed: folderRoot.closeRequested()
     Keys.onLeftPressed: {
         if (folderRoot.backAvailable) {
+            folderRoot.navigationFocusReason = Qt.TabFocusReason
             folderRoot.backRequested()
         }
     }
@@ -577,7 +584,8 @@ Item {
                 pane.maximumAvailableHeight = Qt.binding(function() { return folderRoot.maximumAvailableHeight })
                 pane.folderOpenerName = Qt.binding(function() { return folderRoot.folderOpenerName })
                 pane.animationStyle = "none"
-                pane.restoreView(navigator.pendingIndex, navigator.pendingScroll)
+                pane.restoreView(navigator.pendingIndex, navigator.pendingScroll,
+                    folderRoot.navigationFocusReason)
             }
             onEnabledChanged: {
                 if (enabled && navigationPane.item) {
@@ -589,9 +597,13 @@ Item {
     Connections {
         target: navigationPane.item
         function onDirectoryActivated(entry, index, scroll) {
+            folderRoot.navigationFocusReason = (navigationPane.item as FolderPopup).navigationFocusReason
             navigator.enter(entry, index, scroll, false)
         }
-        function onBackRequested() { navigator.back() }
+        function onBackRequested() {
+            folderRoot.navigationFocusReason = (navigationPane.item as FolderPopup).navigationFocusReason
+            navigator.back()
+        }
         function onAppLaunched(app) { folderRoot.appLaunched(app) }
         function onAppContextMenuRequested(app) { folderRoot.appContextMenuRequested(app) }
         function onOpenLocationRequested(path) { folderRoot.openLocationRequested(path) }
@@ -656,7 +668,11 @@ Item {
                 text: i18nc("@action:button folder navigation", "Back") // qmllint disable unqualified
                 display: Controls.AbstractButton.IconOnly
                 Accessible.name: text
-                onClicked: folderRoot.backRequested()
+                onClicked: {
+                    folderRoot.navigationFocusReason = backButton.visualFocus
+                        ? Qt.TabFocusReason : Qt.MouseFocusReason
+                    folderRoot.backRequested()
+                }
             }
         }
 
@@ -752,12 +768,14 @@ Item {
                 }
             }
 
-            delegate: Item {
+            delegate: FolderPopupEntry {}
+
+            component FolderPopupEntry: Item {
                 id: appDelegate
                 required property var modelData
                 required property int index
                 onActiveFocusChanged: {
-                    if (activeFocus) { itemMouse.forceActiveFocus() }
+                    if (activeFocus) { itemMouse.forceActiveFocus(Qt.OtherFocusReason) }
                 }
                 readonly property bool browsableDirectory: folderRoot.directoryNavigationEnabled
                     && !!(modelData && modelData.navigable)
@@ -790,12 +808,19 @@ Item {
                     y: appDelegate.revealOffsetY
                 }
 
-                function activate() {
+                function focusEntry(reason) {
+                    itemMouse.requestedFocusReason = reason
+                    itemMouse.forceActiveFocus(reason)
+                }
+
+                function activate(reason) {
                     gridView.currentIndex = index
                     if (isOpenLocationAction) {
                         folderRoot.openLocationRequested(folderRoot.folderPath)
                     } else {
                         if (browsableDirectory) {
+                            folderRoot.navigationFocusReason = reason === undefined
+                                ? Qt.PopupFocusReason : reason
                             folderRoot.directoryActivated(modelData, index,
                                 gridView.contentY - gridView.originY)
                         } else {
@@ -813,10 +838,11 @@ Item {
                     // Shared launcher highlight used across Punchi Dock.
                     PunchiMenuComponents.PunchiMenuItemHighlight {
                         id: itemHighlight
+                        objectName: "folderPopupHighlight-" + appDelegate.index
                         anchors.fill: parent
                         anchors.margins: Kirigami.Units.smallSpacing
                         hovered: itemMouse.containsMouse
-                        focused: itemMouse.activeFocus
+                        focused: itemMouse.keyboardFocusVisible
                         pressed: itemMouse.pressed
                         motionEnabled: folderRoot.motionEnabled
                         transformSelf: false
@@ -872,7 +898,7 @@ Item {
                                 ? "folderOpenLocationLabel" : "folderPopupListLabel-" + appDelegate.index
                             text: appDelegate.displayName
                             hovered: itemMouse.containsMouse
-                            focused: itemMouse.activeFocus
+                            focused: itemMouse.keyboardFocusVisible
                             motionEnabled: folderRoot.motionEnabled
                             color: Kirigami.Theme.textColor
                             shadowEnabled: folderRoot.textShadowsEnabled
@@ -953,7 +979,7 @@ Item {
                         visible: folderRoot.showItemLabels
                         text: appDelegate.displayName
                         hovered: itemMouse.containsMouse
-                        focused: itemMouse.activeFocus
+                        focused: itemMouse.keyboardFocusVisible
                         motionEnabled: folderRoot.motionEnabled
                         color: Kirigami.Theme.textColor
                         shadowEnabled: folderRoot.textShadowsEnabled
@@ -967,17 +993,27 @@ Item {
                 }
             }
 
-                MouseArea {
+                Controls.Control {
                     id: itemMouse
+                    readonly property alias containsMouse: itemPointer.containsMouse
+                    readonly property alias pressed: itemPointer.pressed
+                    // GridView may focus its new current item before our arrow
+                    // handler runs, so retain the explicit navigation reason.
+                    property int requestedFocusReason: Qt.OtherFocusReason
+                    readonly property bool keyboardFocusVisible: activeFocus
+                        && (visualFocus || requestedFocusReason === Qt.TabFocusReason
+                            || requestedFocusReason === Qt.BacktabFocusReason
+                            || requestedFocusReason === Qt.ShortcutFocusReason)
+                    onActiveFocusChanged: {
+                        if (!activeFocus) { requestedFocusReason = Qt.OtherFocusReason }
+                    }
                     objectName: appDelegate.isOpenLocationAction
                         ? (folderRoot.layoutMode === "grid"
                             ? "folderGridOpenLocationPointer" : "folderOpenLocationAction")
                         : "folderPopupPointer-" + appDelegate.index
                     anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    acceptedButtons: appDelegate.isOpenLocationAction
-                        ? Qt.LeftButton : Qt.LeftButton | Qt.RightButton
+                    padding: 0
+                    focusPolicy: Qt.TabFocus
                     activeFocusOnTab: true
                     Accessible.role: Accessible.Button
                     Accessible.name: appDelegate.displayName.length > 0
@@ -988,30 +1024,39 @@ Item {
                         ? i18nc("@info:accessible",
                             "Open this folder in the file manager") : ""
                     // qmllint enable unqualified
-                    onClicked: function(mouse) {
-                        if (appDelegate.isOpenLocationAction) {
-                            appDelegate.activate()
-                            return
+                    MouseArea {
+                        id: itemPointer
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        acceptedButtons: appDelegate.isOpenLocationAction
+                            ? Qt.LeftButton : Qt.LeftButton | Qt.RightButton
+                        Accessible.ignored: true
+                        onClicked: function(mouse) {
+                            if (!appDelegate.isOpenLocationAction && mouse.button === Qt.RightButton) {
+                                folderRoot.appContextMenuRequested(appDelegate.modelData)
+                                return
+                            }
+                            appDelegate.activate(Qt.MouseFocusReason)
                         }
-                        if (mouse.button === Qt.RightButton) {
-                            folderRoot.appContextMenuRequested(appDelegate.modelData)
-                            return
-                        }
-                        appDelegate.activate()
                     }
-                    Keys.onReturnPressed: appDelegate.activate()
-                    Keys.onEnterPressed: appDelegate.activate()
-                    Keys.onSpacePressed: appDelegate.activate()
+                    Keys.onReturnPressed: appDelegate.activate(Qt.TabFocusReason)
+                    Keys.onEnterPressed: appDelegate.activate(Qt.TabFocusReason)
+                    Keys.onSpacePressed: appDelegate.activate(Qt.TabFocusReason)
                     Keys.onPressed: function(event) {
                         if (event.key === Qt.Key_Right && appDelegate.browsableDirectory) {
-                            appDelegate.activate()
+                            appDelegate.activate(Qt.TabFocusReason)
                             event.accepted = true
-                        } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
+                        } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Down
+                                || (folderRoot.layoutMode === "grid"
+                                    && (event.key === Qt.Key_Left || event.key === Qt.Key_Right))) {
+                            const previous = event.key === Qt.Key_Up || event.key === Qt.Key_Left
                             gridView.currentIndex = Math.max(0, Math.min(gridView.count - 1,
-                                appDelegate.index + (event.key === Qt.Key_Up ? -1 : 1)))
+                                appDelegate.index + (previous ? -1 : 1)))
                             gridView.positionViewAtIndex(gridView.currentIndex, GridView.Contain)
                             if (gridView.currentItem) {
-                                gridView.currentItem.forceActiveFocus()
+                                (gridView.currentItem as FolderPopupEntry).focusEntry(previous
+                                    ? Qt.BacktabFocusReason : Qt.TabFocusReason)
                             }
                             event.accepted = true
                         }

@@ -20,8 +20,12 @@ GridLayout {
     property alias appCommandText: appCommand.text
     readonly property bool dynamicApplicationsItem:
         selectedItemType === "dynamic-applications"
-    readonly property string itemModeValue: dynamicApplicationsItem
-        ? "dynamic-applications" : (itemMode.currentValue || "app")
+    readonly property bool recentApplicationsItem:
+        selectedItemType === "recent-applications"
+    readonly property bool applicationSectionItem:
+        dynamicApplicationsItem || recentApplicationsItem
+    readonly property string itemModeValue: applicationSectionItem
+        ? selectedItemType : (itemMode.currentValue || "app")
     property alias itemModeIndex: itemMode.currentIndex
     readonly property string containerLayoutValue: containerLayout.currentValue || "grid"
     property alias containerLayoutIndex: containerLayout.currentIndex
@@ -179,7 +183,7 @@ GridLayout {
     Controls.Label {
         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         Layout.preferredWidth: Kirigami.Units.gridUnit * 5
-        visible: root.showTypeSelector && !root.dynamicApplicationsItem
+        visible: root.showTypeSelector && !root.applicationSectionItem
         text: root.itemTypeLabel
         horizontalAlignment: Text.AlignLeft
         opacity: 0.75
@@ -194,7 +198,7 @@ GridLayout {
         // row disappears so the two-column grid gains no empty cell. Every other
         // choice of the type lives in its own row below, so a single row never
         // carries two unrelated choices.
-        visible: !root.dynamicApplicationsItem && root.showTypeSelector
+        visible: !root.applicationSectionItem && root.showTypeSelector
         spacing: Kirigami.Units.smallSpacing
 
         Controls.ComboBox {
@@ -381,7 +385,7 @@ GridLayout {
         objectName: "dynamicApplicationsSeparatorVisibleCheckBox"
         Layout.columnSpan: 2
         Layout.fillWidth: true
-        visible: root.dynamicApplicationsItem
+        visible: root.applicationSectionItem
         checked: true
         text: i18n("Show separator") // qmllint disable unqualified
         Accessible.name: text
@@ -395,7 +399,9 @@ GridLayout {
         Layout.fillWidth: true
         visible: root.itemModeValue === "separator"
             || root.dynamicApplicationsItem
-        enabled: !root.dynamicApplicationsItem
+            || root.recentApplicationsItem
+        showDescription: !root.recentApplicationsItem
+        enabled: !root.applicationSectionItem
             || separatorVisibleCheckBox.checked
         controller: root
     }

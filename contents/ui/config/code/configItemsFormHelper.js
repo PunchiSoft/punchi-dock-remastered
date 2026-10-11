@@ -3,7 +3,11 @@ function refreshFromItems(markAsChanged) {
     try {
         itemModel.clear()
         for (var index = 0; index < items.length; index++) {
-            itemModel.append(ConfigItemsJS.itemModelRow(items[index], i18n, i18np))
+            const row = ConfigItemsJS.itemModelRow(items[index], i18n, i18np)
+            if (items[index].type === "recent-applications") {
+                row.title = i18n("Recent applications")
+            }
+            itemModel.append(row)
         }
         refreshItemForm()
         refreshActions()
@@ -38,14 +42,13 @@ function refreshItemForm() {
         trashDialog.emptyIconText = ""
         trashDialog.fullIconText = ""
         calendarFormat.editText = ""
-        calendarBackgroundColor.text = ""
-        calendarAccentColor.text = ""
-        calendarBorderColor.text = ""
-        calendarRadius.value = 0
+        if (calendarBackgroundColor) { calendarBackgroundColor.text = "" }
+        if (calendarAccentColor) { calendarAccentColor.text = "" }
+        if (calendarBorderColor) { calendarBorderColor.text = "" }
+        if (calendarRadius) { calendarRadius.value = 0 }
         calendarTextShadows.checked = true
         calendarShowWeekNumbers.checked = true
         calendarPopupScale.value = 1.0
-        calendarDisplayMode.currentIndex = 0
         calendarFormat.editText = "HH:mm"
         timedItemWidth.value = 0
         timedTextScale.value = 1.15
@@ -61,6 +64,16 @@ function refreshItemForm() {
         return
     }
 
+    if (item.type === "recent-applications") {
+        item = ConfigItemsJS.clone(item)
+        item.showSeparator = page.cfg_recentApplicationsShowSeparator
+        item.separatorAppearanceSource = page.cfg_recentApplicationsSeparatorAppearanceSource
+        item.separatorStyle = page.cfg_recentApplicationsSeparatorStyle
+        item.separatorThickness = page.cfg_recentApplicationsSeparatorThickness
+        item.separatorLengthRatio = page.cfg_recentApplicationsSeparatorLengthRatio
+        item.separatorOpacity = page.cfg_recentApplicationsSeparatorOpacity
+        item.separatorGlowEnabled = page.cfg_recentApplicationsSeparatorGlowEnabled
+    }
     selectedItemType = item.type || "app"
     itemName.text = item.name || ""
     itemCommand.text = item.command || ""
@@ -160,6 +173,17 @@ function applyItemForm(force) {
     var item = nextItems[selectedIndex]
     item.type = item.type || "app"
 
+    if (item.type === "recent-applications") {
+        page.cfg_recentApplicationsShowSeparator = actionDialog.separatorVisibleChecked
+        page.cfg_recentApplicationsSeparatorAppearanceSource = actionDialog.separatorAppearanceSourceValue
+        page.cfg_recentApplicationsSeparatorStyle = actionDialog.separatorStyleValue
+        page.cfg_recentApplicationsSeparatorThickness = actionDialog.separatorThicknessValue
+        page.cfg_recentApplicationsSeparatorLengthRatio = actionDialog.separatorLengthRatioValue
+        page.cfg_recentApplicationsSeparatorOpacity = actionDialog.separatorOpacityValue
+        page.cfg_recentApplicationsSeparatorGlowEnabled = actionDialog.separatorGlowEnabled
+        markChanged()
+        return
+    }
     if (item.type === "control-center") {
         ConfigItemsJS.pruneControlCenter(item)
     } else if (item.type === "dynamic-applications") {

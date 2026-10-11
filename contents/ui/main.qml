@@ -12,6 +12,7 @@ import "components"
 import "components/controlcenter"
 import "components/punchimenu"
 import "config/code/configItems.js" as ConfigItemsJS
+import "../code/recentApplicationsPlacement.js" as RecentPlacement
 
 PlasmoidItem {
     id: root
@@ -92,6 +93,11 @@ PlasmoidItem {
         })
         return true
     }
+
+    readonly property int recentApplicationsMarkerIndex:
+        RecentPlacement.markerIndex(dockItemsController.dockItems)
+    readonly property int recentPresentationSlotCount:
+        root.recentPresentationItems.length
     
     // Host environment detection (panel or floating dock).
     property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
@@ -385,18 +391,16 @@ PlasmoidItem {
 
     function persistentVisualIndex(modelIndex) {
         const index = Number(modelIndex)
-        if (root.dynamicApplicationsMarkerIndex < 0
-                || index <= root.dynamicApplicationsMarkerIndex) {
-            return index
-        }
-        return index + root.visibleTaskRows.length
-            + root.renderedOverflowItemCount
+        return RecentPlacement.persistentVisualIndex(index,
+            root.dynamicApplicationsMarkerIndex,
+            root.visibleTaskRows.length + root.renderedOverflowItemCount,
+            root.recentApplicationsMarkerIndex, root.recentPresentationSlotCount)
     }
 
     function dynamicVisualIndex(taskIndex) {
-        return root.dynamicApplicationsAnchorIndex
-            + (root.dynamicApplicationsMarkerIndex >= 0 ? 1 : 0)
-            + Number(taskIndex)
+        return RecentPlacement.dynamicVisualIndex(root.dynamicApplicationsAnchorIndex,
+            root.dynamicApplicationsMarkerIndex >= 0, root.recentApplicationsMarkerIndex,
+            root.recentPresentationSlotCount, Number(taskIndex))
     }
 
     function dynamicLauncherInsertionIndex() {
@@ -415,7 +419,21 @@ PlasmoidItem {
     readonly property bool recentContainerVisible: dockConfig.recentApplicationsMode === "container"
         && root.visibleRecentApplicationCount > 0
     readonly property bool recentSeparatorVisible: root.visibleRecentApplicationCount > 0
-        && dockGeometry.panelBaseCompactContentLength > 0
+        && dockConfig.recentApplicationsShowSeparator
+        && root.hasContentBeforeRecentApplications()
+
+    function hasContentBeforeRecentApplications() {
+        if (root.recentApplicationsMarkerIndex < 0) {
+            return dockGeometry.panelBaseCompactContentLength > 0
+        }
+        const items = dockItemsController.dockItems
+        for (let index = 0; index < root.recentApplicationsMarkerIndex; index++) {
+            if (dockGeometry.panelMainAxisExtentForDockItem(items[index]) > 0) { return true }
+            if (index === root.dynamicApplicationsMarkerIndex
+                    && root.visibleTaskRows.length + root.renderedOverflowItemCount > 0) { return true }
+        }
+        return false
+    }
     readonly property var recentContainerDescriptor: ({
         "type": "folder", "entryRole": "recent-container", "key": "recent-container",
         "name": i18nc("@title", "Recent applications"), // qmllint disable unqualified
@@ -424,14 +442,17 @@ PlasmoidItem {
     })
     readonly property var recentPresentationItems: {
         if (root.visibleRecentApplicationCount === 0) { return [] }
-        const result = root.recentSeparatorVisible ? [{ "type": "separator" }] : []
+        const result = root.recentSeparatorVisible
+            ? [dockConfig.recentApplicationsSeparatorDescriptor] : []
         return result.concat(root.recentContainerVisible
             ? [root.recentContainerDescriptor]
             : root.recentApplications.slice(0, root.visibleRecentApplicationCount))
     }
     function recentVisualIndex(offset) {
-        return dockItemsController.dockItems.length + root.visibleTaskRows.length
-            + root.renderedOverflowItemCount + offset
+        return RecentPlacement.recentVisualIndex(root.recentApplicationsMarkerIndex,
+            dockItemsController.dockItems.length, root.dynamicApplicationsMarkerIndex,
+            root.visibleTaskRows.length + root.renderedOverflowItemCount,
+            offset)
     }
 
     function dockItemReorderIconName(item) {
@@ -443,6 +464,9 @@ PlasmoidItem {
         const type = String(itemData.type || "")
         if (type === "dynamic-applications") {
             return "window-duplicate"
+        }
+        if (type === "recent-applications") {
+            return String(root.recentContainerDescriptor.icon)
         }
         if (type === "separator") {
             return "draw-line"
@@ -2040,6 +2064,8 @@ PlasmoidItem {
         id: dockItemsController
         objectName: "dockItemsController"
         dynamicApplicationsEnabled: Plasmoid.configuration.showActiveTasks
+        recentApplicationsEnabled: dockConfig.showRecentApplications
+        recentApplicationsPosition: Plasmoid.configuration.recentApplicationsPosition
         runtimeService: runtimeService
         persistenceAdapter: dockItemsPersistenceAdapter
         systemDiscovery: systemDiscovery
@@ -2071,6 +2097,11 @@ PlasmoidItem {
         }
         recentContainerActive: dockConfig.showRecentApplications
             && dockConfig.recentApplicationsMode === "container"
+        recentApplicationsActive: dockConfig.showRecentApplications
+        recentApplicationsSeparatorVisible: dockConfig.recentApplicationsShowSeparator
+        setRecentApplicationsSeparatorVisibleHandler: function(visible) {
+            return dockConfig.setRecentApplicationsSeparatorVisible(visible)
+        }
         disableRecentApplicationsHandler: function() {
             return dockConfig.disableRecentApplications()
         }
@@ -2291,6 +2322,7 @@ PlasmoidItem {
             return dockLayout.enterDynamicApplicationsMoveMode()
         }
 
+
         Component.onCompleted:
             root.dynamicApplicationsMoveModeTarget = mainContainer
         Component.onDestruction: {
@@ -2471,9 +2503,11 @@ PlasmoidItem {
                 const isVertical = dockGeometry.verticalPanel
                 const padding = isVertical ? dockGeometry.dockBackgroundVerticalPadding * 2
                     : dockGeometry.dockBackgroundHorizontalPadding * 2
-                const hasPrecedingItems = dockGeometry.panelBaseCompactContentLength > 0
+                const hasPrecedingItems = root.hasContentBeforeRecentApplications()
                 const separatorExtent = hasPrecedingItems
-                    ? dockGeometry.panelMainAxisExtentForDockItem({ "type": "separator" }) + dockGeometry.dockSpacing * 2
+                        && dockConfig.recentApplicationsShowSeparator
+                    ? dockGeometry.panelMainAxisExtentForDockItem(
+                        dockConfig.recentApplicationsSeparatorDescriptor) + dockGeometry.dockSpacing * 2
                     : 0
                 const remaining = dynamicTaskCapacityLength - padding
                     - dockGeometry.panelBaseCompactContentLength - separatorExtent
@@ -2790,6 +2824,7 @@ PlasmoidItem {
                 property string persistentDragIconName:
                     "application-x-executable"
                 property bool persistentDragMovesDynamicApplications: false
+                property bool persistentDragMovesRecentApplications: false
                 readonly property bool persistentDragActive:
                     persistentDragSourceIndex >= 0
                 readonly property bool persistentMoveModeActive:
@@ -2819,6 +2854,7 @@ PlasmoidItem {
                     persistentDragPointerPosition = Qt.point(0, 0)
                     persistentDragIconName = "application-x-executable"
                     persistentDragMovesDynamicApplications = false
+                    persistentDragMovesRecentApplications = false
                     persistentMoveModeIndex = -1
                     hoveredIndex = -1
                     lastHoveredIndex = -1
@@ -2883,9 +2919,12 @@ PlasmoidItem {
                         = root.dockItemReorderIconName(items[index])
                     persistentDragMovesDynamicApplications
                         = items[index].type === "dynamic-applications"
+                    persistentDragMovesRecentApplications
+                        = items[index].type === "recent-applications"
                     persistentDragWatchdogTimer.restart()
                     return persistentDragExpectedItemText.length > 0
                 }
+
 
                 function updatePersistentDrag(sourceItem, x, y) {
                     if (!persistentDragActive
@@ -2904,7 +2943,12 @@ PlasmoidItem {
                         if (index === persistentDragSourceIndex) {
                             continue
                         }
-                        const candidate = persistentDockItemsRepeater.itemAt(index)
+                        let candidate = persistentDockItemsRepeater.itemAt(index)
+                        if (index === root.recentApplicationsMarkerIndex) {
+                            candidate = root.recentContainerVisible ? recentContainer
+                                : recentApplicationsRepeater.itemAt(0)
+                            if (!candidate || !candidate.visible) { continue }
+                        }
                         if (!candidate) {
                             continue
                         }
@@ -3206,6 +3250,8 @@ PlasmoidItem {
                         }
                         
                         itemType: dockItemDelegate.modelData.type || "app"
+                        visible: dockItemDelegate.modelData.type !== "recent-applications"
+                            && !dockItemDelegate.dynamicApplicationsMarkerCollapsed
                         timeTextScale: dockItemDelegate.modelData.timeTextScale === undefined ? (dockItemDelegate.modelData.textScale === undefined ? 1.0 : dockItemDelegate.modelData.textScale) : dockItemDelegate.modelData.timeTextScale
                         dateTextScale: dockItemDelegate.modelData.dateTextScale === undefined ? (dockItemDelegate.modelData.textScale === undefined ? 1.0 : dockItemDelegate.modelData.textScale) : dockItemDelegate.modelData.dateTextScale
                         separatorStyleSetting: dockItemDelegate.modelData.separatorStyle || "line"
@@ -3217,7 +3263,8 @@ PlasmoidItem {
                             ConfigItemsJS.normalizedSeparatorAppearanceSource(
                                 dockItemDelegate.modelData)
                         separatorVisibleSetting:
-                            dockItemDelegate.modelData.showSeparator !== false
+                            dockItemDelegate.modelData.type !== "recent-applications"
+                            && dockItemDelegate.modelData.showSeparator !== false
                         iconName: dockItemDelegate.modelData.type === "trash" && dockItemDelegate.modelData.showState !== false
                             ? (dockItemsController.trashHasItems ? (dockItemDelegate.modelData.fullIcon || "user-trash-full") : (dockItemDelegate.modelData.icon || "user-trash"))
                             : (dockItemDelegate.modelData.icon || "")
@@ -3248,7 +3295,7 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         externalDropEnabled: dockItemDelegate.modelData.type === "app"
                             && dockConfig.appDragAndDropEnabled
-                        launcherDropEnabled: true
+                        launcherDropEnabled: dockItemDelegate.modelData.type !== "recent-applications"
                         launcherDropValidator: function(urls) {
                             return dockItemsController.validateApplicationLauncherDrop(urls)
                         }
@@ -3636,7 +3683,9 @@ PlasmoidItem {
                     id: recentSeparator
                     objectName: "recentApplicationsSeparator"
                     visible: root.recentSeparatorVisible
-                    descriptor: ({ "type": "separator" })
+                    descriptor: dockConfig.recentApplicationsSeparatorDescriptor
+                    persistentReorderActive: dockLayout.persistentDragActive
+                    sectionBeingReordered: dockLayout.persistentDragMovesRecentApplications
                     configState: dockConfig
                     geometryState: dockGeometry
                     layoutController: dockLayout
@@ -3655,6 +3704,20 @@ PlasmoidItem {
                     objectName: "recentApplicationsContainer"
                     visible: root.recentContainerVisible
                     descriptor: root.recentContainerDescriptor
+                    persistentModelIndex: root.recentApplicationsMarkerIndex
+                    persistentReorderEnabled: root.recentApplicationsMarkerIndex >= 0
+                    persistentPointerReorderEnabled: persistentReorderEnabled
+                        && (root.inPanel || dockConfig.floatingItemDragReorderingEnabled)
+                    launcherModelInsertionIndex: root.recentApplicationsMarkerIndex
+                    persistentReorderActive: dockLayout.persistentDragActive
+                    persistentReorderSource: dockLayout.persistentDragActive
+                        && dockLayout.persistentDragSourceItem === recentContainer
+                    persistentReorderTarget: dockLayout.persistentDragActive
+                        && dockLayout.persistentDragTargetIndex === root.recentApplicationsMarkerIndex
+                        && dockLayout.persistentDragSourceIndex !== root.recentApplicationsMarkerIndex
+                    persistentReorderInsertAfter: dockLayout.persistentDragSourceIndex
+                        < dockLayout.persistentDragTargetIndex
+                    sectionBeingReordered: dockLayout.persistentDragMovesRecentApplications
                     configState: dockConfig
                     geometryState: dockGeometry
                     layoutController: dockLayout
@@ -3675,6 +3738,18 @@ PlasmoidItem {
                         popupCoordinator.openAppContextMenu(descriptor, visualParent,
                             [], "recent-container", -1)
                     }
+                    onPersistentReorderPressStarted: popupCoordinator.cancelTaskPopupForPointerReorder()
+                    onPersistentReorderStarted: function(modelIndex, visualParent) {
+                        dockLayout.beginPersistentDrag(modelIndex, visualParent)
+                    }
+                    onPersistentReorderMoved: function(x, y) {
+                        dockLayout.updatePersistentDrag(recentContainer, x, y)
+                    }
+                    onPersistentReorderFinished: dockLayout.finishPersistentDrag()
+                    onPersistentReorderCanceled: dockLayout.cancelPersistentDrag()
+                    onPersistentKeyboardMoveRequested: function(modelIndex, delta) {
+                        dockLayout.movePersistentItemFromKeyboard(modelIndex, delta)
+                    }
                     onVisibleChanged: {
                         if (!visible && popupCoordinator.activeFolderData.entryRole === "recent-container") {
                             popupCoordinator.hidePopupDialog(folderPopupDialog)
@@ -3682,6 +3757,7 @@ PlasmoidItem {
                     }
                 }
                 Repeater {
+                    id: recentApplicationsRepeater
                     model: dockConfig.showRecentApplications ? dockConfig.recentApplicationsCount : 0
                     delegate: RecentApplicationDockItem {
                         id: recentItem
@@ -3689,6 +3765,8 @@ PlasmoidItem {
                         objectName: "recentApplication-" + index
                         visible: !root.recentContainerVisible && index < root.visibleRecentApplicationCount
                         descriptor: root.recentApplications[index] || ({})
+                        persistentReorderActive: dockLayout.persistentDragActive
+                        sectionBeingReordered: dockLayout.persistentDragMovesRecentApplications
                         configState: dockConfig
                         geometryState: dockGeometry
                         layoutController: dockLayout

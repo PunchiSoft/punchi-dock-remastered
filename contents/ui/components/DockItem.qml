@@ -52,6 +52,9 @@ Item {
         if (itemType === "dynamic-applications") {
             return i18nc("@title", "Open applications")
         }
+        if (itemType === "recent-applications") {
+            return i18nc("@title", "Recent applications")
+        }
         return itemName
     }
     // qmllint enable unqualified
@@ -511,6 +514,7 @@ Item {
     readonly property bool containsMouse: mouseArea.containsMouse
     readonly property bool separatorItem: itemType === "separator"
         || itemType === "dynamic-applications"
+        || itemType === "recent-applications"
     readonly property bool spacerItem: itemType === "spacer"
     readonly property bool mediaItem: itemType === "media"
     readonly property bool overflowItem: itemType === "overflow"
@@ -554,6 +558,8 @@ Item {
     readonly property bool showAnyTooltip: tooltipEligibleItem
         && !suppressTooltip
         && !isAnyPopupOrMenuOpen
+        && !persistentReorderActive
+        && !persistentReorderInteractionResetPending
     readonly property real requestedSeparatorThickness:
         Number(effectiveSeparatorAppearance.thickness)
     readonly property real separatorThickness: Math.min(iconSize,
@@ -829,6 +835,10 @@ Item {
             dockItemContainer.positionAnimationReady = true
             dockItemContainer.taskMinimizedTrackingReady = true
         })
+    }
+
+    Component.onDestruction: {
+        tooltipDialog.visible = false
     }
 
     onTaskIndicatorCountChanged: minimizeStateEvaluationTimer.restart()
@@ -1888,7 +1898,12 @@ Item {
         visualParent: tooltipAnchor
         location: dockItemContainer.tooltipLocation
         type: PlasmaCore.Dialog.Tooltip
-        visible: dockItemContainer.showAnyTooltip && mouseArea.containsMouse && !tooltipDelayTimer.running
+        visible: dockItemContainer.visible
+            && dockItemContainer.showAnyTooltip && mouseArea.containsMouse
+            && !tooltipDelayTimer.running
+            && tooltipContentLoader.status === Loader.Ready
+            && tooltipContentLoader.implicitWidth > 0
+            && tooltipContentLoader.implicitHeight > 0
         flags: Qt.ToolTip | Qt.FramelessWindowHint | Qt.WindowDoesNotAcceptFocus
 
         mainItem: Item {
