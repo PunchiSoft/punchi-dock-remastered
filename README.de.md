@@ -313,21 +313,21 @@ Paketdateien zu erkennen, bevor solche Änderungen die Benutzer erreichen.
 
 Versionen geprüft am 5. Oktober 2026. Fedora 44 und Debian 13 beschreiben die lokal beobachteten Umgebungen; die weiteren Zeilen beschreiben die unten verlinkten Distributionsrepositorys. Rolling-Release-Distributionen und Aktualisierungen können diese Versionen ändern.
 
-| Betriebssystem | Qt | Plasma | Frameworks | Lokaler Test | Debian 13 universal | Fedora-44-Paket |
+| Betriebssystem | Qt | Plasma | Frameworks | Lokale Kompilierung | Debian 13 universal | Fedora-44-Paket |
 |---|---|---|---|:---:|:---:|:---:|
-| Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | — | ✅ |
-| Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | — |
-| Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | — | — | — |
-| Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | — | — | — |
+| Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
+| Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | ⏳ |
+| Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | ⏳ | ⏳ | ⏳ |
+| Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ⏳ | ⏳ | ⏳ |
 | Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
-| Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | — | — | — |
-| KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | — | — | — |
-| openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | — | — | — |
-| openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | — | — | — |
+| Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | ⏳ | ⏳ | ⏳ |
+| KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | ⏳ | ⏳ | ⏳ |
+| openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | ⏳ | ⏳ | ⏳ |
+| openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | ⏳ | ⏳ | ⏳ |
 
-✅ Getestet und funktionsfähig. ❌ Mit Fehlern getestet. — Nicht getestet.
+✅ Getestet und funktionsfähig. ❌ Mit Fehlern getestet. ⏳ Nicht getestet.
 
-Die Spalte Lokaler Test dokumentiert die lokale Validierung des Plasmoids; die Spalten Debian 13 universal und Fedora-44-Paket dokumentieren, ob dieses Paket dort geprüft wurde. Keine Spalte bestätigt das unter Debian kompilierte universelle Paket auf jedem System. Eine neuere Qt-Version kann Binärdateien unterstützen, die mit einer älteren Qt-6-Version kompiliert wurden; die Qt-, KDE- und Systembibliotheksabhängigkeiten müssen jedoch mit demselben Paket geprüft werden.
+Die Spalte Lokale Kompilierung dokumentiert die lokale Validierung des Plasmoids; die Spalten Debian 13 universal und Fedora-44-Paket dokumentieren, ob dieses Paket dort geprüft wurde. Keine Spalte bestätigt das unter Debian kompilierte universelle Paket auf jedem System. Eine neuere Qt-Version kann Binärdateien unterstützen, die mit einer älteren Qt-6-Version kompiliert wurden; die Qt-, KDE- und Systembibliotheksabhängigkeiten müssen jedoch mit demselben Paket geprüft werden.
 
 **Beobachtungen**
 
