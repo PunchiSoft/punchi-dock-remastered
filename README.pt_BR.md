@@ -326,9 +326,11 @@ Versões consultadas em 5 de outubro de 2026. Fedora 44 e Debian 13 descrevem os
 
 ✅ Testado localmente neste ciclo. ❌ Sem teste local neste ciclo.
 
-O Arch Linux foi testado em 10 de outubro de 2026 com o pacote do Fedora 44, o pacote universal compilado no Debian 13 e uma compilação a partir do código-fonte com as bibliotecas Qt e KDE do sistema. Nos três casos, o applet instalou, carregou e permaneceu funcional.
-
 A coluna Test registra a validação local do plasmoide. Ela não certifica o pacote universal compilado no Debian em cada sistema. Uma versão posterior do Qt pode admitir binários compilados com uma versão anterior do Qt 6, mas as dependências de Qt, KDE e das bibliotecas do sistema precisam ser verificadas com o mesmo pacote.
+
+**Observações**
+
+- **Arch Linux:** Testado em 10 de outubro de 2026 com o pacote do Fedora 44, o pacote universal compilado no Debian 13 e uma compilação nativa dentro do Arch. Nos três casos, o applet instalou, carregou e permaneceu funcional.
 
 Fontes dos repositórios: [Debian 14 Qt](https://packages.debian.org/forky/qt6-base-dev) · [Debian 14 Plasma](https://packages.debian.org/forky/plasma-desktop) · [Debian 14 Frameworks](https://packages.debian.org/forky/libkf6coreaddons6) · [Kubuntu Qt](https://packages.ubuntu.com/resolute/libdevel/qt6-base-dev) · [Atualizações do Plasma no Kubuntu](https://packages.ubuntu.com/resolute-updates/kde/plasma-desktop) · [Kubuntu Frameworks](https://packages.ubuntu.com/resolute/libs/libkf6coreaddons6) · [Arch Qt](https://archlinux.org/packages/extra/x86_64/qt6-base/) · [Arch Plasma](https://archlinux.org/packages/extra/x86_64/plasma-desktop/) · [Arch Frameworks](https://archlinux.org/packages/extra/x86_64/kcoreaddons/) · [Metadados de pacotes Manjaro stable](https://repo.manjaro.org/repo/stable/extra/x86_64/extra.db) · [Metadados de pacotes KDE neon User Edition](https://archive.neon.kde.org/user/dists/noble/main/binary-amd64/Packages.gz) · [Pacotes openSUSE Leap 16.0](https://download.opensuse.org/distribution/leap/16.0/repo/oss/x86_64/) · [openSUSE Tumbleweed Qt](https://news.opensuse.org/2026/09/02/tw-monthly-update-august/) · [openSUSE Tumbleweed Plasma / Frameworks](https://news.opensuse.org/2026/10/01/tw-monthly-update-september/).
 

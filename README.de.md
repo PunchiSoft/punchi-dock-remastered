@@ -327,9 +327,11 @@ Versionen geprüft am 5. Oktober 2026. Fedora 44 und Debian 13 beschreiben die l
 
 ✅ In diesem Zyklus lokal getestet. ❌ In diesem Zyklus nicht lokal getestet.
 
-Arch Linux wurde am 10. Oktober 2026 mit dem Fedora-44-Paket, dem unter Debian 13 erstellten universellen Paket und einer Quelltextkompilierung gegen die systemeigenen Qt- und KDE-Bibliotheken geprüft. In allen drei Fällen ließ sich das Applet installieren, laden und blieb funktionsfähig.
-
 Die Spalte Test dokumentiert die lokale Validierung des Plasmoids. Sie bestätigt nicht das unter Debian kompilierte universelle Paket auf jedem System. Eine neuere Qt-Version kann Binärdateien unterstützen, die mit einer älteren Qt-6-Version kompiliert wurden; die Qt-, KDE- und Systembibliotheksabhängigkeiten müssen jedoch mit demselben Paket geprüft werden.
+
+**Beobachtungen**
+
+- **Arch Linux:** Geprüft am 10. Oktober 2026 mit dem Fedora-44-Paket, dem unter Debian 13 erstellten universellen Paket und einer nativen Kompilierung innerhalb von Arch. In allen drei Fällen ließ sich das Applet installieren, laden und blieb funktionsfähig.
 
 Repository-Quellen: [Debian 14 Qt](https://packages.debian.org/forky/qt6-base-dev) · [Debian 14 Plasma](https://packages.debian.org/forky/plasma-desktop) · [Debian 14 Frameworks](https://packages.debian.org/forky/libkf6coreaddons6) · [Kubuntu Qt](https://packages.ubuntu.com/resolute/libdevel/qt6-base-dev) · [Kubuntu-Plasma-Aktualisierungen](https://packages.ubuntu.com/resolute-updates/kde/plasma-desktop) · [Kubuntu Frameworks](https://packages.ubuntu.com/resolute/libs/libkf6coreaddons6) · [Arch Qt](https://archlinux.org/packages/extra/x86_64/qt6-base/) · [Arch Plasma](https://archlinux.org/packages/extra/x86_64/plasma-desktop/) · [Arch Frameworks](https://archlinux.org/packages/extra/x86_64/kcoreaddons/) · [Paketmetadaten von Manjaro stable](https://repo.manjaro.org/repo/stable/extra/x86_64/extra.db) · [Paketmetadaten von KDE neon User Edition](https://archive.neon.kde.org/user/dists/noble/main/binary-amd64/Packages.gz) · [openSUSE-Leap-16.0-Pakete](https://download.opensuse.org/distribution/leap/16.0/repo/oss/x86_64/) · [openSUSE Tumbleweed Qt](https://news.opensuse.org/2026/09/02/tw-monthly-update-august/) · [openSUSE Tumbleweed Plasma / Frameworks](https://news.opensuse.org/2026/10/01/tw-monthly-update-september/).
 

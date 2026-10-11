@@ -322,9 +322,11 @@ Versions checked on October 5, 2026. Fedora 44 and Debian 13 describe the locall
 
 ✅ Tested locally in this cycle. ❌ Not tested locally in this cycle.
 
-Arch Linux was tested on October 10, 2026 with the Fedora 44 package, the universal package built on Debian 13, and a build from source against the system Qt and KDE libraries. In all three cases the applet installed, loaded and stayed functional.
-
 The Test column records local plasmoid validation. It does not certify the Debian-built universal package on each system. A newer Qt version can support binaries built with an older Qt 6 version, but matching Qt, KDE and system-library dependencies still need to be checked with the same package.
+
+**Observations**
+
+- **Arch Linux:** Tested on October 10, 2026 with the Fedora 44 package, the universal package built on Debian 13, and a native build inside Arch. In all three cases the applet installed, loaded and stayed functional.
 
 Repository sources: [Debian 14 Qt](https://packages.debian.org/forky/qt6-base-dev) · [Debian 14 Plasma](https://packages.debian.org/forky/plasma-desktop) · [Debian 14 Frameworks](https://packages.debian.org/forky/libkf6coreaddons6) · [Kubuntu Qt](https://packages.ubuntu.com/resolute/libdevel/qt6-base-dev) · [Kubuntu Plasma updates](https://packages.ubuntu.com/resolute-updates/kde/plasma-desktop) · [Kubuntu Frameworks](https://packages.ubuntu.com/resolute/libs/libkf6coreaddons6) · [Arch Qt](https://archlinux.org/packages/extra/x86_64/qt6-base/) · [Arch Plasma](https://archlinux.org/packages/extra/x86_64/plasma-desktop/) · [Arch Frameworks](https://archlinux.org/packages/extra/x86_64/kcoreaddons/) · [Manjaro stable package metadata](https://repo.manjaro.org/repo/stable/extra/x86_64/extra.db) · [KDE neon User Edition package metadata](https://archive.neon.kde.org/user/dists/noble/main/binary-amd64/Packages.gz) · [openSUSE Leap 16.0 packages](https://download.opensuse.org/distribution/leap/16.0/repo/oss/x86_64/) · [openSUSE Tumbleweed Qt](https://news.opensuse.org/2026/09/02/tw-monthly-update-august/) · [openSUSE Tumbleweed Plasma / Frameworks](https://news.opensuse.org/2026/10/01/tw-monthly-update-september/).
 
