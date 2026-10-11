@@ -271,7 +271,7 @@ sudo zypper install \
 - **Declared build minimums:** CMake 3.22, a C++20 compiler, Qt 6.6, KDE Frameworks
   6.0, and Plasma 6.0, plus the required development libraries.
 - **Native builds:** Source builds use the host system’s Qt and KDE libraries. Developer profiles are available for Fedora, Debian and Arch Linux.
-- **Universal package:** Official universal builds are compiled on Debian 13. Binary compatibility must be checked with the same package on each target system.
+- **Universal package:** Official universal builds are compiled on Debian 13 against the lowest supported Qt and KDE Frameworks versions. Targeting the lowest version favors forward compatibility with newer systems, while newer APIs stay out of this build. Binary compatibility must be checked with the same package on each target system.
 - **Quality checks:** Local validation has been recorded on Fedora 44 and Debian 13. The table below distinguishes tested environments from other distributions whose package versions were checked.
 - **Native packages:** Use the package intended for your environment. Declared
   minimums do not certify every combination, and cross-distribution binary
@@ -322,7 +322,7 @@ Versions checked on October 5, 2026. Fedora 44 and Debian 13 describe the locall
 
 ✅ Tested and working. ❌ Tested with failures. — Not tested.
 
-The Local test column records local plasmoid validation; the Debian 13 universal and Fedora 44 package columns record whether that same package was checked on that system. It does not certify the Debian-built universal package on each system. A newer Qt version can support binaries built with an older Qt 6 version, but matching Qt, KDE and system-library dependencies still need to be checked with the same package.
+The Local test column records local plasmoid validation; the Debian 13 universal and Fedora 44 package columns record whether that same package was checked on that system. No column certifies the Debian-built universal package on every system. A newer Qt version can support binaries built with an older Qt 6 version, but matching Qt, KDE and system-library dependencies still need to be checked with the same package.
 
 **Observations**
 

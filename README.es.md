@@ -276,7 +276,7 @@ sudo zypper install \
 - **Mínimos declarados de compilación:** CMake 3.22, compilador C++20, Qt 6.6,
   KDE Frameworks 6.0 y Plasma 6.0, además de las bibliotecas de desarrollo requeridas.
 - **Compilación nativa:** Las compilaciones desde código utilizan las bibliotecas Qt y KDE del sistema anfitrión. Existen perfiles de desarrollo para Fedora, Debian y Arch Linux.
-- **Paquete universal:** Las compilaciones universales oficiales se realizan en Debian 13. La compatibilidad binaria debe comprobarse con el mismo paquete en cada sistema objetivo.
+- **Paquete universal:** Las compilaciones universales oficiales se realizan en Debian 13 contra las versiones mínimas admitidas de Qt y KDE Frameworks. Apuntar a la versión mínima favorece la compatibilidad hacia sistemas más nuevos, mientras que las API más recientes quedan fuera de esta compilación. La compatibilidad binaria debe comprobarse con el mismo paquete en cada sistema objetivo.
 - **Pruebas de calidad:** Se ha registrado validación local en Fedora 44 y Debian 13. La tabla siguiente distingue los entornos probados de otras distribuciones cuyas versiones de paquetes se consultaron.
 - **Paquetes nativos:** Utiliza el paquete destinado a tu entorno. Los mínimos
   declarados no certifican todas las combinaciones, y la compatibilidad binaria
@@ -327,7 +327,7 @@ Versiones consultadas el 5 de octubre de 2026. Fedora 44 y Debian 13 describen l
 
 ✅ Probado y funcional. ❌ Probado con fallos. — Sin probar.
 
-La columna Prueba local registra la validación local del plasmoide; las columnas universal de Debian 13 y paquete de Fedora 44 indican si ese mismo paquete se comprobó en ese sistema. No certifica el paquete universal compilado en Debian en cada sistema. Una versión posterior de Qt puede admitir binarios compilados con una versión anterior de Qt 6, pero las dependencias de Qt, KDE y las bibliotecas del sistema deben comprobarse con el mismo paquete.
+La columna Prueba local registra la validación local del plasmoide; las columnas universal de Debian 13 y paquete de Fedora 44 indican si ese mismo paquete se comprobó en ese sistema. Ninguna columna certifica el paquete universal compilado en Debian en todos los sistemas. Una versión posterior de Qt puede admitir binarios compilados con una versión anterior de Qt 6, pero las dependencias de Qt, KDE y las bibliotecas del sistema deben comprobarse con el mismo paquete.
 
 **Observaciones**
 

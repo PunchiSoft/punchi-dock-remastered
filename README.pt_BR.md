@@ -275,7 +275,7 @@ sudo zypper install \
 - **Mínimos declarados de compilação:** CMake 3.22, compilador C++20, Qt 6.6,
   KDE Frameworks 6.0 e Plasma 6.0, além das bibliotecas de desenvolvimento necessárias.
 - **Compilação nativa:** As compilações a partir do código usam as bibliotecas Qt e KDE do sistema anfitrião. Há perfis de desenvolvimento para Fedora, Debian e Arch Linux.
-- **Pacote universal:** As compilações universais oficiais são feitas no Debian 13. A compatibilidade binária deve ser verificada com o mesmo pacote em cada sistema de destino.
+- **Pacote universal:** As compilações universais oficiais são feitas no Debian 13 contra as versões mínimas suportadas de Qt e KDE Frameworks. Mirar a versão mínima favorece a compatibilidade com sistemas mais novos, enquanto as APIs mais recentes ficam fora desta compilação. A compatibilidade binária deve ser verificada com o mesmo pacote em cada sistema de destino.
 - **Testes de qualidade:** Foi registrada validação local no Fedora 44 e no Debian 13. A tabela a seguir distingue os ambientes testados de outras distribuições cujas versões de pacotes foram consultadas.
 - **Pacotes nativos:** Use o pacote destinado ao seu ambiente. Os mínimos
   declarados não certificam todas as combinações, e a compatibilidade binária
@@ -326,7 +326,7 @@ Versões consultadas em 5 de outubro de 2026. Fedora 44 e Debian 13 descrevem os
 
 ✅ Testado e funcional. ❌ Testado com falhas. — Sem teste.
 
-A coluna Teste local registra a validação local do plasmoide; as colunas universal do Debian 13 e pacote do Fedora 44 indicam se esse pacote foi verificado nesse sistema. Ela não certifica o pacote universal compilado no Debian em cada sistema. Uma versão posterior do Qt pode admitir binários compilados com uma versão anterior do Qt 6, mas as dependências de Qt, KDE e das bibliotecas do sistema precisam ser verificadas com o mesmo pacote.
+A coluna Teste local registra a validação local do plasmoide; as colunas universal do Debian 13 e pacote do Fedora 44 indicam se esse pacote foi verificado nesse sistema. Nenhuma coluna certifica o pacote universal compilado no Debian em todos os sistemas. Uma versão posterior do Qt pode admitir binários compilados com uma versão anterior do Qt 6, mas as dependências de Qt, KDE e das bibliotecas do sistema precisam ser verificadas com o mesmo pacote.
 
 **Observações**
 

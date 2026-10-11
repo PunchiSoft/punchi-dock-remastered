@@ -276,7 +276,7 @@ sudo zypper install \
 - **Deklarierte Mindestanforderungen für Builds:** CMake 3.22, ein C++20-Compiler,
   Qt 6.6, KDE Frameworks 6.0 und Plasma 6.0 sowie die erforderlichen Entwicklungsbibliotheken.
 - **Native Builds:** Quellcode-Builds verwenden die Qt- und KDE-Bibliotheken des Hostsystems. Entwicklungsprofile sind für Fedora, Debian und Arch Linux verfügbar.
-- **Universelles Paket:** Offizielle universelle Builds werden unter Debian 13 kompiliert. Die Binärkompatibilität muss mit demselben Paket auf jedem Zielsystem geprüft werden.
+- **Universelles Paket:** Offizielle universelle Builds werden unter Debian 13 gegen die niedrigsten unterstützten Versionen von Qt und KDE Frameworks kompiliert. Die niedrigste Version als Ziel begünstigt die Kompatibilität mit neueren Systemen, während neuere APIs in diesem Build fehlen. Die Binärkompatibilität muss mit demselben Paket auf jedem Zielsystem geprüft werden.
 - **Qualitätsprüfungen:** Lokale Validierungen wurden unter Fedora 44 und Debian 13 aufgezeichnet. Die folgende Tabelle unterscheidet getestete Umgebungen von weiteren Distributionen, deren Paketversionen geprüft wurden.
 - **Native Pakete:** Verwende das für deine Umgebung bestimmte Paket. Deklarierte
   Mindestversionen bestätigen nicht jede Kombination; distributionsübergreifende
@@ -327,7 +327,7 @@ Versionen geprüft am 5. Oktober 2026. Fedora 44 und Debian 13 beschreiben die l
 
 ✅ Getestet und funktionsfähig. ❌ Mit Fehlern getestet. — Nicht getestet.
 
-Die Spalte Lokaler Test dokumentiert die lokale Validierung des Plasmoids; die Spalten Debian 13 universal und Fedora-44-Paket dokumentieren, ob dieses Paket dort geprüft wurde. Sie bestätigt nicht das unter Debian kompilierte universelle Paket auf jedem System. Eine neuere Qt-Version kann Binärdateien unterstützen, die mit einer älteren Qt-6-Version kompiliert wurden; die Qt-, KDE- und Systembibliotheksabhängigkeiten müssen jedoch mit demselben Paket geprüft werden.
+Die Spalte Lokaler Test dokumentiert die lokale Validierung des Plasmoids; die Spalten Debian 13 universal und Fedora-44-Paket dokumentieren, ob dieses Paket dort geprüft wurde. Keine Spalte bestätigt das unter Debian kompilierte universelle Paket auf jedem System. Eine neuere Qt-Version kann Binärdateien unterstützen, die mit einer älteren Qt-6-Version kompiliert wurden; die Qt-, KDE- und Systembibliotheksabhängigkeiten müssen jedoch mit demselben Paket geprüft werden.
 
 **Beobachtungen**
 
