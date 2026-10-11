@@ -318,7 +318,7 @@ Versionen geprüft am 5. Oktober 2026. Fedora 44 und Debian 13 beschreiben die l
 | Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | ❌ |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | ⏳ | ⏳ | ⏳ |
-| Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ⏳ | ⏳ | ⏳ |
+| Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ⏳ | ✅ | ⏳ |
 | Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
 | Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | ⏳ | ⏳ | ⏳ |
 | KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | ⏳ | ⏳ | ⏳ |
