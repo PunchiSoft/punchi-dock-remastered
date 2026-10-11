@@ -316,15 +316,20 @@ Versões consultadas em 5 de outubro de 2026. Fedora 44 e Debian 13 descrevem os
 |---|---|---|---|:---:|:---:|:---:|
 | Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | ❌ |
-| Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | ⏳ | ⏳ | ⏳ |
-| Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | ⏳ | ✅ | ❌ |
+| Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | 🤞 | 🤞 | 🤞 |
+| Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | 🤞 | ✅ | ❌ |
 | Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
-| Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | ⏳ | ⏳ | ⏳ |
-| KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | ⏳ | ⏳ | ⏳ |
-| openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | ⏳ | ⏳ | ⏳ |
-| openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | ⏳ | ⏳ | ⏳ |
+| Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | 🤞 | 🤞 | ⏳ |
+| KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | 🤞 | 🤞 | ⏳ |
+| openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | 🤞 | 🤞 | ⏳ |
+| openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | 🤞 | 🤞 | 🤞 |
 
-✅ Testado e funcional. ❌ Testado com falhas. ⏳ Sem teste.
+**Legenda dos estados de teste**
+
+- ✅ Testado e funcional.
+- ❌ Testado com falhas.
+- ⏳ Sem teste.
+- 🤞 Provavelmente funciona; sem teste.
 
 A coluna Compilação local registra a validação local do plasmoide; as colunas universal do Debian 13 e pacote do Fedora 44 indicam se esse pacote foi verificado nesse sistema. Nenhuma coluna certifica o pacote universal compilado no Debian em todos os sistemas. Uma versão posterior do Qt pode admitir binários compilados com uma versão anterior do Qt 6, mas as dependências de Qt, KDE e das bibliotecas do sistema precisam ser verificadas com o mesmo pacote.
 
