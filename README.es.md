@@ -271,6 +271,8 @@ sudo zypper install \
 
 ## Compatibilidad
 
+**Aviso de compatibilidad:** Tras la última actualización de Plasma 6.8, Punchi Dock Remastered ha perdido funcionalidades y actualmente no se puede ejecutar en esa versión. La compatibilidad con Plasma 6.8 queda temporalmente suspendida.
+
 - **Escritorio:** Linux con KDE Plasma 6; Wayland es el objetivo principal y X11
   conserva una vía secundaria.
 - **Mínimos declarados de compilación:** CMake 3.22, compilador C++20, Qt 6.6,
