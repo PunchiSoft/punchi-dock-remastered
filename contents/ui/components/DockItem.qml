@@ -1880,14 +1880,15 @@ Item {
     Component {
         id: textTooltipComponent
 
-        ColumnLayout {
-            spacing: 4
-
-            Controls.Label {
-                text: dockItemContainer.localizedItemName
-                color: Kirigami.Theme.textColor
-                font.bold: true
-            }
+        DockTooltipBalloon {
+            text: dockItemContainer.localizedItemName
+            tailEdge: dockItemContainer.panelLocation === PlasmaCore.Types.TopEdge
+                ? "top"
+                : dockItemContainer.panelLocation === PlasmaCore.Types.LeftEdge
+                    ? "left"
+                    : dockItemContainer.panelLocation === PlasmaCore.Types.RightEdge
+                        ? "right"
+                        : "bottom"
         }
     }
 
@@ -1898,6 +1899,9 @@ Item {
         visualParent: tooltipAnchor
         location: dockItemContainer.tooltipLocation
         type: PlasmaCore.Dialog.Tooltip
+        // The comic balloon draws its own silhouette. The native tooltip frame
+        // would otherwise paint a second rectangle behind it.
+        backgroundHints: PlasmaCore.Dialog.NoBackground
         visible: dockItemContainer.visible
             && dockItemContainer.showAnyTooltip && mouseArea.containsMouse
             && !tooltipDelayTimer.running
