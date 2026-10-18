@@ -180,25 +180,113 @@ resolve_user_build_dir() {
 ' "${XDG_CACHE_HOME:-$HOME/.cache}/punchi-dock-remastered/user-local-${platform_label}"
 }
 
+punchi_os_release_path() {
+    printf '%s\n' "${PUNCHI_OS_RELEASE_FILE:-/etc/os-release}"
+}
+
 punchi_detect_user_distro() {
     local distro_id="unknown"
-    if [[ -r /etc/os-release ]]; then
-        # shellcheck disable=SC1091
-        source /etc/os-release
-        distro_id="${ID:-$NAME}"
+    local os_release_path=""
+    os_release_path="$(punchi_os_release_path)"
+    if [[ -r "$os_release_path" ]]; then
+        # shellcheck disable=SC1090,SC1091
+        source "$os_release_path"
+        distro_id="${ID:-${NAME:-unknown}}"
         distro_id="${distro_id:-unknown}"
     fi
-    printf '%s
-' "$distro_id" | tr '[:upper:]' '[:lower:]'
+    printf '%s\n' "$distro_id" | tr '[:upper:]' '[:lower:]'
+}
+
+punchi_detect_user_distro_like() {
+    local distro_like=""
+    local os_release_path=""
+    os_release_path="$(punchi_os_release_path)"
+    if [[ -r "$os_release_path" ]]; then
+        # shellcheck disable=SC1090,SC1091
+        source "$os_release_path"
+        distro_like="${ID_LIKE:-}"
+    fi
+    printf '%s\n' "$distro_like" | tr '[:upper:]' '[:lower:]'
+}
+
+punchi_user_distro_family() {
+    local distro_id="${1:-unknown}"
+    local distro_like="${2:-}"
+
+    case "$distro_id" in
+        *neon*|*debian*|*ubuntu*|*kubuntu*|*pop*|*mint*)
+            printf 'debian\n'
+            ;;
+        *arch*|*manjaro*|*endeavouros*|*garuda*|*artix*)
+            printf 'arch\n'
+            ;;
+        *fedora*|*rhel*|*nobara*|*centos*)
+            printf 'fedora\n'
+            ;;
+        *)
+            case " $distro_like " in
+                *arch*)
+                    printf 'arch\n'
+                    ;;
+                *debian*|*ubuntu*)
+                    printf 'debian\n'
+                    ;;
+                *fedora*|*rhel*)
+                    printf 'fedora\n'
+                    ;;
+                *)
+                    printf 'unsupported\n'
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+punchi_missing_deb_packages() {
+    local package_name=""
+    for package_name in "$@"; do
+        if ! dpkg-query -W -f='${Status}' "$package_name" 2>/dev/null | grep -qx 'install ok installed'; then
+            printf '%s\n' "$package_name"
+        fi
+    done
+}
+
+punchi_debian_missing_dependencies() {
+    local distro_id="${1:-}"
+    local activities_dev_package="libplasmaactivities-dev"
+    if [[ "$distro_id" == *neon* ]]; then
+        activities_dev_package="plasma-activities-dev"
+    fi
+
+    local -a deb_pkgs=(
+        build-essential
+        cmake
+        extra-cmake-modules
+        qt6-base-dev
+        qt6-declarative-dev
+        qt6-shader-baker
+        libplasma-dev
+        "$activities_dev_package"
+        libplasmaactivitiesstats-dev
+        libpipewire-0.3-dev
+        libkf6config-dev
+        libkf6i18n-dev
+        libkf6kio-dev
+    )
+    punchi_missing_deb_packages "${deb_pkgs[@]}"
 }
 
 punchi_user_missing_dependencies() {
     local distro_id=""
+    local distro_like=""
+    local distro_family=""
     distro_id="$(punchi_detect_user_distro)"
+    distro_like="$(punchi_detect_user_distro_like)"
+    distro_family="$(punchi_user_distro_family "$distro_id" "$distro_like")"
     local -a missing=()
 
-    case "$distro_id" in
-        *arch*|*manjaro*|*endeavouros*|*garuda*|*artix*)
+    case "$distro_family" in
+        arch)
             local -a arch_pkgs=(
                 base-devel
                 cmake
@@ -225,33 +313,14 @@ punchi_user_missing_dependencies() {
                 printf '%s\n' "${missing[@]}"
             fi
             ;;
-        *debian*|*ubuntu*|*kubuntu*|*pop*|*mint*)
-            local -a deb_pkgs=(
-                build-essential
-                cmake
-                extra-cmake-modules
-                qt6-base-dev
-                qt6-declarative-dev
-                qt6-shader-baker
-                libplasma-dev
-                libplasmaactivities-dev
-                libplasmaactivitiesstats-dev
-                libpipewire-0.3-dev
-                libkf6config-dev
-                libkf6i18n-dev
-                libkf6kio-dev
-            )
-            for pkg in "${deb_pkgs[@]}"; do
-                if ! dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -qx 'install ok installed'; then
-                    missing+=("$pkg")
-                fi
-            done
+        debian)
+            mapfile -t missing < <(punchi_debian_missing_dependencies "$distro_id")
             if (( ${#missing[@]} > 0 )); then
                 printf 'distro:debian\n'
                 printf '%s\n' "${missing[@]}"
             fi
             ;;
-        *fedora*|*rhel*|*nobara*|*centos*)
+        fedora)
             local -a fedora_pkgs=(
                 gcc-c++
                 cmake
@@ -277,6 +346,10 @@ punchi_user_missing_dependencies() {
                 printf '%s\n' "${missing[@]}"
             fi
             ;;
+        *)
+            printf 'distro:unsupported\n'
+            printf '%s\n' "${distro_id:-unknown}"
+            ;;
     esac
 }
 
@@ -290,6 +363,11 @@ punchi_check_and_report_dependencies() {
     fi
 
     local distro_type="${raw_output[0]}"
+    if [[ "$distro_type" == "distro:unsupported" ]]; then
+        punchi_gettext_format 'Automatic dependency checks are not available for %s. Install the build dependencies manually or use the documented package list.\n' \
+            "${raw_output[1]:-unknown}" >&2
+        return 1
+    fi
     local missing_pkgs=("${raw_output[@]:1}")
 
     echo "==> Notice: Missing build dependencies detected:" >&2

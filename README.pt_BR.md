@@ -12,6 +12,9 @@
 
 [English](README.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt_BR.md)
 
+> [!WARNING]
+> **O suporte ao Plasma 6.8 está temporariamente incompleto.** Após o ciclo de atualização do 30.º aniversário do KDE e o lançamento do Plasma 6.8, o Punchi Dock Remastered não é compatível atualmente com o Plasma 6.8. O dock pode não carregar ou perder funcionalidades. O suporte completo para esta versão ainda não está disponível. O trabalho de compatibilidade está em andamento; obrigado pela paciência. Plasma 6.7 e anteriores continuam sendo os alvos testados.
+
 O Punchi Dock Remastered reúne lançadores de aplicativos, janelas abertas,
 pastas, controles de mídia e utilitários do desktop em uma dock personalizável
 para KDE Plasma 6. Use como dock flutuante ou dentro de um painel do Plasma,
@@ -207,7 +210,7 @@ Compilar a partir do código-fonte requer CMake 3.22 ou posterior, um compilador
 
 As listas a seguir abrangem os requisitos de compilação nativa e empacotamento declarados pelo CMake e utilizados por `scripts-user`. Execute os comandos da sua distribuição para instalar as dependências que faltam.
 
-`./scripts-user/setup.sh --check-deps` verifica listas de pacotes para Arch, Debian/Ubuntu e Fedora/RHEL. Prepare manualmente as dependências no KDE neon e no openSUSE; o script atual não possui uma verificação específica de pacotes para esses sistemas.
+`./scripts-user/setup.sh --check-deps` verifica listas de pacotes para Arch, Debian/Ubuntu (incluindo KDE neon) e Fedora/RHEL. Prepare manualmente as dependências no openSUSE; o script atual não possui uma verificação específica de pacotes para esse sistema.
 
 <details>
 <summary>Debian 13/14, Kubuntu 26.04 e KDE neon</summary>
@@ -271,8 +274,6 @@ sudo zypper install \
 
 ## Compatibilidade
 
-**Aviso de compatibilidade:** Após a atualização mais recente do Plasma 6.8, o Punchi Dock Remastered perdeu funcionalidades e atualmente não pode ser executado nessa versão. A compatibilidade com o Plasma 6.8 está temporariamente indisponível.
-
 - **Desktop:** Linux com KDE Plasma 6; Wayland é o alvo principal, com uma via secundária para X11.
 - **Mínimos declarados de compilação:** CMake 3.22, compilador C++20, Qt 6.6,
   KDE Frameworks 6.0 e Plasma 6.0, além das bibliotecas de desenvolvimento necessárias.
@@ -312,7 +313,7 @@ ou um pacote com arquivos ausentes antes que essas mudanças cheguem aos usuári
 
 ### Ambientes de testes locais e destinos adicionais
 
-Versões consultadas em 5 de outubro de 2026. Fedora 44 e Debian 13 descrevem os ambientes observados localmente; as demais linhas descrevem os repositórios das distribuições indicados abaixo. Distribuições de atualização contínua e atualizações podem alterar essas versões.
+Versões consultadas em 18 de outubro de 2026. Fedora 44 e Debian 13 descrevem os ambientes observados localmente; as demais linhas descrevem os repositórios das distribuições indicados abaixo. Distribuições de atualização contínua e atualizações podem alterar essas versões.
 
 | SO | Qt | Plasma | Frameworks | Compilação local | universal do Debian 13 | pacote do Fedora 44 |
 |---|---|---|---|:---:|:---:|:---:|
@@ -320,11 +321,11 @@ Versões consultadas em 5 de outubro de 2026. Fedora 44 e Debian 13 descrevem os
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | ❌ |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | 🤞 | 🤞 | 🤞 |
 | Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | 🤞 | ✅ | ❌ |
-| Arch Linux (extra) | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
+| Arch Linux (extra) | 6.12.0 | 6.8.0 | 6.31.0 | ❌ | ❌ | ❌ |
 | Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | 🤞 | 🤞 | ⏳ |
-| KDE neon (User Edition) | 6.11.1 | 6.7.5 | 6.30.0 | 🤞 | 🤞 | ⏳ |
+| KDE neon (User Edition) | 6.11.1 | 6.8.0 | 6.31.0 | ❌ | ❌ | ❌ |
 | openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | 🤞 | 🤞 | ⏳ |
-| openSUSE Tumbleweed | 6.11.2 | 6.7.5 | 6.30.0 | 🤞 | 🤞 | 🤞 |
+| openSUSE Tumbleweed | 6.11.2 | 6.8.0 | 6.31.0 | ❌ | ❌ | ❌ |
 
 **Legenda dos estados de teste**
 
@@ -335,10 +336,12 @@ Versões consultadas em 5 de outubro de 2026. Fedora 44 e Debian 13 descrevem os
 
 A coluna Compilação local registra a validação local do plasmoide; as colunas universal do Debian 13 e pacote do Fedora 44 indicam se esse pacote foi verificado nesse sistema. Nenhuma coluna certifica o pacote universal compilado no Debian em todos os sistemas. Uma versão posterior do Qt pode admitir binários compilados com uma versão anterior do Qt 6, mas as dependências de Qt, KDE e das bibliotecas do sistema precisam ser verificadas com o mesmo pacote.
 
+**O trabalho de compatibilidade com o Plasma 6.8 está em andamento.** Obrigado pela paciência enquanto os problemas restantes são resolvidos.
+
 **Observações**
 
 - **Por que um pacote pode falhar:** as marcas ❌ vêm de diferenças de versão: um pacote compilado contra Qt e KDE Frameworks mais novos não funciona em sistemas com versões mais antigas. O pacote universal evita isso compilando contra a versão mínima suportada.
-- **Arch Linux:** Testado em 10 de outubro de 2026 com o pacote do Fedora 44, o pacote universal compilado no Debian 13 e uma compilação nativa dentro do Arch. Nos três casos, o applet instalou, carregou e permaneceu funcional.
+- **Arch Linux:** Testado em 10 de outubro de 2026 com Plasma 6.7.5 usando o pacote do Fedora 44, o pacote universal compilado no Debian 13 e uma compilação nativa dentro do Arch. Nos três casos, o applet instalou, carregou e permaneceu funcional. O Arch já distribui Plasma 6.8.0, portanto a compatibilidade está temporariamente suspensa.
 
 Fontes dos repositórios: [Debian 14 Qt](https://packages.debian.org/forky/qt6-base-dev) · [Debian 14 Plasma](https://packages.debian.org/forky/plasma-desktop) · [Debian 14 Frameworks](https://packages.debian.org/forky/libkf6coreaddons6) · [Kubuntu Qt](https://packages.ubuntu.com/resolute/libdevel/qt6-base-dev) · [Atualizações do Plasma no Kubuntu](https://packages.ubuntu.com/resolute-updates/kde/plasma-desktop) · [Kubuntu Frameworks](https://packages.ubuntu.com/resolute/libs/libkf6coreaddons6) · [Arch Qt](https://archlinux.org/packages/extra/x86_64/qt6-base/) · [Arch Plasma](https://archlinux.org/packages/extra/x86_64/plasma-desktop/) · [Arch Frameworks](https://archlinux.org/packages/extra/x86_64/kcoreaddons/) · [Metadados de pacotes Manjaro stable](https://repo.manjaro.org/repo/stable/extra/x86_64/extra.db) · [Metadados de pacotes KDE neon User Edition](https://archive.neon.kde.org/user/dists/noble/main/binary-amd64/Packages.gz) · [Pacotes openSUSE Leap 16.0](https://download.opensuse.org/distribution/leap/16.0/repo/oss/x86_64/) · [openSUSE Tumbleweed Qt](https://news.opensuse.org/2026/09/02/tw-monthly-update-august/) · [openSUSE Tumbleweed Plasma / Frameworks](https://news.opensuse.org/2026/10/01/tw-monthly-update-september/).
 
