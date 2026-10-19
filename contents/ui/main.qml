@@ -4248,6 +4248,9 @@ PlasmoidItem {
                         menuWidth: dockConfig.contextMenuWidth
                         menuRowHeight: dockConfig.contextMenuRowHeight
                         menuIconSize: dockConfig.contextMenuIconSize
+                        autoSize: dockConfig.contextMenuAutoSize
+                        minimumAnchorWidth: trashMenuDialog.sourceAnchor
+                            ? trashMenuDialog.sourceAnchor.width : 0
                         canEmptyTrash: trashIntegration.hasItems
                             && !trashIntegration.emptying
                         surfaceMarginLeft: trashSurfaceStack.backgroundMarginLeft

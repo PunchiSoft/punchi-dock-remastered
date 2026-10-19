@@ -17,8 +17,31 @@ Item {
     readonly property int effectiveIconSize: Math.max(16, Math.min(40,
         Number(iconSize || 26)))
 
-    implicitWidth: 300
+    // Natural width of the widest action row, measured with the same font and
+    // padding the rows use. TrashContextPopup consumes it only in automatic
+    // mode; manual mode keeps the configured target width.
+    readonly property real naturalWidth: {
+        const padding = menuItemPaddingMetrics.margins.left
+            + menuItemPaddingMetrics.margins.right
+        const labelWidth = Math.max(openLabelMetrics.advanceWidth,
+            emptyLabelMetrics.advanceWidth)
+        return Math.ceil(Kirigami.Units.smallSpacing * 2
+            + root.effectiveIconSize + labelWidth + padding)
+    }
+    implicitWidth: naturalWidth
     implicitHeight: actionColumn.implicitHeight
+
+    TextMetrics {
+        id: openLabelMetrics
+        font: Kirigami.Theme.defaultFont
+        text: openOption.text
+    }
+
+    TextMetrics {
+        id: emptyLabelMetrics
+        font: Kirigami.Theme.defaultFont
+        text: emptyOption.text
+    }
 
     signal openTrashClicked()
     signal emptyTrashClicked()
