@@ -4707,7 +4707,10 @@ PlasmoidItem {
                 animationIntensityPercent: dockConfig.windowPreviewAnimationIntensity
                 popupDirection: popupCoordinator.popupDirection
                 // qmllint enable unqualified
-                onCloseAnimationFinished: taskWindowsDialog.closeSafely()
+                onCloseAnimationFinished: {
+                    taskWindowsDialog.closeSafely()
+                    popupCoordinator.completePendingContextMenuAfterTaskPopupClose()
+                }
 
                 TaskPopupSurface {
                     id: taskPopupSurface

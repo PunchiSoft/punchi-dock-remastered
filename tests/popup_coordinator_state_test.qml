@@ -224,6 +224,7 @@ TestCase {
 
     function resetFixture() {
         coordinator.resetTaskPopupState()
+        coordinator.cancelPendingContextMenuAfterTaskPopupClose()
         fakeDialog.visible = false
         fakeDialog.preparingToShow = false
         fakeDialog.visualParent = null
@@ -577,20 +578,65 @@ TestCase {
         compare(coordinator.pendingTaskPopupRows.length, 0)
     }
 
-    function test_previewActionsPreserveResolvedPresentation() {
+    function test_previewContextMenuClosesPreviewBeforeOpeningMenu() {
         coordinator.mediaHoverMode = "none"
         coordinator.windowPreviewsEnabled = true
         coordinator.scheduleTaskWindowsPopup("Firefox", [1], firstAnchor,
             false, true)
         tryCompare(fakeDialog, "openCount", 1, 600)
+        verify(fakeDialog.visible)
         compare(coordinator.activeTaskPopupPresentation, "preview")
+
+        coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
+            firstAnchor, [1], "pinned", 0)
+
+        compare(fakePopupContent.showActionsCount, 0)
+        verify(!fakePopupContent.actionsVisible)
+        compare(fakeAnimatedContent.beginClosingCount, 1)
+        verify(coordinator.pendingContextMenuAfterTaskPopupClose)
+        verify(!fakeAppActionsDialog.visible)
+
+        fakeDialog.visible = false
+        coordinator.resetTaskPopupState()
+        verify(coordinator.completePendingContextMenuAfterTaskPopupClose())
+        wait(0)
+
+        verify(fakeAppActionsDialog.visible)
+        compare(fakeAppActionsDialog.placementAnchor, firstAnchor)
+        verify(!coordinator.pendingContextMenuAfterTaskPopupClose)
+    }
+
+    function test_repeatedRightClickCancelsPendingContextMenuAfterPreview() {
+        coordinator.mediaHoverMode = "none"
+        coordinator.windowPreviewsEnabled = true
+        coordinator.scheduleTaskWindowsPopup("Firefox", [1], firstAnchor,
+            false, true)
+        tryCompare(fakeDialog, "openCount", 1, 600)
+
+        coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
+            firstAnchor, [1], "pinned", 0)
+        verify(coordinator.pendingContextMenuAfterTaskPopupClose)
+
+        coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
+            firstAnchor, [1], "pinned", 0)
+        verify(!coordinator.pendingContextMenuAfterTaskPopupClose)
+        verify(!coordinator.completePendingContextMenuAfterTaskPopupClose())
+        wait(0)
+
+        verify(!fakeAppActionsDialog.visible)
+    }
+
+    function test_mediaCardContextMenuKeepsComposedActions() {
+        openResolvedCard("Firefox", [1], firstAnchor)
 
         coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
             firstAnchor, [1], "pinned", 0)
 
         compare(fakePopupContent.showActionsCount, 1)
         verify(fakePopupContent.actionsVisible)
-        compare(coordinator.activeTaskPopupPresentation, "preview")
+        compare(fakeAnimatedContent.beginClosingCount, 0)
+        verify(!coordinator.pendingContextMenuAfterTaskPopupClose)
+        verify(fakeDialog.visible)
     }
 
     function test_positionedMenuUsesDedicatedPlacementAnchor() {
@@ -665,19 +711,29 @@ TestCase {
         compare(fakeAppActionsDialog.placementAnchor, secondAnchor)
     }
 
-    function test_overlayActionsPreserveResolvedPresentation() {
+    function test_overlayContextMenuClosesPreviewBeforeOpeningMenu() {
         coordinator.mediaHoverMode = "overlay"
         coordinator.windowPreviewsEnabled = true
         coordinator.scheduleTaskWindowsPopup("Firefox", [1], firstAnchor,
             false, true)
         tryCompare(fakeDialog, "openCount", 1, 600)
+        verify(fakeDialog.visible)
         compare(coordinator.activeTaskPopupPresentation, "overlay")
 
         coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
             firstAnchor, [1], "pinned", 0)
 
-        compare(fakePopupContent.showActionsCount, 1)
-        verify(fakePopupContent.actionsVisible)
-        compare(coordinator.activeTaskPopupPresentation, "overlay")
+        compare(fakePopupContent.showActionsCount, 0)
+        verify(!fakePopupContent.actionsVisible)
+        compare(fakeAnimatedContent.beginClosingCount, 1)
+        verify(coordinator.pendingContextMenuAfterTaskPopupClose)
+
+        fakeDialog.visible = false
+        coordinator.resetTaskPopupState()
+        verify(coordinator.completePendingContextMenuAfterTaskPopupClose())
+        wait(0)
+
+        verify(fakeAppActionsDialog.visible)
+        compare(fakeAppActionsDialog.placementAnchor, firstAnchor)
     }
 }

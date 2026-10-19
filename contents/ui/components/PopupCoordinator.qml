@@ -74,6 +74,11 @@ Item {
     property bool contextMenuOpening: false
     property var activeAppContextMenuAnchor: null
     property int appContextMenuRequestSerial: 0
+    // A right click on a visible window preview must finish the preview exit
+    // before the independent context menu appears. The request outlives
+    // resetTaskPopupState(), which runs when the preview dialog hides.
+    property bool pendingContextMenuAfterTaskPopupClose: false
+    property var pendingContextMenuAfterTaskPopupData: null
     property string mediaHoverMode: "card"
     property bool mediaHoverEnabled: mediaHoverMode !== "none"
     readonly property bool mediaReplacementMode:
@@ -88,6 +93,7 @@ Item {
     property bool pendingTaskPopupAwaitingMediaResolution: false
 
     readonly property bool contextMenuVisible: contextMenuOpening
+        || pendingContextMenuAfterTaskPopupClose
         || (appActionsDialogRef && appActionsDialogRef.visible)
         || (trashMenuDialogRef && trashMenuDialogRef.visible)
         || (trashConfirmationDialogRef && trashConfirmationDialogRef.visible)
@@ -119,6 +125,7 @@ Item {
         }
         pendingTaskPopupPreviewFallback = false
         taskPopupOpenTimer.stop()
+        root.cancelPendingContextMenuAfterTaskPopupClose()
         if ((activeTaskPopupPresentation === "preview"
                 || activeTaskPopupPresentation === "overlay")
                 && root.popupDialogActive(taskWindowsDialogRef)) {
@@ -152,6 +159,27 @@ Item {
                     && !root.taskPopupHovered
                     && !root.taskPopupSourceContainsMouse()) {
                 root.closeTaskWindowsPopup(true)
+            }
+        }
+    }
+
+    // Safety net for the sequential close: if the dialog is hidden without the
+    // animated content reporting closeAnimationFinished, do not leave the
+    // pending menu blocking future previews.
+    Timer {
+        id: pendingContextMenuAfterTaskPopupTimer
+        interval: 600
+        repeat: false
+        onTriggered: {
+            if (!root.pendingContextMenuAfterTaskPopupClose) {
+                return
+            }
+            if (root.popupDialogActive(root.taskWindowsDialogRef)) {
+                root.hideTaskWindowsDialog()
+                root.resetTaskPopupState()
+                root.completePendingContextMenuAfterTaskPopupClose()
+            } else {
+                root.cancelPendingContextMenuAfterTaskPopupClose()
             }
         }
     }
@@ -297,15 +325,30 @@ Item {
         return preparePopupAnchor(contextMenuAnchor(visualParent))
     }
 
+    function taskPopupSourceItem(visualParent) {
+        if (!visualParent) {
+            return null
+        }
+        if (visualParent.taskPopupAnchorItem) {
+            return visualParent.taskPopupAnchorItem
+        }
+        // Pinned delegates do not opt into the transformed visual area, but
+        // their layout rect reserves wave headroom, label space and padding.
+        // Anchor their previews to the icon rect the dock paints, exactly as
+        // context menus already do. Media and calendar fall back to the full
+        // item because they do not paint itemIcon.
+        return visualParent.contextMenuAnchorItem || null
+    }
+
     function taskPopupAnchor(visualParent) {
-        if (visualParent && visualParent.taskPopupAnchorItem) {
+        const sourceItem = taskPopupSourceItem(visualParent)
+        if (sourceItem) {
             if (stableTaskPopupAnchorRef
                     && typeof stableTaskPopupAnchorRef.capture === "function"
-                    && stableTaskPopupAnchorRef.capture(
-                        visualParent.taskPopupAnchorItem)) {
+                    && stableTaskPopupAnchorRef.capture(sourceItem)) {
                 return stableTaskPopupAnchorRef
             }
-            return visualParent.taskPopupAnchorItem
+            return sourceItem
         }
         return popupAnchor(visualParent)
     }
@@ -376,6 +419,7 @@ Item {
             contextMenuOpening = false
             activeAppContextMenuAnchor = null
         }
+        root.cancelPendingContextMenuAfterTaskPopupClose()
         const dialogs = [folderPopupDialogRef, calendarPopupDialogRef, trashMenuDialogRef,
             trashConfirmationDialogRef,
             notePopupDialogRef, appActionsDialogRef, taskOverflowDialogRef, taskWindowsDialogRef]
@@ -438,6 +482,12 @@ Item {
                 || !surfaceAvailable(taskWindowsPopupContentRef, "taskWindowsPopupContent")) {
             return
         }
+        if (pendingContextMenuAfterTaskPopupClose
+                && pendingContextMenuAfterTaskPopupData
+                && pendingContextMenuAfterTaskPopupData.anchor === visualParent) {
+            root.cancelPendingContextMenuAfterTaskPopupClose()
+            return
+        }
         const rows = taskRows instanceof Array
             ? taskRows
             : taskControllerRef.taskStateForDockItem(itemData).rows
@@ -446,9 +496,6 @@ Item {
             : ""
         const taskPopupAlreadyActive = taskWindowsDialogRef.visible
             && taskPopupVisualParent === visualParent
-        if (taskPopupAlreadyActive && taskPopupAnimatedContentRef) {
-            taskPopupAnimatedContentRef.cancelClosing()
-        }
         if (taskPopupAlreadyActive && taskWindowsPopupContentRef.actionsVisible) {
             taskPopupOpenTimer.stop()
             taskPopupCloseTimer.stop()
@@ -484,6 +531,20 @@ Item {
                 : 0
         }
         if (taskPopupAlreadyActive) {
+            // Window previews leave first; the context menu is a separate
+            // surface anchored to the icon. Media cards keep their composed
+            // card-to-actions transition until a product decision changes it.
+            const windowPreviewPresentation =
+                activeTaskPopupPresentation === "preview"
+                || activeTaskPopupPresentation === "overlay"
+            if (windowPreviewPresentation
+                    && root.deferContextMenuAfterTaskPopup(itemData,
+                        visualParent, rows, itemOrigin, persistentIndex)) {
+                return
+            }
+            if (taskPopupAnimatedContentRef) {
+                taskPopupAnimatedContentRef.cancelClosing()
+            }
             taskPopupOpenTimer.stop()
             taskPopupCloseTimer.stop()
             taskWindowsPopupContentRef.showActions(!preserveMediaContext)
@@ -613,7 +674,14 @@ Item {
         const resolvedTaskAnchor = taskPopupAnchor(visualParent)
         taskPopupUsesStableAnchor = stableTaskPopupAnchorRef
             && resolvedTaskAnchor === stableTaskPopupAnchorRef
-        taskWindowsDialogRef.visualParent = preparePopupAnchor(resolvedTaskAnchor)
+        const resolvedPopupAnchor = preparePopupAnchor(resolvedTaskAnchor)
+        // Dialog::setVisualParent recalculates placement; assigning the same
+        // anchor again does not. Pinned previews share the stable proxy, so
+        // moving between icons must force a native reposition.
+        if (taskWindowsDialogRef.visualParent === resolvedPopupAnchor) {
+            taskWindowsDialogRef.visualParent = null
+        }
+        taskWindowsDialogRef.visualParent = resolvedPopupAnchor
         taskPopupVisualParent = visualParent
         pendingTaskPopupRequestValid = false
         showTaskWindowsDialog()
@@ -663,6 +731,60 @@ Item {
         closeAllPopups(taskOverflowDialogRef)
         taskOverflowDialogRef.visualParent = preparePopupAnchor(visualParent)
         root.showPopupDialog(taskOverflowDialogRef)
+    }
+
+    function cancelPendingContextMenuAfterTaskPopupClose() {
+        pendingContextMenuAfterTaskPopupTimer.stop()
+        pendingContextMenuAfterTaskPopupClose = false
+        pendingContextMenuAfterTaskPopupData = null
+    }
+
+    function deferContextMenuAfterTaskPopup(itemData, visualParent, taskRows,
+            itemOrigin, persistentIndex) {
+        if (!taskPopupAnimatedContentRef || !taskWindowsDialogRef
+                || !root.popupDialogActive(taskWindowsDialogRef)) {
+            return false
+        }
+        pendingContextMenuAfterTaskPopupClose = true
+        pendingContextMenuAfterTaskPopupData = {
+            "itemData": itemData,
+            "anchor": visualParent,
+            "taskRows": taskRows instanceof Array ? taskRows.slice() : [],
+            "itemOrigin": itemOrigin || "",
+            "persistentIndex": Number.isInteger(persistentIndex)
+                ? persistentIndex : -1
+        }
+        taskPopupOpenTimer.stop()
+        taskPopupCloseTimer.stop()
+        // The safety net must outlast the user-configured exit duration.
+        pendingContextMenuAfterTaskPopupTimer.interval = Math.max(600,
+            Number(taskPopupAnimatedContentRef.effectiveAnimationDuration
+                || 0) + 250)
+        pendingContextMenuAfterTaskPopupTimer.restart()
+        if (!taskPopupAnimatedContentRef.closing) {
+            root.closeTaskWindowsPopup(true)
+        }
+        return true
+    }
+
+    function completePendingContextMenuAfterTaskPopupClose() {
+        if (!pendingContextMenuAfterTaskPopupClose) {
+            return false
+        }
+        const request = pendingContextMenuAfterTaskPopupData
+        root.cancelPendingContextMenuAfterTaskPopupClose()
+        if (!request || !request.anchor) {
+            return false
+        }
+        try {
+            root.openAppContextMenu(request.itemData, request.anchor,
+                request.taskRows, request.itemOrigin,
+                request.persistentIndex)
+            return true
+        } catch (error) {
+            console.warn("Punchi Dock: deferred context menu failed:", error)
+            return false
+        }
     }
 
     function scheduleTaskWindowsPopup(appName, rows, visualParent, keyboardInvoked, previewFallback) {
@@ -737,6 +859,7 @@ Item {
         if (root.popupDialogActive(taskWindowsDialogRef)) {
             root.hideTaskWindowsDialog()
         }
+        root.cancelPendingContextMenuAfterTaskPopupClose()
         root.resetTaskPopupState()
     }
 
