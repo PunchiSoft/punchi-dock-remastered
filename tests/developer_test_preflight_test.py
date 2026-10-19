@@ -56,7 +56,8 @@ class DeveloperTestPreflightTest(unittest.TestCase):
         self.write_executable("ctest", """
 if '--show-only=json-v1' in sys.argv:
     names = [] if os.environ.get('MISSING_PROBE') else [
-        {'name': 'punchimenu_mapped_surface_geometry_test', 'command': [sys.executable]}]
+        {'name': 'punchimenu_mapped_surface_geometry_test', 'command': [sys.executable]},
+        {'name': 'plasmoid_full_load_test', 'command': [sys.executable]}]
     print(json.dumps({'tests': names}))
 elif '-R' in sys.argv:
     record('qml', sys.argv[1:])

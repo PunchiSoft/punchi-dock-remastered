@@ -188,12 +188,14 @@ TestCase {
         property bool preparingToShow: false
         property var visualParent: null
         property var placementAnchor: null
+        property int closeCount: 0
 
         function openSafely() {
             visible = true
         }
 
         function closeSafely() {
+            closeCount += 1
             visible = false
         }
     }
@@ -238,6 +240,10 @@ TestCase {
         fakeAppActionsDialog.preparingToShow = false
         fakeAppActionsDialog.visualParent = null
         fakeAppActionsDialog.placementAnchor = null
+        fakeAppActionsDialog.closeCount = 0
+        coordinator.contextMenuOpening = false
+        coordinator.activeAppContextMenuAnchor = null
+        coordinator.appContextMenuRequestSerial = 0
         fakeSurfaceStack.focusMediaControlsCount = 0
         fakeAnimatedContent.cancelClosingCount = 0
         fakeAnimatedContent.beginClosingCount = 0
@@ -598,6 +604,65 @@ TestCase {
         }, 300)
         compare(fakeAppActionsDialog.placementAnchor, firstAnchor)
         compare(fakeAppActionsDialog.visualParent, firstAnchor)
+    }
+
+    function test_repeatedRightClickOnSameAnchorClosesMenu() {
+        coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
+            firstAnchor, [], "pinned", 0)
+
+        tryVerify(function() {
+            return fakeAppActionsDialog.visible
+        }, 300)
+
+        coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
+            firstAnchor, [], "pinned", 0)
+
+        verify(!fakeAppActionsDialog.visible)
+        verify(!coordinator.contextMenuOpening)
+        compare(coordinator.activeAppContextMenuAnchor, null)
+        compare(fakeAppActionsDialog.closeCount, 1)
+    }
+
+    function test_repeatedClickCancelsQueuedMenuOpen() {
+        coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
+            firstAnchor, [], "pinned", 0)
+        verify(coordinator.contextMenuOpening)
+
+        coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
+            firstAnchor, [], "pinned", 0)
+        wait(0)
+
+        verify(!fakeAppActionsDialog.visible)
+        verify(!coordinator.contextMenuOpening)
+        compare(fakeAppActionsDialog.closeCount, 1)
+    }
+
+    function testOtherDockClickCancelsQueuedContextMenuOpen() {
+        coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
+            firstAnchor, [], "pinned", 0)
+        verify(coordinator.contextMenuOpening)
+
+        coordinator.closeAllPopups(null)
+        wait(0)
+
+        verify(!fakeAppActionsDialog.visible)
+        verify(!coordinator.contextMenuOpening)
+        compare(coordinator.activeAppContextMenuAnchor, null)
+    }
+
+    function testClickOnDifferentAnchorMovesOpenMenu() {
+        coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
+            firstAnchor, [], "pinned", 0)
+        tryVerify(function() {
+            return fakeAppActionsDialog.visible
+        }, 300)
+
+        coordinator.openAppContextMenu({ "appId": "org.mozilla.firefox" },
+            secondAnchor, [], "pinned", 0)
+        wait(0)
+
+        verify(fakeAppActionsDialog.visible)
+        compare(fakeAppActionsDialog.placementAnchor, secondAnchor)
     }
 
     function test_overlayActionsPreserveResolvedPresentation() {

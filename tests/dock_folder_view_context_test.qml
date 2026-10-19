@@ -89,7 +89,7 @@ TestCase {
         const submenu = actionByKind(actions, "submenu")
         verify(submenu !== null)
         compare(submenu.name, "Folder view")
-        compare(submenu.detail, "List")
+        verify(submenu.detail === undefined)
         compare(submenu.children.length, 4)
 
         const gridAction = childByLayout(submenu, "grid")

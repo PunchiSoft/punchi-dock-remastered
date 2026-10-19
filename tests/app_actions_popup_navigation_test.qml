@@ -50,16 +50,19 @@ TestCase {
         popup.openSubMenu(popup.actions[0])
         compare(popup.subMenuOpen, true)
         compare(popup.subMenuTitle, "Places")
-        compare(popup.displayedActions.length, 2)
+        compare(popup.displayedActions.length, 3)
+        compare(popup.displayedActions[0].kind, "back")
+        compare(popup.displayedActions[1].name, "Home")
 
-        popup.openSubMenu(popup.displayedActions[1])
+        popup.openSubMenu(popup.displayedActions[2])
         compare(popup.subMenuTitle, "Devices")
-        compare(popup.displayedActions.length, 1)
-        compare(popup.displayedActions[0].name, "USB")
+        compare(popup.displayedActions.length, 2)
+        compare(popup.displayedActions[0].kind, "back")
+        compare(popup.displayedActions[1].name, "USB")
 
         popup.closeSubMenu()
         compare(popup.subMenuTitle, "Places")
-        compare(popup.displayedActions.length, 2)
+        compare(popup.displayedActions.length, 3)
 
         popup.closeSubMenu()
         compare(popup.subMenuOpen, false)
@@ -69,7 +72,7 @@ TestCase {
 
     function test_rootActionsChangeResetsTheWholeStack() {
         popup.openSubMenu(popup.actions[0])
-        popup.openSubMenu(popup.displayedActions[1])
+        popup.openSubMenu(popup.displayedActions[2])
         compare(popup.subMenuTitle, "Devices")
 
         popup.actions = [{"name": "Only", "kind": "configureDock", "icon": "preferences-system"}]

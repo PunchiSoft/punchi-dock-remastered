@@ -57,6 +57,7 @@ def assert_widget_surface(
     popup_name: str,
     opacity_source: str = "dockConfig.contextMenuBackgroundOpacity",
     adaptive_margin_source: str = "",
+    content_frame_padding_percent: str = "2",
 ) -> None:
     required_fragments = [
         ("ContextSurfaceStack {",
@@ -65,8 +66,8 @@ def assert_widget_surface(
          f"{popup_name} must use the PunchiMenu themed surface"),
         (opacity_source,
          f"{popup_name} must follow its approved opacity source"),
-        ("contentFramePaddingPercent: 2",
-         f"{popup_name} must retain the two-percent content frame"),
+        (f"contentFramePaddingPercent: {content_frame_padding_percent}",
+         f"{popup_name} must retain its approved content frame"),
     ]
     if adaptive_margin_source:
         required_fragments.extend((
@@ -181,6 +182,11 @@ def main() -> int:
     folder_popup = popup_body(main_qml, "folderPopupDialog", "calendarPopupDialog")
     trash_menu = popup_body(main_qml, "trashMenuDialog", "appActionsDialog")
     app_actions = popup_body(main_qml, "appActionsDialog", "notePopupDialog")
+    require(
+        app_actions,
+        "hideOnWindowDeactivate: !popupCoordinator.contextMenuOpening",
+        "The app actions menu must dismiss after focus moves outside once opening completes",
+    )
     note_popup = popup_body(main_qml, "notePopupDialog", "taskWindowsDialog")
     overflow_popup = qml_object_body_by_id(
         main_qml, "GuardedPopupDialog", "taskOverflowDialog"
@@ -202,6 +208,7 @@ def main() -> int:
     assert_widget_surface(
         trash_menu,
         "Trash menu",
+        content_frame_padding_percent="0",
     )
     require(trash_menu, "gap: dockGeometry.contextMenuGap",
             "Trash menu must consume the configured menu distance")
@@ -212,6 +219,7 @@ def main() -> int:
     assert_widget_surface(
         app_actions,
         "Application actions menu",
+        content_frame_padding_percent="0",
     )
     require(app_actions, "gap: dockGeometry.contextMenuGap",
             "Application actions menu must consume the configured menu distance")
@@ -340,13 +348,19 @@ def main() -> int:
         "backgroundBlurAdditionalMaskPolygon:",
         "The shared surface must expose the optional tail blur polygon",
     )
+    integrated_balloon = qml_object_body_by_id(
+        context_surface_stack, "BalloonSurface", "integratedBalloon"
+    )
+    require(
+        integrated_balloon,
+        "z: menuBackground.z",
+        "The integrated balloon must align with the themed frame layer",
+    )
     for fragment, message in (
         ('menuBackground.y + root.backgroundFrameInset("top")',
          "The tail band must start at the effective background edge"),
         ('menuBackground.x + root.backgroundFrameInset("left")',
          "The tail band must start at the effective background edge"),
-        ("z: menuBackground.z + 1",
-         "The tail must join the card edge over the frame shadow strip"),
     ):
         require(context_surface_stack, fragment, message)
     require(
@@ -1062,8 +1076,8 @@ def main() -> int:
         )
 
     for fragment, message in (
-        ("readonly property int actionViewportHeight: visibleRows * effectiveRowHeight",
-         "The action viewport must contain an integer number of rows"),
+        ("readonly property int actionViewportHeight: viewportHeightForRows(visibleRows)",
+         "The action viewport must include its visible separator rows"),
         ("Layout.minimumHeight: appActionsRoot.actionViewportHeight",
          "The action viewport must not contract into a partial row"),
         ("Layout.maximumHeight: appActionsRoot.actionViewportHeight",
@@ -1085,9 +1099,9 @@ def main() -> int:
     app_action_labels = qml_object_bodies(
         app_actions_popup, "PlasmaExtras.ShadowedLabel"
     )
-    if len(app_action_labels) != 3:
+    if len(app_action_labels) != 2:
         raise AssertionError(
-            "Application actions must retain exactly three themed shadow labels"
+            "Application actions must retain themed action and detail labels"
         )
     for label in app_action_labels:
         require(

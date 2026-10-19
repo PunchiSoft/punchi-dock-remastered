@@ -99,8 +99,10 @@ TestCase {
         verify(popup.subMenuOpen)
         compare(popup.subMenuTitle, "Menu mode")
         tryVerify(() => list.itemAtIndex(0) !== null)
-        compare(list.itemAtIndex(0).text, "Normal")
-        verify(list.itemAtIndex(0).checked)
+        compare(list.itemAtIndex(0).text, "Back to menu")
+        tryVerify(() => list.itemAtIndex(1) !== null)
+        compare(list.itemAtIndex(1).text, "Normal")
+        verify(list.itemAtIndex(1).checked)
 
         popup.closeSubMenu()
         verify(!popup.subMenuOpen)

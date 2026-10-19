@@ -42,6 +42,7 @@ Primary actions (choose only one):
   --install         Build and install the plasmoid locally.
   --build-only      Build the local package without installing or restarting Plasma.
   --package         Alias for --build-only.
+  --update          Install or update from the newest universal package in dist/.
   --check-deps      Check system build dependencies for the current distribution.
   --uninstall       Uninstall the plasmoid from the local Plasma environment.
   --restart-plasma  Restart Plasma Shell on demand.
@@ -70,14 +71,15 @@ message() {
         menu_settings)   punchi_ui_write_styled_line heading 1 "$(punchi_gettext 'Settings and help')" ;;
         menu_opt1)       punchi_ui_write_styled_line success 1 "$(punchi_gettext '  [1] Build and install locally (Recommended)')" ;;
         menu_opt2)       punchi_gettext_line '  [2] Build .plasmoid package only (no install)' ;;
-        menu_opt3)       punchi_gettext_line '  [3] Install an existing .plasmoid package' ;;
-        menu_opt4)       punchi_gettext_line '  [4] Uninstall the plasmoid from this system' ;;
-        menu_opt5)       punchi_gettext_line '  [5] Restart Plasma Shell only' ;;
-        menu_opt6)       punchi_gettext_line '  [6] Configure build concurrency (Safe / Balanced / Custom)' ;;
-        menu_opt7)       punchi_gettext_line '  [7] Check system build dependencies' ;;
-        menu_opt8)       punchi_gettext_line '  [8] Help (show CLI options)' ;;
-        menu_opt9)       punchi_gettext_line '  [9] Exit' ;;
-        menu_prompt)     punchi_gettext 'Select an option [1-9]: ' ;;
+        menu_opt3)       punchi_gettext_line '  [3] Update from the newest universal package in dist/' ;;
+        menu_opt4)       punchi_gettext_line '  [4] Install an existing .plasmoid package from a path' ;;
+        menu_opt5)       punchi_gettext_line '  [5] Uninstall the plasmoid from this system' ;;
+        menu_opt6)       punchi_gettext_line '  [6] Restart Plasma Shell only' ;;
+        menu_opt7)       punchi_gettext_line '  [7] Configure build concurrency (Safe / Balanced / Custom)' ;;
+        menu_opt8)       punchi_gettext_line '  [8] Check system build dependencies' ;;
+        menu_opt9)       punchi_gettext_line '  [9] Help (show CLI options)' ;;
+        menu_opt10)      punchi_gettext_line '  [10] Exit' ;;
+        menu_prompt)     punchi_gettext 'Select an option [1-10]: ' ;;
         prompt_restart)  punchi_gettext 'Restart Plasma Shell now to apply the changes? [Y/n]: ' ;;
         prompt_uninstall_restart) punchi_gettext 'Restart Plasma Shell now to finish uninstalling? [Y/n]: ' ;;
         prompt_package)  punchi_gettext 'Enter the path to a .plasmoid package: ' ;;
@@ -429,6 +431,9 @@ required_commands_for_action() {
         install_package)
             printf '%s\n' kpackagetool6
             ;;
+        update)
+            printf '%s\n' kpackagetool6
+            ;;
         uninstall|restart_plasma|check_deps)
             ;;
         *)
@@ -661,6 +666,10 @@ parse_args() {
                 set_primary_action build_only "$1"
                 shift
                 ;;
+            --update)
+                set_primary_action update "$1"
+                shift
+                ;;
             --check-deps)
                 set_primary_action check_deps "$1"
                 shift
@@ -732,16 +741,17 @@ interactive_menu() {
         message menu_opt1
         message menu_opt2
         message menu_opt3
+        message menu_opt4
         echo ""
         message menu_maintenance
-        message menu_opt4
         message menu_opt5
+        message menu_opt6
         echo ""
         message menu_settings
-        message menu_opt6
         message menu_opt7
         message menu_opt8
         message menu_opt9
+        message menu_opt10
         echo ""
         message menu_prompt
 
@@ -761,38 +771,43 @@ interactive_menu() {
                 break
                 ;;
             3)
+                require_action_commands update
+                "$SCRIPT_DIR/setup-universal.sh" --no-restart
+                echo ""
+                ask_restart_plasma prompt_restart
+                break
+                ;;
+            4)
                 message prompt_package
                 read -r target_package || break
                 require_action_commands install_package
                 if [[ -n "$target_package" ]]; then
                     do_install_package "$target_package" 1
                 else
-                    "$SCRIPT_DIR/setup-universal.sh" --no-restart
-                    echo ""
-                    ask_restart_plasma prompt_restart
+                    message cancelled
                 fi
                 break
                 ;;
-            4)
+            5)
                 do_uninstall 1
                 break
                 ;;
-            5)
+            6)
                 punchi_restart_plasma_shell
                 break
                 ;;
-            6)
-                punchi_configure_build_concurrency_interactive
-                ;;
             7)
-                echo ""
-                punchi_check_and_report_dependencies
+                punchi_configure_build_concurrency_interactive
                 ;;
             8)
                 echo ""
+                punchi_check_and_report_dependencies
+                ;;
+            9)
+                echo ""
                 show_help
                 ;;
-            9|[qQ])
+            10|[qQ])
                 message cancelled
                 break
                 ;;
@@ -834,6 +849,13 @@ main() {
             ;;
         install_package)
             do_install_package "$TARGET_PACKAGE" 0
+            ;;
+        update)
+            if (( NO_RESTART == 1 )); then
+                "$SCRIPT_DIR/setup-universal.sh" --no-restart
+            else
+                "$SCRIPT_DIR/setup-universal.sh"
+            fi
             ;;
         uninstall)
             do_uninstall 1

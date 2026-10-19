@@ -11,7 +11,8 @@ This directory contains the normal user flow. Running without arguments opens th
 The interactive menu lets you:
 - **Build and install locally** (with optional confirmation to restart Plasma Shell);
 - **Build the `.plasmoid` package only** (without installing);
-- **Install an existing package** from `dist/` or a custom path;
+- **Update from the newest universal package** in `dist/`;
+- **Install a specific existing package** from a custom path;
 - **Uninstall** the plasmoid cleanly from your desktop;
 - **Restart Plasma Shell** on demand;
 - **Configure build concurrency & RAM safety** (Safe Mode for VMs / low-RAM systems, Balanced, Fast, or Custom parallel jobs);
@@ -33,6 +34,12 @@ You can also run non-interactively with CLI flags:
 # Create the local .plasmoid package using 4 parallel jobs
 ./scripts-user/setup.sh --build-only --jobs 4
 
+# Update from the newest universal package in dist/ and restart Plasma Shell
+./scripts-user/setup.sh --update
+
+# Update without restarting Plasma Shell
+./scripts-user/setup.sh --update --no-restart
+
 # Uninstall the plasmoid from the current desktop
 ./scripts-user/setup.sh --uninstall
 ```
@@ -50,9 +57,15 @@ To install an existing package directly:
 
 ```bash
 ./scripts-user/setup.sh path/to/package.plasmoid
-# or
+# or, select the newest universal package from dist/
+./scripts-user/setup.sh --update
+# or install a package explicitly with the universal installer
 ./scripts-user/setup-universal.sh [--no-restart] path/to/package.plasmoid
 ```
+
+Updating uses KPackage's update operation for the existing plasmoid ID, so the
+installed package is replaced in place and its Plasma configuration remains
+outside the package directory.
 
 Installing an existing package, uninstalling, or restarting does not require
 the C++ build toolchain. Each action checks only the commands it actually uses.

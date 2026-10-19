@@ -70,8 +70,9 @@ TestCase {
         compare(actions[0].children[1].checked, true)
         verify(contextController.triggerAction(actions[0].children[0]))
         compare(fakeDockItemsController.selectedMode, "floating")
-        compare(actions[1].kind, "configureDock")
-        verify(contextController.triggerAction(actions[1]))
+        compare(actions[1].kind, "separator")
+        compare(actions[2].kind, "configureDock")
+        verify(contextController.triggerAction(actions[2]))
         compare(contextController.configureRequestCount, 1)
 
         fakeDockItemsController.dockItems = [{ "type": "app" }]

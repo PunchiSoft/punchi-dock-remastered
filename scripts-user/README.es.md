@@ -11,7 +11,8 @@ Esta carpeta contiene el flujo para una persona normal. Al ejecutarlo sin argume
 El menú interactivo permite:
 - **Compilar e instalar localmente** (con confirmación opcional para reiniciar Plasma Shell);
 - **Crear solo el paquete `.plasmoid`** (sin instalar);
-- **Instalar un paquete existente** desde `dist/` o una ruta personalizada;
+- **Actualizar desde el paquete universal más reciente** de `dist/`;
+- **Instalar un paquete existente específico** desde una ruta personalizada;
 - **Desinstalar** el plasmoide limpiamente del escritorio;
 - **Reiniciar Plasma Shell** bajo demanda;
 - **Configurar concurrencia de compilación y memoria** (Modo Seguro de 1 núcleo para máquinas virtuales o <= 4 GB de RAM, Balanceado, Rápido o Personalizado);
@@ -33,6 +34,12 @@ También se puede ejecutar sin interacción mediante flags:
 # Crear solo el paquete .plasmoid local usando 4 hilos en paralelo
 ./scripts-user/setup.sh --build-only --jobs 4
 
+# Actualizar desde el paquete universal más reciente de dist/ y reiniciar Plasma Shell
+./scripts-user/setup.sh --update
+
+# Actualizar sin reiniciar Plasma Shell
+./scripts-user/setup.sh --update --no-restart
+
 # Desinstalar el plasmoide del escritorio actual
 ./scripts-user/setup.sh --uninstall
 ```
@@ -50,9 +57,15 @@ Para instalar un paquete existente directamente:
 
 ```bash
 ./scripts-user/setup.sh ruta/al/paquete.plasmoid
-# o
+# o seleccionar el paquete universal más reciente de dist/
+./scripts-user/setup.sh --update
+# o instalar un paquete específico con el instalador universal
 ./scripts-user/setup-universal.sh [--no-restart] ruta/al/paquete.plasmoid
 ```
+
+La actualización usa la operación de actualización de KPackage para el mismo
+ID del plasmoide: reemplaza el paquete instalado y conserva la configuración
+de Plasma, que se guarda fuera del directorio del paquete.
 
 Instalar un paquete existente, desinstalar o reiniciar no requiere la toolchain
 de compilación C++. Cada acción comprueba únicamente los comandos que utiliza.

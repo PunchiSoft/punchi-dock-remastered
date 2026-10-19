@@ -72,6 +72,8 @@ Item {
     property int maximumDynamicTaskPopupRestoreAttempts: 12
     property bool taskPopupHovered: false
     property bool contextMenuOpening: false
+    property var activeAppContextMenuAnchor: null
+    property int appContextMenuRequestSerial: 0
     property string mediaHoverMode: "card"
     property bool mediaHoverEnabled: mediaHoverMode !== "none"
     readonly property bool mediaReplacementMode:
@@ -369,6 +371,11 @@ Item {
     }
 
     function closeAllPopups(exceptDialog) {
+        if (exceptDialog !== appActionsDialogRef) {
+            appContextMenuRequestSerial += 1
+            contextMenuOpening = false
+            activeAppContextMenuAnchor = null
+        }
         const dialogs = [folderPopupDialogRef, calendarPopupDialogRef, trashMenuDialogRef,
             trashConfirmationDialogRef,
             notePopupDialogRef, appActionsDialogRef, taskOverflowDialogRef, taskWindowsDialogRef]
@@ -445,7 +452,8 @@ Item {
         if (taskPopupAlreadyActive && taskWindowsPopupContentRef.actionsVisible) {
             taskPopupOpenTimer.stop()
             taskPopupCloseTimer.stop()
-            taskWindowsPopupContentRef.showPreviews()
+            root.closeTaskWindowsPopup(false)
+            root.resetTaskPopupState()
             return
         }
         const contextualTaskApplicationId = taskControllerRef.taskApplicationIdForRows(rows)
@@ -483,13 +491,31 @@ Item {
         }
 
         const anchor = prepareContextMenuAnchor(visualParent)
+        const menuAlreadyActive = root.popupDialogActive(appActionsDialogRef)
+            || contextMenuOpening
+        if (menuAlreadyActive && activeAppContextMenuAnchor === anchor) {
+            appContextMenuRequestSerial += 1
+            contextMenuOpening = false
+            activeAppContextMenuAnchor = null
+            root.hidePopupDialog(appActionsDialogRef)
+            return
+        }
+
+        appContextMenuRequestSerial += 1
+        const requestSerial = appContextMenuRequestSerial
+        activeAppContextMenuAnchor = anchor
         closeAllPopups(appActionsDialogRef)
         contextMenuOpening = true
         Qt.callLater(function() {
+            if (requestSerial !== root.appContextMenuRequestSerial) {
+                return
+            }
             root.assignPopupAnchor(appActionsDialogRef, anchor)
             root.showPopupDialog(appActionsDialogRef)
             Qt.callLater(function() {
-                root.contextMenuOpening = false
+                if (requestSerial === root.appContextMenuRequestSerial) {
+                    root.contextMenuOpening = false
+                }
             })
         })
     }
