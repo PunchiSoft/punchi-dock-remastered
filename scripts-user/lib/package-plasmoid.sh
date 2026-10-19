@@ -160,6 +160,74 @@ require_command "$STRIP_BIN"
 require_command unzip
 require_command zip
 
+LD_CONFIG_BIN="$(command -v ldconfig 2>/dev/null || true)"
+if [[ -z "$LD_CONFIG_BIN" && -x /sbin/ldconfig ]]; then
+    LD_CONFIG_BIN=/sbin/ldconfig
+fi
+if [[ -z "$LD_CONFIG_BIN" && -x /usr/sbin/ldconfig ]]; then
+    LD_CONFIG_BIN=/usr/sbin/ldconfig
+fi
+if [[ -z "$LD_CONFIG_BIN" ]]; then
+    echo "Required command not found: ldconfig" >&2
+    exit 1
+fi
+
+plasma_needed_sonames() {
+    readelf -d "$1" \
+        | sed -n 's/.*(NEEDED).*\[\(.*\)\]/\1/p' \
+        | grep -E '^lib(Plasma|KF6Plasma)' || true
+}
+
+validate_native_plasma_abi() {
+    local artifact_name
+    local available_sonames
+    local library
+    local needed
+    local failures=0
+
+    artifact_name="$(basename "$ZIP_FILE")"
+    available_sonames="$("$LD_CONFIG_BIN" -p 2>/dev/null | awk 'NR > 1 { print $1 }' | sort -u)"
+    if [[ -z "$available_sonames" ]]; then
+        echo "Error: the Plasma runtime library cache could not be inspected with ldconfig." >&2
+        return 1
+    fi
+
+    for library in "$@"; do
+        while IFS= read -r needed; do
+            case "$needed" in
+                libPlasma.so.*|libPlasmaQuick.so.*|libPlasmaActivities.so.*|libKF6Plasma.so.*|libKF6PlasmaQuick.so.*|libKF6PlasmaActivities.so.*)
+                    if ! grep -Fxq "$needed" <<<"$available_sonames"; then
+                        echo "Error: $library requires $needed, which is not available on this build host." >&2
+                        failures=1
+                    fi
+                    ;;
+            esac
+        done < <(plasma_needed_sonames "$library")
+    done
+
+    if (( failures != 0 )); then
+        echo "The packaged native module would not load on the Plasma ABI of this host." >&2
+        echo "Build each artifact in an environment that provides its target Plasma ABI." >&2
+        return 1
+    fi
+
+    if [[ "$artifact_name" == *-universal.plasmoid ]]; then
+        local universal_plasma_abi=""
+        universal_plasma_abi="$(printf '%s\n' "$available_sonames" \
+            | sed -n 's/^libPlasmaQuick\.so\.\([0-9][0-9]*\)$/\1/p' \
+            | sort -n \
+            | tail -n 1)"
+        if [[ -z "$universal_plasma_abi" ]]; then
+            echo "Error: the PlasmaQuick ABI of this host could not be determined." >&2
+            return 1
+        fi
+        if [[ "$universal_plasma_abi" != "${PUNCHI_UNIVERSAL_PLASMA_ABI:-6}" ]]; then
+            echo "Error: a universal artifact must use the canonical Plasma ABI ${PUNCHI_UNIVERSAL_PLASMA_ABI:-6}; this host provides $universal_plasma_abi." >&2
+            return 1
+        fi
+    fi
+}
+
 if [[ "$PACKAGE_VALIDATION_MODE" == "full" ]]; then
     require_command ctest
     require_command msgattrib
@@ -406,6 +474,9 @@ native_libraries=(
     "$PACKAGE_ROOT/contents/ui/org/punchi/dock/libpunchidockintegration.so"
     "$PACKAGE_ROOT/contents/ui/org/punchi/dock/libpunchidockintegrationplugin.so"
 )
+
+echo "==> Validating native Plasma ABI"
+validate_native_plasma_abi "${native_libraries[@]}"
 
 echo "Stripping development symbols from the staged native module"
 "$STRIP_BIN" --strip-unneeded "${native_libraries[@]}"

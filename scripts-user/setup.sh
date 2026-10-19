@@ -43,6 +43,7 @@ Primary actions (choose only one):
   --build-only      Build the local package without installing or restarting Plasma.
   --package         Alias for --build-only.
   --update          Install or update from the newest universal package in dist/.
+  --git-update      Pull the latest source from the configured Git remote.
   --check-deps      Check system build dependencies for the current distribution.
   --uninstall       Uninstall the plasmoid from the local Plasma environment.
   --restart-plasma  Restart Plasma Shell on demand.
@@ -51,7 +52,7 @@ Modifiers:
   -j, --jobs N      Set the number of parallel build jobs (e.g. -j 1 for safe mode).
   --parallel N      Alias for --jobs.
   --no-restart      Skip restarting Plasma Shell after install or uninstall.
-  -y, --yes         Automatically confirm a restart prompt.
+  -y, --yes         Automatically confirm prompts.
   --lang CODE       Override the detected language (en, es, de, pt_BR).
   -h, --help        Show this help.
 
@@ -72,14 +73,22 @@ message() {
         menu_opt1)       punchi_ui_write_styled_line success 1 "$(punchi_gettext '  [1] Build and install locally (Recommended)')" ;;
         menu_opt2)       punchi_gettext_line '  [2] Build .plasmoid package only (no install)' ;;
         menu_opt3)       punchi_gettext_line '  [3] Update from the newest universal package in dist/' ;;
-        menu_opt4)       punchi_gettext_line '  [4] Install an existing .plasmoid package from a path' ;;
-        menu_opt5)       punchi_gettext_line '  [5] Uninstall the plasmoid from this system' ;;
-        menu_opt6)       punchi_gettext_line '  [6] Restart Plasma Shell only' ;;
-        menu_opt7)       punchi_gettext_line '  [7] Configure build concurrency (Safe / Balanced / Custom)' ;;
-        menu_opt8)       punchi_gettext_line '  [8] Check system build dependencies' ;;
-        menu_opt9)       punchi_gettext_line '  [9] Help (show CLI options)' ;;
-        menu_opt10)      punchi_gettext_line '  [10] Exit' ;;
-        menu_prompt)     punchi_gettext 'Select an option [1-10]: ' ;;
+        menu_opt4)       punchi_gettext_line '  [4] Update from the Git repository (git pull)' ;;
+        menu_opt5)       punchi_gettext_line '  [5] Install an existing .plasmoid package from a path' ;;
+        menu_opt6)       punchi_gettext_line '  [6] Uninstall the plasmoid from this system' ;;
+        menu_opt7)       punchi_gettext_line '  [7] Restart Plasma Shell only' ;;
+        menu_opt8)       punchi_gettext_line '  [8] Configure build concurrency (Safe / Balanced / Custom)' ;;
+        menu_opt9)       punchi_gettext_line '  [9] Check system build dependencies' ;;
+        menu_opt10)      punchi_gettext_line '  [10] Help (show CLI options)' ;;
+        menu_opt11)      punchi_gettext_line '  [11] Exit' ;;
+        menu_prompt)     punchi_gettext 'Select an option [1-11]: ' ;;
+        git_checking)    punchi_gettext_line '==> Checking the Git repository for updates...' ;;
+        git_not_checkout) punchi_gettext_line 'Error: this installation is not a Git checkout. Use --update to install a .plasmoid package.' >&2 ;;
+        git_dirty)       punchi_gettext_line 'Error: the Git worktree has local changes. Commit or stash them before updating.' >&2 ;;
+        git_updated)     punchi_gettext_format 'Repository updated: %s -> %s.\n' "${1:-unknown}" "${2:-unknown}" ;;
+        git_up_to_date)  punchi_gettext_format 'Already up to date: %s.\n' "${1:-unknown}" ;;
+        prompt_git_build) punchi_gettext 'Build and install the updated source now? [Y/n]: ' ;;
+        git_update_failed) punchi_gettext_line 'Error: Git update failed. Check the remote and your network connection.' >&2 ;;
         prompt_restart)  punchi_gettext 'Restart Plasma Shell now to apply the changes? [Y/n]: ' ;;
         prompt_uninstall_restart) punchi_gettext 'Restart Plasma Shell now to finish uninstalling? [Y/n]: ' ;;
         prompt_package)  punchi_gettext 'Enter the path to a .plasmoid package: ' ;;
@@ -432,7 +441,10 @@ required_commands_for_action() {
             printf '%s\n' kpackagetool6
             ;;
         update)
-            printf '%s\n' kpackagetool6
+            printf '%s\n' kpackagetool6 unzip
+            ;;
+        git_update)
+            printf '%s\n' git
             ;;
         uninstall|restart_plasma|check_deps)
             ;;
@@ -605,6 +617,67 @@ do_install_package() {
     fi
 }
 
+ask_build_after_git_update() {
+    local answer=""
+
+    if (( AUTO_YES == 1 )); then
+        return 0
+    fi
+    if [[ ! -t 0 ]]; then
+        return 1
+    fi
+
+    message prompt_git_build
+    read -r answer || return 1
+    case "$answer" in
+        [yY]|[sS]|[jJ]|""|[yY][eE][sS]|[sS][iI][mM]|[jJ][aA]) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+do_git_update() {
+    local prompt_for_restart="${1:-1}"
+    local previous_version=""
+    local current_version=""
+    local previous_head=""
+    local current_head=""
+    local package_file=""
+
+    message git_checking
+
+    if ! git -C "$PROJECT_ROOT" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        message git_not_checkout
+        return 1
+    fi
+
+    if [[ -n "$(git -C "$PROJECT_ROOT" status --porcelain --untracked-files=no)" ]]; then
+        message git_dirty
+        return 1
+    fi
+
+    previous_version="$(project_version)"
+    previous_head="$(git -C "$PROJECT_ROOT" rev-parse HEAD 2>/dev/null || true)"
+
+    if ! git -C "$PROJECT_ROOT" pull --ff-only; then
+        message git_update_failed
+        return 1
+    fi
+
+    current_version="$(project_version)"
+    current_head="$(git -C "$PROJECT_ROOT" rev-parse HEAD 2>/dev/null || true)"
+
+    if [[ -n "$previous_head" && "$previous_head" == "$current_head" ]]; then
+        message git_up_to_date "${current_version:-unknown}"
+    else
+        message git_updated "${previous_version:-unknown}" "${current_version:-unknown}"
+    fi
+
+    if ask_build_after_git_update; then
+        package_file="$(run_build_package_flow)"
+        do_install_package "$package_file" "$prompt_for_restart"
+    fi
+}
+
 do_uninstall() {
     local prompt_for_restart="${1:-1}"
     local data_root=""
@@ -668,6 +741,10 @@ parse_args() {
                 ;;
             --update)
                 set_primary_action update "$1"
+                shift
+                ;;
+            --git-update)
+                set_primary_action git_update "$1"
                 shift
                 ;;
             --check-deps)
@@ -742,16 +819,17 @@ interactive_menu() {
         message menu_opt2
         message menu_opt3
         message menu_opt4
+        message menu_opt5
         echo ""
         message menu_maintenance
-        message menu_opt5
         message menu_opt6
+        message menu_opt7
         echo ""
         message menu_settings
-        message menu_opt7
         message menu_opt8
         message menu_opt9
         message menu_opt10
+        message menu_opt11
         echo ""
         message menu_prompt
 
@@ -778,6 +856,11 @@ interactive_menu() {
                 break
                 ;;
             4)
+                require_action_commands git_update
+                do_git_update 1
+                break
+                ;;
+            5)
                 message prompt_package
                 read -r target_package || break
                 require_action_commands install_package
@@ -788,26 +871,26 @@ interactive_menu() {
                 fi
                 break
                 ;;
-            5)
+            6)
                 do_uninstall 1
                 break
                 ;;
-            6)
+            7)
                 punchi_restart_plasma_shell
                 break
                 ;;
-            7)
-                punchi_configure_build_concurrency_interactive
-                ;;
             8)
-                echo ""
-                punchi_check_and_report_dependencies
+                punchi_configure_build_concurrency_interactive
                 ;;
             9)
                 echo ""
+                punchi_check_and_report_dependencies
+                ;;
+            10)
+                echo ""
                 show_help
                 ;;
-            10|[qQ])
+            11|[qQ])
                 message cancelled
                 break
                 ;;
@@ -851,11 +934,17 @@ main() {
             do_install_package "$TARGET_PACKAGE" 0
             ;;
         update)
+            local -a update_arguments=()
             if (( NO_RESTART == 1 )); then
-                "$SCRIPT_DIR/setup-universal.sh" --no-restart
-            else
-                "$SCRIPT_DIR/setup-universal.sh"
+                update_arguments+=(--no-restart)
             fi
+            if (( AUTO_YES == 1 )); then
+                update_arguments+=(--yes)
+            fi
+            "$SCRIPT_DIR/setup-universal.sh" "${update_arguments[@]}"
+            ;;
+        git_update)
+            do_git_update 0
             ;;
         uninstall)
             do_uninstall 1

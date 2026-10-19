@@ -12,6 +12,7 @@ El menú interactivo permite:
 - **Compilar e instalar localmente** (con confirmación opcional para reiniciar Plasma Shell);
 - **Crear solo el paquete `.plasmoid`** (sin instalar);
 - **Actualizar desde el paquete universal más reciente** de `dist/`;
+- **Actualizar desde el repositorio Git (git pull)**;
 - **Instalar un paquete existente específico** desde una ruta personalizada;
 - **Desinstalar** el plasmoide limpiamente del escritorio;
 - **Reiniciar Plasma Shell** bajo demanda;
@@ -39,6 +40,9 @@ También se puede ejecutar sin interacción mediante flags:
 
 # Actualizar sin reiniciar Plasma Shell
 ./scripts-user/setup.sh --update --no-restart
+
+# Descarga el código más reciente del remoto Git configurado
+./scripts-user/setup.sh --git-update
 
 # Desinstalar el plasmoide del escritorio actual
 ./scripts-user/setup.sh --uninstall

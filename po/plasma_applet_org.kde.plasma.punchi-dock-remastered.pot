@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.7.76\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7.77\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-19 01:13-0300\n"
+"POT-Creation-Date: 2026-10-19 13:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,15 +23,19 @@ msgstr ""
 msgid "     Build Concurrency & Memory Configuration           "
 msgstr ""
 
-#: scripts-user/setup-universal.sh:105
+#: scripts-user/setup-universal.sh:118
 msgid "  Punchi Dock Remastered - Package Installer             "
 msgstr ""
 
-#: scripts-user/setup.sh:81
-msgid "  [10] Exit"
+#: scripts-user/setup.sh:82
+msgid "  [10] Help (show CLI options)"
 msgstr ""
 
-#: scripts-user/setup.sh:72
+#: scripts-user/setup.sh:83
+msgid "  [11] Exit"
+msgstr ""
+
+#: scripts-user/setup.sh:73
 msgid "  [1] Build and install locally (Recommended)"
 msgstr ""
 
@@ -47,7 +51,7 @@ msgstr ""
 msgid "  [2] Balanced Mode (2 cores) - Fast and stable for general usage"
 msgstr ""
 
-#: scripts-user/setup.sh:73
+#: scripts-user/setup.sh:74
 msgid "  [2] Build .plasmoid package only (no install)"
 msgstr ""
 
@@ -64,7 +68,7 @@ msgstr ""
 msgid "  [3] Install an existing .plasmoid package from dist/"
 msgstr ""
 
-#: scripts-user/setup.sh:74
+#: scripts-user/setup.sh:75
 msgid "  [3] Update from the newest universal package in dist/"
 msgstr ""
 
@@ -76,8 +80,8 @@ msgstr ""
 msgid "  [4] Custom (enter specific number of parallel jobs)"
 msgstr ""
 
-#: scripts-user/setup.sh:75
-msgid "  [4] Install an existing .plasmoid package from a path"
+#: scripts-user/setup.sh:76
+msgid "  [4] Update from the Git repository (git pull)"
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:181
@@ -88,40 +92,40 @@ msgstr ""
 msgid "  [5] Check and install build dependencies only"
 msgstr ""
 
-#: scripts-user/setup.sh:76
-msgid "  [5] Uninstall the plasmoid from this system"
+#: scripts-user/setup.sh:77
+msgid "  [5] Install an existing .plasmoid package from a path"
 msgstr ""
 
 #: scripts-dev/setup.sh:156
 msgid "  [6] Configure build concurrency (Safe / Balanced / Custom)"
 msgstr ""
 
-#: scripts-user/setup.sh:77
-msgid "  [6] Restart Plasma Shell only"
+#: scripts-user/setup.sh:78
+msgid "  [6] Uninstall the plasmoid from this system"
 msgstr ""
 
-#: scripts-user/setup.sh:78
-msgid "  [7] Configure build concurrency (Safe / Balanced / Custom)"
+#: scripts-user/setup.sh:79
+msgid "  [7] Restart Plasma Shell only"
 msgstr ""
 
 #: scripts-dev/setup.sh:157
 msgid "  [7] Uninstall the plasmoid from this system"
 msgstr ""
 
-#: scripts-user/setup.sh:79
-msgid "  [8] Check system build dependencies"
+#: scripts-user/setup.sh:80
+msgid "  [8] Configure build concurrency (Safe / Balanced / Custom)"
 msgstr ""
 
 #: scripts-dev/setup.sh:158
 msgid "  [8] Help (show CLI commands reference)"
 msgstr ""
 
-#: scripts-dev/setup.sh:159
-msgid "  [9] Exit"
+#: scripts-user/setup.sh:81
+msgid "  [9] Check system build dependencies"
 msgstr ""
 
-#: scripts-user/setup.sh:80
-msgid "  [9] Help (show CLI options)"
+#: scripts-dev/setup.sh:159
+msgid "  [9] Exit"
 msgstr ""
 
 #: contents/ui/components/CalendarPopup.qml:358
@@ -263,11 +267,11 @@ msgstr ""
 msgid "%1 px"
 msgstr ""
 
+#: contents/ui/config/components/ActionDialog.qml:94
 #: contents/ui/config/ConfigItems.qml:1079
 #: contents/ui/config/ItemActionEditor.qml:55
 #: contents/ui/config/ItemActionEditor.qml:180
 #: contents/ui/config/ItemConfigurationDialog.qml:781
-#: contents/ui/config/components/ActionDialog.qml:94
 msgid "%1 rows"
 msgstr ""
 
@@ -341,6 +345,8 @@ msgstr ""
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:586
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:621
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:656
+#: contents/ui/config/components/PopupAnimationSettings.qml:82
+#: contents/ui/config/components/PopupAnimationSettings.qml:107
 #: contents/ui/config/ConfigFolderPopups.qml:245
 #: contents/ui/config/ConfigFolderPopups.qml:279
 #: contents/ui/config/ConfigFolderPopups.qml:323
@@ -353,8 +359,6 @@ msgstr ""
 #: contents/ui/config/ConfigPopups.qml:213
 #: contents/ui/config/ConfigPopups.qml:252
 #: contents/ui/config/ConfigPopups.qml:288
-#: contents/ui/config/components/PopupAnimationSettings.qml:82
-#: contents/ui/config/components/PopupAnimationSettings.qml:107
 #, javascript-format
 msgid "%1%"
 msgstr ""
@@ -561,12 +565,16 @@ msgid ""
 "above to choose which controls appear and adjust their layout."
 msgstr ""
 
-#: scripts-user/setup.sh:87
+#: scripts-user/setup.sh:96
 msgid "==> Building the native QML module without developer tests..."
 msgstr ""
 
 #: scripts-dev/setup.sh:164
 msgid "==> Checking and installing build dependencies..."
+msgstr ""
+
+#: scripts-user/setup.sh:85
+msgid "==> Checking the Git repository for updates..."
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:236
@@ -591,7 +599,7 @@ msgstr ""
 msgid "==> Plasma Shell restart requested."
 msgstr ""
 
-#: scripts-dev/setup.sh:166 scripts-user/setup.sh:89
+#: scripts-dev/setup.sh:166 scripts-user/setup.sh:98
 msgid "==> Plasmoid uninstalled successfully."
 msgstr ""
 
@@ -616,7 +624,7 @@ msgstr ""
 msgid "==> Starting clean install (remove + rebuild + install)..."
 msgstr ""
 
-#: scripts-user/setup.sh:88
+#: scripts-user/setup.sh:97
 msgid "==> Uninstalling Punchi Dock Remastered..."
 msgstr ""
 
@@ -624,15 +632,15 @@ msgstr ""
 msgid "==> Uninstalling the plasmoid..."
 msgstr ""
 
-#: scripts-user/setup-universal.sh:111
+#: scripts-user/setup-universal.sh:190
 msgid "==> [1/3] Installing or updating the plasmoid..."
 msgstr ""
 
-#: scripts-user/setup-universal.sh:123
+#: scripts-user/setup-universal.sh:202
 msgid "==> [2/3] Restarting Plasma Shell..."
 msgstr ""
 
-#: scripts-user/setup-universal.sh:128
+#: scripts-user/setup-universal.sh:207
 msgid "==> [3/3] Collecting startup diagnostics..."
 msgstr ""
 
@@ -899,6 +907,11 @@ msgstr ""
 msgid ""
 "Alphabetical sorting is active. Application positions cannot be changed "
 "manually, but drag and drop remains available."
+msgstr ""
+
+#: scripts-user/setup.sh:89
+#, sh-printf-format
+msgid "Already up to date: %s.\\n"
 msgstr ""
 
 #: contents/ui/config/MediaPlayerOptionsPanel.qml:47
@@ -1210,7 +1223,7 @@ msgctxt "@option:media-track-information"
 msgid "Automatic (recommended)"
 msgstr ""
 
-#: scripts-user/setup.sh:369
+#: scripts-user/setup.sh:378
 #, sh-printf-format
 msgid ""
 "Automatic dependency checks are not available for %s. Install the build "
@@ -1391,8 +1404,8 @@ msgid "Bottom to top"
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:29
-#: contents/ui/config/ConfigMouse.qml:52
 #: contents/ui/config/components/PopupAnimationSettings.qml:19
+#: contents/ui/config/ConfigMouse.qml:52
 msgid "Bounce"
 msgstr ""
 
@@ -1401,7 +1414,11 @@ msgctxt "@option:check folder container"
 msgid "Browse subfolders"
 msgstr ""
 
-#: scripts-user/setup.sh:554 scripts-user/setup.sh:559
+#: scripts-user/setup.sh:90
+msgid "Build and install the updated source now? [Y/n]: "
+msgstr ""
+
+#: scripts-user/setup.sh:566 scripts-user/setup.sh:571
 msgid "Build package"
 msgstr ""
 
@@ -1457,8 +1474,8 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: contents/ui/components/NotePopup.qml:289
 #: contents/ui/components/controlcenter/ControlCenterNetworkPasswordSurface.qml:108
+#: contents/ui/components/NotePopup.qml:289
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionContent.qml:388
 #: contents/ui/config/ConfigAspect.qml:481
 #: contents/ui/config/ItemConfigurationDialog.qml:890
@@ -1555,6 +1572,11 @@ msgstr ""
 msgid "Checking dependencies..."
 msgstr ""
 
+#: scripts-user/setup-universal.sh:168
+#, sh-printf-format
+msgid "Checksum verified: %s\\n"
+msgstr ""
+
 #: contents/ui/config/SeparatorOptions.qml:126
 msgctxt "@item:inlistbox Separator shape"
 msgid "Chevron"
@@ -1591,8 +1613,8 @@ msgstr ""
 msgid "Choose Window Count Badge Color"
 msgstr ""
 
-#: contents/ui/config/ConfigItems.qml:518
 #: contents/ui/config/code/configItemsWorkflowHelper.js:97
+#: contents/ui/config/ConfigItems.qml:518
 msgid "Choose a folder first."
 msgstr ""
 
@@ -1746,8 +1768,8 @@ msgstr ""
 msgid "Clean configuration file?"
 msgstr ""
 
-#: contents/ui/components/NotePopup.qml:175
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
+#: contents/ui/components/NotePopup.qml:175
 msgid "Clear"
 msgstr ""
 
@@ -1859,7 +1881,7 @@ msgctxt "@title:window"
 msgid "Compact Menu Settings"
 msgstr ""
 
-#: scripts-user/setup.sh:537 scripts-user/setup.sh:560
+#: scripts-user/setup.sh:549 scripts-user/setup.sh:572
 msgid "Completed"
 msgstr ""
 
@@ -2009,9 +2031,9 @@ msgctxt "@info:status"
 msgid "Connection failed"
 msgstr ""
 
+#: contents/ui/config/code/itemTypeCatalog.js:50
 #: contents/ui/config/ConfigItems.qml:1054
 #: contents/ui/config/ItemConfigurationDialog.qml:675
-#: contents/ui/config/code/itemTypeCatalog.js:50
 msgid "Container"
 msgstr ""
 
@@ -2078,8 +2100,8 @@ msgstr ""
 msgid "Control Center"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:50
 #: contents/ui/components/controlcenter/ControlCenterOverlay.qml:482
+#: contents/ui/components/DockItem.qml:50
 msgctxt "@title"
 msgid "Control Center"
 msgstr ""
@@ -2274,8 +2296,8 @@ msgstr ""
 msgid "Delete this note from the dock? Its contents cannot be recovered."
 msgstr ""
 
-#: scripts-user/setup.sh:541 scripts-user/setup.sh:545
-#: scripts-user/setup.sh:549
+#: scripts-user/setup.sh:553 scripts-user/setup.sh:557
+#: scripts-user/setup.sh:561
 msgid "Dependency check"
 msgstr ""
 
@@ -2298,8 +2320,8 @@ msgid "Detailed"
 msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:467
-#: contents/ui/config/ConfigFolderPopups.qml:111
 #: contents/ui/config/components/RecentApplicationsSettings.qml:30
+#: contents/ui/config/ConfigFolderPopups.qml:111
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
 msgstr ""
@@ -2335,7 +2357,7 @@ msgctxt "@title:tab"
 msgid "Devices"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:141
+#: scripts-user/setup-universal.sh:220
 #, sh-printf-format
 msgid "Diagnostics saved to: %s\\n"
 msgstr ""
@@ -2649,11 +2671,11 @@ msgctxt "@info"
 msgid "Enter the Wi-Fi password. It is used only for this connection attempt."
 msgstr ""
 
-#: scripts-user/setup.sh:85
+#: scripts-user/setup.sh:94
 msgid "Enter the path to a .plasmoid package: "
 msgstr ""
 
-#: scripts-user/setup.sh:536
+#: scripts-user/setup.sh:548
 msgid "Environment"
 msgstr ""
 
@@ -2661,7 +2683,7 @@ msgstr ""
 msgid "Error: "
 msgstr ""
 
-#: scripts-user/setup.sh:99
+#: scripts-user/setup.sh:108
 #, sh-printf-format
 msgid "Error: %s\\n"
 msgstr ""
@@ -2675,7 +2697,11 @@ msgstr ""
 msgid "Error: Could not identify the distribution from /etc/os-release."
 msgstr ""
 
-#: scripts-user/setup.sh:92
+#: scripts-user/setup.sh:91
+msgid "Error: Git update failed. Check the remote and your network connection."
+msgstr ""
+
+#: scripts-user/setup.sh:101
 #, sh-printf-format
 msgid "Error: Invalid menu option: '%s'\\n"
 msgstr ""
@@ -2700,7 +2726,7 @@ msgstr ""
 msgid "Error: No build profile exists for the distribution: %s.\\n"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:131
+#: scripts-user/setup-universal.sh:210
 #, sh-printf-format
 msgid "Error: Plasma Shell PID %s stopped during startup.\\n"
 msgstr ""
@@ -2722,7 +2748,7 @@ msgstr ""
 msgid "Error: Unsupported Debian version for building: %s.\\n"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:115
+#: scripts-user/setup-universal.sh:194
 #, sh-printf-format
 msgid "Error: kpackagetool6 did not leave a valid installation in %s\\n"
 msgstr ""
@@ -2731,27 +2757,55 @@ msgstr ""
 msgid "Error: no supported command is available to start Plasma Shell."
 msgstr ""
 
-#: scripts-user/setup-universal.sh:99
+#: scripts-user/setup-universal.sh:112
 #, sh-printf-format
 msgid ""
 "Error: no universal .plasmoid was found in '%s' and no valid package path "
 "was provided.\\n"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:71
+#: scripts-user/setup-universal.sh:79
 msgid "Error: only one .plasmoid package can be installed at a time."
 msgstr ""
 
-#: scripts-user/setup-universal.sh:86
+#: scripts-user/setup-universal.sh:157
+msgid ""
+"Error: refusing to install an older package without confirmation; use --yes "
+"to override."
+msgstr ""
+
+#: scripts-user/setup-universal.sh:94
 #, sh-printf-format
 msgid "Error: required installation command not found: %s\\n"
+msgstr ""
+
+#: scripts-user/setup.sh:87
+msgid ""
+"Error: the Git worktree has local changes. Commit or stash them before "
+"updating."
 msgstr ""
 
 #: scripts-user/lib/plasma-shell-control.sh:22
 msgid "Error: the Plasma Shell user service could not be restarted."
 msgstr ""
 
-#: scripts-user/setup-universal.sh:77
+#: scripts-user/setup-universal.sh:172
+#, sh-printf-format
+msgid "Error: the package checksum does not match: %s\\n"
+msgstr ""
+
+#: scripts-user/setup-universal.sh:139
+#, sh-printf-format
+msgid "Error: the selected package is not a valid Punchi Dock package: %s\\n"
+msgstr ""
+
+#: scripts-user/setup.sh:86
+msgid ""
+"Error: this installation is not a Git checkout. Use --update to install "
+"a .plasmoid package."
+msgstr ""
+
+#: scripts-user/setup-universal.sh:85
 #, sh-printf-format
 msgid "Error: unknown option or invalid package path: %s\\n"
 msgstr ""
@@ -2785,12 +2839,12 @@ msgid "Failed to read file."
 msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:480
+#: contents/ui/config/components/ActionDialog.qml:74
+#: contents/ui/config/components/RecentApplicationsSettings.qml:31
 #: contents/ui/config/ConfigFolderPopups.qml:112
 #: contents/ui/config/ConfigItems.qml:1059
 #: contents/ui/config/ItemConfigurationDialog.qml:680
 #: contents/ui/config/ItemEditorPanel.qml:64
-#: contents/ui/config/components/ActionDialog.qml:74
-#: contents/ui/config/components/RecentApplicationsSettings.qml:31
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Fan"
 msgstr ""
@@ -3105,8 +3159,8 @@ msgid "Grid"
 msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:441
-#: contents/ui/config/ConfigFolderPopups.qml:109
 #: contents/ui/config/components/RecentApplicationsSettings.qml:28
+#: contents/ui/config/ConfigFolderPopups.qml:109
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Grid"
 msgstr ""
@@ -3339,7 +3393,7 @@ msgid ""
 "visible."
 msgstr ""
 
-#: scripts-user/setup.sh:542 scripts-user/setup.sh:555
+#: scripts-user/setup.sh:554 scripts-user/setup.sh:567
 msgid "In progress"
 msgstr ""
 
@@ -3380,21 +3434,29 @@ msgctxt "@title:group"
 msgid "Input Devices"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:119
+#: scripts-user/setup-universal.sh:149
+msgid "Install this older package anyway? [y/N]: "
+msgstr ""
+
+#: scripts-user/setup-universal.sh:183
+msgid "Install this package? [Y/n]: "
+msgstr ""
+
+#: scripts-user/setup-universal.sh:198
 #, sh-printf-format
 msgid "Installation completed in: %s\\n"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:145
+#: scripts-user/setup-universal.sh:224
 msgid "Installation completed without restarting Plasma Shell."
 msgstr ""
 
-#: scripts-user/setup-universal.sh:108
+#: scripts-user/setup-universal.sh:121
 #, sh-printf-format
 msgid "Installation directory: %s\\n"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:139
+#: scripts-user/setup-universal.sh:218
 msgid "Installation or update completed successfully."
 msgstr ""
 
@@ -3402,7 +3464,7 @@ msgstr ""
 msgid "Installed Punchi Dock theme"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:140 scripts-user/setup-universal.sh:146
+#: scripts-user/setup-universal.sh:219 scripts-user/setup-universal.sh:225
 #, sh-printf-format
 msgid "Installed package: %s\\n"
 msgstr ""
@@ -3614,8 +3676,8 @@ msgid "List"
 msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:454
-#: contents/ui/config/ConfigFolderPopups.qml:110
 #: contents/ui/config/components/RecentApplicationsSettings.qml:29
+#: contents/ui/config/ConfigFolderPopups.qml:110
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
 msgstr ""
@@ -3635,7 +3697,7 @@ msgctxt "@info:status"
 msgid "Loading applications…"
 msgstr ""
 
-#: scripts-user/setup.sh:91
+#: scripts-user/setup.sh:100
 #, sh-printf-format
 msgid "Local package created without installation: %s\\n"
 msgstr ""
@@ -3655,7 +3717,7 @@ msgctxt "@action:button"
 msgid "Log Out"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:147
+#: scripts-user/setup-universal.sh:226
 msgid "Log out and back in or restart Plasma later to apply the changes."
 msgstr ""
 
@@ -3689,7 +3751,7 @@ msgctxt "@action:context"
 msgid "Magnification"
 msgstr ""
 
-#: scripts-dev/setup.sh:149 scripts-user/setup.sh:70
+#: scripts-dev/setup.sh:149 scripts-user/setup.sh:71
 msgid "Maintenance"
 msgstr ""
 
@@ -4066,7 +4128,7 @@ msgstr ""
 msgid "Name:"
 msgstr ""
 
-#: scripts-user/setup.sh:550
+#: scripts-user/setup.sh:562
 msgid "Needs attention"
 msgstr ""
 
@@ -4227,10 +4289,10 @@ msgid "No virtual desktops were found."
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:26
+#: contents/ui/config/components/PopupAnimationSettings.qml:22
 #: contents/ui/config/ConfigAspect.qml:159
 #: contents/ui/config/ConfigMouse.qml:42 contents/ui/config/ConfigMouse.qml:49
 #: contents/ui/config/ConfigMouse.qml:57 contents/ui/config/ConfigPopups.qml:39
-#: contents/ui/config/components/PopupAnimationSettings.qml:22
 msgid "None"
 msgstr ""
 
@@ -4288,9 +4350,9 @@ msgid "Not selected for the new folder"
 msgstr ""
 
 #: contents/ui/components/NotePopup.qml:133
+#: contents/ui/config/code/itemTypeCatalog.js:55
 #: contents/ui/config/ConfigItems.qml:1060
 #: contents/ui/config/ItemConfigurationDialog.qml:681
-#: contents/ui/config/code/itemTypeCatalog.js:55
 msgid "Note"
 msgstr ""
 
@@ -4302,7 +4364,7 @@ msgstr ""
 msgid "Notice: No local installation found for the plasmoid."
 msgstr ""
 
-#: scripts-user/setup.sh:90
+#: scripts-user/setup.sh:99
 msgid "Notice: No local installation was found."
 msgstr ""
 
@@ -4310,6 +4372,10 @@ msgstr ""
 #, sh-printf-format
 msgid ""
 "Notice: This distribution (%s) is not an official C++ build environment.\\n"
+msgstr ""
+
+#: scripts-user/setup-universal.sh:177
+msgid "Notice: no checksum file was found for this package."
 msgstr ""
 
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:279
@@ -4612,7 +4678,7 @@ msgid ""
 msgstr ""
 
 #: scripts-dev/lib/setup-progress.sh:67 scripts-dev/setup.sh:172
-#: scripts-user/setup.sh:93
+#: scripts-user/setup.sh:102
 msgid "Operation cancelled."
 msgstr ""
 
@@ -4801,7 +4867,7 @@ msgstr ""
 msgid "Plasma Shell PID before restart: %s\\n"
 msgstr ""
 
-#: scripts-user/setup.sh:86
+#: scripts-user/setup.sh:95
 msgid ""
 "Plasma Shell restart skipped. Log out and back in or restart Plasma later."
 msgstr ""
@@ -4940,7 +5006,7 @@ msgctxt "@action:context"
 msgid "Previous track"
 msgstr ""
 
-#: scripts-dev/setup.sh:148 scripts-user/setup.sh:69
+#: scripts-dev/setup.sh:148 scripts-user/setup.sh:70
 msgid "Primary actions"
 msgstr ""
 
@@ -4966,7 +5032,7 @@ msgstr ""
 msgid "Punchi Dock Remastered"
 msgstr ""
 
-#: scripts-dev/setup.sh:68 scripts-user/setup.sh:149
+#: scripts-dev/setup.sh:68 scripts-user/setup.sh:158
 msgid "Punchi Dock Remastered · Setup"
 msgstr ""
 
@@ -5048,7 +5114,7 @@ msgctxt "@info"
 msgid "Quick access to system status and settings"
 msgstr ""
 
-#: scripts-dev/setup.sh:64 scripts-user/setup.sh:145
+#: scripts-dev/setup.sh:64 scripts-user/setup.sh:154
 #, sh-printf-format
 msgid "RAM %s | CPU cores %s | Build jobs %s"
 msgstr ""
@@ -5223,6 +5289,11 @@ msgctxt "@item:inlistbox Media player hover mode"
 msgid "Replace preview with media card"
 msgstr ""
 
+#: scripts-user/setup.sh:88
+#, sh-printf-format
+msgid "Repository updated: %s -> %s.\\n"
+msgstr ""
+
 #: contents/ui/config/ConfigMenus.qml:338
 msgid ""
 "Requests desktop blur behind context menus when the compositor provides it."
@@ -5252,11 +5323,11 @@ msgctxt "@action:button"
 msgid "Restart"
 msgstr ""
 
-#: scripts-user/setup.sh:83
+#: scripts-user/setup.sh:92
 msgid "Restart Plasma Shell now to apply the changes? [Y/n]: "
 msgstr ""
 
-#: scripts-user/setup.sh:84
+#: scripts-user/setup.sh:93
 msgid "Restart Plasma Shell now to finish uninstalling? [Y/n]: "
 msgstr ""
 
@@ -5299,7 +5370,7 @@ msgstr ""
 msgid "Restore window size"
 msgstr ""
 
-#: scripts-user/setup.sh:546
+#: scripts-user/setup.sh:558
 msgid "Reviewed"
 msgstr ""
 
@@ -5437,8 +5508,8 @@ msgstr ""
 msgid "Select a theme"
 msgstr ""
 
-#: scripts-user/setup.sh:82
-msgid "Select an option [1-10]: "
+#: scripts-user/setup.sh:84
+msgid "Select an option [1-11]: "
 msgstr ""
 
 #: scripts-user/lib/build-concurrency.sh:192
@@ -5462,14 +5533,14 @@ msgctxt "@info:accessible"
 msgid "Selected for the new folder"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:107
+#: scripts-user/setup-universal.sh:120
 #, sh-printf-format
 msgid "Selected package: %s\\n"
 msgstr ""
 
+#: contents/ui/config/code/itemTypeCatalog.js:59
 #: contents/ui/config/ConfigItems.qml:1061
 #: contents/ui/config/ItemConfigurationDialog.qml:682
-#: contents/ui/config/code/itemTypeCatalog.js:59
 msgid "Separator"
 msgstr ""
 
@@ -5505,7 +5576,7 @@ msgctxt "@title:application-category"
 msgid "Settings"
 msgstr ""
 
-#: scripts-dev/setup.sh:150 scripts-user/setup.sh:71
+#: scripts-dev/setup.sh:150 scripts-user/setup.sh:72
 msgid "Settings and help"
 msgstr ""
 
@@ -5629,8 +5700,8 @@ msgstr ""
 msgid "Show reflections below dock items"
 msgstr ""
 
-#: contents/ui/config/ItemEditorPanel.qml:390
 #: contents/ui/config/components/RecentApplicationsSeparatorSettings.qml:62
+#: contents/ui/config/ItemEditorPanel.qml:390
 msgid "Show separator"
 msgstr ""
 
@@ -5784,9 +5855,9 @@ msgctxt "@title"
 msgid "Sound Volume"
 msgstr ""
 
+#: contents/ui/config/code/itemTypeCatalog.js:63
 #: contents/ui/config/ConfigItems.qml:1062
 #: contents/ui/config/ItemConfigurationDialog.qml:683
-#: contents/ui/config/code/itemTypeCatalog.js:63
 msgid "Spacer"
 msgstr ""
 
@@ -6485,13 +6556,13 @@ msgid ""
 "install"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:100
+#: scripts-user/setup-universal.sh:113
 msgid ""
 "Usage: scripts-user/setup-universal.sh [--no-restart] <path/to/"
 "package.plasmoid>"
 msgstr ""
 
-#: scripts-user/setup-universal.sh:29
+#: scripts-user/setup-universal.sh:31
 msgid ""
 "Usage: scripts-user/setup-universal.sh [--no-restart] [path/to/"
 "package.plasmoid]\n"
@@ -6502,6 +6573,7 @@ msgid ""
 "\n"
 "Options:\n"
 "  --no-restart   Install without restarting Plasma Shell.\n"
+"  --yes          Skip the package confirmation prompt.\n"
 "  --lang CODE    Override the detected language (en, es, de, pt_BR).\n"
 "  -h, --help     Show this help.\n"
 "\n"
@@ -6534,6 +6606,7 @@ msgid ""
 "  --package         Alias for --build-only.\n"
 "  --update          Install or update from the newest universal package in "
 "dist/.\n"
+"  --git-update      Pull the latest source from the configured Git remote.\n"
 "  --check-deps      Check system build dependencies for the current "
 "distribution.\n"
 "  --uninstall       Uninstall the plasmoid from the local Plasma "
@@ -6546,7 +6619,7 @@ msgid ""
 "  --parallel N      Alias for --jobs.\n"
 "  --no-restart      Skip restarting Plasma Shell after install or "
 "uninstall.\n"
-"  -y, --yes         Automatically confirm a restart prompt.\n"
+"  -y, --yes         Automatically confirm prompts.\n"
 "  --lang CODE       Override the detected language (en, es, de, pt_BR).\n"
 "  -h, --help        Show this help.\n"
 "\n"
@@ -6619,7 +6692,7 @@ msgstr ""
 msgid "Verifying build environment..."
 msgstr ""
 
-#: scripts-dev/setup.sh:62 scripts-user/setup.sh:143
+#: scripts-dev/setup.sh:62 scripts-user/setup.sh:152
 #, sh-printf-format
 msgid "Version %s | %s | %s"
 msgstr ""
@@ -6703,11 +6776,18 @@ msgctxt "@info:accessibility"
 msgid "Volumes can be raised above 100 percent"
 msgstr ""
 
+#: scripts-user/setup-universal.sh:145
+#, sh-printf-format
+msgid ""
+"Warning: the selected package version %s is older than the source version %s."
+"\\n"
+msgstr ""
+
 #: contents/ui/config/ConfigMouse.qml:43
 msgid "Wave"
 msgstr ""
 
-#: scripts-dev/setup.sh:147 scripts-user/setup.sh:68
+#: scripts-dev/setup.sh:147 scripts-user/setup.sh:69
 msgid "What would you like to do?"
 msgstr ""
 
@@ -6873,10 +6953,10 @@ msgstr ""
 msgid "pacman is required on Arch-family distributions"
 msgstr ""
 
+#: contents/ui/config/components/ActionDialog.qml:93
 #: contents/ui/config/ConfigItems.qml:1078
 #: contents/ui/config/ItemActionEditor.qml:54
 #: contents/ui/config/ItemConfigurationDialog.qml:780
-#: contents/ui/config/components/ActionDialog.qml:93
 msgid "rows"
 msgstr ""
 

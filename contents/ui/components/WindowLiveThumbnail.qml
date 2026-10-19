@@ -4,7 +4,6 @@ import QtQuick
 import QtQuick.Effects as Effects
 import org.kde.kwindowsystem
 import org.kde.pipewire as PipeWire
-import org.kde.plasma.core as PlasmaCore
 import org.kde.taskmanager as TaskManager
 
 Item {
@@ -82,20 +81,27 @@ Item {
             anchors.fill: parent
             active: root.isX11 && !root.minimized && Number(root.winId) > 0
             visible: root.isX11
+            source: root.isX11 ? "X11WindowThumbnail.qml" : ""
 
-            sourceComponent: PlasmaCore.WindowThumbnail {
-                id: x11Thumbnail
+            Binding {
+                target: x11ThumbnailLoader.item
+                property: "winId"
+                value: Number(root.winId)
+                when: x11ThumbnailLoader.status === Loader.Ready
+                restoreMode: Binding.RestoreBindingOrValue
+            }
 
-                anchors.fill: parent
-                winId: Number(root.winId)
-                readonly property bool hasThumbnail: paintedWidth > 0 && paintedHeight > 0
-
-                Binding {
-                    target: root
-                    property: "x11ThumbnailReady"
-                    value: x11Thumbnail.hasThumbnail
-                    restoreMode: Binding.RestoreBindingOrValue
-                }
+            Binding {
+                target: root
+                property: "x11ThumbnailReady"
+                value: x11ThumbnailLoader.item
+                    // X11WindowThumbnail.qml defines this property; qmllint
+                    // cannot infer properties across Loader.source.
+                    // qmllint disable missing-property
+                    ? x11ThumbnailLoader.item.hasThumbnail
+                    : false
+                when: x11ThumbnailLoader.status === Loader.Ready
+                restoreMode: Binding.RestoreBindingOrValue
             }
         }
     }

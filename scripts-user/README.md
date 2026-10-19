@@ -12,6 +12,7 @@ The interactive menu lets you:
 - **Build and install locally** (with optional confirmation to restart Plasma Shell);
 - **Build the `.plasmoid` package only** (without installing);
 - **Update from the newest universal package** in `dist/`;
+- **Update from the Git repository (git pull)**;
 - **Install a specific existing package** from a custom path;
 - **Uninstall** the plasmoid cleanly from your desktop;
 - **Restart Plasma Shell** on demand;
@@ -39,6 +40,9 @@ You can also run non-interactively with CLI flags:
 
 # Update without restarting Plasma Shell
 ./scripts-user/setup.sh --update --no-restart
+
+# Pull the latest source from the configured Git remote
+./scripts-user/setup.sh --git-update
 
 # Uninstall the plasmoid from the current desktop
 ./scripts-user/setup.sh --uninstall
