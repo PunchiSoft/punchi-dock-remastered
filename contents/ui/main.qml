@@ -9,6 +9,7 @@ import org.kde.kirigami as Kirigami
 import org.kde.kwindowsystem
 import "org/punchi/dock" as Punchi
 import "components"
+import "components/TaskManagerCompatibility.js" as TaskManagerCompatibility
 import "components/controlcenter"
 import "components/punchimenu"
 import "components/BackgroundQuickActions.js" as BackgroundQuickActions
@@ -2213,8 +2214,14 @@ PlasmoidItem {
     DropFeedbackPopup {
         id: dropFeedbackPopup
     }
-    readonly property string currentVirtualDesktopId: String(virtualDesktopInfo.currentDesktop || "")
-    readonly property bool singleVirtualDesktopMode: Plasmoid.configuration.virtualDesktopMode === "single"
+    readonly property bool virtualDesktopInfoAvailable:
+        TaskManagerCompatibility.supportsVirtualDesktopInfo(Qt.platform.pluginName)
+    readonly property string currentVirtualDesktopId:
+        virtualDesktopInfoAvailable
+            ? String(virtualDesktopInfo.currentDesktop || "")
+            : ""
+    readonly property bool singleVirtualDesktopMode: virtualDesktopInfoAvailable
+        && Plasmoid.configuration.virtualDesktopMode === "single"
         && Plasmoid.configuration.targetVirtualDesktop !== ""
     readonly property bool hiddenByVirtualDesktop: singleVirtualDesktopMode
         && currentVirtualDesktopId !== Plasmoid.configuration.targetVirtualDesktop

@@ -34,10 +34,15 @@ Item {
     TaskManager.VirtualDesktopInfo {
         id: virtualDesktopInfo
     }
+    readonly property bool virtualDesktopInfoAvailable:
+        TaskManagerCompatibility.supportsVirtualDesktopInfo(Qt.platform.pluginName)
 
     // Snapshot consumed by the context-action builder. Names and ids stay
     // bounded to what VirtualDesktopInfo reports; the menu is built on demand.
     readonly property var virtualDesktops: {
+        if (!root.virtualDesktopInfoAvailable) {
+            return []
+        }
         const ids = virtualDesktopInfo.desktopIds
         const names = virtualDesktopInfo.desktopNames
         const current = String(virtualDesktopInfo.currentDesktop || "")
@@ -55,13 +60,17 @@ Item {
         return result
     }
     readonly property string currentVirtualDesktopId:
-        String(virtualDesktopInfo.currentDesktop || "")
+        root.virtualDesktopInfoAvailable
+            ? String(virtualDesktopInfo.currentDesktop || "")
+            : ""
 
     TaskManager.TasksModel {
         id: tasksModel
         groupMode: TaskManager.TasksModel.GroupDisabled
         sortMode: TaskManager.TasksModel.SortDisabled
-        virtualDesktop: virtualDesktopInfo.currentDesktop
+        virtualDesktop: root.virtualDesktopInfoAvailable
+            ? virtualDesktopInfo.currentDesktop
+            : ""
         filterByVirtualDesktop: root.useLegacyCurrentDesktopFilter
 
         Component.onCompleted: root.updateCurrentDesktopFilter()
@@ -140,9 +149,11 @@ Item {
     }
 
     function updateCurrentDesktopFilter() {
-        const enabled = root.showActiveTasks && root.currentDesktopOnly
-        const nativeFilterApplied = TaskManagerCompatibility.setOptionalProperty(
-            tasksModel, "filterByCurrentVirtualDesktop", enabled)
+        const enabled = root.virtualDesktopInfoAvailable
+            && root.showActiveTasks && root.currentDesktopOnly
+        const nativeFilterApplied = enabled
+            && TaskManagerCompatibility.setOptionalProperty(
+                tasksModel, "filterByCurrentVirtualDesktop", true)
         root.useLegacyCurrentDesktopFilter = enabled && !nativeFilterApplied
     }
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.75\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-18 23:58-0300\n"
+"POT-Creation-Date: 2026-10-19 00:38-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Spanish\n"
@@ -207,7 +207,7 @@ msgid_plural "%1 more in %2"
 msgstr[0] "%1 más en %2"
 msgstr[1] "%1 más en %2"
 
-#: contents/ui/main.qml:3774
+#: contents/ui/main.qml:3782
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de ventanas más"
@@ -700,7 +700,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Se creó un acceso directo de escritorio para %1."
 
-#: contents/ui/main.qml:2279
+#: contents/ui/main.qml:2286
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr ""
@@ -743,7 +743,7 @@ msgstr "Concurrencia de compilación activa: %s\\n"
 msgid "Active window"
 msgstr "Ventana activa"
 
-#: contents/ui/config/ConfigGeneral.qml:118
+#: contents/ui/config/ConfigGeneral.qml:119
 msgid "Adaptive"
 msgstr "Adaptable"
 
@@ -753,12 +753,12 @@ msgctxt "@action:button"
 msgid "Add"
 msgstr "Añadir"
 
-#: contents/ui/main.qml:47
+#: contents/ui/main.qml:48
 msgctxt "@action:context"
 msgid "Add Quick Note"
 msgstr "Añadir nota rápida"
 
-#: contents/ui/main.qml:52
+#: contents/ui/main.qml:53
 msgctxt "@action:context"
 msgid "Add Separator"
 msgstr "Añadir separador"
@@ -907,7 +907,7 @@ msgstr ""
 msgid "Adjusts the indicator thickness between 2 and 10 pixels."
 msgstr "Ajusta el grosor del indicador entre 2 y 10 píxeles."
 
-#: contents/ui/config/ConfigGeneral.qml:567
+#: contents/ui/config/ConfigGeneral.qml:576
 msgid "Adjusts the spacing between dock icons from 0 to 24 pixels."
 msgstr "Ajusta la separación entre los iconos del dock de 0 a 24 píxeles."
 
@@ -943,11 +943,11 @@ msgstr "Todas las aplicaciones"
 msgid "All Arch build packages are already installed"
 msgstr "Todos los paquetes de compilación de Arch ya están instalados"
 
-#: contents/ui/components/TaskModelController.qml:859
+#: contents/ui/components/TaskModelController.qml:870
 msgid "All Desktops"
 msgstr "Todos los escritorios"
 
-#: contents/ui/config/ConfigGeneral.qml:636
+#: contents/ui/config/ConfigGeneral.qml:645
 msgid "All desktops"
 msgstr "Todos los escritorios"
 
@@ -985,7 +985,7 @@ msgctxt "@option:media-track-information"
 msgid "Always show"
 msgstr "Mostrar siempre"
 
-#: contents/ui/config/ConfigGeneral.qml:112
+#: contents/ui/config/ConfigGeneral.qml:113
 msgid "Always visible"
 msgstr "Siempre visible"
 
@@ -1041,7 +1041,7 @@ msgstr "Secciones de apariencia"
 msgid "Appearance:"
 msgstr "Apariencia:"
 
-#: contents/ui/config/ConfigGeneral.qml:108
+#: contents/ui/config/ConfigGeneral.qml:109
 msgid "Applets only"
 msgstr "Solo miniaplicaciones"
 
@@ -1262,7 +1262,7 @@ msgstr "Movimiento rítmico del visualizador de audio"
 msgid "Audio visualizer style"
 msgstr "Estilo del visualizador de audio"
 
-#: contents/ui/config/ConfigGeneral.qml:113
+#: contents/ui/config/ConfigGeneral.qml:114
 msgid "Auto hide"
 msgstr "Ocultar automáticamente"
 
@@ -1292,7 +1292,7 @@ msgctxt "@item:inlistbox Grid arrangement"
 msgid "Automatic"
 msgstr "Automático"
 
-#: contents/ui/config/ConfigGeneral.qml:124
+#: contents/ui/config/ConfigGeneral.qml:125
 msgid "Automatic (Recommended)"
 msgstr "Automático (Recomendado)"
 
@@ -1324,11 +1324,11 @@ msgstr ""
 "El modo automático oculta la información integrada en paneles verticales "
 "estrechos. Los detalles completos siguen disponibles en la ayuda emergente."
 
-#: contents/ui/config/ConfigGeneral.qml:599
+#: contents/ui/config/ConfigGeneral.qml:608
 msgid "Automatic sizing enabled (panel adapts to icons)"
 msgstr "Tamaño automático activado (el panel se adapta a los iconos)"
 
-#: contents/ui/main.qml:59
+#: contents/ui/main.qml:60
 msgctxt "@action:context"
 msgid "Automatically Hide Dock"
 msgstr "Ocultar el dock automáticamente"
@@ -1473,7 +1473,7 @@ msgstr "Bluetooth está desactivado"
 msgid "Blur context menus when available"
 msgstr "Difuminar los menús contextuales cuando esté disponible"
 
-#: contents/ui/config/ConfigGeneral.qml:100
+#: contents/ui/config/ConfigGeneral.qml:101
 msgid "Bottom"
 msgstr "Abajo"
 
@@ -1577,7 +1577,7 @@ msgctxt "@info:status Bluetooth device type"
 msgid "Camera"
 msgstr "Cámara"
 
-#: contents/ui/components/ConfirmTrashEmptyPopup.qml:200
+#: contents/ui/components/ConfirmTrashEmptyPopup.qml:197
 msgid "Cancel"
 msgstr "Descartar"
 
@@ -1626,8 +1626,8 @@ msgstr "Categoría:"
 msgid "Center"
 msgstr "Centro"
 
-#: contents/ui/config/ConfigGeneral.qml:99
-#: contents/ui/config/ConfigGeneral.qml:103
+#: contents/ui/config/ConfigGeneral.qml:100
+#: contents/ui/config/ConfigGeneral.qml:104
 msgid "Center (Recommended)"
 msgstr "Centro (Recomendado)"
 
@@ -1918,7 +1918,7 @@ msgstr "Efecto de clic:"
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:219
 #: contents/ui/components/DecorationCloseButton.qml:26
 #: contents/ui/components/NotePopup.qml:259
-#: contents/ui/components/TaskModelController.qml:876
+#: contents/ui/components/TaskModelController.qml:887
 msgid "Close"
 msgstr "Cerrar"
 
@@ -1931,7 +1931,7 @@ msgctxt "@action:button"
 msgid "Close"
 msgstr "Cerrar"
 
-#: contents/ui/components/TaskModelController.qml:1009
+#: contents/ui/components/TaskModelController.qml:1020
 msgid "Close %1 window"
 msgid_plural "Close all %1 windows"
 msgstr[0] "Cerrar %1 ventana"
@@ -2104,7 +2104,7 @@ msgstr "Configurar papelera"
 msgid "Configuring CMake..."
 msgstr "Configurando CMake..."
 
-#: contents/ui/config/ConfigGeneral.qml:527
+#: contents/ui/config/ConfigGeneral.qml:536
 msgid ""
 "Configuring a custom panel size may cause icons to be clipped during wave "
 "magnification or create disproportionate margins if the height is not "
@@ -2250,7 +2250,7 @@ msgstr "Modo de visualización del centro de control"
 msgid "Control Center item"
 msgstr "Elemento de centro de control"
 
-#: contents/ui/config/ConfigGeneral.qml:460
+#: contents/ui/config/ConfigGeneral.qml:469
 msgid "Controlled by the active custom JSON theme (No background)."
 msgstr "Controlado por el tema JSON activo (Sin fondo)."
 
@@ -2315,7 +2315,7 @@ msgstr "Color actual: %1"
 msgid "Current concurrency: %s\\n"
 msgstr "Concurrencia actual: %s\\n"
 
-#: contents/ui/config/ConfigGeneral.qml:247
+#: contents/ui/config/ConfigGeneral.qml:256
 msgctxt "@info:status <b> marks the current dock mode"
 msgid ""
 "Current dock state: <b>Floating mode</b>.<br>Panel-only sizing and "
@@ -2324,7 +2324,7 @@ msgstr ""
 "Estado actual del dock: <b>modo flotante</b>.<br>Las opciones de tamaño e "
 "integración exclusivas del panel no están disponibles."
 
-#: contents/ui/config/ConfigGeneral.qml:250
+#: contents/ui/config/ConfigGeneral.qml:259
 msgctxt "@info:status <b> marks the current dock mode"
 msgid ""
 "Current dock state: <b>Horizontal panel</b>.<br>Fill free panel space is "
@@ -2335,7 +2335,7 @@ msgstr ""
 "libre del panel se activa únicamente cuando el panel de Plasma usa Rellenar "
 "espacio disponible; de lo contrario, Punchi Dock permanece compacto."
 
-#: contents/ui/config/ConfigGeneral.qml:249
+#: contents/ui/config/ConfigGeneral.qml:258
 msgctxt "@info:status <b> marks the current dock mode"
 msgid ""
 "Current dock state: <b>Vertical panel</b>.<br>Fill free panel space is "
@@ -2351,8 +2351,8 @@ msgctxt "@info:accessibility"
 msgid "Current icon: %1"
 msgstr "Icono actual: %1"
 
-#: contents/ui/config/ConfigGeneral.qml:95
-#: contents/ui/config/ConfigGeneral.qml:125
+#: contents/ui/config/ConfigGeneral.qml:96
+#: contents/ui/config/ConfigGeneral.qml:126
 msgid "Custom"
 msgstr "Personalizado"
 
@@ -2374,19 +2374,19 @@ msgstr "Color personalizado"
 msgid "Custom folder:"
 msgstr "Carpeta personalizada:"
 
-#: contents/ui/config/ConfigGeneral.qml:497
+#: contents/ui/config/ConfigGeneral.qml:506
 msgid "Custom height:"
 msgstr "Altura personalizada:"
 
-#: contents/ui/config/ConfigGeneral.qml:517
+#: contents/ui/config/ConfigGeneral.qml:526
 msgid "Custom panel height"
 msgstr "Altura del panel personalizada"
 
-#: contents/ui/config/ConfigGeneral.qml:517
+#: contents/ui/config/ConfigGeneral.qml:526
 msgid "Custom panel width"
 msgstr "Anchura del panel personalizada"
 
-#: contents/ui/config/ConfigGeneral.qml:497
+#: contents/ui/config/ConfigGeneral.qml:506
 msgid "Custom width:"
 msgstr "Anchura personalizada:"
 
@@ -2456,11 +2456,11 @@ msgstr "Comprobación de dependencias"
 msgid "Description:"
 msgstr "Descripción:"
 
-#: contents/ui/config/ConfigGeneral.qml:135
+#: contents/ui/config/ConfigGeneral.qml:139
 msgid "Desktop %1"
 msgstr "Escritorio %1"
 
-#: contents/ui/config/ConfigGeneral.qml:626
+#: contents/ui/config/ConfigGeneral.qml:635
 msgid "Desktop visibility:"
 msgstr "Visibilidad en escritorios:"
 
@@ -2522,7 +2522,7 @@ msgctxt "@action:context"
 msgid "Disable recent applications"
 msgstr "Desactivar aplicaciones recientes"
 
-#: contents/ui/config/ConfigGeneral.qml:107
+#: contents/ui/config/ConfigGeneral.qml:108
 msgid "Disabled"
 msgstr "Desactivado"
 
@@ -2613,11 +2613,11 @@ msgctxt "@action:button"
 msgid "Do Not Disturb"
 msgstr "No molestar"
 
-#: contents/ui/components/TaskModelController.qml:869
+#: contents/ui/components/TaskModelController.qml:880
 msgid "Do not keep above"
 msgstr "No mantener encima"
 
-#: contents/ui/components/TaskModelController.qml:871
+#: contents/ui/components/TaskModelController.qml:882
 msgid "Do not keep below"
 msgstr "No mantener debajo"
 
@@ -2626,7 +2626,7 @@ msgid "Do you want to empty the trash?"
 msgstr "¿Desea vaciar la papelera?"
 
 #: contents/ui/config/ConfigAspect.qml:180
-#: contents/ui/config/ConfigGeneral.qml:209
+#: contents/ui/config/ConfigGeneral.qml:218
 msgid "Dock"
 msgstr "Dock"
 
@@ -2670,7 +2670,7 @@ msgstr "Tema del dock"
 msgid "Docs: scripts-dev/README.md | scripts-dev/README.es.md"
 msgstr "Documentación: scripts-dev/README.md | scripts-dev/README.es.md"
 
-#: contents/ui/config/ConfigGeneral.qml:114
+#: contents/ui/config/ConfigGeneral.qml:115
 msgid "Dodge windows (Recommended)"
 msgstr "Esquivar ventanas (Recomendado)"
 
@@ -2762,7 +2762,7 @@ msgctxt "@title:category"
 msgid "Education"
 msgstr "Educación"
 
-#: contents/ui/config/ConfigGeneral.qml:581
+#: contents/ui/config/ConfigGeneral.qml:590
 msgid "Effective icon size: %1 px; maximum hover enlargement: %2%"
 msgstr ""
 "Tamaño efectivo del icono: %1 px; ampliación máxima al pasar el ratón: %2%"
@@ -2772,7 +2772,7 @@ msgctxt "@info:accessibility"
 msgid "Element type"
 msgstr "Tipo de elemento"
 
-#: contents/ui/components/ConfirmTrashEmptyPopup.qml:207
+#: contents/ui/components/ConfirmTrashEmptyPopup.qml:205
 msgid "Empty Trash"
 msgstr "Vaciar la papelera"
 
@@ -2784,11 +2784,11 @@ msgstr "Icono de papelera vacía:"
 msgid "Empty sound:"
 msgstr "Sonido al vaciar:"
 
-#: contents/ui/components/TrashMenuPopup.qml:95
+#: contents/ui/components/TrashMenuPopup.qml:101
 msgid "Empty trash"
 msgstr "Vaciar la papelera"
 
-#: contents/ui/components/ConfirmTrashEmptyPopup.qml:114
+#: contents/ui/components/ConfirmTrashEmptyPopup.qml:115
 msgid "Emptying trash"
 msgstr "Vaciando la papelera"
 
@@ -2953,11 +2953,11 @@ msgstr "Error: no se pudo reiniciar el servicio de usuario de Plasma Shell."
 msgid "Error: unknown option or invalid package path: %s\\n"
 msgstr "Error: opción desconocida o ruta de paquete no válida: %s\\n"
 
-#: contents/ui/config/ConfigGeneral.qml:601
+#: contents/ui/config/ConfigGeneral.qml:610
 msgid "Estimated panel-safe maximum: %1 px"
 msgstr "Máximo seguro estimado para el panel: %1 px"
 
-#: contents/ui/components/TaskModelController.qml:873
+#: contents/ui/components/TaskModelController.qml:884
 msgid "Exit full screen"
 msgstr "Salir de pantalla completa"
 
@@ -2965,11 +2965,11 @@ msgstr "Salir de pantalla completa"
 msgid "Export..."
 msgstr "Exportar…"
 
-#: contents/ui/config/ConfigAspect.qml:202 contents/ui/main.qml:104
+#: contents/ui/config/ConfigAspect.qml:202 contents/ui/main.qml:105
 msgid "External JSON theme"
 msgstr "Tema JSON externo"
 
-#: contents/ui/config/ConfigGeneral.qml:213
+#: contents/ui/config/ConfigGeneral.qml:222
 msgid "Extras"
 msgstr "Extras"
 
@@ -3015,15 +3015,15 @@ msgstr "Escala de iconos de Favoritos:"
 msgid "Files"
 msgstr "Archivos"
 
-#: contents/ui/config/ConfigGeneral.qml:94
+#: contents/ui/config/ConfigGeneral.qml:95
 msgid "Fill height"
 msgstr "Rellenar la altura"
 
-#: contents/ui/config/ConfigGeneral.qml:94
+#: contents/ui/config/ConfigGeneral.qml:95
 msgid "Fill width"
 msgstr "Rellenar la anchura"
 
-#: contents/ui/config/ConfigGeneral.qml:93
+#: contents/ui/config/ConfigGeneral.qml:94
 msgid "Fit content (Recommended)"
 msgstr "Ajustar el contenido (Recomendado)"
 
@@ -3041,7 +3041,7 @@ msgstr "Reordenación del dock flotante:"
 msgid "Floating capsules"
 msgstr "Cápsulas flotantes"
 
-#: contents/ui/config/ConfigGeneral.qml:533
+#: contents/ui/config/ConfigGeneral.qml:542
 msgid "Floating icon size:"
 msgstr "Tamaño de icono flotante:"
 
@@ -3251,7 +3251,7 @@ msgstr "Desde arriba"
 msgid "Full icon:"
 msgstr "Icono de papelera llena:"
 
-#: contents/ui/components/TaskModelController.qml:872
+#: contents/ui/components/TaskModelController.qml:883
 msgid "Full screen"
 msgstr "Pantalla completa"
 
@@ -3291,7 +3291,7 @@ msgstr "General"
 msgid "General popup animation"
 msgstr "Animación de ventanas emergentes generales"
 
-#: contents/ui/config/ConfigGeneral.qml:206
+#: contents/ui/config/ConfigGeneral.qml:215
 msgid "General sections"
 msgstr "Secciones de General"
 
@@ -3391,7 +3391,7 @@ msgctxt "@action:button"
 msgid "Hide Plasma volume indicator"
 msgstr "Ocultar el indicador de volumen de Plasma"
 
-#: contents/ui/components/TaskModelController.qml:875
+#: contents/ui/components/TaskModelController.qml:886
 msgid "Hide from Screencast"
 msgstr "Ocultar de la captura de pantalla"
 
@@ -3472,11 +3472,11 @@ msgstr "Los reflejos de iconos no están disponibles en paneles verticales."
 msgid "Icon size:"
 msgstr "Tamaño de los iconos:"
 
-#: contents/ui/config/ConfigGeneral.qml:566
+#: contents/ui/config/ConfigGeneral.qml:575
 msgid "Icon spacing"
 msgstr "Separación de iconos"
 
-#: contents/ui/config/ConfigGeneral.qml:556
+#: contents/ui/config/ConfigGeneral.qml:565
 msgid "Icon spacing:"
 msgstr "Separación de iconos:"
 
@@ -3712,11 +3712,11 @@ msgstr "El JSON parece válido."
 msgid "JSON theme files"
 msgstr "Archivos de temas JSON"
 
-#: contents/ui/components/TaskModelController.qml:868
+#: contents/ui/components/TaskModelController.qml:879
 msgid "Keep above"
 msgstr "Mantener encima"
 
-#: contents/ui/components/TaskModelController.qml:870
+#: contents/ui/components/TaskModelController.qml:881
 msgid "Keep below"
 msgstr "Mantener debajo"
 
@@ -3793,7 +3793,7 @@ msgstr "Acción personalizada"
 msgid "Layout profile:"
 msgstr "Perfil de diseño:"
 
-#: contents/ui/config/ConfigGeneral.qml:102
+#: contents/ui/config/ConfigGeneral.qml:103
 msgid "Left"
 msgstr "Izquierda"
 
@@ -3816,7 +3816,7 @@ msgstr "Modo claro y oscuro"
 msgid "Limit menu rows"
 msgstr "Limitar las filas del menú"
 
-#: contents/ui/config/ConfigGeneral.qml:592
+#: contents/ui/config/ConfigGeneral.qml:601
 msgid "Limit:"
 msgstr "Límite:"
 
@@ -3930,7 +3930,7 @@ msgstr "Nube luminosa"
 msgid "MPRIS controls"
 msgstr "Controles MPRIS"
 
-#: contents/ui/main.qml:82
+#: contents/ui/main.qml:83
 msgctxt "@action:context"
 msgid "Magnification"
 msgstr "Magnificación"
@@ -3978,7 +3978,7 @@ msgctxt "@option:application-order"
 msgid "Manual"
 msgstr "Manual"
 
-#: contents/ui/components/TaskModelController.qml:864
+#: contents/ui/components/TaskModelController.qml:875
 msgid "Maximize"
 msgstr "Maximizar"
 
@@ -4172,7 +4172,7 @@ msgstr ""
 "vista previa de ventana. Los límites de la pantalla pueden reducir el tamaño "
 "efectivo de forma segura."
 
-#: contents/ui/components/TaskModelController.qml:866
+#: contents/ui/components/TaskModelController.qml:877
 msgid "Minimize"
 msgstr "Minimizar"
 
@@ -4186,7 +4186,7 @@ msgstr "Minimizar la ventana"
 msgid "Missing pacman packages: %s\\n"
 msgstr "Paquetes de pacman ausentes: %s\\n"
 
-#: contents/ui/components/TaskModelController.qml:861
+#: contents/ui/components/TaskModelController.qml:872
 msgid "More"
 msgstr "Más"
 
@@ -4213,7 +4213,7 @@ msgctxt "@info:status Bluetooth device type"
 msgid "Mouse"
 msgstr "Ratón"
 
-#: contents/ui/components/TaskModelController.qml:862
+#: contents/ui/components/TaskModelController.qml:873
 msgid "Move"
 msgstr "Desplazar"
 
@@ -4245,11 +4245,11 @@ msgstr "Mover el tema seleccionado a la Papelera…"
 msgid "Move themes to the Trash…"
 msgstr "Mover temas a la Papelera…"
 
-#: contents/ui/components/TaskModelController.qml:858
+#: contents/ui/components/TaskModelController.qml:869
 msgid "Move to Current Desktop"
 msgstr "Mover al escritorio actual"
 
-#: contents/ui/components/TaskModelController.qml:857
+#: contents/ui/components/TaskModelController.qml:868
 msgid "Move to Desktop"
 msgstr "Mover a escritorio"
 
@@ -4340,11 +4340,11 @@ msgctxt "@option:media-auto-collapse"
 msgid "Never"
 msgstr "Never"
 
-#: contents/ui/components/TaskModelController.qml:860
+#: contents/ui/components/TaskModelController.qml:871
 msgid "New Desktop"
 msgstr "Nuevo escritorio"
 
-#: contents/ui/components/TaskModelController.qml:989
+#: contents/ui/components/TaskModelController.qml:1000
 msgid "New window"
 msgstr "Nueva ventana"
 
@@ -4405,7 +4405,7 @@ msgctxt "@info:accessible"
 msgid "No MPRIS player is active"
 msgstr "No hay ningún reproductor MPRIS activo"
 
-#: contents/ui/components/TaskModelController.qml:874
+#: contents/ui/components/TaskModelController.qml:885
 msgid "No Titlebar and Frame"
 msgstr "Sin barra de título ni marco"
 
@@ -4457,7 +4457,7 @@ msgstr ""
 "No se encontraron aplicaciones multimedia instaladas. La selección "
 "automática sigue disponible."
 
-#: contents/ui/main.qml:2265
+#: contents/ui/main.qml:2272
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "No se encontraron archivos locales en este arrastre."
@@ -4482,7 +4482,7 @@ msgstr ""
 "No se encontró ningún reproductor de sonido ni sonido utilizable.No se ha "
 "encontrado ningún reproductor de sonido ni ningún sonido utilizable."
 
-#: contents/ui/config/ConfigGeneral.qml:689
+#: contents/ui/config/ConfigGeneral.qml:698
 msgid "No virtual desktops were found."
 msgstr "No se han encontrado escritorios virtuales."
 
@@ -4494,7 +4494,7 @@ msgstr "No se han encontrado escritorios virtuales."
 msgid "None"
 msgstr "Ninguno"
 
-#: contents/ui/config/ConfigGeneral.qml:121
+#: contents/ui/config/ConfigGeneral.qml:122
 msgid "None (No background)"
 msgstr "Sin fondo"
 
@@ -4646,7 +4646,7 @@ msgstr ""
 "cerrada.Solo se aplica cuando este elemento del dock inicia una aplicación "
 "cerrada."
 
-#: contents/ui/main.qml:2276
+#: contents/ui/main.qml:2283
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Solo se pueden abrir archivos locales con una aplicación."
@@ -4734,7 +4734,7 @@ msgstr ""
 msgid "Opacity:"
 msgstr "Opacidad:"
 
-#: contents/ui/config/ConfigGeneral.qml:119
+#: contents/ui/config/ConfigGeneral.qml:120
 msgid "Opaque"
 msgstr "Opaco"
 
@@ -4859,7 +4859,7 @@ msgstr "Abre el selector de elementos para elegir qué añadir al dock."
 msgid "Open the selected player minimized"
 msgstr "Abrir minimizado el reproductor seleccionado"
 
-#: contents/ui/components/TrashMenuPopup.qml:48
+#: contents/ui/components/TrashMenuPopup.qml:49
 msgid "Open the trash folder in the file manager"
 msgstr "Abrir la carpeta de la papelera en el gestor de archivos"
 
@@ -4874,7 +4874,7 @@ msgctxt "@info:accessible"
 msgid "Open this folder in the file manager"
 msgstr "Abrir esta carpeta en el gestor de archivos"
 
-#: contents/ui/components/TrashMenuPopup.qml:44
+#: contents/ui/components/TrashMenuPopup.qml:45
 msgid "Open trash"
 msgstr "Abrir la papelera"
 
@@ -4957,15 +4957,15 @@ msgctxt "@info"
 msgid "Pair a device with the official Bluetooth wizard."
 msgstr "Empareja un dispositivo con el asistente oficial de Bluetooth."
 
-#: contents/ui/config/ConfigGeneral.qml:324
+#: contents/ui/config/ConfigGeneral.qml:333
 msgid "Panel alignment"
 msgstr "Alineación del panel"
 
-#: contents/ui/config/ConfigGeneral.qml:294
+#: contents/ui/config/ConfigGeneral.qml:303
 msgid "Panel alignment:"
 msgstr "Alineación del panel:"
 
-#: contents/ui/config/ConfigGeneral.qml:109
+#: contents/ui/config/ConfigGeneral.qml:110
 msgid "Panel and applets (Recommended)"
 msgstr "Panel y miniaplicaciones (Recomendado)"
 
@@ -4974,51 +4974,51 @@ msgstr "Panel y miniaplicaciones (Recomendado)"
 msgid "Panel distance:"
 msgstr "Separación del panel:"
 
-#: contents/ui/config/ConfigGeneral.qml:361
+#: contents/ui/config/ConfigGeneral.qml:370
 msgid "Panel floating mode"
 msgstr "Modo flotante del panel"
 
-#: contents/ui/config/ConfigGeneral.qml:331
+#: contents/ui/config/ConfigGeneral.qml:340
 msgid "Panel floating mode:"
 msgstr "Modo flotante del panel:"
 
-#: contents/ui/config/ConfigGeneral.qml:287
-#: contents/ui/config/ConfigGeneral.qml:490
+#: contents/ui/config/ConfigGeneral.qml:296
+#: contents/ui/config/ConfigGeneral.qml:499
 msgid "Panel height"
 msgstr "Altura del panel"
 
-#: contents/ui/config/ConfigGeneral.qml:257
-#: contents/ui/config/ConfigGeneral.qml:470
+#: contents/ui/config/ConfigGeneral.qml:266
+#: contents/ui/config/ConfigGeneral.qml:479
 msgid "Panel height:"
 msgstr "Altura del panel:"
 
-#: contents/ui/config/ConfigGeneral.qml:533
+#: contents/ui/config/ConfigGeneral.qml:542
 msgid "Panel icon size:"
 msgstr "Tamaño de icono del panel:"
 
-#: contents/ui/config/ConfigGeneral.qml:454
+#: contents/ui/config/ConfigGeneral.qml:463
 msgid "Panel opacity"
 msgstr "Opacidad del panel"
 
-#: contents/ui/config/ConfigGeneral.qml:414
+#: contents/ui/config/ConfigGeneral.qml:423
 msgid "Panel opacity:"
 msgstr "Opacidad del panel:"
 
-#: contents/ui/config/ConfigGeneral.qml:407
+#: contents/ui/config/ConfigGeneral.qml:416
 msgid "Panel visibility"
 msgstr "Visibilidad del panel"
 
-#: contents/ui/config/ConfigGeneral.qml:368
+#: contents/ui/config/ConfigGeneral.qml:377
 msgid "Panel visibility:"
 msgstr "Visibilidad del panel:"
 
-#: contents/ui/config/ConfigGeneral.qml:287
-#: contents/ui/config/ConfigGeneral.qml:490
+#: contents/ui/config/ConfigGeneral.qml:296
+#: contents/ui/config/ConfigGeneral.qml:499
 msgid "Panel width"
 msgstr "Anchura del panel"
 
-#: contents/ui/config/ConfigGeneral.qml:257
-#: contents/ui/config/ConfigGeneral.qml:470
+#: contents/ui/config/ConfigGeneral.qml:266
+#: contents/ui/config/ConfigGeneral.qml:479
 msgid "Panel width:"
 msgstr "Anchura del panel:"
 
@@ -5043,11 +5043,11 @@ msgctxt "@info:status"
 msgid "Paused by another application"
 msgstr "Pausada por otra aplicación"
 
-#: contents/ui/components/TrashMenuPopup.qml:100
+#: contents/ui/components/TrashMenuPopup.qml:108
 msgid "Permanently remove all items from the trash"
 msgstr "Eliminar permanentemente todos los elementos de la papelera"
 
-#: contents/ui/components/ConfirmTrashEmptyPopup.qml:211
+#: contents/ui/components/ConfirmTrashEmptyPopup.qml:210
 msgid "Permanently remove all trashed items"
 msgstr "Eliminar permanentemente todos los elementos de la papelera"
 
@@ -5120,7 +5120,7 @@ msgstr ""
 "reducen más cuando el tamaño personalizado del panel lo requiere. Con un "
 "tema JSON personalizado activo, estas limitaciones no se aplican."
 
-#: contents/ui/config/ConfigAspect.qml:201 contents/ui/main.qml:96
+#: contents/ui/config/ConfigAspect.qml:201 contents/ui/main.qml:97
 msgid "Plasma theme"
 msgstr "Tema de Plasma"
 
@@ -5376,7 +5376,7 @@ msgstr "Archivos recientes"
 msgid "Recent applications"
 msgstr "Aplicaciones recientes"
 
-#: contents/ui/components/DockItem.qml:56 contents/ui/main.qml:492
+#: contents/ui/components/DockItem.qml:56 contents/ui/main.qml:493
 msgctxt "@title"
 msgid "Recent applications"
 msgstr "Aplicaciones recientes"
@@ -5470,7 +5470,7 @@ msgstr "Quitar de la carpeta"
 msgid "Remove open applications from the dock?"
 msgstr "¿Quitar las aplicaciones abiertas del dock?"
 
-#: contents/ui/config/ConfigGeneral.qml:611
+#: contents/ui/config/ConfigGeneral.qml:620
 msgid "Remove safe limits"
 msgstr "Quitar límites seguros"
 
@@ -5558,7 +5558,7 @@ msgstr ""
 msgid "Required commands are missing:"
 msgstr "Faltan comandos requeridos:"
 
-#: contents/ui/components/TaskModelController.qml:863
+#: contents/ui/components/TaskModelController.qml:874
 msgid "Resize"
 msgstr "Redimensionar"
 
@@ -5588,11 +5588,11 @@ msgstr "Método de reinicio: servicio de usuario de systemd"
 msgid "Restarting Plasma Shell..."
 msgstr "Reiniciando Plasma Shell..."
 
-#: contents/ui/components/TaskModelController.qml:867
+#: contents/ui/components/TaskModelController.qml:878
 msgid "Restore"
 msgstr "Restaurar"
 
-#: contents/ui/components/TaskModelController.qml:865
+#: contents/ui/components/TaskModelController.qml:876
 msgid "Restore from maximized"
 msgstr "Restaurar desde maximizada"
 
@@ -5606,7 +5606,7 @@ msgctxt "@action:button"
 msgid "Restore media volume"
 msgstr "Restaurar volumen multimedia"
 
-#: contents/ui/config/ConfigGeneral.qml:610
+#: contents/ui/config/ConfigGeneral.qml:619
 msgid "Restore safe limit"
 msgstr "Restaurar límite seguro"
 
@@ -5623,7 +5623,7 @@ msgstr "Revisado"
 msgid "Rhythmic movement:"
 msgstr "Movimiento rítmico:"
 
-#: contents/ui/config/ConfigGeneral.qml:104
+#: contents/ui/config/ConfigGeneral.qml:105
 msgid "Right"
 msgstr "Derecha"
 
@@ -5662,7 +5662,7 @@ msgstr "Ejecutando pruebas..."
 msgid "Safe Mode"
 msgstr "Modo Seguro"
 
-#: contents/ui/config/ConfigGeneral.qml:597
+#: contents/ui/config/ConfigGeneral.qml:606
 msgid "Safe limits disabled (up to 96 px)"
 msgstr "Límites seguros desactivados (hasta 96 px)"
 
@@ -6058,7 +6058,7 @@ msgstr "Choque lateral"
 msgid "Single"
 msgstr "Individual"
 
-#: contents/ui/config/ConfigGeneral.qml:637
+#: contents/ui/config/ConfigGeneral.qml:646
 msgid "Single desktop"
 msgstr "Un solo escritorio"
 
@@ -6185,7 +6185,7 @@ msgstr "Sistema"
 msgid "System operation failed: %1"
 msgstr "La operación del sistema ha fallado: %1"
 
-#: contents/ui/config/ConfigGeneral.qml:655
+#: contents/ui/config/ConfigGeneral.qml:664
 msgid "Target desktop:"
 msgstr "Escritorio de destino:"
 
@@ -6366,12 +6366,12 @@ msgstr ""
 "El tema del dock controla este separador. Elige «Este separador» para editar "
 "aquí su apariencia."
 
-#: contents/ui/main.qml:2273
+#: contents/ui/main.qml:2280
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "El arrastre contiene una ubicación de archivo local no válida."
 
-#: contents/ui/main.qml:2282
+#: contents/ui/main.qml:2289
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
@@ -6379,7 +6379,7 @@ msgstr ""
 "seguridad.La lista de archivos arrastrados es demasiado grande para abrirla "
 "de forma segura."
 
-#: contents/ui/main.qml:2287
+#: contents/ui/main.qml:2294
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "No se pudieron abrir los archivos arrastrados."
@@ -6446,7 +6446,7 @@ msgstr ""
 "El porcentaje se adapta a las métricas de Plasma. Solo afecta a los popups "
 "de carpetas y está limitado a una distancia máxima segura."
 
-#: contents/ui/config/ConfigGeneral.qml:602
+#: contents/ui/config/ConfigGeneral.qml:611
 msgid ""
 "The real panel thickness is not available in this view, so a safe fallback "
 "limit is being used."
@@ -6487,7 +6487,7 @@ msgstr ""
 "El script solicitará sudo solo cuando el gestor de paquetes detectado "
 "necesite instalar paquetes."
 
-#: contents/ui/config/ConfigGeneral.qml:690
+#: contents/ui/config/ConfigGeneral.qml:699
 msgid "The selected desktop no longer exists. Choose another desktop."
 msgstr "El escritorio seleccionado ya no existe. Seleccione otro escritorio."
 
@@ -6579,7 +6579,7 @@ msgstr "Delgado"
 msgid "This action cannot be undone."
 msgstr "Esta acción no se puede deshacer."
 
-#: contents/ui/main.qml:2285
+#: contents/ui/main.qml:2292
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -6662,7 +6662,7 @@ msgstr ""
 "Para instalar un .plasmoid precompilado, usa: ./scripts-user/setup-"
 "universal.sh"
 
-#: contents/ui/config/ConfigGeneral.qml:98
+#: contents/ui/config/ConfigGeneral.qml:99
 msgid "Top"
 msgstr "Arriba"
 
@@ -6696,7 +6696,7 @@ msgstr "Visibilidad de la información de la pista"
 msgid "Track information:"
 msgstr "Información de la pista:"
 
-#: contents/ui/config/ConfigGeneral.qml:120
+#: contents/ui/config/ConfigGeneral.qml:121
 msgid "Translucent"
 msgstr "Transparente"
 
@@ -6717,7 +6717,7 @@ msgstr "Progreso del vaciado de la papelera"
 msgid "Trash error: %1"
 msgstr "Error de la papelera: %1"
 
-#: contents/ui/components/ConfirmTrashEmptyPopup.qml:226
+#: contents/ui/components/ConfirmTrashEmptyPopup.qml:227
 msgid "Try Again"
 msgstr "Reintentar"
 
@@ -7342,7 +7342,7 @@ msgstr ""
 msgid "Windows"
 msgstr "Ventanas"
 
-#: contents/ui/config/ConfigGeneral.qml:115
+#: contents/ui/config/ConfigGeneral.qml:116
 msgid "Windows go below"
 msgstr "Las ventanas van por detrás"
 
@@ -7367,7 +7367,7 @@ msgstr "Escribir una nota rápida editable"
 msgid "Write a quick note"
 msgstr "Escribir una nota rápida"
 
-#: contents/ui/main.qml:2269
+#: contents/ui/main.qml:2276
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Puede abrir hasta %1 archivos locales a la vez."

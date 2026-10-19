@@ -29,12 +29,17 @@ Item {
     TaskManager.VirtualDesktopInfo {
         id: virtualDesktopInfo
     }
+    readonly property bool virtualDesktopInfoAvailable:
+        TaskManagerCompatibility.supportsVirtualDesktopInfo(Qt.platform.pluginName)
 
     TaskManager.TasksModel {
         id: visibleWindowsModel
 
-        virtualDesktop: virtualDesktopInfo.currentDesktop
-        filterByVirtualDesktop: root.useLegacyCurrentDesktopFilter
+        virtualDesktop: root.virtualDesktopInfoAvailable
+            ? virtualDesktopInfo.currentDesktop
+            : ""
+        filterByVirtualDesktop: root.virtualDesktopInfoAvailable
+            && root.useLegacyCurrentDesktopFilter
         filterByActivity: true
         filterByScreen: false
         filterByRegion: root.monitoringEnabled
@@ -110,9 +115,11 @@ Item {
     }
 
     function updateCurrentDesktopFilter() {
-        const nativeFilterApplied = TaskManagerCompatibility.setOptionalProperty(
-            visibleWindowsModel, "filterByCurrentVirtualDesktop", true)
-        root.useLegacyCurrentDesktopFilter = !nativeFilterApplied
+        const nativeFilterApplied = root.virtualDesktopInfoAvailable
+            && TaskManagerCompatibility.setOptionalProperty(
+                visibleWindowsModel, "filterByCurrentVirtualDesktop", true)
+        root.useLegacyCurrentDesktopFilter = root.virtualDesktopInfoAvailable
+            && !nativeFilterApplied
     }
 
     function scheduleRegionUpdate() {

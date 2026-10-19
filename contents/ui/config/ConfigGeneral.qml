@@ -8,6 +8,7 @@ import org.kde.plasma.plasmoid
 import "../org/punchi/dock" as Punchi
 import org.kde.taskmanager as TaskManager
 import "components"
+import "../components/TaskManagerCompatibility.js" as TaskManagerCompatibility
 import "../../code/plasmaPanelSizing.js" as PlasmaPanelSizing
 
 KCM.SimpleKCM {
@@ -126,6 +127,9 @@ KCM.SimpleKCM {
     ]
     // qmllint enable unqualified
     readonly property var virtualDesktopModel: {
+        if (!virtualDesktopInfoAvailable) {
+            return []
+        }
         var result = []
         var ids = virtualDesktopInfo.desktopIds
         var names = virtualDesktopInfo.desktopNames
@@ -137,12 +141,16 @@ KCM.SimpleKCM {
         }
         return result
     }
+    readonly property bool virtualDesktopInfoAvailable:
+        TaskManagerCompatibility.supportsVirtualDesktopInfo(Qt.platform.pluginName)
     readonly property string defaultTargetVirtualDesktopId: {
         if (virtualDesktopModel.length === 0) {
             return ""
         }
 
-        var currentDesktopId = String(virtualDesktopInfo.currentDesktop || "")
+        var currentDesktopId = virtualDesktopInfoAvailable
+            ? String(virtualDesktopInfo.currentDesktop || "")
+            : ""
         if (currentDesktopId.length > 0) {
             for (var index = 0; index < virtualDesktopModel.length; index++) {
                 if (virtualDesktopModel[index].id === currentDesktopId) {
@@ -154,7 +162,8 @@ KCM.SimpleKCM {
         return virtualDesktopModel[0].id
     }
     readonly property bool targetVirtualDesktopAvailable: cfg_targetVirtualDesktop === ""
-        || virtualDesktopInfo.desktopIds.map(function(desktopId) { return String(desktopId) }).indexOf(cfg_targetVirtualDesktop) !== -1
+        || (virtualDesktopInfoAvailable
+            && virtualDesktopInfo.desktopIds.map(function(desktopId) { return String(desktopId) }).indexOf(cfg_targetVirtualDesktop) !== -1)
 
     TaskManager.VirtualDesktopInfo {
         id: virtualDesktopInfo
