@@ -17,6 +17,14 @@ RUNTIME_ONLY_KEYS = {
     "punchiMenuFavoriteStorageIds": (
         "Runtime-managed favorite state; it is not a user-editable KCM field."
     ),
+    "panelVisibilityModePrevious": (
+        "Previous panel visibility stored by the background quick action; "
+        "restored by the same toggle and not a separate KCM field."
+    ),
+    "hoverScalePrevious": (
+        "Previous magnification stored by the background quick action; "
+        "restored by the same toggle and not a separate KCM field."
+    ),
 }
 
 EXPECTED_MULTI_PAGE_OWNERS = {

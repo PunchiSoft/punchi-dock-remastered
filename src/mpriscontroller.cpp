@@ -179,6 +179,7 @@ bool MprisController::canPlay() const { return m_canPlay; }
 bool MprisController::canPause() const { return m_canPause; }
 bool MprisController::canGoNext() const { return m_canGoNext; }
 bool MprisController::canControl() const { return m_canControl; }
+bool MprisController::canStop() const { return m_canControl; }
 bool MprisController::canSeek() const { return m_canSeek; }
 bool MprisController::playing() const { return m_playing; }
 qlonglong MprisController::positionUs() const { return m_positionUs; }
@@ -439,6 +440,13 @@ void MprisController::next()
 {
     if (m_canGoNext) {
         callPlayerMethod(QStringLiteral("Next"));
+    }
+}
+
+void MprisController::stop()
+{
+    if (m_canControl) {
+        callPlayerMethod(QStringLiteral("Stop"));
     }
 }
 

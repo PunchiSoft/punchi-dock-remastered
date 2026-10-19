@@ -4,7 +4,9 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls as Controls
 import org.kde.plasma.extras as PlasmaExtras
+import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
+import org.kde.ksvg as KSvg
 
 Item {
     id: appActionsRoot
@@ -17,38 +19,128 @@ Item {
 
     property string itemName: ""
     property var actions: []
-    property int maxVisibleRows: 6
+    // Zero follows Plasma's available-height behavior; positive values are a
+    // user-selected cap for the number of action rows.
+    property int maxVisibleRows: 0
     property int rowHeight: 46
     property int iconSize: 26
     property int targetWidth: 360
+    property bool autoSize: false
     property int maximumAvailableWidth: 752
     property int maximumAvailableHeight: 640
+    property real minimumAnchorWidth: 0
+    property var surfaceMargins: null
     property bool embedded: false
     property bool returnToMedia: false
     property bool textShadowsEnabled: false
     property var subMenuActions: []
     property string subMenuTitle: ""
+    property var subMenuStack: []
     readonly property bool subMenuOpen: subMenuActions instanceof Array
         && subMenuActions.length > 0
-    readonly property var displayedActions: subMenuOpen
-        ? subMenuActions
-        : (actions || [])
+    readonly property bool hasCheckableActions: {
+        for (let index = 0; index < displayedActions.length; index++) {
+            const action = displayedActions[index]
+            if (action && action.checked !== undefined
+                    && action.kind !== "separator") {
+                return true
+            }
+        }
+        return false
+    }
+    readonly property var displayedActions: {
+        const rows = subMenuOpen ? subMenuActions : (actions || [])
+        if (subMenuOpen || embedded) {
+            // qmllint disable unqualified
+            const backLabel = subMenuOpen
+                ? i18n("Back to menu")
+                : returnToMedia
+                    ? i18n("Back to media controls")
+                    : i18n("Back to window previews")
+            // qmllint enable unqualified
+            return [{
+                "name": backLabel,
+                "icon": "go-previous",
+                "kind": "back",
+                "enabled": true
+            }].concat(rows)
+        }
+        return rows
+    }
+    readonly property int automaticIconSize: Kirigami.Units.iconSizes.small
     readonly property int effectiveRowHeight: Math.max(32, Math.min(64,
-        Number(rowHeight || 46)))
-    readonly property int effectiveIconSize: Math.max(16, Math.min(40,
-        Number(iconSize || 26)))
-    readonly property int chromeHeight: 80
+        autoSize
+            ? Math.max(Math.ceil(Kirigami.Units.gridUnit * 1.8),
+                automaticIconSize + Kirigami.Units.smallSpacing * 2)
+            : Number(rowHeight || 46)))
+    readonly property int effectiveIconSize: autoSize
+        ? automaticIconSize
+        : Math.max(16, Math.min(40, Number(iconSize || 26)))
+    readonly property int separatorRowHeight: Math.max(8,
+        Kirigami.Units.smallSpacing * 2 + 1)
+    readonly property real chromeHeight: effectiveSurfaceMarginTop
+        + effectiveSurfaceMarginBottom
+    readonly property real effectiveSurfaceMarginLeft: surfaceMargins
+        && Number.isFinite(Number(surfaceMargins.left))
+        ? Math.max(0, Number(surfaceMargins.left)) : Kirigami.Units.smallSpacing
+    readonly property real effectiveSurfaceMarginTop: surfaceMargins
+        && Number.isFinite(Number(surfaceMargins.top))
+        ? Math.max(0, Number(surfaceMargins.top)) : Kirigami.Units.smallSpacing
+    readonly property real effectiveSurfaceMarginRight: surfaceMargins
+        && Number.isFinite(Number(surfaceMargins.right))
+        ? Math.max(0, Number(surfaceMargins.right)) : Kirigami.Units.smallSpacing
+    readonly property real effectiveSurfaceMarginBottom: surfaceMargins
+        && Number.isFinite(Number(surfaceMargins.bottom))
+        ? Math.max(0, Number(surfaceMargins.bottom)) : Kirigami.Units.smallSpacing
+    readonly property int displayedActionCount: {
+        let count = 0
+        for (let index = 0; index < displayedActions.length; index++) {
+            if (!displayedActions[index]
+                    || displayedActions[index].kind !== "separator") {
+                count++
+            }
+        }
+        return count
+    }
     readonly property int rowsAllowedByHeight: maximumAvailableHeight > chromeHeight
-        ? Math.max(1, Math.floor((maximumAvailableHeight - chromeHeight)
-            / effectiveRowHeight))
+        ? actionCapacityForHeight(maximumAvailableHeight - chromeHeight)
         : 1
-    readonly property int visibleRows: Math.max(1, Math.min(maxVisibleRows,
-        rowsAllowedByHeight, displayedActions.length > 0
-            ? displayedActions.length : 1))
-    readonly property int actionViewportHeight: visibleRows * effectiveRowHeight
+    readonly property int effectiveMaximumVisibleRows: maxVisibleRows > 0
+        ? Math.max(1, Math.min(15, maxVisibleRows))
+        : displayedActionCount
+    readonly property int visibleRows: Math.max(1, Math.min(
+        effectiveMaximumVisibleRows, rowsAllowedByHeight,
+        displayedActionCount > 0 ? displayedActionCount : 1))
+    readonly property int actionViewportHeight: viewportHeightForRows(visibleRows)
+    // Task Manager derives its minimum width from the visual parent. Punchi
+    // also keeps a theme-scaled floor close to the native menu's natural width.
+    readonly property int minimumMenuWidth: Math.min(
+        Math.max(1, Number(maximumAvailableWidth || 752)),
+        Math.max(Kirigami.Units.gridUnit * 18,
+            Number(minimumAnchorWidth || 0)))
+    readonly property int automaticWidth: {
+        let widestAction = 0
+        for (let index = 0; index < actionWidthMeasurements.count; index++) {
+            const measurement = actionWidthMeasurements.objectAt(index)
+            if (measurement) {
+                widestAction = Math.max(widestAction,
+                    // qmllint disable missing-property
+                    // Instantiator.objectAt() returns QObject; its delegate exposes naturalWidth.
+                    Number(measurement["naturalWidth"] || 0))
+                    // qmllint enable missing-property
+            }
+        }
+        const availableWidth = Math.max(1,
+            Number(maximumAvailableWidth || 752))
+        return Math.min(availableWidth, Math.max(minimumMenuWidth,
+            Math.ceil(widestAction + effectiveSurfaceMarginLeft
+                + effectiveSurfaceMarginRight)))
+    }
 
-    implicitWidth: Math.max(240, Math.min(520, Number(targetWidth || 360),
-        Number(maximumAvailableWidth || 752)))
+    implicitWidth: autoSize ? automaticWidth
+        : Math.min(Math.max(1, Number(maximumAvailableWidth || 752)),
+            Math.max(minimumMenuWidth, 240,
+                Math.min(520, Number(targetWidth || 360))))
     implicitHeight: chromeHeight + actionViewportHeight
     width: implicitWidth
     height: implicitHeight
@@ -56,12 +148,73 @@ Item {
     signal actionTriggered(var action)
     signal closeRequested()
 
+    KSvg.FrameSvgItem {
+        id: menuItemPaddingMetrics
+        imagePath: "widgets/viewitem"
+        prefix: "hover"
+        width: 0
+        height: 0
+        visible: false
+        Accessible.ignored: true
+    }
+
+    function actionCapacityForHeight(availableHeight) {
+        let visibleActionCount = 0
+        let usedHeight = 0
+        const actionLimit = maxVisibleRows > 0
+            ? Math.max(1, Math.min(15, maxVisibleRows))
+            : displayedActionCount
+        for (let index = 0; index < displayedActions.length; index++) {
+            const action = displayedActions[index]
+            if (action && action.kind === "separator") {
+                if (visibleActionCount > 0 && visibleActionCount < actionLimit
+                        && usedHeight + separatorRowHeight <= availableHeight) {
+                    usedHeight += separatorRowHeight
+                }
+                continue
+            }
+            if (visibleActionCount >= actionLimit
+                    || usedHeight + effectiveRowHeight > availableHeight) {
+                break
+            }
+            usedHeight += effectiveRowHeight
+            visibleActionCount++
+        }
+        return Math.max(1, visibleActionCount)
+    }
+
+    function viewportHeightForRows(actionRows) {
+        let visibleActionCount = 0
+        let usedHeight = 0
+        for (let index = 0; index < displayedActions.length; index++) {
+            const action = displayedActions[index]
+            if (action && action.kind === "separator") {
+                if (visibleActionCount > 0 && visibleActionCount < actionRows) {
+                    usedHeight += separatorRowHeight
+                }
+                continue
+            }
+            if (visibleActionCount >= actionRows) {
+                break
+            }
+            usedHeight += effectiveRowHeight
+            visibleActionCount++
+        }
+        return Math.max(effectiveRowHeight, usedHeight)
+    }
+
     function openSubMenu(action) {
         const children = action && action.children instanceof Array
             ? action.children : []
         if (children.length === 0) {
             return
         }
+        // Keep every level so Places can return to its group list before the
+        // root menu. The root state is represented by an empty title/actions.
+        subMenuStack = subMenuStack.concat([{
+            "title": subMenuTitle,
+            "actions": subMenuActions
+        }])
         subMenuTitle = String(action.name || "")
         subMenuActions = children
         actionList.positionViewAtBeginning()
@@ -69,77 +222,79 @@ Item {
     }
 
     function closeSubMenu() {
+        if (subMenuStack.length > 0) {
+            const stack = subMenuStack.slice()
+            const previous = stack.pop()
+            subMenuStack = stack
+            subMenuTitle = String(previous.title || "")
+            subMenuActions = previous.actions instanceof Array
+                ? previous.actions : []
+            actionList.positionViewAtBeginning()
+            actionList.forceActiveFocus()
+            return
+        }
+        resetSubMenu()
+    }
+
+    function resetSubMenu() {
+        subMenuStack = []
         subMenuActions = []
         subMenuTitle = ""
         actionList.positionViewAtBeginning()
     }
 
-    onActionsChanged: closeSubMenu()
+    onActionsChanged: resetSubMenu()
+
+    Instantiator {
+        id: actionWidthMeasurements
+        model: appActionsRoot.displayedActions
+
+        delegate: Item {
+            id: actionWidthMeasurement
+            required property var modelData
+            visible: false
+            width: 0
+            height: 0
+
+            readonly property real naturalWidth:
+                (appActionsRoot.hasCheckableActions
+                    ? Kirigami.Units.iconSizes.small
+                    : Kirigami.Units.smallSpacing)
+                + appActionsRoot.effectiveIconSize
+                + mainTextMetrics.advanceWidth
+                + (detailTextMetrics.text.length > 0
+                    ? detailTextMetrics.advanceWidth + Kirigami.Units.largeSpacing
+                    : 0)
+                + (modelData && modelData.children instanceof Array
+                    && modelData.children.length > 0
+                    ? Kirigami.Units.iconSizes.small + Kirigami.Units.largeSpacing
+                    : 0)
+                + Kirigami.Units.largeSpacing * 2
+                + Kirigami.Units.smallSpacing * 2
+
+            TextMetrics {
+                id: mainTextMetrics
+                font: Kirigami.Theme.defaultFont
+                text: actionWidthMeasurement.modelData
+                    && actionWidthMeasurement.modelData.name
+                    ? String(actionWidthMeasurement.modelData.name) : ""
+            }
+
+            TextMetrics {
+                id: detailTextMetrics
+                font: Kirigami.Theme.smallFont
+                text: actionWidthMeasurement.modelData
+                    && !(actionWidthMeasurement.modelData.children instanceof Array
+                        && actionWidthMeasurement.modelData.children.length > 0)
+                    && actionWidthMeasurement.modelData.detail
+                    ? String(actionWidthMeasurement.modelData.detail) : ""
+            }
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
-        spacing: 8
-
-        RowLayout {
-            Layout.fillWidth: true
-            Layout.leftMargin: 12
-            Layout.rightMargin: 12
-            Layout.topMargin: 12
-
-            PlasmaExtras.ShadowedLabel {
-                Layout.fillWidth: true
-                text: appActionsRoot.subMenuOpen
-                    ? appActionsRoot.subMenuTitle
-                    : (appActionsRoot.itemName.length > 0
-                        ? appActionsRoot.itemName
-                        : i18n("Application")) // qmllint disable unqualified
-                color: Kirigami.Theme.textColor
-                renderShadow: appActionsRoot.textShadowsEnabled
-                font.family: Kirigami.Theme.defaultFont.family
-                font.pointSize: Kirigami.Theme.defaultFont.pointSize
-                font.weight: Font.Bold
-            }
-
-            Rectangle {
-                Layout.preferredWidth: 20
-                Layout.preferredHeight: 20
-                radius: 10
-                color: closeMouse.containsMouse || closeMouse.activeFocus
-                    ? Kirigami.Theme.negativeTextColor
-                    : Kirigami.Theme.backgroundColor
-
-                Kirigami.Icon {
-                    anchors.centerIn: parent
-                    width: 14
-                    height: 14
-                    source: appActionsRoot.subMenuOpen || appActionsRoot.embedded
-                        ? "go-previous" : "window-close"
-                    color: Kirigami.Theme.textColor
-                }
-
-                MouseArea {
-                    id: closeMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    activeFocusOnTab: true
-                    Accessible.role: Accessible.Button
-                    Accessible.name: appActionsRoot.subMenuOpen
-                        ? i18n("Back to menu") // qmllint disable unqualified
-                        : appActionsRoot.embedded
-                        ? (appActionsRoot.returnToMedia
-                            ? i18n("Back to media controls") // qmllint disable unqualified
-                            : i18n("Back to window previews")) // qmllint disable unqualified
-                        : i18n("Close") // qmllint disable unqualified
-                    onClicked: {
-                        if (appActionsRoot.subMenuOpen) {
-                            appActionsRoot.closeSubMenu()
-                        } else {
-                            appActionsRoot.closeRequested()
-                        }
-                    }
-                }
-            }
-        }
+        spacing: 0
 
         Controls.ScrollView {
             id: actionScroll
@@ -148,9 +303,10 @@ Item {
             Layout.minimumHeight: appActionsRoot.actionViewportHeight
             Layout.preferredHeight: appActionsRoot.actionViewportHeight
             Layout.maximumHeight: appActionsRoot.actionViewportHeight
-            Layout.leftMargin: 12
-            Layout.rightMargin: Kirigami.Units.smallSpacing
-            Layout.bottomMargin: 12
+            Layout.leftMargin: appActionsRoot.effectiveSurfaceMarginLeft
+            Layout.rightMargin: appActionsRoot.effectiveSurfaceMarginRight
+            Layout.topMargin: appActionsRoot.effectiveSurfaceMarginTop
+            Layout.bottomMargin: appActionsRoot.effectiveSurfaceMarginBottom
             clip: true
 
             ListView {
@@ -162,7 +318,7 @@ Item {
                 implicitHeight: contentHeight
                 boundsBehavior: Flickable.StopAtBounds
 
-                delegate: Controls.ItemDelegate {
+                delegate: PlasmaComponents.MenuItem {
                     id: actionDelegate
                     objectName: "appActionsActionDelegate"
                     required property var modelData
@@ -170,31 +326,47 @@ Item {
                         ? modelData.name
                         : i18n("Custom action") // qmllint disable unqualified
                     readonly property string detailText: modelData && modelData.detail
+                        && !hasChildren
                         ? String(modelData.detail)
                         : ""
                     readonly property bool hasChildren: !!modelData
                         && modelData.children instanceof Array
                         && modelData.children.length > 0
+                    readonly property bool isSeparator: !!modelData
+                        && modelData.kind === "separator"
+                    Accessible.ignored: isSeparator
 
                     width: actionList.width
-                    height: appActionsRoot.effectiveRowHeight
+                    height: isSeparator
+                        ? appActionsRoot.separatorRowHeight
+                        : appActionsRoot.effectiveRowHeight
                     text: actionText
                     icon.name: modelData && modelData.icon ? modelData.icon : "system-run"
                     // qmllint disable unqualified
                     icon.width: appActionsRoot.effectiveIconSize
                     icon.height: appActionsRoot.effectiveIconSize
                     // qmllint enable unqualified
-                    enabled: !!modelData && modelData.enabled !== false
+                    enabled: !isSeparator && !!modelData && modelData.enabled !== false
                         && (String(modelData.kind || "").length > 0
                             || String(modelData.command || "").length > 0
                             || hasChildren)
                     checkable: !hasChildren && !!modelData
                         && modelData.checked !== undefined
                     checked: checkable && !!modelData.checked
-
+                    autoExclusive: checkable && modelData.exclusive === true
+                    leftPadding: menuItemPaddingMetrics.margins.left
+                    rightPadding: menuItemPaddingMetrics.margins.right
+                    topPadding: menuItemPaddingMetrics.margins.top
+                    bottomPadding: menuItemPaddingMetrics.margins.bottom
                     onClicked: {
                         if (enabled) {
-                            if (hasChildren) {
+                            if (modelData.kind === "back") {
+                                if (appActionsRoot.subMenuOpen) {
+                                    appActionsRoot.closeSubMenu()
+                                } else {
+                                    appActionsRoot.closeRequested()
+                                }
+                            } else if (hasChildren) {
                                 appActionsRoot.openSubMenu(modelData)
                             } else {
                                 appActionsRoot.actionTriggered(modelData)
@@ -205,6 +377,9 @@ Item {
                     Keys.onLeftPressed: function(event) {
                         if (appActionsRoot.subMenuOpen) {
                             appActionsRoot.closeSubMenu()
+                            event.accepted = true
+                        } else if (actionDelegate.modelData.kind === "back") {
+                            appActionsRoot.closeRequested()
                             event.accepted = true
                         }
                     }
@@ -217,8 +392,16 @@ Item {
                     }
 
                     contentItem: RowLayout {
-                        spacing: Kirigami.Units.largeSpacing
+                        spacing: Kirigami.Units.smallSpacing
                         opacity: actionDelegate.enabled ? 1 : 0.45
+                        visible: !actionDelegate.isSeparator
+
+                        Item {
+                            Layout.preferredWidth: appActionsRoot.hasCheckableActions
+                                ? Kirigami.Units.iconSizes.small
+                                : Kirigami.Units.smallSpacing
+                            Layout.preferredHeight: Kirigami.Units.iconSizes.small
+                        }
 
                         Kirigami.Icon {
                             Layout.preferredWidth: appActionsRoot.effectiveIconSize
@@ -238,8 +421,10 @@ Item {
                         }
 
                         PlasmaExtras.ShadowedLabel {
-                            Layout.preferredWidth: Math.max(0,
-                                actionDelegate.width * 0.34)
+                            Layout.preferredWidth: appActionsRoot.autoSize
+                                ? Math.min(actionDetailMetrics.advanceWidth,
+                                    actionDelegate.width * 0.5)
+                                : Math.max(0, actionDelegate.width * 0.34)
                             visible: actionDelegate.detailText.length > 0
                             text: actionDelegate.detailText
                             color: Kirigami.Theme.textColor
@@ -260,6 +445,39 @@ Item {
                             source: "go-next"
                             Accessible.ignored: true
                         }
+                    }
+
+                    background: Item {
+                        InteractiveActionBackground {
+                            anchors.fill: parent
+                            anchors.leftMargin: actionDelegate.leftPadding
+                            anchors.rightMargin: actionDelegate.rightPadding
+                            anchors.topMargin: actionDelegate.topPadding
+                            anchors.bottomMargin: actionDelegate.bottomPadding
+                            visible: !actionDelegate.isSeparator
+                            hovered: actionDelegate.hovered
+                            focused: actionDelegate.visualFocus
+                            pressed: actionDelegate.down
+                            visualRadius: height / 2
+                        }
+
+                        Rectangle {
+                            visible: actionDelegate.isSeparator
+                            anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: Kirigami.Units.largeSpacing
+                            anchors.rightMargin: Kirigami.Units.largeSpacing
+                            height: 1
+                            color: Kirigami.Theme.textColor
+                            opacity: 0.2
+                        }
+                    }
+
+                    TextMetrics {
+                        id: actionDetailMetrics
+                        font: Kirigami.Theme.smallFont
+                        text: actionDelegate.detailText
                     }
                 }
             }

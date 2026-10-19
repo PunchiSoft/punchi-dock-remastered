@@ -27,6 +27,7 @@ class MprisController : public QObject
     Q_PROPERTY(bool canPause READ canPause NOTIFY stateChanged)
     Q_PROPERTY(bool canGoNext READ canGoNext NOTIFY stateChanged)
     Q_PROPERTY(bool canControl READ canControl NOTIFY stateChanged)
+    Q_PROPERTY(bool canStop READ canStop NOTIFY stateChanged)
     Q_PROPERTY(bool canSeek READ canSeek NOTIFY stateChanged)
     Q_PROPERTY(bool playing READ playing NOTIFY stateChanged)
     Q_PROPERTY(qlonglong positionUs READ positionUs NOTIFY stateChanged)
@@ -55,6 +56,7 @@ public:
     bool canPause() const;
     bool canGoNext() const;
     bool canControl() const;
+    bool canStop() const;
     bool canSeek() const;
     bool playing() const;
     qlonglong positionUs() const;
@@ -71,6 +73,7 @@ public:
     Q_INVOKABLE void requestPlayWhenAvailable(int timeoutMs);
     Q_INVOKABLE void cancelPlayWhenAvailable();
     Q_INVOKABLE void next();
+    Q_INVOKABLE void stop();
     Q_INVOKABLE void setShuffle(bool enabled);
     Q_INVOKABLE void cycleLoopStatus();
     Q_INVOKABLE void toggleMute();

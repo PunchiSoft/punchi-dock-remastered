@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check an isolated session bus and a registered QML test before the full suite."""
+"""Check D-Bus, a representative QML test, and a full applet load before CTest."""
 
 import argparse
 import json
@@ -12,6 +12,7 @@ import sys
 
 
 SMOKE_TEST = "punchimenu_mapped_surface_geometry_test"
+FULL_LOAD_TEST = "plasmoid_full_load_test"
 
 
 class InterruptedProbe(Exception):
@@ -42,7 +43,7 @@ def terminate_wrapper(process: subprocess.Popen) -> None:
 
 
 def session_probe(build_dir: Path) -> int:
-    """Verify D-Bus communication, then run the existing QML contract."""
+    """Verify D-Bus, then run QML-component and full-applet probes serially."""
     if not os.environ.get("PUNCHI_TEST_ENVIRONMENT_ROOT"):
         raise RuntimeError("the parent isolation wrapper is required")
     result = subprocess.run([
@@ -52,10 +53,27 @@ def session_probe(build_dir: Path) -> int:
     ], check=False)
     if result.returncode:
         return result.returncode
-    return subprocess.run([
+    print(f"==> QML component probe: {SMOKE_TEST}", flush=True)
+    result = subprocess.run([
         "ctest", "--test-dir", str(build_dir), "--parallel", "1",
         "-R", f"^{SMOKE_TEST}$", "--no-tests=error", "--output-on-failure",
     ], check=False).returncode
+    if result:
+        print(f"Error: QML component preflight failed: {SMOKE_TEST}", file=sys.stderr)
+        return result
+
+    print(f"==> Full applet load probe: {FULL_LOAD_TEST}", flush=True)
+    result = subprocess.run([
+        "ctest", "--test-dir", str(build_dir), "--parallel", "1",
+        "-R", f"^{FULL_LOAD_TEST}$", "--no-tests=error", "--output-on-failure",
+    ], check=False).returncode
+    if result:
+        print(
+            f"Error: full applet load preflight failed: {FULL_LOAD_TEST}; "
+            "the full test suite was not started.",
+            file=sys.stderr,
+        )
+    return result
 
 
 def preflight(project_root: Path, build_dir: Path, timeout: float) -> int:
@@ -72,8 +90,18 @@ def preflight(project_root: Path, build_dir: Path, timeout: float) -> int:
             "ctest", "--test-dir", str(build_dir), "--show-only=json-v1",
         ], check=True, capture_output=True, text=True, timeout=timeout)
         tests = json.loads(metadata.stdout).get("tests", [])
-        if not any(t.get("name") == SMOKE_TEST and t.get("command") for t in tests):
-            raise RuntimeError(f"the built QML probe is missing: {SMOKE_TEST}")
+        registered_tests = {
+            t.get("name") for t in tests if t.get("command")
+        }
+        missing_tests = [
+            name for name in (SMOKE_TEST, FULL_LOAD_TEST)
+            if name not in registered_tests
+        ]
+        if missing_tests:
+            raise RuntimeError(
+                "required preflight test(s) missing from the build: "
+                + ", ".join(missing_tests)
+            )
         command = [
             sys.executable, str(project_root / "tests/run_isolated_plasmoid_full_load_test.py"),
             sys.executable, str(project_root / "tests/run_isolated_qml_tooltip_test.py"),
@@ -103,8 +131,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build-dir", type=Path, required=True,
                         help="Configured and freshly built CMake test directory")
-    parser.add_argument("--timeout", type=positive_seconds, default=15.0,
-                        help="Deadline in seconds for each preflight stage (default: 15)")
+    parser.add_argument("--timeout", type=positive_seconds, default=40.0,
+                        help="Overall preflight deadline in seconds (default: 40)")
     parser.add_argument("--session-probe", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
     try:

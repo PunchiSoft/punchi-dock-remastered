@@ -107,6 +107,7 @@ KCM.SimpleKCM {
     property alias cfg_contextMenuTransitionSpeed: menuAppearancePage.cfg_contextMenuTransitionSpeed
     property alias cfg_contextMenuTransitionDirection: menuAppearancePage.cfg_contextMenuTransitionDirection
     property alias cfg_contextMenuVisibleRows: menuAppearancePage.cfg_contextMenuVisibleRows
+    property alias cfg_contextMenuAutoSize: menuAppearancePage.cfg_contextMenuAutoSize
     property alias cfg_contextMenuRowHeight: menuAppearancePage.cfg_contextMenuRowHeight
     property alias cfg_contextMenuIconSize: menuAppearancePage.cfg_contextMenuIconSize
     property alias cfg_contextMenuWidth: menuAppearancePage.cfg_contextMenuWidth

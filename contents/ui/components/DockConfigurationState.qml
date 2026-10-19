@@ -417,8 +417,15 @@ QtObject {
         return ["fromRight", "fromLeft", "fromTop", "fromBottom", "morphOnly"]
             .indexOf(direction) >= 0 ? direction : "fromRight"
     }
-    readonly property int contextMenuVisibleRows: Math.max(3, Math.min(15,
-        Number(Plasmoid.configuration.contextMenuVisibleRows || 6)))
+    readonly property int contextMenuVisibleRows: {
+        const configuredRows = Number(Plasmoid.configuration.contextMenuVisibleRows)
+        if (!Number.isFinite(configuredRows) || configuredRows === 0) {
+            return 0
+        }
+        return Math.max(3, Math.min(15, Math.round(configuredRows)))
+    }
+    readonly property bool contextMenuAutoSize:
+        Plasmoid.configuration.contextMenuAutoSize === true
     readonly property int contextMenuRowHeight: Math.max(32, Math.min(64,
         Number(Plasmoid.configuration.contextMenuRowHeight || 46)))
     readonly property int contextMenuIconSize: Math.max(16, Math.min(40,

@@ -107,6 +107,17 @@ TestCase {
         verifyAnchorMatchesIcon(hostWindow.dockItem)
     }
 
+    function test_contextMenuAnchorUsesTheRenderedIcon() {
+        const hostWindow = createTemporaryObject(windowComponent, testCase)
+        verify(hostWindow !== null)
+        tryCompare(hostWindow, "visible", true)
+
+        const dockItem = hostWindow.dockItem
+        const tooltipAnchor = findChild(dockItem, "dockItemTooltipAnchor")
+        verify(tooltipAnchor !== null)
+        verify(dockItem.contextMenuAnchorItem === tooltipAnchor)
+    }
+
     function test_anchorFollowsTheZoom() {
         const hostWindow = createTemporaryObject(windowComponent, testCase)
         verify(hostWindow !== null)

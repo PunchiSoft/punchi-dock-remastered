@@ -412,6 +412,11 @@ add_test(
 )
 
 add_test(
+    NAME neon_dependency_detection_test
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/neon_dependency_detection_test.sh
+)
+
+add_test(
     NAME arch_dependency_detection_test
     COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/arch_dependency_detection_test.sh
 )
@@ -486,7 +491,7 @@ add_executable(systemdiscovery_test
     systemdiscovery_test.cpp
 )
 target_include_directories(systemdiscovery_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(systemdiscovery_test PRIVATE Qt6::Core Qt6::Qml KF6::ConfigCore KF6::Service KF6::KIOCore KF6::KIOGui KF6::JobWidgets KF6::I18n)
+target_link_libraries(systemdiscovery_test PRIVATE Qt6::Core Qt6::Qml KF6::ConfigCore KF6::Service KF6::KIOCore KF6::KIOGui KF6::KIOFileWidgets KF6::JobWidgets KF6::I18n Plasma::ActivitiesStats)
 add_test(NAME systemdiscovery_test COMMAND systemdiscovery_test)
 
 add_executable(trashintegration_test
@@ -664,7 +669,10 @@ function(punchi_add_qml_test test_name qml_file)
     )
     # Extra arguments are appended to the shared environment. Use them only for
     # a test that must adapt its runtime to a service it loads.
-    set(test_environment "${PUNCHI_QML_TEST_ENVIRONMENT}")
+    # QML component tests must load the module produced by this build. Without
+    # this path the plugin resolves an older installed libpunchidockintegration
+    # and reports properties that exist only in the work tree as missing.
+    set(test_environment "${PUNCHI_QML_TEST_ENVIRONMENT};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/bin:$ENV{LD_LIBRARY_PATH}")
     list(APPEND test_environment ${ARGN})
     set_tests_properties(${test_name} PROPERTIES
         ENVIRONMENT "${test_environment}"
@@ -693,7 +701,7 @@ add_test(NAME decoration_close_button_test
         -import ${CMAKE_BINARY_DIR}/bin
         -input ${CMAKE_CURRENT_SOURCE_DIR}/decoration_close_button_test.qml)
 set_tests_properties(decoration_close_button_test PROPERTIES
-    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT}"
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/bin:$ENV{LD_LIBRARY_PATH}"
     FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
     TIMEOUT 30)
 
@@ -1031,6 +1039,29 @@ punchi_add_qml_test(
     dock_dynamic_applications_context_test.qml
 )
 punchi_add_qml_test(
+    task_context_actions_test
+    task_context_actions_test.qml
+)
+punchi_add_qml_test(
+    background_quick_actions_test
+    background_quick_actions_test.qml
+)
+punchi_add_qml_test(
+    app_actions_popup_navigation_test
+    app_actions_popup_navigation_test.qml
+)
+punchi_add_qml_test(
+    dock_context_native_sections_test
+    dock_context_native_sections_test.qml
+)
+add_test(NAME folder_sort_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_folder_sort_test.py
+        $<TARGET_FILE:punchi_qmltestrunner> ${CMAKE_BINARY_DIR}/bin)
+set_tests_properties(folder_sort_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PYTHONDONTWRITEBYTECODE=1"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30)
+punchi_add_qml_test(
     dynamic_applications_move_geometry_test
     dynamic_applications_move_geometry_test.qml
 )
@@ -1084,7 +1115,7 @@ add_test(
         -input ${CMAKE_CURRENT_SOURCE_DIR}/native_popup_spacing_test.qml
 )
 set_tests_properties(native_popup_spacing_test PROPERTIES
-    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PUNCHI_TEST_NATIVE_POPUP=1"
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PUNCHI_TEST_NATIVE_POPUP=1;LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/bin:$ENV{LD_LIBRARY_PATH}"
     FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
     TIMEOUT 30
 )
@@ -1095,7 +1126,7 @@ add_test(NAME vertical_popup_anchor_test
         -- $<TARGET_FILE:punchi_qmltestrunner>
         -input ${CMAKE_CURRENT_SOURCE_DIR}/vertical_popup_anchor_test.qml)
 set_tests_properties(vertical_popup_anchor_test PROPERTIES
-    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PUNCHI_TEST_NATIVE_POPUP=1"
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};PUNCHI_TEST_NATIVE_POPUP=1;LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/bin:$ENV{LD_LIBRARY_PATH}"
     FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
     TIMEOUT 30)
 

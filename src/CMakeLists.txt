@@ -177,6 +177,7 @@ target_link_libraries(punchidockintegration
         KF6::JobWidgets
         KF6::KIOCore
         KF6::KIOGui
+        KF6::KIOFileWidgets
         KF6::Package
         KF6::Service
         KF6::WindowSystem

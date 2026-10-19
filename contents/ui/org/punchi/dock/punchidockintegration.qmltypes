@@ -652,12 +652,21 @@ Module {
             lineNumber: 20
         }
         Property {
+            name: "sortMode"
+            type: "QString"
+            read: "sortMode"
+            write: "setSortMode"
+            notify: "sortModeChanged"
+            index: 3
+            lineNumber: 22
+        }
+        Property {
             name: "loading"
             type: "bool"
             read: "loading"
             notify: "stateChanged"
-            index: 3
-            lineNumber: 21
+            index: 4
+            lineNumber: 23
             isReadonly: true
         }
         Property {
@@ -665,8 +674,8 @@ Module {
             type: "QString"
             read: "error"
             notify: "stateChanged"
-            index: 4
-            lineNumber: 22
+            index: 5
+            lineNumber: 24
             isReadonly: true
         }
         Property {
@@ -674,8 +683,8 @@ Module {
             type: "int"
             read: "count"
             notify: "countChanged"
-            index: 5
-            lineNumber: 23
+            index: 6
+            lineNumber: 25
             isReadonly: true
         }
         Property {
@@ -683,24 +692,25 @@ Module {
             type: "int"
             read: "depth"
             notify: "locationChanged"
-            index: 6
-            lineNumber: 24
+            index: 7
+            lineNumber: 26
             isReadonly: true
         }
         Property {
             name: "maximumDepth"
             type: "int"
             read: "maximumDepth"
-            index: 7
-            lineNumber: 25
+            index: 8
+            lineNumber: 27
             isReadonly: true
             isPropertyConstant: true
         }
-        Signal { name: "rootPathChanged"; lineNumber: 47 }
-        Signal { name: "locationChanged"; lineNumber: 48 }
-        Signal { name: "enabledChanged"; lineNumber: 49 }
-        Signal { name: "stateChanged"; lineNumber: 50 }
-        Signal { name: "countChanged"; lineNumber: 51 }
+        Signal { name: "rootPathChanged"; lineNumber: 52 }
+        Signal { name: "locationChanged"; lineNumber: 53 }
+        Signal { name: "enabledChanged"; lineNumber: 54 }
+        Signal { name: "sortModeChanged"; lineNumber: 55 }
+        Signal { name: "stateChanged"; lineNumber: 56 }
+        Signal { name: "countChanged"; lineNumber: 57 }
         Method {
             name: "get"
             type: "QVariantMap"

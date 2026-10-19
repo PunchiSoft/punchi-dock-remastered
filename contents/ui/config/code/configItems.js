@@ -1019,6 +1019,15 @@ function pruneApp(item) {
     }
 }
 
+function normalizedFolderSortMode(value) {
+    var mode = String(value || "")
+    if (mode === "name" || mode === "size" || mode === "modified"
+            || mode === "created" || mode === "kind") {
+        return mode
+    }
+    return "modified"
+}
+
 function pruneFolder(item) {
     if (item.browseSubfolders !== true) {
         delete item.browseSubfolders
@@ -1029,6 +1038,7 @@ function pruneFolder(item) {
     item.apps = item.apps instanceof Array ? item.apps : []
     item.layout = item.layout === "list" || item.layout === "detailed"
             || item.layout === "fan" ? item.layout : "grid"
+    item.sortMode = normalizedFolderSortMode(item.sortMode)
     item.columns = Math.max(0, item.columns || 0)
     item.rows = Math.max(0, item.rows || 0)
     item.innerIconSize = Math.max(16, item.innerIconSize || 48)
@@ -1069,6 +1079,32 @@ function setFolderLayout(items, targetIndex, layout) {
 
     var nextItems = clone(source)
     nextItems[index].layout = nextLayout
+    return { "items": nextItems, "changed": true, "status": "updated" }
+}
+
+function setFolderSortMode(items, targetIndex, sortMode) {
+    var source = items instanceof Array ? items : []
+    var index = Number(targetIndex)
+    var nextMode = String(sortMode || "")
+    if (!Number.isInteger(index) || index < 0 || index >= source.length) {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+    if (nextMode !== "name" && nextMode !== "size"
+            && nextMode !== "modified" && nextMode !== "created"
+            && nextMode !== "kind") {
+        return { "items": source, "changed": false, "status": "invalid-sort-mode" }
+    }
+
+    var currentFolder = source[index]
+    if (!currentFolder || currentFolder.type !== "folder") {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+    if (normalizedFolderSortMode(currentFolder.sortMode) === nextMode) {
+        return { "items": source, "changed": false, "status": "unchanged" }
+    }
+
+    var nextItems = clone(source)
+    nextItems[index].sortMode = nextMode
     return { "items": nextItems, "changed": true, "status": "updated" }
 }
 
@@ -1180,6 +1216,7 @@ function newItem(type, defaultTrashEmptySound) {
             "icon": "folder",
             "apps": [],
             "layout": "grid",
+            "sortMode": "modified",
             "columns": 3,
             "rows": 0,
             "innerIconSize": 48,

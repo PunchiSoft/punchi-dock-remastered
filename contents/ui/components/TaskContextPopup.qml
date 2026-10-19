@@ -23,10 +23,11 @@ Item {
     property int maximumAvailableHeight: 640
     property string actionItemName: ""
     property var actions: []
-    property int maxVisibleActionRows: 6
+    property int maxVisibleActionRows: 0
     property int actionRowHeight: 46
     property int actionIconSize: 26
     property int actionMenuWidth: 360
+    property bool actionAutoSize: false
     property string transitionDirection: "fromRight"
     property int transitionSpeedPercent: 100
     property bool transitionsEnabled: true
@@ -228,6 +229,7 @@ Item {
             rowHeight: root.actionRowHeight
             iconSize: root.actionIconSize
             targetWidth: root.actionMenuWidth
+            autoSize: root.actionAutoSize
             maximumAvailableWidth: root.maximumAvailableWidth
             maximumAvailableHeight: root.maximumAvailableHeight
             embedded: true

@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Shapes as Shapes
 import org.kde.kirigami as Kirigami
 
-// Comic-style tail of the folder popup.
+// Comic-style tail shared by the folder popup and the right-click menus.
 //
 // It is a plain triangle: its base corners sit on the effective background edge
 // of the card, so the outline meets the popup edge without any step, and only the

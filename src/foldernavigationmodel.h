@@ -2,6 +2,8 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QDateTime>
+#include <QList>
 #include <QPointer>
 #include <QVariantMap>
 #include <qqmlregistration.h>
@@ -18,6 +20,7 @@ class FolderNavigationModel : public QAbstractListModel
     Q_PROPERTY(QString rootPath READ rootPath WRITE setRootPath NOTIFY rootPathChanged)
     Q_PROPERTY(QString location READ location WRITE setLocation NOTIFY locationChanged)
     Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
+    Q_PROPERTY(QString sortMode READ sortMode WRITE setSortMode NOTIFY sortModeChanged)
     Q_PROPERTY(bool loading READ loading NOTIFY stateChanged)
     Q_PROPERTY(QString error READ error NOTIFY stateChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
@@ -32,6 +35,7 @@ public:
     QString rootPath() const { return m_rootPath; }
     QString location() const { return m_location; }
     bool enabled() const { return m_enabled; }
+    QString sortMode() const { return m_sortMode; }
     bool loading() const { return m_loading; }
     QString error() const { return m_error; }
     int count() const { return m_entries.size(); }
@@ -40,6 +44,7 @@ public:
     void setRootPath(const QString &path);
     void setLocation(const QString &location);
     void setEnabled(bool enabled);
+    void setSortMode(const QString &mode);
     Q_INVOKABLE QVariantMap get(int row) const;
     Q_INVOKABLE QString directoryTarget(const QVariantMap &entry) const;
     Q_INVOKABLE void reload();
@@ -47,19 +52,31 @@ Q_SIGNALS:
     void rootPathChanged();
     void locationChanged();
     void enabledChanged();
+    void sortModeChanged();
     void stateChanged();
     void countChanged();
 private:
+    struct Entry {
+        QVariantMap row;
+        QString name;
+        qint64 size = 0;
+        QDateTime modified;
+        QDateTime created;
+        QString mimeType;
+    };
     QString boundedDirectory(const QString &path) const;
     void cancel();
     void clear();
+    void sortEntries(QList<Entry> &entries);
     QString m_rootPath;
     QString m_rootDirectory;
     QString m_location;
+    QString m_sortMode = QStringLiteral("modified");
     bool m_enabled = false;
     bool m_loading = false;
     QString m_error;
-    QList<QVariantMap> m_entries;
+    QList<Entry> m_entries;
+    QList<Entry> m_pendingEntries;
     QPointer<KIO::ListJob> m_job;
     quint64 m_generation = 0;
 };

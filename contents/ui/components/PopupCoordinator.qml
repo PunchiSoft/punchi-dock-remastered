@@ -27,6 +27,7 @@ Item {
     property var folderPopupDialogRef: null
     property var calendarPopupDialogRef: null
     property var trashMenuDialogRef: null
+    property var trashConfirmationDialogRef: null
     property var notePopupDialogRef: null
     property var appActionsDialogRef: null
     property var taskWindowsDialogRef: null
@@ -87,6 +88,7 @@ Item {
     readonly property bool contextMenuVisible: contextMenuOpening
         || (appActionsDialogRef && appActionsDialogRef.visible)
         || (trashMenuDialogRef && trashMenuDialogRef.visible)
+        || (trashConfirmationDialogRef && trashConfirmationDialogRef.visible)
             || (taskWindowsPopupContentRef && taskWindowsPopupContentRef.actionsVisible)
 
     TaskPopupPresentationController {
@@ -100,6 +102,7 @@ Item {
         return (folderPopupDialogRef && folderPopupDialogRef.visible)
             || (calendarPopupDialogRef && calendarPopupDialogRef.visible)
             || (trashMenuDialogRef && trashMenuDialogRef.visible)
+            || (trashConfirmationDialogRef && trashConfirmationDialogRef.visible)
             || (notePopupDialogRef && notePopupDialogRef.visible)
             || (appActionsDialogRef && appActionsDialogRef.visible)
             || (taskWindowsDialogRef && taskWindowsDialogRef.visible)
@@ -281,6 +284,17 @@ Item {
         return visualParent || dockFallbackAnchor
     }
 
+    // Context menus and their callout leave from the visible icon. The original
+    // visualParent stays untouched for task-popup comparisons and fallbacks.
+    function contextMenuAnchor(visualParent) {
+        return visualParent && visualParent.contextMenuAnchorItem
+            ? visualParent.contextMenuAnchorItem : visualParent
+    }
+
+    function prepareContextMenuAnchor(visualParent) {
+        return preparePopupAnchor(contextMenuAnchor(visualParent))
+    }
+
     function taskPopupAnchor(visualParent) {
         if (visualParent && visualParent.taskPopupAnchorItem) {
             if (stableTaskPopupAnchorRef
@@ -356,10 +370,15 @@ Item {
 
     function closeAllPopups(exceptDialog) {
         const dialogs = [folderPopupDialogRef, calendarPopupDialogRef, trashMenuDialogRef,
+            trashConfirmationDialogRef,
             notePopupDialogRef, appActionsDialogRef, taskOverflowDialogRef, taskWindowsDialogRef]
         for (let index = 0; index < dialogs.length; index++) {
             const dialog = dialogs[index]
             if (dialog && dialog !== exceptDialog) {
+                if (dialog === trashConfirmationDialogRef
+                        && trashIntegrationRef && trashIntegrationRef.emptying) {
+                    continue
+                }
                 root.hidePopupDialog(dialog)
             }
         }
@@ -373,23 +392,30 @@ Item {
 
     function openTrashMenu(itemData, visualParent, keyboardInvoked) {
         if (!surfaceAvailable(trashMenuDialogRef, "trashMenuDialog")
+                || !surfaceAvailable(trashConfirmationDialogRef,
+                    "trashConfirmationDialog")
                 || !surfaceAvailable(trashIntegrationRef, "trashIntegration")
                 || !surfaceAvailable(trashContextContentRef, "trashContextContent")) {
             return
         }
         const wasActive = root.popupDialogActive(trashMenuDialogRef)
+        if (trashIntegrationRef.emptying) {
+            closeAllPopups(trashConfirmationDialogRef)
+            root.hidePopupDialog(trashMenuDialogRef)
+            if (typeof trashConfirmationDialogRef.positionInScreen === "function") {
+                trashConfirmationDialogRef.positionInScreen()
+            }
+            root.showPopupDialog(trashConfirmationDialogRef)
+            return
+        }
         closeAllPopups(trashMenuDialogRef)
         activeTrashEmptySound = itemData && itemData.emptySound
             ? String(itemData.emptySound)
             : ""
         root.assignPopupAnchor(trashMenuDialogRef,
-            preparePopupAnchor(visualParent))
-        if (trashIntegrationRef.emptying) {
-            trashContextContentRef.showConfirmation()
-        } else {
-            trashIntegrationRef.resetOperationState()
-            trashContextContentRef.showMenu(!!keyboardInvoked)
-        }
+            prepareContextMenuAnchor(visualParent))
+        trashIntegrationRef.resetOperationState()
+        trashContextContentRef.showMenu(!!keyboardInvoked)
         if (wasActive) {
             root.hidePopupDialog(trashMenuDialogRef)
         } else {
@@ -456,7 +482,7 @@ Item {
             return
         }
 
-        const anchor = preparePopupAnchor(visualParent)
+        const anchor = prepareContextMenuAnchor(visualParent)
         closeAllPopups(appActionsDialogRef)
         contextMenuOpening = true
         Qt.callLater(function() {
@@ -988,6 +1014,7 @@ Item {
             return false
         }
         const anchor = popupAnchor(targetItem)
+        const contextAnchor = targetItem.contextMenuAnchorItem
         const isTarget = function(dialog) {
             if (!dialog || !dialog.visible) {
                 return false
@@ -995,6 +1022,7 @@ Item {
             const source = typeof dialog.sourceAnchor !== "undefined"
                 ? dialog.sourceAnchor : dialog.visualParent
             return source === targetItem || source === anchor
+                || (contextAnchor !== undefined && source === contextAnchor)
         }
         return isTarget(folderPopupDialogRef)
             || isTarget(calendarPopupDialogRef)

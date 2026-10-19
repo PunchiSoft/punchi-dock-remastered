@@ -11,6 +11,7 @@ import "org/punchi/dock" as Punchi
 import "components"
 import "components/controlcenter"
 import "components/punchimenu"
+import "components/BackgroundQuickActions.js" as BackgroundQuickActions
 import "config/code/configItems.js" as ConfigItemsJS
 import "../code/recentApplicationsPlacement.js" as RecentPlacement
 
@@ -53,6 +54,45 @@ PlasmoidItem {
             onTriggered: dockItemsController.addQuickSeparator()
         },
         PlasmaCore.Action {
+            id: autoHidePanelAction
+            visible: root.inPanel
+            text: i18nc("@action:context", "Automatically Hide Dock")
+            icon.name: "visibility-hidden"
+            checkable: true
+            // The toggle reflects the effective panel mode; dodge windows and
+            // windows go below are different states and stay unchecked.
+            onTriggered: {
+                const detected = dockGeometry.detectedPanelVisibilityMode
+                const autoHide = BackgroundQuickActions.autoHideActive(
+                    detected, root.configuredPanelVisibilityMode)
+                // Remember the real previous mode so turning auto-hide off
+                // restores dodge/windows-go-below instead of always visible.
+                const result = BackgroundQuickActions.visibilityToggle(
+                    autoHide,
+                    BackgroundQuickActions.effectiveVisibilityMode(
+                        detected, root.configuredPanelVisibilityMode),
+                    String(Plasmoid.configuration.panelVisibilityModePrevious
+                        || ""))
+                Plasmoid.configuration.panelVisibilityModePrevious =
+                    result.previous
+                Plasmoid.configuration.panelVisibilityMode = result.mode
+            }
+        },
+        PlasmaCore.Action {
+            text: i18nc("@action:context", "Magnification")
+            icon.name: "zoom-in"
+            checkable: true
+            checked: dockConfig.configuredHoverScale > 1.0
+            onTriggered: {
+                const result = BackgroundQuickActions.magnificationToggle(
+                    dockConfig.configuredHoverScale > 1.0,
+                    dockConfig.configuredHoverScale,
+                    Number(Plasmoid.configuration.hoverScalePrevious || 0))
+                Plasmoid.configuration.hoverScalePrevious = result.previous
+                Plasmoid.configuration.hoverScale = result.scale
+            }
+        },
+        PlasmaCore.Action {
             text: i18n("Plasma theme")
             icon.name: "preferences-desktop-theme-global"
             checkable: true
@@ -71,6 +111,19 @@ PlasmoidItem {
     ]
     // qmllint enable missing-property
     // qmllint enable import
+
+    // A checkable PlasmaCore.Action rewrites its own checked state when it is
+    // triggered, which removes a plain QML binding. Re-assert the effective
+    // panel mode so later external changes stay reflected in the menu.
+    Binding {
+        target: autoHidePanelAction
+        property: "checked"
+        value: root.inPanel
+            && BackgroundQuickActions.autoHideActive(
+                dockGeometry.detectedPanelVisibilityMode,
+                root.configuredPanelVisibilityMode)
+        restoreMode: Binding.RestoreBindingOrValue
+    }
 
     property bool deletingActiveNote: false
     property var dynamicApplicationsMoveModeTarget: null
@@ -867,6 +920,10 @@ PlasmoidItem {
         }
     }
     readonly property string configuredPanelVisibilityMode: String(Plasmoid.configuration.panelVisibilityMode || "system")
+    // The quick action and the Plasma panel settings can change the effective
+    // mode. Adoption is enabled only after the startup apply, so a stale
+    // observation cannot overwrite an explicit stored preference.
+    property bool panelVisibilitySyncReady: false
     readonly property bool panelAlwaysVisible: {
         if (!root.inPanel) {
             return false
@@ -879,7 +936,50 @@ PlasmoidItem {
         }
         return false
     }
-    onConfiguredPanelVisibilityModeChanged: applyConfiguredPanelVisibilityMode()
+    onConfiguredPanelVisibilityModeChanged: {
+        root.rememberPanelVisibilityMode()
+        root.applyConfiguredPanelVisibilityMode()
+    }
+
+    // Keep the last explicit non-auto mode so the background toggle restores
+    // it instead of falling back to "always visible".
+    function rememberPanelVisibilityMode() {
+        const mode = root.configuredPanelVisibilityMode
+        if (mode === "autoHide" || mode === "system") {
+            return
+        }
+        if (String(Plasmoid.configuration.panelVisibilityModePrevious || "")
+                !== mode) {
+            Plasmoid.configuration.panelVisibilityModePrevious = mode
+        }
+    }
+
+    Connections {
+        target: dockGeometry
+        ignoreUnknownSignals: true
+        function onDetectedPanelVisibilityModeChanged() {
+            if (!root.inPanel) {
+                return
+            }
+            // The hosting window may appear after Component.onCompleted. Apply
+            // the stored mode before adopting a mode observed on the panel.
+            if (!root.panelVisibilitySyncReady) {
+                root.applyConfiguredPanelVisibilityMode()
+                if (root.inPanel
+                        && (root.configuredPanelVisibilityMode === "system"
+                            || !!root.Window.window)) {
+                    root.panelVisibilitySyncReady = true
+                }
+                return
+            }
+            const target = BackgroundQuickActions.visibilitySyncTarget(
+                dockGeometry.detectedPanelVisibilityMode,
+                root.configuredPanelVisibilityMode)
+            if (target !== "") {
+                Plasmoid.configuration.panelVisibilityMode = target
+            }
+        }
+    }
 
     function applyConfiguredPanelVisibilityMode() {
         if (!root.inPanel || !root.Window.window) {
@@ -2087,6 +2187,7 @@ PlasmoidItem {
         objectName: "dockContextActionsController"
         systemDiscovery: systemDiscovery
         taskController: taskController
+        mprisController: mprisController
         dockItemsController: dockItemsController
         showConfigureDockAction: Plasmoid.configuration.showConfigureDockAction !== false
         configureDockHandler: function() {
@@ -2281,7 +2382,14 @@ PlasmoidItem {
         Qt.callLater(root.applyConfiguredPanelLengthMode)
         Qt.callLater(root.applyConfiguredPanelAlignmentMode)
         Qt.callLater(root.applyConfiguredPanelFloatingMode)
-        Qt.callLater(root.applyConfiguredPanelVisibilityMode)
+        Qt.callLater(function() {
+            root.applyConfiguredPanelVisibilityMode()
+            if (root.inPanel
+                    && (root.configuredPanelVisibilityMode === "system"
+                        || !!root.Window.window)) {
+                root.panelVisibilitySyncReady = true
+            }
+        })
         Qt.callLater(root.applyConfiguredPanelThickness)
         Qt.callLater(root.applyConfiguredPanelOpacityMode)
     }
@@ -2378,6 +2486,7 @@ PlasmoidItem {
             folderPopupDialogRef: folderPopupDialog
             calendarPopupDialogRef: calendarPopupDialog
             trashMenuDialogRef: trashMenuDialog
+            trashConfirmationDialogRef: trashConfirmationDialog
             notePopupDialogRef: notePopupDialog
             appActionsDialogRef: appActionsDialog
             taskWindowsDialogRef: taskWindowsDialog
@@ -2406,7 +2515,8 @@ PlasmoidItem {
                     return
                 }
                 runtimeService.playSound(popupCoordinator.activeTrashEmptySound, "trash-empty")
-                if (trashMenuDialog.visible && trashContextContent.confirmationVisible) {
+                if (trashConfirmationDialog.visible
+                        && trashConfirmationSurface.confirmationContent.succeeded) {
                     trashSuccessCloseTimer.restart()
                 }
             }
@@ -2417,8 +2527,7 @@ PlasmoidItem {
             interval: 1200
             repeat: false
             onTriggered: {
-                trashMenuDialog.closeSafely()
-                trashContextContent.showMenu()
+                trashConfirmationDialog.closeSafely()
                 trashIntegration.resetOperationState()
             }
         }
@@ -3282,8 +3391,12 @@ PlasmoidItem {
                             || (folderPopupDialog.visible && folderPopupDialog.sourceAnchor === dockItemDelegate)
                             || (calendarPopupDialog.visible && calendarPopupDialog.visualParent === dockItemDelegate)
                             || (notePopupDialog.visible && notePopupDialog.visualParent === dockItemDelegate)
-                            || (trashMenuDialog.visible && trashMenuDialog.sourceAnchor === dockItemDelegate)
-                            || (appActionsDialog.visible && appActionsDialog.sourceAnchor === dockItemDelegate)
+                            || (trashMenuDialog.visible
+                                && trashMenuDialog.sourceAnchor
+                                    === dockItemDelegate.contextMenuAnchorItem)
+                            || (appActionsDialog.visible
+                                && appActionsDialog.sourceAnchor
+                                    === dockItemDelegate.contextMenuAnchorItem)
                             || (root.punchiMenuDialogInstance && root.punchiMenuDialogInstance.visible && root.punchiMenuAnchorItem === dockItemDelegate)
                             || (root.controlCenterDialogInstance
                                 && root.controlCenterDialogInstance.visible
@@ -3535,8 +3648,12 @@ PlasmoidItem {
                             || (folderPopupDialog.visible && folderPopupDialog.sourceAnchor === taskDockItemDelegate)
                             || (calendarPopupDialog.visible && calendarPopupDialog.visualParent === taskDockItemDelegate)
                             || (notePopupDialog.visible && notePopupDialog.visualParent === taskDockItemDelegate)
-                            || (trashMenuDialog.visible && trashMenuDialog.sourceAnchor === taskDockItemDelegate)
-                            || (appActionsDialog.visible && appActionsDialog.sourceAnchor === taskDockItemDelegate)
+                            || (trashMenuDialog.visible
+                                && trashMenuDialog.sourceAnchor
+                                    === taskDockItemDelegate.contextMenuAnchorItem)
+                            || (appActionsDialog.visible
+                                && appActionsDialog.sourceAnchor
+                                    === taskDockItemDelegate.contextMenuAnchorItem)
                             || (root.punchiMenuDialogInstance && root.punchiMenuDialogInstance.visible && root.punchiMenuAnchorItem === taskDockItemDelegate)
                         // qmllint enable unqualified
                         supportsContextMenu: dockContextActionsController.itemHasContextMenu(modelData, taskData.rows, "dynamic")
@@ -4038,7 +4155,7 @@ PlasmoidItem {
         GuardedPopupDialog {
             id: trashMenuDialog
             location: dockGeometry.effectivePanelLocation
-            hideOnWindowDeactivate: !trashContextContent.confirmationVisible
+            hideOnWindowDeactivate: true
             onBlurReapplyRequested: trashMenuBlurController.reapply()
 
             property Item sourceAnchor: null
@@ -4047,10 +4164,16 @@ PlasmoidItem {
                 popup: trashMenuDialog
                 gap: dockGeometry.contextMenuGap
                 location: trashMenuDialog.location
+                preserveHorizontalAnchorCenter: true
+                preserveVerticalAnchorCenter: true
+                targetSurface: trashSurfaceStack
+                targetTranslationX: trashMenuAnimatedContent.contentTranslationX
+                targetTranslationY: trashMenuAnimatedContent.contentTranslationY
             }
 
             function setPopupAnchor(anchor) {
                 trashMenuDialog.sourceAnchor = anchor
+                trashMenuDialog.popupSpacing.captureSourceGeometry()
                 trashMenuDialog.popupSpacing.refreshAnchor()
             }
 
@@ -4062,6 +4185,8 @@ PlasmoidItem {
                     maskSource: trashSurfaceStack.backgroundBlurMaskSource
                     useMaskSourceInsets: true
                     maskOffset: trashSurfaceStack.backgroundBlurMaskOffset
+                    additionalMaskPolygon:
+                        trashSurfaceStack.backgroundBlurAdditionalMaskPolygon
                     enabled: trashMenuDialog.visible
                         && trashSurfaceStack.backgroundBlurEnabled
                         && trashSurfaceStack.backgroundBlurMaskPresent
@@ -4088,7 +4213,18 @@ PlasmoidItem {
                     drawContentBackground: true
                     backgroundImagePath: "widgets/background"
                     backgroundOpacity: dockConfig.contextMenuBackgroundOpacity
-                    contentFramePaddingPercent: 2
+                    integratedBalloonSurface: true
+                    // Draw a continuous balloon silhouette while retaining the
+                    // themed frame as the blur mask source.
+                    edgeTailEnabled: true
+                    edgeTailLocation: dockGeometry.spectrumOriginEdge
+                    constrainEdgeTailTip: !trashSurfaceStack.edgeTailHorizontal
+                    edgeTailTipOffset: !trashSurfaceStack.edgeTailHorizontal
+                        ? trashMenuDialog.popupSpacing.sourceCenterInTarget.y : NaN
+                    // Keep the callout base on the stable theme default. The
+                    // source anchor follows the icon zoom; deriving the tail
+                    // from it would make the figure grow with magnification.
+                    contentFramePaddingPercent: 0
                     minimumSurfaceWidth: Kirigami.Units.smallSpacing
                     minimumSurfaceHeight: Kirigami.Units.smallSpacing
 
@@ -4105,6 +4241,12 @@ PlasmoidItem {
                         menuWidth: dockConfig.contextMenuWidth
                         menuRowHeight: dockConfig.contextMenuRowHeight
                         menuIconSize: dockConfig.contextMenuIconSize
+                        canEmptyTrash: trashIntegration.hasItems
+                            && !trashIntegration.emptying
+                        surfaceMarginLeft: trashSurfaceStack.backgroundMarginLeft
+                        surfaceMarginTop: trashSurfaceStack.backgroundMarginTop
+                        surfaceMarginRight: trashSurfaceStack.backgroundMarginRight
+                        surfaceMarginBottom: trashSurfaceStack.backgroundMarginBottom
                         menuTextShadowsEnabled: dockConfig.menuTextShadowsEnabled
                         maximumAvailableWidth: dockGeometry.taskPopupAvailableWidth
                         maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
@@ -4113,7 +4255,15 @@ PlasmoidItem {
                             trashIntegration.openTrash()
                         }
                         onEmptyTrashRequested: {
-                            trashIntegration.emptyTrash()
+                            trashSuccessCloseTimer.stop()
+                            trashIntegration.resetOperationState()
+                            popupCoordinator.closeAllPopups(trashConfirmationDialog)
+                            trashMenuDialog.closeSafely()
+                            trashConfirmationDialog.positionInScreen()
+                            popupCoordinator.showPopupDialog(trashConfirmationDialog)
+                            Qt.callLater(function() {
+                                trashConfirmationSurface.confirmationContent.focusPrimaryAction()
+                            })
                         }
                         onCloseRequested: {
                             trashSuccessCloseTimer.stop()
@@ -4130,6 +4280,100 @@ PlasmoidItem {
         }
 
         GuardedPopupDialog {
+            id: trashConfirmationDialog
+            visualParent: null
+            location: PlasmaCore.Types.Floating
+            type: PlasmaCore.Dialog.PopupMenu
+            flags: isX11Session
+                ? Qt.Popup | Qt.FramelessWindowHint
+                : Qt.Dialog | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+            hideOnWindowDeactivate:
+                trashConfirmationSurface.confirmationContent.operationState === "idle"
+            mainItem: TrashConfirmationSurface {
+                id: trashConfirmationSurface
+                maximumWidth: Math.max(320,
+                    root.availableScreenRect.width
+                        - Kirigami.Units.largeSpacing * 2)
+
+                confirmationContent.operationState: trashIntegration.operationState
+                confirmationContent.progressPercent: trashIntegration.progressPercent
+                confirmationContent.progressDeterminate:
+                    trashIntegration.progressDeterminate
+                confirmationContent.processedItems: trashIntegration.processedItems
+                confirmationContent.totalItems: trashIntegration.totalItems
+                confirmationContent.errorMessage: trashIntegration.errorMessage
+                confirmationContent.canConfirm: trashIntegration.hasItems
+                    && !trashIntegration.emptying
+                confirmationContent.rowHeight: dockConfig.contextMenuRowHeight
+                confirmationContent.iconSize: dockConfig.contextMenuIconSize
+                confirmationContent.onConfirmRequested:
+                    trashIntegration.emptyTrash()
+                confirmationContent.onCancelRequested: {
+                    trashConfirmationDialog.closeSafely()
+                    trashIntegration.resetOperationState()
+                }
+                confirmationContent.onDismissRequested: {
+                    trashConfirmationDialog.closeSafely()
+                    trashIntegration.resetOperationState()
+                }
+            }
+
+            function positionInScreen() {
+                const screenGeometry = Plasmoid.containment
+                    && Plasmoid.containment.screenGeometry
+                    ? Plasmoid.containment.screenGeometry
+                    : Qt.rect(Screen.virtualX, Screen.virtualY,
+                        Screen.width, Screen.height)
+                const availableGeometry = root.availableScreenRect
+                const hasAvailableGeometry = Number.isFinite(availableGeometry.x)
+                    && Number.isFinite(availableGeometry.y)
+                    && Number.isFinite(availableGeometry.width)
+                    && Number.isFinite(availableGeometry.height)
+                    && availableGeometry.width > 0
+                    && availableGeometry.height > 0
+                const left = screenGeometry.x + (hasAvailableGeometry
+                    ? availableGeometry.x : 0)
+                const top = screenGeometry.y + (hasAvailableGeometry
+                    ? availableGeometry.y : 0)
+                const availableWidth = hasAvailableGeometry
+                    ? availableGeometry.width : screenGeometry.width
+                const availableHeight = hasAvailableGeometry
+                    ? availableGeometry.height : screenGeometry.height
+                x = Math.round(Math.max(left, Math.min(left + availableWidth - width,
+                    left + (availableWidth - width) / 2)))
+                y = Math.round(Math.max(top, Math.min(top + availableHeight - height,
+                    top + (availableHeight - height) / 2)))
+            }
+
+            onWidthChanged: {
+                if (visible) {
+                    Qt.callLater(positionInScreen)
+                }
+            }
+            onHeightChanged: {
+                if (visible) {
+                    Qt.callLater(positionInScreen)
+                }
+            }
+            onVisibleChanged: {
+                if (visible) {
+                    positionInScreen()
+                    Qt.callLater(function() {
+                        trashConfirmationSurface.confirmationContent.focusPrimaryAction()
+                    })
+                } else if (!trashIntegration.emptying) {
+                    trashSuccessCloseTimer.stop()
+                    trashIntegration.resetOperationState()
+                }
+            }
+            onOpenFailed: {
+                trashIntegration.resetOperationState()
+                trashContextContent.showMenu(false)
+                popupCoordinator.showPopupDialog(trashMenuDialog)
+            }
+        }
+
+        GuardedPopupDialog {
             id: appActionsDialog
             location: dockGeometry.effectivePanelLocation
             hideOnWindowDeactivate: !popupCoordinator.contextMenuOpening
@@ -4142,10 +4386,16 @@ PlasmoidItem {
                 popup: appActionsDialog
                 gap: dockGeometry.contextMenuGap
                 location: appActionsDialog.location
+                preserveHorizontalAnchorCenter: true
+                preserveVerticalAnchorCenter: true
+                targetSurface: appActionsSurfaceStack
+                targetTranslationX: appActionsAnimatedContent.contentTranslationX
+                targetTranslationY: appActionsAnimatedContent.contentTranslationY
             }
 
             function setPopupAnchor(anchor) {
                 appActionsDialog.sourceAnchor = anchor
+                appActionsDialog.popupSpacing.captureSourceGeometry()
                 appActionsDialog.popupSpacing.refreshAnchor()
             }
 
@@ -4157,6 +4407,8 @@ PlasmoidItem {
                     maskSource: appActionsSurfaceStack.backgroundBlurMaskSource
                     useMaskSourceInsets: true
                     maskOffset: appActionsSurfaceStack.backgroundBlurMaskOffset
+                    additionalMaskPolygon:
+                        appActionsSurfaceStack.backgroundBlurAdditionalMaskPolygon
                     enabled: appActionsDialog.visible
                         && appActionsSurfaceStack.backgroundBlurEnabled
                         && appActionsSurfaceStack.backgroundBlurMaskPresent
@@ -4183,7 +4435,18 @@ PlasmoidItem {
                     drawContentBackground: true
                     backgroundImagePath: "widgets/background"
                     backgroundOpacity: dockConfig.contextMenuBackgroundOpacity
-                    contentFramePaddingPercent: 2
+                    integratedBalloonSurface: true
+                    // Draw a continuous balloon silhouette while retaining the
+                    // themed frame as the blur mask source.
+                    edgeTailEnabled: true
+                    edgeTailLocation: dockGeometry.spectrumOriginEdge
+                    constrainEdgeTailTip: !appActionsSurfaceStack.edgeTailHorizontal
+                    edgeTailTipOffset: !appActionsSurfaceStack.edgeTailHorizontal
+                        ? appActionsDialog.popupSpacing.sourceCenterInTarget.y : NaN
+                    // Keep the callout base on the stable theme default. The
+                    // source anchor follows the icon zoom; deriving the tail
+                    // from it would make the figure grow with magnification.
+                    contentFramePaddingPercent: 0
                     minimumSurfaceWidth: Kirigami.Units.smallSpacing
                     minimumSurfaceHeight: Kirigami.Units.smallSpacing
 
@@ -4199,6 +4462,15 @@ PlasmoidItem {
                         rowHeight: dockConfig.contextMenuRowHeight
                         iconSize: dockConfig.contextMenuIconSize
                         targetWidth: dockConfig.contextMenuWidth
+                        autoSize: dockConfig.contextMenuAutoSize
+                        minimumAnchorWidth: appActionsDialog.sourceAnchor
+                            ? appActionsDialog.sourceAnchor.width : 0
+                        surfaceMargins: ({
+                            "left": appActionsSurfaceStack.backgroundMarginLeft,
+                            "top": appActionsSurfaceStack.backgroundMarginTop,
+                            "right": appActionsSurfaceStack.backgroundMarginRight,
+                            "bottom": appActionsSurfaceStack.backgroundMarginBottom
+                        })
                         textShadowsEnabled: dockConfig.menuTextShadowsEnabled
                         maximumAvailableWidth: dockGeometry.taskPopupAvailableWidth
                         maximumAvailableHeight: dockGeometry.taskPopupAvailableHeight
@@ -4485,6 +4757,7 @@ PlasmoidItem {
                         actionRowHeight: dockConfig.contextMenuRowHeight
                         actionIconSize: dockConfig.contextMenuIconSize
                         actionMenuWidth: dockConfig.contextMenuWidth
+                        actionAutoSize: dockConfig.contextMenuAutoSize
                         transitionDirection: dockConfig.contextMenuTransitionDirection
                         // qmllint enable unqualified
                         previewsEnabled: (taskWindowsDialog.visible

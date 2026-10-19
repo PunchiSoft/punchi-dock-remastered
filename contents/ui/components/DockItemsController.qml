@@ -658,6 +658,58 @@ Item {
         return true
     }
 
+    function setFolderSortMode(targetIndex, sortMode, expectedFolderText) {
+        const index = Number(targetIndex)
+        if (!Number.isInteger(index) || index < 0
+                || index >= root.dockItems.length) {
+            return false
+        }
+
+        const expectedText = String(expectedFolderText || "")
+        const currentFolder = root.dockItems[index]
+        if (expectedText.length === 0
+                || root.canonicalJsonText(currentFolder) !== expectedText) {
+            return false
+        }
+
+        const update = ConfigItemsJS.setFolderSortMode(
+            root.dockItems, index, String(sortMode || ""))
+        if (!update.changed) {
+            return update.status === "unchanged"
+        }
+
+        if (!root.persistenceAdapter
+                || typeof root.persistenceAdapter.commitDockItemsJson
+                    !== "function") {
+            return false
+        }
+
+        let candidateRaw = ""
+        try {
+            candidateRaw = JSON.stringify(update.items)
+        } catch (error) {
+            return false
+        }
+        if (candidateRaw.length > Logic.maximumDockItemsJsonLength) {
+            return false
+        }
+
+        const expectedRaw = String(Plasmoid.configuration.dockItemsJson || "")
+        const persistenceResult = root.persistenceAdapter.commitDockItemsJson(
+            expectedRaw, candidateRaw)
+        if (!persistenceResult || !persistenceResult.success) {
+            return false
+        }
+
+        root.dockItems = update.items
+        if (root.runtimeService) {
+            root.runtimeService.persistDockItemsJson(
+                candidateRaw, root.configInstanceId())
+        }
+        root.configurationChanged()
+        return true
+    }
+
     function punchiMenuApplicationLayout() {
         const itemIndex = root.punchiMenuItemIndex(root.dockItems)
         if (itemIndex < 0) {

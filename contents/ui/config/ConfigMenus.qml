@@ -15,7 +15,8 @@ Item {
     }
 
     property alias cfg_contextMenuTransitionSpeed: contextMenuTransitionSpeedSlider.value
-    property alias cfg_contextMenuVisibleRows: contextMenuVisibleRowsSpin.value
+    property int cfg_contextMenuVisibleRows: 0
+    property bool cfg_contextMenuAutoSize: false
     property alias cfg_contextMenuRowHeight: contextMenuRowHeightSlider.value
     property alias cfg_contextMenuIconSize: contextMenuIconSizeSlider.value
     property alias cfg_contextMenuWidth: contextMenuWidthSlider.value
@@ -33,6 +34,7 @@ Item {
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     // qmllint disable unqualified
     readonly property var sizePresetOptions: [
+        { "text": i18nc("@item:inlistbox Context menu size", "Automatic"), "value": "automatic" },
         { "text": i18nc("@item:inlistbox Context menu size", "Compact"), "value": "compact" },
         { "text": i18nc("@item:inlistbox Context menu size", "Comfortable"), "value": "comfortable" },
         { "text": i18nc("@item:inlistbox Context menu size", "Large"), "value": "large" },
@@ -40,6 +42,9 @@ Item {
     ]
     // qmllint enable unqualified
     readonly property string detectedSizePreset: {
+        if (cfg_contextMenuAutoSize) {
+            return "automatic"
+        }
         const rowHeight = Math.round(contextMenuRowHeightSlider.value)
         const iconSize = Math.round(contextMenuIconSizeSlider.value)
         const menuWidth = Math.round(contextMenuWidthSlider.value)
@@ -74,7 +79,19 @@ Item {
         }
     }
 
+    function syncVisibleRowsSelector() {
+        visibleRowsModeCombo.currentIndex = cfg_contextMenuVisibleRows > 0 ? 1 : 0
+        if (cfg_contextMenuVisibleRows > 0) {
+            contextMenuVisibleRowsSpin.value = Math.max(3,
+                Math.min(15, cfg_contextMenuVisibleRows))
+        }
+    }
+
     function applySizePreset(preset) {
+        cfg_contextMenuAutoSize = preset === "automatic"
+        if (preset === "automatic" || preset === "custom") {
+            return
+        }
         if (preset === "compact") {
             contextMenuRowHeightSlider.value = 38
             contextMenuIconSizeSlider.value = 20
@@ -91,7 +108,11 @@ Item {
     }
 
     onCfg_contextMenuTransitionDirectionChanged: syncDirectionSelector()
-    Component.onCompleted: syncDirectionSelector()
+    onCfg_contextMenuVisibleRowsChanged: syncVisibleRowsSelector()
+    Component.onCompleted: {
+        syncDirectionSelector()
+        syncVisibleRowsSelector()
+    }
 
     ColumnLayout {
         id: menuColumn
@@ -117,15 +138,43 @@ Item {
 
         }
 
-        Controls.SpinBox {
-            id: contextMenuVisibleRowsSpin
+        RowLayout {
             Kirigami.FormData.label: i18n("Visible actions:")
-            from: 3
-            to: 15
-            value: 6
-            Layout.preferredWidth: layoutMetrics.selectorWidth
-            Accessible.name: i18n("Maximum visible context menu actions")
+            Layout.maximumWidth: page.contentWidthHint
 
+            Controls.ComboBox {
+                id: visibleRowsModeCombo
+                textRole: "text"
+                valueRole: "value"
+                model: [
+                    { "text": i18nc("@item:inlistbox Context menu visible actions", "Automatic"), "value": 0 },
+                    { "text": i18nc("@item:inlistbox Context menu visible actions", "Manual"), "value": 1 }
+                ]
+                Layout.preferredWidth: Math.floor(page.contentWidthHint * 0.54)
+                Layout.maximumWidth: Math.floor(page.contentWidthHint * 0.54)
+                Accessible.name: i18n("Visible context menu actions mode")
+                onActivated: function(index) {
+                    page.cfg_contextMenuVisibleRows = currentValue === 0
+                        ? 0 : Math.max(3, Math.min(15,
+                            contextMenuVisibleRowsSpin.value || 6))
+                }
+            }
+
+            Controls.SpinBox {
+                id: contextMenuVisibleRowsSpin
+                from: 3
+                to: 15
+                value: 6
+                enabled: visibleRowsModeCombo.currentValue === 1
+                Layout.preferredWidth: Math.floor(page.contentWidthHint * 0.34)
+                Layout.maximumWidth: Math.floor(page.contentWidthHint * 0.34)
+                Accessible.name: i18n("Maximum visible context menu actions")
+                onValueChanged: {
+                    if (visibleRowsModeCombo.currentValue === 1) {
+                        page.cfg_contextMenuVisibleRows = value
+                    }
+                }
+            }
         }
 
         RowLayout {
@@ -142,6 +191,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Context menu row height")
+                enabled: !page.cfg_contextMenuAutoSize
 
             }
 
@@ -166,6 +216,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Context menu icon size")
+                enabled: !page.cfg_contextMenuAutoSize
 
             }
 
@@ -190,6 +241,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredWidth: page.contentWidthHint - 64
                 Accessible.name: i18n("Context menu target width")
+                enabled: !page.cfg_contextMenuAutoSize
 
             }
 
@@ -202,6 +254,7 @@ Item {
 
         Controls.Label {
             text: i18n("Menus use these target dimensions after morphing from a window preview. Screen limits can reduce the effective size safely.")
+            visible: !page.cfg_contextMenuAutoSize
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

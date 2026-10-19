@@ -1,8 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls as Controls
 import org.kde.plasma.extras as PlasmaExtras
+import org.kde.plasma.components as PlasmaComponents
 import org.kde.kirigami as Kirigami
+import org.kde.ksvg as KSvg
 
 Item {
     id: root
@@ -10,6 +11,7 @@ Item {
     property int rowHeight: 46
     property int iconSize: 26
     property bool textShadowsEnabled: false
+    property bool canEmptyTrash: false
     readonly property int effectiveRowHeight: Math.max(32, Math.min(64,
         Number(rowHeight || 46)))
     readonly property int effectiveIconSize: Math.max(16, Math.min(40,
@@ -36,7 +38,7 @@ Item {
         anchors.top: parent.top
         spacing: Kirigami.Units.smallSpacing
 
-        Controls.ItemDelegate {
+        PlasmaComponents.MenuItem {
             id: openOption
             Layout.fillWidth: true
             Layout.preferredHeight: root.effectiveRowHeight
@@ -45,10 +47,19 @@ Item {
             icon.width: root.effectiveIconSize
             icon.height: root.effectiveIconSize
             Accessible.description: i18n("Open the trash folder in the file manager") // qmllint disable unqualified
+            leftPadding: menuItemPaddingMetrics.margins.left
+            rightPadding: menuItemPaddingMetrics.margins.right
+            topPadding: menuItemPaddingMetrics.margins.top
+            bottomPadding: menuItemPaddingMetrics.margins.bottom
             onClicked: root.openTrashClicked()
 
             contentItem: RowLayout {
-                spacing: Kirigami.Units.largeSpacing
+                spacing: Kirigami.Units.smallSpacing
+
+                Item {
+                    Layout.preferredWidth: Kirigami.Units.smallSpacing
+                    Layout.preferredHeight: Kirigami.Units.iconSizes.small
+                }
 
                 Kirigami.Icon {
                     Layout.preferredWidth: root.effectiveIconSize
@@ -67,22 +78,47 @@ Item {
                     wrapMode: Text.NoWrap
                 }
             }
+
+            background: Item {
+                InteractiveActionBackground {
+                    anchors.fill: parent
+                    anchors.leftMargin: openOption.leftPadding
+                    anchors.rightMargin: openOption.rightPadding
+                    anchors.topMargin: openOption.topPadding
+                    anchors.bottomMargin: openOption.bottomPadding
+                    hovered: openOption.hovered
+                    focused: openOption.visualFocus
+                    pressed: openOption.down
+                    visualRadius: height / 2
+                }
+            }
         }
 
-        Controls.ItemDelegate {
+        PlasmaComponents.MenuItem {
             id: emptyOption
             Layout.fillWidth: true
             Layout.preferredHeight: root.effectiveRowHeight
             text: i18n("Empty trash") // qmllint disable unqualified
-            icon.name: "trash-empty"
+            enabled: root.canEmptyTrash
+            opacity: emptyOption.enabled ? 1.0 : 0.5
+            icon.name: "edit-delete"
             icon.width: root.effectiveIconSize
             icon.height: root.effectiveIconSize
             icon.color: Kirigami.Theme.negativeTextColor
             Accessible.description: i18n("Permanently remove all items from the trash") // qmllint disable unqualified
+            leftPadding: menuItemPaddingMetrics.margins.left
+            rightPadding: menuItemPaddingMetrics.margins.right
+            topPadding: menuItemPaddingMetrics.margins.top
+            bottomPadding: menuItemPaddingMetrics.margins.bottom
             onClicked: root.emptyTrashClicked()
 
             contentItem: RowLayout {
-                spacing: Kirigami.Units.largeSpacing
+                spacing: Kirigami.Units.smallSpacing
+
+                Item {
+                    Layout.preferredWidth: Kirigami.Units.smallSpacing
+                    Layout.preferredHeight: Kirigami.Units.iconSizes.small
+                }
 
                 Kirigami.Icon {
                     Layout.preferredWidth: root.effectiveIconSize
@@ -102,6 +138,30 @@ Item {
                     wrapMode: Text.NoWrap
                 }
             }
+
+            background: Item {
+                InteractiveActionBackground {
+                    anchors.fill: parent
+                    anchors.leftMargin: emptyOption.leftPadding
+                    anchors.rightMargin: emptyOption.rightPadding
+                    anchors.topMargin: emptyOption.topPadding
+                    anchors.bottomMargin: emptyOption.bottomPadding
+                    hovered: emptyOption.hovered
+                    focused: emptyOption.visualFocus
+                    pressed: emptyOption.down
+                    visualRadius: height / 2
+                }
+            }
         }
+    }
+
+    KSvg.FrameSvgItem {
+        id: menuItemPaddingMetrics
+        imagePath: "widgets/viewitem"
+        prefix: "hover"
+        width: 0
+        height: 0
+        visible: false
+        Accessible.ignored: true
     }
 }

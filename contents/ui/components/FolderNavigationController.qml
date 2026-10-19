@@ -10,6 +10,7 @@ QtObject {
     property bool retainChildModel: false
     property string rootPath: ""
     property string rootName: ""
+    property string sortMode: "modified"
     property var history: []
     property int pendingIndex: 0
     property real pendingScroll: 0
@@ -25,6 +26,7 @@ QtObject {
     readonly property Punchi.FolderNavigationModel rootModel: Punchi.FolderNavigationModel {
         enabled: root.enabled
         rootPath: root.rootPath
+        sortMode: root.sortMode
         onStateChanged: {
             if (!loading && root.enabled && !root.hasChild) {
                 root.restoreRequested(true, 0, 0)
@@ -34,6 +36,7 @@ QtObject {
     readonly property Punchi.FolderNavigationModel childModel: Punchi.FolderNavigationModel {
         enabled: root.enabled && (root.hasChild || root.retainChildModel)
         rootPath: root.rootPath
+        sortMode: root.sortMode
         onStateChanged: {
             if (!loading && root.pendingRestore) {
                 root.pendingRestore = false

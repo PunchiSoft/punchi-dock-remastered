@@ -6,6 +6,7 @@ QtObject {
 
     property var systemDiscovery: null
     property var taskController: null
+    property var mprisController: null
     property var dockItemsController: null
     property var configureDockHandler: null
     property var moveDynamicApplicationsHandler: null
@@ -65,7 +66,6 @@ QtObject {
         // qmllint enable unqualified
         const actions = [{
             "name": menuName,
-            "detail": mode === "floating" ? floatingName : fullscreenName,
             "icon": "view-grid",
             "kind": "submenu",
             "enabled": true,
@@ -76,6 +76,7 @@ QtObject {
                     "kind": "setControlCenterMode",
                     "enabled": true,
                     "checked": mode === "floating",
+                    "exclusive": true,
                     "mode": "floating",
                     "targetIndex": persistentIndex
                 },
@@ -85,12 +86,17 @@ QtObject {
                     "kind": "setControlCenterMode",
                     "enabled": true,
                     "checked": mode === "fullScreen",
+                    "exclusive": true,
                     "mode": "fullScreen",
                     "targetIndex": persistentIndex
                 }
             ]
         }]
         if (root.showConfigureDockAction && typeof root.configureDockHandler === "function") {
+            actions.push({
+                "kind": "separator",
+                "enabled": false
+            })
             actions.push({
                 "name": i18nc("@action:context", "Configure Punchi Dock…"), // qmllint disable unqualified
                 "icon": "preferences-system",
@@ -100,6 +106,175 @@ QtObject {
         }
         return actions
     }
+
+    // qmllint disable unqualified
+    function placeAction(place, applicationId) {
+        return {
+            "name": String(place && place.name ? place.name : ""),
+            "icon": String(place && place.icon ? place.icon : "folder"),
+            "kind": "openFilePlace",
+            "enabled": !place || place.available !== false,
+            "applicationId": String(applicationId || ""),
+            "resource": String(place && place.resource ? place.resource : "")
+        }
+    }
+
+    function placesSubmenu(places, applicationId) {
+        const values = places instanceof Array ? places : []
+        if (values.length === 0) {
+            return null
+        }
+        const groups = {}
+        const order = []
+        for (let index = 0; index < values.length; index++) {
+            const group = String(values[index].groupName || "")
+            if (!Object.prototype.hasOwnProperty.call(groups, group)) {
+                groups[group] = []
+                order.push(group)
+            }
+            groups[group].push(values[index])
+        }
+
+        const firstGroup = order.length > 0 ? order[0] : ""
+        const root = []
+        const firstEntries = groups[firstGroup] || []
+        for (let index = 0; index < firstEntries.length; index++) {
+            root.push(placeAction(firstEntries[index], applicationId))
+        }
+        for (let orderIndex = 1; orderIndex < order.length; orderIndex++) {
+            const group = order[orderIndex]
+            const children = []
+            const entries = groups[group] || []
+            for (let index = 0; index < entries.length; index++) {
+                children.push(placeAction(entries[index], applicationId))
+            }
+            root.push({
+                "name": group,
+                "icon": "folder",
+                "kind": "submenu",
+                "enabled": true,
+                "children": children
+            })
+        }
+
+        let visible = root
+        if (root.length > 7) {
+            const remaining = root.slice(5)
+            visible = root.slice(0, 5)
+            visible.push({
+                "name": i18nc("@action:context", "%1 more Places…", remaining.length),
+                "icon": "view-more-symbolic",
+                "kind": "submenu",
+                "enabled": true,
+                "children": remaining
+            })
+        }
+        return {
+            "name": i18nc("@title:menu", "Places"),
+            "icon": "folder",
+            "kind": "submenu",
+            "enabled": true,
+            "children": visible
+        }
+    }
+
+    function recentSubmenu(documents, applicationId) {
+        const values = documents instanceof Array ? documents : []
+        if (values.length === 0) {
+            return null
+        }
+        const children = []
+        for (let index = 0; index < values.length; index++) {
+            children.push({
+                "name": String(values[index].name || ""),
+                "icon": String(values[index].icon || "text-x-generic"),
+                "kind": "openRecentDocument",
+                "enabled": true,
+                "applicationId": String(applicationId || ""),
+                "resource": String(values[index].resource || ""),
+                "mimeType": String(values[index].mimeType || "")
+            })
+        }
+        children.push({
+            "name": i18nc("@action:context", "Forget Recent Files"),
+            "icon": "edit-clear-history",
+            "kind": "forgetRecentDocuments",
+            "enabled": true,
+            "applicationId": String(applicationId || "")
+        })
+        return {
+            "name": i18nc("@title:menu", "Recent Files"),
+            "icon": "document-open-recent",
+            "kind": "submenu",
+            "enabled": true,
+            "children": children
+        }
+    }
+
+    function mediaSubmenu(controller, applicationId) {
+        if (!controller || !controller.available
+                || String(controller.applicationId || "")
+                    !== String(applicationId || "")) {
+            return null
+        }
+        const children = []
+        if (controller.canGoPrevious) {
+            children.push({
+                "name": i18nc("@action:context", "Previous track"),
+                "icon": "media-skip-backward",
+                "kind": "mprisCommand",
+                "command": "previous",
+                "applicationId": String(applicationId || ""),
+                "enabled": true
+            })
+        }
+        const canPlayPause = controller.playing
+            ? controller.canPause : controller.canPlay
+        if (canPlayPause) {
+            children.push({
+                "name": controller.playing
+                    ? i18nc("@action:context", "Pause")
+                    : i18nc("@action:context", "Play"),
+                "icon": controller.playing
+                    ? "media-playback-pause" : "media-playback-start",
+                "kind": "mprisCommand",
+                "command": "togglePlaying",
+                "applicationId": String(applicationId || ""),
+                "enabled": true
+            })
+        }
+        if (controller.canGoNext) {
+            children.push({
+                "name": i18nc("@action:context", "Next track"),
+                "icon": "media-skip-forward",
+                "kind": "mprisCommand",
+                "command": "next",
+                "applicationId": String(applicationId || ""),
+                "enabled": true
+            })
+        }
+        if (controller.canStop === true) {
+            children.push({
+                "name": i18nc("@action:context", "Stop"),
+                "icon": "media-playback-stop",
+                "kind": "mprisCommand",
+                "command": "stop",
+                "applicationId": String(applicationId || ""),
+                "enabled": true
+            })
+        }
+        if (children.length === 0) {
+            return null
+        }
+        return {
+            "name": i18nc("@title:menu", "Media"),
+            "icon": "multimedia-player",
+            "kind": "submenu",
+            "enabled": true,
+            "children": children
+        }
+    }
+    // qmllint enable unqualified
 
     function actionsForItem(item, taskRows, itemOrigin, persistentIndex) {
         if (!item || !root.taskController) {
@@ -116,7 +291,9 @@ QtObject {
             return root.controlCenterActions(item, persistentIndex)
         }
         const actions = []
+        const dockActions = []
         const seenNames = {}
+        let deferredPinnedActions = []
         if ((recentContainer || (itemOrigin === "recent" && itemType === "app"))
                 && root.recentApplicationsActive
                 && typeof root.setRecentApplicationsSeparatorVisibleHandler === "function") {
@@ -172,16 +349,6 @@ QtObject {
         } else if (recentContainer
                 || (itemOrigin === "pinned" && root.removablePinnedItem(item))) {
             const itemActions = []
-            if (root.showConfigureDockAction && typeof root.configureDockHandler === "function") {
-                itemActions.push({
-                    // qmllint disable unqualified
-                    "name": i18nc("@action:context", "Configure Punchi Dock…"),
-                    // qmllint enable unqualified
-                    "icon": "preferences-system",
-                    "kind": "configureDock",
-                    "enabled": true
-                })
-            }
             if (itemType === "punchimenu") {
                 const currentMode = String(item.menuMode || "normal")
                 const normalPlacement = String(item.normalPlacementMode || "anchored")
@@ -191,19 +358,9 @@ QtObject {
                     && normalPlacement === "centered"
                 const isFullScreen = currentMode === "fullScreen"
                 const isCompact = currentMode === "compact"
-                const activeDetail = isCompact
-                    // qmllint disable unqualified
-                    ? i18nc("@option:punchimenu-mode", "Compact")
-                    : isNormalAnchored
-                        ? i18nc("@option:punchimenu-mode", "Normal (anchored)")
-                        : isNormalCentered
-                            ? i18nc("@option:punchimenu-mode", "Normal (floating center)")
-                            : i18nc("@option:punchimenu-mode", "Full screen")
-                    // qmllint enable unqualified
                 itemActions.push({
                     // qmllint disable unqualified
                     "name": i18nc("@title:menu", "Menu mode"),
-                    "detail": activeDetail,
                     // qmllint enable unqualified
                     "icon": "view-grid",
                     "kind": "submenu",
@@ -217,6 +374,7 @@ QtObject {
                             "kind": "setPunchiMenuMode",
                             "enabled": true,
                             "checked": isNormalAnchored,
+                            "exclusive": true,
                             "mode": "normal",
                             "placementMode": "anchored",
                             "targetIndex": persistentIndex
@@ -229,6 +387,7 @@ QtObject {
                             "kind": "setPunchiMenuMode",
                             "enabled": true,
                             "checked": isNormalCentered,
+                            "exclusive": true,
                             "mode": "normal",
                             "placementMode": "centered",
                             "targetIndex": persistentIndex
@@ -241,6 +400,7 @@ QtObject {
                             "kind": "setPunchiMenuMode",
                             "enabled": true,
                             "checked": isFullScreen,
+                            "exclusive": true,
                             "mode": "fullScreen",
                             "targetIndex": persistentIndex
                         },
@@ -252,6 +412,7 @@ QtObject {
                             "kind": "setPunchiMenuMode",
                             "enabled": true,
                             "checked": isCompact,
+                            "exclusive": true,
                             "mode": "compact",
                             "placementMode": "anchored",
                             "targetIndex": persistentIndex
@@ -264,22 +425,12 @@ QtObject {
                         || item.layout === "detailed"
                         || item.layout === "fan"
                     ? item.layout : "grid"
-                const activeFolderViewDetail = currentFolderView === "list"
-                    // qmllint disable unqualified
-                    ? i18nc("@item:inlistbox Folder popup layout", "List")
-                    : currentFolderView === "detailed"
-                        ? i18nc("@item:inlistbox Folder popup layout", "Detailed")
-                        : currentFolderView === "fan"
-                            ? i18nc("@item:inlistbox Folder popup layout", "Fan")
-                            : i18nc("@item:inlistbox Folder popup layout", "Grid")
-                    // qmllint enable unqualified
                 const expectedFolderText = typeof root.dockItemsController.canonicalJsonText
                         === "function"
                     ? root.dockItemsController.canonicalJsonText(item) : ""
                 const folderViewAction = {
                     // qmllint disable unqualified
                     "name": i18nc("@title:menu", "Folder view"),
-                    "detail": activeFolderViewDetail,
                     // qmllint enable unqualified
                     "icon": "view-grid",
                     "kind": "submenu",
@@ -293,6 +444,7 @@ QtObject {
                             "kind": "setFolderView",
                             "enabled": true,
                             "checked": currentFolderView === "grid",
+                            "exclusive": true,
                             "layout": "grid",
                             "targetIndex": persistentIndex,
                             "expectedFolderText": expectedFolderText
@@ -305,6 +457,7 @@ QtObject {
                             "kind": "setFolderView",
                             "enabled": true,
                             "checked": currentFolderView === "list",
+                            "exclusive": true,
                             "layout": "list",
                             "targetIndex": persistentIndex,
                             "expectedFolderText": expectedFolderText
@@ -317,6 +470,7 @@ QtObject {
                             "kind": "setFolderView",
                             "enabled": true,
                             "checked": currentFolderView === "detailed",
+                            "exclusive": true,
                             "layout": "detailed",
                             "targetIndex": persistentIndex,
                             "expectedFolderText": expectedFolderText
@@ -329,6 +483,7 @@ QtObject {
                             "kind": "setFolderView",
                             "enabled": true,
                             "checked": currentFolderView === "fan",
+                            "exclusive": true,
                             "layout": "fan",
                             "targetIndex": persistentIndex,
                             "expectedFolderText": expectedFolderText
@@ -346,6 +501,88 @@ QtObject {
                     }
                 }
                 itemActions.push(folderViewAction)
+                if (!recentContainer) {
+                    const currentSort = item.sortMode === "name"
+                            || item.sortMode === "size"
+                            || item.sortMode === "created"
+                            || item.sortMode === "kind"
+                        ? item.sortMode : "modified"
+                    itemActions.push({
+                        // qmllint disable unqualified
+                        "name": i18nc("@title:menu", "Sort by"),
+                        // qmllint enable unqualified
+                        "icon": "view-sort-ascending",
+                        "kind": "submenu",
+                        "enabled": true,
+                        "children": [
+                            {
+                                "name": i18nc("@item:inmenu folder sort mode", "Name"), // qmllint disable unqualified
+                                "icon": "format-text-direction-ltr",
+                                "kind": "setFolderSortMode",
+                                "enabled": true,
+                                "checked": currentSort === "name",
+                                "exclusive": true,
+                                "sortMode": "name",
+                                "targetIndex": persistentIndex,
+                                "expectedFolderText": expectedFolderText
+                            },
+                            {
+                                "name": i18nc("@item:inmenu folder sort mode", "Size"), // qmllint disable unqualified
+                                "icon": "view-sort-descending",
+                                "kind": "setFolderSortMode",
+                                "enabled": true,
+                                "checked": currentSort === "size",
+                                "exclusive": true,
+                                "sortMode": "size",
+                                "targetIndex": persistentIndex,
+                                "expectedFolderText": expectedFolderText
+                            },
+                            {
+                                "name": i18nc("@item:inmenu folder sort mode", "Date Modified"), // qmllint disable unqualified
+                                "icon": "document-open-recent",
+                                "kind": "setFolderSortMode",
+                                "enabled": true,
+                                "checked": currentSort === "modified",
+                                "exclusive": true,
+                                "sortMode": "modified",
+                                "targetIndex": persistentIndex,
+                                "expectedFolderText": expectedFolderText
+                            },
+                            {
+                                "name": i18nc("@item:inmenu folder sort mode", "Date Created"), // qmllint disable unqualified
+                                "icon": "document-new",
+                                "kind": "setFolderSortMode",
+                                "enabled": true,
+                                "checked": currentSort === "created",
+                                "exclusive": true,
+                                "sortMode": "created",
+                                "targetIndex": persistentIndex,
+                                "expectedFolderText": expectedFolderText
+                            },
+                            {
+                                "name": i18nc("@item:inmenu folder sort mode", "Type"), // qmllint disable unqualified
+                                "icon": "application-x-executable",
+                                "kind": "setFolderSortMode",
+                                "enabled": true,
+                                "checked": currentSort === "kind",
+                                "exclusive": true,
+                                "sortMode": "kind",
+                                "targetIndex": persistentIndex,
+                                "expectedFolderText": expectedFolderText
+                            }
+                        ]
+                    })
+                    const folderPath = String(item.sourcePath || "").trim()
+                    if (folderPath.length > 0) {
+                        itemActions.push({
+                            "name": i18nc("@action:context", "Open in File Manager"), // qmllint disable unqualified
+                            "icon": "document-open-folder",
+                            "kind": "openFolderLocation",
+                            "enabled": true,
+                            "targetPath": folderPath
+                        })
+                    }
+                }
             }
             if (recentContainer) {
                 itemActions.push({
@@ -355,7 +592,7 @@ QtObject {
                     "enabled": typeof root.disableRecentApplicationsHandler === "function"
                 })
             } else {
-                itemActions.push({
+                dockActions.push({
                     // qmllint disable unqualified
                     "name": i18nc("@action:context", "Unpin from Dock"),
                     // qmllint enable unqualified
@@ -371,17 +608,60 @@ QtObject {
                         : ""
                 })
             }
-            root.appendUniqueActions(actions, itemActions, seenNames)
+            if (itemType === "app" && itemOrigin === "pinned") {
+                deferredPinnedActions = itemActions
+            } else {
+                root.appendUniqueActions(actions, itemActions, seenNames)
+            }
         }
 
         if (itemType !== "app") {
+            root.appendDockActionsSection(actions, dockActions, seenNames)
             return actions
         }
 
         const applicationId = root.applicationIdentityForItem(item)
+        const hasTaskRows = taskRows instanceof Array && taskRows.length > 0
         if (applicationId.length > 0 && root.systemDiscovery) {
+            // qmllint disable unqualified
+            const mediaAction = root.mediaSubmenu(root.mprisController, applicationId)
+            if (mediaAction) {
+                root.appendUniqueActions(actions, [mediaAction], seenNames)
+            }
+
+            let placesAction = null
+            if (typeof root.systemDiscovery.filePlaceActions === "function") {
+                const places = root.systemDiscovery.filePlaceActions(applicationId)
+                if (places instanceof Array && places.length > 0) {
+                    placesAction = root.placesSubmenu(places, applicationId)
+                }
+            }
+            if (placesAction) {
+                root.appendUniqueActions(actions, [placesAction], seenNames)
+            } else if (typeof root.systemDiscovery.recentDocumentActions === "function") {
+                const recentAction = root.recentSubmenu(
+                    root.systemDiscovery.recentDocumentActions(applicationId),
+                    applicationId)
+                if (recentAction) {
+                    root.appendUniqueActions(actions, [recentAction], seenNames)
+                }
+            }
+
             root.appendUniqueActions(actions,
                 root.systemDiscovery.applicationActions(applicationId), seenNames)
+
+            if (itemOrigin === "pinned" && !hasTaskRows
+                    && typeof root.systemDiscovery.canLaunchNewWindow === "function"
+                    && root.systemDiscovery.canLaunchNewWindow(applicationId)) {
+                root.appendUniqueActions(actions, [{
+                    "name": i18nc("@action:context", "New window"),
+                    "icon": "window-new",
+                    "kind": "launchNewWindow",
+                    "enabled": true,
+                    "applicationId": applicationId
+                }], seenNames)
+            }
+            // qmllint enable unqualified
         }
 
         if (item.actionsEnabled !== false && item.actions instanceof Array) {
@@ -399,17 +679,58 @@ QtObject {
 
         root.appendUniqueActions(actions,
             root.taskController.contextActionsForRows(taskRows || []), seenNames)
-        if (root.showConfigureDockAction && typeof root.configureDockHandler === "function") {
-            root.appendUniqueActions(actions, [{
+        root.appendUniqueActions(actions, deferredPinnedActions, seenNames)
+        root.appendDockActionsSection(actions, dockActions, seenNames)
+        return actions
+    }
+
+    function appendDockActionsSection(actions, dockActions, seenNames) {
+        const hasConfigureAction = root.showConfigureDockAction
+            && typeof root.configureDockHandler === "function"
+        const hasDockActions = dockActions instanceof Array && dockActions.length > 0
+        if (!hasDockActions && !hasConfigureAction) {
+            return
+        }
+        if (actions.length > 0 && actions[actions.length - 1].kind !== "separator") {
+            actions.push({
+                "kind": "separator",
+                "enabled": false
+            })
+        }
+        if (hasDockActions) {
+            root.appendUniqueActions(actions, dockActions, seenNames)
+        }
+        if (hasConfigureAction) {
+            actions.push({
                 // qmllint disable unqualified
                 "name": i18nc("@action:context", "Configure Punchi Dock…"),
                 // qmllint enable unqualified
                 "icon": "preferences-system",
                 "kind": "configureDock",
                 "enabled": true
-            }], seenNames)
+            })
         }
-        return actions
+    }
+
+    function appendConfigureDockSection(actions) {
+        if (!root.showConfigureDockAction
+                || typeof root.configureDockHandler !== "function") {
+            return
+        }
+        if (actions.length > 0 && actions[actions.length - 1].kind !== "separator") {
+            actions.push({
+                "kind": "separator",
+                "enabled": false
+            })
+        }
+        actions.push({
+            // qmllint disable unqualified
+            "name": i18nc("@action:context", "Configure Punchi Dock…"),
+            // qmllint enable unqualified
+            "icon": "preferences-system",
+            "kind": "configureDock",
+            "enabled": true
+        })
     }
 
     function itemHasContextMenu(item, taskRows, itemOrigin) {
@@ -517,6 +838,89 @@ QtObject {
             return root.dockItemsController.setFolderLayout(
                 action.targetIndex, String(action.layout || ""),
                 String(action.expectedFolderText || ""))
+        }
+        if (action.kind === "setFolderSortMode") {
+            return root.dockItemsController.setFolderSortMode(
+                action.targetIndex, String(action.sortMode || ""),
+                String(action.expectedFolderText || ""))
+        }
+        if (action.kind === "openFolderLocation") {
+            if (!root.dockItemsController
+                    || typeof root.dockItemsController.openLocation !== "function") {
+                return false
+            }
+            const targetPath = String(action.targetPath || "").trim()
+            if (targetPath.length === 0) {
+                return false
+            }
+            root.dockItemsController.openLocation(targetPath)
+            return true
+        }
+        if (action.kind === "launchNewWindow") {
+            return !!root.systemDiscovery
+                && typeof root.systemDiscovery.launchApplicationNewInstance
+                    === "function"
+                && root.systemDiscovery.launchApplicationNewInstance(
+                    String(action.applicationId || ""))
+        }
+        if (action.kind === "openRecentDocument") {
+            return !!root.systemDiscovery
+                && typeof root.systemDiscovery.openRecentDocument === "function"
+                && root.systemDiscovery.openRecentDocument(
+                    String(action.applicationId || ""),
+                    String(action.resource || ""),
+                    String(action.mimeType || ""))
+        }
+        if (action.kind === "forgetRecentDocuments") {
+            return !!root.systemDiscovery
+                && typeof root.systemDiscovery.forgetRecentDocuments === "function"
+                && root.systemDiscovery.forgetRecentDocuments(
+                    String(action.applicationId || ""))
+        }
+        if (action.kind === "openFilePlace") {
+            return !!root.systemDiscovery
+                && typeof root.systemDiscovery.openFilePlace === "function"
+                && root.systemDiscovery.openFilePlace(
+                    String(action.applicationId || ""),
+                    String(action.resource || ""))
+        }
+        if (action.kind === "mprisCommand") {
+            const controller = root.mprisController
+            if (!controller || !controller.available
+                    || String(controller.applicationId || "")
+                        !== String(action.applicationId || "")) {
+                return false
+            }
+            const command = String(action.command || "")
+            if (command === "previous") {
+                if (!controller.canGoPrevious) {
+                    return false
+                }
+                controller.previous()
+                return true
+            }
+            if (command === "togglePlaying") {
+                if (controller.playing ? !controller.canPause : !controller.canPlay) {
+                    return false
+                }
+                controller.togglePlaying()
+                return true
+            }
+            if (command === "next") {
+                if (!controller.canGoNext) {
+                    return false
+                }
+                controller.next()
+                return true
+            }
+            if (command === "stop") {
+                if (controller.canStop !== true) {
+                    return false
+                }
+                controller.stop()
+                return true
+            }
+            return false
         }
         if (action.kind === "desktopAction") {
             return root.systemDiscovery

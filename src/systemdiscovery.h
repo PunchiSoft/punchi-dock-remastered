@@ -11,6 +11,7 @@ namespace KIO
 {
 class Job;
 }
+class KFilePlacesModel;
 
 class SystemDiscovery : public QObject
 {
@@ -53,6 +54,15 @@ public:
     Q_INVOKABLE QVariantMap resolveApplication(const QString &storageId, const QString &command = QString(),
         const QString &launcherUrl = QString()) const;
     Q_INVOKABLE QVariantList applicationActions(const QString &applicationId) const;
+    Q_INVOKABLE bool canLaunchNewWindow(const QString &applicationId) const;
+    Q_INVOKABLE bool launchApplicationNewInstance(const QString &applicationId);
+    Q_INVOKABLE QVariantList recentDocumentActions(const QString &applicationId) const;
+    Q_INVOKABLE bool openRecentDocument(const QString &applicationId,
+        const QString &resource, const QString &mimeType);
+    Q_INVOKABLE bool forgetRecentDocuments(const QString &applicationId);
+    Q_INVOKABLE QVariantList filePlaceActions(const QString &applicationId) const;
+    Q_INVOKABLE bool openFilePlace(const QString &applicationId,
+        const QString &resource);
     Q_INVOKABLE QVariantMap validateDroppedUrls(const QVariantList &urls) const;
     Q_INVOKABLE QVariantMap validateApplicationLauncherDrop(const QVariantList &urls) const;
     Q_INVOKABLE void launchApplication(const QString &storageId);
@@ -79,6 +89,8 @@ Q_SIGNALS:
     void kwinBlurSafeChanged();
 
 private:
+    KFilePlacesModel *placesModel() const;
     QString m_kwinVersion;
     bool m_kwinBlurSafe = true;
+    mutable KFilePlacesModel *m_placesModel = nullptr;
 };

@@ -58,6 +58,15 @@ POPUP_BLUR_CONTROLLERS = {
 
 BLUR_FREE_POPUP_DIALOGS = ("taskOverflowDialog",)
 
+# Surfaces that share the folder popup's comic tail. Their blur controllers must
+# unite that tail polygon with the themed frame region. Any other controller
+# keeps the optional polygon empty.
+TAIL_BLUR_SURFACES = {
+    "folderSurfaceStack",
+    "trashSurfaceStack",
+    "appActionsSurfaceStack",
+}
+
 
 def require(condition: bool, message: str) -> None:
     """Raise a focused contract failure when condition is false."""
@@ -288,7 +297,7 @@ def assert_popup_controllers(source: str) -> None:
                 re.search(expression, block, flags=re.DOTALL) is not None,
                 f"{controller} must use {reason}.",
             )
-        if dialog == "folderPopupDialog":
+        if surface in TAIL_BLUR_SURFACES:
             require(
                 re.search(
                     rf"additionalMaskPolygon: "
@@ -296,7 +305,7 @@ def assert_popup_controllers(source: str) -> None:
                     block,
                 )
                 is not None,
-                "The folder popup blur must include its callout polygon.",
+                f"{controller} must include its shared tail polygon.",
             )
         else:
             require(

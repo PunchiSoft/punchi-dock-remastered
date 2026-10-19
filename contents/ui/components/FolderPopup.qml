@@ -71,7 +71,26 @@ Item {
     property real pendingViewScroll: 0
     property int navigationFocusReason: Qt.PopupFocusReason
     property int pendingViewFocusReason: Qt.PopupFocusReason
-    onSessionActiveChanged: navigationFocusReason = Qt.PopupFocusReason
+
+    function resetViewSession() {
+        if (!gridView) { return }
+        pendingViewIndex = -1
+        pendingViewScroll = 0
+        gridView.currentIndex = gridView.count > 0 ? 0 : -1
+        gridView.contentY = gridView.originY
+    }
+
+    onSessionActiveChanged: {
+        navigationFocusReason = Qt.PopupFocusReason
+        if (sessionActive) {
+            resetViewSession()
+        }
+    }
+    onFolderItemChanged: {
+        if (!sessionActive) {
+            resetViewSession()
+        }
+    }
 
     FolderNavigationController {
         id: navigator
@@ -80,6 +99,7 @@ Item {
             && folderRoot.navigationMotionEnabled
         rootPath: String(folderRoot.folderItem.sourcePath || "")
         rootName: String(folderRoot.folderItem.name || "")
+        sortMode: String(folderRoot.folderItem.sortMode || "modified")
         onNavigationChanged: {
             if (navigator.hasChild) {
                 folderRoot.retainedNavigationTitle = navigator.breadcrumb
@@ -497,6 +517,9 @@ Item {
         const maximumScroll = minimumScroll
             + Math.max(0, gridView.contentHeight - gridView.height)
         if (folderRoot.pendingViewIndex < 0) {
+            if (gridView.currentIndex < 0 && gridView.count > 0) {
+                gridView.currentIndex = 0
+            }
             if (folderRoot.directoryNavigationEnabled && !gridView.moving) {
                 gridView.contentY = Math.max(minimumScroll,
                     Math.min(gridView.contentY, maximumScroll))
@@ -695,7 +718,15 @@ Item {
                     || folderRoot.layoutMode === "detailed")
                     ? (folderRoot.directoryModel || folderRoot.folderPathAvailable
                         ? folderRoot.listItems : folderRoot.apps) : [])
-            onCountChanged: Qt.callLater(folderRoot.applyViewRestore)
+            onCountChanged: {
+                if (folderRoot.pendingViewIndex < 0 && gridView.count > 0) {
+                    gridView.currentIndex = 0
+                }
+                Qt.callLater(folderRoot.applyViewRestore)
+            }
+            onVisibleChanged: {
+                if (visible) { Qt.callLater(folderRoot.applyViewRestore) }
+            }
             onOriginYChanged: Qt.callLater(folderRoot.applyViewRestore)
             onContentHeightChanged: Qt.callLater(folderRoot.applyViewRestore)
             onWidthChanged: Qt.callLater(folderRoot.applyViewRestore)

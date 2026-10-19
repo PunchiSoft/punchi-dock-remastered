@@ -722,6 +722,12 @@ Item {
         || panelLocation === PlasmaCore.Types.RightEdge
     readonly property Item taskPopupAnchorItem: taskPopupTracksVisualArea
         ? visualArea : null
+    // Menus and their callout tail leave from the icon the dock paints, not
+    // from the item's layout rect: the item also reserves wave headroom, label
+    // space and padding. Media and calendar keep the full item as a fallback
+    // because they do not paint itemIcon.
+    readonly property Item contextMenuAnchorItem:
+        itemIcon.visible ? tooltipAnchor : dockItemContainer
     readonly property bool launcherDropPlaceholderVisible:
         externalDropState === "launcherAcceptable"
     readonly property bool externalDropRejected:

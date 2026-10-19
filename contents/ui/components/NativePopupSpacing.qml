@@ -16,6 +16,8 @@ Item {
     property Item targetSurface: null
     property real targetTranslationX: 0
     property real targetTranslationY: 0
+    property rect capturedSourceGeometry: Qt.rect(0, 0, 0, 0)
+    property bool hasCapturedSourceGeometry: false
 
     readonly property PopupAnchorMetrics anchorMetrics: PopupAnchorMetrics {}
     readonly property bool centerHorizontally: root.preserveHorizontalAnchorCenter
@@ -44,6 +46,7 @@ Item {
         let geometryState = root.sourceGeometry.x + root.sourceGeometry.y
             + root.sourceGeometry.width + root.sourceGeometry.height
             + root.targetTranslationX + root.targetTranslationY
+            + root.x + root.y + root.width + root.height
             + root.sourceAnchor.Window.window.x + root.sourceAnchor.Window.window.y
             + root.targetSurface.Window.window.x + root.targetSurface.Window.window.y
         for (let item = root.targetSurface; item; item = item.parent) {
@@ -53,8 +56,8 @@ Item {
         if (!Number.isFinite(geometryState)) {
             return Qt.point(NaN, NaN)
         }
-        return root.sourceAnchor.mapToItem(root.targetSurface,
-            Qt.point(root.sourceAnchor.width / 2, root.sourceAnchor.height / 2))
+        return root.mapToItem(root.targetSurface,
+            Qt.point(root.width / 2, root.height / 2))
     }
 
     // Map into the window content item so the extra distance stays in logical
@@ -63,7 +66,7 @@ Item {
     visible: false
     Accessible.ignored: true
 
-    readonly property rect sourceGeometry: {
+    readonly property rect mappedSourceGeometry: {
         if (!root.sourceAnchor || !root.parent) {
             return Qt.rect(0, 0, 0, 0)
         }
@@ -79,6 +82,13 @@ Item {
         return root.sourceAnchor.mapToItem(root.parent,
             Qt.rect(0, 0, root.sourceAnchor.width, root.sourceAnchor.height))
     }
+    readonly property bool followLiveSourceGeometry:
+        root.popup && (root.popup.visible || root.popup.preparingToShow)
+        && (root.location === PlasmaCore.Types.LeftEdge
+            || root.location === PlasmaCore.Types.RightEdge)
+    readonly property rect sourceGeometry:
+        root.followLiveSourceGeometry || !root.hasCapturedSourceGeometry
+            ? root.mappedSourceGeometry : root.capturedSourceGeometry
     readonly property int safeGap: Math.max(0, root.gap)
 
     x: root.sourceGeometry.x - (root.width - root.sourceGeometry.width) / 2
@@ -115,6 +125,26 @@ Item {
             ? root : root.sourceAnchor
     }
 
+    function captureSourceGeometry() {
+        // Match Quickshell: horizontal docks keep the click-time icon rect,
+        // while vertical docks may follow the rendered icon during the popup.
+        const geometry = root.mappedSourceGeometry
+        const valid = Number.isFinite(geometry.x)
+            && Number.isFinite(geometry.y)
+            && Number.isFinite(geometry.width) && geometry.width > 0
+            && Number.isFinite(geometry.height) && geometry.height > 0
+        if (!valid) {
+            root.capturedSourceGeometry = Qt.rect(0, 0, 0, 0)
+            root.hasCapturedSourceGeometry = false
+            return false
+        }
+
+        root.capturedSourceGeometry = Qt.rect(geometry.x, geometry.y,
+            geometry.width, geometry.height)
+        root.hasCapturedSourceGeometry = true
+        return true
+    }
+
     function scheduleRefresh() {
         Qt.callLater(root.refreshAnchor)
     }
@@ -131,6 +161,7 @@ Item {
     onCenterHorizontallyChanged: root.scheduleRefresh()
     onCenterVerticallyChanged: root.scheduleRefresh()
     onHorizontalAnchorOffsetChanged: root.scheduleRefresh()
+    onFollowLiveSourceGeometryChanged: root.scheduleRefresh()
 
     Connections {
         target: root.popup

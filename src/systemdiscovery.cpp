@@ -14,14 +14,20 @@
 #include "folderentryicon.h"
 
 #include <KApplicationTrader>
+#include <KFileItem>
+#include <KFilePlacesModel>
 #include <KIO/ApplicationLauncherJob>
 #include <KIO/ListJob>
 #include <KIO/OpenUrlJob>
 #include <KIO/UDSEntry>
+#include <KRecentDocument>
 #include <KService>
 #include <KServiceAction>
 #include <KShell>
 #include <KSycoca>
+#include <PlasmaActivities/Stats/Cleaning>
+#include <PlasmaActivities/Stats/ResultSet>
+#include <PlasmaActivities/Stats/Terms>
 
 #include <QDBusConnection>
 #include <QDBusMessage>
@@ -541,6 +547,15 @@ QUrl localUrlForPath(const QString &path)
     }
     return QUrl::fromUserInput(resolved, QDir::homePath(), QUrl::AssumeLocalFile);
 }
+
+// Places may point at local folders, network shares or devices. Only reject
+// schemes that would execute something or resolve another application.
+bool usablePlaceUrl(const QUrl &url)
+{
+    return url.isValid() && !url.isEmpty() && !url.scheme().isEmpty()
+        && url.scheme() != QLatin1String("exec")
+        && url.scheme() != QLatin1String("applications");
+}
 } // namespace
 
 void SystemDiscovery::requestFolderEntries(const QString &path)
@@ -710,6 +725,234 @@ QVariantList SystemDiscovery::applicationActions(const QString &applicationId) c
         });
     }
     return result;
+}
+
+bool SystemDiscovery::canLaunchNewWindow(const QString &applicationId) const
+{
+    const KService::Ptr service = findApplicationService(applicationId);
+    if (!service || !service->isApplication() || service->noDisplay()) {
+        return false;
+    }
+    if (service->property<bool>(QStringLiteral("SingleMainWindow"))
+        || service->property<bool>(QStringLiteral("X-GNOME-SingleWindow"))) {
+        return false;
+    }
+    const QList<KServiceAction> actions = service->actions();
+    for (const KServiceAction &action : actions) {
+        if (action.noDisplay() || action.isSeparator()) {
+            continue;
+        }
+        const QString name = action.name();
+        if ((name.startsWith(QLatin1String("new"), Qt::CaseInsensitive)
+                && name.endsWith(QLatin1String("window"), Qt::CaseInsensitive))
+            || name == QLatin1String("WindowNew")) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool SystemDiscovery::launchApplicationNewInstance(const QString &applicationId)
+{
+    if (!canLaunchNewWindow(applicationId)) {
+        return false;
+    }
+    const KService::Ptr service = findApplicationService(applicationId);
+    if (!service) {
+        return false;
+    }
+    auto *job = new KIO::ApplicationLauncherJob(service, this);
+    job->setUiDelegate(nullptr);
+    connect(job, &KJob::result, this, [this, job, storageId = service->storageId()]() {
+        if (job->error()) {
+            Q_EMIT operationFailed(QStringLiteral("newWindow"), job->errorString());
+        } else {
+            Q_EMIT applicationAccessed(storageId);
+        }
+    });
+    job->start();
+    return true;
+}
+
+QVariantList SystemDiscovery::recentDocumentActions(const QString &applicationId) const
+{
+    QVariantList result;
+    const KService::Ptr service = findApplicationService(applicationId);
+    if (!service) {
+        return result;
+    }
+
+    using namespace KActivities::Stats;
+    using namespace KActivities::Stats::Terms;
+    const auto query = UsedResources | RecentlyUsedFirst
+        | Agent(service->desktopEntryName()) | Type::any()
+        | Activity::current() | Url::file() | Limit(5);
+    ResultSet results(query);
+    for (auto it = results.begin(); it != results.end() && result.size() < 5; ++it) {
+        const QUrl url = (*it).url();
+        if (!url.isValid() || !url.isLocalFile()) {
+            continue;
+        }
+        const KFileItem fileItem(url, (*it).mimetype());
+        if (!fileItem.isFile()) {
+            continue;
+        }
+        result.append(QVariantMap{
+            {QStringLiteral("kind"), QStringLiteral("openRecentDocument")},
+            {QStringLiteral("name"), url.fileName()},
+            {QStringLiteral("icon"), fileItem.iconName()},
+            {QStringLiteral("applicationId"), service->storageId()},
+            {QStringLiteral("resource"), (*it).resource()},
+            {QStringLiteral("mimeType"), (*it).mimetype()},
+            {QStringLiteral("enabled"), true},
+        });
+    }
+    return result;
+}
+
+bool SystemDiscovery::openRecentDocument(const QString &applicationId,
+    const QString &resource, const QString &mimeType)
+{
+    const KService::Ptr service = findApplicationService(applicationId);
+    if (!service) {
+        return false;
+    }
+    const QUrl url = QUrl::fromUserInput(resource);
+    if (!url.isValid() || !url.isLocalFile()
+        || !QFileInfo(url.toLocalFile()).isFile()) {
+        return false;
+    }
+
+    // A screenshot tool may not accept the MIME type it produced. Fall back to
+    // the preferred handler only when the application itself cannot open it.
+    KService::Ptr target = service;
+    if (!mimeType.isEmpty() && !target->hasMimeType(mimeType)) {
+        target = KApplicationTrader::preferredService(mimeType);
+    }
+    if (!target) {
+        return false;
+    }
+
+    auto *job = new KIO::ApplicationLauncherJob(target, this);
+    job->setUrls({url});
+    job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoErrorHandlingEnabled));
+    connect(job, &KJob::result, this, [this, job, storageId = target->storageId()]() {
+        if (job->error()) {
+            Q_EMIT operationFailed(QStringLiteral("openRecent"), job->errorString());
+        } else {
+            Q_EMIT applicationAccessed(storageId);
+        }
+    });
+    job->start();
+    return true;
+}
+
+bool SystemDiscovery::forgetRecentDocuments(const QString &applicationId)
+{
+    const KService::Ptr service = findApplicationService(applicationId);
+    if (!service) {
+        return false;
+    }
+    using namespace KActivities::Stats;
+    using namespace KActivities::Stats::Terms;
+    const QString agent = service->desktopEntryName();
+    KRecentDocument::removeApplication(agent);
+    const auto query = UsedResources | Agent(agent) | Type::any()
+        | Activity::current() | Url::file();
+    forgetResources(query);
+    return true;
+}
+
+KFilePlacesModel *SystemDiscovery::placesModel() const
+{
+    if (!m_placesModel) {
+        m_placesModel = new KFilePlacesModel(const_cast<SystemDiscovery *>(this));
+    }
+    return m_placesModel;
+}
+
+QVariantList SystemDiscovery::filePlaceActions(const QString &applicationId) const
+{
+    QVariantList result;
+    const KService::Ptr service = findApplicationService(applicationId);
+    if (!service || !service->categories().contains(QStringLiteral("FileManager"))) {
+        return result;
+    }
+    KFilePlacesModel *model = placesModel();
+    if (!model) {
+        return result;
+    }
+
+    constexpr int maximumPlaces = 128;
+    for (int row = 0; row < model->rowCount() && result.size() < maximumPlaces; ++row) {
+        const QModelIndex index = model->index(row, 0);
+        if (!index.isValid() || model->isHidden(index)) {
+            continue;
+        }
+        const QUrl url = KFilePlacesModel::convertedUrl(model->url(index));
+        const bool available = !model->setupNeeded(index) && usablePlaceUrl(url);
+        result.append(QVariantMap{
+            {QStringLiteral("kind"), QStringLiteral("filePlace")},
+            {QStringLiteral("name"), model->data(index, Qt::DisplayRole).toString()},
+            {QStringLiteral("icon"),
+                model->data(index, KFilePlacesModel::IconNameRole).toString()},
+            {QStringLiteral("resource"), available
+                ? url.toString(QUrl::FullyEncoded) : QString()},
+            {QStringLiteral("groupName"),
+                model->data(index, KFilePlacesModel::GroupRole).toString()},
+            {QStringLiteral("available"), available},
+        });
+    }
+    return result;
+}
+
+bool SystemDiscovery::openFilePlace(const QString &applicationId,
+    const QString &resource)
+{
+    const KService::Ptr service = findApplicationService(applicationId);
+    if (!service || !service->categories().contains(QStringLiteral("FileManager"))
+        || resource.isEmpty()) {
+        return false;
+    }
+    KFilePlacesModel *model = placesModel();
+    if (!model) {
+        return false;
+    }
+
+    // Revalidate the selected bookmark at dispatch time; a stale menu row must
+    // never open a hidden, unmounted or replaced place.
+    QUrl target;
+    for (int row = 0; row < model->rowCount(); ++row) {
+        const QModelIndex index = model->index(row, 0);
+        if (!index.isValid() || model->isHidden(index) || model->setupNeeded(index)) {
+            continue;
+        }
+        const QUrl placeUrl = KFilePlacesModel::convertedUrl(model->url(index));
+        if (placeUrl.toString(QUrl::FullyEncoded) != resource) {
+            continue;
+        }
+        if (!usablePlaceUrl(placeUrl)) {
+            return false;
+        }
+        target = placeUrl;
+        break;
+    }
+    if (!target.isValid()) {
+        return false;
+    }
+
+    auto *job = new KIO::ApplicationLauncherJob(service, this);
+    job->setUrls({target});
+    job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoErrorHandlingEnabled));
+    connect(job, &KJob::result, this, [this, job, storageId = service->storageId()]() {
+        if (job->error()) {
+            Q_EMIT operationFailed(QStringLiteral("openPlace"), job->errorString());
+        } else {
+            Q_EMIT applicationAccessed(storageId);
+        }
+    });
+    job->start();
+    return true;
 }
 
 QVariantMap SystemDiscovery::validateDroppedUrls(const QVariantList &urls) const

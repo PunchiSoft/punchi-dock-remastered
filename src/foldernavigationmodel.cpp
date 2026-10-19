@@ -6,9 +6,14 @@
 #include <KIO/ListJob>
 #include <KIO/UDSEntry>
 #include <KJob>
+#include <QCollator>
+#include <QDateTime>
 #include <QDir>
 #include <QFileInfo>
+#include <QMimeDatabase>
 #include <QUrl>
+
+#include <algorithm>
 
 namespace {
 constexpr int MaximumEntries = 80;
@@ -39,10 +44,10 @@ int FolderNavigationModel::rowCount(const QModelIndex &parent) const { return pa
 QVariant FolderNavigationModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid() || index.column() != 0 || index.row() < 0 || index.row() >= count()) { return {}; }
-    return role == Qt::UserRole + 1 ? QVariant(m_entries.at(index.row())) : QVariant();
+    return role == Qt::UserRole + 1 ? QVariant(m_entries.at(index.row()).row) : QVariant();
 }
 QHash<int, QByteArray> FolderNavigationModel::roleNames() const { return {{Qt::UserRole + 1, "modelData"}}; }
-QVariantMap FolderNavigationModel::get(int row) const { return row >= 0 && row < count() ? m_entries.at(row) : QVariantMap(); }
+QVariantMap FolderNavigationModel::get(int row) const { return row >= 0 && row < count() ? m_entries.at(row).row : QVariantMap(); }
 
 QString FolderNavigationModel::boundedDirectory(const QString &input) const
 {
@@ -82,15 +87,17 @@ void FolderNavigationModel::cancel()
         disconnect(job, nullptr, this, nullptr);
         job->kill(KJob::Quietly);
     }
+    m_pendingEntries.clear();
     m_loading = false;
 }
 void FolderNavigationModel::clear()
 {
-    if (m_entries.isEmpty()) { return; }
-    beginRemoveRows({}, 0, m_entries.size() - 1);
+    m_pendingEntries.clear();
+    const bool hadEntries = !m_entries.isEmpty();
+    beginResetModel();
     m_entries.clear();
-    endRemoveRows();
-    Q_EMIT countChanged();
+    endResetModel();
+    if (hadEntries) { Q_EMIT countChanged(); }
 }
 void FolderNavigationModel::setRootPath(const QString &path)
 {
@@ -120,6 +127,42 @@ void FolderNavigationModel::setEnabled(bool enabled)
     Q_EMIT enabledChanged();
     reload();
 }
+void FolderNavigationModel::setSortMode(const QString &mode)
+{
+    const QString normalized = mode == QLatin1String("name") || mode == QLatin1String("size")
+            || mode == QLatin1String("modified") || mode == QLatin1String("created")
+            || mode == QLatin1String("kind")
+        ? mode : QStringLiteral("modified");
+    if (m_sortMode == normalized) { return; }
+    m_sortMode = normalized;
+    Q_EMIT sortModeChanged();
+    if (!m_entries.isEmpty()) {
+        beginResetModel();
+        sortEntries(m_entries);
+        endResetModel();
+    }
+}
+void FolderNavigationModel::sortEntries(QList<Entry> &entries)
+{
+    if (entries.size() < 2) { return; }
+    QCollator collator;
+    collator.setNumericMode(true);
+    collator.setCaseSensitivity(Qt::CaseInsensitive);
+    const QString mode = m_sortMode;
+    std::stable_sort(entries.begin(), entries.end(), [&](const Entry &left, const Entry &right) {
+        if (mode == QLatin1String("size")) {
+            if (left.size != right.size) { return left.size > right.size; }
+        } else if (mode == QLatin1String("modified")) {
+            if (left.modified != right.modified) { return left.modified > right.modified; }
+        } else if (mode == QLatin1String("created")) {
+            if (left.created != right.created) { return left.created > right.created; }
+        } else if (mode == QLatin1String("kind")) {
+            const int typeOrder = collator.compare(left.mimeType, right.mimeType);
+            if (typeOrder != 0) { return typeOrder < 0; }
+        }
+        return collator.compare(left.name, right.name) < 0;
+    });
+}
 void FolderNavigationModel::reload()
 {
     cancel();
@@ -134,9 +177,8 @@ void FolderNavigationModel::reload()
     Q_EMIT stateChanged();
     connect(job, &KIO::ListJob::entries, this, [this, generation, directory](KIO::Job *, const KIO::UDSEntryList &batch) {
         if (generation != m_generation || boundedDirectory(m_location) != directory) { return; }
-        QList<QVariantMap> rows;
         for (const auto &entry : batch) {
-            if (count() + rows.size() >= MaximumEntries) { break; }
+            if (m_pendingEntries.size() >= MaximumEntries) { break; }
             const QString name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
             if (name.isEmpty() || name == QLatin1String(".") || name == QLatin1String("..")
                 || name.contains(QLatin1Char('/')) || name.startsWith(QLatin1Char('.'))
@@ -166,14 +208,33 @@ void FolderNavigationModel::reload()
             };
             if (!storageId.isEmpty()) { row.insert(QStringLiteral("storageId"), storageId); }
             row.insert(QStringLiteral("navigable"), !directoryTarget(row).isEmpty());
-            rows.append(row);
-        }
-        if (!rows.isEmpty()) {
-            const int first = count();
-            beginInsertRows({}, first, first + rows.size() - 1);
-            m_entries.append(rows);
-            endInsertRows();
-            Q_EMIT countChanged();
+
+            Entry pending;
+            pending.row = row;
+            pending.name = title.isEmpty() ? name : title;
+            pending.size = entry.numberValue(KIO::UDSEntry::UDS_SIZE, 0);
+            const qint64 modifiedSeconds = entry.numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, 0);
+            pending.modified = modifiedSeconds > 0
+                ? QDateTime::fromSecsSinceEpoch(modifiedSeconds) : QDateTime();
+            const qint64 createdSeconds = entry.numberValue(KIO::UDSEntry::UDS_CREATION_TIME, 0);
+            pending.created = createdSeconds > 0
+                ? QDateTime::fromSecsSinceEpoch(createdSeconds) : QDateTime();
+            pending.mimeType = entry.stringValue(KIO::UDSEntry::UDS_MIME_TYPE);
+            if (pending.mimeType.isEmpty()) {
+                if (isDirectory) {
+                    pending.mimeType = QStringLiteral("inode/directory");
+                } else {
+                    // KIO does not always include UDS_MIME_TYPE in a directory
+                    // listing. Extension matching keeps kind sorting cheap and
+                    // deterministic without reading file contents.
+                    const QMimeType mime = QMimeDatabase().mimeTypeForFile(
+                        QDir(directory).filePath(name),
+                        QMimeDatabase::MatchExtension);
+                    pending.mimeType = mime.isValid()
+                        ? mime.name() : QStringLiteral("application/octet-stream");
+                }
+            }
+            m_pendingEntries.append(pending);
         }
     });
     connect(job, &KIO::ListJob::redirection, this, [this, generation](KIO::Job *, const QUrl &) {
@@ -183,8 +244,19 @@ void FolderNavigationModel::reload()
     connect(job, &KJob::result, this, [this, job, generation]() {
         if (generation != m_generation) { return; }
         m_job.clear();
+        if (job->error()) {
+            m_pendingEntries.clear();
+            m_error = job->errorString();
+        } else if (!m_pendingEntries.isEmpty()) {
+            sortEntries(m_pendingEntries);
+            const int first = m_entries.size();
+            beginInsertRows({}, first, first + m_pendingEntries.size() - 1);
+            m_entries.append(m_pendingEntries);
+            m_pendingEntries.clear();
+            endInsertRows();
+            Q_EMIT countChanged();
+        }
         m_loading = false;
-        if (job->error()) { m_error = job->errorString(); clear(); }
         Q_EMIT stateChanged();
     });
 }

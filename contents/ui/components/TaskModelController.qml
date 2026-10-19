@@ -1,6 +1,7 @@
 import QtQuick
 import org.kde.taskmanager as TaskManager
 import "TaskManagerCompatibility.js" as TaskManagerCompatibility
+import "TaskContextActions.js" as TaskContextActions
 
 Item {
     id: root
@@ -33,6 +34,28 @@ Item {
     TaskManager.VirtualDesktopInfo {
         id: virtualDesktopInfo
     }
+
+    // Snapshot consumed by the context-action builder. Names and ids stay
+    // bounded to what VirtualDesktopInfo reports; the menu is built on demand.
+    readonly property var virtualDesktops: {
+        const ids = virtualDesktopInfo.desktopIds
+        const names = virtualDesktopInfo.desktopNames
+        const current = String(virtualDesktopInfo.currentDesktop || "")
+        const result = []
+        const count = Math.min(Number(ids ? ids.length : 0),
+            Number(names ? names.length : 0))
+        for (let index = 0; index < count; index++) {
+            const id = String(ids[index])
+            result.push({
+                "id": id,
+                "name": String(names[index] || id),
+                "current": id === current
+            })
+        }
+        return result
+    }
+    readonly property string currentVirtualDesktopId:
+        String(virtualDesktopInfo.currentDesktop || "")
 
     TaskManager.TasksModel {
         id: tasksModel
@@ -829,6 +852,113 @@ Item {
     }
 
     // qmllint disable unqualified
+    function taskContextLabels() {
+        return {
+            "moveToDesktop": i18n("Move to Desktop"),
+            "moveToCurrentDesktop": i18n("Move to Current Desktop"),
+            "allDesktops": i18n("All Desktops"),
+            "newDesktop": i18n("New Desktop"),
+            "more": i18n("More"),
+            "move": i18n("Move"),
+            "resize": i18n("Resize"),
+            "maximize": i18n("Maximize"),
+            "restoreFromMaximized": i18n("Restore from maximized"),
+            "minimize": i18n("Minimize"),
+            "restore": i18n("Restore"),
+            "keepAbove": i18n("Keep above"),
+            "doNotKeepAbove": i18n("Do not keep above"),
+            "keepBelow": i18n("Keep below"),
+            "doNotKeepBelow": i18n("Do not keep below"),
+            "fullscreen": i18n("Full screen"),
+            "exitFullscreen": i18n("Exit full screen"),
+            "noBorder": i18n("No Titlebar and Frame"),
+            "hideFromCapture": i18n("Hide from Screencast"),
+            "close": i18n("Close")
+        }
+    }
+
+    // Read every capability from the live task row. Optional roles added after
+    // Plasma 6.0 stay undefined on older runtimes and are never offered.
+    function windowCapabilitiesForRow(row) {
+        const taskIndex = tasksModel.index(Number(row), 0)
+        if (!taskIndex.valid) {
+            return ({ "window": false })
+        }
+        const isWindow = !!tasksModel.data(taskIndex,
+            TaskManager.AbstractTasksModel.IsWindow)
+        const isStartup = !!tasksModel.data(taskIndex,
+            TaskManager.AbstractTasksModel.IsStartup)
+        if (!isWindow || isStartup) {
+            return ({ "window": false })
+        }
+
+        const canSetNoBorderRole = (function() {
+            try {
+                return TaskManager.AbstractTasksModel.CanSetNoBorder
+            } catch (error) {
+                return undefined
+            }
+        })()
+        const canHideFromCaptureRole = (function() {
+            try {
+                return TaskManager.AbstractTasksModel.IsExcludedFromCapture
+            } catch (error) {
+                return undefined
+            }
+        })()
+        const assigned = tasksModel.data(taskIndex,
+            TaskManager.AbstractTasksModel.VirtualDesktops)
+        const assignedIds = []
+        if (assigned !== undefined && assigned !== null) {
+            const assignedCount = Number(assigned.length || 0)
+            for (let index = 0; index < assignedCount; index++) {
+                assignedIds.push(String(assigned[index]))
+            }
+        }
+
+        return {
+            "window": true,
+            "taskRow": Number(row),
+            "movable": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsMovable),
+            "resizable": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsResizable),
+            "maximizable": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsMaximizable),
+            "maximized": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsMaximized),
+            "minimizable": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsMinimizable),
+            "minimized": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsMinimized),
+            "keepAbove": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsKeepAbove),
+            "keepBelow": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsKeepBelow),
+            "fullscreenable": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsFullScreenable),
+            "fullscreen": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsFullScreen),
+            "desktopChangeable": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsVirtualDesktopsChangeable),
+            "onAllDesktops": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsOnAllVirtualDesktops),
+            "virtualDesktops": assignedIds,
+            "desktops": root.virtualDesktops,
+            "currentDesktop": root.currentVirtualDesktopId,
+            "canSetNoBorder": canSetNoBorderRole !== undefined
+                && !!tasksModel.data(taskIndex, canSetNoBorderRole),
+            "noBorder": canSetNoBorderRole !== undefined
+                && !!tasksModel.data(taskIndex,
+                    TaskManager.AbstractTasksModel.HasNoBorder),
+            "canHideFromCapture": canHideFromCaptureRole !== undefined,
+            "excludedFromCapture": canHideFromCaptureRole !== undefined
+                && !!tasksModel.data(taskIndex, canHideFromCaptureRole),
+            "closable": !!tasksModel.data(taskIndex,
+                TaskManager.AbstractTasksModel.IsClosable)
+        }
+    }
+
     function contextActionsForRows(taskRows) {
         const sourceRows = taskRows instanceof Array ? taskRows : []
         const rows = []
@@ -863,6 +993,7 @@ Item {
             })
         }
 
+        const labels = taskContextLabels()
         if (rows.length > 1) {
             let closableCount = 0
             for (let index = 0; index < rows.length; index++) {
@@ -882,64 +1013,18 @@ Item {
                     "destructive": true
                 })
             }
+            const groupActions = TaskContextActions.windowActions(
+                windowCapabilitiesForRow(preferredRow), labels, false)
+            for (let index = 0; index < groupActions.length; index++) {
+                actions.push(groupActions[index])
+            }
             return actions
         }
 
-        const minimized = !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimized)
-        const maximized = !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMaximized)
-        const keepAbove = !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsKeepAbove)
-        const fullScreen = !!tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsFullScreen)
-
-        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMinimizable)) {
-            actions.push({
-                "kind": "taskAction",
-                "operation": "toggleMinimized",
-                "name": minimized ? i18n("Restore") : i18n("Minimize"),
-                "icon": minimized ? "window-restore" : "window-minimize",
-                "taskRow": preferredRow,
-                "enabled": true
-            })
-        }
-        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsMaximizable)) {
-            actions.push({
-                "kind": "taskAction",
-                "operation": "toggleMaximized",
-                "name": maximized ? i18n("Restore from maximized") : i18n("Maximize"),
-                "icon": maximized ? "window-restore" : "window-maximize",
-                "taskRow": preferredRow,
-                "enabled": true
-            })
-        }
-        actions.push({
-            "kind": "taskAction",
-            "operation": "toggleKeepAbove",
-            "name": keepAbove ? i18n("Do not keep above") : i18n("Keep above"),
-            "icon": "window-keep-above",
-            "taskRow": preferredRow,
-            "enabled": true,
-            "checked": keepAbove
-        })
-        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsFullScreenable)) {
-            actions.push({
-                "kind": "taskAction",
-                "operation": "toggleFullScreen",
-                "name": fullScreen ? i18n("Exit full screen") : i18n("Full screen"),
-                "icon": fullScreen ? "view-restore" : "view-fullscreen",
-                "taskRow": preferredRow,
-                "enabled": true,
-                "checked": fullScreen
-            })
-        }
-        if (tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsClosable)) {
-            actions.push({
-                "kind": "taskAction",
-                "operation": "close",
-                "name": i18n("Close"),
-                "icon": "window-close",
-                "taskRow": preferredRow,
-                "enabled": true,
-                "destructive": true
-            })
+        const windowActions = TaskContextActions.windowActions(
+            windowCapabilitiesForRow(preferredRow), labels, true)
+        for (let index = 0; index < windowActions.length; index++) {
+            actions.push(windowActions[index])
         }
         return actions
     }
@@ -952,7 +1037,6 @@ Item {
 
         const operation = String(action.operation || "")
         const row = Number(action.taskRow)
-        const taskIndex = tasksModel.index(row, 0)
         if (operation === "closeAll") {
             const rows = action.taskRows instanceof Array ? action.taskRows.slice() : []
             for (let index = 0; index < rows.length; index++) {
@@ -960,20 +1044,101 @@ Item {
             }
             return rows.length > 0
         }
+
+        const taskIndex = tasksModel.index(row, 0)
         if (!taskIndex.valid) {
             return false
         }
         if (operation === "newInstance") {
             tasksModel.requestNewInstance(taskIndex)
+            return true
+        }
+        if (operation === "closeAll") {
+            return false
+        }
+
+        const capabilities = windowCapabilitiesForRow(row)
+        if (!capabilities.window) {
+            return false
+        }
+        if (operation === "move") {
+            if (!capabilities.movable) {
+                return false
+            }
+            tasksModel.requestMove(taskIndex)
+        } else if (operation === "resize") {
+            if (!capabilities.resizable) {
+                return false
+            }
+            tasksModel.requestResize(taskIndex)
         } else if (operation === "toggleMinimized") {
+            if (!capabilities.minimizable) {
+                return false
+            }
             minimizeTaskRow(row)
         } else if (operation === "toggleMaximized") {
+            if (!capabilities.maximizable) {
+                return false
+            }
             toggleMaximizedTaskRow(row)
         } else if (operation === "toggleKeepAbove") {
+            if (typeof tasksModel.requestToggleKeepAbove !== "function") {
+                return false
+            }
             tasksModel.requestToggleKeepAbove(taskIndex)
+        } else if (operation === "toggleKeepBelow") {
+            if (typeof tasksModel.requestToggleKeepBelow !== "function") {
+                return false
+            }
+            tasksModel.requestToggleKeepBelow(taskIndex)
         } else if (operation === "toggleFullScreen") {
+            if (!capabilities.fullscreenable) {
+                return false
+            }
             tasksModel.requestToggleFullScreen(taskIndex)
+        } else if (operation === "toggleNoBorder") {
+            if (!capabilities.canSetNoBorder
+                    || typeof tasksModel.requestToggleNoBorder !== "function") {
+                return false
+            }
+            tasksModel.requestToggleNoBorder(taskIndex)
+        } else if (operation === "toggleExcludeFromCapture") {
+            if (!capabilities.canHideFromCapture
+                    || typeof tasksModel.requestToggleExcludeFromCapture !== "function") {
+                return false
+            }
+            tasksModel.requestToggleExcludeFromCapture(taskIndex)
+        } else if (operation === "moveToDesktop") {
+            if (!capabilities.desktopChangeable) {
+                return false
+            }
+            if (action.allDesktops === true) {
+                tasksModel.requestVirtualDesktops(taskIndex, [])
+                return true
+            }
+            const targetDesktop = String(action.desktopId || "")
+            let knownDesktop = false
+            for (let index = 0; index < root.virtualDesktops.length; index++) {
+                if (String(root.virtualDesktops[index].id) === targetDesktop) {
+                    knownDesktop = true
+                    break
+                }
+            }
+            if (targetDesktop.length === 0 || !knownDesktop) {
+                return false
+            }
+            tasksModel.requestVirtualDesktops(taskIndex, [targetDesktop])
+        } else if (operation === "newVirtualDesktop") {
+            if (!capabilities.desktopChangeable
+                    || root.virtualDesktops.length <= 1
+                    || typeof tasksModel.requestNewVirtualDesktop !== "function") {
+                return false
+            }
+            tasksModel.requestNewVirtualDesktop(taskIndex)
         } else if (operation === "close") {
+            if (!capabilities.closable) {
+                return false
+            }
             return closeTaskRow(row)
         } else {
             return false

@@ -392,12 +392,16 @@ def main() -> int:
          "The background frame must keep its own size when a band is reserved"),
     ):
         require(context_surface_stack, fragment, message)
-    # The tail belongs to the three classic presentations of the folder popup.
-    # The accepted layouts are listed one by one on purpose: a layout added later
-    # must not inherit the tail without a review, and the fan never receives it.
+    # The tail belongs to the three classic presentations of the folder popup
+    # and to the two right-click menus. The accepted folder layouts are listed
+    # one by one on purpose: a layout added later must not inherit the tail
+    # without a review, and every other shared-surface consumer keeps it
+    # disabled.
+    folder_surface = qml_object_body_by_id(
+        main_qml, "ContextSurfaceStack", "folderSurfaceStack")
     tail_binding_match = re.search(
         r"edgeTailEnabled:(?P<value>.*?)edgeTailLocation:",
-        main_qml,
+        folder_surface,
         re.DOTALL,
     )
     if tail_binding_match is None:
@@ -419,32 +423,93 @@ def main() -> int:
         raise AssertionError(
             "The tail must not be enabled by excluding the fan: an unknown "
             "layout would inherit it without a review")
-    require(
-        main_qml,
-        "edgeTailLocation: dockGeometry.spectrumOriginEdge",
-        "The tail must leave from the dock edge",
-    )
+
+    tail_surfaces = {
+        "folderSurfaceStack",
+        "trashSurfaceStack",
+        "appActionsSurfaceStack",
+    }
+    for surface_body in qml_object_bodies(main_qml, "ContextSurfaceStack"):
+        id_match = re.search(r"\bid:\s*(\w+)", surface_body)
+        if id_match is None:
+            raise AssertionError(
+                "Every ContextSurfaceStack consumer must keep an id for review")
+        surface_id = id_match.group(1)
+        if surface_id in tail_surfaces:
+            require(
+                surface_body,
+                "edgeTailEnabled:",
+                f"{surface_id} must request the shared tail",
+            )
+            require(
+                surface_body,
+                "edgeTailLocation: dockGeometry.spectrumOriginEdge",
+                f"{surface_id} must leave the tail from the dock edge",
+            )
+            require(
+                surface_body,
+                f"constrainEdgeTailTip: !{surface_id}.edgeTailHorizontal",
+                f"{surface_id} must constrain vertical tail tips",
+            )
+            require(
+                surface_body,
+                f"edgeTailTipOffset: !{surface_id}.edgeTailHorizontal",
+                f"{surface_id} must map the tip only for vertical tails",
+            )
+        elif "edgeTailEnabled:" in surface_body:
+            raise AssertionError(
+                f"{surface_id} must keep the shared tail disabled: only the "
+                "folder popup and the right-click menus may request it")
+
     require(
         main_qml,
         "edgeTailAnchorExtent: folderPopupDialog.sourceAnchor",
-        "The tail must stay proportional to the dock item it points at",
+        "The folder popup must keep its tail proportional to its dock item",
     )
-    require(
-        main_qml,
-        "folderSurfaceStack.backgroundBlurAdditionalMaskPolygon",
-        "The folder popup controller must unite the tail with its blur region",
-    )
-    if re.search(r"edgeTailLocation:\s*folderPopupAnimatedContent\b", main_qml):
+    if main_qml.count("edgeTailAnchorExtent:") != 1:
+        raise AssertionError(
+            "Only the folder popup may derive the tail base from a live anchor; "
+            "the context menus must keep the stable default extent so icon zoom "
+            "cannot scale the callout")
+    for dialog in ("trashMenuDialog", "appActionsDialog"):
+        require(
+            main_qml,
+            f"{dialog}.popupSpacing.sourceCenterInTarget",
+            f"{dialog} must map the tail tip from the source anchor",
+        )
+
+    for surface_id in tail_surfaces:
+        require(
+            main_qml,
+            f"{surface_id}.backgroundBlurAdditionalMaskPolygon",
+            f"{surface_id} must unite the tail with its blur region",
+        )
+    if re.search(r"edgeTailLocation:\s*\w+AnimatedContent\b", main_qml):
         raise AssertionError(
             "The tail side must not follow the direction the popup grows toward")
-    if main_qml.count("edgeTailEnabled:") != 1:
-        raise AssertionError(
-            "The tail must stay scoped to the folder popup surface only, so "
-            "every other consumer of the shared surface keeps it disabled")
-    if main_qml.count("additionalMaskPolygon:") != 1:
-        raise AssertionError(
-            "Only the folder popup blur controller may unite the tail "
-            "silhouette with its blur region")
+    dock_item = (
+        PROJECT_ROOT / "contents/ui/components/DockItem.qml"
+    ).read_text()
+    require(
+        dock_item,
+        "readonly property Item contextMenuAnchorItem:",
+        "The context menu must expose the rendered icon anchor",
+    )
+    require(
+        popup_coordinator,
+        "function prepareContextMenuAnchor(",
+        "Context menus must resolve the rendered icon anchor",
+    )
+    require(
+        popup_coordinator,
+        "prepareContextMenuAnchor(visualParent))",
+        "The trash menu must use the rendered icon anchor",
+    )
+    require(
+        popup_coordinator,
+        "const anchor = prepareContextMenuAnchor(visualParent)",
+        "The app-action menu must use the rendered icon anchor",
+    )
     tail_instantiations = sorted(
         path.relative_to(PROJECT_ROOT).as_posix()
         for path in (PROJECT_ROOT / "contents/ui").rglob("*.qml")

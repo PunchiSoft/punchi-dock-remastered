@@ -35,8 +35,12 @@ Item {
     // Optional comic-style tail, composed from the same theme frame that draws
     // the background. It needs a band outside the frame, so the frame keeps its
     // own size and the surface grows by the visible length of the tail.
-    // Disabled by default: only the folder grid popup enables it.
+    // Disabled by default; folder content and context menus opt in explicitly.
     property bool edgeTailEnabled: false
+    // Draw a context-menu pointer as one continuous surface instead of
+    // overlaying the tail on the Plasma frame. The frame remains available as
+    // the authoritative blur mask source.
+    property bool integratedBalloonSurface: false
     property int edgeTailLocation: Qt.BottomEdge
     // Extent of the dock item the tail points at, so the tail stays proportional
     // to the icon it belongs to.
@@ -51,6 +55,10 @@ Item {
     readonly property real contentImplicitWidth: !mediaOnly && contentItem ? contentItem.implicitWidth : 0
     readonly property real contentImplicitHeight: !mediaOnly && contentItem ? contentItem.implicitHeight : 0
     readonly property var backgroundBlurMaskSource: menuBackground
+    readonly property real backgroundMarginLeft: menuBackground.margins.left
+    readonly property real backgroundMarginTop: menuBackground.margins.top
+    readonly property real backgroundMarginRight: menuBackground.margins.right
+    readonly property real backgroundMarginBottom: menuBackground.margins.bottom
     readonly property bool backgroundBlurMaskPresent: menuBackground.visible
         && menuBackground.width > 0
         && menuBackground.height > 0
@@ -374,16 +382,15 @@ Item {
         onCloseRequested: root.mediaCloseRequested()
     }
 
-    // Band that carries the optional tail. It starts at the effective background
-    // edge of the frame, which is the border the user sees and the one the blur
-    // region measures, and the clip keeps the rest of the lobe off the card.
+    // Tail geometry remains the shared source for the blur polygon. For context
+    // menus the integrated BalloonSurface draws the same geometry as one outline.
     FolderPopupTail {
         id: edgeTail
-        visible: root.edgeTailPresent
+        visible: root.edgeTailPresent && !root.integratedBalloonSurface
         clip: true
         // The band joins the card edge, so it paints over the card shadow strip
         // at the junction instead of leaving a seam there.
-        z: menuBackground.z + 1
+        z: menuBackground.z
         location: root.edgeTailLocation
         surfaceOpacity: menuBackground.opacity
         tipOffset: root.edgeTailTipOffset
@@ -426,8 +433,45 @@ Item {
         height: root.surfaceContentHeight + root.contentFramePadding * 2
         imagePath: root.backgroundImagePath
         visible: root.drawContentBackground && !root.mediaOnly
-        opacity: root.safeBackgroundOpacity
+        opacity: root.integratedBalloonSurface
+            ? 0 : root.safeBackgroundOpacity
         Accessible.ignored: true
+    }
+    BalloonSurface {
+        id: integratedBalloon
+        visible: root.integratedBalloonSurface && root.edgeTailPresent
+            && root.drawContentBackground && !root.mediaOnly
+        // Keep the same stacking level as the frame: contentHost is declared
+        // after the surface and therefore paints above it.
+        z: menuBackground.z
+        x: menuBackground.x + menuBackground.inset.left
+            - (root.edgeTailPresent && !root.edgeTailHorizontal
+                && root.edgeTailBandOnStart ? root.edgeTailProtrusion : 0)
+        y: menuBackground.y + menuBackground.inset.top
+            - (root.edgeTailPresent && root.edgeTailHorizontal
+                && root.edgeTailBandOnStart ? root.edgeTailProtrusion : 0)
+        width: Math.max(0, menuBackground.width
+            - menuBackground.inset.left - menuBackground.inset.right
+            + (root.edgeTailPresent && !root.edgeTailHorizontal
+                ? root.edgeTailProtrusion : 0))
+        height: Math.max(0, menuBackground.height
+            - menuBackground.inset.top - menuBackground.inset.bottom
+            + (root.edgeTailPresent && root.edgeTailHorizontal
+                ? root.edgeTailProtrusion : 0))
+        fillColor: Qt.alpha(Kirigami.Theme.backgroundColor,
+            root.safeBackgroundOpacity)
+        strokeColor: Qt.alpha(Kirigami.Theme.textColor, 0.2)
+        borderWidth: Kirigami.Units.smallSpacing / 4
+        cornerRadius: Kirigami.Units.cornerRadius * 2
+        tailHeight: root.edgeTailPresent ? root.edgeTailProtrusion : 0
+        tailBaseScale: root.edgeTailPresent && root.edgeTailProtrusion > 0
+            ? edgeTail.tailBase / (2 * root.edgeTailProtrusion) : 1
+        tailTipRadius: root.edgeTailPresent ? edgeTail.tipRadius : 0
+        tailEdge: root.edgeTailLocation === Qt.TopEdge ? "top"
+            : root.edgeTailLocation === Qt.LeftEdge ? "left"
+            : root.edgeTailLocation === Qt.RightEdge ? "right" : "bottom"
+        pointerX: edgeTail.tipPosition - x
+        pointerY: edgeTail.tipPosition - y
     }
     // Mask contract consumed by the owning dialog's BlurBehindController. The
     // frame does not fill the window, so its own origin and insets define the

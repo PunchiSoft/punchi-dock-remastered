@@ -14,16 +14,16 @@ Item {
     property int processedItems: 0
     property int totalItems: 0
     property string errorMessage: ""
+    property bool canConfirm: false
     property int rowHeight: 46
     property int iconSize: 26
     property bool busyIndicatorReady: false
     readonly property bool emptying: operationState === "emptying"
     readonly property bool succeeded: operationState === "succeeded"
     readonly property bool failed: operationState === "failed"
-    readonly property int effectiveRowHeight: Math.max(32, Math.min(64,
+    readonly property int effectiveRowHeight: Math.max(32, Math.min(36,
         Number(rowHeight || 46)))
-    readonly property int effectiveIconSize: Math.max(24, Math.min(48,
-        Number(iconSize || 26) + 8))
+    readonly property int effectiveIconSize: Kirigami.Units.iconSizes.huge
     readonly property string primaryText: {
         if (emptying) {
             return i18n("Emptying trash…")
@@ -101,22 +101,24 @@ Item {
         anchors.top: parent.top
         spacing: Kirigami.Units.largeSpacing
 
-        RowLayout {
+        Item {
             Layout.fillWidth: true
-            spacing: Kirigami.Units.largeSpacing
+            Layout.preferredHeight: root.effectiveIconSize
 
             Controls.BusyIndicator {
                 visible: root.emptying && !root.progressDeterminate
                     && root.busyIndicatorReady
                 running: visible
-                Layout.preferredWidth: root.effectiveIconSize
-                Layout.preferredHeight: root.effectiveIconSize
+                width: root.effectiveIconSize
+                height: root.effectiveIconSize
+                anchors.centerIn: parent
                 Accessible.name: i18n("Emptying trash")
             }
 
             Kirigami.Icon {
                 visible: !(root.emptying && !root.progressDeterminate
                     && root.busyIndicatorReady)
+                anchors.centerIn: parent
                 source: root.succeeded
                     ? "dialog-ok-symbolic"
                     : (root.failed
@@ -127,29 +129,27 @@ Item {
                     : (root.failed
                         ? Kirigami.Theme.negativeTextColor
                         : Kirigami.Theme.textColor)
-                Layout.preferredWidth: root.effectiveIconSize
-                Layout.preferredHeight: root.effectiveIconSize
+                width: root.effectiveIconSize
+                height: root.effectiveIconSize
             }
+        }
 
-            ColumnLayout {
-                Layout.fillWidth: true
-                spacing: Kirigami.Units.smallSpacing
+        Kirigami.Heading {
+            Layout.fillWidth: true
+            level: 4
+            font.bold: true
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            text: root.primaryText
+        }
 
-                Kirigami.Heading {
-                    Layout.fillWidth: true
-                    level: 4
-                    wrapMode: Text.WordWrap
-                    text: root.primaryText
-                }
-
-                PlasmaComponents.Label {
-                    visible: root.secondaryText.length > 0
-                    Layout.fillWidth: true
-                    wrapMode: Text.WordWrap
-                    text: root.secondaryText
-                    color: Kirigami.Theme.disabledTextColor
-                }
-            }
+        PlasmaComponents.Label {
+            visible: root.secondaryText.length > 0
+            Layout.fillWidth: true
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
+            text: root.secondaryText
+            color: Kirigami.Theme.disabledTextColor
         }
 
         Controls.ProgressBar {
@@ -189,13 +189,10 @@ Item {
             Layout.alignment: Qt.AlignRight
             spacing: Kirigami.Units.smallSpacing
 
-            Item {
-                Layout.fillWidth: true
-            }
-
             Controls.Button {
                 id: cancelButton
                 visible: root.operationState === "idle"
+                Layout.fillWidth: true
                 Layout.preferredHeight: root.effectiveRowHeight
                 text: i18n("Cancel")
                 onClicked: root.cancelRequested()
@@ -203,11 +200,13 @@ Item {
 
             Controls.Button {
                 visible: root.operationState === "idle"
+                Layout.fillWidth: true
                 Layout.preferredHeight: root.effectiveRowHeight
                 text: i18n("Empty Trash")
-                icon.name: "trash-empty"
+                icon.name: "edit-delete"
                 icon.color: Kirigami.Theme.negativeTextColor
                 palette.buttonText: Kirigami.Theme.negativeTextColor
+                enabled: root.canConfirm
                 Accessible.description: i18n("Permanently remove all trashed items")
                 onClicked: root.confirmRequested()
             }
@@ -215,6 +214,7 @@ Item {
             Controls.Button {
                 id: closeButton
                 visible: root.succeeded || root.failed
+                Layout.fillWidth: true
                 Layout.preferredHeight: root.effectiveRowHeight
                 text: i18n("Close")
                 onClicked: root.dismissRequested()
@@ -222,6 +222,7 @@ Item {
 
             Controls.Button {
                 visible: root.failed
+                Layout.fillWidth: true
                 Layout.preferredHeight: root.effectiveRowHeight
                 text: i18n("Try Again")
                 icon.name: "view-refresh"
