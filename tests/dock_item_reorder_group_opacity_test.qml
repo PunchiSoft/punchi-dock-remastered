@@ -73,7 +73,7 @@ TestCase {
 
         dockItem.persistentReorderGroupMember = false
         dockItem.persistentReorderSource = true
-        fuzzyCompare(dockItem.opacity, 0.5, 0.0001)
+        fuzzyCompare(dockItem.opacity, 1.0, 0.0001)
 
         dockItem.persistentReorderSource = false
         fuzzyCompare(dockItem.opacity, 1.0, 0.0001)

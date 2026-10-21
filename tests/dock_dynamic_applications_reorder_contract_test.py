@@ -254,14 +254,16 @@ require(
 )
 require(
     "property bool persistentReorderGroupMember: false" in DOCK_ITEM
-    and "|| dockItemContainer.persistentReorderGroupMember) ? 0.5 : 1.0)"
+    and "dockItemContainer.persistentReorderGroupMember ? 0.5 : 1.0)"
+    in DOCK_ITEM
+    and "persistentReorderActive\n            && !dockItemContainer.persistentReorderSource"
     in DOCK_ITEM
     and "property bool persistentDragMovesDynamicApplications: false" in MAIN
     and 'items[index].type === "dynamic-applications"' in MAIN
     and MAIN.count("persistentReorderGroupMember:") == 2
     and MAIN.count("dockLayout.persistentDragMovesDynamicApplications") == 2,
-    "Dragging the open-applications marker must dim every dynamic task and "
-    "the overflow item with the same opacity as a persistent reorder source.",
+    "Dragging keeps the source fully visible, dims every dynamic task of the "
+    "moved section and dims the rest of the dock to focus the gesture.",
 )
 require(
     'objectName: "dockReorderDragProxy"' in DRAG_LAYER

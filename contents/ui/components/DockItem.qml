@@ -802,8 +802,7 @@ Item {
     // what removes the gap left by a hidden dynamic-applications separator.
     visible: !dockItemContainer.dynamicApplicationsMarkerCollapsed
     opacity: dockItemContainer.entryOpacity
-        * ((dockItemContainer.persistentReorderSource
-            || dockItemContainer.persistentReorderGroupMember) ? 0.5 : 1.0)
+        * (dockItemContainer.persistentReorderGroupMember ? 0.5 : 1.0)
         * (dockItemContainer.persistentReorderActive
             && !dockItemContainer.persistentReorderSource
             && !dockItemContainer.persistentReorderGroupMember ? 0.9 : 1.0)
