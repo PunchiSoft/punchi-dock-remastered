@@ -2926,6 +2926,9 @@ PlasmoidItem {
                 property int persistentDropSettleIndex: -1
                 readonly property bool persistentDragOffsetMotionEnabled:
                     persistentDragActive && !persistentDragSettleInstant
+                // Platform drag threshold, sourced once from QStyleHints.
+                readonly property int dragStartDistance:
+                    runtimeService.dragStartDistance
                 onPersistentDragTargetIndexChanged:
                     dockLayout.updatePersistentDragOffsets()
                 onPersistentDragSourceIndexChanged:

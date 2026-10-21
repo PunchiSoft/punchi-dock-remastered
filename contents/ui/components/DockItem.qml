@@ -111,6 +111,12 @@ Item {
     property bool persistentReorderDragActive: false
     property bool persistentReorderDragPending: false
     property string persistentReorderDragImage: ""
+    property real persistentReorderPressX: 0
+    property real persistentReorderPressY: 0
+    readonly property int persistentReorderDragThreshold:
+        dockItemContainer.layoutController
+            && dockItemContainer.layoutController.dragStartDistance > 0
+            ? dockItemContainer.layoutController.dragStartDistance : 10
     property int persistentModelIndex: -1
     property bool suppressClickAfterReorder: false
     property bool persistentReorderInteractionResetPending: false
@@ -1648,7 +1654,7 @@ Item {
             }
             if (dockItemContainer.persistentPointerReorderEnabled) {
                 return i18nc("@info:accessible",
-                    "Press and hold to move this Dock item. Use Control+Shift with an arrow key to move it from the keyboard.")
+                    "Drag to move this Dock item. Use Control+Shift with an arrow key to move it from the keyboard.")
             }
             if (dockItemContainer.persistentReorderEnabled) {
                 return i18nc("@info:accessible",
@@ -1705,6 +1711,23 @@ Item {
         }
         
         onPositionChanged: function(mouse) {
+            if (pressed && dockItemContainer.persistentPointerReorderEnabled
+                    && !dockItemContainer.persistentDirectReorderEnabled
+                    && !dockItemContainer.persistentReorderActive) {
+                const deltaX = mouse.x - dockItemContainer.persistentReorderPressX
+                const deltaY = mouse.y - dockItemContainer.persistentReorderPressY
+                const threshold = dockItemContainer.persistentReorderDragThreshold
+                if (deltaX * deltaX + deltaY * deltaY
+                        >= threshold * threshold) {
+                    dockItemContainer.persistentReorderStarted(
+                        dockItemContainer.persistentModelIndex,
+                        dockItemContainer)
+                    if (dockItemContainer.persistentReorderSource) {
+                        dockItemContainer.suppressClickAfterReorder = true
+                        dockItemContainer.beginPersistentReorderDrag()
+                    }
+                }
+            }
             if (dockItemContainer.separatorItem || dockItemContainer.spacerItem || dockItemContainer.itemType === "calendar") {
                 return
             }
@@ -1733,28 +1756,13 @@ Item {
             if (mouse.button === Qt.LeftButton
                     && dockItemContainer.persistentPointerReorderEnabled
                     && !dockItemContainer.persistentReorderActive) {
+                dockItemContainer.persistentReorderPressX = mouse.x
+                dockItemContainer.persistentReorderPressY = mouse.y
                 dockItemContainer.persistentReorderPressStarted(
                     dockItemContainer)
             }
             if (mouse.button === Qt.RightButton) {
                 dockItemContainer.contextMenuRequested(dockItemContainer, false)
-            }
-        }
-
-        onPressAndHold: function(mouse) {
-            if (mouse.button !== Qt.LeftButton
-                    || dockItemContainer.persistentDirectReorderEnabled
-                    || !dockItemContainer.persistentPointerReorderEnabled
-                    || dockItemContainer.persistentReorderActive) {
-                return
-            }
-            dockItemContainer.persistentReorderStarted(
-                dockItemContainer.persistentModelIndex, dockItemContainer)
-            if (dockItemContainer.persistentReorderSource) {
-                dockItemContainer.suppressClickAfterReorder = true
-                mouse.accepted = true
-                mouseArea.forceActiveFocus(Qt.MouseFocusReason)
-                dockItemContainer.beginPersistentReorderDrag()
             }
         }
 

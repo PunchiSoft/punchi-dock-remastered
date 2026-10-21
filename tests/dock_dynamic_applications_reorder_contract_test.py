@@ -191,7 +191,8 @@ require(
 )
 
 for marker in (
-    "onPressAndHold",
+    "persistentReorderDragThreshold",
+    "persistentReorderPressX",
     "persistentPointerReorderEnabled",
     "persistentReorderPressStarted",
     "mouse.button === Qt.LeftButton",
@@ -216,10 +217,10 @@ require(
     in CONFIG_SCHEMA[floating_reorder_entry_start:floating_reorder_entry_end]
     and "property alias cfg_enableFloatingItemDragReordering" in CONFIG_MOUSE
     and "visible: !page.inPanel" in CONFIG_MOUSE
-    and 'i18n("Enable press-and-hold item reordering")' in CONFIG_MOUSE
+    and 'i18n("Enable drag-to-reorder items")' in CONFIG_MOUSE
     and "floatingItemDragReorderingEnabled" in DOCK_CONFIGURATION
     and "enableFloatingItemDragReordering === true" in DOCK_CONFIGURATION,
-    "Floating press-and-hold reordering must be an explicit opt-in.",
+    "Floating drag-to-reorder must be an explicit opt-in.",
 )
 
 require(

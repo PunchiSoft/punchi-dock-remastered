@@ -259,14 +259,14 @@ KCM.SimpleKCM {
             id: enableFloatingItemDragReorderingCheck
             Kirigami.FormData.label: i18n("Floating Dock reordering:")
             visible: !page.inPanel
-            text: i18n("Enable press-and-hold item reordering")
+            text: i18n("Enable drag-to-reorder items")
             Layout.maximumWidth: page.contentWidthHint
 
         }
 
         Controls.Label {
             visible: !page.inPanel
-            text: i18n("Disabled by default because Plasma uses press and hold to enter widget editing in floating mode.")
+            text: i18n("Disabled by default because dragging in floating mode also moves the widget.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

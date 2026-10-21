@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.78\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-21 15:11-0300\n"
+"POT-Creation-Date: 2026-10-21 17:15-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Spanish\n"
@@ -176,12 +176,12 @@ msgctxt "@info:media"
 msgid "%1 is not running"
 msgstr "%1 no está en ejecución"
 
-#: contents/ui/components/DockItem.qml:1553
+#: contents/ui/components/DockItem.qml:1617
 msgctxt "@info:accessible"
 msgid "%1 is now in front; release to open the local files"
 msgstr "%1 está ahora al frente; suelte para abrir los archivos locales"
 
-#: contents/ui/components/DockItem.qml:1577
+#: contents/ui/components/DockItem.qml:1641
 msgctxt "@info:accessible"
 msgid "%1 is updated automatically and cannot accept applications"
 msgstr "%1 se actualiza automáticamente y no puede aceptar aplicaciones"
@@ -225,7 +225,7 @@ msgid_plural "%1 more in %2"
 msgstr[0] "%1 más en %2"
 msgstr[1] "%1 más en %2"
 
-#: contents/ui/main.qml:3900
+#: contents/ui/main.qml:3914
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de ventanas más"
@@ -244,14 +244,14 @@ msgstr "%1 de %2 caracteres"
 msgid "%1 of %2 items"
 msgstr "%1 de %2 elementos"
 
-#: contents/ui/components/DockItem.qml:1607
+#: contents/ui/components/DockItem.qml:1671
 #: contents/ui/components/TaskOverflowPopup.qml:111
 msgid "%1 open window"
 msgid_plural "%1 open windows"
 msgstr[0] "%1 ventana abierta"
 msgstr[1] "%1 ventanas abiertas"
 
-#: contents/ui/components/DockItem.qml:1603
+#: contents/ui/components/DockItem.qml:1667
 msgid "%1 open window. Press M to open media controls."
 msgid_plural "%1 open windows. Press M to open media controls."
 msgstr[0] "%1 ventana abierta. Pulsa M para abrir los controles multimedia."
@@ -1072,8 +1072,8 @@ msgstr "Apariencia:"
 msgid "Applets only"
 msgstr "Solo miniaplicaciones"
 
-#: contents/ui/components/DockItem.qml:1564
-#: contents/ui/components/DockItem.qml:1571
+#: contents/ui/components/DockItem.qml:1628
+#: contents/ui/components/DockItem.qml:1635
 #: contents/ui/components/DockItemsController.qml:904
 #: contents/ui/components/FolderFanView.qml:846
 #: contents/ui/components/FolderPopup.qml:1052
@@ -2574,12 +2574,8 @@ msgstr "Deshabilitado"
 
 #: contents/ui/config/ConfigMouse.qml:269
 msgid ""
-"Disabled by default because Plasma uses press and hold to enter widget "
-"editing in floating mode."
-msgstr ""
-"Está desactivada de forma predeterminada porque Plasma usa la pulsación "
-"prolongada para entrar en la edición de widgets cuando el dock está en modo "
-"flotante."
+"Disabled by default because dragging in floating mode also moves the widget."
+msgstr "Desactivado por defecto porque arrastrar en modo flotante también mueve el widget."
 
 #: contents/ui/config/ConfigAspect.qml:950
 msgid "Disables the active-window indicator entirely."
@@ -2723,7 +2719,7 @@ msgstr "Double line"
 msgid "Drag files"
 msgstr "Arrastrar archivos"
 
-#: contents/ui/components/DockItem.qml:1546
+#: contents/ui/components/DockItem.qml:1610
 msgctxt "@info:accessible"
 msgid ""
 "Drag to move the open applications section. Use an arrow key to move it one "
@@ -2731,6 +2727,13 @@ msgid ""
 msgstr ""
 "Arrastre para mover la sección de aplicaciones abiertas. Use una tecla de "
 "flecha para moverla una posición o Escape para cancelar."
+
+#: contents/ui/components/DockItem.qml:1657
+msgctxt "@info:accessible"
+msgid ""
+"Drag to move this Dock item. Use Control+Shift with an arrow key to move it "
+"from the keyboard."
+msgstr "Arrastra para mover este elemento del Dock. Usa Control+Mayús con una flecha para moverlo con el teclado."
 
 #: contents/ui/components/controlcenter/ControlCenterBluetoothDelegate.qml:75
 msgctxt "@info:status Bluetooth device type"
@@ -2837,13 +2840,13 @@ msgctxt "@option:check"
 msgid "Enable background blur (BlurBehind)"
 msgstr "Activar desenfoque de fondo (BlurBehind)"
 
+#: contents/ui/config/ConfigMouse.qml:262
+msgid "Enable drag-to-reorder items"
+msgstr "Activar el reordenamiento arrastrando elementos"
+
 #: contents/ui/config/ConfigMouse.qml:242
 msgid "Enable file drag and drop onto application icons"
 msgstr "Permitir arrastrar y soltar archivos sobre los iconos de aplicaciones"
-
-#: contents/ui/config/ConfigMouse.qml:262
-msgid "Enable press-and-hold item reordering"
-msgstr "Activar la reordenación de elementos mediante pulsación prolongada"
 
 #: contents/ui/config/ConfigItems.qml:1083
 #: contents/ui/config/ItemConfigurationDialog.qml:784
@@ -3810,7 +3813,7 @@ msgctxt "@action:button"
 msgid "Keep editing"
 msgstr "Seguir editando"
 
-#: contents/ui/components/DockItem.qml:1549
+#: contents/ui/components/DockItem.qml:1613
 msgctxt "@info:accessible"
 msgid "Keep holding to bring %1 to the front"
 msgstr "Mantenga el archivo para traer %1 al frente"
@@ -4368,10 +4371,11 @@ msgstr "Mover a una carpeta"
 msgid "Move “%1” to the Trash…"
 msgstr "Mover «%1» a la Papelera…"
 
-#: contents/ui/components/DockItem.qml:1587
+#: contents/ui/components/DockItem.qml:1651
 msgctxt "@info:accessible"
 msgid "Moving Dock item. Drop to place it at position %1 of %2."
-msgstr "Moviendo un elemento del Dock. Suelta para colocarlo en la posición %1 de %2."
+msgstr ""
+"Moviendo un elemento del Dock. Suelta para colocarlo en la posición %1 de %2."
 
 #: contents/ui/config/ConfigAspect.qml:776
 msgid "Moving themes to the Trash…"
@@ -4571,7 +4575,7 @@ msgctxt "@info"
 msgid "No notifications"
 msgstr "No hay notificaciones"
 
-#: src/dockruntimeservice.cpp:122
+#: src/dockruntimeservice.cpp:130
 msgid "No sound player or usable sound was found."
 msgstr ""
 "No se encontró ningún reproductor de sonido ni sonido utilizable.No se ha "
@@ -5284,19 +5288,10 @@ msgstr "Presentación:"
 msgid "Press"
 msgstr "Pulsar"
 
-#: contents/ui/components/DockItem.qml:1611
+#: contents/ui/components/DockItem.qml:1675
 msgctxt "@info:accessible"
 msgid "Press M to open media controls"
 msgstr "Pulsa M para abrir los controles multimedia"
-
-#: contents/ui/components/DockItem.qml:1593
-msgctxt "@info:accessible"
-msgid ""
-"Press and hold to move this Dock item. Use Control+Shift with an arrow key "
-"to move it from the keyboard."
-msgstr ""
-"Mantén pulsado para mover este elemento del dock. Usa Control+Mayús con una "
-"tecla de flecha para moverlo mediante el teclado."
 
 #: contents/ui/config/ConfigPopups.qml:340
 msgid "Preview information:"
@@ -5513,17 +5508,17 @@ msgstr "Opacidad del reflejo:"
 msgid "Reflection:"
 msgstr "Reflejo:"
 
-#: contents/ui/components/DockItem.qml:1568
+#: contents/ui/components/DockItem.qml:1632
 msgctxt "@info:accessible"
 msgid "Release to add %1 to %2"
 msgstr "Suelta para añadir %1 a %2"
 
-#: contents/ui/components/DockItem.qml:1561
+#: contents/ui/components/DockItem.qml:1625
 msgctxt "@info:accessible"
 msgid "Release to insert %1 in the Dock"
 msgstr "Suelta para insertar %1 en el dock"
 
-#: contents/ui/components/DockItem.qml:1557
+#: contents/ui/components/DockItem.qml:1621
 msgctxt "@info:accessible"
 msgid "Release to open local files with %1"
 msgstr "Suelte para abrir archivos locales con %1"
@@ -6400,15 +6395,15 @@ msgstr ""
 "El emblema aparece a partir de dos ventanas agrupadas y se oculta cuando la "
 "agrupación de ventanas está desactivada."
 
-#: src/dockruntimeservice.cpp:89
+#: src/dockruntimeservice.cpp:97
 msgid "The command could not be started."
 msgstr "No se ha podido iniciar la orden."
 
-#: src/dockruntimeservice.cpp:62
+#: src/dockruntimeservice.cpp:70
 msgid "The configuration directory could not be created."
 msgstr "No se ha podido crear el directorio de configuración."
 
-#: src/dockruntimeservice.cpp:56
+#: src/dockruntimeservice.cpp:64
 msgid "The configuration directory is unavailable."
 msgstr "El directorio de configuración no está disponible."
 
@@ -6445,7 +6440,7 @@ msgid "The dock configuration contains too many items. The maximum is %1."
 msgstr ""
 "La configuración del dock contiene demasiados elementos. El máximo es %1."
 
-#: src/dockruntimeservice.cpp:50
+#: src/dockruntimeservice.cpp:58
 msgid "The dock configuration is too large."
 msgstr "La configuración del dock es demasiado grande."
 
@@ -6691,7 +6686,7 @@ msgctxt "@info:status"
 msgid "This application could not be resolved safely."
 msgstr "Esta aplicación no se pudo resolver de forma segura."
 
-#: contents/ui/components/DockItem.qml:1581
+#: contents/ui/components/DockItem.qml:1645
 msgctxt "@info:accessible"
 msgid "This file drop cannot be accepted"
 msgstr "No se puede aceptar este arrastre de archivos"
@@ -7176,7 +7171,7 @@ msgctxt "@action:button %1 is an audio device name"
 msgid "Use %1 as the default device"
 msgstr "Usar %1 como dispositivo predeterminado"
 
-#: contents/ui/components/DockItem.qml:1597
+#: contents/ui/components/DockItem.qml:1661
 msgctxt "@info:accessible"
 msgid "Use Control+Shift with an arrow key to move this Dock item."
 msgstr ""

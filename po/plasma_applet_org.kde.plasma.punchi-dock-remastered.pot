@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.78\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-21 15:11-0300\n"
+"POT-Creation-Date: 2026-10-21 17:15-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -172,12 +172,12 @@ msgctxt "@info:media"
 msgid "%1 is not running"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1553
+#: contents/ui/components/DockItem.qml:1617
 msgctxt "@info:accessible"
 msgid "%1 is now in front; release to open the local files"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1577
+#: contents/ui/components/DockItem.qml:1641
 msgctxt "@info:accessible"
 msgid "%1 is updated automatically and cannot accept applications"
 msgstr ""
@@ -219,7 +219,7 @@ msgid_plural "%1 more in %2"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/main.qml:3900
+#: contents/ui/main.qml:3914
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] ""
@@ -238,14 +238,14 @@ msgstr ""
 msgid "%1 of %2 items"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1607
+#: contents/ui/components/DockItem.qml:1671
 #: contents/ui/components/TaskOverflowPopup.qml:111
 msgid "%1 open window"
 msgid_plural "%1 open windows"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/components/DockItem.qml:1603
+#: contents/ui/components/DockItem.qml:1667
 msgid "%1 open window. Press M to open media controls."
 msgid_plural "%1 open windows. Press M to open media controls."
 msgstr[0] ""
@@ -975,8 +975,8 @@ msgstr ""
 msgid "Applets only"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1564
-#: contents/ui/components/DockItem.qml:1571
+#: contents/ui/components/DockItem.qml:1628
+#: contents/ui/components/DockItem.qml:1635
 #: contents/ui/components/DockItemsController.qml:904
 #: contents/ui/components/FolderFanView.qml:846
 #: contents/ui/components/FolderPopup.qml:1052
@@ -2388,8 +2388,7 @@ msgstr ""
 
 #: contents/ui/config/ConfigMouse.qml:269
 msgid ""
-"Disabled by default because Plasma uses press and hold to enter widget "
-"editing in floating mode."
+"Disabled by default because dragging in floating mode also moves the widget."
 msgstr ""
 
 #: contents/ui/config/ConfigAspect.qml:950
@@ -2531,11 +2530,18 @@ msgstr ""
 msgid "Drag files"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1546
+#: contents/ui/components/DockItem.qml:1610
 msgctxt "@info:accessible"
 msgid ""
 "Drag to move the open applications section. Use an arrow key to move it one "
 "position, or Escape to cancel."
+msgstr ""
+
+#: contents/ui/components/DockItem.qml:1657
+msgctxt "@info:accessible"
+msgid ""
+"Drag to move this Dock item. Use Control+Shift with an arrow key to move it "
+"from the keyboard."
 msgstr ""
 
 #: contents/ui/components/controlcenter/ControlCenterBluetoothDelegate.qml:75
@@ -2632,12 +2638,12 @@ msgctxt "@option:check"
 msgid "Enable background blur (BlurBehind)"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:242
-msgid "Enable file drag and drop onto application icons"
+#: contents/ui/config/ConfigMouse.qml:262
+msgid "Enable drag-to-reorder items"
 msgstr ""
 
-#: contents/ui/config/ConfigMouse.qml:262
-msgid "Enable press-and-hold item reordering"
+#: contents/ui/config/ConfigMouse.qml:242
+msgid "Enable file drag and drop onto application icons"
 msgstr ""
 
 #: contents/ui/config/ConfigItems.qml:1083
@@ -3556,7 +3562,7 @@ msgctxt "@action:button"
 msgid "Keep editing"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1549
+#: contents/ui/components/DockItem.qml:1613
 msgctxt "@info:accessible"
 msgid "Keep holding to bring %1 to the front"
 msgstr ""
@@ -4091,7 +4097,7 @@ msgstr ""
 msgid "Move “%1” to the Trash…"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1587
+#: contents/ui/components/DockItem.qml:1651
 msgctxt "@info:accessible"
 msgid "Moving Dock item. Drop to place it at position %1 of %2."
 msgstr ""
@@ -4290,7 +4296,7 @@ msgctxt "@info"
 msgid "No notifications"
 msgstr ""
 
-#: src/dockruntimeservice.cpp:122
+#: src/dockruntimeservice.cpp:130
 msgid "No sound player or usable sound was found."
 msgstr ""
 
@@ -4964,16 +4970,9 @@ msgstr ""
 msgid "Press"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1611
+#: contents/ui/components/DockItem.qml:1675
 msgctxt "@info:accessible"
 msgid "Press M to open media controls"
-msgstr ""
-
-#: contents/ui/components/DockItem.qml:1593
-msgctxt "@info:accessible"
-msgid ""
-"Press and hold to move this Dock item. Use Control+Shift with an arrow key "
-"to move it from the keyboard."
 msgstr ""
 
 #: contents/ui/config/ConfigPopups.qml:340
@@ -5184,17 +5183,17 @@ msgstr ""
 msgid "Reflection:"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1568
+#: contents/ui/components/DockItem.qml:1632
 msgctxt "@info:accessible"
 msgid "Release to add %1 to %2"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1561
+#: contents/ui/components/DockItem.qml:1625
 msgctxt "@info:accessible"
 msgid "Release to insert %1 in the Dock"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1557
+#: contents/ui/components/DockItem.qml:1621
 msgctxt "@info:accessible"
 msgid "Release to open local files with %1"
 msgstr ""
@@ -6034,15 +6033,15 @@ msgid ""
 "grouping is disabled."
 msgstr ""
 
-#: src/dockruntimeservice.cpp:89
+#: src/dockruntimeservice.cpp:97
 msgid "The command could not be started."
 msgstr ""
 
-#: src/dockruntimeservice.cpp:62
+#: src/dockruntimeservice.cpp:70
 msgid "The configuration directory could not be created."
 msgstr ""
 
-#: src/dockruntimeservice.cpp:56
+#: src/dockruntimeservice.cpp:64
 msgid "The configuration directory is unavailable."
 msgstr ""
 
@@ -6076,7 +6075,7 @@ msgstr ""
 msgid "The dock configuration contains too many items. The maximum is %1."
 msgstr ""
 
-#: src/dockruntimeservice.cpp:50
+#: src/dockruntimeservice.cpp:58
 msgid "The dock configuration is too large."
 msgstr ""
 
@@ -6289,7 +6288,7 @@ msgctxt "@info:status"
 msgid "This application could not be resolved safely."
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1581
+#: contents/ui/components/DockItem.qml:1645
 msgctxt "@info:accessible"
 msgid "This file drop cannot be accepted"
 msgstr ""
@@ -6635,7 +6634,7 @@ msgctxt "@action:button %1 is an audio device name"
 msgid "Use %1 as the default device"
 msgstr ""
 
-#: contents/ui/components/DockItem.qml:1597
+#: contents/ui/components/DockItem.qml:1661
 msgctxt "@info:accessible"
 msgid "Use Control+Shift with an arrow key to move this Dock item."
 msgstr ""
