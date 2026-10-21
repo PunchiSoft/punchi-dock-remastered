@@ -735,7 +735,9 @@ PlasmoidItem {
         // PanelView exposes visibilityMode on the hosting window at runtime.
         // qmllint disable missing-property
         panelWindow: root.inPanel ? root.Window.window : null
-        requested: Plasmoid.userConfiguring
+        // Configuring and a move gesture share one lease, so an auto-hidden
+        // panel cannot swallow the gesture before it settles.
+        requested: Plasmoid.userConfiguring || root.panelGestureActive
         // qmllint enable missing-property
     }
     readonly property string configuredPanelOpacityMode: String(Plasmoid.configuration.panelOpacityMode || "system")
@@ -908,36 +910,10 @@ PlasmoidItem {
     readonly property string configuredPanelVisibilityMode: String(Plasmoid.configuration.panelVisibilityMode || "system")
     // A pointer gesture must survive an auto-hiding panel: while the
     // open-applications section or a Dock item is being moved, the panel stays
-    // visible and the configured mode is restored once the gesture settles.
-    // The representation reports the gesture state because its ids are scoped
-    // to that nested component.
+    // visible. The representation reports the gesture state because its ids are
+    // scoped to that nested component, and PanelRevealAdapter holds the panel
+    // exactly like it does while the applet is being configured.
     property bool panelGestureActive: false
-    property int panelVisibilityBeforeGesture: -1
-    onPanelGestureActiveChanged: root.updatePanelVisibilityHold()
-
-    function updatePanelVisibilityHold() {
-        const panelWindow = root.Window.window
-        if (!root.inPanel || !panelWindow) {
-            return
-        }
-        const visibilityKey = "visibilityMode"
-        try {
-            if (root.panelGestureActive) {
-                if (root.panelVisibilityBeforeGesture < 0) {
-                    root.panelVisibilityBeforeGesture
-                        = Number(panelWindow[visibilityKey])
-                }
-                panelWindow[visibilityKey] = 0
-            } else if (root.panelVisibilityBeforeGesture >= 0) {
-                panelWindow[visibilityKey]
-                    = root.panelVisibilityBeforeGesture
-                root.panelVisibilityBeforeGesture = -1
-                root.applyConfiguredPanelVisibilityMode()
-            }
-        } catch (error) {
-            // Guard against custom shells
-        }
-    }
     // The quick action and the Plasma panel settings can change the effective
     // mode. Adoption is enabled only after the startup apply, so a stale
     // observation cannot overwrite an explicit stored preference.
@@ -2449,6 +2425,17 @@ PlasmoidItem {
 
         function enterDynamicApplicationsMoveMode() {
             return dockLayout.enterDynamicApplicationsMoveMode()
+        }
+
+        // Leaving the mode releases the panel-visibility lease, so callers that
+        // start it programmatically can settle it the same way Escape does.
+        function cancelDynamicApplicationsMoveMode() {
+            if (!dockLayout.persistentMoveModeActive
+                    && !dockLayout.persistentDragActive) {
+                return false
+            }
+            dockLayout.cancelPersistentDrag()
+            return true
         }
 
 
