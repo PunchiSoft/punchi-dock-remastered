@@ -15,13 +15,6 @@ Kirigami.FormLayout {
     property alias maximumApplications: recentApplicationsCountSpin.value
     property string presentationMode: "container"
     property string containerLayout: "fan"
-    property alias showSeparator: separatorSettings.showSeparator
-    property alias separatorAppearanceSource: separatorSettings.separatorAppearanceSource
-    property alias separatorStyle: separatorSettings.separatorStyle
-    property alias separatorThickness: separatorSettings.separatorThickness
-    property alias separatorLengthRatio: separatorSettings.separatorLengthRatio
-    property alias separatorOpacity: separatorSettings.separatorOpacity
-    property alias separatorGlowEnabled: separatorSettings.separatorGlowEnabled
 
     readonly property var modeOptions: [
         { "text": i18nc("@option:recent-applications", "Icons"), "value": "inline" }, // qmllint disable unqualified
@@ -133,13 +126,5 @@ Kirigami.FormLayout {
             highlighted: ListView.isCurrentItem
             Accessible.name: String(model.text)
         }
-    }
-
-    RecentApplicationsSeparatorSettings {
-        id: separatorSettings
-        objectName: "recentApplicationsSeparatorSettings"
-        enabled: root.showApplications
-        Layout.fillWidth: true
-        Layout.maximumWidth: root.contentWidth
     }
 }

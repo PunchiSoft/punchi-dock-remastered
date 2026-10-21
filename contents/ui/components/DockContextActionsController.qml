@@ -15,8 +15,6 @@ QtObject {
     property var disableRecentApplicationsHandler: null
     property var setRecentContainerViewHandler: null
     property bool recentApplicationsActive: false
-    property bool recentApplicationsSeparatorVisible: true
-    property var setRecentApplicationsSeparatorVisibleHandler: null
     // The fan is a horizontal-only presentation: a vertical dock cannot select
     // it, but the stored preference stays visible in the menu.
     property bool verticalDock: false
@@ -297,22 +295,6 @@ QtObject {
         const dockActions = []
         const seenNames = {}
         let deferredPinnedActions = []
-        if ((recentContainer || (itemOrigin === "recent" && itemType === "app"))
-                && root.recentApplicationsActive
-                && typeof root.setRecentApplicationsSeparatorVisibleHandler === "function") {
-            root.appendUniqueActions(actions, [{
-                // qmllint disable unqualified
-                "name": root.recentApplicationsSeparatorVisible
-                    ? i18nc("@action:context", "Hide separator")
-                    : i18nc("@action:context", "Show separator"),
-                // qmllint enable unqualified
-                "icon": root.recentApplicationsSeparatorVisible
-                    ? "view-hidden" : "view-visible",
-                "kind": "setRecentApplicationsSeparatorVisible",
-                "visible": !root.recentApplicationsSeparatorVisible,
-                "enabled": true
-            }], seenNames)
-        }
         if (itemType === "app" && itemOrigin === "folder") {
             root.appendUniqueActions(actions, [{
                 // Plasma injects translation functions into the applet context.
@@ -742,11 +724,6 @@ QtObject {
             return false
         }
         const itemType = String(item.type || "app")
-        if (itemOrigin === "recent" && itemType === "app"
-                && root.recentApplicationsActive
-                && typeof root.setRecentApplicationsSeparatorVisibleHandler === "function") {
-            return true
-        }
         if (itemOrigin === "recent-container" && itemType === "folder"
                 && item.entryRole === "recent-container") {
             return root.recentContainerActive
@@ -771,12 +748,6 @@ QtObject {
     function triggerAction(action) {
         if (!action || action.enabled === false || !root.dockItemsController) {
             return false
-        }
-        if (action.kind === "setRecentApplicationsSeparatorVisible") {
-            return root.recentApplicationsActive
-                && typeof action.visible === "boolean"
-                && typeof root.setRecentApplicationsSeparatorVisibleHandler === "function"
-                ? root.setRecentApplicationsSeparatorVisibleHandler(action.visible) : false
         }
         if (action.kind === "disableRecentApplications") {
             return root.recentContainerActive

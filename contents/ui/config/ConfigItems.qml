@@ -56,13 +56,6 @@ KCM.SimpleKCM {
     property int cfg_pendingEditDockItemIndex: -1
     property bool cfg_showActiveTasks: true
     property bool cfg_showRecentApplications: true
-    property bool cfg_recentApplicationsShowSeparator: true
-    property string cfg_recentApplicationsSeparatorAppearanceSource: "theme"
-    property string cfg_recentApplicationsSeparatorStyle: "line"
-    property int cfg_recentApplicationsSeparatorThickness: 2
-    property real cfg_recentApplicationsSeparatorLengthRatio: 0.72
-    property real cfg_recentApplicationsSeparatorOpacity: 0.34
-    property bool cfg_recentApplicationsSeparatorGlowEnabled: false
     property string cfg_recentApplicationsPosition: ""
     property bool pendingEditConsumed: false
     property string iconPickerTarget: "item"

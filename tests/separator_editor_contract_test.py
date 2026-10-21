@@ -93,32 +93,39 @@ def main() -> int:
         sources["ItemEditorPanel.qml"],
         (
             "readonly property bool dynamicApplicationsItem:",
-            "readonly property bool separatorVisibleChecked:",
-            "function setSeparatorVisibleChecked(visible)",
-            'text: i18n("Show separator")',
-            "|| root.dynamicApplicationsItem",
-            "|| separatorVisibleCheckBox.checked",
+            'visible: root.itemModeValue === "separator"',
+            "showDescription: true",
         ),
-        "ItemEditorPanel.qml dynamic applications editor",
+        "ItemEditorPanel.qml separator editor",
     ) and passed
-    passed = require_markers(
-        sources["ActionDialog.qml"],
-        (
-            "readonly property bool separatorVisibleChecked:",
-            "function setSeparatorVisibleChecked(visible)",
-        ),
-        "ActionDialog.qml dynamic applications editor",
-    ) and passed
+
+    for label, source in (("ItemEditorPanel.qml", sources["ItemEditorPanel.qml"]),
+            ("ActionDialog.qml", sources["ActionDialog.qml"])):
+        for removed in ("separatorVisibleChecked", "setSeparatorVisibleChecked",
+                'i18n("Show separator")'):
+            if removed in source:
+                print(
+                    f"{label}: obsolete dynamic separator control remains: {removed}",
+                    file=sys.stderr,
+                )
+                passed = False
+
     passed = require_markers(
         form_helper,
         (
-            "actionDialog.setSeparatorVisibleChecked(item.showSeparator !== false)",
             'if (item.type === "dynamic-applications")',
-            "item.showSeparator = actionDialog.separatorVisibleChecked",
             "ConfigItemsJS.pruneDynamicApplications(item)",
         ),
         "configItemsFormHelper.js dynamic applications editor",
     ) and passed
+    for removed in ("showSeparator", "separatorVisibleChecked"):
+        if removed in form_helper:
+            print(
+                "configItemsFormHelper.js: obsolete dynamic separator value remains: "
+                + removed,
+                file=sys.stderr,
+            )
+            passed = False
     passed = require_markers(
         workflow_helper,
         (

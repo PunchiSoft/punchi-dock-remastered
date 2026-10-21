@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 """Contract for the dynamic-applications marker footprint.
 
-Hiding the marker separator must release its layout slot. The marker used to
-keep a fixed slot because its size was computed without reading the separator
-visibility, so unchecking "Show separator" only hid the line and left a gap.
+The marker no longer paints a separator. It only takes layout space while its
+move handle is active or while the launcher drop placeholder is shown, and the
+visual index math subtracts its slot the rest of the time.
 """
 
 from pathlib import Path
@@ -15,11 +15,11 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 COMPONENTS = ROOT / "contents/ui/components"
 CODE = ROOT / "contents/code"
+CONFIG = ROOT / "contents/ui/config"
 
 COLLAPSE_PROPERTY = (
     'readonly property bool dynamicApplicationsMarkerCollapsed: '
     'itemType === "dynamic-applications" '
-    "&& !separatorVisibleSetting "
     "&& !persistentMoveHandleVisible "
     "&& !launcherDropPlaceholderVisible"
 )
@@ -34,7 +34,7 @@ COLLAPSED_VERTICAL = (
 )
 SEPARATOR_VISUAL_GATE = (
     "visible: dockItemContainer.separatorItem "
-    "&& dockItemContainer.separatorVisibleSetting "
+    '&& dockItemContainer.itemType !== "dynamic-applications" '
     "&& !dockItemContainer.persistentMoveHandleVisible"
 )
 SEPARATOR_SLOT = "Math.max(10, Math.ceil(separatorThickness + 4))"
@@ -43,20 +43,27 @@ GEOMETRY_COLLAPSE_FUNCTION = (
     "function dynamicApplicationsMarkerCollapsed(item) { "
     'const itemType = item && item.type ? String(item.type) : "app" '
     'return itemType === "dynamic-applications" '
-    "&& item.showSeparator === false }"
+    "&& !root.dynamicApplicationsMoveModeActive }"
 )
-GEOMETRY_MOVE_MODE_BRANCH = (
-    'if (itemType === "dynamic-applications" '
-    "&& root.dynamicApplicationsMoveModeActive) "
-    "{ return root.dynamicApplicationsMoveHandleExtent }"
-)
-GEOMETRY_COLLAPSED_EXTENT = (
-    "if (root.dynamicApplicationsMarkerCollapsed(item)) { return 0 }"
+GEOMETRY_MARKER_EXTENT = (
+    'if (itemType === "dynamic-applications") '
+    "{ return root.dynamicApplicationsMoveModeActive "
+    "? root.dynamicApplicationsMoveHandleExtent : 0 }"
 )
 GEOMETRY_VISIBLE_COUNT = "visibleFixedDockItemCount"
 GEOMETRY_FIXED_LENGTH = (
     "return Math.ceil(extent "
     "+ (Math.max(0, root.visibleFixedDockItemCount - 1) * dockSpacing))"
+)
+
+LEGACY_SEPARATOR_KEYS = (
+    "showSeparator",
+    "separatorAppearanceSource",
+    "separatorStyle",
+    "separatorThickness",
+    "separatorLengthRatio",
+    "separatorOpacity",
+    "separatorGlowEnabled",
 )
 
 
@@ -71,6 +78,21 @@ def require(condition: bool, message: str) -> bool:
     return condition
 
 
+def function_body(source: str, name: str) -> str:
+    start = source.find(f"function {name}(")
+    if start < 0:
+        return ""
+    depth = 0
+    for index in range(source.find("{", start), len(source)):
+        if source[index] == "{":
+            depth += 1
+        elif source[index] == "}":
+            depth -= 1
+            if depth == 0:
+                return source[start:index + 1]
+    return ""
+
+
 def main() -> int:
     dock_item = compact(
         (COMPONENTS / "DockItem.qml").read_text(encoding="utf-8")
@@ -78,15 +100,23 @@ def main() -> int:
     geometry = compact(
         (COMPONENTS / "DockGeometryState.qml").read_text(encoding="utf-8")
     )
+    placement = compact(
+        (CODE / "recentApplicationsPlacement.js").read_text(encoding="utf-8")
+    )
+    config_items = (CONFIG / "code/configItems.js").read_text(encoding="utf-8")
     default_items = (CODE / "defaultItems.js").read_text(encoding="utf-8")
 
     passed = True
 
-    # The marker stops occupying space only when it draws nothing at all.
+    # The marker stops occupying space only when it shows nothing functional.
     passed &= require(
         COLLAPSE_PROPERTY in dock_item,
-        "DockItem must collapse the marker only without separator, move handle "
-        "and drop placeholder",
+        "DockItem must collapse the marker only without move handle and drop "
+        "placeholder",
+    )
+    passed &= require(
+        "separatorVisibleSetting" not in dock_item,
+        "the marker must not keep a separator visibility setting",
     )
     passed &= require(
         "visible: !dockItemContainer.dynamicApplicationsMarkerCollapsed"
@@ -110,32 +140,34 @@ def main() -> int:
         "a plain separator must keep its reserved slot",
     )
 
-    # The separator appearance itself is out of scope for this correction.
+    # The marker never paints a separator, while a plain one keeps its gate.
     passed &= require(
         SEPARATOR_VISUAL_GATE in dock_item,
-        "the separator visual gate must keep depending on the separator item, "
-        "its visibility setting and the move handle",
+        "the separator visual gate must exclude the dynamic-applications marker",
     )
 
     # The panel length mirrors the same footprint from the item model.
     passed &= require(
         GEOMETRY_COLLAPSE_FUNCTION in geometry,
-        "DockGeometryState must mirror the collapsed marker from the model",
+        "DockGeometryState must collapse the marker unless its move handle is "
+        "active",
     )
     passed &= require(
-        GEOMETRY_MOVE_MODE_BRANCH in geometry,
-        "the move handle extent must stay authoritative while moving the marker",
+        GEOMETRY_MARKER_EXTENT in geometry,
+        "the marker must reserve only the move handle extent",
     )
     passed &= require(
-        geometry.count(GEOMETRY_COLLAPSED_EXTENT) == 1,
-        "the panel main axis extent must be zero for the collapsed marker",
+        'itemType === "separator" || itemType === "dynamic-applications"'
+        not in geometry,
+        "the marker must not consume separator geometry",
     )
-    move_mode_index = geometry.find(GEOMETRY_MOVE_MODE_BRANCH)
-    collapsed_index = geometry.find(GEOMETRY_COLLAPSED_EXTENT)
-    separator_index = geometry.find("if (itemType === \"separator\"")
     passed &= require(
-        0 <= move_mode_index < collapsed_index < separator_index,
-        "the move handle branch must be evaluated before the collapsed marker",
+        'if (itemType === "separator") {' in geometry,
+        "the separator geometry branch must serve plain separators only",
+    )
+    passed &= require(
+        "item.showSeparator" not in geometry,
+        "the panel extent must not read the removed per-item separator flag",
     )
     passed &= require(
         GEOMETRY_FIXED_LENGTH in geometry,
@@ -151,10 +183,41 @@ def main() -> int:
         "the fixed panel length must not reserve a gap for the collapsed marker",
     )
 
-    # The default dock must keep shipping a visible separator.
+    # The visual index math subtracts the marker slot unless it is shown.
+    passed &= require(
+        placement.count("dynamicCount - 1 + markerSlots") == 2,
+        "persistent and recent visual indices must subtract the marker slot",
+    )
+    passed &= require(
+        "function dynamicVisualIndex(index, markerSlot, recentIndex, "
+        "recentSlots, offset)" in placement,
+        "the task index must accept the marker slot explicitly",
+    )
+    passed &= require(
+        "index + (markerSlot === true ? 1 : 0) + offset" in placement,
+        "the first task must start at the marker slot only while it is shown",
+    )
+
+    # Persisted separator values on the marker are dropped, not normalized.
+    prune_body = function_body(config_items, "pruneDynamicApplications")
+    passed &= require(
+        prune_body != "",
+        "pruneDynamicApplications must stay available",
+    )
+    for key in LEGACY_SEPARATOR_KEYS:
+        passed &= require(
+            f'"{key}"' in prune_body,
+            f"pruneDynamicApplications must delete the legacy key {key}",
+        )
+    passed &= require(
+        "pruneSeparatorAppearance(item)" not in prune_body,
+        "the marker must not keep normalizing separator appearance",
+    )
+
+    # The default dock must not ship a marker separator any more.
     passed &= require(
         "showSeparator" not in default_items,
-        "the default items must not disable the dynamic-applications separator",
+        "the default items must not declare a marker separator",
     )
 
     if not passed:

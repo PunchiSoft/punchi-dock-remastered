@@ -49,8 +49,6 @@ Controls.Dialog {
     readonly property real separatorLengthRatioValue: itemEditor.separatorLengthRatioValue
     readonly property real separatorOpacityValue: itemEditor.separatorOpacityValue
     readonly property bool separatorGlowEnabled: itemEditor.separatorGlowEnabled
-    readonly property bool separatorVisibleChecked:
-        itemEditor.separatorVisibleChecked
     readonly property string containerSourceValue: itemEditor.containerSourceValue
     property alias containerSourceIndex: itemEditor.containerSourceIndex
     property alias containerPathText: itemEditor.containerPathText
@@ -163,10 +161,6 @@ Controls.Dialog {
 
     function setSeparatorGlowEnabled(enabled) {
         itemEditor.setSeparatorGlowEnabled(enabled)
-    }
-
-    function setSeparatorVisibleChecked(visible) {
-        itemEditor.setSeparatorVisibleChecked(visible)
     }
 
     function iconPreview(value, fallback) {

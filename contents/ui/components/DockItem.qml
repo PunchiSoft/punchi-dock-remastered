@@ -24,7 +24,6 @@ Item {
     property real separatorLengthRatioSetting: 0.72
     property real separatorOpacitySetting: 0.34
     property bool separatorGlowSetting: false
-    property bool separatorVisibleSetting: true
     property string separatorAppearanceSourceSetting: "theme"
 
     readonly property string effectiveIndicatorPosition:
@@ -519,13 +518,11 @@ Item {
     readonly property bool mediaItem: itemType === "media"
     readonly property bool overflowItem: itemType === "overflow"
     readonly property bool structuralWaveItem: separatorItem || spacerItem
-    // The dynamic-applications marker only keeps its layout slot while it draws
-    // something: its separator, its move handle or the launcher drop
-    // placeholder. Hiding the separator must also release the slot, otherwise
-    // unchecking "Show separator" would only hide the line and leave a gap.
+    // The dynamic-applications marker only keeps its layout slot while it shows
+    // something functional: its move handle or the launcher drop placeholder.
+    // It no longer draws a separator, so the resting dock leaves no gap there.
     readonly property bool dynamicApplicationsMarkerCollapsed:
         itemType === "dynamic-applications"
-        && !separatorVisibleSetting
         && !persistentMoveHandleVisible
         && !launcherDropPlaceholderVisible
     readonly property bool isAnyPopupOrMenuOpen: {
@@ -1270,7 +1267,7 @@ Item {
 
         ThemedSeparator {
             visible: dockItemContainer.separatorItem
-                && dockItemContainer.separatorVisibleSetting
+                && dockItemContainer.itemType !== "dynamic-applications"
                 && !dockItemContainer.persistentMoveHandleVisible
             anchors.centerIn: parent
             theme: dockItemContainer.customSeparatorEnabled

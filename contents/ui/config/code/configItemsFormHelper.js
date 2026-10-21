@@ -59,21 +59,10 @@ function refreshItemForm() {
         actionDialog.actionPopupLimitRowsChecked = false
         actionDialog.actionPopupMaxVisibleRowsValue = 6
         actionDialog.setContainerLayoutValue("grid")
-        actionDialog.setSeparatorVisibleChecked(true)
         actionDialog.setSeparatorAppearanceSourceValue("theme")
         return
     }
 
-    if (item.type === "recent-applications") {
-        item = ConfigItemsJS.clone(item)
-        item.showSeparator = page.cfg_recentApplicationsShowSeparator
-        item.separatorAppearanceSource = page.cfg_recentApplicationsSeparatorAppearanceSource
-        item.separatorStyle = page.cfg_recentApplicationsSeparatorStyle
-        item.separatorThickness = page.cfg_recentApplicationsSeparatorThickness
-        item.separatorLengthRatio = page.cfg_recentApplicationsSeparatorLengthRatio
-        item.separatorOpacity = page.cfg_recentApplicationsSeparatorOpacity
-        item.separatorGlowEnabled = page.cfg_recentApplicationsSeparatorGlowEnabled
-    }
     selectedItemType = item.type || "app"
     itemName.text = item.name || ""
     itemCommand.text = item.command || ""
@@ -122,7 +111,6 @@ function refreshItemForm() {
     actionDialog.setSeparatorOpacityValue(
         item.separatorOpacity === undefined ? 0.34 : item.separatorOpacity)
     actionDialog.setSeparatorGlowEnabled(item.separatorGlowEnabled === true)
-    actionDialog.setSeparatorVisibleChecked(item.showSeparator !== false)
 
     trashDialog.soundPath = item.emptySound || defaultTrashEmptySound
     trashDialog.showStateChecked = item.showState === undefined ? true : item.showState
@@ -173,30 +161,9 @@ function applyItemForm(force) {
     var item = nextItems[selectedIndex]
     item.type = item.type || "app"
 
-    if (item.type === "recent-applications") {
-        page.cfg_recentApplicationsShowSeparator = actionDialog.separatorVisibleChecked
-        page.cfg_recentApplicationsSeparatorAppearanceSource = actionDialog.separatorAppearanceSourceValue
-        page.cfg_recentApplicationsSeparatorStyle = actionDialog.separatorStyleValue
-        page.cfg_recentApplicationsSeparatorThickness = actionDialog.separatorThicknessValue
-        page.cfg_recentApplicationsSeparatorLengthRatio = actionDialog.separatorLengthRatioValue
-        page.cfg_recentApplicationsSeparatorOpacity = actionDialog.separatorOpacityValue
-        page.cfg_recentApplicationsSeparatorGlowEnabled = actionDialog.separatorGlowEnabled
-        markChanged()
-        return
-    }
     if (item.type === "control-center") {
         ConfigItemsJS.pruneControlCenter(item)
     } else if (item.type === "dynamic-applications") {
-        item.separatorAppearanceSource
-            = actionDialog.separatorAppearanceSourceValue
-        item.showSeparator = actionDialog.separatorVisibleChecked
-        if (actionDialog.separatorStyleValue.length > 0) {
-            item.separatorStyle = actionDialog.separatorStyleValue
-        }
-        item.separatorThickness = actionDialog.separatorThicknessValue
-        item.separatorLengthRatio = actionDialog.separatorLengthRatioValue
-        item.separatorOpacity = actionDialog.separatorOpacityValue
-        item.separatorGlowEnabled = actionDialog.separatorGlowEnabled
         ConfigItemsJS.pruneDynamicApplications(item)
     } else if (item.type === "separator") {
         item.separatorAppearanceSource

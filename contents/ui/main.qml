@@ -448,12 +448,15 @@ PlasmoidItem {
         return RecentPlacement.persistentVisualIndex(index,
             root.dynamicApplicationsMarkerIndex,
             root.visibleTaskRows.length + root.renderedOverflowItemCount,
-            root.recentApplicationsMarkerIndex, root.recentPresentationSlotCount)
+            root.recentApplicationsMarkerIndex, root.recentPresentationSlotCount,
+            root.dynamicApplicationsMoveModeActive)
     }
 
     function dynamicVisualIndex(taskIndex) {
         return RecentPlacement.dynamicVisualIndex(root.dynamicApplicationsAnchorIndex,
-            root.dynamicApplicationsMarkerIndex >= 0, root.recentApplicationsMarkerIndex,
+            root.dynamicApplicationsMarkerIndex >= 0
+                && root.dynamicApplicationsMoveModeActive,
+            root.recentApplicationsMarkerIndex,
             root.recentPresentationSlotCount, Number(taskIndex))
     }
 
@@ -472,22 +475,6 @@ PlasmoidItem {
         root.recentApplicationCapacity < 0 ? dockConfig.recentApplicationsCount : root.recentApplicationCapacity)
     readonly property bool recentContainerVisible: dockConfig.recentApplicationsMode === "container"
         && root.visibleRecentApplicationCount > 0
-    readonly property bool recentSeparatorVisible: root.visibleRecentApplicationCount > 0
-        && dockConfig.recentApplicationsShowSeparator
-        && root.hasContentBeforeRecentApplications()
-
-    function hasContentBeforeRecentApplications() {
-        if (root.recentApplicationsMarkerIndex < 0) {
-            return dockGeometry.panelBaseCompactContentLength > 0
-        }
-        const items = dockItemsController.dockItems
-        for (let index = 0; index < root.recentApplicationsMarkerIndex; index++) {
-            if (dockGeometry.panelMainAxisExtentForDockItem(items[index]) > 0) { return true }
-            if (index === root.dynamicApplicationsMarkerIndex
-                    && root.visibleTaskRows.length + root.renderedOverflowItemCount > 0) { return true }
-        }
-        return false
-    }
     readonly property var recentContainerDescriptor: ({
         "type": "folder", "entryRole": "recent-container", "key": "recent-container",
         "name": i18nc("@title", "Recent applications"), // qmllint disable unqualified
@@ -496,17 +483,15 @@ PlasmoidItem {
     })
     readonly property var recentPresentationItems: {
         if (root.visibleRecentApplicationCount === 0) { return [] }
-        const result = root.recentSeparatorVisible
-            ? [dockConfig.recentApplicationsSeparatorDescriptor] : []
-        return result.concat(root.recentContainerVisible
+        return root.recentContainerVisible
             ? [root.recentContainerDescriptor]
-            : root.recentApplications.slice(0, root.visibleRecentApplicationCount))
+            : root.recentApplications.slice(0, root.visibleRecentApplicationCount)
     }
     function recentVisualIndex(offset) {
         return RecentPlacement.recentVisualIndex(root.recentApplicationsMarkerIndex,
             dockItemsController.dockItems.length, root.dynamicApplicationsMarkerIndex,
             root.visibleTaskRows.length + root.renderedOverflowItemCount,
-            offset)
+            offset, root.dynamicApplicationsMoveModeActive)
     }
 
     function dockItemReorderIconName(item) {
@@ -2200,11 +2185,7 @@ PlasmoidItem {
         recentContainerActive: dockConfig.showRecentApplications
             && dockConfig.recentApplicationsMode === "container"
         recentApplicationsActive: dockConfig.showRecentApplications
-        recentApplicationsSeparatorVisible: dockConfig.recentApplicationsShowSeparator
         verticalDock: dockGeometry.verticalPanel
-        setRecentApplicationsSeparatorVisibleHandler: function(visible) {
-            return dockConfig.setRecentApplicationsSeparatorVisible(visible)
-        }
         disableRecentApplicationsHandler: function() {
             return dockConfig.disableRecentApplications()
         }
@@ -2620,14 +2601,8 @@ PlasmoidItem {
                 const isVertical = dockGeometry.verticalPanel
                 const padding = isVertical ? dockGeometry.dockBackgroundVerticalPadding * 2
                     : dockGeometry.dockBackgroundHorizontalPadding * 2
-                const hasPrecedingItems = root.hasContentBeforeRecentApplications()
-                const separatorExtent = hasPrecedingItems
-                        && dockConfig.recentApplicationsShowSeparator
-                    ? dockGeometry.panelMainAxisExtentForDockItem(
-                        dockConfig.recentApplicationsSeparatorDescriptor) + dockGeometry.dockSpacing * 2
-                    : 0
                 const remaining = dynamicTaskCapacityLength - padding
-                    - dockGeometry.panelBaseCompactContentLength - separatorExtent
+                    - dockGeometry.panelBaseCompactContentLength
                 const itemExtent = isVertical ? dockGeometry.panelItemHeight : dockGeometry.panelItemWidth
                 const slots = Math.max(0, Math.floor((remaining + dockGeometry.dockSpacing)
                     / (itemExtent + dockGeometry.dockSpacing)))
@@ -3379,9 +3354,6 @@ PlasmoidItem {
                         separatorAppearanceSourceSetting:
                             ConfigItemsJS.normalizedSeparatorAppearanceSource(
                                 dockItemDelegate.modelData)
-                        separatorVisibleSetting:
-                            dockItemDelegate.modelData.type !== "recent-applications"
-                            && dockItemDelegate.modelData.showSeparator !== false
                         iconName: dockItemDelegate.modelData.type === "trash" && dockItemDelegate.modelData.showState !== false
                             ? (dockItemsController.trashHasItems ? (dockItemDelegate.modelData.fullIcon || "user-trash-full") : (dockItemDelegate.modelData.icon || "user-trash"))
                             : (dockItemDelegate.modelData.icon || "")
@@ -3809,26 +3781,6 @@ PlasmoidItem {
                     }
                 }
                 RecentApplicationDockItem {
-                    id: recentSeparator
-                    objectName: "recentApplicationsSeparator"
-                    visible: root.recentSeparatorVisible
-                    descriptor: dockConfig.recentApplicationsSeparatorDescriptor
-                    persistentReorderActive: dockLayout.persistentDragActive
-                    sectionBeingReordered: dockLayout.persistentDragMovesRecentApplications
-                    configState: dockConfig
-                    geometryState: dockGeometry
-                    layoutController: dockLayout
-                    clickCollisionController: dockLayout.clickCollision
-                    itemIndex: root.recentVisualIndex(0)
-                    Layout.column: dockGeometry.verticalPanel ? 0 : itemIndex
-                    Layout.row: dockGeometry.verticalPanel ? itemIndex : 0
-                    hoveredIndex: dockLayout.hoveredIndex
-                    hoverAnimationMode: dockLayout.effectiveHoverAnimationMode
-                    hoverZoomProgress: dockLayout.hoverZoomProgress
-                    lastHoveredIndex: dockLayout.lastHoveredIndex
-                    lastMouseOffset: dockLayout.lastMouseOffset
-                }
-                RecentApplicationDockItem {
                     id: recentContainer
                     objectName: "recentApplicationsContainer"
                     visible: root.recentContainerVisible
@@ -3851,7 +3803,7 @@ PlasmoidItem {
                     geometryState: dockGeometry
                     layoutController: dockLayout
                     clickCollisionController: dockLayout.clickCollision
-                    itemIndex: root.recentVisualIndex(root.recentSeparatorVisible ? 1 : 0)
+                    itemIndex: root.recentVisualIndex(0)
                     Layout.column: dockGeometry.verticalPanel ? 0 : itemIndex
                     Layout.row: dockGeometry.verticalPanel ? itemIndex : 0
                     hoveredIndex: dockLayout.hoveredIndex
@@ -3900,7 +3852,7 @@ PlasmoidItem {
                         geometryState: dockGeometry
                         layoutController: dockLayout
                         clickCollisionController: dockLayout.clickCollision
-                        itemIndex: root.recentVisualIndex((root.recentSeparatorVisible ? 1 : 0) + index)
+                        itemIndex: root.recentVisualIndex(index)
                         Layout.column: dockGeometry.verticalPanel ? 0 : itemIndex
                         Layout.row: dockGeometry.verticalPanel ? itemIndex : 0
                         hoveredIndex: dockLayout.hoveredIndex

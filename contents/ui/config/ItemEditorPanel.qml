@@ -41,8 +41,6 @@ GridLayout {
     readonly property real separatorLengthRatioValue: separatorOptions.separatorLengthRatioValue
     readonly property real separatorOpacityValue: separatorOptions.separatorOpacityValue
     readonly property bool separatorGlowEnabled: separatorOptions.separatorGlowEnabled
-    readonly property bool separatorVisibleChecked:
-        separatorVisibleCheckBox.checked
     property bool separatorControlsSyncing: false
     readonly property bool syncing: separatorControlsSyncing
     readonly property string containerSourceValue: containerSource.currentValue || "manual"
@@ -177,15 +175,6 @@ GridLayout {
         root.separatorControlsSyncing = true
         try {
             separatorOptions.setSeparatorGlowEnabled(enabled)
-        } finally {
-            root.separatorControlsSyncing = false
-        }
-    }
-
-    function setSeparatorVisibleChecked(visible) {
-        root.separatorControlsSyncing = true
-        try {
-            separatorVisibleCheckBox.checked = visible !== false
         } finally {
             root.separatorControlsSyncing = false
         }
@@ -407,29 +396,13 @@ GridLayout {
         onValueModified: root.formChanged()
     }
 
-    Controls.CheckBox {
-        id: separatorVisibleCheckBox
-        objectName: "dynamicApplicationsSeparatorVisibleCheckBox"
-        Layout.columnSpan: 2
-        Layout.fillWidth: true
-        visible: root.applicationSectionItem
-        checked: true
-        text: i18n("Show separator") // qmllint disable unqualified
-        Accessible.name: text
-        onToggled: root.applyItemForm()
-    }
-
     SeparatorOptions {
         id: separatorOptions
         objectName: "dynamicApplicationsSeparatorOptions"
         Layout.columnSpan: 2
         Layout.fillWidth: true
         visible: root.itemModeValue === "separator"
-            || root.dynamicApplicationsItem
-            || root.recentApplicationsItem
-        showDescription: !root.recentApplicationsItem
-        enabled: !root.applicationSectionItem
-            || separatorVisibleCheckBox.checked
+        showDescription: true
         controller: root
     }
 
