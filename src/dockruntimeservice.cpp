@@ -6,10 +6,12 @@
 
 #include <QDir>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QProcess>
 #include <QRegularExpression>
 #include <QSaveFile>
 #include <QStandardPaths>
+#include <QStyleHints>
 #include <QUrl>
 
 namespace
@@ -40,6 +42,12 @@ QString dockItemsFileNameForInstance(const QString &instanceId)
 DockRuntimeService::DockRuntimeService(QObject *parent)
     : QObject(parent)
 {
+}
+
+int DockRuntimeService::dragStartDistance() const
+{
+    const QStyleHints *hints = QGuiApplication::styleHints();
+    return hints ? hints->startDragDistance() : 10;
 }
 
 bool DockRuntimeService::persistDockItemsJson(const QString &json, const QString &instanceId)

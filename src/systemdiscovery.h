@@ -53,6 +53,10 @@ public:
     Q_INVOKABLE QVariantMap applicationForLauncher(const QString &applicationId, const QString &launcherUrl) const;
     Q_INVOKABLE QVariantMap resolveApplication(const QString &storageId, const QString &command = QString(),
         const QString &launcherUrl = QString()) const;
+    // File URL of the launcher behind a Dock item, so dragging it to the desktop
+    // offers the native copy/link menu.
+    Q_INVOKABLE QString desktopFileUrl(const QString &storageId = QString(),
+        const QString &command = QString()) const;
     Q_INVOKABLE QVariantList applicationActions(const QString &applicationId) const;
     Q_INVOKABLE bool canLaunchNewWindow(const QString &applicationId) const;
     Q_INVOKABLE bool launchApplicationNewInstance(const QString &applicationId);

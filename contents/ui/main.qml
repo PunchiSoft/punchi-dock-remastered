@@ -735,7 +735,9 @@ PlasmoidItem {
         // PanelView exposes visibilityMode on the hosting window at runtime.
         // qmllint disable missing-property
         panelWindow: root.inPanel ? root.Window.window : null
-        requested: Plasmoid.userConfiguring
+        // Configuring and a move gesture share one lease, so an auto-hidden
+        // panel cannot swallow the gesture before it settles.
+        requested: Plasmoid.userConfiguring || root.panelGestureActive
         // qmllint enable missing-property
     }
     readonly property string configuredPanelOpacityMode: String(Plasmoid.configuration.panelOpacityMode || "system")
@@ -906,6 +908,12 @@ PlasmoidItem {
         }
     }
     readonly property string configuredPanelVisibilityMode: String(Plasmoid.configuration.panelVisibilityMode || "system")
+    // A pointer gesture must survive an auto-hiding panel: while the
+    // open-applications section or a Dock item is being moved, the panel stays
+    // visible. The representation reports the gesture state because its ids are
+    // scoped to that nested component, and PanelRevealAdapter holds the panel
+    // exactly like it does while the applet is being configured.
+    property bool panelGestureActive: false
     // The quick action and the Plasma panel settings can change the effective
     // mode. Adoption is enabled only after the startup apply, so a stale
     // observation cannot overwrite an explicit stored preference.
@@ -2419,6 +2427,17 @@ PlasmoidItem {
             return dockLayout.enterDynamicApplicationsMoveMode()
         }
 
+        // Leaving the mode releases the panel-visibility lease, so callers that
+        // start it programmatically can settle it the same way Escape does.
+        function cancelDynamicApplicationsMoveMode() {
+            if (!dockLayout.persistentMoveModeActive
+                    && !dockLayout.persistentDragActive) {
+                return false
+            }
+            dockLayout.cancelPersistentDrag()
+            return true
+        }
+
 
         Component.onCompleted:
             root.dynamicApplicationsMoveModeTarget = mainContainer
@@ -2851,6 +2870,15 @@ PlasmoidItem {
                         return result
                     }
                 }
+                // Auto-hide must not interrupt a move gesture; the root keeps
+                // the panel visible until the gesture settles.
+                readonly property bool pointerGestureActive:
+                    persistentMoveModeActive || persistentDragActive
+                onPointerGestureActiveChanged:
+                    root.panelGestureActive = pointerGestureActive
+                Component.onCompleted:
+                    root.panelGestureActive = pointerGestureActive
+                Component.onDestruction: root.panelGestureActive = false
                 z: 10
                 flow: dockGeometry.verticalPanel ? GridLayout.TopToBottom : GridLayout.LeftToRight
                 columns: dockGeometry.verticalPanel ? 1 : -1
@@ -2918,12 +2946,38 @@ PlasmoidItem {
                 property int persistentDragTargetIndex: -1
                 property string persistentDragExpectedItemText: ""
                 property var persistentDragSourceItem: null
-                property point persistentDragPointerPosition:
-                    Qt.point(0, 0)
                 property string persistentDragIconName:
                     "application-x-executable"
                 property bool persistentDragMovesDynamicApplications: false
                 property bool persistentDragMovesRecentApplications: false
+                // Visual-only preview of the final slots. The model still moves
+                // once, on drop, so the gap travels as transforms and never
+                // reflows the GridLayout while the pointer moves.
+                property var persistentDragOffsets: ({})
+                property bool persistentDragSettleInstant: false
+                property int persistentDragTargetPosition: 0
+                property int persistentDragVisibleItemCount: 0
+                // Slot that receives the short settle after a successful drop.
+                property int persistentDropSettleIndex: -1
+                // Only a drop inside the dock may commit a reorder; a desktop
+                // copy/link drop also reports MoveAction.
+                property bool persistentDropAccepted: false
+                readonly property bool persistentDragOffsetMotionEnabled:
+                    persistentDragActive && !persistentDragSettleInstant
+                // Platform drag threshold, sourced once from QStyleHints.
+                readonly property int dragStartDistance:
+                    runtimeService.dragStartDistance
+                onPersistentDragTargetIndexChanged:
+                    dockLayout.updatePersistentDragOffsets()
+                onPersistentDragSourceIndexChanged:
+                    dockLayout.updatePersistentDragOffsets()
+
+                Timer {
+                    id: persistentDropSettleTimer
+                    interval: 120
+                    repeat: false
+                    onTriggered: dockLayout.persistentDropSettleIndex = -1
+                }
                 readonly property bool persistentDragActive:
                     persistentDragSourceIndex >= 0
                 readonly property bool persistentMoveModeActive:
@@ -2950,10 +3004,10 @@ PlasmoidItem {
                     persistentDragTargetIndex = -1
                     persistentDragExpectedItemText = ""
                     persistentDragSourceItem = null
-                    persistentDragPointerPosition = Qt.point(0, 0)
                     persistentDragIconName = "application-x-executable"
                     persistentDragMovesDynamicApplications = false
                     persistentDragMovesRecentApplications = false
+                    persistentDropAccepted = false
                     persistentMoveModeIndex = -1
                     hoveredIndex = -1
                     lastHoveredIndex = -1
@@ -2966,6 +3020,105 @@ PlasmoidItem {
                         sourceItem.releasePersistentReorderInteraction()
                     }
                     dockLayout.forceActiveFocus(Qt.OtherFocusReason)
+                }
+
+                function desktopFileUrlFor(item) {
+                    if (!item || item.type !== "app") {
+                        return ""
+                    }
+                    return systemDiscovery.desktopFileUrl(
+                        String(item.storageId || ""),
+                        String(item.command || ""))
+                }
+
+                function persistentDragOffsetFor(visualIndex) {
+                    return Number(persistentDragOffsets[Number(visualIndex)] || 0)
+                }
+
+                function persistentDragDelegateAt(modelIndex) {
+                    const index = Number(modelIndex)
+                    if (!Number.isInteger(index) || index < 0) {
+                        return null
+                    }
+                    if (index === root.recentApplicationsMarkerIndex) {
+                        return root.recentContainerVisible
+                            ? recentContainer : recentApplicationsRepeater.itemAt(0)
+                    }
+                    return persistentDockItemsRepeater.itemAt(index)
+                }
+
+                // Every delegate between the source and its target slides one
+                // source slot towards the source; the source travels the widths
+                // it crosses. That is exactly the layout the model will produce
+                // on drop, so the commit needs no second animation.
+                function updatePersistentDragOffsets() {
+                    const offsets = ({})
+                    persistentDragTargetPosition = 0
+                    persistentDragVisibleItemCount = 0
+                    if (!persistentDragActive) {
+                        persistentDragOffsets = offsets
+                        return
+                    }
+                    let visibleCount = 0
+                    for (const child of dockLayout.children) {
+                        if (child && child.itemIndex !== undefined
+                                && child.itemIndex >= 0 && child.visible) {
+                            ++visibleCount
+                        }
+                    }
+                    persistentDragVisibleItemCount = visibleCount
+
+                    const sourceItem = persistentDragSourceItem
+                    const targetItem = dockLayout.persistentDragDelegateAt(
+                        persistentDragTargetIndex)
+                    const sourceVisual = sourceItem
+                        ? Number(sourceItem.itemIndex) : -1
+                    const targetVisual = targetItem
+                        ? Number(targetItem.itemIndex) : -1
+                    if (!sourceItem || !targetItem
+                            || !Number.isFinite(sourceVisual)
+                            || !Number.isFinite(targetVisual)
+                            || sourceVisual < 0 || targetVisual < 0) {
+                        persistentDragOffsets = offsets
+                        return
+                    }
+                    persistentDragTargetPosition = targetVisual + 1
+                    if (sourceVisual === targetVisual) {
+                        persistentDragOffsets = offsets
+                        return
+                    }
+
+                    const vertical = dockGeometry.verticalPanel
+                    const spacing = Math.max(0, Number(vertical
+                        ? dockLayout.rowSpacing
+                        : dockLayout.columnSpacing) || 0)
+                    const sourceExtent
+                        = (vertical ? sourceItem.height : sourceItem.width) + spacing
+                    const forward = targetVisual > sourceVisual
+                    let travelled = 0
+                    for (const child of dockLayout.children) {
+                        if (!child || child === sourceItem || !child.visible
+                                || child.itemIndex === undefined
+                                || child.itemIndex < 0) {
+                            continue
+                        }
+                        const visualIndex = Number(child.itemIndex)
+                        const crosses = forward
+                            ? visualIndex > sourceVisual
+                                && visualIndex <= targetVisual
+                            : visualIndex >= targetVisual
+                                && visualIndex < sourceVisual
+                        if (!crosses) {
+                            continue
+                        }
+                        offsets[visualIndex] = forward
+                            ? -sourceExtent : sourceExtent
+                        travelled += (vertical ? child.height : child.width)
+                            + spacing
+                    }
+                    offsets[sourceVisual] = forward ? travelled : -travelled
+                    // Reassign so every delegate binding re-evaluates once.
+                    persistentDragOffsets = offsets
                 }
 
                 function enterDynamicApplicationsMoveMode() {
@@ -3020,7 +3173,9 @@ PlasmoidItem {
                         = items[index].type === "dynamic-applications"
                     persistentDragMovesRecentApplications
                         = items[index].type === "recent-applications"
+                    persistentDropAccepted = false
                     persistentDragWatchdogTimer.restart()
+                    dockLayout.updatePersistentDragOffsets()
                     return persistentDragExpectedItemText.length > 0
                 }
 
@@ -3030,10 +3185,24 @@ PlasmoidItem {
                             || sourceItem !== persistentDragSourceItem) {
                         return
                     }
+                    dockLayout.updatePersistentDragAt(
+                        sourceItem.mapToItem(dockLayout, x, y))
+                }
+
+                // The drag session reports positions in this area, which covers
+                // dockLayout, so no source-item mapping is needed.
+                function updatePersistentDragFromDock(x, y) {
+                    if (!persistentDragActive) {
+                        return
+                    }
+                    dockLayout.updatePersistentDragAt(Qt.point(x, y))
+                }
+
+                function updatePersistentDragAt(point) {
+                    if (!persistentDragActive) {
+                        return
+                    }
                     persistentDragWatchdogTimer.restart()
-                    const point = sourceItem.mapToItem(dockLayout, x, y)
-                    persistentDragPointerPosition
-                        = sourceItem.mapToItem(dockWrapper, x, y)
                     const primaryPosition = dockGeometry.verticalPanel
                         ? point.y : point.x
                     const itemCount = persistentDockItemsRepeater.count
@@ -3076,10 +3245,23 @@ PlasmoidItem {
                     const sourceIndex = persistentDragSourceIndex
                     const targetIndex = persistentDragTargetIndex
                     const expectedItemText = persistentDragExpectedItemText
+                    // The offsets already hold every delegate in the slot the
+                    // model is about to produce, so the commit must not animate
+                    // positions a second time.
+                    persistentDragSettleInstant = true
                     cancelPersistentDrag()
-                    if (!dockItemsController.movePersistentItem(
-                            sourceIndex, targetIndex, expectedItemText)) {
+                    const moved = dockItemsController.movePersistentItem(
+                        sourceIndex, targetIndex, expectedItemText)
+                    Qt.callLater(function() {
+                        dockLayout.persistentDragSettleInstant = false
+                    })
+                    if (!moved) {
                         console.warn("Punchi Dock: Persistent item reorder was canceled because the configuration changed or could not be saved.")
+                        return
+                    }
+                    if (targetIndex !== sourceIndex) {
+                        dockLayout.persistentDropSettleIndex = targetIndex
+                        persistentDropSettleTimer.restart()
                     }
                 }
 
@@ -3247,14 +3429,21 @@ PlasmoidItem {
                         persistentReorderActive: dockLayout.persistentDragActive
                         persistentReorderSource: dockLayout.persistentDragSourceIndex
                             === dockItemDelegate.index
-                        persistentReorderTarget: dockLayout.persistentDragActive
-                            && dockLayout.persistentDragTargetIndex
-                                === dockItemDelegate.index
-                            && dockLayout.persistentDragSourceIndex
-                                !== dockItemDelegate.index
-                        persistentReorderInsertAfter:
-                            dockLayout.persistentDragSourceIndex
-                                < dockLayout.persistentDragTargetIndex
+                        dragLauncherUrl: dockLayout.desktopFileUrlFor(
+                            dockItemDelegate.modelData)
+                        persistentReorderOffset:
+                            dockLayout.persistentDragOffsetFor(
+                                dockItemDelegate.itemIndex)
+                        persistentReorderOffsetMotionEnabled:
+                            dockLayout.persistentDragOffsetMotionEnabled
+                        persistentReorderPosition:
+                            dockLayout.persistentDragTargetPosition
+                        persistentReorderItemCount:
+                            dockLayout.persistentDragVisibleItemCount
+                        persistentDropSettle:
+                            dockLayout.persistentDropSettleIndex >= 0
+                            && dockItemDelegate.persistentModelIndex
+                                === dockLayout.persistentDropSettleIndex
                         launcherModelInsertionIndex: dockItemDelegate.index
                         hoveredIndex: dockLayout.hoveredIndex
                         inPanel: root.inPanel
@@ -3574,6 +3763,11 @@ PlasmoidItem {
                             dockLayout.persistentDragActive
                         persistentReorderGroupMember:
                             dockLayout.persistentDragMovesDynamicApplications
+                        persistentReorderOffset:
+                            dockLayout.persistentDragOffsetFor(
+                                taskDockItemDelegate.itemIndex)
+                        persistentReorderOffsetMotionEnabled:
+                            dockLayout.persistentDragOffsetMotionEnabled
                         // qmllint enable unqualified
                         dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                         clickEffect: dockConfig.dockClickEffect
@@ -3745,6 +3939,11 @@ PlasmoidItem {
                         dockLayout.persistentDragActive
                     persistentReorderGroupMember:
                         dockLayout.persistentDragMovesDynamicApplications
+                    persistentReorderOffset:
+                        dockLayout.persistentDragOffsetFor(
+                            taskOverflowDockItem.itemIndex)
+                    persistentReorderOffsetMotionEnabled:
+                        dockLayout.persistentDragOffsetMotionEnabled
                     dockMotionSpeedPercent: dockConfig.dockMotionSpeedPercent
                     clickEffect: dockConfig.dockClickEffect
                     windowMinimizeEffect: dockConfig.dockWindowMinimizeEffect
@@ -3800,11 +3999,19 @@ PlasmoidItem {
                     persistentReorderActive: dockLayout.persistentDragActive
                     persistentReorderSource: dockLayout.persistentDragActive
                         && dockLayout.persistentDragSourceItem === recentContainer
-                    persistentReorderTarget: dockLayout.persistentDragActive
-                        && dockLayout.persistentDragTargetIndex === root.recentApplicationsMarkerIndex
-                        && dockLayout.persistentDragSourceIndex !== root.recentApplicationsMarkerIndex
-                    persistentReorderInsertAfter: dockLayout.persistentDragSourceIndex
-                        < dockLayout.persistentDragTargetIndex
+                    persistentReorderOffset:
+                        dockLayout.persistentDragOffsetFor(
+                            root.recentVisualIndex(0))
+                    persistentReorderOffsetMotionEnabled:
+                        dockLayout.persistentDragOffsetMotionEnabled
+                    persistentReorderPosition:
+                        dockLayout.persistentDragTargetPosition
+                    persistentReorderItemCount:
+                        dockLayout.persistentDragVisibleItemCount
+                    persistentDropSettle:
+                        dockLayout.persistentDropSettleIndex >= 0
+                        && recentContainer.persistentModelIndex
+                            === dockLayout.persistentDropSettleIndex
                     sectionBeingReordered: dockLayout.persistentDragMovesRecentApplications
                     configState: dockConfig
                     geometryState: dockGeometry
@@ -3854,6 +4061,11 @@ PlasmoidItem {
                         visible: !root.recentContainerVisible && index < root.visibleRecentApplicationCount
                         descriptor: root.recentApplications[index] || ({})
                         persistentReorderActive: dockLayout.persistentDragActive
+                        persistentReorderOffset:
+                            dockLayout.persistentDragOffsetFor(
+                                root.recentVisualIndex(index))
+                        persistentReorderOffsetMotionEnabled:
+                            dockLayout.persistentDragOffsetMotionEnabled
                         sectionBeingReordered: dockLayout.persistentDragMovesRecentApplications
                         configState: dockConfig
                         geometryState: dockGeometry
@@ -3879,16 +4091,31 @@ PlasmoidItem {
 
             }
 
-            DockReorderDragLayer {
-                id: dockReorderDragLayer
-                anchors.fill: parent
+            // The gesture itself is a platform drag session, like the native
+            // task manager: the compositor owns the icon, so it is never
+            // clipped by the panel surface. This area only echoes the drag
+            // position into the reorder state.
+            DropArea {
+                objectName: "dockReorderDropArea"
+                anchors.fill: dockLayout
                 z: 20
-                active: dockLayout.persistentDragActive
-                pointerPosition:
-                    dockLayout.persistentDragPointerPosition
-                iconName: dockLayout.persistentDragIconName
-                iconSize: dockGeometry.effectiveIconSize
-                motionEnabled: Kirigami.Units.longDuration > 0
+                keys: ["application/x-punchi-dock-item"]
+
+                onEntered: function(drag) {
+                    drag.accept(Qt.MoveAction)
+                    dockLayout.updatePersistentDragFromDock(drag.x, drag.y)
+                }
+                onPositionChanged: function(drag) {
+                    drag.accept(Qt.MoveAction)
+                    dockLayout.updatePersistentDragFromDock(drag.x, drag.y)
+                }
+                onDropped: function(drag) {
+                    if (drag.keys.indexOf("application/x-punchi-dock-item") < 0) {
+                        return
+                    }
+                    dockLayout.persistentDropAccepted = true
+                    drag.accept(Qt.MoveAction)
+                }
             }
         }
 

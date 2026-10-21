@@ -100,8 +100,35 @@ Item {
     property bool persistentReorderActive: false
     property bool persistentReorderSource: false
     property bool persistentReorderGroupMember: false
-    property bool persistentReorderTarget: false
-    property bool persistentReorderInsertAfter: false
+    // Main-axis distance, in pixels, that this delegate travels to preview the
+    // slot it will occupy when the dragged item is dropped.
+    property real persistentReorderOffset: 0
+    property bool persistentReorderOffsetMotionEnabled: false
+    property int persistentReorderPosition: 0
+    property int persistentReorderItemCount: 0
+    property bool persistentDropSettle: false
+    property real dropSettleScale: 1.0
+    property bool persistentReorderDragActive: false
+    property bool persistentReorderDragPending: false
+    property string persistentReorderDragImage: ""
+    property real persistentReorderPressX: 0
+    property real persistentReorderPressY: 0
+    // File URL of the launcher, so dropping on the desktop offers copy/link.
+    property string dragLauncherUrl: ""
+    readonly property var persistentReorderDragMimeData: {
+        const data = {
+            "application/x-punchi-dock-item":
+                String(dockItemContainer.persistentModelIndex)
+        }
+        if (dockItemContainer.dragLauncherUrl.length > 0) {
+            data["text/uri-list"] = dockItemContainer.dragLauncherUrl
+        }
+        return data
+    }
+    readonly property int persistentReorderDragThreshold:
+        dockItemContainer.layoutController
+            && dockItemContainer.layoutController.dragStartDistance > 0
+            ? dockItemContainer.layoutController.dragStartDistance : 10
     property int persistentModelIndex: -1
     property bool suppressClickAfterReorder: false
     property bool persistentReorderInteractionResetPending: false
@@ -628,8 +655,69 @@ Item {
         suppressClickAfterReorder = false
         resetSelectionPulse()
         keyboardFeedbackPressed = false
+        persistentReorderDragPending = false
+        persistentReorderDragImage = ""
+        persistentReorderDragActive = false
+        setRequestedInhibitDnd(false)
         persistentReorderInteractionResetPending = true
         persistentReorderInteractionResetTimer.restart()
+    }
+
+    // The drag icon belongs to the platform drag session, exactly like the
+    // native task manager, so the compositor draws it beyond the panel surface.
+    Drag.dragType: Drag.Automatic
+    // Applications carry a launcher URL, so the desktop can offer copy/link.
+    // Containers have no file representation yet: they only move inside the
+    // dock, and any other target rejects them, which is what makes the
+    // compositor show the "cannot drop" cursor.
+    Drag.supportedActions: dockItemContainer.dragLauncherUrl.length > 0
+        ? Qt.CopyAction | Qt.MoveAction | Qt.LinkAction : Qt.MoveAction
+    Drag.imageSource: dockItemContainer.persistentReorderDragImage
+    Drag.mimeData: dockItemContainer.persistentReorderDragMimeData
+    Drag.active: dockItemContainer.persistentReorderDragActive
+    Drag.onDragFinished: function(dropAction) {
+        const accepted = dropAction === Qt.MoveAction
+            && dockItemContainer.layoutController
+            && dockItemContainer.layoutController.persistentDropAccepted
+        dockItemContainer.persistentReorderDragActive = false
+        dockItemContainer.persistentReorderDragPending = false
+        dockItemContainer.persistentReorderDragImage = ""
+        dockItemContainer.setRequestedInhibitDnd(false)
+        if (accepted) {
+            dockItemContainer.persistentReorderFinished()
+        } else {
+            dockItemContainer.persistentReorderCanceled()
+        }
+    }
+
+    function setRequestedInhibitDnd(value) {
+        // The panel containment (another package) owns this property; probe it
+        // dynamically instead of assuming a type.
+        const inhibitKey = "appletRequestsInhibitDnD"
+        let ancestor = dockItemContainer.parent
+        while (ancestor) {
+            if (ancestor[inhibitKey] !== undefined) {
+                ancestor[inhibitKey] = value
+            }
+            ancestor = ancestor.parent
+        }
+    }
+
+    function beginPersistentReorderDrag() {
+        if (dockItemContainer.persistentReorderDragActive
+                || dockItemContainer.persistentReorderDragPending) {
+            return
+        }
+        dockItemContainer.persistentReorderDragPending = true
+        dockItemContainer.setRequestedInhibitDnd(true)
+        itemIcon.grabToImage(function(result) {
+            if (!dockItemContainer.persistentReorderDragPending
+                    || !dockItemContainer.persistentReorderSource) {
+                return
+            }
+            dockItemContainer.persistentReorderDragImage = result.url
+            dockItemContainer.persistentReorderDragActive = true
+        }, Qt.size(dockItemContainer.iconSize, dockItemContainer.iconSize))
     }
 
     function validateLauncherDrop(urls) {
@@ -796,11 +884,74 @@ Item {
     // what removes the gap left by a hidden dynamic-applications separator.
     visible: !dockItemContainer.dynamicApplicationsMarkerCollapsed
     opacity: dockItemContainer.entryOpacity
-        * ((dockItemContainer.persistentReorderSource
-            || dockItemContainer.persistentReorderGroupMember) ? 0.28 : 1.0)
+        * (dockItemContainer.persistentReorderGroupMember ? 0.5 : 1.0)
+        * (dockItemContainer.persistentReorderActive
+            && !dockItemContainer.persistentReorderSource
+            && !dockItemContainer.persistentReorderGroupMember ? 0.9 : 1.0)
+
+    // The previewed slot travels instead of the layout, so reordering never
+    // reflows the GridLayout while the pointer moves.
+    transform: [
+        Translate {
+            x: dockItemContainer.verticalPanelMode
+                ? 0 : dockItemContainer.persistentReorderOffset
+            y: dockItemContainer.verticalPanelMode
+                ? dockItemContainer.persistentReorderOffset : 0
+        },
+        Scale {
+            origin.x: dockItemContainer.width / 2
+            origin.y: dockItemContainer.height / 2
+            xScale: dockItemContainer.dropSettleScale
+            yScale: dockItemContainer.dropSettleScale
+        }
+    ]
+
+    Behavior on persistentReorderOffset {
+        enabled: dockItemContainer.persistentReorderOffsetMotionEnabled
+            && Kirigami.Units.longDuration > 0
+        NumberAnimation {
+            duration: dockItemContainer.dockMotionDuration
+            easing.type: Easing.InOutCubic
+        }
+    }
+
+    function playDropSettle() {
+        if (Kirigami.Units.longDuration <= 0 || !dockItemContainer.visible) {
+            return
+        }
+        dropSettleAnimation.restart()
+    }
+
+    onPersistentDropSettleChanged: {
+        if (persistentDropSettle) {
+            dockItemContainer.playDropSettle()
+        }
+    }
+
+    SequentialAnimation {
+        id: dropSettleAnimation
+        NumberAnimation {
+            target: dockItemContainer
+            property: "dropSettleScale"
+            to: 1.035
+            duration: Math.max(1, Math.round(
+                dockItemContainer.dockMotionDuration * 0.45))
+            easing.type: Easing.OutCubic
+        }
+        NumberAnimation {
+            target: dockItemContainer
+            property: "dropSettleScale"
+            to: 1.0
+            duration: Math.max(1, Math.round(
+                dockItemContainer.dockMotionDuration * 0.55))
+            easing.type: Easing.InOutCubic
+        }
+    }
 
     Behavior on x {
         enabled: dockItemContainer.positionAnimationReady
+            && !(dockItemContainer.layoutController
+                && dockItemContainer.layoutController.persistentDragSettleInstant)
             && (dockItemContainer.positionTransitionEnabled
                 || (dockItemContainer.layoutController
                     && (dockItemContainer.layoutController.mediaMorphActive
@@ -814,6 +965,8 @@ Item {
 
     Behavior on y {
         enabled: dockItemContainer.positionAnimationReady
+            && !(dockItemContainer.layoutController
+                && dockItemContainer.layoutController.persistentDragSettleInstant)
             && (dockItemContainer.positionTransitionEnabled
                 || (dockItemContainer.layoutController
                     && (dockItemContainer.layoutController.mediaMorphActive
@@ -838,6 +991,9 @@ Item {
             dockItemContainer.positionAnimationReady = true
             dockItemContainer.taskMinimizedTrackingReady = true
         })
+        if (dockItemContainer.persistentDropSettle) {
+            Qt.callLater(dockItemContainer.playDropSettle)
+        }
     }
 
     Component.onDestruction: {
@@ -917,28 +1073,6 @@ Item {
             pressed: mouseArea.pressed
             motionEnabled: Kirigami.Units.longDuration > 0
         }
-    }
-
-    Rectangle {
-        id: persistentReorderInsertionIndicator
-        z: 9
-        visible: dockItemContainer.persistentReorderTarget
-        radius: Math.min(width, height) / 2
-        color: Kirigami.Theme.highlightColor
-        width: dockItemContainer.verticalPanelMode
-            ? Math.max(12, dockItemContainer.width * 0.72)
-            : Math.max(3, Math.round(Kirigami.Units.smallSpacing / 2))
-        height: dockItemContainer.verticalPanelMode
-            ? Math.max(3, Math.round(Kirigami.Units.smallSpacing / 2))
-            : Math.max(12, dockItemContainer.height * 0.72)
-        x: dockItemContainer.verticalPanelMode
-            ? Math.round((dockItemContainer.width - width) / 2)
-            : (dockItemContainer.persistentReorderInsertAfter
-                ? dockItemContainer.width - width / 2 : -width / 2)
-        y: dockItemContainer.verticalPanelMode
-            ? (dockItemContainer.persistentReorderInsertAfter
-                ? dockItemContainer.height - height / 2 : -height / 2)
-            : Math.round((dockItemContainer.height - height) / 2)
     }
 
     Item {
@@ -1527,9 +1661,17 @@ Item {
             if (dockItemContainer.externalDropRejected) {
                 return i18nc("@info:accessible", "This file drop cannot be accepted")
             }
+            if (dockItemContainer.persistentReorderSource
+                    && dockItemContainer.persistentReorderPosition > 0
+                    && dockItemContainer.persistentReorderItemCount > 0) {
+                return i18nc("@info:accessible",
+                    "Moving Dock item. Drop to place it at position %1 of %2.",
+                    dockItemContainer.persistentReorderPosition,
+                    dockItemContainer.persistentReorderItemCount)
+            }
             if (dockItemContainer.persistentPointerReorderEnabled) {
                 return i18nc("@info:accessible",
-                    "Press and hold to move this Dock item. Use Control+Shift with an arrow key to move it from the keyboard.")
+                    "Drag to move this Dock item. Use Control+Shift with an arrow key to move it from the keyboard.")
             }
             if (dockItemContainer.persistentReorderEnabled) {
                 return i18nc("@info:accessible",
@@ -1586,8 +1728,22 @@ Item {
         }
         
         onPositionChanged: function(mouse) {
-            if (dockItemContainer.persistentReorderSource && pressed) {
-                dockItemContainer.persistentReorderMoved(mouse.x, mouse.y)
+            if (pressed && dockItemContainer.persistentPointerReorderEnabled
+                    && !dockItemContainer.persistentDirectReorderEnabled
+                    && !dockItemContainer.persistentReorderActive) {
+                const deltaX = mouse.x - dockItemContainer.persistentReorderPressX
+                const deltaY = mouse.y - dockItemContainer.persistentReorderPressY
+                const threshold = dockItemContainer.persistentReorderDragThreshold
+                if (deltaX * deltaX + deltaY * deltaY
+                        >= threshold * threshold) {
+                    dockItemContainer.persistentReorderStarted(
+                        dockItemContainer.persistentModelIndex,
+                        dockItemContainer)
+                    if (dockItemContainer.persistentReorderSource) {
+                        dockItemContainer.suppressClickAfterReorder = true
+                        dockItemContainer.beginPersistentReorderDrag()
+                    }
+                }
             }
             if (dockItemContainer.separatorItem || dockItemContainer.spacerItem || dockItemContainer.itemType === "calendar") {
                 return
@@ -1610,13 +1766,15 @@ Item {
                     dockItemContainer.suppressClickAfterReorder = true
                     mouse.accepted = true
                     mouseArea.forceActiveFocus(Qt.MouseFocusReason)
-                    dockItemContainer.persistentReorderMoved(mouse.x, mouse.y)
+                    dockItemContainer.beginPersistentReorderDrag()
                 }
                 return
             }
             if (mouse.button === Qt.LeftButton
                     && dockItemContainer.persistentPointerReorderEnabled
                     && !dockItemContainer.persistentReorderActive) {
+                dockItemContainer.persistentReorderPressX = mouse.x
+                dockItemContainer.persistentReorderPressY = mouse.y
                 dockItemContainer.persistentReorderPressStarted(
                     dockItemContainer)
             }
@@ -1625,33 +1783,32 @@ Item {
             }
         }
 
-        onPressAndHold: function(mouse) {
-            if (mouse.button !== Qt.LeftButton
-                    || dockItemContainer.persistentDirectReorderEnabled
-                    || !dockItemContainer.persistentPointerReorderEnabled
-                    || dockItemContainer.persistentReorderActive) {
+        onReleased: {
+            if (!dockItemContainer.persistentReorderSource) {
                 return
             }
-            dockItemContainer.persistentReorderStarted(
-                dockItemContainer.persistentModelIndex, dockItemContainer)
-            if (dockItemContainer.persistentReorderSource) {
-                dockItemContainer.suppressClickAfterReorder = true
-                mouse.accepted = true
-                mouseArea.forceActiveFocus(Qt.MouseFocusReason)
-                dockItemContainer.persistentReorderMoved(mouse.x, mouse.y)
+            // An active drag session owns the gesture and reports its result
+            // through Drag.onDragFinished.
+            if (dockItemContainer.persistentReorderDragActive) {
+                return
             }
-        }
-
-        onReleased: {
-            if (dockItemContainer.persistentReorderSource) {
-                dockItemContainer.persistentReorderFinished()
+            if (dockItemContainer.persistentReorderDragPending) {
+                dockItemContainer.persistentReorderDragPending = false
+                dockItemContainer.setRequestedInhibitDnd(false)
+                dockItemContainer.persistentReorderCanceled()
+                return
             }
+            dockItemContainer.persistentReorderFinished()
         }
 
         onCanceled: {
-            if (dockItemContainer.persistentReorderSource) {
-                dockItemContainer.persistentReorderCanceled()
+            if (!dockItemContainer.persistentReorderSource
+                    || dockItemContainer.persistentReorderDragActive) {
+                return
             }
+            dockItemContainer.persistentReorderDragPending = false
+            dockItemContainer.setRequestedInhibitDnd(false)
+            dockItemContainer.persistentReorderCanceled()
         }
         
         onClicked: function(mouse) {

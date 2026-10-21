@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.7.80\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7.78\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-21 14:23-0300\n"
+"POT-Creation-Date: 2026-10-21 17:52-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: German\n"
@@ -179,13 +179,13 @@ msgctxt "@info:media"
 msgid "%1 is not running"
 msgstr "%1 wird nicht ausgeführt"
 
-#: contents/ui/components/DockItem.qml:1500
+#: contents/ui/components/DockItem.qml:1634
 msgctxt "@info:accessible"
 msgid "%1 is now in front; release to open the local files"
 msgstr ""
 "%1 ist jetzt im Vordergrund; loslassen, um die lokalen Dateien zu öffnen"
 
-#: contents/ui/components/DockItem.qml:1524
+#: contents/ui/components/DockItem.qml:1658
 msgctxt "@info:accessible"
 msgid "%1 is updated automatically and cannot accept applications"
 msgstr "%1 wird automatisch aktualisiert und kann keine Anwendungen aufnehmen"
@@ -231,7 +231,7 @@ msgid_plural "%1 more in %2"
 msgstr[0] "%1 weitere in %2"
 msgstr[1] "%1 weitere in %2"
 
-#: contents/ui/main.qml:3766
+#: contents/ui/main.qml:3965
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 weitere Fenstergruppe"
@@ -250,14 +250,14 @@ msgstr "%1 von %2 Zeichen"
 msgid "%1 of %2 items"
 msgstr "%1 von %2 Artikeln"
 
-#: contents/ui/components/DockItem.qml:1546
+#: contents/ui/components/DockItem.qml:1688
 #: contents/ui/components/TaskOverflowPopup.qml:111
 msgid "%1 open window"
 msgid_plural "%1 open windows"
 msgstr[0] "%1 Fenster öffnen"
 msgstr[1] "%1 Fenster öffnen"
 
-#: contents/ui/components/DockItem.qml:1542
+#: contents/ui/components/DockItem.qml:1684
 msgid "%1 open window. Press M to open media controls."
 msgid_plural "%1 open windows. Press M to open media controls."
 msgstr[0] ""
@@ -738,7 +738,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Eine Desktop-Verknüpfung für %1 wurde erstellt."
 
-#: contents/ui/main.qml:2268
+#: contents/ui/main.qml:2276
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr "Ein Dateipfad ist zu lang, um ihn sicher zu öffnen."
@@ -1083,8 +1083,8 @@ msgstr "Erscheinungsbild:"
 msgid "Applets only"
 msgstr "Nur Miniprogramme"
 
-#: contents/ui/components/DockItem.qml:1511
-#: contents/ui/components/DockItem.qml:1518
+#: contents/ui/components/DockItem.qml:1645
+#: contents/ui/components/DockItem.qml:1652
 #: contents/ui/components/DockItemsController.qml:904
 #: contents/ui/components/FolderFanView.qml:846
 #: contents/ui/components/FolderPopup.qml:1052
@@ -2585,11 +2585,10 @@ msgstr "Deaktiviert"
 
 #: contents/ui/config/ConfigMouse.qml:269
 msgid ""
-"Disabled by default because Plasma uses press and hold to enter widget "
-"editing in floating mode."
+"Disabled by default because dragging in floating mode also moves the widget."
 msgstr ""
-"Standardmäßig deaktiviert, da Plasma durch Gedrückthalten im schwebenden "
-"Modus die Widget-Bearbeitung öffnet."
+"Standardmäßig deaktiviert, weil Ziehen im schwebenden Modus auch das Widget "
+"verschiebt."
 
 #: contents/ui/config/ConfigAspect.qml:950
 msgid "Disables the active-window indicator entirely."
@@ -2733,7 +2732,7 @@ msgstr "Double line"
 msgid "Drag files"
 msgstr "Dateien ziehen"
 
-#: contents/ui/components/DockItem.qml:1493
+#: contents/ui/components/DockItem.qml:1627
 msgctxt "@info:accessible"
 msgid ""
 "Drag to move the open applications section. Use an arrow key to move it one "
@@ -2742,6 +2741,15 @@ msgstr ""
 "Ziehen Sie, um den Bereich für offene Anwendungen zu verschieben. "
 "Verschieben Sie ihn mit einer Pfeiltaste um eine Position oder brechen Sie "
 "mit Escape ab."
+
+#: contents/ui/components/DockItem.qml:1674
+msgctxt "@info:accessible"
+msgid ""
+"Drag to move this Dock item. Use Control+Shift with an arrow key to move it "
+"from the keyboard."
+msgstr ""
+"Ziehen, um dieses Dock-Element zu verschieben. Mit Strg+Umschalt und einer "
+"Pfeiltaste lässt es sich über die Tastatur verschieben."
 
 #: contents/ui/components/controlcenter/ControlCenterBluetoothDelegate.qml:75
 msgctxt "@info:status Bluetooth device type"
@@ -2846,13 +2854,13 @@ msgctxt "@option:check"
 msgid "Enable background blur (BlurBehind)"
 msgstr "Hintergrundunschärfe aktivieren (BlurBehind)"
 
+#: contents/ui/config/ConfigMouse.qml:262
+msgid "Enable drag-to-reorder items"
+msgstr "Neuordnen per Ziehen aktivieren"
+
 #: contents/ui/config/ConfigMouse.qml:242
 msgid "Enable file drag and drop onto application icons"
 msgstr "Dateien auf Anwendungssymbole ziehen und dort ablegen"
-
-#: contents/ui/config/ConfigMouse.qml:262
-msgid "Enable press-and-hold item reordering"
-msgstr "Neuanordnung von Elementen durch Gedrückthalten aktivieren"
 
 #: contents/ui/config/ConfigItems.qml:1083
 #: contents/ui/config/ItemConfigurationDialog.qml:784
@@ -3834,7 +3842,7 @@ msgctxt "@action:button"
 msgid "Keep editing"
 msgstr "Weiter bearbeiten"
 
-#: contents/ui/components/DockItem.qml:1496
+#: contents/ui/components/DockItem.qml:1630
 msgctxt "@info:accessible"
 msgid "Keep holding to bring %1 to the front"
 msgstr "Weiter gedrückt halten, um %1 in den Vordergrund zu bringen"
@@ -4392,6 +4400,12 @@ msgstr "In einen Ordner verschieben"
 msgid "Move “%1” to the Trash…"
 msgstr "„%1“ in den Papierkorb verschieben…"
 
+#: contents/ui/components/DockItem.qml:1668
+msgctxt "@info:accessible"
+msgid "Moving Dock item. Drop to place it at position %1 of %2."
+msgstr ""
+"Dock-Element wird verschoben. Zum Ablegen an Position %1 von %2 loslassen."
+
 #: contents/ui/config/ConfigAspect.qml:776
 msgid "Moving themes to the Trash…"
 msgstr "Designs werden in den Papierkorb verschoben…"
@@ -4571,7 +4585,7 @@ msgstr ""
 "Es wurden keine installierten Multimedia-Anwendungen gefunden. Die "
 "automatische Auswahl bleibt verfügbar."
 
-#: contents/ui/main.qml:2254
+#: contents/ui/main.qml:2262
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "In diesem Ablegevorgang wurden keine lokalen Dateien gefunden."
@@ -4590,7 +4604,7 @@ msgctxt "@info"
 msgid "No notifications"
 msgstr "Keine Benachrichtigungen"
 
-#: src/dockruntimeservice.cpp:122
+#: src/dockruntimeservice.cpp:130
 msgid "No sound player or usable sound was found."
 msgstr "Es wurde kein Soundplayer oder brauchbarer Sound gefunden."
 
@@ -4760,7 +4774,7 @@ msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 "Gilt nur, wenn dieses Dock-Element eine geschlossene Anwendung startet."
 
-#: contents/ui/main.qml:2265
+#: contents/ui/main.qml:2273
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Mit einer Anwendung können nur lokale Dateien geöffnet werden."
@@ -5302,19 +5316,10 @@ msgstr "Darstellung:"
 msgid "Press"
 msgstr "Drücken Sie"
 
-#: contents/ui/components/DockItem.qml:1550
+#: contents/ui/components/DockItem.qml:1692
 msgctxt "@info:accessible"
 msgid "Press M to open media controls"
 msgstr "Drücken Sie M, um die Mediensteuerung zu öffnen"
-
-#: contents/ui/components/DockItem.qml:1532
-msgctxt "@info:accessible"
-msgid ""
-"Press and hold to move this Dock item. Use Control+Shift with an arrow key "
-"to move it from the keyboard."
-msgstr ""
-"Gedrückt halten, um dieses Dock-Element zu verschieben. Mit Strg+Umschalt "
-"und einer Pfeiltaste kann es per Tastatur verschoben werden."
 
 #: contents/ui/config/ConfigPopups.qml:340
 msgid "Preview information:"
@@ -5532,17 +5537,17 @@ msgstr "Reflexionsopazität:"
 msgid "Reflection:"
 msgstr "Reflexion:"
 
-#: contents/ui/components/DockItem.qml:1515
+#: contents/ui/components/DockItem.qml:1649
 msgctxt "@info:accessible"
 msgid "Release to add %1 to %2"
 msgstr "Loslassen, um %1 zu %2 hinzuzufügen"
 
-#: contents/ui/components/DockItem.qml:1508
+#: contents/ui/components/DockItem.qml:1642
 msgctxt "@info:accessible"
 msgid "Release to insert %1 in the Dock"
 msgstr "Loslassen, um %1 in das Dock einzufügen"
 
-#: contents/ui/components/DockItem.qml:1504
+#: contents/ui/components/DockItem.qml:1638
 msgctxt "@info:accessible"
 msgid "Release to open local files with %1"
 msgstr "Loslassen, um lokale Dateien mit %1 zu öffnen"
@@ -6368,7 +6373,7 @@ msgstr ""
 "Die Menge gilt für die Beschriftungen der Ordner-Popups. Null entfernt den "
 "Schatten vollständig, sodass der Text nur seine Fläche hinter sich behält."
 
-#: src/systemdiscovery.cpp:1128
+#: src/systemdiscovery.cpp:1135
 msgid "The application action could not be found."
 msgstr "Die Anwendungsaktion konnte nicht gefunden werden."
 
@@ -6377,7 +6382,7 @@ msgctxt "@info:status"
 msgid "The application could not be added to the container."
 msgstr "Die Anwendung konnte dem Container nicht hinzugefügt werden."
 
-#: src/systemdiscovery.cpp:1019
+#: src/systemdiscovery.cpp:1026
 msgid "The application could not be found."
 msgstr "Die Anwendung konnte nicht gefunden werden."
 
@@ -6426,15 +6431,15 @@ msgstr ""
 "Das Abzeichen wird ab zwei gruppierten Fenstern angezeigt und ausgeblendet, "
 "wenn die Fenstergruppierung deaktiviert ist."
 
-#: src/dockruntimeservice.cpp:89
+#: src/dockruntimeservice.cpp:97
 msgid "The command could not be started."
 msgstr "Der Befehl konnte nicht gestartet werden."
 
-#: src/dockruntimeservice.cpp:62
+#: src/dockruntimeservice.cpp:70
 msgid "The configuration directory could not be created."
 msgstr "Das Konfigurationsverzeichnis konnte nicht erstellt werden."
 
-#: src/dockruntimeservice.cpp:56
+#: src/dockruntimeservice.cpp:64
 msgid "The configuration directory is unavailable."
 msgstr "Das Konfigurationsverzeichnis ist nicht verfügbar."
 
@@ -6472,7 +6477,7 @@ msgid "The dock configuration contains too many items. The maximum is %1."
 msgstr ""
 "Die Dockkonfiguration enthält zu viele Elemente. Das Maximum beträgt %1."
 
-#: src/dockruntimeservice.cpp:50
+#: src/dockruntimeservice.cpp:58
 msgid "The dock configuration is too large."
 msgstr "Die Dockkonfiguration ist zu groß."
 
@@ -6492,17 +6497,17 @@ msgstr ""
 "Das Dock-Design steuert diesen Trenner. Wählen Sie „Dieser Trenner“, um sein "
 "Erscheinungsbild hier zu bearbeiten."
 
-#: contents/ui/main.qml:2262
+#: contents/ui/main.qml:2270
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "Der Ablegevorgang enthält einen ungültigen lokalen Dateipfad."
 
-#: contents/ui/main.qml:2271
+#: contents/ui/main.qml:2279
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr "Die Liste der abgelegten Dateien ist zu groß, um sie sicher zu öffnen."
 
-#: contents/ui/main.qml:2276
+#: contents/ui/main.qml:2284
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Die abgelegten Dateien konnten nicht geöffnet werden."
@@ -6541,7 +6546,7 @@ msgid "The folder change could not be applied. Please try again."
 msgstr ""
 "Die Ordneränderung konnte nicht angewendet werden. Versuchen Sie es erneut."
 
-#: src/systemdiscovery.cpp:565 src/systemdiscovery.cpp:1194
+#: src/systemdiscovery.cpp:565 src/systemdiscovery.cpp:1201
 msgid "The folder location is invalid."
 msgstr "Der Ordnerspeicherort ist ungültig."
 
@@ -6711,7 +6716,7 @@ msgstr "Dünn"
 msgid "This action cannot be undone."
 msgstr "Diese Aktion kann nicht rückgängig gemacht werden."
 
-#: contents/ui/main.qml:2274
+#: contents/ui/main.qml:2282
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -6723,7 +6728,7 @@ msgctxt "@info:status"
 msgid "This application could not be resolved safely."
 msgstr "Diese Anwendung konnte nicht sicher aufgelöst werden."
 
-#: contents/ui/components/DockItem.qml:1528
+#: contents/ui/components/DockItem.qml:1662
 msgctxt "@info:accessible"
 msgid "This file drop cannot be accepted"
 msgstr "Dieser Datei-Ablegevorgang kann nicht angenommen werden"
@@ -7215,7 +7220,7 @@ msgctxt "@action:button %1 is an audio device name"
 msgid "Use %1 as the default device"
 msgstr "%1 als Standardgerät verwenden"
 
-#: contents/ui/components/DockItem.qml:1536
+#: contents/ui/components/DockItem.qml:1678
 msgctxt "@info:accessible"
 msgid "Use Control+Shift with an arrow key to move this Dock item."
 msgstr ""
@@ -7523,7 +7528,7 @@ msgstr "Schreiben Sie eine schnell bearbeitbare Notiz"
 msgid "Write a quick note"
 msgstr "Schreiben Sie eine kurze Notiz"
 
-#: contents/ui/main.qml:2258
+#: contents/ui/main.qml:2266
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Sie können bis zu %1 lokale Dateien gleichzeitig öffnen."

@@ -700,6 +700,13 @@ QVariantMap SystemDiscovery::resolveApplication(const QString &storageId, const 
     return resolveApplicationService(storageId, command, launcherUrl);
 }
 
+QString SystemDiscovery::desktopFileUrl(const QString &storageId, const QString &command) const
+{
+    const QVariantMap resolution = resolveApplicationService(storageId, command, {});
+    const QString entryPath = resolution.value(QStringLiteral("desktopFilePath")).toString();
+    return entryPath.isEmpty() ? QString() : QUrl::fromLocalFile(entryPath).toString();
+}
+
 QVariantList SystemDiscovery::applicationActions(const QString &applicationId) const
 {
     QVariantList result;

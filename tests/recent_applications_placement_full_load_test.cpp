@@ -239,38 +239,27 @@ private Q_SLOTS:
             QVERIFY(QMetaObject::invokeMethod(container, "persistentReorderMoved", Q_ARG(qreal, -10000), Q_ARG(qreal, -10000)));
             QVERIFY(QMetaObject::invokeMethod(container, "persistentReorderFinished"));
             QTRY_VERIFY(root->property("recentApplicationsMarkerIndex").toInt() < 3);
-            // Exercise MouseArea, including the source-state binding that
-            // direct signal invocation cannot validate.
+            // The gesture is a platform drag session now, which a test cannot
+            // simulate; drive the same contract through the reorder signals.
             QVERIFY(move(root->property("recentApplicationsMarkerIndex").toInt(), 3));
             QTRY_COMPARE(root->property("recentApplicationsMarkerIndex").toInt(), 3);
             QTest::qWait(100);
-            QPoint pressPoint = container->mapToScene(
-                QPointF(container->width() / 2, container->height() / 2)).toPoint();
-            QTest::mouseMove(&window, pressPoint);
-            QTest::qWait(250);
-            pressPoint = container->mapToScene(
-                QPointF(container->width() / 2, container->height() / 2)).toPoint();
-            QTest::mouseMove(&window, pressPoint);
-            QTest::mousePress(&window, Qt::LeftButton, Qt::NoModifier, pressPoint);
-            QVERIFY(window.mouseGrabberItem());
-            QCOMPARE(window.mouseGrabberItem()->parentItem(), container);
-            QTest::qWait(QGuiApplication::styleHints()->mousePressAndHoldInterval() + 100);
+            auto *layout = container->property("layoutController").value<QObject *>();
+            QVERIFY(layout);
+            QVERIFY(QMetaObject::invokeMethod(container, "persistentReorderPressStarted",
+                Q_ARG(QVariant, QVariant::fromValue<QObject *>(container))));
+            QVERIFY(QMetaObject::invokeMethod(container, "persistentReorderStarted",
+                Q_ARG(int, root->property("recentApplicationsMarkerIndex").toInt()),
+                Q_ARG(QVariant, QVariant::fromValue<QObject *>(container))));
             QTRY_VERIFY(container->property("persistentReorderSource").toBool());
             QVERIFY(container->property("persistentReorderActive").toBool());
             QVERIFY(!container->property("showAnyTooltip").toBool());
-            auto *layout = container->property("layoutController").value<QObject *>();
-            QVERIFY(layout);
             QCOMPARE(layout->property("persistentDragIconName").toString(),
                 container->property("iconName").toString());
-            const QPointF initialPointer = layout->property("persistentDragPointerPosition").toPointF();
-            QVERIFY(initialPointer != QPointF());
-            const QPoint dropPoint = container->mapToScene(vertical
-                ? QPointF(container->width() / 2, -container->y() + 1)
-                : QPointF(-container->x() + 1, container->height() / 2)).toPoint();
-            QTest::mouseMove(&window, dropPoint);
+            QVERIFY(QMetaObject::invokeMethod(container, "persistentReorderMoved",
+                Q_ARG(qreal, -10000), Q_ARG(qreal, -10000)));
             QTRY_COMPARE(layout->property("persistentDragTargetIndex").toInt(), 0);
-            QVERIFY(layout->property("persistentDragPointerPosition").toPointF() != initialPointer);
-            QTest::mouseRelease(&window, Qt::LeftButton, Qt::NoModifier, dropPoint);
+            QVERIFY(QMetaObject::invokeMethod(container, "persistentReorderFinished"));
             QTRY_VERIFY(!container->property("persistentReorderActive").toBool());
             QVERIFY(!container->property("persistentReorderSource").toBool());
             QTRY_COMPARE(root->property("recentApplicationsMarkerIndex").toInt(), 0);

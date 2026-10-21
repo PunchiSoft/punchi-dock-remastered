@@ -229,6 +229,7 @@ struct LoadResult {
     bool dynamicMoveRequestAccepted = false;
     bool dynamicMoveModeActivated = false;
     bool panelRevealAdapterAvailable = false;
+    bool dynamicMoveModeSettled = false;
     bool panelRevealActivated = false;
     bool panelRevealRestored = false;
     bool panelRevealPreservedExternalStatus = false;
@@ -359,6 +360,8 @@ private Q_SLOTS:
                      "The open-applications move request was rejected");
             QVERIFY2(result.dynamicMoveModeActivated,
                      "The open-applications move mode did not activate after the popup turn");
+            QVERIFY2(result.dynamicMoveModeSettled,
+                     "The open-applications move mode could not be settled");
             QVERIFY2(result.panelRevealAdapterAvailable,
                      "The panel reveal adapter is unavailable from the applet root");
             QVERIFY2(result.panelRevealActivated,
@@ -681,6 +684,17 @@ private:
                         result.dynamicMoveModeActivated = representationObject
                             ->property("dynamicApplicationsMoveModeActive")
                             .toBool();
+                        // A move gesture holds the panel visible through the
+                        // same lease as configuring, so settle it before the
+                        // reveal assertions.
+                        QVariant cancelled;
+                        const bool cancelInvoked = QMetaObject::invokeMethod(
+                            representationObject,
+                            "cancelDynamicApplicationsMoveMode",
+                            Q_RETURN_ARG(QVariant, cancelled));
+                        result.dynamicMoveModeSettled = cancelInvoked
+                            && cancelled.toBool();
+                        drainDeferredEvents();
                     }
 
                     QObject *panelRevealAdapter = rootObject
