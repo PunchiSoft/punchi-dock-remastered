@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.7.78\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7.79\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-21 13:08-0300\n"
+"POT-Creation-Date: 2026-10-21 13:43-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -201,10 +201,12 @@ msgid_plural "%1 more"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/components/DockContextActionsController.qml:166
+#: contents/ui/components/DockContextActionsController.qml:188
 msgctxt "@action:context"
-msgid "%1 more Places…"
-msgstr ""
+msgid "%1 more Place…"
+msgid_plural "%1 more Places…"
+msgstr[0] ""
+msgstr[1] ""
 
 #: contents/ui/components/FolderFanView.qml:1114
 msgid "%1 more entry is not shown"
@@ -219,7 +221,7 @@ msgid_plural "%1 more in %2"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/main.qml:3759
+#: contents/ui/main.qml:3766
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] ""
@@ -678,6 +680,11 @@ msgstr ""
 #: contents/ui/config/ConfigItems.qml:1087
 #: contents/ui/config/ItemConfigurationDialog.qml:788
 msgid "Action name:"
+msgstr ""
+
+#: contents/ui/components/DockContextActionsController.qml:721
+msgctxt "@title:group for section of menu items"
+msgid "Actions"
 msgstr ""
 
 #: contents/ui/components/WindowPreviewCard.qml:66
@@ -1276,15 +1283,15 @@ msgctxt "@action:button"
 msgid "Back to Control Center"
 msgstr ""
 
-#: contents/ui/components/AppActionsPopup.qml:58
+#: contents/ui/components/AppActionsPopup.qml:59
 msgid "Back to media controls"
 msgstr ""
 
-#: contents/ui/components/AppActionsPopup.qml:56
+#: contents/ui/components/AppActionsPopup.qml:57
 msgid "Back to menu"
 msgstr ""
 
-#: contents/ui/components/AppActionsPopup.qml:59
+#: contents/ui/components/AppActionsPopup.qml:60
 msgid "Back to window previews"
 msgstr ""
 
@@ -1870,7 +1877,7 @@ msgctxt "@option:media-display-mode"
 msgid "Compact"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:394
+#: contents/ui/components/DockContextActionsController.qml:407
 #: contents/ui/config/PunchiMenuOptionsPanel.qml:45
 msgctxt "@option:punchimenu-mode"
 msgid "Compact"
@@ -1913,9 +1920,9 @@ msgctxt "@action:button"
 msgid "Configure Night Light"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:102
-#: contents/ui/components/DockContextActionsController.qml:692
-#: contents/ui/components/DockContextActionsController.qml:714
+#: contents/ui/components/DockContextActionsController.qml:123
+#: contents/ui/components/DockContextActionsController.qml:762
+#: contents/ui/components/DockContextActionsController.qml:784
 msgctxt "@action:context"
 msgid "Configure Punchi Dock…"
 msgstr ""
@@ -2052,7 +2059,7 @@ msgstr ""
 msgid "Container applications"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:479
+#: contents/ui/components/DockContextActionsController.qml:492
 msgctxt "@title:menu"
 msgid "Container view"
 msgstr ""
@@ -2211,7 +2218,7 @@ msgctxt "@item:inlistbox Context menu size"
 msgid "Custom"
 msgstr ""
 
-#: contents/ui/components/AppActionsPopup.qml:327
+#: contents/ui/components/AppActionsPopup.qml:407
 msgid "Custom action"
 msgstr ""
 
@@ -2240,12 +2247,12 @@ msgstr ""
 msgid "Custom width:"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:538
+#: contents/ui/components/DockContextActionsController.qml:551
 msgctxt "@item:inmenu folder sort mode"
 msgid "Date Created"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:527
+#: contents/ui/components/DockContextActionsController.qml:540
 msgctxt "@item:inmenu folder sort mode"
 msgid "Date Modified"
 msgstr ""
@@ -2319,7 +2326,7 @@ msgstr ""
 msgid "Detailed"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:452
+#: contents/ui/components/DockContextActionsController.qml:465
 #: contents/ui/config/components/RecentApplicationsSettings.qml:26
 #: contents/ui/config/ConfigFolderPopups.qml:115
 msgctxt "@item:inlistbox Folder popup layout"
@@ -2367,7 +2374,7 @@ msgctxt "@item:inlistbox Separator shape"
 msgid "Diamond"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:575
+#: contents/ui/components/DockContextActionsController.qml:588
 msgctxt "@action:context"
 msgid "Disable recent applications"
 msgstr ""
@@ -2838,7 +2845,7 @@ msgstr ""
 msgid "Failed to read file."
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:465
+#: contents/ui/components/DockContextActionsController.qml:478
 #: contents/ui/config/components/ActionDialog.qml:79
 #: contents/ui/config/components/RecentApplicationsSettings.qml:27
 #: contents/ui/config/ConfigFolderPopups.qml:116
@@ -2889,7 +2896,7 @@ msgstr ""
 msgid "Fit content (Recommended)"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:64
+#: contents/ui/components/DockContextActionsController.qml:85
 #: contents/ui/config/ControlCenterOptionsPanel.qml:38
 msgctxt "@option:control-center-mode"
 msgid "Floating"
@@ -2993,7 +3000,7 @@ msgstr ""
 msgid "Folder popups"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:418
+#: contents/ui/components/DockContextActionsController.qml:431
 msgctxt "@title:menu"
 msgid "Folder view"
 msgstr ""
@@ -3052,7 +3059,7 @@ msgctxt "@option:check"
 msgid "Force mute all playback devices"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:200
+#: contents/ui/components/DockContextActionsController.qml:219
 msgctxt "@action:context"
 msgid "Forget Recent Files"
 msgstr ""
@@ -3098,13 +3105,13 @@ msgstr ""
 msgid "Full screen"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:65
+#: contents/ui/components/DockContextActionsController.qml:86
 #: contents/ui/config/ControlCenterOptionsPanel.qml:34
 msgctxt "@option:control-center-mode"
 msgid "Full screen"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:382
+#: contents/ui/components/DockContextActionsController.qml:395
 #: contents/ui/config/PunchiMenuOptionsPanel.qml:35
 msgctxt "@option:punchimenu-mode"
 msgid "Full screen"
@@ -3163,7 +3170,7 @@ msgstr ""
 msgid "Grid"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:426
+#: contents/ui/components/DockContextActionsController.qml:439
 #: contents/ui/config/components/RecentApplicationsSettings.qml:24
 #: contents/ui/config/ConfigFolderPopups.qml:113
 msgctxt "@item:inlistbox Folder popup layout"
@@ -3675,7 +3682,7 @@ msgstr ""
 msgid "List"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:439
+#: contents/ui/components/DockContextActionsController.qml:452
 #: contents/ui/config/components/RecentApplicationsSettings.qml:25
 #: contents/ui/config/ConfigFolderPopups.qml:114
 msgctxt "@item:inlistbox Folder popup layout"
@@ -3851,7 +3858,7 @@ msgstr ""
 msgid "Maximum visible popup rows"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:271
+#: contents/ui/components/DockContextActionsController.qml:284
 msgctxt "@title:menu"
 msgid "Media"
 msgstr ""
@@ -3948,8 +3955,8 @@ msgid ""
 "Menu entries and per-item actions remain configured from the Items section."
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:66
-#: contents/ui/components/DockContextActionsController.qml:348
+#: contents/ui/components/DockContextActionsController.qml:87
+#: contents/ui/components/DockContextActionsController.qml:361
 msgctxt "@title:menu"
 msgid "Menu mode"
 msgstr ""
@@ -4045,7 +4052,7 @@ msgstr[1] ""
 msgid "Move all themes to the Trash…"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:314
+#: contents/ui/components/DockContextActionsController.qml:327
 msgctxt "@action:context"
 msgid "Move open applications section"
 msgstr ""
@@ -4121,7 +4128,7 @@ msgctxt "@action:button"
 msgid "Mute media volume"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:505
+#: contents/ui/components/DockContextActionsController.qml:518
 msgctxt "@item:inmenu folder sort mode"
 msgid "Name"
 msgstr ""
@@ -4160,7 +4167,7 @@ msgstr ""
 msgid "New window"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:643
+#: contents/ui/components/DockContextActionsController.qml:652
 msgctxt "@action:context"
 msgid "New window"
 msgstr ""
@@ -4180,7 +4187,7 @@ msgctxt "@action:button"
 msgid "Next track"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:249
+#: contents/ui/components/DockContextActionsController.qml:262
 msgctxt "@action:context"
 msgid "Next track"
 msgstr ""
@@ -4310,12 +4317,12 @@ msgctxt "@option:punchimenu-mode"
 msgid "Normal"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:356
+#: contents/ui/components/DockContextActionsController.qml:369
 msgctxt "@option:punchimenu-mode"
 msgid "Normal (anchored)"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:369
+#: contents/ui/components/DockContextActionsController.qml:382
 msgctxt "@option:punchimenu-mode"
 msgid "Normal (floating center)"
 msgstr ""
@@ -4536,7 +4543,7 @@ msgctxt "@action:button open the container"
 msgid "Open"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:302
+#: contents/ui/components/DockContextActionsController.qml:315
 msgctxt "@action:context"
 msgid "Open"
 msgstr ""
@@ -4588,7 +4595,7 @@ msgctxt "@action:button open the folder in the file manager"
 msgid "Open in %1"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:564
+#: contents/ui/components/DockContextActionsController.qml:577
 msgctxt "@action:context"
 msgid "Open in File Manager"
 msgstr ""
@@ -4815,7 +4822,7 @@ msgctxt "@action:button"
 msgid "Pause"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:237
+#: contents/ui/components/DockContextActionsController.qml:250
 msgctxt "@action:context"
 msgid "Pause"
 msgstr ""
@@ -4838,7 +4845,7 @@ msgctxt "@info:status Bluetooth device type"
 msgid "Phone"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:326
+#: contents/ui/components/DockContextActionsController.qml:339
 msgctxt "@action:context"
 msgid "Pin to Dock"
 msgstr ""
@@ -4862,8 +4869,8 @@ msgstr ""
 msgid "Pixel spectrum"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:174
-msgctxt "@title:menu"
+#: contents/ui/components/DockContextActionsController.qml:703
+msgctxt "@title:group for section of menu items"
 msgid "Places"
 msgstr ""
 
@@ -4905,7 +4912,7 @@ msgctxt "@action:button"
 msgid "Play"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:238
+#: contents/ui/components/DockContextActionsController.qml:251
 msgctxt "@action:context"
 msgid "Play"
 msgstr ""
@@ -5006,7 +5013,7 @@ msgctxt "@action:button"
 msgid "Previous track"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:224
+#: contents/ui/components/DockContextActionsController.qml:237
 msgctxt "@action:context"
 msgid "Previous track"
 msgstr ""
@@ -5133,8 +5140,8 @@ msgstr ""
 msgid "Reactive particles"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:207
-msgctxt "@title:menu"
+#: contents/ui/components/DockContextActionsController.qml:712
+msgctxt "@title:group for section of menu items"
 msgid "Recent Files"
 msgstr ""
 
@@ -5801,7 +5808,7 @@ msgstr ""
 msgid "Single desktop"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:516
+#: contents/ui/components/DockContextActionsController.qml:529
 msgctxt "@item:inmenu folder sort mode"
 msgid "Size"
 msgstr ""
@@ -5835,7 +5842,7 @@ msgctxt "@option:check"
 msgid "Sort applications alphabetically"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:498
+#: contents/ui/components/DockContextActionsController.qml:511
 msgctxt "@title:menu"
 msgid "Sort by"
 msgstr ""
@@ -5877,7 +5884,7 @@ msgstr ""
 msgid "Star"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:259
+#: contents/ui/components/DockContextActionsController.qml:272
 msgctxt "@action:context"
 msgid "Stop"
 msgstr ""
@@ -6428,7 +6435,7 @@ msgctxt "@info"
 msgid "Turn on Wi-Fi to search for networks."
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:549
+#: contents/ui/components/DockContextActionsController.qml:562
 msgctxt "@item:inmenu folder sort mode"
 msgid "Type"
 msgstr ""
@@ -6475,7 +6482,7 @@ msgctxt "@info"
 msgid "Unnamed audio device"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:583
+#: contents/ui/components/DockContextActionsController.qml:596
 msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr ""

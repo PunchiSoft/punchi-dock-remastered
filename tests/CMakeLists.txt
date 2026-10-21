@@ -1054,6 +1054,10 @@ punchi_add_qml_test(
     dock_context_native_sections_test
     dock_context_native_sections_test.qml
 )
+punchi_add_qml_test(
+    app_actions_popup_sections_test
+    app_actions_popup_sections_test.qml
+)
 add_test(NAME folder_sort_test
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_folder_sort_test.py
         $<TARGET_FILE:punchi_qmltestrunner> ${CMAKE_BINARY_DIR}/bin)

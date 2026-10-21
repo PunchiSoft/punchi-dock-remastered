@@ -58,6 +58,7 @@ Item {
     property int activeNoteIndex: -1
     property var activeTaskPopupData: ({ "name": "", "windows": [] })
     property var activeAppContextMenuData: ({ "name": "", "actions": [], "maxVisibleRows": 0 })
+    property var activeAppContextMenuRequest: null
     property string activeTrashEmptySound: ""
     property string pendingTaskPopupAppName: ""
     property var pendingTaskPopupRows: []
@@ -519,6 +520,12 @@ Item {
             return
         }
 
+        activeAppContextMenuRequest = {
+            "itemData": itemData,
+            "rows": rows,
+            "itemOrigin": itemOrigin || "",
+            "persistentIndex": Number.isInteger(persistentIndex) ? persistentIndex : -1
+        }
         activeAppContextMenuData = {
             "name": itemData && itemData.name ? itemData.name : "",
             "icon": itemData && itemData.icon ? itemData.icon : "emblem-music-symbolic",
@@ -579,6 +586,28 @@ Item {
                 }
             })
         })
+    }
+
+    function expandActiveContextMenuPlaces(applicationId) {
+        const request = activeAppContextMenuRequest
+        if (!request || !contextActionsResolver) {
+            return false
+        }
+        if (String(applicationId || "").length > 0 && applicationIdentityResolver) {
+            const currentId = applicationIdentityResolver(request.itemData)
+            if (String(currentId || "") !== String(applicationId)) {
+                return false
+            }
+        }
+        const actions = contextActionsResolver(request.itemData, request.rows,
+            request.itemOrigin, request.persistentIndex, { "showAllPlaces": true })
+        if (!actions || actions.length === 0) {
+            return false
+        }
+        activeAppContextMenuData = Object.assign({}, activeAppContextMenuData, {
+            "actions": actions
+        })
+        return true
     }
 
     function openFolderPopup(itemData, visualParent) {

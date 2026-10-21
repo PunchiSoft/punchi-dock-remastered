@@ -156,6 +156,7 @@ task_context_actions_test
 background_quick_actions_test
 app_actions_popup_navigation_test
 dock_context_native_sections_test
+app_actions_popup_sections_test
 folder_sort_test
 dynamic_applications_move_geometry_test
 popup_spacing_metrics_test
