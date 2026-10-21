@@ -36,6 +36,30 @@ FocusScope {
     signal navigationRequested()
     signal settingsRequested()
 
+    // The trailing actions stay inline only while they fit next to a readable
+    // title. When they do not, navigation, secondary and settings collapse into
+    // one overflow button, so the row never pushes a control to the edge of the
+    // card, where the page scroll bar can cover it.
+    readonly property real inlineTitleWidth: Kirigami.Units.gridUnit * 5
+    readonly property bool compactActions: {
+        if (!root.navigationActionVisible && !root.secondaryActionVisible) {
+            return false
+        }
+        let requiredWidth = iconButton.implicitWidth + root.inlineTitleWidth
+            + valueLabel.implicitWidth + settingsButton.implicitWidth
+        let itemCount = 4
+        if (root.navigationActionVisible) {
+            requiredWidth += navigationButton.implicitWidth
+            itemCount += 1
+        }
+        if (root.secondaryActionVisible) {
+            requiredWidth += secondaryActionButton.implicitWidth
+            itemCount += 1
+        }
+        requiredWidth += rowLayout.spacing * (itemCount - 1)
+        return rowLayout.width > 0 && requiredWidth > rowLayout.width
+    }
+
     objectName: "controlCenterControlCard"
     implicitWidth: Kirigami.Units.gridUnit * 22
     implicitHeight: Kirigami.Units.gridUnit * 6
@@ -55,6 +79,8 @@ FocusScope {
         spacing: Kirigami.Units.smallSpacing
 
         RowLayout {
+            id: rowLayout
+
             Layout.fillWidth: true
             spacing: Kirigami.Units.smallSpacing
 
@@ -83,6 +109,8 @@ FocusScope {
             }
 
             Controls.Label {
+                id: valueLabel
+
                 text: root.controlAvailable
                     ? i18nc("@info:label Percentage value", "%1%", root.value) // qmllint disable unqualified
                     : root.unavailableText
@@ -94,7 +122,7 @@ FocusScope {
                 id: navigationButton
 
                 objectName: "controlCenterNavigationActionButton"
-                visible: root.navigationActionVisible
+                visible: root.navigationActionVisible && !root.compactActions
                 enabled: root.navigationActionEnabled
                 icon.name: root.navigationActionIconName
                 text: root.navigationActionName
@@ -113,7 +141,7 @@ FocusScope {
             PlasmaComponents.ToolButton {
                 id: secondaryActionButton
                 objectName: "controlCenterSecondaryActionButton"
-                visible: root.secondaryActionVisible
+                visible: root.secondaryActionVisible && !root.compactActions
                 enabled: root.secondaryActionEnabled
                 checkable: root.secondaryActionCheckable
                 checked: root.secondaryActionChecked
@@ -134,8 +162,10 @@ FocusScope {
 
             PlasmaComponents.ToolButton {
                 id: settingsButton
+                objectName: "controlCenterSettingsActionButton"
                 icon.name: "configure"
                 text: root.settingsActionName
+                visible: !root.compactActions
                 display: PlasmaComponents.AbstractButton.IconOnly
                 Accessible.name: text
                 onClicked: root.settingsRequested()
@@ -146,6 +176,64 @@ FocusScope {
                 HoverHandler {
                     cursorShape: Qt.PointingHandCursor
                 }
+            }
+
+            PlasmaComponents.ToolButton {
+                id: overflowButton
+
+                objectName: "controlCenterOverflowActionButton"
+                visible: root.compactActions
+                icon.name: "overflow-menu"
+                text: i18nc("@action:button", "More actions") // qmllint disable unqualified
+                display: PlasmaComponents.AbstractButton.IconOnly
+                Accessible.name: text
+                Accessible.description: root.title
+                onClicked: overflowMenu.popup(overflowButton, 0, overflowButton.height)
+
+                Controls.ToolTip.visible: hovered && text.length > 0
+                Controls.ToolTip.text: text
+
+                HoverHandler {
+                    cursorShape: Qt.PointingHandCursor
+                }
+            }
+        }
+
+        PlasmaComponents.Menu {
+            id: overflowMenu
+
+            objectName: "controlCenterOverflowActionMenu"
+
+            PlasmaComponents.MenuItem {
+                visible: root.navigationActionVisible
+                enabled: root.navigationActionEnabled
+                text: root.navigationActionName
+                icon.name: root.navigationActionIconName
+                Accessible.name: text
+                onTriggered: root.navigationRequested()
+            }
+
+            PlasmaComponents.MenuItem {
+                visible: root.secondaryActionVisible
+                enabled: root.secondaryActionEnabled
+                checkable: root.secondaryActionCheckable
+                checked: root.secondaryActionChecked
+                text: root.secondaryActionName
+                icon.name: root.secondaryActionIconName
+                Accessible.name: text
+                Accessible.description: root.secondaryActionDescription
+                onTriggered: root.secondaryActionTriggered()
+            }
+
+            PlasmaComponents.MenuSeparator {
+                visible: root.navigationActionVisible && root.secondaryActionVisible
+            }
+
+            PlasmaComponents.MenuItem {
+                text: root.settingsActionName
+                icon.name: "configure"
+                Accessible.name: text
+                onTriggered: root.settingsRequested()
             }
         }
 

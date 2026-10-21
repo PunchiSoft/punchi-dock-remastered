@@ -55,6 +55,16 @@ FocusScope {
     readonly property int quickActionMaximumCount: 8
     readonly property bool wideLayout:
         width >= Kirigami.Units.gridUnit * 48
+    // The attached scroll bar is drawn over the right edge of the page instead
+    // of taking room from it. The content reserves its width while the bar is on
+    // screen, otherwise the last control of a card row sits under the bar and
+    // loses its clicks.
+    readonly property real scrollBarInset:
+        homeScrollBar.visible ? homeScrollBar.implicitWidth : 0
+    // The width every page layout must honour: the viewport minus the strip the
+    // bar occupies.
+    readonly property real pageContentWidth:
+        Math.max(0, homeScrollView.width - root.scrollBarInset)
 
     signal networkRequested()
     // The tile opens the submenu in place; the page path stays available as the
@@ -164,6 +174,7 @@ FocusScope {
         // pushes the quick controls out through the top of their viewport.
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.rightMargin: root.scrollBarInset
         anchors.bottom: parent.bottom
         height: root.notificationsArea
         radius: Kirigami.Units.cornerRadius * 2.5
@@ -303,6 +314,8 @@ FocusScope {
         // meant to be hidden. The section owns the only scroll that matters then.
         interactive: networkSubmenu.expansionProgress < 0.001
         Controls.ScrollBar.vertical: PlasmaComponents.ScrollBar {
+            id: homeScrollBar
+
             objectName: "controlCenterHomeScrollBar"
             // While a section is open the page cannot scroll: the content below
             // leaves the frame on purpose, so a bar here would promise movement
@@ -315,7 +328,8 @@ FocusScope {
         ColumnLayout {
             id: homeLayout
 
-            width: homeScrollView.width
+            objectName: "controlCenterHomeLayout"
+            width: root.pageContentWidth
             height: Math.max(homeScrollView.height, implicitHeight)
             spacing: Kirigami.Units.largeSpacing
 
@@ -650,17 +664,29 @@ FocusScope {
                     enabled: networkSubmenu.expansionProgress <= 0.001
                     Accessible.ignored:
                         networkSubmenu.expansionProgress > 0.001
-                    // The width comes from the scroll view, which the surface
-                    // sizes, so filling empty slots never feeds back into the
-                    // layout that decides how many of them fit.
+                    // The width comes from the page, which the surface sizes, so
+                    // filling empty slots never feeds back into the layout that
+                    // decides how many of them fit. It is the content width, not
+                    // the scroll view width: the bar is drawn over the page and
+                    // the strip must fit beside it. The two fill spacers add one
+                    // gap beyond the cells and the spacing has a floor, so the
+                    // capacity leaves that gap behind; otherwise the strip
+                    // reports a minimum width larger than the page and pushes the
+                    // right-hand controls out of it.
                     readonly property int cellCount: LayoutMetrics.quickActionCapacity(
-                        homeScrollView.width, Kirigami.Units.gridUnit * 3,
+                        Math.max(0, root.pageContentWidth
+                            - Kirigami.Units.mediumSpacing * 2),
+                        Kirigami.Units.gridUnit * 3,
                         Kirigami.Units.mediumSpacing, root.quickActionMinimumCount,
                         root.quickActionMaximumCount)
                     readonly property int emptySlotCount: Math.max(0,
                         cellCount - root.quickActionFixedCount)
-                    spacing: LayoutMetrics.quickActionSpacing(homeScrollView.width,
-                        Kirigami.Units.gridUnit * 3, cellCount,
+                    // The gaps the strip must fit are its own children minus one,
+                    // not the cell count: the fill spacers and the repeater take
+                    // part in the row.
+                    spacing: LayoutMetrics.quickActionSpacing(root.pageContentWidth,
+                        Kirigami.Units.gridUnit * 3,
+                        quickActionsRow.children.length,
                         Kirigami.Units.mediumSpacing,
                         Kirigami.Units.largeSpacing * 2)
 

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.77\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-19 13:53-0300\n"
+"POT-Creation-Date: 2026-10-21 08:47-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -155,7 +155,7 @@ msgid_plural "%1 characters"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:446
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:460
 msgid "%1 device connected"
 msgid_plural "%1 devices connected"
 msgstr[0] ""
@@ -219,7 +219,7 @@ msgid_plural "%1 more in %2"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/main.qml:3782
+#: contents/ui/main.qml:3786
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] ""
@@ -251,7 +251,7 @@ msgid_plural "%1 open windows. Press M to open media controls."
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/components/controlcenter/ControlCenterControlCard.qml:163
+#: contents/ui/components/controlcenter/ControlCenterControlCard.qml:251
 msgctxt "@info:accessibility Percentage value"
 msgid "%1 percent"
 msgstr ""
@@ -281,7 +281,7 @@ msgid_plural "%1 seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:194
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
 msgid "%1 unread notification"
 msgid_plural "%1 unread notifications"
 msgstr[0] ""
@@ -364,7 +364,7 @@ msgid "%1%"
 msgstr ""
 
 #: contents/ui/components/controlcenter/ControlCenterAudioItem.qml:91
-#: contents/ui/components/controlcenter/ControlCenterControlCard.qml:87
+#: contents/ui/components/controlcenter/ControlCenterControlCard.qml:115
 #, javascript-format
 msgctxt "@info:label Percentage value"
 msgid "%1%"
@@ -1353,7 +1353,7 @@ msgstr ""
 msgid "Balanced Mode"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:436
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:450
 msgctxt "@action:button"
 msgid "Bluetooth"
 msgstr ""
@@ -1368,7 +1368,7 @@ msgctxt "@title"
 msgid "Bluetooth Devices"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:440
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:454
 msgctxt "@info"
 msgid "Bluetooth controls unavailable"
 msgstr ""
@@ -1451,7 +1451,7 @@ msgid ""
 "directly"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:723
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:748
 msgctxt "@action:button"
 msgid "Calculator"
 msgstr ""
@@ -1557,7 +1557,7 @@ msgid ""
 "Changes the icon size in the reserved Favorites section in both menu modes."
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:617
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:631
 msgctxt "@info:accessibility"
 msgid ""
 "Changes the volume indicator for all Plasma controls and multimedia keys"
@@ -1768,7 +1768,7 @@ msgstr ""
 msgid "Clean configuration file?"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:216
 #: contents/ui/components/NotePopup.qml:175
 msgid "Clear"
 msgstr ""
@@ -1908,7 +1908,7 @@ msgctxt "@action:button opens system settings"
 msgid "Configure Desktop Effects…"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:773
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:798
 msgctxt "@action:button"
 msgid "Configure Night Light"
 msgstr ""
@@ -2412,7 +2412,7 @@ msgctxt "@info:status"
 msgid "Disconnecting…"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:571
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:585
 msgctxt "@title"
 msgid "Display"
 msgstr ""
@@ -2452,7 +2452,7 @@ msgstr ""
 msgid "Distribution label:"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:526
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:540
 msgctxt "@action:button"
 msgid "Do Not Disturb"
 msgstr ""
@@ -3224,7 +3224,7 @@ msgctxt "@option:media-track-information"
 msgid "Hide"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:611
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:625
 msgctxt "@action:button"
 msgid "Hide Plasma volume indicator"
 msgstr ""
@@ -3633,7 +3633,7 @@ msgstr ""
 msgid "Length:"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:680
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:705
 msgctxt "@action:button"
 msgid "Light and dark mode"
 msgstr ""
@@ -3760,12 +3760,12 @@ msgctxt "@info"
 msgid "Manage audio devices and application volumes"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:624
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:638
 msgctxt "@action:button"
 msgid "Manage audio devices and applications"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:546
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:560
 msgctxt "@info"
 msgid "Manage system updates"
 msgstr ""
@@ -3998,6 +3998,11 @@ msgstr ""
 msgid "More"
 msgstr ""
 
+#: contents/ui/components/controlcenter/ControlCenterControlCard.qml:187
+msgctxt "@action:button"
+msgid "More actions"
+msgstr ""
+
 #: contents/ui/components/controlcenter/ControlCenterAudioItem.qml:121
 msgctxt "@action:button"
 msgid "More options for %1"
@@ -4101,7 +4106,7 @@ msgctxt "@title:category"
 msgid "Multimedia"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:601
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:615
 msgctxt "@action:button"
 msgid "Mute"
 msgstr ""
@@ -4132,7 +4137,7 @@ msgstr ""
 msgid "Needs attention"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:394
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:408
 msgctxt "@info"
 msgid "Network controls unavailable"
 msgstr ""
@@ -4180,7 +4185,7 @@ msgctxt "@action:context"
 msgid "Next track"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:702
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:727
 msgctxt "@action:button"
 msgid "Night Light"
 msgstr ""
@@ -4191,12 +4196,12 @@ msgctxt "@label"
 msgid "Night Light intensity"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:712
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:737
 msgctxt "@info:status"
 msgid "Night Light is paused"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:442
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:456
 msgctxt "@info:status"
 msgid "No Bluetooth adapters"
 msgstr ""
@@ -4275,7 +4280,7 @@ msgstr ""
 msgid "No movement"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:278
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:289
 msgctxt "@info"
 msgid "No notifications"
 msgstr ""
@@ -4378,19 +4383,19 @@ msgstr ""
 msgid "Notice: no checksum file was found for this package."
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:279
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:528
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:290
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:542
 msgctxt "@info"
 msgid "Notification service unavailable"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:212
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:223
 msgctxt "@action:button"
 msgid "Notification settings"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:174
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:185
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:196
 msgctxt "@title"
 msgid "Notifications"
 msgstr ""
@@ -4403,17 +4408,17 @@ msgstr ""
 msgid "Number of bars:"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:531
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:545
 msgctxt "@info:status"
 msgid "Off — allow notification popups"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:444
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:458
 msgctxt "@info:status"
 msgid "Off — view devices"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:393
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:407
 msgctxt "@info:status"
 msgid "Off — view networks"
 msgstr ""
@@ -4429,17 +4434,17 @@ msgctxt "@title:category"
 msgid "Office"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:530
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:544
 msgctxt "@info:status"
 msgid "On — suppress notification popups"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:449
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:463
 msgctxt "@info:status"
 msgid "On — view devices"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:392
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:406
 msgctxt "@info:status"
 msgid "On — view networks"
 msgstr ""
@@ -4546,7 +4551,7 @@ msgctxt "@action:button"
 msgid "Open Bluetooth settings"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:705
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:730
 msgctxt "@info"
 msgid "Open Night Light settings"
 msgstr ""
@@ -4555,7 +4560,7 @@ msgstr ""
 msgid "Open Trash"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:683
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:708
 msgctxt "@info"
 msgid "Open appearance settings"
 msgstr ""
@@ -4573,7 +4578,7 @@ msgctxt "@title"
 msgid "Open applications"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:577
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:591
 msgctxt "@action:button"
 msgid "Open display settings"
 msgstr ""
@@ -4617,7 +4622,7 @@ msgid "Open settings"
 msgstr ""
 
 #: contents/ui/components/controlcenter/ControlCenterAudioPage.qml:129
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:626
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:640
 msgctxt "@action:button"
 msgid "Open sound settings"
 msgstr ""
@@ -4815,7 +4820,7 @@ msgctxt "@action:context"
 msgid "Pause"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:710
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:735
 msgctxt "@info:status"
 msgid "Paused by another application"
 msgstr ""
@@ -5601,7 +5606,7 @@ msgstr ""
 msgid "Show \"Configure Punchi Dock…\""
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:612
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:626
 msgctxt "@action:button"
 msgid "Show Plasma volume indicator"
 msgstr ""
@@ -5845,7 +5850,7 @@ msgctxt "@title:menu"
 msgid "Sort by"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:590
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:604
 msgctxt "@title"
 msgid "Sound"
 msgstr ""
@@ -5900,12 +5905,12 @@ msgstr ""
 msgid "Supported build environments: Fedora, Debian 13, and Arch Linux."
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:686
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:711
 msgctxt "@action:button"
 msgid "Switch to dark mode"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:685
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:710
 msgctxt "@action:button"
 msgid "Switch to light mode"
 msgstr ""
@@ -6413,7 +6418,7 @@ msgctxt "@info"
 msgid "Try scanning again or open Network Settings."
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:713
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:738
 msgctxt "@action:button"
 msgid "Turn off Night Light"
 msgstr ""
@@ -6423,7 +6428,7 @@ msgctxt "@info"
 msgid "Turn on Bluetooth to manage paired devices."
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:707
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:732
 msgctxt "@action:button"
 msgid "Turn on Night Light"
 msgstr ""
@@ -6465,7 +6470,7 @@ msgctxt "@info"
 msgid "Unknown audio stream"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:600
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:614
 msgctxt "@action:button"
 msgid "Unmute"
 msgstr ""
@@ -6485,7 +6490,7 @@ msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:545
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:559
 msgctxt "@action:button"
 msgid "Updates"
 msgstr ""
@@ -6803,7 +6808,7 @@ msgid ""
 "final row to open the remaining items in the file manager."
 msgstr ""
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:386
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:400
 msgctxt "@action:button"
 msgid "Wi-Fi"
 msgstr ""
