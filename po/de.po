@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.77\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-19 13:53-0300\n"
+"POT-Creation-Date: 2026-10-21 08:47-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: German\n"
@@ -119,7 +119,9 @@ msgstr "  [7] Plasmoid von diesem System deinstallieren"
 
 #: scripts-user/setup.sh:80
 msgid "  [8] Configure build concurrency (Safe / Balanced / Custom)"
-msgstr "  [8] Build-Parallelität konfigurieren (Sicher / Ausgewogen / Benutzerdefiniert)"
+msgstr ""
+"  [8] Build-Parallelität konfigurieren (Sicher / Ausgewogen / "
+"Benutzerdefiniert)"
 
 #: scripts-dev/setup.sh:158
 msgid "  [8] Help (show CLI commands reference)"
@@ -160,7 +162,7 @@ msgid_plural "%1 characters"
 msgstr[0] "%1 Zeichen"
 msgstr[1] "%1 Zeichen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:446
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:460
 msgid "%1 device connected"
 msgid_plural "%1 devices connected"
 msgstr[0] "%1 Gerät verbunden"
@@ -227,7 +229,7 @@ msgid_plural "%1 more in %2"
 msgstr[0] "%1 weitere in %2"
 msgstr[1] "%1 weitere in %2"
 
-#: contents/ui/main.qml:3782
+#: contents/ui/main.qml:3786
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 weitere Fenstergruppe"
@@ -262,7 +264,7 @@ msgstr[1] ""
 "%1 Fenster geöffnet. Drücken Sie M, um die Mediensteuerung zu öffnen."
 
 #
-#: contents/ui/components/controlcenter/ControlCenterControlCard.qml:163
+#: contents/ui/components/controlcenter/ControlCenterControlCard.qml:251
 msgctxt "@info:accessibility Percentage value"
 msgid "%1 percent"
 msgstr "%1 Prozent"
@@ -292,7 +294,7 @@ msgid_plural "%1 seconds"
 msgstr[0] "%1 Sekunde"
 msgstr[1] "%1 Sekunden"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:194
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
 msgid "%1 unread notification"
 msgid_plural "%1 unread notifications"
 msgstr[0] "%1 ungelesene Benachrichtigung"
@@ -377,7 +379,7 @@ msgid "%1%"
 msgstr "%1%"
 
 #: contents/ui/components/controlcenter/ControlCenterAudioItem.qml:91
-#: contents/ui/components/controlcenter/ControlCenterControlCard.qml:87
+#: contents/ui/components/controlcenter/ControlCenterControlCard.qml:115
 #, javascript-format
 msgctxt "@info:label Percentage value"
 msgid "%1%"
@@ -1467,7 +1469,7 @@ msgstr "Abzeichen:"
 msgid "Balanced Mode"
 msgstr "Ausgewogener Modus"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:436
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:450
 msgctxt "@action:button"
 msgid "Bluetooth"
 msgstr "Bluetooth"
@@ -1483,7 +1485,7 @@ msgid "Bluetooth Devices"
 msgstr "Bluetooth-Geräte"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:440
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:454
 msgctxt "@info"
 msgid "Bluetooth controls unavailable"
 msgstr "Bluetooth-Steuerung nicht verfügbar"
@@ -1586,7 +1588,7 @@ msgstr ""
 "  ./scripts-dev/setup.sh <datei.plasmoid>   Vorgefertigtes Paket direkt "
 "installieren"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:723
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:748
 msgctxt "@action:button"
 msgid "Calculator"
 msgstr "Rechner"
@@ -1700,7 +1702,7 @@ msgid ""
 msgstr ""
 "Ändert die Symbolgröße im reservierten Favoritenbereich in beiden Menümodi."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:617
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:631
 msgctxt "@info:accessibility"
 msgid ""
 "Changes the volume indicator for all Plasma controls and multimedia keys"
@@ -1930,7 +1932,7 @@ msgstr "Reinigung abgeschlossen."
 msgid "Clean configuration file?"
 msgstr "Konfigurationsdatei bereinigen?"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:205
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:216
 #: contents/ui/components/NotePopup.qml:175
 msgid "Clear"
 msgstr "Klar"
@@ -2070,7 +2072,7 @@ msgctxt "@action:button opens system settings"
 msgid "Configure Desktop Effects…"
 msgstr "Arbeitsflächeneffekte einrichten…"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:773
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:798
 msgctxt "@action:button"
 msgid "Configure Night Light"
 msgstr "Nachtlicht einrichten"
@@ -2603,7 +2605,7 @@ msgid "Disconnecting…"
 msgstr "Verbindung wird getrennt…"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:571
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:585
 msgctxt "@title"
 msgid "Display"
 msgstr "Anzeige"
@@ -2645,7 +2647,7 @@ msgstr "Ordner auflösen"
 msgid "Distribution label:"
 msgstr "Distributionsbezeichnung:"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:526
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:540
 msgctxt "@action:button"
 msgid "Do Not Disturb"
 msgstr "Nicht stören"
@@ -2907,7 +2909,9 @@ msgstr ""
 
 #: scripts-user/setup.sh:91
 msgid "Error: Git update failed. Check the remote and your network connection."
-msgstr "Fehler: Git-Aktualisierung fehlgeschlagen. Prüfe das Remote und deine Netzwerkverbindung."
+msgstr ""
+"Fehler: Git-Aktualisierung fehlgeschlagen. Prüfe das Remote und deine "
+"Netzwerkverbindung."
 
 #: scripts-user/setup.sh:101
 #, sh-printf-format
@@ -3007,7 +3011,9 @@ msgstr "Fehler: Erforderlicher Installationsbefehl nicht gefunden: %s\\n"
 msgid ""
 "Error: the Git worktree has local changes. Commit or stash them before "
 "updating."
-msgstr "Fehler: Der Git-Arbeitsbaum enthält lokale Änderungen. Committe oder stashe sie vor der Aktualisierung."
+msgstr ""
+"Fehler: Der Git-Arbeitsbaum enthält lokale Änderungen. Committe oder stashe "
+"sie vor der Aktualisierung."
 
 #: scripts-user/lib/plasma-shell-control.sh:22
 msgid "Error: the Plasma Shell user service could not be restarted."
@@ -3029,7 +3035,9 @@ msgstr ""
 msgid ""
 "Error: this installation is not a Git checkout. Use --update to install "
 "a .plasmoid package."
-msgstr "Fehler: Diese Installation ist kein Git-Checkout. Verwende --update, um ein .plasmoid-Paket zu installieren."
+msgstr ""
+"Fehler: Diese Installation ist kein Git-Checkout. Verwende --update, um "
+"ein .plasmoid-Paket zu installieren."
 
 #: scripts-user/setup-universal.sh:85
 #, sh-printf-format
@@ -3469,7 +3477,7 @@ msgctxt "@option:media-track-information"
 msgid "Hide"
 msgstr "Ausblenden"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:611
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:625
 msgctxt "@action:button"
 msgid "Hide Plasma volume indicator"
 msgstr "Plasma-Lautstärkeanzeige ausblenden"
@@ -3895,7 +3903,7 @@ msgstr "Links"
 msgid "Length:"
 msgstr "Länge:"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:680
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:705
 msgctxt "@action:button"
 msgid "Light and dark mode"
 msgstr "Heller und dunkler Modus"
@@ -4033,12 +4041,12 @@ msgctxt "@info"
 msgid "Manage audio devices and application volumes"
 msgstr "Audiogeräte und Anwendungslautstärken verwalten"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:624
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:638
 msgctxt "@action:button"
 msgid "Manage audio devices and applications"
 msgstr "Audiogeräte und Anwendungen verwalten"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:546
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:560
 msgctxt "@info"
 msgid "Manage system updates"
 msgstr "Systemaktualisierungen verwalten"
@@ -4279,6 +4287,11 @@ msgstr "Fehlende pacman-Pakete: %s\\n"
 msgid "More"
 msgstr "Mehr"
 
+#: contents/ui/components/controlcenter/ControlCenterControlCard.qml:187
+msgctxt "@action:button"
+msgid "More actions"
+msgstr "Weitere Aktionen"
+
 #: contents/ui/components/controlcenter/ControlCenterAudioItem.qml:121
 msgctxt "@action:button"
 msgid "More options for %1"
@@ -4382,7 +4395,7 @@ msgctxt "@title:category"
 msgid "Multimedia"
 msgstr "Multimedia"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:601
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:615
 msgctxt "@action:button"
 msgid "Mute"
 msgstr "Stummschalten"
@@ -4414,7 +4427,7 @@ msgid "Needs attention"
 msgstr "Eingreifen erforderlich"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:394
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:408
 msgctxt "@info"
 msgid "Network controls unavailable"
 msgstr "Netzwerksteuerung nicht verfügbar"
@@ -4462,7 +4475,7 @@ msgctxt "@action:context"
 msgid "Next track"
 msgstr "Nächster Titel"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:702
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:727
 msgctxt "@action:button"
 msgid "Night Light"
 msgstr "Nachtlicht"
@@ -4473,12 +4486,12 @@ msgctxt "@label"
 msgid "Night Light intensity"
 msgstr "Nachtlichtintensität"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:712
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:737
 msgctxt "@info:status"
 msgid "Night Light is paused"
 msgstr "Nachtlicht ist pausiert"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:442
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:456
 msgctxt "@info:status"
 msgid "No Bluetooth adapters"
 msgstr "Keine Bluetooth-Adapter"
@@ -4560,7 +4573,7 @@ msgstr "Keine Medienwiedergabe"
 msgid "No movement"
 msgstr "Keine Bewegung"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:278
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:289
 msgctxt "@info"
 msgid "No notifications"
 msgstr "Keine Benachrichtigungen"
@@ -4664,19 +4677,19 @@ msgstr ""
 msgid "Notice: no checksum file was found for this package."
 msgstr "Hinweis: Für dieses Paket wurde keine Prüfsummendatei gefunden."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:279
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:528
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:290
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:542
 msgctxt "@info"
 msgid "Notification service unavailable"
 msgstr "Benachrichtigungsdienst nicht verfügbar"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:212
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:223
 msgctxt "@action:button"
 msgid "Notification settings"
 msgstr "Benachrichtigungseinstellungen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:174
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:185
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:196
 msgctxt "@title"
 msgid "Notifications"
 msgstr "Benachrichtigungen"
@@ -4689,17 +4702,17 @@ msgstr "Anzahl der Audiovisualisierungsbalken"
 msgid "Number of bars:"
 msgstr "Anzahl der Balken:"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:531
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:545
 msgctxt "@info:status"
 msgid "Off — allow notification popups"
 msgstr "Aus — Benachrichtigungs-Pop-ups zulassen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:444
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:458
 msgctxt "@info:status"
 msgid "Off — view devices"
 msgstr "Aus — Geräte anzeigen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:393
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:407
 msgctxt "@info:status"
 msgid "Off — view networks"
 msgstr "Aus — Netzwerke anzeigen"
@@ -4715,17 +4728,17 @@ msgctxt "@title:category"
 msgid "Office"
 msgstr "Büro"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:530
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:544
 msgctxt "@info:status"
 msgid "On — suppress notification popups"
 msgstr "Ein — Benachrichtigungs-Pop-ups unterdrücken"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:449
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:463
 msgctxt "@info:status"
 msgid "On — view devices"
 msgstr "Ein — Geräte anzeigen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:392
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:406
 msgctxt "@info:status"
 msgid "On — view networks"
 msgstr "Ein — Netzwerke anzeigen"
@@ -4846,7 +4859,7 @@ msgid "Open Bluetooth settings"
 msgstr "Bluetooth-Einstellungen öffnen"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:705
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:730
 msgctxt "@info"
 msgid "Open Night Light settings"
 msgstr "Nachtlicht-Einstellungen öffnen"
@@ -4855,7 +4868,7 @@ msgstr "Nachtlicht-Einstellungen öffnen"
 msgid "Open Trash"
 msgstr "Papierkorb öffnen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:683
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:708
 msgctxt "@info"
 msgid "Open appearance settings"
 msgstr "Einstellungen zum Erscheinungsbild öffnen"
@@ -4874,7 +4887,7 @@ msgid "Open applications"
 msgstr "Geöffnete Anwendungen"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:577
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:591
 msgctxt "@action:button"
 msgid "Open display settings"
 msgstr "Anzeigeeinstellungen öffnen"
@@ -4921,7 +4934,7 @@ msgstr "Einstellungen öffnen"
 
 #
 #: contents/ui/components/controlcenter/ControlCenterAudioPage.qml:129
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:626
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:640
 msgctxt "@action:button"
 msgid "Open sound settings"
 msgstr "Klangeinstellungen öffnen"
@@ -5124,7 +5137,7 @@ msgctxt "@action:context"
 msgid "Pause"
 msgstr "Pausieren"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:710
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:735
 msgctxt "@info:status"
 msgid "Paused by another application"
 msgstr "Durch eine andere Anwendung pausiert"
@@ -5945,7 +5958,7 @@ msgstr "Lange Anwendungsnamen kürzen"
 msgid "Show \"Configure Punchi Dock…\""
 msgstr "„Punchi Dock einrichten…“ anzeigen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:612
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:626
 msgctxt "@action:button"
 msgid "Show Plasma volume indicator"
 msgstr "Plasma-Lautstärkeanzeige anzeigen"
@@ -6201,7 +6214,7 @@ msgid "Sort by"
 msgstr "Sortieren nach"
 
 #
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:590
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:604
 msgctxt "@title"
 msgid "Sound"
 msgstr "Ton"
@@ -6257,12 +6270,12 @@ msgstr ""
 msgid "Supported build environments: Fedora, Debian 13, and Arch Linux."
 msgstr "Unterstützte Build-Umgebungen: Fedora, Debian 13 und Arch Linux."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:686
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:711
 msgctxt "@action:button"
 msgid "Switch to dark mode"
 msgstr "Zum dunklen Modus wechseln"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:685
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:710
 msgctxt "@action:button"
 msgid "Switch to light mode"
 msgstr "Zum hellen Modus wechseln"
@@ -6834,7 +6847,7 @@ msgid "Try scanning again or open Network Settings."
 msgstr ""
 "Versuchen Sie erneut zu suchen oder öffnen Sie die Netzwerkeinstellungen."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:713
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:738
 msgctxt "@action:button"
 msgid "Turn off Night Light"
 msgstr "Nachtlicht ausschalten"
@@ -6844,7 +6857,7 @@ msgctxt "@info"
 msgid "Turn on Bluetooth to manage paired devices."
 msgstr "Schalten Sie Bluetooth ein, um gekoppelte Geräte zu verwalten."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:707
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:732
 msgctxt "@action:button"
 msgid "Turn on Night Light"
 msgstr "Nachtlicht einschalten"
@@ -6887,7 +6900,7 @@ msgctxt "@info"
 msgid "Unknown audio stream"
 msgstr "Unbekannter Audio-Stream"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:600
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:614
 msgctxt "@action:button"
 msgid "Unmute"
 msgstr "Stummschaltung aufheben"
@@ -6907,7 +6920,7 @@ msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Vom Dock lösen"
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:545
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:559
 msgctxt "@action:button"
 msgid "Updates"
 msgstr "Aktualisierungen"
@@ -7145,31 +7158,41 @@ msgid ""
 msgstr ""
 "Verwendung: scripts-user/setup.sh [Optionen] [Pfad/zu/Paket.plasmoid]\n"
 "\n"
-"Kompiliert Punchi Dock Remastered für das aktuelle Linux-System ohne Entwicklertests,\n"
+"Kompiliert Punchi Dock Remastered für das aktuelle Linux-System ohne "
+"Entwicklertests,\n"
 "erstellt ein lokales .plasmoid-Paket, installiert es und verwaltet die\n"
 "Plasma-Shell-Integration.\n"
 "\n"
-"Wenn es ohne primäre Aktion ausgeführt wird, öffnet es das interaktive Setup-Menü.\n"
+"Wenn es ohne primäre Aktion ausgeführt wird, öffnet es das interaktive Setup-"
+"Menü.\n"
 "\n"
 "Hauptaktionen (nur eine auswählen):\n"
 "  --install         Kompilieren und das Plasmoid lokal installieren.\n"
-"  --build-only      Lokales Paket kompilieren, ohne zu installieren oder Plasma neu zu starten.\n"
+"  --build-only      Lokales Paket kompilieren, ohne zu installieren oder "
+"Plasma neu zu starten.\n"
 "  --package         Alias für --build-only.\n"
-"  --update          Aus dem neuesten universellen Paket in dist/ installieren oder aktualisieren.\n"
-"  --git-update      Den neuesten Quellcode vom konfigurierten Git-Remote abrufen.\n"
-"  --check-deps      System-Build-Abhängigkeiten für die aktuelle Distribution prüfen.\n"
-"  --uninstall       Plasmoid aus der lokalen Plasma-Umgebung deinstallieren.\n"
+"  --update          Aus dem neuesten universellen Paket in dist/ "
+"installieren oder aktualisieren.\n"
+"  --git-update      Den neuesten Quellcode vom konfigurierten Git-Remote "
+"abrufen.\n"
+"  --check-deps      System-Build-Abhängigkeiten für die aktuelle "
+"Distribution prüfen.\n"
+"  --uninstall       Plasmoid aus der lokalen Plasma-Umgebung "
+"deinstallieren.\n"
 "  --restart-plasma  Plasma Shell bei Bedarf neu starten.\n"
 "\n"
 "Modifikatoren:\n"
-"  -j, --jobs N      Legt die Anzahl paralleler Build-Jobs fest (z.B. -j 1 für sicheren Modus).\n"
+"  -j, --jobs N      Legt die Anzahl paralleler Build-Jobs fest (z.B. -j 1 "
+"für sicheren Modus).\n"
 "  --parallel N      Alias für --jobs.\n"
-"  --no-restart      Neustart der Plasma Shell nach Installation oder Deinstallation überspringen.\n"
+"  --no-restart      Neustart der Plasma Shell nach Installation oder "
+"Deinstallation überspringen.\n"
 "  -y, --yes         Aufforderungen automatisch bestätigen.\n"
 "  --lang CODE       Erkannte Sprache überschreiben (en, es, de, pt_BR).\n"
 "  -h, --help        Diese Hilfe anzeigen.\n"
 "\n"
-"Die Übergabe eines .plasmoid-Pfads installiert dieses bestehende Paket ohne Kompilierung.\n"
+"Die Übergabe eines .plasmoid-Pfads installiert dieses bestehende Paket ohne "
+"Kompilierung.\n"
 "Build-Abhängigkeiten sind nur für Aktionen erforderlich, die kompilieren.\n"
 "\n"
 "Die Entwickler-Validierung ist separat über scripts-dev/setup.sh verfügbar."
@@ -7361,7 +7384,7 @@ msgstr ""
 "Wenn deaktiviert, zeigt der Fächer nur die konfigurierte Anzahl anEinträgen. "
 "Mit der letzten Zeile lassen sich die übrigen Einträge imDateimanager öffnen."
 
-#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:386
+#: contents/ui/components/controlcenter/ControlCenterHomePage.qml:400
 msgctxt "@action:button"
 msgid "Wi-Fi"
 msgstr "WLAN"
