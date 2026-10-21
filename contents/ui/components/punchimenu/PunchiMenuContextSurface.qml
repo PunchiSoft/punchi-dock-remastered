@@ -3,11 +3,11 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import org.kde.kirigami as Kirigami
 import org.kde.ksvg as KSvg
-import org.kde.plasma.components as PlasmaComponents
 // Importing PlasmaCore initializes Plasma theme resolution for FrameSvgItem.
 // qmllint disable unused-imports
 import org.kde.plasma.core as PlasmaCore
 // qmllint enable unused-imports
+import ".." as PunchiComponents
 
 FocusScope {
     id: root
@@ -34,7 +34,7 @@ FocusScope {
     readonly property real availablePanelWidth: Math.max(0,
         width - edgeMargin * 2)
 
-    signal actionTriggered(string actionId)
+    signal actionTriggered(var entry)
     signal closeRequested(bool restoreFocus)
     signal focusFallbackRequested()
 
@@ -52,45 +52,60 @@ FocusScope {
         }
     }
 
-    function isActionable(index) {
-        if (index < 0 || index >= entries.length) {
-            return false
+    // Menu surfaces share the dock popup renderer, so the entry contract grows
+    // to the same shape: text/iconName stay for existing callers, while section,
+    // children and checked enable native grouping and submenus.
+    readonly property var popupActions: root.buildActionRows(root.entries)
+
+    function buildActionRows(values) {
+        const rows = []
+        if (!(values instanceof Array)) {
+            return rows
         }
-        const entry = entries[index]
-        return entry && entry.separator !== true && entry.enabled !== false
+        for (let index = 0; index < values.length; index++) {
+            rows.push(root.buildActionRow(values[index]))
+        }
+        return rows
     }
 
-    function firstActionableIndex() {
-        for (let index = 0; index < entries.length; index++) {
-            if (isActionable(index)) {
-                return index
-            }
+    function buildActionRow(entry) {
+        const source = entry || {}
+        const row = {
+            "name": String(source.text !== undefined ? source.text : (source.name || "")),
+            "icon": String(source.iconName !== undefined ? source.iconName : (source.icon || "")),
+            "enabled": source.enabled !== false,
+            "source": source
         }
-        return -1
+        if (source.separator === true || source.kind === "separator") {
+            row.kind = "separator"
+            row.enabled = false
+            return row
+        }
+        if (source.section === true || source.kind === "section") {
+            row.kind = "section"
+            row.enabled = false
+            return row
+        }
+        if (source.children instanceof Array && source.children.length > 0) {
+            row.kind = "submenu"
+            row.children = root.buildActionRows(source.children)
+        } else {
+            row.kind = String(source.kind || "action")
+        }
+        if (source.checked !== undefined) {
+            row.checked = !!source.checked
+        }
+        if (source.exclusive === true) {
+            row.exclusive = true
+        }
+        if (source.detail) {
+            row.detail = String(source.detail)
+        }
+        return row
     }
 
-    function adjacentActionableIndex(direction) {
-        if (entries.length === 0) {
-            return -1
-        }
-        let candidate = currentIndex
-        for (let offset = 0; offset < entries.length; offset++) {
-            candidate = (candidate + direction + entries.length)
-                % entries.length
-            if (isActionable(candidate)) {
-                return candidate
-            }
-        }
-        return -1
-    }
-
-    function focusEntry(index) {
-        if (!isActionable(index)) {
-            return false
-        }
-        currentIndex = index
-        forceActiveFocus(Qt.TabFocusReason)
-        return true
+    function entryFor(action) {
+        return action && action.source ? action.source : action
     }
 
     function restoreSourceFocus(targetItem) {
@@ -110,6 +125,7 @@ FocusScope {
         sourceItem = targetItem
         requestedX = mappedPoint.x + Kirigami.Units.smallSpacing
         requestedY = mappedPoint.y + Kirigami.Units.smallSpacing
+        currentIndex = -1
         entries = menuEntries
         targetKind = String(context && context.kind || "")
         targetStorageId = String(context && context.storageId || "")
@@ -122,11 +138,10 @@ FocusScope {
         targetIsFavorite = !!(context && context.isFavorite)
         targetIsPinnedToDock = !!(context && context.isPinnedToDock)
         targetIsHidden = !!(context && context.isHidden)
-        currentIndex = firstActionableIndex()
         active = true
         Qt.callLater(function() {
-            if (root.active && !root.focusEntry(root.currentIndex)) {
-                root.forceActiveFocus(Qt.PopupFocusReason)
+            if (root.active) {
+                actionsPopup.takeKeyboardFocus()
             }
         })
         return true
@@ -149,11 +164,9 @@ FocusScope {
     }
 
     function triggerIndex(index) {
-        if (!isActionable(index)) {
+        if (!actionsPopup.activateActionAt(index)) {
             return
         }
-        const entry = entries[index]
-        actionTriggered(String(entry.actionId || ""))
     }
 
     MouseArea {
@@ -169,25 +182,15 @@ FocusScope {
     Item {
         id: panel
 
-        readonly property real frameVerticalMargins:
-            menuBackground.margins.top + menuBackground.margins.bottom
-
         x: Math.max(root.edgeMargin, Math.min(root.requestedX,
             root.width - width - root.edgeMargin))
         y: Math.max(root.edgeMargin, Math.min(root.requestedY,
             root.height - height - root.edgeMargin))
-        width: Math.min(root.preferredPanelWidth,
+        width: Math.min(actionsPopup.implicitWidth,
             root.availablePanelWidth)
         height: Math.min(Math.max(0,
             root.height - root.edgeMargin * 2),
-            menuColumn.implicitHeight + frameVerticalMargins
-                + Kirigami.Units.smallSpacing * 2)
-
-        KSvg.FrameSvgItem {
-            id: menuBackground
-            anchors.fill: parent
-            imagePath: "widgets/background"
-        }
+            actionsPopup.implicitHeight)
 
         MouseArea {
             anchors.fill: parent
@@ -201,113 +204,89 @@ FocusScope {
             }
         }
 
-        Column {
-            id: menuColumn
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.leftMargin: menuBackground.margins.left
-                + Kirigami.Units.smallSpacing
-            anchors.rightMargin: menuBackground.margins.right
-                + Kirigami.Units.smallSpacing
-            anchors.topMargin: menuBackground.margins.top
-                + Kirigami.Units.smallSpacing
+        KSvg.FrameSvgItem {
+            id: menuBackground
+            anchors.fill: parent
+            imagePath: "widgets/background"
+            Accessible.ignored: true
+        }
 
-            Repeater {
-                id: menuRepeater
-                model: root.entries
-
-                delegate: Loader {
-                    id: rowLoader
-
-                    required property int index
-                    required property var modelData
-
-                    width: menuColumn.width
-                    sourceComponent: modelData.separator === true
-                        ? separatorComponent : actionComponent
-
-                    onLoaded: {
-                        if (!item) {
-                            return
-                        }
-                        item.menuEntry = modelData
-                        item.menuEntryIndex = index
-                    }
-                }
+        PunchiComponents.AppActionsPopup {
+            id: actionsPopup
+            anchors.fill: parent
+            actions: root.popupActions
+            // PunchiMenu rows follow the native menu density instead of the
+            // dock context menu defaults.
+            rowHeight: Math.max(32, Math.round(Kirigami.Units.gridUnit * 1.5))
+            iconSize: Kirigami.Units.iconSizes.small
+            autoSize: true
+            maximumAvailableWidth: root.availablePanelWidth
+            maximumAvailableHeight: Math.max(0,
+                root.height - root.edgeMargin * 2)
+            surfaceMargins: ({
+                "left": menuBackground.margins.left
+                    + Kirigami.Units.smallSpacing,
+                "top": menuBackground.margins.top
+                    + Kirigami.Units.smallSpacing,
+                "right": menuBackground.margins.right
+                    + Kirigami.Units.smallSpacing,
+                "bottom": menuBackground.margins.bottom
+                    + Kirigami.Units.smallSpacing
+            })
+            onActionTriggered: function(action) {
+                root.actionTriggered(root.entryFor(action))
             }
+            onCloseRequested: root.closeRequested(true)
         }
     }
 
-    Component {
-        id: actionComponent
-
-        PlasmaComponents.MenuItem {
-            id: menuItem
-
-            property var menuEntry: ({})
-            property int menuEntryIndex: -1
-
-            width: menuColumn.width
-            text: String(menuEntry.text || "")
-            icon.name: String(menuEntry.iconName || "")
-            enabled: menuEntry.enabled !== false
-            highlighted: root.currentIndex === menuEntryIndex
-            Accessible.name: text
-            onHoveredChanged: {
-                if (hovered && enabled) {
-                    root.currentIndex = menuEntryIndex
-                }
-            }
-            onClicked: root.triggerIndex(menuEntryIndex)
-
-            HoverHandler {
-                cursorShape: menuItem.enabled
-                    ? Qt.PointingHandCursor : Qt.ArrowCursor
-            }
-        }
-    }
-
-    Component {
-        id: separatorComponent
-
-        PlasmaComponents.MenuSeparator {
-            property var menuEntry: ({})
-            property int menuEntryIndex: -1
-            width: menuColumn.width
-        }
-    }
-
-    Keys.priority: Keys.BeforeItem
+    Keys.priority: Keys.AfterItem
     Keys.onPressed: function(event) {
         if (!root.active) {
             return
         }
         if (event.key === Qt.Key_Escape) {
-            root.closeRequested(true)
+            if (actionsPopup.subMenuOpen) {
+                actionsPopup.closeSubMenu()
+            } else {
+                root.closeRequested(true)
+            }
             event.accepted = true
             return
         }
-        if (event.key === Qt.Key_Up) {
-            root.focusEntry(root.adjacentActionableIndex(-1))
-            event.accepted = true
-            return
-        }
-        if (event.key === Qt.Key_Down) {
-            root.focusEntry(root.adjacentActionableIndex(1))
+        if (event.key === Qt.Key_Up || event.key === Qt.Key_Down) {
+            actionsPopup.moveSelection(
+                actionsPopup.currentActionIndex,
+                event.key === Qt.Key_Up ? -1 : 1)
             event.accepted = true
             return
         }
         if (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
             const backwards = event.key === Qt.Key_Backtab
                 || (event.modifiers & Qt.ShiftModifier)
-            root.focusEntry(root.adjacentActionableIndex(backwards ? -1 : 1))
+            actionsPopup.moveSelection(
+                actionsPopup.currentActionIndex,
+                backwards ? -1 : 1)
+            event.accepted = true
+            return
+        }
+        if (event.key === Qt.Key_Left) {
+            if (actionsPopup.subMenuOpen) {
+                actionsPopup.closeSubMenu()
+                event.accepted = true
+            }
+            return
+        }
+        if (event.key === Qt.Key_Right) {
+            actionsPopup.activateActionAt(
+                actionsPopup.currentActionIndex)
             event.accepted = true
             return
         }
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
                 || event.key === Qt.Key_Space) {
-            root.triggerIndex(root.currentIndex)
+            actionsPopup.activateActionAt(
+                actionsPopup.currentActionIndex)
             event.accepted = true
         }
     }

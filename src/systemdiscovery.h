@@ -74,6 +74,13 @@ public:
     Q_INVOKABLE bool launchApplicationWithUrls(const QString &applicationId, const QString &command,
         const QString &launcherUrl, const QVariantList &urls);
     Q_INVOKABLE bool launchApplicationAction(const QString &applicationId, const QString &actionId);
+    // Mirrors the native launcher actions that depend on an external provider.
+    // Both stay hidden when the provider is missing, so the menu never shows a
+    // row that cannot work.
+    Q_INVOKABLE bool canEditApplication(const QString &applicationId) const;
+    Q_INVOKABLE bool editApplication(const QString &applicationId);
+    Q_INVOKABLE bool canManageApplication(const QString &applicationId) const;
+    Q_INVOKABLE bool manageApplication(const QString &applicationId);
     Q_INVOKABLE bool launchApplicationByCommand(const QString &command);
     Q_INVOKABLE void openUrl(const QString &url);
     // Opens a folder with the user's file manager. Unlike openUrl, it does not

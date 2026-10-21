@@ -267,6 +267,43 @@ Item {
         actionList.positionViewAtBeginning()
     }
 
+    // Menu surfaces that host this popup keep their own key handling, so the
+    // current row and its activation stay reachable without stealing focus
+    // from the list.
+    readonly property int currentActionIndex: actionList.currentIndex
+
+    function takeKeyboardFocus() {
+        actionList.positionViewAtBeginning()
+        actionList.forceActiveFocus()
+        if (actionList.currentIndex < 0) {
+            moveSelection(-1, 1)
+        }
+    }
+
+    function activateActionAt(index) {
+        if (index < 0 || index >= displayedActions.length) {
+            return false
+        }
+        const action = displayedActions[index]
+        if (!selectableAction(action) || action.enabled === false) {
+            return false
+        }
+        if (action.children instanceof Array && action.children.length > 0) {
+            openSubMenu(action)
+            return true
+        }
+        if (action.kind === "back") {
+            if (subMenuOpen) {
+                closeSubMenu()
+            } else {
+                closeRequested()
+            }
+            return true
+        }
+        actionTriggered(action)
+        return true
+    }
+
     function selectableAction(action) {
         return !!action && action.kind !== "separator"
             && action.kind !== "section"

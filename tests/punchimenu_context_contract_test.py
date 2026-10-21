@@ -2181,9 +2181,17 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
-    if "Controls.Menu {" in overlay_source:
+    if "PunchiMenuContextSurface {" not in overlay_source:
         print(
-            "PunchiMenu Fullscreen: context menu must use PlasmaComponents.Menu",
+            "PunchiMenu Fullscreen: context menu must use the shared "
+            "PunchiMenuContextSurface",
+            file=sys.stderr,
+        )
+        passed = False
+    if "PlasmaComponents.Menu {" in overlay_source or "Controls.Menu {" in overlay_source:
+        print(
+            "PunchiMenu Fullscreen: context menu must not keep a private menu "
+            "implementation",
             file=sys.stderr,
         )
         passed = False
@@ -2192,7 +2200,7 @@ def main() -> int:
         ': "favorite"',
         '? "window-unpin"',
         ': "window-pin"',
-        'icon.name: "user-desktop"',
+        '"user-desktop", true',
         '? "view-visible"',
         ': "view-hidden"',
     )
@@ -2219,17 +2227,17 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
+    # The launcher reuses the shared surface, so retargeting happens by
+    # rewriting the open menu instead of closing and reopening a popup window.
     fullscreen_context_menu_interaction_contract = (
-        "modal: false",
-        "Controls.Popup.CloseOnEscape",
-        "requestContextMenu(targetMenu, sourceItem, x, y)",
-        "property Item pendingSourceItem: null",
-        "function requestContextMenu(menu, sourceItem, x, y)",
-        "if (menu.opened || menu.visible)",
-        "function completeContextMenuClose(menu)",
-        "onClosed:",
-        "Qt.callLater(function()",
+        "contextMenuSurface.openAt(sourceItem",
+        "function closeApplicationContextMenu(restoreFocus)",
+        "contextMenuSurface.close(false)",
+        "contextMenuSurface.sourceItem",
         "folderSurface.restoreFocus()",
+        "contextMenuSurface.restoreSourceFocus(sourceItem)",
+        "onActionTriggered: function(entry)",
+        "enabled: root.menuOpen && !contextMenuSurface.active",
     )
     for marker in fullscreen_context_menu_interaction_contract:
         if marker not in overlay_source:
@@ -2238,7 +2246,7 @@ def main() -> int:
                 file=sys.stderr,
             )
             passed = False
-    if "Controls.Popup.CloseOnPressOutside" not in overlay_source:
+    if "root.closeRequested(true)" not in normal_context_surface_source:
         print(
             "PunchiMenu Fullscreen: context menu no longer closes on an outside press",
             file=sys.stderr,
@@ -2248,7 +2256,7 @@ def main() -> int:
         "function standaloneApplicationContextEntries(context)",
         "function folderMemberContextEntries(context)",
         "function folderContextEntries()",
-        "function activateContextMenuAction(actionId)",
+        "function activateContextMenuAction(entry)",
         "applicationContextMenuSurface.openAt(sourceItem",
         "id: applicationContextMenuSurface",
         "allowedExternalFocusItems: [applicationContextMenuSurface]",
@@ -2265,15 +2273,16 @@ def main() -> int:
     normal_context_surface_contract = (
         "FocusScope {",
         "targetItem.mapToItem(root,",
-        "signal actionTriggered(string actionId)",
+        "signal actionTriggered(var entry)",
         "signal closeRequested(bool restoreFocus)",
         "acceptedButtons: Qt.LeftButton",
         "propagateComposedEvents: true",
         "mouse.accepted = false",
         'imagePath: "widgets/background"',
-        "PlasmaComponents.MenuItem {",
-        "PlasmaComponents.MenuSeparator {",
-        "Keys.priority: Keys.BeforeItem",
+        "PunchiComponents.AppActionsPopup {",
+        "readonly property var popupActions:",
+        "function buildActionRow(entry)",
+        "Keys.priority: Keys.AfterItem",
         "event.key === Qt.Key_Escape",
         "root.width - width - root.edgeMargin",
         "root.height - height - root.edgeMargin",

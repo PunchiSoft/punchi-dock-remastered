@@ -225,6 +225,92 @@ QtObject {
         return rows
     }
 
+    // Rows that mirror the native launcher for a single application: the open
+    // entry, its jump list, Places and Recent Files. PunchiMenu consumes these
+    // so it does not reimplement the composition of the dock context menu.
+    function applicationBackendRows(applicationId) {
+        const id = String(applicationId || "")
+        const rows = []
+        if (id.length === 0 || !root.systemDiscovery) {
+            return rows
+        }
+
+        rows.push({
+            "name": i18nc("@action:context", "Open"),
+            "icon": "application-x-executable",
+            "kind": "launchApplication",
+            "enabled": true,
+            "applicationId": id
+        })
+
+        if (typeof root.systemDiscovery.applicationActions === "function") {
+            const jumpList = root.systemDiscovery.applicationActions(id)
+            if (jumpList instanceof Array) {
+                for (let index = 0; index < jumpList.length; index++) {
+                    rows.push(jumpList[index])
+                }
+            }
+        }
+
+        let places = null
+        if (typeof root.systemDiscovery.filePlaceActions === "function") {
+            places = root.placeSectionRows(
+                root.systemDiscovery.filePlaceActions(id), id, true)
+        }
+        if (places instanceof Array && places.length > 0) {
+            rows.push(root.sectionHeader(
+                i18nc("@title:group for section of menu items", "Places")))
+            for (let index = 0; index < places.length; index++) {
+                rows.push(places[index])
+            }
+        }
+
+        let recent = null
+        if (typeof root.systemDiscovery.recentDocumentActions === "function") {
+            recent = root.recentSectionRows(
+                root.systemDiscovery.recentDocumentActions(id), id)
+        }
+        if (recent instanceof Array && recent.length > 0) {
+            rows.push(root.sectionHeader(
+                i18nc("@title:group for section of menu items", "Recent Files")))
+            for (let index = 0; index < recent.length; index++) {
+                rows.push(recent[index])
+            }
+        }
+        return rows
+    }
+
+    // Provider-backed rows stay hidden when the external tool is missing.
+    function applicationProviderRows(applicationId) {
+        const id = String(applicationId || "")
+        const rows = []
+        if (id.length === 0 || !root.systemDiscovery) {
+            return rows
+        }
+        if (typeof root.systemDiscovery.canEditApplication === "function"
+                && root.systemDiscovery.canEditApplication(id)) {
+            rows.push({
+                "name": i18nc("@action:context", "Edit Application…"),
+                "icon": "kmenuedit",
+                "kind": "editApplication",
+                "enabled": true,
+                "applicationId": id
+            })
+        }
+        if (typeof root.systemDiscovery.canManageApplication === "function"
+                && root.systemDiscovery.canManageApplication(id)) {
+            rows.push({
+                "name": i18nc("@action:context",
+                    "Uninstall or Manage Add-Ons…"),
+                "icon": "system-software-install",
+                "kind": "manageApplication",
+                "enabled": true,
+                "applicationId": id
+            })
+        }
+        return rows
+    }
+
     function mediaSubmenu(controller, applicationId) {
         if (!controller || !controller.available
                 || String(controller.applicationId || "")
@@ -976,6 +1062,27 @@ QtObject {
                 return true
             }
             return false
+        }
+        if (action.kind === "launchApplication") {
+            if (!root.systemDiscovery
+                    || typeof root.systemDiscovery.launchApplication !== "function") {
+                return false
+            }
+            root.systemDiscovery.launchApplication(
+                String(action.applicationId || ""))
+            return true
+        }
+        if (action.kind === "editApplication") {
+            return !!root.systemDiscovery
+                && typeof root.systemDiscovery.editApplication === "function"
+                && root.systemDiscovery.editApplication(
+                    String(action.applicationId || ""))
+        }
+        if (action.kind === "manageApplication") {
+            return !!root.systemDiscovery
+                && typeof root.systemDiscovery.manageApplication === "function"
+                && root.systemDiscovery.manageApplication(
+                    String(action.applicationId || ""))
         }
         if (action.kind === "desktopAction") {
             return root.systemDiscovery
