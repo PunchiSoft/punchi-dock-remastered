@@ -22,11 +22,12 @@ Item {
         id: dragProxy
         objectName: "dockReorderDragProxy"
 
-        readonly property real proxyExtent: Math.max(24,
-            Number(root.iconSize) + Kirigami.Units.smallSpacing * 2)
+        // The icon hangs from the pointer by its top-left corner, exactly like
+        // the native drag pixmap, so it reads as grabbed instead of centred.
+        readonly property real proxyExtent: Math.max(24, Number(root.iconSize))
 
-        x: root.pointerPosition.x - width / 2
-        y: root.pointerPosition.y - height / 2
+        x: root.pointerPosition.x
+        y: root.pointerPosition.y
         width: proxyExtent
         height: proxyExtent
         visible: root.active
@@ -34,7 +35,6 @@ Item {
 
         Kirigami.Icon {
             anchors.fill: parent
-            anchors.margins: Kirigami.Units.smallSpacing
             source: root.iconName
             Accessible.ignored: true
         }

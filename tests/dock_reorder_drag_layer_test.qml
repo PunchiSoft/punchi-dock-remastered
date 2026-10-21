@@ -48,13 +48,15 @@ TestCase {
         layer.active = true
         tryCompare(layer, "visible", true)
         tryCompare(proxy, "visible", true)
-        compare(Math.round(proxy.x + proxy.width / 2), 180)
-        compare(Math.round(proxy.y + proxy.height / 2), 96)
+        // Native parity: the icon hangs from the pointer by its top-left corner.
+        compare(Math.round(proxy.x), 180)
+        compare(Math.round(proxy.y), 96)
+        compare(Math.round(proxy.width), 48)
         compare(proxy.scale, 1.0)
 
         layer.pointerPosition = Qt.point(310, 144)
-        compare(Math.round(proxy.x + proxy.width / 2), 310)
-        compare(Math.round(proxy.y + proxy.height / 2), 144)
+        compare(Math.round(proxy.x), 310)
+        compare(Math.round(proxy.y), 144)
 
         layer.active = false
         tryCompare(layer, "visible", false)

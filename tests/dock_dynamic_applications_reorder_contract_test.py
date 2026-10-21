@@ -265,11 +265,13 @@ require(
 )
 require(
     'objectName: "dockReorderDragProxy"' in DRAG_LAYER
-    and "x: root.pointerPosition.x - width / 2" in DRAG_LAYER
-    and "y: root.pointerPosition.y - height / 2" in DRAG_LAYER
+    and "x: root.pointerPosition.x" in DRAG_LAYER
+    and "y: root.pointerPosition.y" in DRAG_LAYER
+    and "Math.max(24, Number(root.iconSize))" in DRAG_LAYER
     and "source: root.iconName" in DRAG_LAYER
     and "ShaderEffect" not in DRAG_LAYER,
-    "The drag proxy must be a lightweight icon-only visual that follows the pointer.",
+    "The drag proxy must be an icon-only visual anchored at the pointer, like "
+    "the native drag pixmap.",
 )
 require(
     "onPersistentReorderPressStarted:" in MAIN
