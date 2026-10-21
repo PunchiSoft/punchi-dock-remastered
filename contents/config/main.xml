@@ -35,33 +35,6 @@
     <entry name="showRecentApplications" type="Bool">
       <default>true</default>
     </entry>
-    <entry name="recentApplicationsShowSeparator" type="Bool">
-      <default>true</default>
-    </entry>
-    <entry name="recentApplicationsSeparatorAppearanceSource" type="String">
-      <default>theme</default>
-    </entry>
-    <entry name="recentApplicationsSeparatorStyle" type="String">
-      <default>line</default>
-    </entry>
-    <entry name="recentApplicationsSeparatorThickness" type="Int">
-      <default>2</default>
-      <min>1</min>
-      <max>16</max>
-    </entry>
-    <entry name="recentApplicationsSeparatorLengthRatio" type="Double">
-      <default>0.72</default>
-      <min>0.2</min>
-      <max>1</max>
-    </entry>
-    <entry name="recentApplicationsSeparatorOpacity" type="Double">
-      <default>0.34</default>
-      <min>0.1</min>
-      <max>1</max>
-    </entry>
-    <entry name="recentApplicationsSeparatorGlowEnabled" type="Bool">
-      <default>false</default>
-    </entry>
     <entry name="recentApplicationsPosition" type="String">
       <default></default>
     </entry>

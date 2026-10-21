@@ -31,7 +31,7 @@ TestCase {
     function test_horizontalMoveHandleReservesVisibleExtent() {
         const marker = geometry.dockItems[1]
         const compactLength = geometry.panelFixedContentLength
-        compare(geometry.panelMainAxisExtentForDockItem(marker), 10)
+        compare(geometry.panelMainAxisExtentForDockItem(marker), 0)
 
         geometry.dynamicApplicationsMoveModeActive = true
 
@@ -58,6 +58,11 @@ TestCase {
             "separatorThickness": 16
         }
 
-        compare(geometry.panelMainAxisExtentForDockItem(customizedMarker), 20)
+        compare(geometry.panelMainAxisExtentForDockItem(customizedMarker), 0)
+        compare(geometry.panelMainAxisExtentForDockItem({
+            "type": "separator",
+            "separatorAppearanceSource": "item",
+            "separatorThickness": 16
+        }), 20)
     }
 }

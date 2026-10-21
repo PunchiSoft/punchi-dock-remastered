@@ -62,21 +62,27 @@ TestCase {
     function test_visualOrderAroundOpenApplications_data() {
         return [
             { tag: "recent-first", recent: 0, dynamic: 2, slots: 3,
-                persistent: [0, 3, 4, 7], recentStart: 0, dynamicStart: 5 },
+                persistent: [0, 3, 4, 6], recentStart: 0, dynamicStart: 4 },
             { tag: "recent-after-windows", recent: 2, dynamic: 0, slots: 3,
-                persistent: [0, 3, 4, 7], recentStart: 4, dynamicStart: 1 },
+                persistent: [0, 2, 3, 6], recentStart: 3, dynamicStart: 0 },
             { tag: "recent-empty-before-windows", recent: 0, dynamic: 2, slots: 0,
-                persistent: [0, 0, 1, 4], recentStart: 0, dynamicStart: 2 }
+                persistent: [0, 0, 1, 3], recentStart: 0, dynamicStart: 1 },
+            { tag: "move-handle-keeps-its-slot", recent: 0, dynamic: 2, slots: 3,
+                persistent: [0, 3, 4, 7], recentStart: 0, dynamicStart: 5,
+                markerSlot: true }
         ]
     }
 
     function test_visualOrderAroundOpenApplications(data) {
+        const markerSlot = data.markerSlot === true
         for (let index = 0; index < 4; index++) {
-            compare(Placement.persistentVisualIndex(index, data.dynamic, 2, data.recent, data.slots),
-                data.persistent[index])
+            compare(Placement.persistentVisualIndex(index, data.dynamic, 2,
+                data.recent, data.slots, markerSlot), data.persistent[index])
         }
-        compare(Placement.recentVisualIndex(data.recent, 4, data.dynamic, 2, 0), data.recentStart)
-        compare(Placement.dynamicVisualIndex(data.dynamic, true, data.recent, data.slots, 0), data.dynamicStart)
+        compare(Placement.recentVisualIndex(data.recent, 4, data.dynamic, 2, 0,
+            markerSlot), data.recentStart)
+        compare(Placement.dynamicVisualIndex(data.dynamic, markerSlot, data.recent,
+            data.slots, 0), data.dynamicStart)
     }
 
     Component { id: itemsPage; Config.ConfigItems {} }
@@ -125,53 +131,5 @@ TestCase {
         compare(Placement.markerIndex(page.items), -1)
         page.cfg_showRecentApplications = true
         compare(Placement.markerIndex(page.items), 1)
-    }
-
-    function test_separatorDraftEditingAndCancel() {
-        const persisted = JSON.stringify(fixtures())
-        let page = createTemporaryObject(itemsPage, this,
-            { cfg_dockItemsJson: persisted, cfg_showRecentApplications: true })
-        page.selectItem(3)
-        page.width = 650
-        page.height = 760
-        page.configureSelectedItem()
-        const dialog = findChild(page, "itemActionsDialog")
-        verify(dialog !== null)
-        tryVerify(function() { return dialog.opened })
-        const show = findChild(dialog, "dynamicApplicationsSeparatorVisibleCheckBox")
-        const options = findChild(dialog, "dynamicApplicationsSeparatorOptions")
-        verify(show !== null && options !== null)
-        verify(show.visible && options.visible)
-        show.checked = false
-        show.toggled()
-        compare(page.cfg_recentApplicationsShowSeparator, false)
-        verify(!options.enabled)
-        show.checked = true
-        show.toggled()
-        options.setSeparatorAppearanceSourceValue("item")
-        options.setSeparatorStyleValue("diamond")
-        options.setSeparatorThicknessValue(7)
-        options.setSeparatorLengthRatioValue(0.85)
-        options.setSeparatorOpacityValue(0.65)
-        options.setSeparatorGlowEnabled(true)
-        page.applyItemForm()
-        compare(page.cfg_recentApplicationsSeparatorAppearanceSource, "item")
-        compare(page.cfg_recentApplicationsSeparatorStyle, "diamond")
-        compare(page.cfg_recentApplicationsSeparatorThickness, 7)
-        compare(page.cfg_recentApplicationsSeparatorLengthRatio, 0.85)
-        compare(page.cfg_recentApplicationsSeparatorOpacity, 0.65)
-        compare(page.cfg_recentApplicationsSeparatorGlowEnabled, true)
-        compare(page.items[3].separatorStyle, undefined)
-        page.cfg_showRecentApplications = false
-        page.cfg_showRecentApplications = true
-        page.selectItem(3)
-        compare(dialog.separatorStyleValue, "diamond")
-        dialog.close()
-        page.destroy()
-        page = createTemporaryObject(itemsPage, this,
-            { cfg_dockItemsJson: persisted, cfg_showRecentApplications: true })
-        compare(page.cfg_recentApplicationsShowSeparator, true)
-        compare(page.cfg_recentApplicationsSeparatorAppearanceSource, "theme")
-        compare(page.cfg_recentApplicationsSeparatorStyle, "line")
     }
 }

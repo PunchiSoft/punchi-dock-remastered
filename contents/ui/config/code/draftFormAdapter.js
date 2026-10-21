@@ -43,8 +43,7 @@ function separatorFieldsFor(panel) {
         "separatorThickness": panel.separatorThicknessValue,
         "separatorLengthRatio": panel.separatorLengthRatioValue,
         "separatorOpacity": panel.separatorOpacityValue,
-        "separatorGlowEnabled": panel.separatorGlowEnabled,
-        "showSeparator": panel.separatorVisibleChecked
+        "separatorGlowEnabled": panel.separatorGlowEnabled
     }
 }
 
@@ -82,7 +81,7 @@ function fieldsFor(draft, panel, type) {
     if (kind === "spacer") {
         return {"size": Number(panel.spacerSizeValue)}
     }
-    if (kind === "separator" || kind === "dynamic-applications") {
+    if (kind === "separator") {
         return separatorFieldsFor(panel)
     }
     return {}
@@ -292,7 +291,7 @@ function applyToPanel(draft, panel, type) {
     if (kind === "spacer") {
         panel.spacerSizeValue = Number(item.size === undefined ? 32 : item.size)
     }
-    if (kind === "separator" || kind === "dynamic-applications") {
+    if (kind === "separator") {
         panel.setSeparatorAppearanceSourceValue(
             ConfigItemsJS.normalizedSeparatorAppearanceSource(item))
         panel.setSeparatorStyleValue(item.separatorStyle === "pill"
@@ -307,6 +306,5 @@ function applyToPanel(draft, panel, type) {
             Number(item.separatorOpacity === undefined
                 ? 0.34 : item.separatorOpacity))
         panel.setSeparatorGlowEnabled(item.separatorGlowEnabled === true)
-        panel.setSeparatorVisibleChecked(item.showSeparator !== false)
     }
 }

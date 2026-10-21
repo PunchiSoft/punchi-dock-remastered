@@ -115,15 +115,20 @@ require(
     "The KCM must add at most one open-applications marker through the transactional flow.",
 )
 require(
-    'itemType === "separator" || itemType === "dynamic-applications"'
-    in GEOMETRY,
-    "The marker must consume separator geometry instead of a full app slot.",
+    'if (itemType === "dynamic-applications") {' in GEOMETRY
+    and "return root.dynamicApplicationsMoveModeActive" in GEOMETRY
+    and "? root.dynamicApplicationsMoveHandleExtent : 0" in GEOMETRY
+    and 'itemType === "separator" || itemType === "dynamic-applications"'
+    not in GEOMETRY,
+    "The marker must reserve length only for its move handle, not a separator slot.",
 )
 require(
-    "property bool separatorVisibleSetting: true" in DOCK_ITEM
-    and "&& dockItemContainer.separatorVisibleSetting" in DOCK_ITEM
-    and "dockItemDelegate.modelData.showSeparator !== false" in MAIN,
-    "The marker must keep its anchor while allowing its separator to be hidden.",
+    "separatorVisibleSetting" not in DOCK_ITEM
+    and "separatorVisibleSetting" not in MAIN
+    and "showSeparator" not in DOCK_ITEM
+    and 'dockItemContainer.itemType !== "dynamic-applications"' in DOCK_ITEM
+    and "&& !persistentMoveHandleVisible" in DOCK_ITEM,
+    "The marker must keep its insertion anchor without a separator or a reserved gap.",
 )
 require(
     "function dynamicApplicationsMarkerUpdate(items)" in LOGIC

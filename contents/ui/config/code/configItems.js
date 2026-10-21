@@ -497,16 +497,12 @@ function pruneDynamicApplications(item) {
     delete item.actionPopupMaxVisibleRows
     removeKeys(item, [
         "icon", "command", "apps", "actions", "actionsEnabled",
-        "description", "storageId", "appId"
+        "description", "storageId", "appId", "showSeparator",
+        "separatorAppearanceSource", "separatorStyle", "separatorThickness",
+        "separatorLengthRatio", "separatorOpacity", "separatorGlowEnabled"
     ])
     item.type = "dynamic-applications"
     item.name = "Open applications"
-    if (item.showSeparator === false) {
-        item.showSeparator = false
-    } else {
-        delete item.showSeparator
-    }
-    pruneSeparatorAppearance(item)
 }
 
 function pruneSpacer(item) {

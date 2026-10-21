@@ -62,19 +62,27 @@ function reconcile(items, enabled, storedPosition, maximumItems) {
 }
 
 // The hidden marker is replaced by its presentation slots. An empty block
-// adds none.
-function persistentVisualIndex(index, dynamicIndex, dynamicCount, recentIndex, recentSlots) {
-    return index + (dynamicIndex >= 0 && index > dynamicIndex ? dynamicCount : 0)
+// adds none. The open-applications marker only takes a visual slot while its
+// move handle is active; otherwise its tasks start at the marker's own slot.
+function persistentVisualIndex(index, dynamicIndex, dynamicCount, recentIndex, recentSlots,
+        dynamicMarkerSlot) {
+    const markerSlots = dynamicMarkerSlot === true ? 1 : 0
+    return index
+        + (dynamicIndex >= 0 && index > dynamicIndex
+            ? dynamicCount - 1 + markerSlots : 0)
         + (recentIndex >= 0 && index > recentIndex ? recentSlots - 1 : 0)
 }
 
-function recentVisualIndex(index, itemCount, dynamicIndex, dynamicCount, offset) {
+function recentVisualIndex(index, itemCount, dynamicIndex, dynamicCount, offset,
+        dynamicMarkerSlot) {
+    const markerSlots = dynamicMarkerSlot === true ? 1 : 0
     return (index >= 0 ? index : itemCount)
-        + (index < 0 || (dynamicIndex >= 0 && dynamicIndex < index) ? dynamicCount : 0)
+        + (index < 0 || (dynamicIndex >= 0 && dynamicIndex < index)
+            ? dynamicCount - 1 + markerSlots : 0)
         + offset
 }
 
-function dynamicVisualIndex(index, markerPresent, recentIndex, recentSlots, offset) {
-    return index + (markerPresent ? 1 : 0) + offset
+function dynamicVisualIndex(index, markerSlot, recentIndex, recentSlots, offset) {
+    return index + (markerSlot === true ? 1 : 0) + offset
         + (recentIndex >= 0 && recentIndex < index ? recentSlots - 1 : 0)
 }

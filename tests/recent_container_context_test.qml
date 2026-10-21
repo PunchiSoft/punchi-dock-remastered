@@ -15,8 +15,6 @@ TestCase {
     property string layout: "grid"
     property int viewCalls: 0
     property int disableCalls: 0
-    property bool separatorShown: true
-    property int separatorCalls: 0
     property var page: null
 
     QtObject {
@@ -41,12 +39,6 @@ TestCase {
         dockItemsController: items
         recentContainerActive: testCase.recentEnabled
         recentApplicationsActive: testCase.recentEnabled
-        recentApplicationsSeparatorVisible: testCase.separatorShown
-        setRecentApplicationsSeparatorVisibleHandler: function(value) {
-            testCase.separatorShown = value
-            testCase.separatorCalls += 1
-            return true
-        }
         configureDockHandler: function() { return true }
         disableRecentApplicationsHandler: function() {
             testCase.recentEnabled = false
@@ -76,8 +68,6 @@ TestCase {
         layout = "grid"
         viewCalls = 0
         disableCalls = 0
-        separatorShown = true
-        separatorCalls = 0
         page = recentGeneralTestSupport.createPage(testCase)
         verify(page !== null)
         const tabs = findChild(page, "generalTabs")
@@ -178,26 +168,15 @@ TestCase {
 
     function test_separatorActionForBothPresentationsAndStaleState() {
         for (const origin of ["recent-container", "recent"]) {
-            const item = origin === "recent" ? {type: "app", entryRole: "recent"} : descriptor()
+            const item = origin === "recent"
+                ? {type: "app", entryRole: "recent",
+                    storageId: "org.example.Recent.desktop"}
+                : descriptor()
             verify(controller.itemHasContextMenu(item, [], origin))
-            let actions = controller.actionsForItem(item, [], origin, -1)
-            let action = actionOfKind(actions, "setRecentApplicationsSeparatorVisible")
-            verify(action !== null)
-            compare(action.name, "Hide separator")
-            verify(controller.triggerAction(action))
-            compare(separatorShown, false)
-            actions = controller.actionsForItem(item, [], origin, -1)
-            action = actionOfKind(actions, "setRecentApplicationsSeparatorVisible")
-            compare(action.name, "Show separator")
-            verify(controller.triggerAction(action))
-            compare(separatorShown, true)
+            const actions = controller.actionsForItem(item, [], origin, -1)
+            compare(actionOfKind(actions, "setRecentApplicationsSeparatorVisible"), null)
             compare(actionOfKind(actions, "moveDynamicApplications"), null)
         }
-        compare(separatorCalls, 4)
-        verify(!controller.triggerAction({kind: "setRecentApplicationsSeparatorVisible", visible: "true"}))
-        recentEnabled = false
-        verify(!controller.triggerAction({kind: "setRecentApplicationsSeparatorVisible", visible: false}))
-        compare(separatorCalls, 4)
         const pinned = controller.actionsForItem({type: "folder", apps: []}, [], "pinned", 0)
         compare(actionOfKind(pinned, "setRecentApplicationsSeparatorVisible"), null)
     }

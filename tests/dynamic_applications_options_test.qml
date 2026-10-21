@@ -34,6 +34,27 @@ TestCase {
         }
     }
 
+    Component {
+        id: separatorWindowComponent
+
+        Window {
+            id: separatorHostWindow
+            width: 800
+            height: 700
+            visible: true
+
+            property alias panel: separatorEditorPanel
+
+            Config.ItemEditorPanel {
+                id: separatorEditorPanel
+                anchors.fill: parent
+                selectedItemType: "separator"
+                showTypeSelector: false
+                itemModeIndex: 3
+            }
+        }
+    }
+
     function init() {
         failOnWarning(/.?/)
         formChangedSpy.clear()
@@ -64,51 +85,25 @@ TestCase {
         const checkbox = findChild(
             panel, "dynamicApplicationsSeparatorVisibleCheckBox")
         const options = findChild(panel, "dynamicApplicationsSeparatorOptions")
-        const appearanceSource = findChild(
-            panel, "separatorAppearanceSourceCombo")
-        const appearanceControls = findChild(
-            panel, "separatorAppearanceControls")
-        verify(checkbox !== null)
+        verify(checkbox === null)
         verify(options !== null)
-        verify(appearanceSource !== null)
-        verify(appearanceControls !== null)
-        verify(checkbox.visible)
-        verify(checkbox.checked)
-        verify(options.visible)
-        verify(options.enabled)
+        verify(!options.visible)
+        verify(panel.separatorVisibleChecked === undefined)
         compare(panel.separatorAppearanceSourceValue, "theme")
-        verify(!appearanceControls.enabled)
-
-        formChangedSpy.target = panel
-        panel.setSeparatorAppearanceSourceValue("item")
-        verify(appearanceControls.enabled)
-        panel.setSeparatorStyleValue("diamond")
-        panel.setSeparatorThicknessValue(4)
-        panel.setSeparatorVisibleChecked(false)
-        compare(formChangedSpy.count, 0)
-        compare(panel.separatorVisibleChecked, false)
-        panel.setSeparatorVisibleChecked(true)
-        compare(formChangedSpy.count, 0)
-
-        checkbox.forceActiveFocus(Qt.TabFocusReason)
-        verify(checkbox.activeFocus)
-        keyClick(Qt.Key_Space)
-
-        tryCompare(checkbox, "checked", false)
-        compare(panel.separatorVisibleChecked, false)
-        compare(options.enabled, false)
-        verify(formChangedSpy.count > 0)
     }
 
     function test_keyboardSelectsPerItemAppearance() {
-        const hostWindow = createTemporaryObject(windowComponent, testCase)
+        const hostWindow = createTemporaryObject(separatorWindowComponent, testCase)
         verify(hostWindow !== null)
         hostWindowUnderTest = hostWindow
         tryCompare(hostWindow, "visible", true)
         const panel = hostWindow.panel
+        wait(0)
+        compare(panel.itemModeValue, "separator")
         const appearanceSource = findChild(
             panel, "separatorAppearanceSourceCombo")
         verify(appearanceSource !== null)
+        verify(appearanceSource.visible)
         compare(panel.separatorAppearanceSourceValue, "theme")
 
         formChangedSpy.target = panel

@@ -199,40 +199,24 @@ private Q_SLOTS:
             };
             QVERIFY(move(3, 0));
             QTRY_COMPARE(root->property("recentApplicationsMarkerIndex").toInt(), 0);
-            QTRY_VERIFY(!root->property("recentSeparatorVisible").toBool());
+            QVERIFY(!root->property("recentSeparatorVisible").isValid());
+            QVERIFY(!findVisual(item->fullRepresentationItem(),
+                QStringLiteral("recentApplicationsSeparator")));
             QVariant recentStart;
             QVERIFY(QMetaObject::invokeMethod(root, "recentVisualIndex", Q_RETURN_ARG(QVariant, recentStart), Q_ARG(QVariant, 0)));
             QCOMPARE(recentStart.toInt(), 0);
             QVERIFY(move(0, 2));
             QTRY_COMPARE(root->property("recentApplicationsMarkerIndex").toInt(), 2);
-            QTRY_VERIFY(root->property("recentSeparatorVisible").toBool());
-            auto *separator = findVisual(item->fullRepresentationItem(), QStringLiteral("recentApplicationsSeparator"));
-            QVERIFY(separator);
-            QVERIFY(separator->isVisible());
-            const int slotsWithSeparator = root->property("recentPresentationItems").value<QJSValue>().property(QStringLiteral("length")).toInt();
-            config->insert(QStringLiteral("recentApplicationsShowSeparator"), false);
-            QTRY_VERIFY(!root->property("recentSeparatorVisible").toBool());
-            QTRY_VERIFY(!separator->isVisible());
-            QCOMPARE(root->property("recentPresentationItems").value<QJSValue>().property(QStringLiteral("length")).toInt(), slotsWithSeparator - 1);
+            QVERIFY(!findVisual(item->fullRepresentationItem(),
+                QStringLiteral("recentApplicationsSeparator")));
+            QCOMPARE(root->property("recentPresentationItems").value<QJSValue>()
+                .property(QStringLiteral("length")).toInt(), 1);
             config->insert(QStringLiteral("recentApplicationsMode"), QStringLiteral("inline"));
-            config->insert(QStringLiteral("recentApplicationsShowSeparator"), true);
-            QTRY_VERIFY(root->property("recentSeparatorVisible").toBool());
-            QTRY_VERIFY(separator->isVisible());
-            config->insert(QStringLiteral("recentApplicationsSeparatorAppearanceSource"), QStringLiteral("item"));
-            config->insert(QStringLiteral("recentApplicationsSeparatorStyle"), QStringLiteral("diamond"));
-            config->insert(QStringLiteral("recentApplicationsSeparatorThickness"), 7);
-            config->insert(QStringLiteral("recentApplicationsSeparatorLengthRatio"), 0.85);
-            config->insert(QStringLiteral("recentApplicationsSeparatorOpacity"), 0.65);
-            config->insert(QStringLiteral("recentApplicationsSeparatorGlowEnabled"), true);
-            QTRY_COMPARE(separator->property("separatorAppearanceSourceSetting").toString(), QStringLiteral("item"));
-            QTRY_COMPARE(separator->property("separatorStyleSetting").toString(), QStringLiteral("diamond"));
-            QTRY_COMPARE(separator->property("separatorThicknessSetting").toInt(), 7);
-            QTRY_COMPARE(separator->property("separatorLengthRatioSetting").toDouble(), 0.85);
-            QTRY_COMPARE(separator->property("separatorOpacitySetting").toDouble(), 0.65);
-            QTRY_VERIFY(separator->property("separatorGlowSetting").toBool());
+            QTRY_COMPARE(root->property("recentPresentationItems").value<QJSValue>()
+                .property(QStringLiteral("length")).toInt(),
+                root->property("visibleRecentApplicationCount").toInt());
             QPointer<QObject> previousHistory(history);
             config->insert(QStringLiteral("showRecentApplications"), false);
-            QTRY_VERIFY(!separator->isVisible());
             QTRY_VERIFY(previousHistory.isNull());
             QTRY_COMPARE(root->property("recentApplicationsMarkerIndex").toInt(), -1);
             config->insert(QStringLiteral("showRecentApplications"), true);
@@ -241,19 +225,9 @@ private Q_SLOTS:
             history = root->findChild<QObject *>(QStringLiteral("recentApplicationsHistory"));
             QVERIFY(history->setProperty("sourceModel", QVariant::fromValue<QAbstractItemModel *>(&provider)));
             QTRY_COMPARE(root->property("visibleRecentApplicationCount").toInt(), 5);
-            QTRY_VERIFY(separator->isVisible());
-            QCOMPARE(separator->property("separatorStyleSetting").toString(), QStringLiteral("diamond"));
             config->insert(QStringLiteral("recentApplicationsMode"), QStringLiteral("container"));
-            config->insert(QStringLiteral("recentApplicationsShowSeparator"), false);
-            // The configuration adapter is the same immediate writer used by
-            // both recent context menus.
-            QObject *configState = separator->property("configState").value<QObject *>();
-            QVERIFY(configState);
-            QVariant toggled;
-            QVERIFY(QMetaObject::invokeMethod(configState, "setRecentApplicationsSeparatorVisible",
-                Q_RETURN_ARG(QVariant, toggled), Q_ARG(QVariant, true)));
-            QVERIFY(toggled.toBool());
-            QTRY_VERIFY(separator->isVisible());
+            QTRY_COMPARE(root->property("recentPresentationItems").value<QJSValue>()
+                .property(QStringLiteral("length")).toInt(), 1);
             // The ordinary container gesture emits the same signals as other
             // persistent dock items, carrying the virtual marker's model index.
             config->insert(QStringLiteral("enableFloatingItemDragReordering"), true);
@@ -311,7 +285,8 @@ private Q_SLOTS:
             QVERIFY(!icon->property("persistentReorderEnabled").toBool());
             provider.clear();
             QTRY_COMPARE(root->property("visibleRecentApplicationCount").toInt(), 0);
-            QVERIFY(!root->property("recentSeparatorVisible").toBool());
+            QVERIFY(!findVisual(item->fullRepresentationItem(),
+                QStringLiteral("recentApplicationsSeparator")));
             QCOMPARE(root->property("recentApplicationsMarkerIndex").toInt(), position);
             config->insert(QStringLiteral("showRecentApplications"), false);
             QTRY_COMPARE(root->property("recentApplicationsMarkerIndex").toInt(), -1);

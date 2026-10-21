@@ -56,7 +56,7 @@ TestCase {
         compare(result.items.length, Logic.maximumDockItemCount)
     }
 
-    function test_markerAppearanceIsNormalizedAndVisibilityIsPreserved() {
+    function test_markerDropsLegacySeparatorKeys() {
         const item = {
             "type": "dynamic-applications",
             "name": "Unexpected name",
@@ -66,23 +66,24 @@ TestCase {
             "separatorLengthRatio": 0.05,
             "separatorOpacity": 2,
             "separatorGlowEnabled": true,
+            "separatorAppearanceSource": "item",
             "command": "must-not-survive"
         }
 
         ConfigItems.pruneDynamicApplications(item)
 
         compare(item.name, "Open applications")
-        compare(item.showSeparator, false)
-        compare(item.separatorStyle, "capsule")
-        compare(item.separatorThickness, 16)
-        compare(item.separatorLengthRatio, 0.20)
-        compare(item.separatorOpacity, 1.0)
-        compare(item.separatorGlowEnabled, true)
-        compare(item.separatorAppearanceSource, "item")
+        verify(Object.keys(item).indexOf("showSeparator") < 0)
+        verify(Object.keys(item).indexOf("separatorStyle") < 0)
+        verify(Object.keys(item).indexOf("separatorThickness") < 0)
+        verify(Object.keys(item).indexOf("separatorLengthRatio") < 0)
+        verify(Object.keys(item).indexOf("separatorOpacity") < 0)
+        verify(Object.keys(item).indexOf("separatorGlowEnabled") < 0)
+        verify(Object.keys(item).indexOf("separatorAppearanceSource") < 0)
         verify(Object.keys(item).indexOf("command") < 0)
     }
 
-    function test_visibleMarkerUsesBackwardCompatibleDefault() {
+    function test_markerKeepsOnlyItsTypeAndName() {
         const item = {
             "type": "dynamic-applications",
             "showSeparator": true
@@ -90,11 +91,12 @@ TestCase {
 
         ConfigItems.pruneDynamicApplications(item)
 
-        verify(Object.keys(item).indexOf("showSeparator") < 0)
-        compare(item.separatorAppearanceSource, "theme")
+        compare(Object.keys(item).sort().join(","), "name,type")
+        compare(item.type, "dynamic-applications")
+        compare(item.name, "Open applications")
     }
 
-    function test_explicitThemeSourceSurvivesStoredLocalValues() {
+    function test_storedSeparatorAppearanceDoesNotSurvive() {
         const item = {
             "type": "dynamic-applications",
             "separatorAppearanceSource": "theme",
@@ -104,8 +106,9 @@ TestCase {
 
         ConfigItems.pruneDynamicApplications(item)
 
-        compare(item.separatorAppearanceSource, "theme")
-        compare(ConfigItems.normalizedSeparatorAppearanceSource(item), "theme")
+        verify(Object.keys(item).indexOf("separatorAppearanceSource") < 0)
+        verify(Object.keys(item).indexOf("separatorStyle") < 0)
+        verify(Object.keys(item).indexOf("separatorThickness") < 0)
     }
 
     function test_removingMarkerRequiresConfirmationAndDisablesActiveTasks() {

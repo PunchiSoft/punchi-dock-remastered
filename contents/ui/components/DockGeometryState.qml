@@ -364,12 +364,13 @@ QtObject {
             : root.compactMediaItemMainAxisLength
     }
 
-    // Mirrors DockItem.dynamicApplicationsMarkerCollapsed from the item model:
-    // a marker whose separator is hidden must not reserve panel length either.
+    // The dynamic-applications marker no longer paints a separator. It only
+    // reserves panel length while its move handle is active; the rest of the
+    // time it is a model insertion point with no visual footprint.
     function dynamicApplicationsMarkerCollapsed(item) {
         const itemType = item && item.type ? String(item.type) : "app"
         return itemType === "dynamic-applications"
-            && item.showSeparator === false
+            && !root.dynamicApplicationsMoveModeActive
     }
 
     function panelMainAxisExtentForDockItem(item) {
@@ -377,14 +378,11 @@ QtObject {
         if (itemType === "recent-applications") {
             return 0
         }
-        if (itemType === "dynamic-applications"
-                && root.dynamicApplicationsMoveModeActive) {
-            return root.dynamicApplicationsMoveHandleExtent
+        if (itemType === "dynamic-applications") {
+            return root.dynamicApplicationsMoveModeActive
+                ? root.dynamicApplicationsMoveHandleExtent : 0
         }
-        if (root.dynamicApplicationsMarkerCollapsed(item)) {
-            return 0
-        }
-        if (itemType === "separator" || itemType === "dynamic-applications") {
+        if (itemType === "separator") {
             const appearance = SeparatorAppearance.resolvedAppearance(
                 SeparatorAppearance.sourceForItem(item), item,
                 root.customSeparatorEnabled, root.separatorTheme)
