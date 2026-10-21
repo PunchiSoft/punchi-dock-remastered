@@ -247,12 +247,14 @@ require(
     and 'effectiveHoverAnimationMode:\n                    persistentDragActive ? "none"'
     in MAIN
     and "&& !dockLayout.persistentDragActive" in MAIN
-    and "persistentReorderInsertionIndicator" in DOCK_ITEM,
-    "An active reorder must follow the pointer, freeze hover, and show insertion feedback.",
+    and "persistentReorderOffset" in DOCK_ITEM
+    and "persistentDragOffsets" in MAIN,
+    "An active reorder must follow the pointer, freeze hover, and preview the "
+    "final slot by moving the delegates instead of a static insertion mark.",
 )
 require(
     "property bool persistentReorderGroupMember: false" in DOCK_ITEM
-    and "|| dockItemContainer.persistentReorderGroupMember) ? 0.28 : 1.0)"
+    and "|| dockItemContainer.persistentReorderGroupMember) ? 0.5 : 1.0)"
     in DOCK_ITEM
     and "property bool persistentDragMovesDynamicApplications: false" in MAIN
     and 'items[index].type === "dynamic-applications"' in MAIN
@@ -265,9 +267,9 @@ require(
     'objectName: "dockReorderDragProxy"' in DRAG_LAYER
     and "x: root.pointerPosition.x - width / 2" in DRAG_LAYER
     and "y: root.pointerPosition.y - height / 2" in DRAG_LAYER
-    and "Kirigami.Theme.highlightColor" in DRAG_LAYER
+    and "source: root.iconName" in DRAG_LAYER
     and "ShaderEffect" not in DRAG_LAYER,
-    "The drag proxy must be a lightweight themed visual that follows the pointer.",
+    "The drag proxy must be a lightweight icon-only visual that follows the pointer.",
 )
 require(
     "onPersistentReorderPressStarted:" in MAIN
