@@ -906,6 +906,38 @@ PlasmoidItem {
         }
     }
     readonly property string configuredPanelVisibilityMode: String(Plasmoid.configuration.panelVisibilityMode || "system")
+    // A pointer gesture must survive an auto-hiding panel: while the
+    // open-applications section or a Dock item is being moved, the panel stays
+    // visible and the configured mode is restored once the gesture settles.
+    // The representation reports the gesture state because its ids are scoped
+    // to that nested component.
+    property bool panelGestureActive: false
+    property int panelVisibilityBeforeGesture: -1
+    onPanelGestureActiveChanged: root.updatePanelVisibilityHold()
+
+    function updatePanelVisibilityHold() {
+        const panelWindow = root.Window.window
+        if (!root.inPanel || !panelWindow) {
+            return
+        }
+        const visibilityKey = "visibilityMode"
+        try {
+            if (root.panelGestureActive) {
+                if (root.panelVisibilityBeforeGesture < 0) {
+                    root.panelVisibilityBeforeGesture
+                        = Number(panelWindow[visibilityKey])
+                }
+                panelWindow[visibilityKey] = 0
+            } else if (root.panelVisibilityBeforeGesture >= 0) {
+                panelWindow[visibilityKey]
+                    = root.panelVisibilityBeforeGesture
+                root.panelVisibilityBeforeGesture = -1
+                root.applyConfiguredPanelVisibilityMode()
+            }
+        } catch (error) {
+            // Guard against custom shells
+        }
+    }
     // The quick action and the Plasma panel settings can change the effective
     // mode. Adoption is enabled only after the startup apply, so a stale
     // observation cannot overwrite an explicit stored preference.
@@ -2844,6 +2876,15 @@ PlasmoidItem {
                         return result
                     }
                 }
+                // Auto-hide must not interrupt a move gesture; the root keeps
+                // the panel visible until the gesture settles.
+                readonly property bool pointerGestureActive:
+                    persistentMoveModeActive || persistentDragActive
+                onPointerGestureActiveChanged:
+                    root.panelGestureActive = pointerGestureActive
+                Component.onCompleted:
+                    root.panelGestureActive = pointerGestureActive
+                Component.onDestruction: root.panelGestureActive = false
                 z: 10
                 flow: dockGeometry.verticalPanel ? GridLayout.TopToBottom : GridLayout.LeftToRight
                 columns: dockGeometry.verticalPanel ? 1 : -1
