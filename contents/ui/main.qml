@@ -3395,7 +3395,9 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === dockItemDelegate)
-                            || (folderPopupDialog.visible && folderPopupDialog.sourceAnchor === dockItemDelegate)
+                            || (folderPopupDialog.visible
+                                && folderPopupDialog.sourceAnchor
+                                    === dockItemDelegate.contextMenuAnchorItem)
                             || (calendarPopupDialog.visible && calendarPopupDialog.visualParent === dockItemDelegate)
                             || (notePopupDialog.visible && notePopupDialog.visualParent === dockItemDelegate)
                             || (trashMenuDialog.visible
@@ -3652,7 +3654,9 @@ PlasmoidItem {
                         // qmllint disable unqualified
                         suppressTooltip: mainContainer.contextMenuVisible
                             || (taskWindowsDialog.visible && popupCoordinator.taskPopupVisualParent === taskDockItemDelegate)
-                            || (folderPopupDialog.visible && folderPopupDialog.sourceAnchor === taskDockItemDelegate)
+                            || (folderPopupDialog.visible
+                                && folderPopupDialog.sourceAnchor
+                                    === taskDockItemDelegate.contextMenuAnchorItem)
                             || (calendarPopupDialog.visible && calendarPopupDialog.visualParent === taskDockItemDelegate)
                             || (notePopupDialog.visible && notePopupDialog.visualParent === taskDockItemDelegate)
                             || (trashMenuDialog.visible
@@ -3955,6 +3959,9 @@ PlasmoidItem {
 
             function setPopupAnchor(anchor) {
                 folderPopupDialog.sourceAnchor = anchor
+                // Horizontal docks keep the click-time icon rect so the popup
+                // and its callout do not chase the icon magnification.
+                folderPopupDialog.popupSpacing.captureSourceGeometry()
                 folderPopupDialog.popupSpacing.refreshAnchor()
             }
 
@@ -3998,26 +4005,37 @@ PlasmoidItem {
                     contentGeometryTransitionsEnabled: false
                     drawContentBackground:
                         folderPopupContent.layoutMode !== "fan"
-                    // Comic-style tail, composed from the same theme frame that
-                    // draws the background. The three classic presentations of the
-                    // folder popup ask for it — grid, list and detailed — and the
-                    // fan stays out, because it draws no card background of its
-                    // own and its alignment belongs to its arc. The accepted
-                    // layouts are listed one by one on purpose: a layout added
-                    // later must not inherit the tail without a review. The side is
-                    // the dock edge: popupDirection is the edge the popup grows
-                    // away from and would put the tail at the far side of the popup.
+                    // Comic-style callout for the three classic presentations of
+                    // the folder popup — grid, list and detailed. They draw one
+                    // continuous balloon silhouette; the themed frame remains in
+                    // the tree as the authoritative blur mask source but is not
+                    // painted. The fan stays out, because it draws no card
+                    // background of its own and its alignment belongs to its
+                    // arc. The accepted layouts are listed one by one on purpose:
+                    // a layout added later must not inherit the silhouette
+                    // without a review. The side is the dock edge: popupDirection
+                    // is the edge the popup grows away from and would put the
+                    // tail at the far side of the popup.
                     edgeTailEnabled: ["grid", "list", "detailed"].indexOf(folderPopupContent.layoutMode) >= 0
                     edgeTailLocation: dockGeometry.spectrumOriginEdge
+                    // Replace the frame only while the tail is actually present;
+                    // otherwise the themed background must stay visible.
+                    integratedBalloonSurface: folderSurfaceStack.edgeTailPresent
                     constrainEdgeTailTip: !folderSurfaceStack.edgeTailHorizontal
                     edgeTailTipOffset: !folderSurfaceStack.edgeTailHorizontal
                         ? folderPopupDialog.popupSpacing.sourceCenterInTarget.y : NaN
-                    // The tail is as wide as the dock item it points at.
-                    edgeTailAnchorExtent: folderPopupDialog.sourceAnchor
-                        ? Math.min(
-                            Number(folderPopupDialog.sourceAnchor.width || 0),
-                            Number(folderPopupDialog.sourceAnchor.height || 0))
-                        : 0
+                    // The tail is as wide as the icon it points at. It reads the
+                    // rect Plasma is placing the popup against, so a captured
+                    // horizontal anchor keeps the callout from growing with the
+                    // icon magnification while the popup is open.
+                    edgeTailAnchorExtent: {
+                        const anchoredGeometry =
+                            folderPopupDialog.popupSpacing.sourceGeometry
+                        const width = Number(anchoredGeometry.width)
+                        const height = Number(anchoredGeometry.height)
+                        return Number.isFinite(width) && Number.isFinite(height)
+                            ? Math.min(width, height) : 0
+                    }
                     backgroundBlurEnabled:
                         folderPopupContent.layoutMode !== "fan"
                     backgroundImagePath: "widgets/background"

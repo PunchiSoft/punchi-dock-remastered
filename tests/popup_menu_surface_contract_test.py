@@ -438,6 +438,17 @@ def main() -> int:
             "The tail must not be enabled by excluding the fan: an unknown "
             "layout would inherit it without a review")
 
+    require(
+        folder_surface,
+        "integratedBalloonSurface: folderSurfaceStack.edgeTailPresent",
+        "The folder popup must draw the continuous balloon silhouette only "
+        "while its tail is present",
+    )
+    if re.search(r"integratedBalloonSurface:\s*true", folder_surface):
+        raise AssertionError(
+            "The folder surface must tie the integrated silhouette to the tail "
+            "instead of hiding the themed frame unconditionally")
+
     tail_surfaces = {
         "folderSurfaceStack",
         "trashSurfaceStack",
@@ -475,11 +486,42 @@ def main() -> int:
                 f"{surface_id} must keep the shared tail disabled: only the "
                 "folder popup and the right-click menus may request it")
 
+    # The folder callout points at the same rendered icon the context menus
+    # use, and it takes its width from the rect Plasma places the popup
+    # against, so a captured horizontal anchor does not grow with icon zoom.
+    folder_open_match = re.search(
+        r"function openFolderPopup\([^)]*\)\s*\{(?P<body>.*?)\n    \}",
+        popup_coordinator,
+        re.DOTALL,
+    )
+    if folder_open_match is None:
+        raise AssertionError("PopupCoordinator must expose openFolderPopup")
+    require(
+        folder_open_match.group("body"),
+        "prepareContextMenuAnchor(visualParent)",
+        "The folder popup must anchor to the rendered icon like the menus",
+    )
+    if "preparePopupAnchor(visualParent)" in folder_open_match.group("body"):
+        raise AssertionError(
+            "The folder popup must not anchor to the whole dock item rect")
+    require(
+        folder_popup,
+        "folderPopupDialog.popupSpacing.captureSourceGeometry()",
+        "The folder popup must capture the click-time icon rect like the menus",
+    )
     require(
         main_qml,
-        "edgeTailAnchorExtent: folderPopupDialog.sourceAnchor",
-        "The folder popup must keep its tail proportional to its dock item",
+        "folderPopupDialog.popupSpacing.sourceGeometry",
+        "The folder tail must be sized from the anchored icon geometry",
     )
+    for delegate in ("dockItemDelegate", "taskDockItemDelegate"):
+        require(
+            main_qml,
+            f"folderPopupDialog.sourceAnchor\n"
+            f"                                    === {delegate}.contextMenuAnchorItem",
+            f"The folder popup must keep suppressing the {delegate} tooltip "
+            "while it is anchored to the rendered icon",
+        )
     if main_qml.count("edgeTailAnchorExtent:") != 1:
         raise AssertionError(
             "Only the folder popup may derive the tail base from a live anchor; "

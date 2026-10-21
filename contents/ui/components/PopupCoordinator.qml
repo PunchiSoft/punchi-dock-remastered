@@ -591,8 +591,11 @@ Item {
         activeFolderModelIndex = visualParent
             && Number.isInteger(Number(visualParent.index))
             ? Number(visualParent.index) : -1
+        // The folder callout points at the icon the dock paints, exactly like
+        // the context menus: the item rect also reserves wave headroom, label
+        // space and padding.
         root.assignPopupAnchor(folderPopupDialogRef,
-            preparePopupAnchor(visualParent))
+            prepareContextMenuAnchor(visualParent))
         if (wasActive) {
             root.hidePopupDialog(folderPopupDialogRef)
         } else {
