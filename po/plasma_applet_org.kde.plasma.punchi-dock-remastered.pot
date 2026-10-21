@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.7.80\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7.81\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-21 17:52-0300\n"
+"POT-Creation-Date: 2026-10-21 19:43-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2218,7 +2218,7 @@ msgctxt "@item:inlistbox Context menu size"
 msgid "Custom"
 msgstr ""
 
-#: contents/ui/components/AppActionsPopup.qml:407
+#: contents/ui/components/AppActionsPopup.qml:411
 msgid "Custom action"
 msgstr ""
 
@@ -4674,7 +4674,7 @@ msgstr ""
 msgid "Open the selected player minimized"
 msgstr ""
 
-#: contents/ui/components/TrashMenuPopup.qml:72
+#: contents/ui/components/TrashMenuPopup.qml:76
 msgid "Open the trash folder in the file manager"
 msgstr ""
 
@@ -4689,7 +4689,7 @@ msgctxt "@info:accessible"
 msgid "Open this folder in the file manager"
 msgstr ""
 
-#: contents/ui/components/TrashMenuPopup.qml:68
+#: contents/ui/components/TrashMenuPopup.qml:72
 msgid "Open trash"
 msgstr ""
 

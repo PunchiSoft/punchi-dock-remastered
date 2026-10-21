@@ -16,6 +16,10 @@ Item {
         Number(rowHeight || 46)))
     readonly property int effectiveIconSize: Math.max(16, Math.min(40,
         Number(iconSize || 26)))
+    // Matches the app context menu: the selection hugs the row bounds while
+    // the row padding still follows the theme for the content.
+    readonly property int actionHighlightInset: Math.max(1,
+        Math.round(Kirigami.Units.smallSpacing / 2))
 
     // Natural width of the widest action row, measured with the same font and
     // padding the rows use. TrashContextPopup consumes it only in automatic
@@ -105,14 +109,10 @@ Item {
             background: Item {
                 InteractiveActionBackground {
                     anchors.fill: parent
-                    anchors.leftMargin: openOption.leftPadding
-                    anchors.rightMargin: openOption.rightPadding
-                    anchors.topMargin: openOption.topPadding
-                    anchors.bottomMargin: openOption.bottomPadding
+                    anchors.margins: root.actionHighlightInset
                     hovered: openOption.hovered
                     focused: openOption.visualFocus
                     pressed: openOption.down
-                    visualRadius: height / 2
                 }
             }
         }
@@ -165,14 +165,10 @@ Item {
             background: Item {
                 InteractiveActionBackground {
                     anchors.fill: parent
-                    anchors.leftMargin: emptyOption.leftPadding
-                    anchors.rightMargin: emptyOption.rightPadding
-                    anchors.topMargin: emptyOption.topPadding
-                    anchors.bottomMargin: emptyOption.bottomPadding
+                    anchors.margins: root.actionHighlightInset
                     hovered: emptyOption.hovered
                     focused: emptyOption.visualFocus
                     pressed: emptyOption.down
-                    visualRadius: height / 2
                 }
             }
         }

@@ -86,6 +86,10 @@ Item {
         Math.ceil(Kirigami.Units.gridUnit * 1.4))
     readonly property real chromeHeight: effectiveSurfaceMarginTop
         + effectiveSurfaceMarginBottom
+    // Keeps the row selection close to the item bounds, as the native menu
+    // does. The item padding still follows the theme for the content itself.
+    readonly property int actionHighlightInset: Math.max(1,
+        Math.round(Kirigami.Units.smallSpacing / 2))
     readonly property real effectiveSurfaceMarginLeft: surfaceMargins
         && Number.isFinite(Number(surfaceMargins.left))
         ? Math.max(0, Number(surfaceMargins.left)) : Kirigami.Units.smallSpacing
@@ -549,16 +553,12 @@ Item {
                     background: Item {
                         InteractiveActionBackground {
                             anchors.fill: parent
-                            anchors.leftMargin: actionDelegate.leftPadding
-                            anchors.rightMargin: actionDelegate.rightPadding
-                            anchors.topMargin: actionDelegate.topPadding
-                            anchors.bottomMargin: actionDelegate.bottomPadding
+                            anchors.margins: appActionsRoot.actionHighlightInset
                             visible: !actionDelegate.isSeparator
                                 && !actionDelegate.isSection
                             hovered: actionDelegate.hovered
                             focused: actionDelegate.visualFocus
                             pressed: actionDelegate.down
-                            visualRadius: height / 2
                         }
 
                         Rectangle {
