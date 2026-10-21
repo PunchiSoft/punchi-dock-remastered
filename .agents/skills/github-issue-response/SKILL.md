@@ -94,6 +94,13 @@ issue.>
 <Traduccion fiel de la respuesta anterior para que el usuario pueda revisarla.>
 ```
 
+Cada respuesta se entrega dentro de su propio bloque de codigo copiable, rodeado
+por vallas de cuatro acentos graves. El bloque exterior conserva los cercos de
+tres acentos y el formato Markdown que GitHub interpreta, de modo que el usuario
+pueda copiar la respuesta completa con una sola seleccion. La evaluacion previa
+queda fuera de los bloques. No sustituir este formato por citas, tablas, HTML ni
+texto suelto.
+
 La traduccion no debe añadir explicaciones, compromisos o matices ausentes en
 ingles. Si existen datos insuficientes, ambas versiones deben contener la misma
 pregunta de aclaracion.
@@ -106,7 +113,8 @@ Antes de entregar, comprobar que:
   impresion sobre la captura;
 - la clasificacion separa bug, mejora, soporte existente y responsabilidad de
   KDE;
-- la respuesta inglesa esta lista para copiar sin notas internas;
+- ingles y español se entregan cada uno en su propio bloque de codigo con vallas
+  de cuatro acentos, listos para copiar sin notas internas;
 - ingles y español expresan exactamente los mismos compromisos;
 - toda voz del autor esta en singular formal;
 - no se realizo ninguna publicacion ni modificacion externa sin autorizacion.
