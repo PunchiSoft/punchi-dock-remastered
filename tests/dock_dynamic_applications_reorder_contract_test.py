@@ -18,9 +18,6 @@ CONTEXT_ACTIONS = (
 DOCK_CONFIGURATION = (
     ROOT / "contents/ui/components/DockConfigurationState.qml"
 ).read_text(encoding="utf-8")
-DRAG_LAYER = (
-    ROOT / "contents/ui/components/DockReorderDragLayer.qml"
-).read_text(encoding="utf-8")
 POPUP_COORDINATOR = (
     ROOT / "contents/ui/components/PopupCoordinator.qml"
 ).read_text(encoding="utf-8")
@@ -227,7 +224,7 @@ require(
 
 require(
     "sourceItem.mapToItem(dockLayout, x, y)" in MAIN
-    and "sourceItem.mapToItem(dockWrapper, x, y)" in MAIN
+    and "dockLayout.persistentDragDelegateAt(" in MAIN
     and "persistentDockItemsRepeater.itemAt(index)" in MAIN
     and "items[index].type === \"media\"" in MAIN,
     "Reordering must resolve persistent delegates and preserve media controls.",
@@ -242,14 +239,26 @@ require(
     "Disabling the floating pointer gesture must preserve keyboard reordering.",
 )
 require(
-    "DockReorderDragLayer {" in MAIN
-    and "persistentDragPointerPosition" in MAIN
+    'Drag.dragType: Drag.Automatic' in DOCK_ITEM
+    and "Drag.imageSource:" in DOCK_ITEM
+    and 'Drag.supportedActions: Qt.MoveAction' in DOCK_ITEM
+    and 'application/x-punchi-dock-item' in DOCK_ITEM
+    and "appletRequestsInhibitDnD" in DOCK_ITEM
+    and "grabToImage" in DOCK_ITEM
+    and "itemIcon.grabToImage" in DOCK_ITEM,
+    "The reorder must run as a platform drag session with the icon as the "
+    "compositor-owned drag pixmap, like the native task manager.",
+)
+require(
+    'objectName: "dockReorderDropArea"' in MAIN
+    and 'keys: ["application/x-punchi-dock-item"]' in MAIN
+    and "updatePersistentDragFromDock(" in MAIN
     and 'effectiveHoverAnimationMode:\n                    persistentDragActive ? "none"'
     in MAIN
     and "&& !dockLayout.persistentDragActive" in MAIN
     and "persistentReorderOffset" in DOCK_ITEM
     and "persistentDragOffsets" in MAIN,
-    "An active reorder must follow the pointer, freeze hover, and preview the "
+    "The drop area must feed the drag position, freeze hover and preview the "
     "final slot by moving the delegates instead of a static insertion mark.",
 )
 require(
@@ -264,16 +273,6 @@ require(
     and MAIN.count("dockLayout.persistentDragMovesDynamicApplications") == 2,
     "Dragging keeps the source fully visible, dims every dynamic task of the "
     "moved section and dims the rest of the dock to focus the gesture.",
-)
-require(
-    'objectName: "dockReorderDragProxy"' in DRAG_LAYER
-    and "x: root.pointerPosition.x" in DRAG_LAYER
-    and "y: root.pointerPosition.y" in DRAG_LAYER
-    and "Math.max(24, Number(root.iconSize))" in DRAG_LAYER
-    and "source: root.iconName" in DRAG_LAYER
-    and "ShaderEffect" not in DRAG_LAYER,
-    "The drag proxy must be an icon-only visual anchored at the pointer, like "
-    "the native drag pixmap.",
 )
 require(
     "onPersistentReorderPressStarted:" in MAIN

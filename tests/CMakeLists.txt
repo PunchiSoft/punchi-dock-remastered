@@ -1023,10 +1023,6 @@ punchi_add_qml_test(
     dynamic_applications_options_test.qml
 )
 punchi_add_qml_test(
-    dock_reorder_drag_layer_test
-    dock_reorder_drag_layer_test.qml
-)
-punchi_add_qml_test(
     container_launcher_drop_logic_test
     container_launcher_drop_logic_test.qml
 )

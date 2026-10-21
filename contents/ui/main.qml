@@ -2911,19 +2911,6 @@ PlasmoidItem {
                 property int persistentDragTargetIndex: -1
                 property string persistentDragExpectedItemText: ""
                 property var persistentDragSourceItem: null
-                property point persistentDragPointerPosition:
-                    Qt.point(0, 0)
-                // The panel window clips anything drawn outside it, so the
-                // floating icon switches to its own surface once the pointer
-                // leaves the dock.
-                readonly property bool persistentDragPointerInsideDock: {
-                    const pointer = persistentDragPointerPosition
-                    return pointer.x >= 0 && pointer.y >= 0
-                        && pointer.x <= dockWrapper.width
-                        && pointer.y <= dockWrapper.height
-                }
-                readonly property point persistentDragPointerGlobalPosition:
-                    dockWrapper.mapToGlobal(persistentDragPointerPosition)
                 property string persistentDragIconName:
                     "application-x-executable"
                 property bool persistentDragMovesDynamicApplications: false
@@ -2976,7 +2963,6 @@ PlasmoidItem {
                     persistentDragTargetIndex = -1
                     persistentDragExpectedItemText = ""
                     persistentDragSourceItem = null
-                    persistentDragPointerPosition = Qt.point(0, 0)
                     persistentDragIconName = "application-x-executable"
                     persistentDragMovesDynamicApplications = false
                     persistentDragMovesRecentApplications = false
@@ -3147,10 +3133,24 @@ PlasmoidItem {
                             || sourceItem !== persistentDragSourceItem) {
                         return
                     }
+                    dockLayout.updatePersistentDragAt(
+                        sourceItem.mapToItem(dockLayout, x, y))
+                }
+
+                // The drag session reports positions in this area, which covers
+                // dockLayout, so no source-item mapping is needed.
+                function updatePersistentDragFromDock(x, y) {
+                    if (!persistentDragActive) {
+                        return
+                    }
+                    dockLayout.updatePersistentDragAt(Qt.point(x, y))
+                }
+
+                function updatePersistentDragAt(point) {
+                    if (!persistentDragActive) {
+                        return
+                    }
                     persistentDragWatchdogTimer.restart()
-                    const point = sourceItem.mapToItem(dockLayout, x, y)
-                    persistentDragPointerPosition
-                        = sourceItem.mapToItem(dockWrapper, x, y)
                     const primaryPosition = dockGeometry.verticalPanel
                         ? point.y : point.x
                     const itemCount = persistentDockItemsRepeater.count
@@ -4037,26 +4037,27 @@ PlasmoidItem {
 
             }
 
-            DockReorderDragLayer {
-                id: dockReorderDragLayer
-                anchors.fill: parent
+            // The gesture itself is a platform drag session, like the native
+            // task manager: the compositor owns the icon, so it is never
+            // clipped by the panel surface. This area only echoes the drag
+            // position into the reorder state.
+            DropArea {
+                objectName: "dockReorderDropArea"
+                anchors.fill: dockLayout
                 z: 20
-                active: dockLayout.persistentDragActive
-                    && dockLayout.persistentDragPointerInsideDock
-                pointerPosition:
-                    dockLayout.persistentDragPointerPosition
-                iconName: dockLayout.persistentDragIconName
-                iconSize: dockGeometry.effectiveIconSize
-                motionEnabled: Kirigami.Units.longDuration > 0
-            }
+                keys: ["application/x-punchi-dock-item"]
 
-            DockReorderDragWindow {
-                dragging: dockLayout.persistentDragActive
-                    && !dockLayout.persistentDragPointerInsideDock
-                pointerPosition:
-                    dockLayout.persistentDragPointerGlobalPosition
-                iconName: dockLayout.persistentDragIconName
-                iconSize: dockGeometry.effectiveIconSize
+                onEntered: function(drag) {
+                    drag.accept(Qt.MoveAction)
+                    dockLayout.updatePersistentDragFromDock(drag.x, drag.y)
+                }
+                onPositionChanged: function(drag) {
+                    drag.accept(Qt.MoveAction)
+                    dockLayout.updatePersistentDragFromDock(drag.x, drag.y)
+                }
+                onDropped: function(drag) {
+                    drag.accept(Qt.MoveAction)
+                }
             }
         }
 

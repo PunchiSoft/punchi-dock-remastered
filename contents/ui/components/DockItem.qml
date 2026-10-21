@@ -108,6 +108,9 @@ Item {
     property int persistentReorderItemCount: 0
     property bool persistentDropSettle: false
     property real dropSettleScale: 1.0
+    property bool persistentReorderDragActive: false
+    property bool persistentReorderDragPending: false
+    property string persistentReorderDragImage: ""
     property int persistentModelIndex: -1
     property bool suppressClickAfterReorder: false
     property bool persistentReorderInteractionResetPending: false
@@ -634,8 +637,64 @@ Item {
         suppressClickAfterReorder = false
         resetSelectionPulse()
         keyboardFeedbackPressed = false
+        persistentReorderDragPending = false
+        persistentReorderDragImage = ""
+        persistentReorderDragActive = false
+        setRequestedInhibitDnd(false)
         persistentReorderInteractionResetPending = true
         persistentReorderInteractionResetTimer.restart()
+    }
+
+    // The drag icon belongs to the platform drag session, exactly like the
+    // native task manager, so the compositor draws it beyond the panel surface.
+    Drag.dragType: Drag.Automatic
+    Drag.supportedActions: Qt.MoveAction
+    Drag.imageSource: dockItemContainer.persistentReorderDragImage
+    Drag.mimeData: ({
+        "application/x-punchi-dock-item": String(dockItemContainer.persistentModelIndex)
+    })
+    Drag.active: dockItemContainer.persistentReorderDragActive
+    Drag.onDragFinished: function(dropAction) {
+        const accepted = dropAction === Qt.MoveAction
+        dockItemContainer.persistentReorderDragActive = false
+        dockItemContainer.persistentReorderDragPending = false
+        dockItemContainer.persistentReorderDragImage = ""
+        dockItemContainer.setRequestedInhibitDnd(false)
+        if (accepted) {
+            dockItemContainer.persistentReorderFinished()
+        } else {
+            dockItemContainer.persistentReorderCanceled()
+        }
+    }
+
+    function setRequestedInhibitDnd(value) {
+        // The panel containment (another package) owns this property; probe it
+        // dynamically instead of assuming a type.
+        const inhibitKey = "appletRequestsInhibitDnD"
+        let ancestor = dockItemContainer.parent
+        while (ancestor) {
+            if (ancestor[inhibitKey] !== undefined) {
+                ancestor[inhibitKey] = value
+            }
+            ancestor = ancestor.parent
+        }
+    }
+
+    function beginPersistentReorderDrag() {
+        if (dockItemContainer.persistentReorderDragActive
+                || dockItemContainer.persistentReorderDragPending) {
+            return
+        }
+        dockItemContainer.persistentReorderDragPending = true
+        dockItemContainer.setRequestedInhibitDnd(true)
+        itemIcon.grabToImage(function(result) {
+            if (!dockItemContainer.persistentReorderDragPending
+                    || !dockItemContainer.persistentReorderSource) {
+                return
+            }
+            dockItemContainer.persistentReorderDragImage = result.url
+            dockItemContainer.persistentReorderDragActive = true
+        }, Qt.size(dockItemContainer.iconSize, dockItemContainer.iconSize))
     }
 
     function validateLauncherDrop(urls) {
@@ -1646,9 +1705,6 @@ Item {
         }
         
         onPositionChanged: function(mouse) {
-            if (dockItemContainer.persistentReorderSource && pressed) {
-                dockItemContainer.persistentReorderMoved(mouse.x, mouse.y)
-            }
             if (dockItemContainer.separatorItem || dockItemContainer.spacerItem || dockItemContainer.itemType === "calendar") {
                 return
             }
@@ -1670,7 +1726,7 @@ Item {
                     dockItemContainer.suppressClickAfterReorder = true
                     mouse.accepted = true
                     mouseArea.forceActiveFocus(Qt.MouseFocusReason)
-                    dockItemContainer.persistentReorderMoved(mouse.x, mouse.y)
+                    dockItemContainer.beginPersistentReorderDrag()
                 }
                 return
             }
@@ -1698,20 +1754,36 @@ Item {
                 dockItemContainer.suppressClickAfterReorder = true
                 mouse.accepted = true
                 mouseArea.forceActiveFocus(Qt.MouseFocusReason)
-                dockItemContainer.persistentReorderMoved(mouse.x, mouse.y)
+                dockItemContainer.beginPersistentReorderDrag()
             }
         }
 
         onReleased: {
-            if (dockItemContainer.persistentReorderSource) {
-                dockItemContainer.persistentReorderFinished()
+            if (!dockItemContainer.persistentReorderSource) {
+                return
             }
+            // An active drag session owns the gesture and reports its result
+            // through Drag.onDragFinished.
+            if (dockItemContainer.persistentReorderDragActive) {
+                return
+            }
+            if (dockItemContainer.persistentReorderDragPending) {
+                dockItemContainer.persistentReorderDragPending = false
+                dockItemContainer.setRequestedInhibitDnd(false)
+                dockItemContainer.persistentReorderCanceled()
+                return
+            }
+            dockItemContainer.persistentReorderFinished()
         }
 
         onCanceled: {
-            if (dockItemContainer.persistentReorderSource) {
-                dockItemContainer.persistentReorderCanceled()
+            if (!dockItemContainer.persistentReorderSource
+                    || dockItemContainer.persistentReorderDragActive) {
+                return
             }
+            dockItemContainer.persistentReorderDragPending = false
+            dockItemContainer.setRequestedInhibitDnd(false)
+            dockItemContainer.persistentReorderCanceled()
         }
         
         onClicked: function(mouse) {
