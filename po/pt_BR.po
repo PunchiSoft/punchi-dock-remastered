@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.78\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-21 17:52-0300\n"
+"POT-Creation-Date: 2026-10-21 19:43-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -2375,7 +2375,7 @@ msgctxt "@item:inlistbox Context menu size"
 msgid "Custom"
 msgstr "Personalizado"
 
-#: contents/ui/components/AppActionsPopup.qml:407
+#: contents/ui/components/AppActionsPopup.qml:411
 msgid "Custom action"
 msgstr "Ação personalizada"
 
@@ -4942,7 +4942,7 @@ msgstr "Abre o seletor de itens para escolher o que adicionar ao dock."
 msgid "Open the selected player minimized"
 msgstr "Abrir o reprodutor selecionado minimizado"
 
-#: contents/ui/components/TrashMenuPopup.qml:72
+#: contents/ui/components/TrashMenuPopup.qml:76
 msgid "Open the trash folder in the file manager"
 msgstr "Abra a pasta de lixo no gerenciador de arquivos"
 
@@ -4957,7 +4957,7 @@ msgctxt "@info:accessible"
 msgid "Open this folder in the file manager"
 msgstr "Abrir esta pasta no gerenciador de arquivos"
 
-#: contents/ui/components/TrashMenuPopup.qml:68
+#: contents/ui/components/TrashMenuPopup.qml:72
 msgid "Open trash"
 msgstr "Abrir lixeira"
 
