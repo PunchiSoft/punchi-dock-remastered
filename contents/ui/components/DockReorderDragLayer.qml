@@ -3,8 +3,8 @@ import org.kde.kirigami as Kirigami
 
 // Lightweight visual transport for persistent Dock item reordering. The
 // actual model move remains owned by DockItemsController. It carries only the
-// icon so the element under the pointer reads as the item itself, the way the
-// native icon-only task manager does, instead of as a floating card.
+// icon at full opacity and natural size, so the element under the pointer reads
+// as the grabbed item itself, the way the native icon-only task manager does.
 Item {
     id: root
 
@@ -30,9 +30,7 @@ Item {
         width: proxyExtent
         height: proxyExtent
         visible: root.active
-        opacity: root.active ? 0.94 : 0.0
-        scale: root.active && root.motionEnabled ? 1.06 : 1.0
-        transformOrigin: Item.Center
+        opacity: root.active ? 1.0 : 0.0
 
         Kirigami.Icon {
             anchors.fill: parent
@@ -41,7 +39,7 @@ Item {
             Accessible.ignored: true
         }
 
-        Behavior on scale {
+        Behavior on opacity {
             enabled: root.motionEnabled
             NumberAnimation {
                 duration: Kirigami.Units.shortDuration
