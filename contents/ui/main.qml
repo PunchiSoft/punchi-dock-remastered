@@ -2924,6 +2924,9 @@ PlasmoidItem {
                 property int persistentDragVisibleItemCount: 0
                 // Slot that receives the short settle after a successful drop.
                 property int persistentDropSettleIndex: -1
+                // Only a drop inside the dock may commit a reorder; a desktop
+                // copy/link drop also reports MoveAction.
+                property bool persistentDropAccepted: false
                 readonly property bool persistentDragOffsetMotionEnabled:
                     persistentDragActive && !persistentDragSettleInstant
                 // Platform drag threshold, sourced once from QStyleHints.
@@ -2969,6 +2972,7 @@ PlasmoidItem {
                     persistentDragIconName = "application-x-executable"
                     persistentDragMovesDynamicApplications = false
                     persistentDragMovesRecentApplications = false
+                    persistentDropAccepted = false
                     persistentMoveModeIndex = -1
                     hoveredIndex = -1
                     lastHoveredIndex = -1
@@ -2981,6 +2985,15 @@ PlasmoidItem {
                         sourceItem.releasePersistentReorderInteraction()
                     }
                     dockLayout.forceActiveFocus(Qt.OtherFocusReason)
+                }
+
+                function desktopFileUrlFor(item) {
+                    if (!item || item.type !== "app") {
+                        return ""
+                    }
+                    return systemDiscovery.desktopFileUrl(
+                        String(item.storageId || ""),
+                        String(item.command || ""))
                 }
 
                 function persistentDragOffsetFor(visualIndex) {
@@ -3125,6 +3138,7 @@ PlasmoidItem {
                         = items[index].type === "dynamic-applications"
                     persistentDragMovesRecentApplications
                         = items[index].type === "recent-applications"
+                    persistentDropAccepted = false
                     persistentDragWatchdogTimer.restart()
                     dockLayout.updatePersistentDragOffsets()
                     return persistentDragExpectedItemText.length > 0
@@ -3380,6 +3394,8 @@ PlasmoidItem {
                         persistentReorderActive: dockLayout.persistentDragActive
                         persistentReorderSource: dockLayout.persistentDragSourceIndex
                             === dockItemDelegate.index
+                        dragLauncherUrl: dockLayout.desktopFileUrlFor(
+                            dockItemDelegate.modelData)
                         persistentReorderOffset:
                             dockLayout.persistentDragOffsetFor(
                                 dockItemDelegate.itemIndex)
@@ -4059,6 +4075,10 @@ PlasmoidItem {
                     dockLayout.updatePersistentDragFromDock(drag.x, drag.y)
                 }
                 onDropped: function(drag) {
+                    if (drag.keys.indexOf("application/x-punchi-dock-item") < 0) {
+                        return
+                    }
+                    dockLayout.persistentDropAccepted = true
                     drag.accept(Qt.MoveAction)
                 }
             }

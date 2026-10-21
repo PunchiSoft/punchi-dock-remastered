@@ -242,8 +242,12 @@ require(
 require(
     'Drag.dragType: Drag.Automatic' in DOCK_ITEM
     and "Drag.imageSource:" in DOCK_ITEM
-    and 'Drag.supportedActions: Qt.MoveAction' in DOCK_ITEM
+    and "Drag.supportedActions: dockItemContainer.dragLauncherUrl.length > 0"
+    in DOCK_ITEM
+    and "Qt.CopyAction | Qt.MoveAction | Qt.LinkAction" in DOCK_ITEM
     and 'application/x-punchi-dock-item' in DOCK_ITEM
+    and 'text/uri-list' in DOCK_ITEM
+    and "persistentDropAccepted" in MAIN
     and "appletRequestsInhibitDnD" in DOCK_ITEM
     and "grabToImage" in DOCK_ITEM
     and "itemIcon.grabToImage" in DOCK_ITEM,

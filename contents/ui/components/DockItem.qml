@@ -113,6 +113,18 @@ Item {
     property string persistentReorderDragImage: ""
     property real persistentReorderPressX: 0
     property real persistentReorderPressY: 0
+    // File URL of the launcher, so dropping on the desktop offers copy/link.
+    property string dragLauncherUrl: ""
+    readonly property var persistentReorderDragMimeData: {
+        const data = {
+            "application/x-punchi-dock-item":
+                String(dockItemContainer.persistentModelIndex)
+        }
+        if (dockItemContainer.dragLauncherUrl.length > 0) {
+            data["text/uri-list"] = dockItemContainer.dragLauncherUrl
+        }
+        return data
+    }
     readonly property int persistentReorderDragThreshold:
         dockItemContainer.layoutController
             && dockItemContainer.layoutController.dragStartDistance > 0
@@ -654,14 +666,19 @@ Item {
     // The drag icon belongs to the platform drag session, exactly like the
     // native task manager, so the compositor draws it beyond the panel surface.
     Drag.dragType: Drag.Automatic
-    Drag.supportedActions: Qt.MoveAction
+    // Applications carry a launcher URL, so the desktop can offer copy/link.
+    // Containers have no file representation yet: they only move inside the
+    // dock, and any other target rejects them, which is what makes the
+    // compositor show the "cannot drop" cursor.
+    Drag.supportedActions: dockItemContainer.dragLauncherUrl.length > 0
+        ? Qt.CopyAction | Qt.MoveAction | Qt.LinkAction : Qt.MoveAction
     Drag.imageSource: dockItemContainer.persistentReorderDragImage
-    Drag.mimeData: ({
-        "application/x-punchi-dock-item": String(dockItemContainer.persistentModelIndex)
-    })
+    Drag.mimeData: dockItemContainer.persistentReorderDragMimeData
     Drag.active: dockItemContainer.persistentReorderDragActive
     Drag.onDragFinished: function(dropAction) {
         const accepted = dropAction === Qt.MoveAction
+            && dockItemContainer.layoutController
+            && dockItemContainer.layoutController.persistentDropAccepted
         dockItemContainer.persistentReorderDragActive = false
         dockItemContainer.persistentReorderDragPending = false
         dockItemContainer.persistentReorderDragImage = ""
