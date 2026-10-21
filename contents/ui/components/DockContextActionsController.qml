@@ -4,6 +4,8 @@ import "../config/code/configItems.js" as ConfigItemsJS
 QtObject {
     id: root
 
+    signal showAllPlacesRequested(string applicationId)
+
     property var systemDiscovery: null
     property var taskController: null
     property var mprisController: null
@@ -54,6 +56,25 @@ QtObject {
             }
             seenNames[key] = true
             target.push(action)
+        }
+    }
+
+    function extractActions(target, predicate) {
+        const extracted = []
+        for (let index = target.length - 1; index >= 0; index--) {
+            if (predicate(target[index])) {
+                extracted.unshift(target[index])
+                target.splice(index, 1)
+            }
+        }
+        return extracted
+    }
+
+    function sectionHeader(title) {
+        return {
+            "name": String(title || ""),
+            "kind": "section",
+            "enabled": false
         }
     }
 
@@ -120,7 +141,7 @@ QtObject {
         }
     }
 
-    function placesSubmenu(places, applicationId) {
+    function placeSectionRows(places, applicationId, showAllPlaces) {
         const values = places instanceof Array ? places : []
         if (values.length === 0) {
             return null
@@ -136,11 +157,13 @@ QtObject {
             groups[group].push(values[index])
         }
 
+        // KFilePlacesModel exposes the first group inline and keeps the
+        // remaining groups one level down, exactly like the native applet.
         const firstGroup = order.length > 0 ? order[0] : ""
-        const root = []
+        const rows = []
         const firstEntries = groups[firstGroup] || []
         for (let index = 0; index < firstEntries.length; index++) {
-            root.push(placeAction(firstEntries[index], applicationId))
+            rows.push(placeAction(firstEntries[index], applicationId))
         }
         for (let orderIndex = 1; orderIndex < order.length; orderIndex++) {
             const group = order[orderIndex]
@@ -149,7 +172,7 @@ QtObject {
             for (let index = 0; index < entries.length; index++) {
                 children.push(placeAction(entries[index], applicationId))
             }
-            root.push({
+            rows.push({
                 "name": group,
                 "icon": "folder",
                 "kind": "submenu",
@@ -158,35 +181,31 @@ QtObject {
             })
         }
 
-        let visible = root
-        if (root.length > 7) {
-            const remaining = root.slice(5)
-            visible = root.slice(0, 5)
+        if (!showAllPlaces && rows.length > 7) {
+            const remaining = rows.slice(5)
+            const visible = rows.slice(0, 5)
             visible.push({
-                "name": i18nc("@action:context", "%1 more Places…", remaining.length),
+                "name": i18ncp("@action:context", "%1 more Place…",
+                    "%1 more Places…", remaining.length),
                 "icon": "view-more-symbolic",
-                "kind": "submenu",
+                "kind": "showAllPlaces",
                 "enabled": true,
-                "children": remaining
+                "applicationId": String(applicationId || "")
             })
+            return visible
         }
-        return {
-            "name": i18nc("@title:menu", "Places"),
-            "icon": "folder",
-            "kind": "submenu",
-            "enabled": true,
-            "children": visible
-        }
+        return rows
     }
 
-    function recentSubmenu(documents, applicationId) {
+    function recentSectionRows(documents, applicationId) {
         const values = documents instanceof Array ? documents : []
         if (values.length === 0) {
             return null
         }
-        const children = []
-        for (let index = 0; index < values.length; index++) {
-            children.push({
+        const rows = []
+        const limit = Math.min(values.length, 5)
+        for (let index = 0; index < limit; index++) {
+            rows.push({
                 "name": String(values[index].name || ""),
                 "icon": String(values[index].icon || "text-x-generic"),
                 "kind": "openRecentDocument",
@@ -196,20 +215,14 @@ QtObject {
                 "mimeType": String(values[index].mimeType || "")
             })
         }
-        children.push({
+        rows.push({
             "name": i18nc("@action:context", "Forget Recent Files"),
             "icon": "edit-clear-history",
             "kind": "forgetRecentDocuments",
             "enabled": true,
             "applicationId": String(applicationId || "")
         })
-        return {
-            "name": i18nc("@title:menu", "Recent Files"),
-            "icon": "document-open-recent",
-            "kind": "submenu",
-            "enabled": true,
-            "children": children
-        }
+        return rows
     }
 
     function mediaSubmenu(controller, applicationId) {
@@ -277,7 +290,7 @@ QtObject {
     }
     // qmllint enable unqualified
 
-    function actionsForItem(item, taskRows, itemOrigin, persistentIndex) {
+    function actionsForItem(item, taskRows, itemOrigin, persistentIndex, options) {
         if (!item || !root.taskController) {
             return []
         }
@@ -608,6 +621,9 @@ QtObject {
 
         const applicationId = root.applicationIdentityForItem(item)
         const hasTaskRows = taskRows instanceof Array && taskRows.length > 0
+        const showAllPlaces = !!options && options.showAllPlaces === true
+        let placesRows = null
+        let recentRows = null
         if (applicationId.length > 0 && root.systemDiscovery) {
             // qmllint disable unqualified
             const mediaAction = root.mediaSubmenu(root.mprisController, applicationId)
@@ -615,22 +631,15 @@ QtObject {
                 root.appendUniqueActions(actions, [mediaAction], seenNames)
             }
 
-            let placesAction = null
             if (typeof root.systemDiscovery.filePlaceActions === "function") {
-                const places = root.systemDiscovery.filePlaceActions(applicationId)
-                if (places instanceof Array && places.length > 0) {
-                    placesAction = root.placesSubmenu(places, applicationId)
-                }
+                placesRows = root.placeSectionRows(
+                    root.systemDiscovery.filePlaceActions(applicationId),
+                    applicationId, showAllPlaces)
             }
-            if (placesAction) {
-                root.appendUniqueActions(actions, [placesAction], seenNames)
-            } else if (typeof root.systemDiscovery.recentDocumentActions === "function") {
-                const recentAction = root.recentSubmenu(
+            if (typeof root.systemDiscovery.recentDocumentActions === "function") {
+                recentRows = root.recentSectionRows(
                     root.systemDiscovery.recentDocumentActions(applicationId),
                     applicationId)
-                if (recentAction) {
-                    root.appendUniqueActions(actions, [recentAction], seenNames)
-                }
             }
 
             root.appendUniqueActions(actions,
@@ -666,8 +675,69 @@ QtObject {
         root.appendUniqueActions(actions,
             root.taskController.contextActionsForRows(taskRows || []), seenNames)
         root.appendUniqueActions(actions, deferredPinnedActions, seenNames)
-        root.appendDockActionsSection(actions, dockActions, seenNames)
-        return actions
+
+        // Dock management actions (pin/unpin and configure) are one family and
+        // stay together at the tail, before the final Close row.
+        const pinActions = root.extractActions(actions, function(action) {
+            return !!action && action.kind === "pinToDock"
+        })
+        for (let index = 0; index < pinActions.length; index++) {
+            const name = String(pinActions[index].name || "").toLocaleLowerCase()
+            if (name.length > 0) {
+                delete seenNames[name]
+            }
+            dockActions.unshift(pinActions[index])
+        }
+        const closingActions = root.extractActions(actions, function(action) {
+            return !!action && action.kind === "taskAction"
+                && (action.operation === "close"
+                    || action.operation === "closeAll")
+        })
+
+        const finalActions = []
+        const hasPlaces = placesRows instanceof Array && placesRows.length > 0
+        const hasRecent = recentRows instanceof Array && recentRows.length > 0
+        if (hasPlaces) {
+            // qmllint disable unqualified
+            finalActions.push(root.sectionHeader(
+                i18nc("@title:group for section of menu items", "Places")))
+            // qmllint enable unqualified
+            for (let index = 0; index < placesRows.length; index++) {
+                finalActions.push(placesRows[index])
+            }
+        }
+        if (hasRecent) {
+            // qmllint disable unqualified
+            finalActions.push(root.sectionHeader(
+                i18nc("@title:group for section of menu items", "Recent Files")))
+            // qmllint enable unqualified
+            for (let index = 0; index < recentRows.length; index++) {
+                finalActions.push(recentRows[index])
+            }
+        }
+        if ((hasPlaces || hasRecent) && actions.length > 0) {
+            // qmllint disable unqualified
+            finalActions.push(root.sectionHeader(
+                i18nc("@title:group for section of menu items", "Actions")))
+            // qmllint enable unqualified
+        }
+        for (let index = 0; index < actions.length; index++) {
+            finalActions.push(actions[index])
+        }
+        root.appendDockActionsSection(finalActions, dockActions, seenNames)
+        if (closingActions.length > 0) {
+            if (finalActions.length > 0
+                    && finalActions[finalActions.length - 1].kind !== "separator") {
+                finalActions.push({
+                    "kind": "separator",
+                    "enabled": false
+                })
+            }
+            for (let index = 0; index < closingActions.length; index++) {
+                finalActions.push(closingActions[index])
+            }
+        }
+        return finalActions
     }
 
     function appendDockActionsSection(actions, dockActions, seenNames) {
@@ -857,6 +927,10 @@ QtObject {
                 && typeof root.systemDiscovery.forgetRecentDocuments === "function"
                 && root.systemDiscovery.forgetRecentDocuments(
                     String(action.applicationId || ""))
+        }
+        if (action.kind === "showAllPlaces") {
+            root.showAllPlacesRequested(String(action.applicationId || ""))
+            return true
         }
         if (action.kind === "openFilePlace") {
             return !!root.systemDiscovery

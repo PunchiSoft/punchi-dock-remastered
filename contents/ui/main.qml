@@ -2445,6 +2445,13 @@ PlasmoidItem {
         Layout.preferredHeight: dockGeometry.panelPreferredHeight
         // qmllint enable unqualified
 
+        Connections {
+            target: dockContextActionsController
+            function onShowAllPlacesRequested(applicationId) {
+                popupCoordinator.expandActiveContextMenuPlaces(applicationId)
+            }
+        }
+
         PopupCoordinator {
             id: popupCoordinator
             objectName: "popupCoordinator"
@@ -2488,9 +2495,9 @@ PlasmoidItem {
                 return dockContextActionsController.applicationIdentityForItem(itemData)
             }
             // qmllint disable unqualified
-            contextActionsResolver: function(itemData, rows, itemOrigin, persistentIndex) {
+            contextActionsResolver: function(itemData, rows, itemOrigin, persistentIndex, options) {
                 return dockContextActionsController.actionsForItem(
-                    itemData, rows, itemOrigin, persistentIndex)
+                    itemData, rows, itemOrigin, persistentIndex, options)
             }
             // qmllint enable unqualified
         }
@@ -4450,6 +4457,10 @@ PlasmoidItem {
                         // qmllint enable unqualified
 
                         onActionTriggered: function(action) {
+                            if (action && action.kind === "showAllPlaces") {
+                                dockContextActionsController.triggerAction(action)
+                                return
+                            }
                             appActionsDialog.closeSafely()
                             dockContextActionsController.triggerAction(action)
                         }
@@ -4763,6 +4774,10 @@ PlasmoidItem {
                         }
                         onMediaCloseRequested: popupCoordinator.closeMediaHoverFromKeyboard()
                         onActionTriggered: function(action) {
+                            if (action && action.kind === "showAllPlaces") {
+                                dockContextActionsController.triggerAction(action)
+                                return
+                            }
                             taskWindowsDialog.closeSafely()
                             dockContextActionsController.triggerAction(action)
                         }

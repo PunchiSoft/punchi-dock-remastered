@@ -15,8 +15,12 @@ TestCase {
 
     QtObject {
         id: tasks
-        function contextActionsForRows() { return [] }
-        function pinDescriptorForEntry() { return null }
+        property var taskActions: []
+        function contextActionsForRows() { return taskActions }
+        function pinDescriptorForEntry() {
+            return { "launcherUrl": "applications:org.example.App.desktop" }
+        }
+        function dockContainsPinDescriptor() { return false }
         function dockItemApplicationId() { return "" }
         function dockItemLauncherUrl() { return "" }
     }
@@ -41,6 +45,7 @@ TestCase {
         property bool placesAvailable: false
         property bool recentAvailable: false
         property bool newWindowAvailable: false
+        property var extraPlaces: []
         property int recentCalls: 0
         property int placeCalls: 0
         property int newWindowCalls: 0
@@ -53,13 +58,17 @@ TestCase {
             if (!placesAvailable) {
                 return []
             }
-            return [
+            const rows = [
                 {"name": "Home", "icon": "folder-home", "groupName": "",
-                    "resource": "file:///home/user", "available": true},
-                {"name": "USB", "icon": "drive-removable-media",
-                    "groupName": "Devices", "resource": "file:///media/usb",
-                    "available": true}
+                    "resource": "file:///home/user", "available": true}
             ]
+            for (let index = 0; index < extraPlaces.length; index++) {
+                rows.push(extraPlaces[index])
+            }
+            rows.push({"name": "USB", "icon": "drive-removable-media",
+                "groupName": "Devices", "resource": "file:///media/usb",
+                "available": true})
+            return rows
         }
         function recentDocumentActions(applicationId) {
             recentCalls++
@@ -115,13 +124,22 @@ TestCase {
         systemDiscovery: discovery
         mprisController: mpris
         dockItemsController: items
-        showConfigureDockAction: false
+        showConfigureDockAction: true
+        configureDockHandler: function() { return true }
+    }
+
+    SignalSpy {
+        id: showAllPlacesSpy
+        target: controller
+        signalName: "showAllPlacesRequested"
     }
 
     function init() {
         discovery.placesAvailable = false
         discovery.recentAvailable = false
         discovery.newWindowAvailable = false
+        discovery.extraPlaces = []
+        tasks.taskActions = []
         discovery.recentCalls = 0
         discovery.placeCalls = 0
         discovery.newWindowCalls = 0
@@ -150,34 +168,97 @@ TestCase {
         return null
     }
 
-    function test_recentFilesSubmenuOpensAndForgets() {
+    function test_recentFilesRenderAsNativeSection() {
         discovery.recentAvailable = true
         const actions = controller.actionsForItem(appItem, [], "pinned", 0)
         const recent = actionByName(actions, "Recent Files")
         verify(recent !== null)
-        compare(recent.kind, "submenu")
-        compare(recent.children.length, 2)
-        compare(recent.children[0].kind, "openRecentDocument")
-        compare(recent.children[1].kind, "forgetRecentDocuments")
+        compare(recent.kind, "section")
+        const document = actionByName(actions, "doc.txt")
+        verify(document !== null)
+        compare(document.kind, "openRecentDocument")
+        const forget = actionByName(actions, "Forget Recent Files")
+        verify(forget !== null)
+        compare(forget.kind, "forgetRecentDocuments")
 
-        verify(controller.triggerAction(recent.children[0]))
+        verify(controller.triggerAction(document))
         compare(discovery.openedRecent, "/tmp/doc.txt")
-        verify(controller.triggerAction(recent.children[1]))
+        verify(controller.triggerAction(forget))
     }
 
-    function test_placesReplaceRecentFilesAndKeepGroups() {
+    function test_placesAndRecentFilesRenderAsSections() {
         discovery.placesAvailable = true
         discovery.recentAvailable = true
         const actions = controller.actionsForItem(appItem, [], "pinned", 0)
         const places = actionByName(actions, "Places")
         verify(places !== null)
-        compare(actionByName(actions, "Recent Files"), null)
-        const devices = actionByName(places.children, "Devices")
+        compare(places.kind, "section")
+        verify(actionByName(actions, "Recent Files") !== null)
+        const actionsHeader = actionByName(actions, "Actions")
+        verify(actionsHeader !== null)
+        compare(actionsHeader.kind, "section")
+        compare(actions.findIndex(action => action.name === "Places")
+            < actions.findIndex(action => action.name === "Actions"), true)
+        compare(actionByName(actions, "Home").kind, "openFilePlace")
+        const devices = actionByName(actions, "Devices")
         verify(devices !== null)
         compare(devices.kind, "submenu")
         compare(devices.children.length, 1)
         verify(controller.triggerAction(devices.children[0]))
         compare(discovery.openedPlace, "file:///media/usb")
+    }
+
+    function test_morePlacesRequestsFullMenu() {
+        discovery.placesAvailable = true
+        const extraPlaces = []
+        for (let index = 0; index < 6; index++) {
+            extraPlaces.push({
+                "name": "Extra " + index,
+                "icon": "folder",
+                "groupName": "",
+                "resource": "file:///tmp/extra-" + index,
+                "available": true
+            })
+        }
+        discovery.extraPlaces = extraPlaces
+        const actions = controller.actionsForItem(appItem, [], "pinned", 0)
+        const more = actionByName(actions, "3 more Places…")
+        verify(more !== null)
+        compare(more.kind, "showAllPlaces")
+        compare(actionByName(actions, "Extra 4"), null)
+
+        verify(controller.triggerAction(more))
+        compare(showAllPlacesSpy.count, 1)
+
+        const expanded = controller.actionsForItem(appItem, [], "pinned", 0,
+            {"showAllPlaces": true})
+        verify(actionByName(expanded, "Extra 0") !== null)
+        verify(actionByName(expanded, "Extra 5") !== null)
+        compare(actionByName(expanded, "3 more Places…"), null)
+    }
+
+    function test_closeStaysLastAndDockFamilyGroupsTogether() {
+        tasks.taskActions = [{
+            "kind": "taskAction",
+            "operation": "close",
+            "name": "Close",
+            "icon": "window-close",
+            "taskRow": 4,
+            "enabled": true
+        }]
+        const actions = controller.actionsForItem(appItem, [4], "dynamic", 0)
+
+        compare(actionByName(actions, "Actions"), null)
+        compare(actions[actions.length - 1].name, "Close")
+        compare(actions[actions.length - 2].kind, "separator")
+
+        const pinIndex = actions.findIndex(action => action.name === "Pin to Dock")
+        const configureIndex = actions.findIndex(
+            action => action.name === "Configure Punchi Dock…")
+        verify(pinIndex > 0)
+        verify(configureIndex > pinIndex)
+        compare(actions[pinIndex - 1].kind, "separator")
+        verify(actions.findIndex(action => action.name === "Close") > configureIndex)
     }
 
     function test_newWindowIsOfferedOnlyWithoutRunningRows() {

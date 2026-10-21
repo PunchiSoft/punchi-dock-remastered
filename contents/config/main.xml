@@ -330,10 +330,10 @@
       <default>false</default>
     </entry>
     <entry name="contextMenuRowHeight" type="Int">
-      <default>46</default>
+      <default>38</default>
     </entry>
     <entry name="contextMenuIconSize" type="Int">
-      <default>26</default>
+      <default>20</default>
     </entry>
     <entry name="contextMenuWidth" type="Int">
       <default>360</default>
