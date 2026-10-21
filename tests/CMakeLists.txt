@@ -531,12 +531,25 @@ add_executable(recentapplicationsadapter_test
 )
 target_include_directories(recentapplicationsadapter_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
 target_link_libraries(recentapplicationsadapter_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml Qt6::Test
-    KF6::Service Plasma::Activities Plasma::ActivitiesStats)
+    KF6::ConfigCore KF6::KIOCore KF6::KIOGui KF6::Service Plasma::Activities Plasma::ActivitiesStats)
 add_test(NAME recentapplicationsadapter_test
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
         ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
         -- $<TARGET_FILE:recentapplicationsadapter_test>)
 set_tests_properties(recentapplicationsadapter_test PROPERTIES TIMEOUT 30)
+
+add_executable(recentapplications_tracking_test
+    recentapplications_tracking_test.cpp
+    ${CMAKE_SOURCE_DIR}/src/recentapplicationsadapter.cpp
+)
+target_include_directories(recentapplications_tracking_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(recentapplications_tracking_test PRIVATE Qt6::Core Qt6::Gui Qt6::Qml Qt6::Test
+    KF6::ConfigCore KF6::KIOCore KF6::KIOGui KF6::Service Plasma::Activities Plasma::ActivitiesStats)
+add_test(NAME recentapplications_tracking_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- $<TARGET_FILE:recentapplications_tracking_test>)
+set_tests_properties(recentapplications_tracking_test PROPERTIES TIMEOUT 30)
 
 add_executable(dockthemetrash_test
     dockthemetrash_test.cpp
@@ -760,7 +773,7 @@ if(TARGET KF6::I18nQml)
     target_link_libraries(recent_general_qml_test_runner PRIVATE KF6::I18nQml)
     target_compile_definitions(recent_general_qml_test_runner PRIVATE PUNCHI_HAS_KLOCALIZED_QML_CONTEXT)
 endif()
-foreach(recent_config_test IN ITEMS recent_applications_ui_test recent_container_context_test recent_applications_count_ui_test)
+foreach(recent_config_test IN ITEMS recent_applications_ui_test recent_container_context_test recent_applications_count_ui_test recent_applications_kde_tracking_ui_test)
     add_test(NAME ${recent_config_test}
         COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
             $<TARGET_FILE:recent_general_qml_test_runner>
@@ -1049,6 +1062,10 @@ punchi_add_qml_test(
 punchi_add_qml_test(
     dock_context_native_sections_test
     dock_context_native_sections_test.qml
+)
+punchi_add_qml_test(
+    app_actions_popup_sections_test
+    app_actions_popup_sections_test.qml
 )
 add_test(NAME folder_sort_test
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_folder_sort_test.py

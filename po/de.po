@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.78\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-21 17:15-0300\n"
+"POT-Creation-Date: 2026-10-21 17:52-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: German\n"
@@ -179,13 +179,13 @@ msgctxt "@info:media"
 msgid "%1 is not running"
 msgstr "%1 wird nicht ausgeführt"
 
-#: contents/ui/components/DockItem.qml:1617
+#: contents/ui/components/DockItem.qml:1634
 msgctxt "@info:accessible"
 msgid "%1 is now in front; release to open the local files"
 msgstr ""
 "%1 ist jetzt im Vordergrund; loslassen, um die lokalen Dateien zu öffnen"
 
-#: contents/ui/components/DockItem.qml:1641
+#: contents/ui/components/DockItem.qml:1658
 msgctxt "@info:accessible"
 msgid "%1 is updated automatically and cannot accept applications"
 msgstr "%1 wird automatisch aktualisiert und kann keine Anwendungen aufnehmen"
@@ -211,10 +211,12 @@ msgid_plural "%1 more"
 msgstr[0] "%1 weitere"
 msgstr[1] "%1 weitere"
 
-#: contents/ui/components/DockContextActionsController.qml:166
+#: contents/ui/components/DockContextActionsController.qml:188
 msgctxt "@action:context"
-msgid "%1 more Places…"
-msgstr "%1 weitere Orte…"
+msgid "%1 more Place…"
+msgid_plural "%1 more Places…"
+msgstr[0] "%1 weiterer Ort…"
+msgstr[1] "%1 weitere Orte…"
 
 #: contents/ui/components/FolderFanView.qml:1114
 msgid "%1 more entry is not shown"
@@ -229,7 +231,7 @@ msgid_plural "%1 more in %2"
 msgstr[0] "%1 weitere in %2"
 msgstr[1] "%1 weitere in %2"
 
-#: contents/ui/main.qml:3914
+#: contents/ui/main.qml:3965
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 weitere Fenstergruppe"
@@ -248,14 +250,14 @@ msgstr "%1 von %2 Zeichen"
 msgid "%1 of %2 items"
 msgstr "%1 von %2 Artikeln"
 
-#: contents/ui/components/DockItem.qml:1671
+#: contents/ui/components/DockItem.qml:1688
 #: contents/ui/components/TaskOverflowPopup.qml:111
 msgid "%1 open window"
 msgid_plural "%1 open windows"
 msgstr[0] "%1 Fenster öffnen"
 msgstr[1] "%1 Fenster öffnen"
 
-#: contents/ui/components/DockItem.qml:1667
+#: contents/ui/components/DockItem.qml:1684
 msgid "%1 open window. Press M to open media controls."
 msgid_plural "%1 open windows. Press M to open media controls."
 msgstr[0] ""
@@ -736,7 +738,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Eine Desktop-Verknüpfung für %1 wurde erstellt."
 
-#: contents/ui/main.qml:2268
+#: contents/ui/main.qml:2276
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr "Ein Dateipfad ist zu lang, um ihn sicher zu öffnen."
@@ -755,6 +757,11 @@ msgstr "Aktionssymbol:"
 #: contents/ui/config/ItemConfigurationDialog.qml:788
 msgid "Action name:"
 msgstr "Aktionsname:"
+
+#: contents/ui/components/DockContextActionsController.qml:721
+msgctxt "@title:group for section of menu items"
+msgid "Actions"
+msgstr "Aktionen"
 
 #: contents/ui/components/WindowPreviewCard.qml:66
 msgid "Activate window"
@@ -1076,8 +1083,8 @@ msgstr "Erscheinungsbild:"
 msgid "Applets only"
 msgstr "Nur Miniprogramme"
 
-#: contents/ui/components/DockItem.qml:1628
-#: contents/ui/components/DockItem.qml:1635
+#: contents/ui/components/DockItem.qml:1645
+#: contents/ui/components/DockItem.qml:1652
 #: contents/ui/components/DockItemsController.qml:904
 #: contents/ui/components/FolderFanView.qml:846
 #: contents/ui/components/FolderPopup.qml:1052
@@ -1179,8 +1186,8 @@ msgctxt "@info:accessible"
 msgid "Applications grouped by category"
 msgstr "Nach Kategorie gruppierte Anwendungen"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:85
-#: contents/ui/config/components/RecentApplicationsSettings.qml:86
+#: contents/ui/config/components/RecentApplicationsSettings.qml:122
+#: contents/ui/config/components/RecentApplicationsSettings.qml:123
 msgctxt "@label:spinbox"
 msgid "Applications to show:"
 msgstr "Anzuzeigende Anwendungen:"
@@ -1392,15 +1399,15 @@ msgctxt "@action:button"
 msgid "Back to Control Center"
 msgstr "Zurück zum Kontrollzentrum"
 
-#: contents/ui/components/AppActionsPopup.qml:58
+#: contents/ui/components/AppActionsPopup.qml:59
 msgid "Back to media controls"
 msgstr "Zurück zur Mediensteuerung"
 
-#: contents/ui/components/AppActionsPopup.qml:56
+#: contents/ui/components/AppActionsPopup.qml:57
 msgid "Back to menu"
 msgstr "Zurück zum Menü"
 
-#: contents/ui/components/AppActionsPopup.qml:59
+#: contents/ui/components/AppActionsPopup.qml:60
 msgid "Back to window previews"
 msgstr "Zurück zur Fenstervorschau"
 
@@ -2034,7 +2041,7 @@ msgctxt "@option:media-display-mode"
 msgid "Compact"
 msgstr "Kompakt"
 
-#: contents/ui/components/DockContextActionsController.qml:394
+#: contents/ui/components/DockContextActionsController.qml:407
 #: contents/ui/config/PunchiMenuOptionsPanel.qml:45
 msgctxt "@option:punchimenu-mode"
 msgid "Compact"
@@ -2077,9 +2084,9 @@ msgctxt "@action:button"
 msgid "Configure Night Light"
 msgstr "Nachtlicht einrichten"
 
-#: contents/ui/components/DockContextActionsController.qml:102
-#: contents/ui/components/DockContextActionsController.qml:692
-#: contents/ui/components/DockContextActionsController.qml:714
+#: contents/ui/components/DockContextActionsController.qml:123
+#: contents/ui/components/DockContextActionsController.qml:762
+#: contents/ui/components/DockContextActionsController.qml:784
 msgctxt "@action:context"
 msgid "Configure Punchi Dock…"
 msgstr "Punchi Dock einrichten…"
@@ -2209,7 +2216,7 @@ msgstr "Verbindung fehlgeschlagen"
 msgid "Container"
 msgstr "Behälter"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:21
+#: contents/ui/config/components/RecentApplicationsSettings.qml:22
 msgctxt "@option:recent-applications"
 msgid "Container"
 msgstr "Container"
@@ -2224,12 +2231,12 @@ msgstr "Behälter"
 msgid "Container applications"
 msgstr "Containeranwendungen"
 
-#: contents/ui/components/DockContextActionsController.qml:479
+#: contents/ui/components/DockContextActionsController.qml:492
 msgctxt "@title:menu"
 msgid "Container view"
 msgstr "Behälteransicht"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:100
+#: contents/ui/config/components/RecentApplicationsSettings.qml:137
 msgctxt "@label:listbox"
 msgid "Container view:"
 msgstr "Behälteransicht:"
@@ -2399,7 +2406,7 @@ msgctxt "@item:inlistbox Context menu size"
 msgid "Custom"
 msgstr "Benutzerdefiniert"
 
-#: contents/ui/components/AppActionsPopup.qml:327
+#: contents/ui/components/AppActionsPopup.qml:407
 msgid "Custom action"
 msgstr "Benutzerdefinierte Aktion"
 
@@ -2428,12 +2435,12 @@ msgstr "Benutzerdefinierte Panelbreite"
 msgid "Custom width:"
 msgstr "Benutzerdefinierte Breite:"
 
-#: contents/ui/components/DockContextActionsController.qml:538
+#: contents/ui/components/DockContextActionsController.qml:551
 msgctxt "@item:inmenu folder sort mode"
 msgid "Date Created"
 msgstr "Erstellungsdatum"
 
-#: contents/ui/components/DockContextActionsController.qml:527
+#: contents/ui/components/DockContextActionsController.qml:540
 msgctxt "@item:inmenu folder sort mode"
 msgid "Date Modified"
 msgstr "Änderungsdatum"
@@ -2509,8 +2516,8 @@ msgstr "Desktop-Sichtbarkeit:"
 msgid "Detailed"
 msgstr "Ausführlich"
 
-#: contents/ui/components/DockContextActionsController.qml:452
-#: contents/ui/config/components/RecentApplicationsSettings.qml:26
+#: contents/ui/components/DockContextActionsController.qml:465
+#: contents/ui/config/components/RecentApplicationsSettings.qml:27
 #: contents/ui/config/ConfigFolderPopups.qml:115
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
@@ -2557,7 +2564,7 @@ msgctxt "@item:inlistbox Separator shape"
 msgid "Diamond"
 msgstr "Diamond"
 
-#: contents/ui/components/DockContextActionsController.qml:575
+#: contents/ui/components/DockContextActionsController.qml:588
 msgctxt "@action:context"
 msgid "Disable recent applications"
 msgstr "Zuletzt verwendete Anwendungen deaktivieren"
@@ -2579,7 +2586,9 @@ msgstr "Deaktiviert"
 #: contents/ui/config/ConfigMouse.qml:269
 msgid ""
 "Disabled by default because dragging in floating mode also moves the widget."
-msgstr "Standardmäßig deaktiviert, weil Ziehen im schwebenden Modus auch das Widget verschiebt."
+msgstr ""
+"Standardmäßig deaktiviert, weil Ziehen im schwebenden Modus auch das Widget "
+"verschiebt."
 
 #: contents/ui/config/ConfigAspect.qml:950
 msgid "Disables the active-window indicator entirely."
@@ -2723,7 +2732,7 @@ msgstr "Double line"
 msgid "Drag files"
 msgstr "Dateien ziehen"
 
-#: contents/ui/components/DockItem.qml:1610
+#: contents/ui/components/DockItem.qml:1627
 msgctxt "@info:accessible"
 msgid ""
 "Drag to move the open applications section. Use an arrow key to move it one "
@@ -2733,12 +2742,14 @@ msgstr ""
 "Verschieben Sie ihn mit einer Pfeiltaste um eine Position oder brechen Sie "
 "mit Escape ab."
 
-#: contents/ui/components/DockItem.qml:1657
+#: contents/ui/components/DockItem.qml:1674
 msgctxt "@info:accessible"
 msgid ""
 "Drag to move this Dock item. Use Control+Shift with an arrow key to move it "
 "from the keyboard."
-msgstr "Ziehen, um dieses Dock-Element zu verschieben. Mit Strg+Umschalt und einer Pfeiltaste lässt es sich über die Tastatur verschieben."
+msgstr ""
+"Ziehen, um dieses Dock-Element zu verschieben. Mit Strg+Umschalt und einer "
+"Pfeiltaste lässt es sich über die Tastatur verschieben."
 
 #: contents/ui/components/controlcenter/ControlCenterBluetoothDelegate.qml:75
 msgctxt "@info:status Bluetooth device type"
@@ -3076,9 +3087,9 @@ msgstr "Verblassen"
 msgid "Failed to read file."
 msgstr "Datei konnte nicht gelesen werden."
 
-#: contents/ui/components/DockContextActionsController.qml:465
+#: contents/ui/components/DockContextActionsController.qml:478
 #: contents/ui/config/components/ActionDialog.qml:79
-#: contents/ui/config/components/RecentApplicationsSettings.qml:27
+#: contents/ui/config/components/RecentApplicationsSettings.qml:28
 #: contents/ui/config/ConfigFolderPopups.qml:116
 #: contents/ui/config/ConfigItems.qml:1064
 #: contents/ui/config/ItemConfigurationDialog.qml:684
@@ -3127,7 +3138,7 @@ msgstr "Breite ausfüllen"
 msgid "Fit content (Recommended)"
 msgstr "An Inhalt anpassen (Empfohlen)"
 
-#: contents/ui/components/DockContextActionsController.qml:64
+#: contents/ui/components/DockContextActionsController.qml:85
 #: contents/ui/config/ControlCenterOptionsPanel.qml:38
 msgctxt "@option:control-center-mode"
 msgid "Floating"
@@ -3241,7 +3252,7 @@ msgstr "Intensität des Textschattens des Ordner-Popups"
 msgid "Folder popups"
 msgstr "Ordner-Popups"
 
-#: contents/ui/components/DockContextActionsController.qml:418
+#: contents/ui/components/DockContextActionsController.qml:431
 msgctxt "@title:menu"
 msgid "Folder view"
 msgstr "Ordneransicht"
@@ -3309,7 +3320,7 @@ msgctxt "@option:check"
 msgid "Force mute all playback devices"
 msgstr "Stummschaltung aller Wiedergabegeräte erzwingen"
 
-#: contents/ui/components/DockContextActionsController.qml:200
+#: contents/ui/components/DockContextActionsController.qml:219
 msgctxt "@action:context"
 msgid "Forget Recent Files"
 msgstr "Zuletzt verwendete Dateien vergessen"
@@ -3355,13 +3366,13 @@ msgstr "Vollständiges Symbol:"
 msgid "Full screen"
 msgstr "Vollbild"
 
-#: contents/ui/components/DockContextActionsController.qml:65
+#: contents/ui/components/DockContextActionsController.qml:86
 #: contents/ui/config/ControlCenterOptionsPanel.qml:34
 msgctxt "@option:control-center-mode"
 msgid "Full screen"
 msgstr "Vollbild"
 
-#: contents/ui/components/DockContextActionsController.qml:382
+#: contents/ui/components/DockContextActionsController.qml:395
 #: contents/ui/config/PunchiMenuOptionsPanel.qml:35
 msgctxt "@option:punchimenu-mode"
 msgid "Full screen"
@@ -3420,8 +3431,8 @@ msgstr "Grafik"
 msgid "Grid"
 msgstr "Gitter"
 
-#: contents/ui/components/DockContextActionsController.qml:426
-#: contents/ui/config/components/RecentApplicationsSettings.qml:24
+#: contents/ui/components/DockContextActionsController.qml:439
+#: contents/ui/config/components/RecentApplicationsSettings.qml:25
 #: contents/ui/config/ConfigFolderPopups.qml:113
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Grid"
@@ -3581,7 +3592,7 @@ msgstr "Symbolabstand:"
 msgid "Icon:"
 msgstr "Symbol:"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:20
+#: contents/ui/config/components/RecentApplicationsSettings.qml:21
 msgctxt "@option:recent-applications"
 msgid "Icons"
 msgstr "Symbole"
@@ -3813,6 +3824,11 @@ msgstr "JSON sieht gültig aus."
 msgid "JSON theme files"
 msgstr "JSON-Designdateien"
 
+#: contents/ui/config/components/RecentApplicationsSettings.qml:85
+msgctxt "@label"
+msgid "KDE recent files options:"
+msgstr "Optionen für zuletzt verwendete Dateien in KDE:"
+
 #: contents/ui/components/TaskModelController.qml:879
 msgid "Keep above"
 msgstr "Oben bleiben"
@@ -3826,7 +3842,7 @@ msgctxt "@action:button"
 msgid "Keep editing"
 msgstr "Weiter bearbeiten"
 
-#: contents/ui/components/DockItem.qml:1613
+#: contents/ui/components/DockItem.qml:1630
 msgctxt "@info:accessible"
 msgid "Keep holding to bring %1 to the front"
 msgstr "Weiter gedrückt halten, um %1 in den Vordergrund zu bringen"
@@ -3956,8 +3972,8 @@ msgstr ""
 msgid "List"
 msgstr "Einfache Ansicht"
 
-#: contents/ui/components/DockContextActionsController.qml:439
-#: contents/ui/config/components/RecentApplicationsSettings.qml:25
+#: contents/ui/components/DockContextActionsController.qml:452
+#: contents/ui/config/components/RecentApplicationsSettings.qml:26
 #: contents/ui/config/ConfigFolderPopups.qml:114
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
@@ -4137,7 +4153,7 @@ msgstr "Maximal sichtbare Ordner-Popup-Zeilen"
 msgid "Maximum visible popup rows"
 msgstr "Maximal sichtbare Popup-Zeilen"
 
-#: contents/ui/components/DockContextActionsController.qml:271
+#: contents/ui/components/DockContextActionsController.qml:284
 msgctxt "@title:menu"
 msgid "Media"
 msgstr "Medien"
@@ -4238,8 +4254,8 @@ msgstr ""
 "Menüeinträge und Aktionen pro Element bleiben im Abschnitt „Elemente“ "
 "konfiguriert."
 
-#: contents/ui/components/DockContextActionsController.qml:66
-#: contents/ui/components/DockContextActionsController.qml:348
+#: contents/ui/components/DockContextActionsController.qml:87
+#: contents/ui/components/DockContextActionsController.qml:361
 msgctxt "@title:menu"
 msgid "Menu mode"
 msgstr "Menümodus"
@@ -4338,7 +4354,7 @@ msgstr[1] "%1 Designs in den Papierkorb verschieben?"
 msgid "Move all themes to the Trash…"
 msgstr "Alle Designs in den Papierkorb verschieben…"
 
-#: contents/ui/components/DockContextActionsController.qml:314
+#: contents/ui/components/DockContextActionsController.qml:327
 msgctxt "@action:context"
 msgid "Move open applications section"
 msgstr "Bereich für offene Anwendungen verschieben"
@@ -4384,7 +4400,7 @@ msgstr "In einen Ordner verschieben"
 msgid "Move “%1” to the Trash…"
 msgstr "„%1“ in den Papierkorb verschieben…"
 
-#: contents/ui/components/DockItem.qml:1651
+#: contents/ui/components/DockItem.qml:1668
 msgctxt "@info:accessible"
 msgid "Moving Dock item. Drop to place it at position %1 of %2."
 msgstr ""
@@ -4420,7 +4436,7 @@ msgctxt "@action:button"
 msgid "Mute media volume"
 msgstr "Medienlautstärke stumm schalten"
 
-#: contents/ui/components/DockContextActionsController.qml:505
+#: contents/ui/components/DockContextActionsController.qml:518
 msgctxt "@item:inmenu folder sort mode"
 msgid "Name"
 msgstr "Name"
@@ -4460,7 +4476,7 @@ msgstr "Neuer Desktop"
 msgid "New window"
 msgstr "Neues Fenster"
 
-#: contents/ui/components/DockContextActionsController.qml:643
+#: contents/ui/components/DockContextActionsController.qml:652
 msgctxt "@action:context"
 msgid "New window"
 msgstr "Neues Fenster"
@@ -4480,7 +4496,7 @@ msgctxt "@action:button"
 msgid "Next track"
 msgstr "Nächster Titel"
 
-#: contents/ui/components/DockContextActionsController.qml:249
+#: contents/ui/components/DockContextActionsController.qml:262
 msgctxt "@action:context"
 msgid "Next track"
 msgstr "Nächster Titel"
@@ -4569,7 +4585,7 @@ msgstr ""
 "Es wurden keine installierten Multimedia-Anwendungen gefunden. Die "
 "automatische Auswahl bleibt verfügbar."
 
-#: contents/ui/main.qml:2254
+#: contents/ui/main.qml:2262
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr "In diesem Ablegevorgang wurden keine lokalen Dateien gefunden."
@@ -4613,12 +4629,12 @@ msgctxt "@option:punchimenu-mode"
 msgid "Normal"
 msgstr "Normal"
 
-#: contents/ui/components/DockContextActionsController.qml:356
+#: contents/ui/components/DockContextActionsController.qml:369
 msgctxt "@option:punchimenu-mode"
 msgid "Normal (anchored)"
 msgstr "Normal (angedockt)"
 
-#: contents/ui/components/DockContextActionsController.qml:369
+#: contents/ui/components/DockContextActionsController.qml:382
 msgctxt "@option:punchimenu-mode"
 msgid "Normal (floating center)"
 msgstr "Normal (schwebend zentriert)"
@@ -4758,7 +4774,7 @@ msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 "Gilt nur, wenn dieses Dock-Element eine geschlossene Anwendung startet."
 
-#: contents/ui/main.qml:2265
+#: contents/ui/main.qml:2273
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr "Mit einer Anwendung können nur lokale Dateien geöffnet werden."
@@ -4852,7 +4868,7 @@ msgctxt "@action:button open the container"
 msgid "Open"
 msgstr "Öffnen"
 
-#: contents/ui/components/DockContextActionsController.qml:302
+#: contents/ui/components/DockContextActionsController.qml:315
 msgctxt "@action:context"
 msgid "Open"
 msgstr "Öffnen"
@@ -4867,6 +4883,11 @@ msgstr "%1 öffnen"
 msgctxt "@action:button"
 msgid "Open Bluetooth settings"
 msgstr "Bluetooth-Einstellungen öffnen"
+
+#: contents/ui/config/components/RecentApplicationsSettings.qml:86
+msgctxt "@action:button"
+msgid "Open KDE Recent Files settings"
+msgstr "Einstellungen für zuletzt verwendete Dateien in KDE öffnen"
 
 #
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:731
@@ -4907,7 +4928,7 @@ msgctxt "@action:button open the folder in the file manager"
 msgid "Open in %1"
 msgstr "In %1 öffnen"
 
-#: contents/ui/components/DockContextActionsController.qml:564
+#: contents/ui/components/DockContextActionsController.qml:577
 msgctxt "@action:context"
 msgid "Open in File Manager"
 msgstr "Im Dateiverwalter öffnen"
@@ -4938,6 +4959,7 @@ msgstr "Öffnen oder leeren Sie den Papierkorb"
 
 #
 #: contents/ui/components/controlcenter/ControlCenterControlCard.qml:31
+#: contents/ui/config/components/RecentApplicationsSettings.qml:87
 msgctxt "@action:button"
 msgid "Open settings"
 msgstr "Einstellungen öffnen"
@@ -5142,7 +5164,7 @@ msgctxt "@action:button"
 msgid "Pause"
 msgstr "Pause"
 
-#: contents/ui/components/DockContextActionsController.qml:237
+#: contents/ui/components/DockContextActionsController.qml:250
 msgctxt "@action:context"
 msgid "Pause"
 msgstr "Pausieren"
@@ -5165,7 +5187,7 @@ msgctxt "@info:status Bluetooth device type"
 msgid "Phone"
 msgstr "Telefon"
 
-#: contents/ui/components/DockContextActionsController.qml:326
+#: contents/ui/components/DockContextActionsController.qml:339
 msgctxt "@action:context"
 msgid "Pin to Dock"
 msgstr "An Dock anpinnen"
@@ -5191,8 +5213,8 @@ msgstr ""
 msgid "Pixel spectrum"
 msgstr "Pixelspektrum"
 
-#: contents/ui/components/DockContextActionsController.qml:174
-msgctxt "@title:menu"
+#: contents/ui/components/DockContextActionsController.qml:703
+msgctxt "@title:group for section of menu items"
 msgid "Places"
 msgstr "Orte"
 
@@ -5240,7 +5262,7 @@ msgctxt "@action:button"
 msgid "Play"
 msgstr "Spielen"
 
-#: contents/ui/components/DockContextActionsController.qml:238
+#: contents/ui/components/DockContextActionsController.qml:251
 msgctxt "@action:context"
 msgid "Play"
 msgstr "Wiedergeben"
@@ -5285,7 +5307,7 @@ msgstr "Die Position wird mit der aktuellen Indikatorform nicht verwendet."
 msgid "Preparing environment..."
 msgstr "Umgebung wird vorbereitet..."
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:68
+#: contents/ui/config/components/RecentApplicationsSettings.qml:105
 msgctxt "@label:listbox"
 msgid "Presentation:"
 msgstr "Darstellung:"
@@ -5294,7 +5316,7 @@ msgstr "Darstellung:"
 msgid "Press"
 msgstr "Drücken Sie"
 
-#: contents/ui/components/DockItem.qml:1675
+#: contents/ui/components/DockItem.qml:1692
 msgctxt "@info:accessible"
 msgid "Press M to open media controls"
 msgstr "Drücken Sie M, um die Mediensteuerung zu öffnen"
@@ -5334,7 +5356,7 @@ msgctxt "@action:button"
 msgid "Previous track"
 msgstr "Vorheriger Titel"
 
-#: contents/ui/components/DockContextActionsController.qml:224
+#: contents/ui/components/DockContextActionsController.qml:237
 msgctxt "@action:context"
 msgid "Previous track"
 msgstr "Vorheriger Titel"
@@ -5469,8 +5491,8 @@ msgstr "Maximale Lautstärke erhöhen"
 msgid "Reactive particles"
 msgstr "Reaktive Partikel"
 
-#: contents/ui/components/DockContextActionsController.qml:207
-msgctxt "@title:menu"
+#: contents/ui/components/DockContextActionsController.qml:712
+msgctxt "@title:group for section of menu items"
 msgid "Recent Files"
 msgstr "Zuletzt verwendete Dateien"
 
@@ -5483,17 +5505,17 @@ msgctxt "@title"
 msgid "Recent applications"
 msgstr "Zuletzt verwendete Anwendungen"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:52
+#: contents/ui/config/components/RecentApplicationsSettings.qml:53
 msgctxt "@title:group"
 msgid "Recent applications"
 msgstr "Zuletzt verwendete Anwendungen"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:101
+#: contents/ui/config/components/RecentApplicationsSettings.qml:138
 msgctxt "@label:listbox"
 msgid "Recent applications container view"
 msgstr "Behälteransicht zuletzt verwendeter Anwendungen"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:69
+#: contents/ui/config/components/RecentApplicationsSettings.qml:106
 msgctxt "@label:listbox"
 msgid "Recent applications presentation"
 msgstr "Darstellung zuletzt verwendeter Anwendungen"
@@ -5515,20 +5537,25 @@ msgstr "Reflexionsopazität:"
 msgid "Reflection:"
 msgstr "Reflexion:"
 
-#: contents/ui/components/DockItem.qml:1632
+#: contents/ui/components/DockItem.qml:1649
 msgctxt "@info:accessible"
 msgid "Release to add %1 to %2"
 msgstr "Loslassen, um %1 zu %2 hinzuzufügen"
 
-#: contents/ui/components/DockItem.qml:1625
+#: contents/ui/components/DockItem.qml:1642
 msgctxt "@info:accessible"
 msgid "Release to insert %1 in the Dock"
 msgstr "Loslassen, um %1 in das Dock einzufügen"
 
-#: contents/ui/components/DockItem.qml:1621
+#: contents/ui/components/DockItem.qml:1638
 msgctxt "@info:accessible"
 msgid "Release to open local files with %1"
 msgstr "Loslassen, um lokale Dateien mit %1 zu öffnen"
+
+#: contents/ui/config/components/RecentApplicationsSettings.qml:69
+msgctxt "@option:check"
+msgid "Remember application history in KDE"
+msgstr "Anwendungsverlauf in KDE merken"
 
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionState.qml:342
 msgctxt "@action:button"
@@ -6049,7 +6076,7 @@ msgstr "Nur Fenster des aktuellen virtuellen Desktops anzeigen"
 msgid "Show page navigation arrows"
 msgstr "Seitennavigationspfeile anzeigen"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:58
+#: contents/ui/config/components/RecentApplicationsSettings.qml:59
 msgctxt "@option:check"
 msgid "Show recent applications"
 msgstr "Zuletzt verwendete Anwendungen anzeigen"
@@ -6164,7 +6191,7 @@ msgstr "Single"
 msgid "Single desktop"
 msgstr "Einzelner Desktop"
 
-#: contents/ui/components/DockContextActionsController.qml:516
+#: contents/ui/components/DockContextActionsController.qml:529
 msgctxt "@item:inmenu folder sort mode"
 msgid "Size"
 msgstr "Größe"
@@ -6199,7 +6226,7 @@ msgctxt "@option:check"
 msgid "Sort applications alphabetically"
 msgstr "Anwendungen alphabetisch sortieren"
 
-#: contents/ui/components/DockContextActionsController.qml:498
+#: contents/ui/components/DockContextActionsController.qml:511
 msgctxt "@title:menu"
 msgid "Sort by"
 msgstr "Sortieren nach"
@@ -6242,7 +6269,7 @@ msgstr "Quadratisch"
 msgid "Star"
 msgstr "Stern"
 
-#: contents/ui/components/DockContextActionsController.qml:259
+#: contents/ui/components/DockContextActionsController.qml:272
 msgctxt "@action:context"
 msgid "Stop"
 msgstr "Anhalten"
@@ -6346,7 +6373,7 @@ msgstr ""
 "Die Menge gilt für die Beschriftungen der Ordner-Popups. Null entfernt den "
 "Schatten vollständig, sodass der Text nur seine Fläche hinter sich behält."
 
-#: src/systemdiscovery.cpp:1128
+#: src/systemdiscovery.cpp:1135
 msgid "The application action could not be found."
 msgstr "Die Anwendungsaktion konnte nicht gefunden werden."
 
@@ -6355,7 +6382,7 @@ msgctxt "@info:status"
 msgid "The application could not be added to the container."
 msgstr "Die Anwendung konnte dem Container nicht hinzugefügt werden."
 
-#: src/systemdiscovery.cpp:1019
+#: src/systemdiscovery.cpp:1026
 msgid "The application could not be found."
 msgstr "Die Anwendung konnte nicht gefunden werden."
 
@@ -6470,17 +6497,17 @@ msgstr ""
 "Das Dock-Design steuert diesen Trenner. Wählen Sie „Dieser Trenner“, um sein "
 "Erscheinungsbild hier zu bearbeiten."
 
-#: contents/ui/main.qml:2262
+#: contents/ui/main.qml:2270
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr "Der Ablegevorgang enthält einen ungültigen lokalen Dateipfad."
 
-#: contents/ui/main.qml:2271
+#: contents/ui/main.qml:2279
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr "Die Liste der abgelegten Dateien ist zu groß, um sie sicher zu öffnen."
 
-#: contents/ui/main.qml:2276
+#: contents/ui/main.qml:2284
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Die abgelegten Dateien konnten nicht geöffnet werden."
@@ -6519,7 +6546,7 @@ msgid "The folder change could not be applied. Please try again."
 msgstr ""
 "Die Ordneränderung konnte nicht angewendet werden. Versuchen Sie es erneut."
 
-#: src/systemdiscovery.cpp:565 src/systemdiscovery.cpp:1194
+#: src/systemdiscovery.cpp:565 src/systemdiscovery.cpp:1201
 msgid "The folder location is invalid."
 msgstr "Der Ordnerspeicherort ist ungültig."
 
@@ -6689,7 +6716,7 @@ msgstr "Dünn"
 msgid "This action cannot be undone."
 msgstr "Diese Aktion kann nicht rückgängig gemacht werden."
 
-#: contents/ui/main.qml:2274
+#: contents/ui/main.qml:2282
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -6701,7 +6728,7 @@ msgctxt "@info:status"
 msgid "This application could not be resolved safely."
 msgstr "Diese Anwendung konnte nicht sicher aufgelöst werden."
 
-#: contents/ui/components/DockItem.qml:1645
+#: contents/ui/components/DockItem.qml:1662
 msgctxt "@info:accessible"
 msgid "This file drop cannot be accepted"
 msgstr "Dieser Datei-Ablegevorgang kann nicht angenommen werden"
@@ -6858,7 +6885,7 @@ msgctxt "@info"
 msgid "Turn on Wi-Fi to search for networks."
 msgstr "Schalten Sie WLAN ein, um nach Netzwerken zu suchen."
 
-#: contents/ui/components/DockContextActionsController.qml:549
+#: contents/ui/components/DockContextActionsController.qml:562
 msgctxt "@item:inmenu folder sort mode"
 msgid "Type"
 msgstr "Typ"
@@ -6906,7 +6933,7 @@ msgctxt "@info"
 msgid "Unnamed audio device"
 msgstr "Unbenanntes Audiogerät"
 
-#: contents/ui/components/DockContextActionsController.qml:583
+#: contents/ui/components/DockContextActionsController.qml:596
 msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Vom Dock lösen"
@@ -7193,7 +7220,7 @@ msgctxt "@action:button %1 is an audio device name"
 msgid "Use %1 as the default device"
 msgstr "%1 als Standardgerät verwenden"
 
-#: contents/ui/components/DockItem.qml:1661
+#: contents/ui/components/DockItem.qml:1678
 msgctxt "@info:accessible"
 msgid "Use Control+Shift with an arrow key to move this Dock item."
 msgstr ""
@@ -7501,7 +7528,7 @@ msgstr "Schreiben Sie eine schnell bearbeitbare Notiz"
 msgid "Write a quick note"
 msgstr "Schreiben Sie eine kurze Notiz"
 
-#: contents/ui/main.qml:2258
+#: contents/ui/main.qml:2266
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr "Sie können bis zu %1 lokale Dateien gleichzeitig öffnen."

@@ -42,7 +42,8 @@ Item {
         for (let index = 0; index < displayedActions.length; index++) {
             const action = displayedActions[index]
             if (action && action.checked !== undefined
-                    && action.kind !== "separator") {
+                    && action.kind !== "separator"
+                    && action.kind !== "section") {
                 return true
             }
         }
@@ -78,6 +79,11 @@ Item {
         : Math.max(16, Math.min(40, Number(iconSize || 26)))
     readonly property int separatorRowHeight: Math.max(8,
         Kirigami.Units.smallSpacing * 2 + 1)
+    // QMenu section headings sit slightly tighter than an action row so the
+    // grouping reads as a label, not as another command.
+    readonly property int sectionRowHeight: Math.max(
+        Math.ceil(sectionTextMetrics.height) + Kirigami.Units.smallSpacing * 2,
+        Math.ceil(Kirigami.Units.gridUnit * 1.4))
     readonly property real chromeHeight: effectiveSurfaceMarginTop
         + effectiveSurfaceMarginBottom
     readonly property real effectiveSurfaceMarginLeft: surfaceMargins
@@ -95,8 +101,9 @@ Item {
     readonly property int displayedActionCount: {
         let count = 0
         for (let index = 0; index < displayedActions.length; index++) {
-            if (!displayedActions[index]
-                    || displayedActions[index].kind !== "separator") {
+            const kind = displayedActions[index] ? displayedActions[index].kind : ""
+            if (!displayedActions[index] || (kind !== "separator"
+                    && kind !== "section")) {
                 count++
             }
         }
@@ -173,6 +180,13 @@ Item {
                 }
                 continue
             }
+            if (action && action.kind === "section") {
+                if (visibleActionCount < actionLimit
+                        && usedHeight + sectionRowHeight <= availableHeight) {
+                    usedHeight += sectionRowHeight
+                }
+                continue
+            }
             if (visibleActionCount >= actionLimit
                     || usedHeight + effectiveRowHeight > availableHeight) {
                 break
@@ -191,6 +205,12 @@ Item {
             if (action && action.kind === "separator") {
                 if (visibleActionCount > 0 && visibleActionCount < actionRows) {
                     usedHeight += separatorRowHeight
+                }
+                continue
+            }
+            if (action && action.kind === "section") {
+                if (visibleActionCount < actionRows) {
+                    usedHeight += sectionRowHeight
                 }
                 continue
             }
@@ -243,6 +263,35 @@ Item {
         actionList.positionViewAtBeginning()
     }
 
+    function selectableAction(action) {
+        return !!action && action.kind !== "separator"
+            && action.kind !== "section"
+    }
+
+    function moveSelection(fromIndex, delta) {
+        let index = fromIndex + delta
+        while (index >= 0 && index < displayedActions.length) {
+            if (selectableAction(displayedActions[index])) {
+                actionList.currentIndex = index
+                const item = actionList.itemAtIndex(index)
+                if (item) {
+                    item.forceActiveFocus()
+                }
+                actionList.positionViewAtIndex(index, ListView.Contain)
+                return
+            }
+            index += delta
+        }
+    }
+
+    TextMetrics {
+        id: sectionTextMetrics
+        font.family: Kirigami.Theme.defaultFont.family
+        font.pointSize: Kirigami.Theme.defaultFont.pointSize
+        font.weight: Font.DemiBold
+        text: "Ag"
+    }
+
     onActionsChanged: resetSubMenu()
 
     Instantiator {
@@ -256,21 +305,29 @@ Item {
             width: 0
             height: 0
 
-            readonly property real naturalWidth:
-                (appActionsRoot.hasCheckableActions
+            readonly property bool isSection: !!modelData
+                && modelData.kind === "section"
+            readonly property real naturalWidth: isSection
+                ? (appActionsRoot.hasCheckableActions
                     ? Kirigami.Units.iconSizes.small
                     : Kirigami.Units.smallSpacing)
-                + appActionsRoot.effectiveIconSize
-                + mainTextMetrics.advanceWidth
-                + (detailTextMetrics.text.length > 0
-                    ? detailTextMetrics.advanceWidth + Kirigami.Units.largeSpacing
-                    : 0)
-                + (modelData && modelData.children instanceof Array
-                    && modelData.children.length > 0
-                    ? Kirigami.Units.iconSizes.small + Kirigami.Units.largeSpacing
-                    : 0)
-                + Kirigami.Units.largeSpacing * 2
-                + Kirigami.Units.smallSpacing * 2
+                    + sectionWidthMetrics.advanceWidth
+                    + Kirigami.Units.largeSpacing * 2
+                    + Kirigami.Units.smallSpacing * 2
+                : (appActionsRoot.hasCheckableActions
+                    ? Kirigami.Units.iconSizes.small
+                    : Kirigami.Units.smallSpacing)
+                    + appActionsRoot.effectiveIconSize
+                    + mainTextMetrics.advanceWidth
+                    + (detailTextMetrics.text.length > 0
+                        ? detailTextMetrics.advanceWidth + Kirigami.Units.largeSpacing
+                        : 0)
+                    + (modelData && modelData.children instanceof Array
+                        && modelData.children.length > 0
+                        ? Kirigami.Units.iconSizes.small + Kirigami.Units.largeSpacing
+                        : 0)
+                    + Kirigami.Units.largeSpacing * 2
+                    + Kirigami.Units.smallSpacing * 2
 
             TextMetrics {
                 id: mainTextMetrics
@@ -278,6 +335,16 @@ Item {
                 text: actionWidthMeasurement.modelData
                     && actionWidthMeasurement.modelData.name
                     ? String(actionWidthMeasurement.modelData.name) : ""
+            }
+
+            TextMetrics {
+                id: sectionWidthMetrics
+                font.family: Kirigami.Theme.defaultFont.family
+                font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                font.weight: Font.DemiBold
+                text: actionWidthMeasurement.isSection
+                    && actionWidthMeasurement.modelData
+                    ? String(actionWidthMeasurement.modelData.name || "") : ""
             }
 
             TextMetrics {
@@ -318,10 +385,23 @@ Item {
                 implicitHeight: contentHeight
                 boundsBehavior: Flickable.StopAtBounds
 
+                Keys.onUpPressed: function(event) {
+                    appActionsRoot.moveSelection(
+                        actionList.currentIndex < 0 ? 0 : actionList.currentIndex, -1)
+                    event.accepted = true
+                }
+
+                Keys.onDownPressed: function(event) {
+                    appActionsRoot.moveSelection(
+                        actionList.currentIndex < 0 ? -1 : actionList.currentIndex, 1)
+                    event.accepted = true
+                }
+
                 delegate: PlasmaComponents.MenuItem {
                     id: actionDelegate
                     objectName: "appActionsActionDelegate"
                     required property var modelData
+                    required property int index
                     readonly property string actionText: modelData && modelData.name
                         ? modelData.name
                         : i18n("Custom action") // qmllint disable unqualified
@@ -334,19 +414,25 @@ Item {
                         && modelData.children.length > 0
                     readonly property bool isSeparator: !!modelData
                         && modelData.kind === "separator"
-                    Accessible.ignored: isSeparator
+                    readonly property bool isSection: !!modelData
+                        && modelData.kind === "section"
+                    Accessible.ignored: isSeparator || isSection
 
                     width: actionList.width
-                    height: isSeparator
-                        ? appActionsRoot.separatorRowHeight
-                        : appActionsRoot.effectiveRowHeight
+                    height: isSection
+                        ? appActionsRoot.sectionRowHeight
+                        : isSeparator
+                            ? appActionsRoot.separatorRowHeight
+                            : appActionsRoot.effectiveRowHeight
                     text: actionText
-                    icon.name: modelData && modelData.icon ? modelData.icon : "system-run"
+                    icon.name: !isSection && modelData && modelData.icon
+                        ? modelData.icon : ""
                     // qmllint disable unqualified
                     icon.width: appActionsRoot.effectiveIconSize
                     icon.height: appActionsRoot.effectiveIconSize
                     // qmllint enable unqualified
-                    enabled: !isSeparator && !!modelData && modelData.enabled !== false
+                    enabled: !isSeparator && !isSection && !!modelData
+                        && modelData.enabled !== false
                         && (String(modelData.kind || "").length > 0
                             || String(modelData.command || "").length > 0
                             || hasChildren)
@@ -391,9 +477,20 @@ Item {
                         }
                     }
 
+                    Keys.onUpPressed: function(event) {
+                        appActionsRoot.moveSelection(index, -1)
+                        event.accepted = true
+                    }
+
+                    Keys.onDownPressed: function(event) {
+                        appActionsRoot.moveSelection(index, 1)
+                        event.accepted = true
+                    }
+
                     contentItem: RowLayout {
                         spacing: Kirigami.Units.smallSpacing
-                        opacity: actionDelegate.enabled ? 1 : 0.45
+                        opacity: actionDelegate.enabled || actionDelegate.isSection
+                            ? 1 : 0.45
                         visible: !actionDelegate.isSeparator
 
                         Item {
@@ -406,6 +503,7 @@ Item {
                         Kirigami.Icon {
                             Layout.preferredWidth: appActionsRoot.effectiveIconSize
                             Layout.preferredHeight: appActionsRoot.effectiveIconSize
+                            visible: !actionDelegate.isSection
                             source: actionDelegate.icon.name
                         }
 
@@ -416,6 +514,7 @@ Item {
                             renderShadow: appActionsRoot.textShadowsEnabled
                             font.family: Kirigami.Theme.defaultFont.family
                             font.pointSize: Kirigami.Theme.defaultFont.pointSize
+                            font.bold: actionDelegate.isSection
                             elide: Text.ElideRight
                             wrapMode: Text.NoWrap
                         }
@@ -455,6 +554,7 @@ Item {
                             anchors.topMargin: actionDelegate.topPadding
                             anchors.bottomMargin: actionDelegate.bottomPadding
                             visible: !actionDelegate.isSeparator
+                                && !actionDelegate.isSection
                             hovered: actionDelegate.hovered
                             focused: actionDelegate.visualFocus
                             pressed: actionDelegate.down
@@ -464,6 +564,21 @@ Item {
                         Rectangle {
                             visible: actionDelegate.isSeparator
                             anchors.verticalCenter: parent.verticalCenter
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.leftMargin: Kirigami.Units.largeSpacing
+                            anchors.rightMargin: Kirigami.Units.largeSpacing
+                            height: 1
+                            color: Kirigami.Theme.textColor
+                            opacity: 0.2
+                        }
+
+                        // QMenu draws the section divider as part of the
+                        // heading, so no explicit separator row is needed.
+                        Rectangle {
+                            visible: actionDelegate.isSection
+                                && actionDelegate.index > 0
+                            anchors.top: parent.top
                             anchors.left: parent.left
                             anchors.right: parent.right
                             anchors.leftMargin: Kirigami.Units.largeSpacing

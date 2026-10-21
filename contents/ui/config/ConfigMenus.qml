@@ -48,7 +48,7 @@ Item {
         const rowHeight = Math.round(contextMenuRowHeightSlider.value)
         const iconSize = Math.round(contextMenuIconSizeSlider.value)
         const menuWidth = Math.round(contextMenuWidthSlider.value)
-        if (rowHeight === 38 && iconSize === 20 && menuWidth === 300) {
+        if (rowHeight === 38 && iconSize === 20 && menuWidth === 360) {
             return "compact"
         }
         if (rowHeight === 46 && iconSize === 26 && menuWidth === 360) {
@@ -95,7 +95,7 @@ Item {
         if (preset === "compact") {
             contextMenuRowHeightSlider.value = 38
             contextMenuIconSizeSlider.value = 20
-            contextMenuWidthSlider.value = 300
+            contextMenuWidthSlider.value = 360
         } else if (preset === "comfortable") {
             contextMenuRowHeightSlider.value = 46
             contextMenuIconSizeSlider.value = 26
