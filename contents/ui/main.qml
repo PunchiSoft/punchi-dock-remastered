@@ -2913,6 +2913,17 @@ PlasmoidItem {
                 property var persistentDragSourceItem: null
                 property point persistentDragPointerPosition:
                     Qt.point(0, 0)
+                // The panel window clips anything drawn outside it, so the
+                // floating icon switches to its own surface once the pointer
+                // leaves the dock.
+                readonly property bool persistentDragPointerInsideDock: {
+                    const pointer = persistentDragPointerPosition
+                    return pointer.x >= 0 && pointer.y >= 0
+                        && pointer.x <= dockWrapper.width
+                        && pointer.y <= dockWrapper.height
+                }
+                readonly property point persistentDragPointerGlobalPosition:
+                    dockWrapper.mapToGlobal(persistentDragPointerPosition)
                 property string persistentDragIconName:
                     "application-x-executable"
                 property bool persistentDragMovesDynamicApplications: false
@@ -4031,11 +4042,21 @@ PlasmoidItem {
                 anchors.fill: parent
                 z: 20
                 active: dockLayout.persistentDragActive
+                    && dockLayout.persistentDragPointerInsideDock
                 pointerPosition:
                     dockLayout.persistentDragPointerPosition
                 iconName: dockLayout.persistentDragIconName
                 iconSize: dockGeometry.effectiveIconSize
                 motionEnabled: Kirigami.Units.longDuration > 0
+            }
+
+            DockReorderDragWindow {
+                dragging: dockLayout.persistentDragActive
+                    && !dockLayout.persistentDragPointerInsideDock
+                pointerPosition:
+                    dockLayout.persistentDragPointerGlobalPosition
+                iconName: dockLayout.persistentDragIconName
+                iconSize: dockGeometry.effectiveIconSize
             }
         }
 
