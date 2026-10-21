@@ -19,6 +19,9 @@ FocusScope {
     enabled: menuOpen
 
     required property var systemDiscovery
+    // Shared composer/executor of the native application rows.
+    property var applicationActionsController: null
+    property bool favoriteLimitReached: false
     property var applicationCatalog: []
     property bool applicationCatalogLoaded: false
     property var applicationLayoutController: null
@@ -456,6 +459,137 @@ FocusScope {
         favoritesScrollAnimation.start()
     }
 
+    function contextEntry(actionId, text, iconName, enabled) {
+        return {
+            actionId: actionId,
+            text: text,
+            iconName: iconName,
+            enabled: enabled !== false,
+            separator: false
+        }
+    }
+
+    function contextSeparator() {
+        return {
+            actionId: "",
+            text: "",
+            iconName: "",
+            enabled: false,
+            separator: true
+        }
+    }
+
+    function applicationBackendEntries(storageId) {
+        const controller = root.applicationActionsController
+        const applicationId = String(storageId || "").trim()
+        if (!controller || applicationId.length === 0
+                || typeof controller.applicationBackendRows !== "function") {
+            return []
+        }
+        const rows = controller.applicationBackendRows(applicationId)
+        return rows instanceof Array ? rows : []
+    }
+
+    function appendProviderEntries(entries, storageId) {
+        const controller = root.applicationActionsController
+        const applicationId = String(storageId || "").trim()
+        if (!controller || applicationId.length === 0
+                || typeof controller.applicationProviderRows !== "function") {
+            return entries
+        }
+        const rows = controller.applicationProviderRows(applicationId)
+        if (!(rows instanceof Array) || rows.length === 0) {
+            return entries
+        }
+        entries.push(contextSeparator())
+        for (let index = 0; index < rows.length; index++) {
+            entries.push(rows[index])
+        }
+        return entries
+    }
+
+    function standaloneApplicationContextEntries(context) {
+        const layoutActionEnabled = root.applicationLayoutController
+            && !root.applicationLayoutController.transactionPending
+        const entries = root.applicationBackendEntries(context.storageId)
+        if (entries.length > 0) {
+            entries.push(contextSeparator())
+        }
+        entries.push(contextEntry("createFolder",
+            i18nc("@action:inmenu", "Create Folder…"),
+            "folder-new", layoutActionEnabled))
+        entries.push(contextEntry("moveToFolder",
+            i18nc("@action:inmenu", "Move to Folder…"),
+            "folder-move", layoutActionEnabled
+                && applicationLayoutModel.folderChoiceCount > 0))
+        entries.push(contextSeparator())
+        entries.push(contextEntry("toggleFavorite", context.isFavorite
+                ? i18nc("@action:inmenu", "Remove from Favorites")
+                : i18nc("@action:inmenu", "Add to Favorites"),
+            context.isFavorite ? "favorite-favorited" : "favorite",
+            context.isFavorite || !root.favoriteLimitReached))
+        entries.push(contextEntry("toggleDockPin", context.isPinnedToDock
+                ? i18nc("@action:inmenu", "Remove from Dock")
+                : i18nc("@action:inmenu", "Pin to Dock"),
+            context.isPinnedToDock ? "window-unpin" : "window-pin", true))
+        entries.push(contextEntry("addToDesktop",
+            i18nc("@action:inmenu", "Add to Desktop"),
+            "user-desktop", true))
+        entries.push(contextSeparator())
+        entries.push(contextEntry("toggleHidden", context.isHidden
+                ? i18nc("@action:inmenu", "Show in listing")
+                : i18nc("@action:inmenu", "Hide from listing"),
+            context.isHidden ? "view-visible" : "view-hidden",
+            context.storageId.length > 0))
+        return root.appendProviderEntries(entries, context.storageId)
+    }
+
+    function folderMemberContextEntries(context) {
+        const layoutActionEnabled = root.applicationLayoutController
+            && !root.applicationLayoutController.transactionPending
+        const entries = root.applicationBackendEntries(context.storageId)
+        if (entries.length > 0) {
+            entries.push(contextSeparator())
+        }
+        entries.push(contextEntry("removeFromFolder",
+            i18nc("@action:inmenu", "Remove from Folder…"),
+            "list-remove", layoutActionEnabled))
+        entries.push(contextSeparator())
+        entries.push(contextEntry("toggleFavorite", context.isFavorite
+                ? i18nc("@action:inmenu", "Remove from Favorites")
+                : i18nc("@action:inmenu", "Add to Favorites"),
+            context.isFavorite ? "favorite-favorited" : "favorite",
+            context.isFavorite || !root.favoriteLimitReached))
+        entries.push(contextEntry("toggleDockPin", context.isPinnedToDock
+                ? i18nc("@action:inmenu", "Remove from Dock")
+                : i18nc("@action:inmenu", "Pin to Dock"),
+            context.isPinnedToDock ? "window-unpin" : "window-pin", true))
+        entries.push(contextEntry("addToDesktop",
+            i18nc("@action:inmenu", "Add to Desktop"),
+            "user-desktop", true))
+        entries.push(contextSeparator())
+        entries.push(contextEntry("toggleHidden", context.isHidden
+                ? i18nc("@action:inmenu", "Show in listing")
+                : i18nc("@action:inmenu", "Hide from listing"),
+            context.isHidden ? "view-visible" : "view-hidden",
+            context.storageId.length > 0))
+        return root.appendProviderEntries(entries, context.storageId)
+    }
+
+    function folderContextEntries() {
+        const layoutActionEnabled = root.applicationLayoutController
+            && !root.applicationLayoutController.transactionPending
+        return [
+            contextEntry("renameFolder",
+                i18nc("@action:inmenu", "Rename Folder…"),
+                "edit-rename", layoutActionEnabled),
+            contextSeparator(),
+            contextEntry("dissolveFolder",
+                i18nc("@action:inmenu", "Dissolve Folder…"),
+                "edit-delete", layoutActionEnabled)
+        ]
+    }
+
     function openApplicationContextMenu(sourceItem, storageId, appName, appIcon, appCommand, x, y) {
         const normalizedId = String(storageId || "").trim()
         const normalizedCmd = String(appCommand || "").trim()
@@ -464,23 +598,25 @@ FocusScope {
             return
         }
         const placement = applicationLayoutModel.applicationPlacement(normalizedId)
-        const targetMenu = String(placement.placement || "missing") === "folder"
-            ? folderMemberContextMenu : standaloneApplicationContextMenu
-        closeContextMenusExcept(targetMenu)
-        targetMenu.targetStorageId = normalizedId
-        targetMenu.targetAppCommand = normalizedCmd
-        targetMenu.targetAppName = String(appName || "")
-        targetMenu.targetAppIcon = String(appIcon || "")
-        targetMenu.targetIsFavorite = isFavorite(primaryId)
-        targetMenu.targetIsPinnedToDock = root.dockItemsController
-            ? root.dockItemsController.isAppPinnedToDock(normalizedId, normalizedCmd)
-            : false
-        targetMenu.targetIsHidden = isApplicationHidden(normalizedId)
-        if (targetMenu === folderMemberContextMenu) {
-            targetMenu.targetContainingFolderId = String(
-                placement.folderId || "")
+        const context = {
+            kind: String(placement.placement || "missing") === "folder"
+                ? "folderMember" : "standaloneApplication",
+            storageId: normalizedId,
+            appCommand: normalizedCmd,
+            appName: String(appName || ""),
+            appIcon: String(appIcon || ""),
+            containingFolderId: String(placement.folderId || ""),
+            isFavorite: isFavorite(primaryId),
+            isPinnedToDock: root.dockItemsController
+                ? root.dockItemsController.isAppPinnedToDock(normalizedId, normalizedCmd)
+                : false,
+            isHidden: isApplicationHidden(normalizedId)
         }
-        requestContextMenu(targetMenu, sourceItem, x, y)
+        const entries = context.kind === "folderMember"
+            ? folderMemberContextEntries(context)
+            : standaloneApplicationContextEntries(context)
+        contextMenuSurface.openAt(sourceItem, Number(x), Number(y),
+            entries, context)
     }
 
     function openFolderContextMenu(sourceItem, folder, x, y) {
@@ -488,56 +624,71 @@ FocusScope {
         if (!sourceItem || folderId.length === 0) {
             return
         }
-        closeContextMenusExcept(folderContextMenu)
-        folderContextMenu.targetFolderId = folderId
-        requestContextMenu(folderContextMenu, sourceItem, x, y)
+        contextMenuSurface.openAt(sourceItem, Number(x), Number(y),
+            folderContextEntries(), { kind: "folder", folderId: folderId })
     }
 
-    function closeContextMenusExcept(exception) {
-        const menus = [standaloneApplicationContextMenu,
-            folderMemberContextMenu, folderContextMenu]
-        for (let index = 0; index < menus.length; index++) {
-            const menu = menus[index]
-            if (menu === exception) {
-                continue
-            }
-            menu.pendingSourceItem = null
-            if (menu.opened || menu.visible) {
-                menu.close()
-            }
-        }
-    }
-
-    function requestContextMenu(menu, sourceItem, x, y) {
-        if (!menu || !sourceItem) {
+    function closeApplicationContextMenu(restoreFocus) {
+        const sourceItem = contextMenuSurface.sourceItem
+        contextMenuSurface.close(false)
+        if (restoreFocus === false) {
             return
         }
-        if (menu.opened || menu.visible) {
-            menu.pendingSourceItem = sourceItem
-            menu.pendingPopupX = Number(x)
-            menu.pendingPopupY = Number(y)
-            menu.close()
-            return
-        }
-        menu.pendingSourceItem = null
-        menu.popup(sourceItem, Number(x), Number(y))
-    }
-
-    function completeContextMenuClose(menu) {
-        const sourceItem = menu.pendingSourceItem
-        const popupX = menu.pendingPopupX
-        const popupY = menu.pendingPopupY
-        menu.pendingSourceItem = null
-        if (root.menuOpen && sourceItem) {
-            Qt.callLater(function() {
-                if (root.menuOpen && sourceItem) {
-                    menu.popup(sourceItem, popupX, popupY)
-                }
-            })
-            return
-        }
+        // The folder dialog owns focus while it is open; otherwise focus goes
+        // back to the launcher item that opened the menu.
         if (folderSurface.active) {
             folderSurface.restoreFocus()
+        } else {
+            contextMenuSurface.restoreSourceFocus(sourceItem)
+        }
+    }
+
+    function activateContextMenuAction(entry) {
+        const contextMenu = contextMenuSurface
+        const actionId = String(entry && entry.actionId || "")
+        const controller = root.applicationActionsController
+        const backendKinds = ["launchApplication", "desktopAction",
+            "openFilePlace", "openRecentDocument", "forgetRecentDocuments",
+            "launchNewWindow", "editApplication", "manageApplication"]
+        if (entry && controller
+                && backendKinds.indexOf(String(entry.kind || "")) >= 0
+                && typeof controller.triggerAction === "function") {
+            root.closeApplicationContextMenu(false)
+            controller.triggerAction(entry)
+            return
+        }
+        const application = contextMenu.targetApplication()
+        const containingFolderId = contextMenu.targetContainingFolderId
+        const targetFolderId = contextMenu.targetFolderId
+        root.closeApplicationContextMenu(false)
+        if (actionId === "createFolder") {
+            Qt.callLater(function() {
+                folderSurface.beginCreate(application)
+            })
+        } else if (actionId === "moveToFolder") {
+            Qt.callLater(function() {
+                folderSurface.beginMove(application)
+            })
+        } else if (actionId === "removeFromFolder") {
+            Qt.callLater(function() {
+                folderSurface.beginRemove(application, containingFolderId)
+            })
+        } else if (actionId === "renameFolder") {
+            Qt.callLater(function() {
+                folderSurface.beginRename(targetFolderId)
+            })
+        } else if (actionId === "dissolveFolder") {
+            Qt.callLater(function() {
+                folderSurface.beginDissolve(targetFolderId)
+            })
+        } else if (actionId === "toggleFavorite") {
+            root.toggleContextFavorite(contextMenu)
+        } else if (actionId === "toggleDockPin") {
+            root.toggleContextDockPin(contextMenu)
+        } else if (actionId === "addToDesktop") {
+            root.addContextApplicationToDesktop(contextMenu)
+        } else if (actionId === "toggleHidden") {
+            root.toggleContextApplicationHidden(contextMenu)
         }
     }
 
@@ -1401,7 +1552,9 @@ FocusScope {
 
     Shortcut {
         sequences: ["Escape", "Back"]
-        enabled: root.menuOpen
+        // The context menu owns Escape while it is open so it can first leave a
+        // submenu instead of closing the whole launcher.
+        enabled: root.menuOpen && !contextMenuSurface.active
         onActivated: {
             if (folderSurface.active) {
                 folderSurface.closeCurrentView()
@@ -1414,258 +1567,18 @@ FocusScope {
         }
     }
 
-    PlasmaComponents.Menu {
-        id: standaloneApplicationContextMenu
+    PunchiMenuContextSurface {
+        id: contextMenuSurface
+        anchors.fill: parent
+        z: 400
 
-        modal: false
-        closePolicy: Controls.Popup.CloseOnEscape
-            | Controls.Popup.CloseOnPressOutside
-
-        property string targetStorageId: ""
-        property string targetAppCommand: ""
-        property string targetAppName: ""
-        property string targetAppIcon: ""
-        property bool targetIsFavorite: false
-        property bool targetIsPinnedToDock: false
-        property bool targetIsHidden: false
-        property Item pendingSourceItem: null
-        property real pendingPopupX: 0
-        property real pendingPopupY: 0
-        readonly property bool layoutActionEnabled:
-            root.applicationLayoutController
-            && !root.applicationLayoutController.transactionPending
-
-        function targetApplication() {
-            return {
-                appStorageId: targetStorageId,
-                appName: targetAppName,
-                appIcon: targetAppIcon
-            }
+        onActionTriggered: function(entry) {
+            root.activateContextMenuAction(entry)
         }
-
-        onClosed: root.completeContextMenuClose(
-            standaloneApplicationContextMenu)
-
-        PlasmaComponents.MenuItem {
-            enabled: standaloneApplicationContextMenu.layoutActionEnabled
-            text: i18nc("@action:inmenu", "Create Folder…")
-            icon.name: "folder-new"
-            Accessible.name: text
-            onTriggered: {
-                const application = standaloneApplicationContextMenu
-                    .targetApplication()
-                Qt.callLater(function() {
-                    folderSurface.beginCreate(application)
-                })
-            }
+        onCloseRequested: function(restoreFocus) {
+            root.closeApplicationContextMenu(restoreFocus)
         }
-
-        PlasmaComponents.MenuItem {
-            enabled: standaloneApplicationContextMenu.layoutActionEnabled
-                && applicationLayoutModel.folderChoiceCount > 0
-            text: i18nc("@action:inmenu", "Move to Folder…")
-            icon.name: "folder-move"
-            Accessible.name: text
-            onTriggered: {
-                const application = standaloneApplicationContextMenu
-                    .targetApplication()
-                Qt.callLater(function() {
-                    folderSurface.beginMove(application)
-                })
-            }
-        }
-
-        PlasmaComponents.MenuSeparator {}
-
-        PlasmaComponents.MenuItem {
-            text: standaloneApplicationContextMenu.targetIsFavorite
-                ? i18nc("@action:inmenu", "Remove from Favorites")
-                : i18nc("@action:inmenu", "Add to Favorites")
-            icon.name: standaloneApplicationContextMenu.targetIsFavorite
-                ? "favorite-favorited"
-                : "favorite"
-            Accessible.name: text
-            onTriggered: root.toggleContextFavorite(
-                standaloneApplicationContextMenu)
-        }
-
-        PlasmaComponents.MenuItem {
-            text: standaloneApplicationContextMenu.targetIsPinnedToDock
-                ? i18nc("@action:inmenu", "Remove from Dock")
-                : i18nc("@action:inmenu", "Pin to Dock")
-            icon.name: standaloneApplicationContextMenu.targetIsPinnedToDock
-                ? "window-unpin"
-                : "window-pin"
-            Accessible.name: text
-            onTriggered: root.toggleContextDockPin(
-                standaloneApplicationContextMenu)
-        }
-
-        PlasmaComponents.MenuItem {
-            text: i18nc("@action:inmenu", "Add to Desktop")
-            icon.name: "user-desktop"
-            Accessible.name: text
-            onTriggered: root.addContextApplicationToDesktop(
-                standaloneApplicationContextMenu)
-        }
-
-        PlasmaComponents.MenuSeparator {}
-
-        PlasmaComponents.MenuItem {
-            enabled: standaloneApplicationContextMenu
-                .targetStorageId.length > 0
-            text: standaloneApplicationContextMenu.targetIsHidden
-                ? i18nc("@action:inmenu", "Show in listing")
-                : i18nc("@action:inmenu", "Hide from listing")
-            icon.name: standaloneApplicationContextMenu.targetIsHidden
-                ? "view-visible"
-                : "view-hidden"
-            Accessible.name: text
-            onTriggered: root.toggleContextApplicationHidden(
-                standaloneApplicationContextMenu)
-        }
-    }
-
-    PlasmaComponents.Menu {
-        id: folderMemberContextMenu
-
-        modal: false
-        closePolicy: Controls.Popup.CloseOnEscape
-            | Controls.Popup.CloseOnPressOutside
-
-        property string targetStorageId: ""
-        property string targetAppCommand: ""
-        property string targetAppName: ""
-        property string targetAppIcon: ""
-        property string targetContainingFolderId: ""
-        property bool targetIsFavorite: false
-        property bool targetIsPinnedToDock: false
-        property bool targetIsHidden: false
-        property Item pendingSourceItem: null
-        property real pendingPopupX: 0
-        property real pendingPopupY: 0
-        readonly property bool layoutActionEnabled:
-            root.applicationLayoutController
-            && !root.applicationLayoutController.transactionPending
-
-        function targetApplication() {
-            return {
-                appStorageId: targetStorageId,
-                appName: targetAppName,
-                appIcon: targetAppIcon
-            }
-        }
-
-        onClosed: root.completeContextMenuClose(folderMemberContextMenu)
-
-        PlasmaComponents.MenuItem {
-            enabled: folderMemberContextMenu.layoutActionEnabled
-            text: i18nc("@action:inmenu", "Remove from Folder…")
-            icon.name: "list-remove"
-            Accessible.name: text
-            onTriggered: {
-                const application = folderMemberContextMenu
-                    .targetApplication()
-                const folderId = folderMemberContextMenu
-                    .targetContainingFolderId
-                Qt.callLater(function() {
-                    folderSurface.beginRemove(application, folderId)
-                })
-            }
-        }
-
-        PlasmaComponents.MenuSeparator {}
-
-        PlasmaComponents.MenuItem {
-            text: folderMemberContextMenu.targetIsFavorite
-                ? i18nc("@action:inmenu", "Remove from Favorites")
-                : i18nc("@action:inmenu", "Add to Favorites")
-            icon.name: folderMemberContextMenu.targetIsFavorite
-                ? "favorite-favorited"
-                : "favorite"
-            Accessible.name: text
-            onTriggered: root.toggleContextFavorite(folderMemberContextMenu)
-        }
-
-        PlasmaComponents.MenuItem {
-            text: folderMemberContextMenu.targetIsPinnedToDock
-                ? i18nc("@action:inmenu", "Remove from Dock")
-                : i18nc("@action:inmenu", "Pin to Dock")
-            icon.name: folderMemberContextMenu.targetIsPinnedToDock
-                ? "window-unpin"
-                : "window-pin"
-            Accessible.name: text
-            onTriggered: root.toggleContextDockPin(folderMemberContextMenu)
-        }
-
-        PlasmaComponents.MenuItem {
-            text: i18nc("@action:inmenu", "Add to Desktop")
-            icon.name: "user-desktop"
-            Accessible.name: text
-            onTriggered: root.addContextApplicationToDesktop(
-                folderMemberContextMenu)
-        }
-
-        PlasmaComponents.MenuSeparator {}
-
-        PlasmaComponents.MenuItem {
-            enabled: folderMemberContextMenu.targetStorageId.length > 0
-            text: folderMemberContextMenu.targetIsHidden
-                ? i18nc("@action:inmenu", "Show in listing")
-                : i18nc("@action:inmenu", "Hide from listing")
-            icon.name: folderMemberContextMenu.targetIsHidden
-                ? "view-visible"
-                : "view-hidden"
-            Accessible.name: text
-            onTriggered: root.toggleContextApplicationHidden(
-                folderMemberContextMenu)
-        }
-    }
-
-    PlasmaComponents.Menu {
-        id: folderContextMenu
-
-        modal: false
-        closePolicy: Controls.Popup.CloseOnEscape
-            | Controls.Popup.CloseOnPressOutside
-
-        property string targetFolderId: ""
-        property Item pendingSourceItem: null
-        property real pendingPopupX: 0
-        property real pendingPopupY: 0
-        readonly property bool layoutActionEnabled:
-            root.applicationLayoutController
-            && !root.applicationLayoutController.transactionPending
-
-        onClosed: root.completeContextMenuClose(folderContextMenu)
-
-        PlasmaComponents.MenuItem {
-            enabled: folderContextMenu.layoutActionEnabled
-            text: i18nc("@action:inmenu", "Rename Folder…")
-            icon.name: "edit-rename"
-            Accessible.name: text
-            onTriggered: {
-                const folderId = folderContextMenu.targetFolderId
-                Qt.callLater(function() {
-                    folderSurface.beginRename(folderId)
-                })
-            }
-        }
-
-        PlasmaComponents.MenuSeparator {}
-
-        PlasmaComponents.MenuItem {
-            enabled: folderContextMenu.layoutActionEnabled
-            text: i18nc("@action:inmenu", "Dissolve Folder…")
-            icon.name: "edit-delete"
-            Accessible.name: text
-            onTriggered: {
-                const folderId = folderContextMenu.targetFolderId
-                Qt.callLater(function() {
-                    folderSurface.beginDissolve(folderId)
-                })
-            }
-        }
+        onFocusFallbackRequested: root.focusCurrentMode()
     }
 
     NumberAnimation {
@@ -3443,9 +3356,7 @@ FocusScope {
                 detailedApplicationFeedback: true
                 returnToFolderAfterMemberRemoval: true
                 allowedExternalFocusItems: [
-                    standaloneApplicationContextMenu.contentItem,
-                    folderMemberContextMenu.contentItem,
-                    folderContextMenu.contentItem,
+                    contextMenuSurface,
                     operationInlineMessage
                 ]
 

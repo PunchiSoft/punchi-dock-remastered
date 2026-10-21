@@ -14,6 +14,9 @@ FocusScope {
 
     required property var systemDiscovery
     property var applicationCatalog: []
+    // Shared composer/executor of the native application rows (jump list,
+    // Places, Recent Files and provider actions).
+    property var applicationActionsController: null
     property var favorites: []
     property bool favoriteLimitReached: false
     property var dockItemsController: null
@@ -366,21 +369,63 @@ FocusScope {
         }
     }
 
+    function contextSeparator() {
+        return {
+            actionId: "",
+            text: "",
+            iconName: "",
+            enabled: false,
+            separator: true
+        }
+    }
+
+    function applicationBackendEntries(context) {
+        const controller = root.applicationActionsController
+        const applicationId = String(context && context.storageId || "").trim()
+        if (!controller || applicationId.length === 0
+                || typeof controller.applicationBackendRows !== "function") {
+            return []
+        }
+        const rows = controller.applicationBackendRows(applicationId)
+        return rows instanceof Array ? rows : []
+    }
+
+    function appendProviderEntries(entries, context) {
+        const controller = root.applicationActionsController
+        const applicationId = String(context && context.storageId || "").trim()
+        if (!controller || applicationId.length === 0
+                || typeof controller.applicationProviderRows !== "function") {
+            return entries
+        }
+        const rows = controller.applicationProviderRows(applicationId)
+        if (!(rows instanceof Array) || rows.length === 0) {
+            return entries
+        }
+        entries.push(contextSeparator())
+        for (let index = 0; index < rows.length; index++) {
+            entries.push(rows[index])
+        }
+        return entries
+    }
+
     function standaloneApplicationContextEntries(context) {
-        return [
-            contextEntry("toggleFavorite", context.isFavorite
-                    ? i18nc("@action:inmenu", "Remove from Favorites")
-                    : i18nc("@action:inmenu", "Add to Favorites"),
-                context.isFavorite ? "favorite-favorited" : "favorite",
-                context.isFavorite || !root.favoriteLimitReached),
-            contextEntry("toggleDockPin", context.isPinnedToDock
-                    ? i18nc("@action:inmenu", "Remove from Dock")
-                    : i18nc("@action:inmenu", "Pin to Dock"),
-                context.isPinnedToDock ? "window-unpin" : "window-pin", true),
-            contextEntry("addToDesktop",
-                i18nc("@action:inmenu", "Add to Desktop"),
-                "user-desktop", true)
-        ]
+        const entries = root.applicationBackendEntries(context)
+        if (entries.length > 0) {
+            entries.push(contextSeparator())
+        }
+        entries.push(contextEntry("toggleFavorite", context.isFavorite
+                ? i18nc("@action:inmenu", "Remove from Favorites")
+                : i18nc("@action:inmenu", "Add to Favorites"),
+            context.isFavorite ? "favorite-favorited" : "favorite",
+            context.isFavorite || !root.favoriteLimitReached))
+        entries.push(contextEntry("toggleDockPin", context.isPinnedToDock
+                ? i18nc("@action:inmenu", "Remove from Dock")
+                : i18nc("@action:inmenu", "Pin to Dock"),
+            context.isPinnedToDock ? "window-unpin" : "window-pin", true))
+        entries.push(contextEntry("addToDesktop",
+            i18nc("@action:inmenu", "Add to Desktop"),
+            "user-desktop", true))
+        return root.appendProviderEntries(entries, context)
     }
 
     function openApplicationContextMenu(sourceItem, appData, x, y) {
@@ -421,12 +466,24 @@ FocusScope {
         }
     }
 
-    function activateContextMenuAction(actionId) {
+    function activateContextMenuAction(entry) {
         const storageId = String(applicationContextMenuSurface.targetStorageId || "")
         const appName = String(applicationContextMenuSurface.targetAppName || "")
         const appIcon = String(applicationContextMenuSurface.targetAppIcon || "")
         const appCommand = String(applicationContextMenuSurface.targetAppCommand || "")
         const isFav = applicationContextMenuSurface.targetIsFavorite
+        const actionId = String(entry && entry.actionId || "")
+        const controller = root.applicationActionsController
+        const backendKinds = ["launchApplication", "desktopAction",
+            "openFilePlace", "openRecentDocument", "forgetRecentDocuments",
+            "launchNewWindow", "editApplication", "manageApplication"]
+        if (entry && controller
+                && backendKinds.indexOf(String(entry.kind || "")) >= 0
+                && typeof controller.triggerAction === "function") {
+            closeApplicationContextMenu(false)
+            controller.triggerAction(entry)
+            return
+        }
 
         closeApplicationContextMenu(true)
 

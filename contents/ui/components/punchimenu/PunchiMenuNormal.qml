@@ -15,6 +15,9 @@ FocusScope {
     required property var favorites
     property var applicationCatalog: []
     property var applicationLayoutController: null
+    // Shared composer/executor of the native application rows (jump list,
+    // Places, Recent Files and provider actions).
+    property var applicationActionsController: null
     property real applicationIconScale: 1.0
     property real favoriteIconScale: 1.0
     property int folderMaximumColumns: 3
@@ -873,66 +876,105 @@ FocusScope {
         }
     }
 
+    function applicationIdentifier(context) {
+        return String(context && context.storageId || "").trim()
+    }
+
+    function applicationBackendEntries(context) {
+        const controller = root.applicationActionsController
+        const applicationId = root.applicationIdentifier(context)
+        if (!controller || applicationId.length === 0
+                || typeof controller.applicationBackendRows !== "function") {
+            return []
+        }
+        const rows = controller.applicationBackendRows(applicationId)
+        return rows instanceof Array ? rows : []
+    }
+
+    function appendProviderEntries(entries, context) {
+        const controller = root.applicationActionsController
+        const applicationId = root.applicationIdentifier(context)
+        if (!controller || applicationId.length === 0
+                || typeof controller.applicationProviderRows !== "function") {
+            return entries
+        }
+        const rows = controller.applicationProviderRows(applicationId)
+        if (!(rows instanceof Array) || rows.length === 0) {
+            return entries
+        }
+        entries.push(contextSeparator())
+        for (let index = 0; index < rows.length; index++) {
+            entries.push(rows[index])
+        }
+        return entries
+    }
+
     function standaloneApplicationContextEntries(context) {
         const layoutActionEnabled = root.applicationLayoutController
             && !root.applicationLayoutController.transactionPending
-        return [
-            contextEntry("createFolder",
-                i18nc("@action:inmenu", "Create Folder…"),
-                "folder-new", layoutActionEnabled),
-            contextEntry("moveToFolder",
-                i18nc("@action:inmenu", "Move to Folder…"),
-                "folder-move", layoutActionEnabled
-                    && applicationLayoutModel.folderChoiceCount > 0),
-            contextSeparator(),
-            contextEntry("toggleFavorite", context.isFavorite
-                    ? i18nc("@action:inmenu", "Remove from Favorites")
-                    : i18nc("@action:inmenu", "Add to Favorites"),
-                context.isFavorite ? "favorite-favorited" : "favorite",
-                context.isFavorite || !root.favoriteLimitReached),
-            contextEntry("toggleDockPin", context.isPinnedToDock
-                    ? i18nc("@action:inmenu", "Remove from Dock")
-                    : i18nc("@action:inmenu", "Pin to Dock"),
-                context.isPinnedToDock ? "window-unpin" : "window-pin", true),
-            contextEntry("addToDesktop",
-                i18nc("@action:inmenu", "Add to Desktop"),
-                "user-desktop", true),
-            contextSeparator(),
-            contextEntry("toggleHidden", context.isHidden
-                    ? i18nc("@action:inmenu", "Show in listing")
-                    : i18nc("@action:inmenu", "Hide from listing"),
-                context.isHidden ? "view-visible" : "view-hidden",
-                context.storageId.length > 0)
-        ]
+        const entries = root.applicationBackendEntries(context)
+        if (entries.length > 0) {
+            entries.push(contextSeparator())
+        }
+        entries.push(contextEntry("createFolder",
+            i18nc("@action:inmenu", "Create Folder…"),
+            "folder-new", layoutActionEnabled))
+        entries.push(contextEntry("moveToFolder",
+            i18nc("@action:inmenu", "Move to Folder…"),
+            "folder-move", layoutActionEnabled
+                && applicationLayoutModel.folderChoiceCount > 0))
+        entries.push(contextSeparator())
+        entries.push(contextEntry("toggleFavorite", context.isFavorite
+                ? i18nc("@action:inmenu", "Remove from Favorites")
+                : i18nc("@action:inmenu", "Add to Favorites"),
+            context.isFavorite ? "favorite-favorited" : "favorite",
+            context.isFavorite || !root.favoriteLimitReached))
+        entries.push(contextEntry("toggleDockPin", context.isPinnedToDock
+                ? i18nc("@action:inmenu", "Remove from Dock")
+                : i18nc("@action:inmenu", "Pin to Dock"),
+            context.isPinnedToDock ? "window-unpin" : "window-pin", true))
+        entries.push(contextEntry("addToDesktop",
+            i18nc("@action:inmenu", "Add to Desktop"),
+            "user-desktop", true))
+        entries.push(contextSeparator())
+        entries.push(contextEntry("toggleHidden", context.isHidden
+                ? i18nc("@action:inmenu", "Show in listing")
+                : i18nc("@action:inmenu", "Hide from listing"),
+            context.isHidden ? "view-visible" : "view-hidden",
+            context.storageId.length > 0))
+        return root.appendProviderEntries(entries, context)
     }
 
     function folderMemberContextEntries(context) {
         const layoutActionEnabled = root.applicationLayoutController
             && !root.applicationLayoutController.transactionPending
-        return [
-            contextEntry("removeFromFolder",
-                i18nc("@action:inmenu", "Remove from Folder…"),
-                "list-remove", layoutActionEnabled),
-            contextSeparator(),
-            contextEntry("toggleFavorite", context.isFavorite
-                    ? i18nc("@action:inmenu", "Remove from Favorites")
-                    : i18nc("@action:inmenu", "Add to Favorites"),
-                context.isFavorite ? "favorite-favorited" : "favorite",
-                context.isFavorite || !root.favoriteLimitReached),
-            contextEntry("toggleDockPin", context.isPinnedToDock
-                    ? i18nc("@action:inmenu", "Remove from Dock")
-                    : i18nc("@action:inmenu", "Pin to Dock"),
-                context.isPinnedToDock ? "window-unpin" : "window-pin", true),
-            contextEntry("addToDesktop",
-                i18nc("@action:inmenu", "Add to Desktop"),
-                "user-desktop", true),
-            contextSeparator(),
-            contextEntry("toggleHidden", context.isHidden
-                    ? i18nc("@action:inmenu", "Show in listing")
-                    : i18nc("@action:inmenu", "Hide from listing"),
-                context.isHidden ? "view-visible" : "view-hidden",
-                context.storageId.length > 0)
-        ]
+        const entries = root.applicationBackendEntries(context)
+        if (entries.length > 0) {
+            entries.push(contextSeparator())
+        }
+        entries.push(contextEntry("removeFromFolder",
+            i18nc("@action:inmenu", "Remove from Folder…"),
+            "list-remove", layoutActionEnabled))
+        entries.push(contextSeparator())
+        entries.push(contextEntry("toggleFavorite", context.isFavorite
+                ? i18nc("@action:inmenu", "Remove from Favorites")
+                : i18nc("@action:inmenu", "Add to Favorites"),
+            context.isFavorite ? "favorite-favorited" : "favorite",
+            context.isFavorite || !root.favoriteLimitReached))
+        entries.push(contextEntry("toggleDockPin", context.isPinnedToDock
+                ? i18nc("@action:inmenu", "Remove from Dock")
+                : i18nc("@action:inmenu", "Pin to Dock"),
+            context.isPinnedToDock ? "window-unpin" : "window-pin", true))
+        entries.push(contextEntry("addToDesktop",
+            i18nc("@action:inmenu", "Add to Desktop"),
+            "user-desktop", true))
+        entries.push(contextSeparator())
+        entries.push(contextEntry("toggleHidden", context.isHidden
+                ? i18nc("@action:inmenu", "Show in listing")
+                : i18nc("@action:inmenu", "Hide from listing"),
+            context.isHidden ? "view-visible" : "view-hidden",
+            context.storageId.length > 0))
+        return root.appendProviderEntries(entries, context)
     }
 
     function folderContextEntries() {
@@ -953,11 +995,23 @@ FocusScope {
         applicationContextMenuSurface.close(restoreFocus !== false)
     }
 
-    function activateContextMenuAction(actionId) {
+    function activateContextMenuAction(entry) {
         const contextMenu = applicationContextMenuSurface
         const application = contextMenu.targetApplication()
         const containingFolderId = contextMenu.targetContainingFolderId
         const targetFolderId = contextMenu.targetFolderId
+        const actionId = String(entry && entry.actionId || "")
+        const controller = root.applicationActionsController
+        const backendKinds = ["launchApplication", "desktopAction",
+            "openFilePlace", "openRecentDocument", "forgetRecentDocuments",
+            "launchNewWindow", "editApplication", "manageApplication"]
+        if (entry && controller
+                && backendKinds.indexOf(String(entry.kind || "")) >= 0
+                && typeof controller.triggerAction === "function") {
+            closeApplicationContextMenu(false)
+            controller.triggerAction(entry)
+            return
+        }
 
         if (actionId === "createFolder") {
             closeApplicationContextMenu(false)

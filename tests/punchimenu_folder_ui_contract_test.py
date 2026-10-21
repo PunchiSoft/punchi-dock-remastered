@@ -542,6 +542,70 @@ def assert_folder_action_contracts(
     """Protect placement gates and destructive-action confirmations."""
 
     for mode, source in menu_sources.items():
+        if mode == "Fullscreen":
+            # The launcher builds the same inventories as Normal and renders
+            # them through the shared context surface.
+            inventory_names = (
+                "standaloneApplicationContextEntries",
+                "folderMemberContextEntries",
+                "folderContextEntries",
+            )
+            inventories = {
+                name: block_matching(
+                    source,
+                    rf"function\s+{name}\s*\([^)]*\)\s*\{{",
+                    f"PunchiMenu Fullscreen {name}",
+                )
+                for name in inventory_names
+            }
+            require(
+                'contextEntry("moveToFolder"' in inventories[
+                    "standaloneApplicationContextEntries"
+                ]
+                and re.search(
+                    r"folderChoiceCount\s*>\s*0",
+                    inventories["standaloneApplicationContextEntries"],
+                )
+                is not None,
+                "PunchiMenu Fullscreen must disable Move when no destination exists.",
+            )
+            require(
+                'contextEntry("removeFromFolder"' in inventories[
+                    "folderMemberContextEntries"
+                ],
+                "PunchiMenu Fullscreen member inventory must expose removal.",
+            )
+            require(
+                'contextEntry("dissolveFolder"' in inventories[
+                    "folderContextEntries"
+                ],
+                "PunchiMenu Fullscreen folder inventory must expose dissolution.",
+            )
+            for name, inventory in inventories.items():
+                require(
+                    "visible:" not in without_comments(inventory),
+                    f"PunchiMenu Fullscreen {name} must not retain hidden rows.",
+                )
+            dispatcher = block_matching(
+                source,
+                r"function\s+activateContextMenuAction\s*\([^)]*\)\s*\{",
+                "PunchiMenu Fullscreen context action dispatcher",
+            )
+            for marker in (
+                "folderSurface.beginMove(",
+                "folderSurface.beginRemove(",
+                "folderSurface.beginDissolve(",
+            ):
+                require(
+                    marker in dispatcher,
+                    f"PunchiMenu Fullscreen dispatcher is missing {marker}",
+                )
+            require(
+                "PunchiMenuContextSurface {" in source,
+                "PunchiMenu Fullscreen must render its context menu through the "
+                "shared surface.",
+            )
+            continue
         if mode == "Normal":
             inventory_names = (
                 "standaloneApplicationContextEntries",
@@ -730,10 +794,10 @@ def assert_folder_action_contracts(
     )
     fullscreen_source = menu_sources["Fullscreen"]
     require(
-        "folderMemberContextMenu.contentItem" in fullscreen_source
+        "contextMenuSurface" in fullscreen_source
         and "allowedExternalFocusItems:" in fullscreen_source
         and "operationInlineMessage" in fullscreen_source,
-        "Fullscreen must allow the folder-member menu to retain keyboard focus.",
+        "Fullscreen must allow the shared context menu to retain keyboard focus.",
     )
     operation_message = block_matching(
         fullscreen_source,

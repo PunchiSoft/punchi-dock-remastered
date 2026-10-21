@@ -17,6 +17,7 @@
 #include <KFileItem>
 #include <KFilePlacesModel>
 #include <KIO/ApplicationLauncherJob>
+#include <KIO/CommandLauncherJob>
 #include <KIO/ListJob>
 #include <KIO/OpenUrlJob>
 #include <KIO/UDSEntry>
@@ -33,6 +34,7 @@
 #include <QDBusMessage>
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
+#include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
 #include <QSettings>
@@ -40,6 +42,11 @@
 #include <QSet>
 #include <QStandardPaths>
 #include <QUrl>
+
+#ifdef HAVE_APPSTREAMQT
+#include <AppStreamQt/launchable.h>
+#include <AppStreamQt/pool.h>
+#endif
 
 #include <memory>
 
@@ -1134,6 +1141,91 @@ bool SystemDiscovery::launchApplicationAction(const QString &applicationId, cons
 
     Q_EMIT operationFailed(QStringLiteral("launchAction"), i18nd(TranslationDomain, "The application action could not be found."));
     return false;
+}
+
+bool SystemDiscovery::canEditApplication(const QString &applicationId) const
+{
+    const KService::Ptr service = findApplicationService(applicationId);
+    return service && service->isApplication()
+        && KService::serviceByDesktopName(QStringLiteral("org.kde.kmenuedit"));
+}
+
+bool SystemDiscovery::editApplication(const QString &applicationId)
+{
+    const KService::Ptr service = findApplicationService(applicationId);
+    if (!service || !service->isApplication()) {
+        return false;
+    }
+
+    const KService::Ptr editor = KService::serviceByDesktopName(QStringLiteral("org.kde.kmenuedit"));
+    if (!editor) {
+        Q_EMIT operationFailed(QStringLiteral("editApplication"),
+            i18nd(TranslationDomain, "The menu editor could not be found."));
+        return false;
+    }
+
+    // KMenuEdit opens the whole tree when it receives no menu identifier.
+    const QString menuId = service->menuId();
+    auto *job = new KIO::CommandLauncherJob(editor->exec(),
+        {menuId.isEmpty() ? QStringLiteral("/") : menuId}, this);
+    job->setDesktopName(editor->desktopEntryName());
+    job->setUiDelegate(new KNotificationJobUiDelegate(KJobUiDelegate::AutoErrorHandlingEnabled));
+    connect(job, &KJob::result, this, [this, job]() {
+        if (job->error()) {
+            Q_EMIT operationFailed(QStringLiteral("editApplication"), job->errorString());
+        }
+    });
+    job->start();
+    return true;
+}
+
+bool SystemDiscovery::canManageApplication(const QString &applicationId) const
+{
+#ifdef HAVE_APPSTREAMQT
+    const KService::Ptr service = findApplicationService(applicationId);
+    // The row only exists when a software center handles appstream:// URLs,
+    // matching the native launcher.
+    return service && service->isApplication()
+        && !service->desktopEntryName().isEmpty()
+        && KApplicationTrader::preferredService(
+            QStringLiteral("x-scheme-handler/appstream"));
+#else
+    Q_UNUSED(applicationId)
+    return false;
+#endif
+}
+
+bool SystemDiscovery::manageApplication(const QString &applicationId)
+{
+#ifdef HAVE_APPSTREAMQT
+    const KService::Ptr service = findApplicationService(applicationId);
+    if (!service || !service->isApplication() || service->desktopEntryName().isEmpty()
+        || !KApplicationTrader::preferredService(
+            QStringLiteral("x-scheme-handler/appstream"))) {
+        return false;
+    }
+
+    static AppStream::Pool pool;
+    static bool poolLoaded = false;
+    if (!poolLoaded) {
+        poolLoaded = pool.load();
+    }
+    if (!poolLoaded) {
+        return false;
+    }
+
+    const QList<AppStream::Component> components = pool.componentsByLaunchable(
+        AppStream::Launchable::KindDesktopId,
+        service->desktopEntryName() + QStringLiteral(".desktop")).toList();
+    if (components.isEmpty()) {
+        return false;
+    }
+    return QDesktopServices::openUrl(
+        QUrl(QStringLiteral("appstream://") + components.first().id()));
+#else
+    Q_UNUSED(applicationId)
+    return false;
+#endif
 }
 
 bool SystemDiscovery::launchApplicationByCommand(const QString &command)

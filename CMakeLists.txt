@@ -23,6 +23,14 @@ find_package(PlasmaActivities 6.0 REQUIRED)
 find_package(PlasmaActivitiesStats 6.0 REQUIRED)
 find_package(LibKWorkspace REQUIRED)
 find_package(PkgConfig REQUIRED)
+# Optional: the "Uninstall or Manage Add-Ons…" row only appears when the
+# software catalog library and a handler for appstream:// URLs exist.
+find_package(AppStreamQt 1.0)
+if(AppStreamQt_FOUND)
+    message(STATUS "AppStreamQt found: enabling the application management action")
+else()
+    message(STATUS "AppStreamQt not found: the application management action stays hidden")
+endif()
 find_package(Gettext REQUIRED)
 pkg_check_modules(PipeWire REQUIRED IMPORTED_TARGET libpipewire-0.3)
 

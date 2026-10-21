@@ -189,6 +189,11 @@ target_link_libraries(punchidockintegration
         PW::KWorkspace
 )
 
+if(AppStreamQt_FOUND)
+    target_link_libraries(punchidockintegration PRIVATE AppStreamQt)
+    target_compile_definitions(punchidockintegration PRIVATE HAVE_APPSTREAMQT)
+endif()
+
 if(PUNCHI_EMBED_QML_MODULE_IN_KPACKAGE)
     install(
         TARGETS punchidockintegration

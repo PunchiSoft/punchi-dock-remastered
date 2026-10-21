@@ -1454,7 +1454,9 @@ PlasmoidItem {
                 width: Screen.width
                 height: Screen.height
                 systemDiscovery: root.systemDiscoveryService
+                applicationActionsController: dockContextActionsController
                 applicationCatalog: root.punchiMenuApplicationCatalog
+                favoriteLimitReached: punchiMenuFavoritesController.limitReached
                 // qmllint disable unqualified
                 applicationCatalogLoaded:
                     root.punchiMenuApplicationCatalogLoaded
@@ -1774,6 +1776,7 @@ PlasmoidItem {
                 Layout.preferredHeight: punchiMenuNormalDialog.desiredContentHeight
                 Layout.maximumHeight: punchiMenuNormalDialog.desiredContentHeight
                 systemDiscovery: root.systemDiscoveryService
+                applicationActionsController: dockContextActionsController
                 applicationCatalog: root.punchiMenuApplicationCatalog
                 applicationLayoutController:
                     root.punchiMenuLayoutControllerService
@@ -2063,6 +2066,7 @@ PlasmoidItem {
                 Layout.preferredHeight: punchiMenuCompactDialog.desiredContentHeight
                 Layout.maximumHeight: punchiMenuCompactDialog.desiredContentHeight
                 systemDiscovery: root.systemDiscoveryService
+                applicationActionsController: dockContextActionsController
                 applicationCatalog: root.punchiMenuApplicationCatalog
                 dockItemsController: root.dockItemsControllerService
                 showApplicationLabels: root.configuredPunchiMenuShowApplicationLabels
