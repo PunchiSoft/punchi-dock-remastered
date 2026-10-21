@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
+import "../../org/punchi/dock" as Punchi
 
 Kirigami.FormLayout {
     id: root
@@ -60,6 +61,42 @@ Kirigami.FormLayout {
         checked: true
         activeFocusOnTab: true
         Layout.maximumWidth: root.contentWidth
+    }
+
+    Controls.Switch {
+        id: rememberHistorySwitch
+        objectName: "rememberApplicationsTrackingSwitch"
+        text: i18nc("@option:check", "Remember application history in KDE") // qmllint disable unqualified
+        Accessible.name: rememberHistorySwitch.text
+        activeFocusOnTab: true
+        Layout.maximumWidth: root.contentWidth
+        checked: tracking.trackingEnabled
+        onToggled: {
+            tracking.setTrackingEnabled(checked)
+            // The gesture breaks the declarative binding; KDE stays the source
+            // of truth for external changes.
+            checked = Qt.binding(function() { return tracking.trackingEnabled })
+        }
+    }
+
+    Controls.Button {
+        id: openKdeRecentFilesButton
+        objectName: "openKdeRecentFilesSettingsButton"
+        Kirigami.FormData.label: i18nc("@label", "KDE recent files options:") // qmllint disable unqualified
+        Accessible.name: i18nc("@action:button", "Open KDE Recent Files settings") // qmllint disable unqualified
+        text: i18nc("@action:button", "Open settings") // qmllint disable unqualified
+        activeFocusOnTab: true
+        Layout.preferredWidth: root.selectorWidth
+        Layout.maximumWidth: root.selectorWidth
+        onClicked: tracking.openTrackingSettings()
+    }
+
+    Punchi.RecentApplicationsAdapter {
+        id: tracking
+        objectName: "recentApplicationsTrackingAdapter"
+        // The configuration page only owns KDE's tracking preference; the
+        // dock's own history query belongs to the representation.
+        enabled: false
     }
 
     Controls.ComboBox {

@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Punchi Dock Remastered 0.9.7.79\n"
+"Project-Id-Version: Punchi Dock Remastered 0.9.7.80\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-10-21 13:43-0300\n"
+"POT-Creation-Date: 2026-10-21 14:23-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Spanish\n"
@@ -1182,8 +1182,8 @@ msgctxt "@info:accessible"
 msgid "Applications grouped by category"
 msgstr "Aplicaciones agrupadas por categoría"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:85
-#: contents/ui/config/components/RecentApplicationsSettings.qml:86
+#: contents/ui/config/components/RecentApplicationsSettings.qml:122
+#: contents/ui/config/components/RecentApplicationsSettings.qml:123
 msgctxt "@label:spinbox"
 msgid "Applications to show:"
 msgstr "Aplicaciones a mostrar:"
@@ -2215,7 +2215,7 @@ msgstr "La conexión ha fallado"
 msgid "Container"
 msgstr "Contenedor"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:21
+#: contents/ui/config/components/RecentApplicationsSettings.qml:22
 msgctxt "@option:recent-applications"
 msgid "Container"
 msgstr "Contenedor"
@@ -2235,7 +2235,7 @@ msgctxt "@title:menu"
 msgid "Container view"
 msgstr "Vista del contenedor"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:100
+#: contents/ui/config/components/RecentApplicationsSettings.qml:137
 msgctxt "@label:listbox"
 msgid "Container view:"
 msgstr "Vista del contenedor:"
@@ -2513,7 +2513,7 @@ msgid "Detailed"
 msgstr "Detallado"
 
 #: contents/ui/components/DockContextActionsController.qml:465
-#: contents/ui/config/components/RecentApplicationsSettings.qml:26
+#: contents/ui/config/components/RecentApplicationsSettings.qml:27
 #: contents/ui/config/ConfigFolderPopups.qml:115
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Detailed"
@@ -3067,7 +3067,7 @@ msgstr "No se ha podido leer el archivo."
 
 #: contents/ui/components/DockContextActionsController.qml:478
 #: contents/ui/config/components/ActionDialog.qml:79
-#: contents/ui/config/components/RecentApplicationsSettings.qml:27
+#: contents/ui/config/components/RecentApplicationsSettings.qml:28
 #: contents/ui/config/ConfigFolderPopups.qml:116
 #: contents/ui/config/ConfigItems.qml:1064
 #: contents/ui/config/ItemConfigurationDialog.qml:684
@@ -3410,7 +3410,7 @@ msgid "Grid"
 msgstr "Rejilla"
 
 #: contents/ui/components/DockContextActionsController.qml:439
-#: contents/ui/config/components/RecentApplicationsSettings.qml:24
+#: contents/ui/config/components/RecentApplicationsSettings.qml:25
 #: contents/ui/config/ConfigFolderPopups.qml:113
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "Grid"
@@ -3570,7 +3570,7 @@ msgstr "Separación de iconos:"
 msgid "Icon:"
 msgstr "Icono:"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:20
+#: contents/ui/config/components/RecentApplicationsSettings.qml:21
 msgctxt "@option:recent-applications"
 msgid "Icons"
 msgstr "Iconos"
@@ -3804,6 +3804,11 @@ msgstr "El JSON parece válido."
 msgid "JSON theme files"
 msgstr "Archivos de temas JSON"
 
+#: contents/ui/config/components/RecentApplicationsSettings.qml:85
+msgctxt "@label"
+msgid "KDE recent files options:"
+msgstr "Opciones de archivos recientes de KDE:"
+
 #: contents/ui/components/TaskModelController.qml:879
 msgid "Keep above"
 msgstr "Mantener encima"
@@ -3948,7 +3953,7 @@ msgid "List"
 msgstr "Vista simple"
 
 #: contents/ui/components/DockContextActionsController.qml:452
-#: contents/ui/config/components/RecentApplicationsSettings.qml:25
+#: contents/ui/config/components/RecentApplicationsSettings.qml:26
 #: contents/ui/config/ConfigFolderPopups.qml:114
 msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
@@ -4862,6 +4867,11 @@ msgctxt "@action:button"
 msgid "Open Bluetooth settings"
 msgstr "Abrir la configuración de Bluetooth"
 
+#: contents/ui/config/components/RecentApplicationsSettings.qml:86
+msgctxt "@action:button"
+msgid "Open KDE Recent Files settings"
+msgstr "Abrir la configuración de Archivos recientes de KDE"
+
 #
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:731
 msgctxt "@info"
@@ -4932,6 +4942,7 @@ msgstr "Abrir o vaciar la papelera"
 
 #
 #: contents/ui/components/controlcenter/ControlCenterControlCard.qml:31
+#: contents/ui/config/components/RecentApplicationsSettings.qml:87
 msgctxt "@action:button"
 msgid "Open settings"
 msgstr "Abrir la configuración"
@@ -5277,7 +5288,7 @@ msgstr "La posición no se usa con la forma actual del indicador."
 msgid "Preparing environment..."
 msgstr "Preparando entorno..."
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:68
+#: contents/ui/config/components/RecentApplicationsSettings.qml:105
 msgctxt "@label:listbox"
 msgid "Presentation:"
 msgstr "Presentación:"
@@ -5483,17 +5494,17 @@ msgctxt "@title"
 msgid "Recent applications"
 msgstr "Aplicaciones recientes"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:52
+#: contents/ui/config/components/RecentApplicationsSettings.qml:53
 msgctxt "@title:group"
 msgid "Recent applications"
 msgstr "Aplicaciones recientes"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:101
+#: contents/ui/config/components/RecentApplicationsSettings.qml:138
 msgctxt "@label:listbox"
 msgid "Recent applications container view"
 msgstr "Vista del contenedor de aplicaciones recientes"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:69
+#: contents/ui/config/components/RecentApplicationsSettings.qml:106
 msgctxt "@label:listbox"
 msgid "Recent applications presentation"
 msgstr "Presentación de aplicaciones recientes"
@@ -5529,6 +5540,11 @@ msgstr "Suelta para insertar %1 en el dock"
 msgctxt "@info:accessible"
 msgid "Release to open local files with %1"
 msgstr "Suelte para abrir archivos locales con %1"
+
+#: contents/ui/config/components/RecentApplicationsSettings.qml:69
+msgctxt "@option:check"
+msgid "Remember application history in KDE"
+msgstr "Recordar el historial de aplicaciones en KDE"
 
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionState.qml:342
 msgctxt "@action:button"
@@ -6048,7 +6064,7 @@ msgstr "Mostrar solo las ventanas del escritorio virtual actual"
 msgid "Show page navigation arrows"
 msgstr "Mostrar flechas de navegación de páginas"
 
-#: contents/ui/config/components/RecentApplicationsSettings.qml:58
+#: contents/ui/config/components/RecentApplicationsSettings.qml:59
 msgctxt "@option:check"
 msgid "Show recent applications"
 msgstr "Mostrar aplicaciones recientes"

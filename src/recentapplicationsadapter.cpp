@@ -2,23 +2,110 @@
 
 #include "recentapplicationsadapter.h"
 
+#include <KConfig>
+#include <KConfigGroup>
+#include <KIO/ApplicationLauncherJob>
 #include <KService>
 #include <KSycoca>
 #include <PlasmaActivities/Consumer>
 #include <PlasmaActivities/ResourceInstance>
 #include <PlasmaActivities/Stats/ResultModel>
 #include <PlasmaActivities/Stats/Terms>
+#include <QFileInfo>
+#include <QFileSystemWatcher>
+#include <QProcess>
+#include <QStandardPaths>
 #include <QUrl>
+
+namespace {
+// Matches kactivitymanagerd's StatsPlugin::WhatToRemember: AllApplications = 0,
+// SpecificApplications = 1, NoApplications = 2.
+constexpr int NoApplications = 2;
+constexpr auto ScoringGroup = "Plugin-org.kde.ActivityManager.Resources.Scoring";
+constexpr auto WhatToRemember = "what-to-remember";
+}
 
 RecentApplicationsAdapter::RecentApplicationsAdapter(QObject *parent)
     : QIdentityProxyModel(parent)
+    , m_trackingConfigPath(QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation)
+          + QStringLiteral("/kactivitymanagerd-pluginsrc"))
+    , m_trackingWatcher(new QFileSystemWatcher(this))
 {
+    // KConfigWatcher needs a session-bus notification from the writer, while
+    // KDE may replace this file atomically. Watching both the file and its
+    // directory keeps the switch aligned with external changes either way.
+    connect(m_trackingWatcher, &QFileSystemWatcher::fileChanged, this, [this]() {
+        reloadTracking();
+        watchTrackingConfiguration();
+    });
+    connect(m_trackingWatcher, &QFileSystemWatcher::directoryChanged, this, [this]() {
+        reloadTracking();
+        watchTrackingConfiguration();
+    });
+    watchTrackingConfiguration();
+    reloadTracking();
     connect(KSycoca::self(), &KSycoca::databaseChanged, this, [this]() {
         m_applications.clear();
         if (rowCount() > 0) {
             Q_EMIT dataChanged(index(0, 0), index(rowCount() - 1, 0), {StorageIdRole, NameRole, IconRole});
         }
     });
+}
+
+void RecentApplicationsAdapter::watchTrackingConfiguration()
+{
+    const QString directory = QFileInfo(m_trackingConfigPath).absolutePath();
+    if (QFileInfo::exists(m_trackingConfigPath) && !m_trackingWatcher->files().contains(m_trackingConfigPath)) {
+        m_trackingWatcher->addPath(m_trackingConfigPath);
+    }
+    if (!m_trackingWatcher->directories().contains(directory)) {
+        m_trackingWatcher->addPath(directory);
+    }
+}
+
+void RecentApplicationsAdapter::reloadTracking()
+{
+    // A fresh KConfig reads the file instead of reusing a cached state whose
+    // change detection can miss a same-size rewrite within the same second.
+    const KConfig config(QStringLiteral("kactivitymanagerd-pluginsrc"));
+    const KConfigGroup group(&config, QString::fromLatin1(ScoringGroup));
+    const bool enabled = group.readEntry(WhatToRemember, 0) != NoApplications;
+    if (m_trackingEnabled == enabled) {
+        return;
+    }
+    m_trackingEnabled = enabled;
+    Q_EMIT trackingEnabledChanged();
+}
+
+bool RecentApplicationsAdapter::trackingEnabled() const
+{
+    return m_trackingEnabled;
+}
+
+bool RecentApplicationsAdapter::setTrackingEnabled(bool enabled)
+{
+    KConfig config(QStringLiteral("kactivitymanagerd-pluginsrc"));
+    KConfigGroup group(&config, QString::fromLatin1(ScoringGroup));
+    group.writeEntry(WhatToRemember, enabled ? 0 : NoApplications, KConfig::Notify);
+    const bool written = group.sync();
+    reloadTracking();
+    return written;
+}
+
+bool RecentApplicationsAdapter::openTrackingSettings()
+{
+    // A standalone module window matches this single preference; KDE's own
+    // desktop entry is the fallback when kcmshell6 is unavailable.
+    if (QProcess::startDetached(QStringLiteral("kcmshell6"), {QStringLiteral("kcm_recentFiles")})) {
+        return true;
+    }
+    const KService::Ptr service = KService::serviceByStorageId(QStringLiteral("kcm_recentFiles.desktop"));
+    if (!service || !service->isValid() || !service->isApplication() || service->exec().trimmed().isEmpty()) {
+        return false;
+    }
+    auto *job = new KIO::ApplicationLauncherJob(service, this);
+    job->start();
+    return true;
 }
 
 bool RecentApplicationsAdapter::enabled() const
