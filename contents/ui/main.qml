@@ -2201,6 +2201,7 @@ PlasmoidItem {
             && dockConfig.recentApplicationsMode === "container"
         recentApplicationsActive: dockConfig.showRecentApplications
         recentApplicationsSeparatorVisible: dockConfig.recentApplicationsShowSeparator
+        verticalDock: dockGeometry.verticalPanel
         setRecentApplicationsSeparatorVisibleHandler: function(visible) {
             return dockConfig.setRecentApplicationsSeparatorVisible(visible)
         }
@@ -3959,8 +3960,8 @@ PlasmoidItem {
 
             function setPopupAnchor(anchor) {
                 folderPopupDialog.sourceAnchor = anchor
-                // Horizontal docks keep the click-time icon rect so the popup
-                // and its callout do not chase the icon magnification.
+                // Keep the click-time icon rect so the popup and its callout
+                // do not chase the icon magnification in either orientation.
                 folderPopupDialog.popupSpacing.captureSourceGeometry()
                 folderPopupDialog.popupSpacing.refreshAnchor()
             }
@@ -4021,21 +4022,13 @@ PlasmoidItem {
                     // Replace the frame only while the tail is actually present;
                     // otherwise the themed background must stay visible.
                     integratedBalloonSurface: folderSurfaceStack.edgeTailPresent
+                    // Vertical screen clamping can move the popup away from the
+                    // icon center, so map the tip only on that axis.
                     constrainEdgeTailTip: !folderSurfaceStack.edgeTailHorizontal
                     edgeTailTipOffset: !folderSurfaceStack.edgeTailHorizontal
                         ? folderPopupDialog.popupSpacing.sourceCenterInTarget.y : NaN
-                    // The tail is as wide as the icon it points at. It reads the
-                    // rect Plasma is placing the popup against, so a captured
-                    // horizontal anchor keeps the callout from growing with the
-                    // icon magnification while the popup is open.
-                    edgeTailAnchorExtent: {
-                        const anchoredGeometry =
-                            folderPopupDialog.popupSpacing.sourceGeometry
-                        const width = Number(anchoredGeometry.width)
-                        const height = Number(anchoredGeometry.height)
-                        return Number.isFinite(width) && Number.isFinite(height)
-                            ? Math.min(width, height) : 0
-                    }
+                    // Keep the callout base on its stable theme-derived size;
+                    // the captured icon rect can include hover magnification.
                     backgroundBlurEnabled:
                         folderPopupContent.layoutMode !== "fan"
                     backgroundImagePath: "widgets/background"
@@ -4055,9 +4048,9 @@ PlasmoidItem {
                             folderPopupAnimatedContent.animationIntensityPercent
                         popupDirection: folderPopupAnimatedContent.popupDirection
                         revealProgress: folderPopupAnimatedContent.openingProgress
-                        layoutMode: ["list", "detailed", "fan"].indexOf(folderPopupContent.folderItem.layout) >= 0
-                            ? folderPopupContent.folderItem.layout
-                            : "grid"
+                        layoutMode: ConfigItemsJS.effectiveFolderLayout(
+                            folderPopupContent.folderItem.layout,
+                            dockGeometry.verticalPanel)
                         // qmllint disable unqualified
                         profileIconSize: folderPopupContent.layoutMode === "fan"
                             ? dockConfig.folderFanIconSize

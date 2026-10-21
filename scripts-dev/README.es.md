@@ -30,6 +30,7 @@ python3 ./scripts-dev/audit-plasma-config.py --project-root .
 python3 ./scripts-dev/skill_inventory.py --check
 ./scripts-dev/update-translations.sh
 ./scripts-dev/validar-empaquetado-limpio.sh
+./scripts-dev/universal-package-validation-test.sh
 ./scripts-dev/watch-plasmoidviewer.sh
 ```
 
@@ -46,6 +47,9 @@ python3 ./scripts-dev/skill_inventory.py --check
 - `skill_inventory.py`: valida las skills versionadas para agentes y mantiene
   su inventario generado.
 - `instalar-plasmoide.sh`: selector de paquetes generados localmente.
+- `universal-package-validation-test.sh`: comprobacion manual de la validacion
+  de paquetes universales que usa `scripts-user/setup-universal.sh`; ejecutarla
+  antes de publicar.
 
 ## Auditor del contrato KConfig
 

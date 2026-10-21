@@ -256,6 +256,18 @@ private Q_SLOTS:
                 QCOMPARE(action.value(QStringLiteral("kind")).toString(), QStringLiteral("setRecentContainerView"));
                 QVariant result;
                 QVERIFY(QMetaObject::invokeMethod(context, "triggerAction", Q_RETURN_ARG(QVariant, result), Q_ARG(QVariant, view)));
+                if (vertical && layout == QLatin1String("fan")) {
+                    QVERIFY(!action.value(QStringLiteral("enabled")).toBool());
+                    QVERIFY(!result.toBool());
+                    const QString savedLayout = config->value(QStringLiteral("recentApplicationsContainerLayout")).toString();
+                    const QString presentedLayout = folder->property("layoutMode").toString();
+                    QCOMPARE(savedLayout, QStringLiteral("detailed"));
+                    QCOMPARE(presentedLayout, QStringLiteral("detailed"));
+                    QCOMPARE(objectMap(root->property("recentContainerDescriptor")).value(QStringLiteral("layout")).toString(),
+                        QStringLiteral("detailed"));
+                    continue;
+                }
+                QVERIFY(action.value(QStringLiteral("enabled")).toBool());
                 QVERIFY(result.toBool());
                 QTRY_COMPARE(folder->property("layoutMode").toString(), layout);
                 QCOMPARE(config->value(QStringLiteral("recentApplicationsContainerLayout")).toString(), layout);
@@ -282,9 +294,16 @@ private Q_SLOTS:
                 QTRY_COMPARE(folderDialog->property("location").toInt(), int(edge));
                 QVERIFY(spacing->property("centerVertically").toBool());
                 QVERIFY(surface->property("constrainEdgeTailTip").toBool());
-                QTRY_VERIFY(std::isfinite(surface->property("edgeTailTipOffset").toDouble()));
-                const auto mapped = container->mapToItem(surface, QPointF(container->width() / 2, container->height() / 2));
-                QVERIFY(qAbs(surface->property("edgeTailTipOffset").toDouble() - mapped.y()) < 0.1);
+                auto *anchor = qobject_cast<QQuickItem *>(objectPointer(spacing->property("sourceAnchor")));
+                QVERIFY(anchor);
+                auto *balloon = surface->findChild<QQuickItem *>(QStringLiteral("integratedBalloonSurface"));
+                QVERIFY(balloon);
+                QVERIFY(std::isfinite(surface->property("edgeTailTipOffset").toDouble()));
+                const qreal tipX = edge == Plasma::Types::LeftEdge ? 0 : balloon->width();
+                const qreal tipY = balloon->property("pointerCenter").toDouble();
+                const QPointF anchorCenter(anchor->width() / 2, anchor->height() / 2);
+                QTRY_VERIFY(qAbs(balloon->mapToGlobal(QPointF(tipX, tipY)).y()
+                    - anchor->mapToGlobal(anchorCenter).y()) < 2.0);
                 QCOMPARE(config->value(QStringLiteral("dockItemsJson")).toString(), pinnedWithRecentMarker);
             }
             QVERIFY(QMetaObject::invokeMethod(folderDialog, "closeSafely"));

@@ -29,6 +29,10 @@ GridLayout {
     property alias itemModeIndex: itemMode.currentIndex
     readonly property string containerLayoutValue: containerLayout.currentValue || "grid"
     property alias containerLayoutIndex: containerLayout.currentIndex
+    // Layout the draft actually holds. A blocked activation of the fan must not
+    // change the value the form hands back, so this is written by the draft
+    // population and by successful activations only.
+    property string stableContainerLayout: "grid"
     property alias spacerSizeValue: spacerSize.value
     readonly property string separatorAppearanceSourceValue:
         separatorOptions.separatorAppearanceSourceValue
@@ -62,6 +66,10 @@ GridLayout {
     property string listText: "List"
     property string detailedText: "Detailed"
     property string fanText: i18nc("@item:inlistbox Folder popup layout", "Fan") // qmllint disable unqualified
+    // Vertical docks resolve the fan to the grid, so the row stays visible but
+    // cannot be chosen; the stored fan value is preserved until it can be used.
+    property bool verticalDock: false
+    property string fanUnavailableText: ""
     property string noteText: "Note"
     property string separatorText: "Separator"
     property string spacerText: "Spacer"
@@ -99,6 +107,25 @@ GridLayout {
 
     function layoutIndexFor(value) {
         return Math.max(0, containerLayout.indexOfValue(value || "grid"))
+    }
+
+    // Population path used by the draft adapter.
+    function setContainerLayoutValue(value) {
+        const layout = String(value || "grid")
+        root.stableContainerLayout = layout
+        containerLayout.currentIndex = root.layoutIndexFor(layout)
+    }
+
+    // A locked row can still be highlighted with the keyboard, so the control
+    // must return to the value the draft holds instead of keeping the blocked
+    // one on screen.
+    function restoreContainerLayout() {
+        if (String(containerLayout.currentValue || "grid")
+                === root.stableContainerLayout) {
+            return
+        }
+        containerLayout.currentIndex = root.layoutIndexFor(
+            root.stableContainerLayout)
     }
 
     function setSeparatorStyleValue(value) {
@@ -429,9 +456,41 @@ GridLayout {
             { "text": root.gridText, "value": "grid" },
             { "text": root.listText, "value": "list" },
             { "text": root.detailedText, "value": "detailed" },
-            { "text": root.fanText, "value": "fan" }
+            { "text": root.fanText, "value": "fan", "disabled": root.verticalDock }
         ]
-        onActivated: root.containerLayoutChanged(currentValue)
+        onActivated: function(index) {
+            const option = containerLayout.model[index]
+            if (option && !option.disabled) {
+                root.stableContainerLayout = String(option.value)
+                root.containerLayoutChanged(currentValue)
+                return
+            }
+            root.restoreContainerLayout()
+        }
+        delegate: Controls.ItemDelegate {
+            // ComboBox exposes its roles through `model`, matching KDE's own
+            // ComboBox delegates.
+            required property var model
+
+            width: ListView.view ? ListView.view.width : parent.width
+            text: String(model.text)
+            enabled: !model.disabled
+            highlighted: ListView.isCurrentItem
+            Accessible.name: String(model.text)
+        }
+    }
+
+    Controls.Label {
+        objectName: "containerLayoutFanUnavailableNote"
+        Layout.columnSpan: 2
+        Layout.fillWidth: true
+        visible: root.itemModeValue === "container"
+            && root.selectedItemType === "folder"
+            && root.verticalDock
+            && root.fanUnavailableText.length > 0
+        text: root.fanUnavailableText
+        wrapMode: Text.WordWrap
+        color: Kirigami.Theme.disabledTextColor
     }
 
     Controls.Label {

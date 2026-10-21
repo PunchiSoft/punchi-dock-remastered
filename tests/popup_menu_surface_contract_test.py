@@ -479,7 +479,8 @@ def main() -> int:
             require(
                 surface_body,
                 f"edgeTailTipOffset: !{surface_id}.edgeTailHorizontal",
-                f"{surface_id} must map the tip only for vertical tails",
+                f"{surface_id} must map the tip on vertical docks where screen "
+                "clamping can move the popup away from its icon",
             )
         elif "edgeTailEnabled:" in surface_body:
             raise AssertionError(
@@ -487,8 +488,7 @@ def main() -> int:
                 "folder popup and the right-click menus may request it")
 
     # The folder callout points at the same rendered icon the context menus
-    # use, and it takes its width from the rect Plasma places the popup
-    # against, so a captured horizontal anchor does not grow with icon zoom.
+    # use, while its base stays on the stable theme-derived size.
     folder_open_match = re.search(
         r"function openFolderPopup\([^)]*\)\s*\{(?P<body>.*?)\n    \}",
         popup_coordinator,
@@ -509,11 +509,6 @@ def main() -> int:
         "folderPopupDialog.popupSpacing.captureSourceGeometry()",
         "The folder popup must capture the click-time icon rect like the menus",
     )
-    require(
-        main_qml,
-        "folderPopupDialog.popupSpacing.sourceGeometry",
-        "The folder tail must be sized from the anchored icon geometry",
-    )
     for delegate in ("dockItemDelegate", "taskDockItemDelegate"):
         require(
             main_qml,
@@ -522,16 +517,15 @@ def main() -> int:
             f"The folder popup must keep suppressing the {delegate} tooltip "
             "while it is anchored to the rendered icon",
         )
-    if main_qml.count("edgeTailAnchorExtent:") != 1:
+    if "edgeTailAnchorExtent:" in main_qml:
         raise AssertionError(
-            "Only the folder popup may derive the tail base from a live anchor; "
-            "the context menus must keep the stable default extent so icon zoom "
-            "cannot scale the callout")
+            "Production popup tails must keep the stable theme-derived extent "
+            "so hover magnification cannot resize the callout")
     for dialog in ("trashMenuDialog", "appActionsDialog"):
         require(
             main_qml,
-            f"{dialog}.popupSpacing.sourceCenterInTarget",
-            f"{dialog} must map the tail tip from the source anchor",
+            f"{dialog}.popupSpacing.sourceCenterInTarget.y",
+            f"{dialog} must map the tail tip from its anchor on vertical docks",
         )
 
     for surface_id in tail_surfaces:

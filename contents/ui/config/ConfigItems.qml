@@ -4,6 +4,7 @@ import QtQuick.Controls as Controls
 import org.kde.kirigami as Kirigami
 import org.kde.iconthemes as KIconThemes
 import org.kde.plasma.plasmoid
+import org.kde.plasma.core as PlasmaCore
 import "../org/punchi/dock" as Punchi
 
 import "code/configItemsController.js" as ConfigItemsControllerJS
@@ -71,6 +72,16 @@ KCM.SimpleKCM {
     property real listFramePadding: Kirigami.Units.largeSpacing * 2
     property real listScrollGutter: Kirigami.Units.gridUnit * 1.6
     property string defaultTrashEmptySound: "/usr/share/sounds/ocean/stereo/trash-empty.oga"
+    // The fan is offered by the item editor, so the page has to know whether the
+    // dock can use it. A floating dock takes its orientation from its own
+    // setting; a dock in a panel takes it from the containment.
+    readonly property bool verticalDock: page.inPanel
+        ? Plasmoid.formFactor === PlasmaCore.Types.Vertical
+        : String((Plasmoid.configuration
+            && Plasmoid.configuration.floatingDockOrientation) || "horizontal")
+            === "vertical"
+    readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+        || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     property var fontChoices: ["Anurati", "Noto Sans", "Noto Sans Mono", "Inter", "Roboto", "Ubuntu", "Cantarell", "DejaVu Sans", "Liberation Sans", "Monospace", "Serif", "Sans Serif"]
 
     SystemDiscoveryManager {
@@ -934,6 +945,7 @@ KCM.SimpleKCM {
         height: Math.min(page.height - Kirigami.Units.gridUnit * 2,
             Kirigami.Units.gridUnit * 26)
         draftController: itemDraftController
+        verticalDock: page.verticalDock
         applicationLauncherDropValidator: function(urls) {
             return page.validateApplicationLauncherDrop(urls)
         }
@@ -1057,6 +1069,8 @@ KCM.SimpleKCM {
         listText: i18n("List")
         detailedText: i18n("Detailed")
         fanText: i18nc("@item:inlistbox Folder popup layout", "Fan")
+        verticalDock: page.verticalDock
+        fanUnavailableText: i18n("Fan is only available in horizontal docks.")
         noteText: i18n("Note")
         separatorText: i18n("Separator")
         spacerText: i18n("Spacer")

@@ -28,6 +28,13 @@ Controls.Dialog {
     property alias itemModeIndex: itemEditor.itemModeIndex
     readonly property string containerLayoutValue: itemEditor.containerLayoutValue
     property alias containerLayoutIndex: itemEditor.containerLayoutIndex
+    // Vertical docks lock the fan in the nested folder editor too.
+    property bool verticalDock: false
+    property string fanUnavailableText: ""
+
+    function setContainerLayoutValue(value) {
+        itemEditor.setContainerLayoutValue(value)
+    }
     property alias actionsEnabledChecked: actionEditor.actionsEnabledChecked
     property alias actionPopupLimitRowsChecked: actionEditor.actionPopupLimitRowsChecked
     property alias actionPopupMaxVisibleRowsValue: actionEditor.actionPopupMaxVisibleRowsValue
@@ -193,6 +200,8 @@ Controls.Dialog {
             listText: root.listText
             detailedText: root.detailedText
             fanText: root.fanText
+            verticalDock: root.verticalDock
+            fanUnavailableText: root.fanUnavailableText
             noteText: root.noteText
             separatorText: root.separatorText
             spacerText: root.spacerText

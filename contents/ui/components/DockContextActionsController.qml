@@ -17,6 +17,9 @@ QtObject {
     property bool recentApplicationsActive: false
     property bool recentApplicationsSeparatorVisible: true
     property var setRecentApplicationsSeparatorVisibleHandler: null
+    // The fan is a horizontal-only presentation: a vertical dock cannot select
+    // it, but the stored preference stays visible in the menu.
+    property bool verticalDock: false
 
     function removablePinnedItem(item) {
         if (!item) {
@@ -481,7 +484,7 @@ QtObject {
                             // qmllint enable unqualified
                             "icon": "view-list-icons",
                             "kind": "setFolderView",
-                            "enabled": true,
+                            "enabled": !root.verticalDock,
                             "checked": currentFolderView === "fan",
                             "exclusive": true,
                             "layout": "fan",
@@ -496,6 +499,7 @@ QtObject {
                         const child = folderViewAction.children[index]
                         child.kind = "setRecentContainerView"
                         child.enabled = typeof root.setRecentContainerViewHandler === "function"
+                            && !(root.verticalDock && child.layout === "fan")
                         delete child.targetIndex
                         delete child.expectedFolderText
                     }
@@ -780,6 +784,9 @@ QtObject {
                 ? root.disableRecentApplicationsHandler() : false
         }
         if (action.kind === "setRecentContainerView") {
+            if (root.verticalDock && action.layout === "fan") {
+                return false
+            }
             return root.recentContainerActive
                 && ["grid", "list", "detailed", "fan"].indexOf(action.layout) >= 0
                 && typeof root.setRecentContainerViewHandler === "function"
@@ -835,6 +842,9 @@ QtObject {
             return root.dockItemsController.setControlCenterMode(action.mode)
         }
         if (action.kind === "setFolderView") {
+            if (root.verticalDock && action.layout === "fan") {
+                return false
+            }
             return root.dockItemsController.setFolderLayout(
                 action.targetIndex, String(action.layout || ""),
                 String(action.expectedFolderText || ""))

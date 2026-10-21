@@ -276,8 +276,14 @@ function applyToPanel(draft, panel, type) {
         panel.containerBrowseSubfoldersChecked = item.browseSubfolders === true
     }
     if (kind === "folder") {
-        panel.containerLayoutIndex =
-            panel.layoutIndexFor(String(item.layout || "grid"))
+        const layout = String(item.layout || "grid")
+        if (typeof panel.setContainerLayoutValue === "function") {
+            // The panel also remembers the draft while a vertical dock locks the
+            // fan, so a blocked activation can restore the real value.
+            panel.setContainerLayoutValue(layout)
+        } else {
+            panel.containerLayoutIndex = panel.layoutIndexFor(layout)
+        }
         panel.containerSourceIndex =
             panel.sourceIndexFor(String(item.sourceType || "manual"))
         panel.containerCategoryIndex =

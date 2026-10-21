@@ -1117,6 +1117,7 @@ Item {
         scale: dockItemContainer.clickAnimationScale * dockItemContainer.entryScale
         opacity: clickFeedback.visualOpacity
         transform: Translate {
+            id: visualAreaTranslation
             x: minimizeItemReaction.horizontalOffset
                 + clickFeedback.horizontalOffset
                 + (dockItemContainer.verticalPanelMode ? 0 : dockItemContainer.clickCollisionOffset)
@@ -1201,6 +1202,7 @@ Item {
 
             scale: dockItemContainer.highQualityIconScale * dockItemContainer.waveScale
             transform: Translate {
+                id: iconTranslation
                 x: dockItemContainer.hoverOffsetX
                 y: dockItemContainer.hoverOffsetY
             }
@@ -1223,6 +1225,12 @@ Item {
 
             objectName: "dockItemTooltipAnchor"
             visible: false
+            // NativePopupSpacing maps this anchor across windows. Expose the
+            // Translate inputs directly so its live vertical mapping reacts
+            // without observing Item.transform, which is not bindable.
+            readonly property real mappedGeometryRevision:
+                visualAreaTranslation.x + visualAreaTranslation.y
+                    + iconTranslation.x + iconTranslation.y
             width: itemIcon.width * itemIcon.scale
             height: itemIcon.height * itemIcon.scale
             x: itemIcon.x + (itemIcon.width - width) / 2

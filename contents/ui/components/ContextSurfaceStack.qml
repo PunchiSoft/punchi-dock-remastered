@@ -439,6 +439,7 @@ Item {
     }
     BalloonSurface {
         id: integratedBalloon
+        objectName: "integratedBalloonSurface"
         visible: root.integratedBalloonSurface && root.edgeTailPresent
             && root.drawContentBackground && !root.mediaOnly
         // Keep the same stacking level as the frame: contentHost is declared

@@ -53,6 +53,9 @@ Item {
     property alias cfg_popupAnimationIntensity: generalPopupAnimationSettings.animationIntensityPercent
 
     property string activeProfile: "grid"
+    // The fan is a horizontal-only presentation, so its appearance profile is
+    // hidden while the dock is vertical. Its saved values are left untouched.
+    property bool verticalDock: false
 
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
@@ -105,12 +108,20 @@ Item {
                 ? cfg_folderDetailedFontSize
                 : cfg_folderGridFontSize))
     // qmllint disable unqualified
-    readonly property var profileOptions: [
-        { "text": i18nc("@item:inlistbox Folder popup layout", "Grid"), "value": "grid" },
-        { "text": i18nc("@item:inlistbox Folder popup layout", "List"), "value": "list" },
-        { "text": i18nc("@item:inlistbox Folder popup layout", "Detailed"), "value": "detailed" },
-        { "text": i18nc("@item:inlistbox Folder popup layout", "Fan"), "value": "fan" }
-    ]
+    readonly property var profileOptions: {
+        const options = [
+            { "text": i18nc("@item:inlistbox Folder popup layout", "Grid"), "value": "grid" },
+            { "text": i18nc("@item:inlistbox Folder popup layout", "List"), "value": "list" },
+            { "text": i18nc("@item:inlistbox Folder popup layout", "Detailed"), "value": "detailed" },
+            { "text": i18nc("@item:inlistbox Folder popup layout", "Fan"), "value": "fan" }
+        ]
+        if (page.verticalDock) {
+            return options.filter(function(option) {
+                return String(option.value) !== "fan"
+            })
+        }
+        return options
+    }
     readonly property var gridArrangementOptions: [
         { "text": i18nc("@item:inlistbox Grid arrangement", "Automatic"), "value": true },
         { "text": i18nc("@item:inlistbox Grid arrangement", "Manual"), "value": false }
@@ -176,6 +187,17 @@ Item {
             cfg_folderGridFontSize = value
         }
     }
+
+    // Hiding the fan profile must not leave the selector pointing at an entry
+    // that no longer exists.
+    function normalizeActiveProfile() {
+        if (page.verticalDock && page.activeProfile === "fan") {
+            page.activeProfile = "grid"
+        }
+    }
+
+    onVerticalDockChanged: normalizeActiveProfile()
+    Component.onCompleted: normalizeActiveProfile()
 
     // qmllint disable unqualified
     function availableFonts() {

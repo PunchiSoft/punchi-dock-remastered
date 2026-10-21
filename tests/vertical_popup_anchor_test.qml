@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Window
 import QtTest
 import org.kde.plasma.core as PlasmaCore
+import org.kde.kirigami as Kirigami
 import "../contents/ui/components"
 
 TestCase {
@@ -18,6 +19,8 @@ TestCase {
         y: 200
         width: 80
         height: 400
+        transform: Translate { id: launcherTranslation }
+        readonly property real mappedGeometryRevision: launcherTranslation.y
         Item { id: launcher; x: 8; y: 20; width: 48; height: 48 }
     }
     GuardedPopupDialog {
@@ -34,8 +37,8 @@ TestCase {
                 contentGeometryTransitionsEnabled: false
                 drawContentBackground: folder.layoutMode !== "fan"
                 edgeTailEnabled: folder.layoutMode !== "fan"
+                integratedBalloonSurface: true
                 edgeTailLocation: spacing.location
-                edgeTailAnchorExtent: launcher.width
                 constrainEdgeTailTip: !edgeTailHorizontal
                 edgeTailTipOffset: !edgeTailHorizontal ? spacing.sourceCenterInTarget.y : NaN
                 FolderPopup {
@@ -81,6 +84,7 @@ TestCase {
         spacing.location = PlasmaCore.Types.LeftEdge
         spacing.gap = 0
         launcherParent.scale = 1
+        launcherTranslation.y = 0
         folder.layoutMode = "grid"
         folder.profileScale = 1
         constrainedTail.tipOffset = NaN
@@ -135,6 +139,17 @@ TestCase {
         if (surface.edgeTailPresent) {
             const mapped = launcher.mapToItem(surface, launcher.width / 2, launcher.height / 2)
             fuzzyCompare(surface.edgeTailTipOffset, mapped.y, 0.1)
+            const renderedBalloon = findChild(surface, "integratedBalloonSurface")
+            verify(renderedBalloon, "The integrated balloon must be present for the pointer check")
+            fuzzyCompare(renderedBalloon.tailBaseScale * renderedBalloon.tailHeight * 2,
+                Kirigami.Units.gridUnit * 2 * 0.55, 0.1)
+            fuzzyCompare(renderedBalloon.y + renderedBalloon.pointerCenter, mapped.y, 0.1)
+            const iconCenterGlobalY = launcher.mapToGlobal(
+                launcher.width / 2, launcher.height / 2).y
+            const pointerGlobalY = surface.mapToGlobal(0,
+                renderedBalloon.y + renderedBalloon.pointerCenter).y
+            verify(Math.abs(pointerGlobalY - iconCenterGlobalY) <= 1,
+                "The drawn pointer must reach the launcher center in global screen coordinates")
         }
         popup.closeSafely()
         popup.openSafely()
@@ -184,6 +199,20 @@ TestCase {
             const mapped = launcher.mapToItem(surface, launcher.width / 2, launcher.height / 2)
             return Math.abs(surface.edgeTailTipOffset - mapped.y) < 0.1
         })
+        const renderedBalloon = findChild(surface, "integratedBalloonSurface")
+        verify(renderedBalloon, "The integrated balloon must be present during screen clamping")
+        const mappedCenterY = launcher.mapToItem(surface,
+            launcher.width / 2, launcher.height / 2).y
+        const minimumPointerY = renderedBalloon.radius + renderedBalloon.tailHeight
+        const maximumPointerY = surface.height - minimumPointerY
+        if (mappedCenterY >= minimumPointerY && mappedCenterY <= maximumPointerY) {
+            const iconCenterGlobalY = launcher.mapToGlobal(
+                launcher.width / 2, launcher.height / 2).y
+            const pointerGlobalY = surface.mapToGlobal(0,
+                renderedBalloon.y + renderedBalloon.pointerCenter).y
+            verify(Math.abs(pointerGlobalY - iconCenterGlobalY) <= 1,
+                "A clamped popup must still point at anchors within the safe tail range")
+        }
         verify(surface.constrainEdgeTailTip)
         verify(data.end < 0 ? surface.edgeTailTipOffset < surface.height / 2
             : surface.edgeTailTipOffset > surface.height / 2)
@@ -203,6 +232,15 @@ TestCase {
         })
         verify(Math.abs(surface.edgeTailTipOffset - previous) > 1,
             "The tail must react to the popup window's changed position")
+        const renderedBalloon = findChild(surface, "integratedBalloonSurface")
+        verify(renderedBalloon)
+        tryVerify(function() {
+            const iconCenterGlobalY = launcher.mapToGlobal(
+                launcher.width / 2, launcher.height / 2).y
+            const pointerGlobalY = surface.mapToGlobal(0,
+                renderedBalloon.y + renderedBalloon.pointerCenter).y
+            return Math.abs(pointerGlobalY - iconCenterGlobalY) <= 1
+        }, 2000, "The drawn pointer must stay on the icon when the popup window moves")
         animation.transformSurfaceItem.scale = 0.85
         tryVerify(function() {
             const mapped = launcher.mapToItem(surface, launcher.width / 2, launcher.height / 2)
@@ -212,6 +250,48 @@ TestCase {
         spacing.sourceAnchor = null
         tryCompare(popup, "visible", false)
         verify(isNaN(spacing.sourceCenterInTarget.y))
+    }
+    function test_capturedAnchorTracksLiveVerticalIconTransform() {
+        placeLauncher(50)
+        spacing.captureSourceGeometry()
+        popup.openSafely()
+        tryCompare(popup, "visible", true)
+        verifyAlignment()
+
+        const renderedBalloon = findChild(surface, "integratedBalloonSurface")
+        verify(renderedBalloon)
+        const previousGlobalY = launcher.mapToGlobal(
+            launcher.width / 2, launcher.height / 2).y
+        launcherTranslation.y += 24
+        tryVerify(function() {
+            const iconCenterGlobalY = launcher.mapToGlobal(
+                launcher.width / 2, launcher.height / 2).y
+            const pointerGlobalY = surface.mapToGlobal(0,
+                renderedBalloon.y + renderedBalloon.pointerCenter).y
+            return Math.abs(pointerGlobalY - iconCenterGlobalY) <= 1
+                && Math.abs(iconCenterGlobalY - previousGlobalY) >= 20
+        }, 2000, "The captured anchor must follow the live vertical icon transform")
+    }
+    function test_tailBaseDoesNotFollowIconMagnification() {
+        placeLauncher(25)
+        popup.openSafely()
+        tryCompare(popup, "visible", true)
+        const renderedBalloon = findChild(surface, "integratedBalloonSurface")
+        verify(renderedBalloon)
+        const initialBase = renderedBalloon.tailBaseScale
+            * renderedBalloon.tailHeight * 2
+
+        launcherParent.scale = 1.35
+        tryVerify(function() {
+            const iconCenterGlobalY = launcher.mapToGlobal(
+                launcher.width / 2, launcher.height / 2).y
+            const pointerGlobalY = surface.mapToGlobal(0,
+                renderedBalloon.y + renderedBalloon.pointerCenter).y
+            return Math.abs(pointerGlobalY - iconCenterGlobalY) <= 1
+        })
+        fuzzyCompare(renderedBalloon.tailBaseScale * renderedBalloon.tailHeight * 2,
+            initialBase, 0.1)
+        fuzzyCompare(initialBase, Kirigami.Units.gridUnit * 2 * 0.55, 0.1)
     }
     function test_tailStaysClearOfFrameEnds() {
         constrainedTail.tipOffset = -100

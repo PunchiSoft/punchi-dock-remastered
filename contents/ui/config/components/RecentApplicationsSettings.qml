@@ -8,6 +8,9 @@ Kirigami.FormLayout {
 
     required property int selectorWidth
     required property int contentWidth
+    // Vertical docks resolve the fan to the grid, so the container view keeps
+    // the stored fan visible but cannot select it.
+    property bool verticalDock: false
     property alias showApplications: showRecentApplicationsSwitch.checked
     property alias maximumApplications: recentApplicationsCountSpin.value
     property string presentationMode: "container"
@@ -28,7 +31,8 @@ Kirigami.FormLayout {
         { "text": i18nc("@item:inlistbox Folder popup layout", "Grid"), "value": "grid" }, // qmllint disable unqualified
         { "text": i18nc("@item:inlistbox Folder popup layout", "List"), "value": "list" }, // qmllint disable unqualified
         { "text": i18nc("@item:inlistbox Folder popup layout", "Detailed"), "value": "detailed" }, // qmllint disable unqualified
-        { "text": i18nc("@item:inlistbox Folder popup layout", "Fan"), "value": "fan" } // qmllint disable unqualified
+        { "text": i18nc("@item:inlistbox Folder popup layout", "Fan"), "value": "fan", // qmllint disable unqualified
+            "disabled": root.verticalDock }
     ]
 
     function syncComboValue(combo, value) {
@@ -110,7 +114,24 @@ Kirigami.FormLayout {
         model: root.layoutOptions
         onActivated: function(index) {
             const option = root.layoutOptions[index]
-            if (option) { root.containerLayout = option.value }
+            if (option && !option.disabled) {
+                root.containerLayout = option.value
+                return
+            }
+            // A blocked row must not leave the closed control showing a value
+            // that the configuration does not hold.
+            root.syncComboValue(recentContainerLayoutCombo, root.containerLayout)
+        }
+        delegate: Controls.ItemDelegate {
+            // ComboBox exposes its roles through `model`, matching KDE's own
+            // ComboBox delegates.
+            required property var model
+
+            width: ListView.view ? ListView.view.width : parent.width
+            text: String(model.text)
+            enabled: !model.disabled
+            highlighted: ListView.isCurrentItem
+            Accessible.name: String(model.text)
         }
     }
 

@@ -58,7 +58,7 @@ function refreshItemForm() {
         actionDialog.actionsEnabledChecked = false
         actionDialog.actionPopupLimitRowsChecked = false
         actionDialog.actionPopupMaxVisibleRowsValue = 6
-        actionDialog.containerLayoutIndex = 0
+        actionDialog.setContainerLayoutValue("grid")
         actionDialog.setSeparatorVisibleChecked(true)
         actionDialog.setSeparatorAppearanceSourceValue("theme")
         return
@@ -85,7 +85,7 @@ function refreshItemForm() {
     actionDialog.appStorageId = item.storageId || ""
     actionDialog.appApplicationId = item.appId || ConfigItemsJS.applicationIdForCommand(item.command || "")
     actionDialog.itemModeIndex = item.type === "folder" ? 1 : (item.type === "note" ? 2 : (item.type === "separator" ? 3 : (item.type === "spacer" ? 4 : 0)))
-    actionDialog.containerLayoutIndex = actionDialog.layoutIndexFor(item.layout || "grid")
+    actionDialog.setContainerLayoutValue(item.layout || "grid")
     actionDialog.spacerSizeValue = item.size || 24
     actionDialog.containerSourceIndex = actionDialog.sourceIndexFor(item.sourceType || "manual")
     actionDialog.containerPathText = item.sourcePath || ""

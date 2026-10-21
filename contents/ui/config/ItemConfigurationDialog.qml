@@ -33,6 +33,10 @@ Controls.Dialog {
     // loaded inside this one.
     property string pendingTypeChange: ""
 
+    // The fan is a horizontal-only presentation. The editor keeps the stored
+    // choice visible but locked while the dock is vertical.
+    property bool verticalDock: false
+
     readonly property bool compactLayout: width > 0
         && width < Kirigami.Units.gridUnit * 34
     // Generation of the draft this surface opened. The close of a popup is
@@ -678,6 +682,8 @@ Controls.Dialog {
                         listText: i18n("List")
                         detailedText: i18n("Detailed")
                         fanText: i18nc("@item:inlistbox Folder popup layout", "Fan")
+                        verticalDock: root.verticalDock
+                        fanUnavailableText: i18n("Fan is only available in horizontal docks.")
                         noteText: i18n("Note")
                         separatorText: i18n("Separator")
                         spacerText: i18n("Spacer")

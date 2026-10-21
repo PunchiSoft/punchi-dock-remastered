@@ -138,6 +138,11 @@ KCM.SimpleKCM {
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
         || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool horizontalPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal
+    // A floating dock has no containment orientation, so it follows its own
+    // setting. The fan is a horizontal-only presentation.
+    readonly property bool verticalDock: page.inPanel
+        ? Plasmoid.formFactor === PlasmaCore.Types.Vertical
+        : String(cfg_floatingDockOrientation || "horizontal") === "vertical"
     readonly property bool iconReflectionsSupported: !inPanel || horizontalPanel
     readonly property bool indicatorPositionApplicable: cfg_indicatorType !== "none"
     readonly property string effectiveIndicatorColor: {
@@ -1197,6 +1202,7 @@ KCM.SimpleKCM {
         ConfigFolderPopups {
             id: folderPopupPage
             Layout.fillWidth: true
+            verticalDock: page.verticalDock
         }
 
         ConfigMenus {

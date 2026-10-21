@@ -30,6 +30,7 @@ python3 ./scripts-dev/audit-plasma-config.py --project-root .
 python3 ./scripts-dev/skill_inventory.py --check
 ./scripts-dev/update-translations.sh
 ./scripts-dev/validar-empaquetado-limpio.sh
+./scripts-dev/universal-package-validation-test.sh
 ./scripts-dev/watch-plasmoidviewer.sh
 ```
 
@@ -49,6 +50,8 @@ python3 ./scripts-dev/skill_inventory.py --check
   policy lives in `AGENTS.md`; the operation is documented in
   [test-integrity/README.md](test-integrity/README.md).
 - `instalar-plasmoide.sh`: selector for locally produced packages.
+- `universal-package-validation-test.sh`: manual check of the universal package
+  validation used by `scripts-user/setup-universal.sh`; run it before publishing.
 
 ## KConfig contract auditor
 

@@ -15,9 +15,8 @@ import org.kde.kirigami as Kirigami
 // insets locate the effective card edge but do not define the triangle size or
 // its tip radius; those remain proportional to the dock item.
 //
-// Sizes stay proportional: the base is as wide as the dock item the tail points
-// at, so the tail follows the icon size and the dock scale the user configured.
-// No absolute length is fixed here.
+// The base may follow an explicitly supplied anchor extent. Without one, it
+// uses the theme grid unit so transient icon magnification cannot resize it.
 Item {
     id: root
 
@@ -31,9 +30,8 @@ Item {
     // Opacity the popup background is drawn with, shared so both surfaces read
     // as one piece.
     property real surfaceOpacity: 1
-    // Extent of the dock item the tail points at. The tail is proportional to it
-    // instead of to an invented size, so it follows the icon size and the dock
-    // scale the user configured.
+    // Optional stable extent of the dock item the tail points at. Leave unset
+    // when the available anchor includes transient icon magnification.
     property real anchorExtent: 0
     // Position of the tip along the surface axis, in window coordinates. A
     // non-finite value centers the tail on the surface.

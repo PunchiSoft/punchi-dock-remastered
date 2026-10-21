@@ -48,6 +48,13 @@ KCM.SimpleKCM {
         && ((page.cfg_dockThemeMode === "custom") || (String(Plasmoid.configuration.dockThemeMode || "") === "custom"))
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
     readonly property bool verticalPanel: Plasmoid.formFactor === PlasmaCore.Types.Vertical
+    // Vertical docks cannot use the fan, so the recent container view and the
+    // folder editor lock that choice without discarding the stored preference.
+    readonly property bool verticalDock: page.inPanel
+        ? page.verticalPanel
+        : String((Plasmoid.configuration
+            && Plasmoid.configuration.floatingDockOrientation) || "horizontal")
+            === "vertical"
     readonly property int contentWidthHint: layoutMetrics.contentWidth
     readonly property int selectorWidthHint: layoutMetrics.selectorWidth
     // Plasma::Containment exposes its visual geometry at runtime, although the
@@ -710,6 +717,7 @@ KCM.SimpleKCM {
             Accessible.ignored: generalTabs.currentIndex !== 1
             selectorWidth: page.selectorWidthHint
             contentWidth: page.contentWidthHint
+            verticalDock: page.verticalDock
         }
     }
 }

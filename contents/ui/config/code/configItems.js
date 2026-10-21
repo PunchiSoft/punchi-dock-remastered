@@ -1028,6 +1028,19 @@ function normalizedFolderSortMode(value) {
     return "modified"
 }
 
+// The fan draws its band from a horizontal dock edge, so a vertical dock
+// resolves it to the canonical grid. The stored preference is never rewritten:
+// turning the dock horizontal again brings the fan back.
+function effectiveFolderLayout(layout, verticalDock) {
+    var value = String(layout || "")
+    var normalized = value === "list" || value === "detailed"
+            || value === "fan" ? value : "grid"
+    if (verticalDock === true && normalized === "fan") {
+        return "grid"
+    }
+    return normalized
+}
+
 function pruneFolder(item) {
     if (item.browseSubfolders !== true) {
         delete item.browseSubfolders

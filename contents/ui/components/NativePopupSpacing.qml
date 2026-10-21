@@ -35,11 +35,10 @@ Item {
     readonly property real popupHeight: root.popup
         ? Math.max(root.popup.height,
             root.popup.sizingItem ? root.popup.sizingItem.height : 0) : 0
-
     // The launcher and popup live in separate windows. Observe both window
     // positions and the actual transform chain before mapping between them.
     readonly property point sourceCenterInTarget: {
-        if (!root.sourceAnchor || !root.targetSurface
+        if (!root.sourceAnchor || !root.parent || !root.targetSurface
                 || !root.sourceAnchor.Window.window || !root.targetSurface.Window.window) {
             return Qt.point(NaN, NaN)
         }
@@ -52,12 +51,26 @@ Item {
         for (let item = root.targetSurface; item; item = item.parent) {
             geometryState += item.x + item.y + item.width + item.height
                 + item.scale + item.rotation + item.transformOrigin
+            // Dock items may expose an optional reactive transform revision;
+            // the generic QQuickItem type does not declare this property.
+            // qmllint disable missing-property
+            const mappedGeometryRevision = Number(item["mappedGeometryRevision"])
+            // qmllint enable missing-property
+            if (Number.isFinite(mappedGeometryRevision)) {
+                geometryState += mappedGeometryRevision
+            }
         }
         if (!Number.isFinite(geometryState)) {
             return Qt.point(NaN, NaN)
         }
-        return root.mapToItem(root.targetSurface,
-            Qt.point(root.width / 2, root.height / 2))
+        // Map the captured or live icon center directly. The spacing item is
+        // enlarged to keep Plasma from snapping the popup to screen center, so
+        // its visualParent bounds are not the callout's geometry source.
+        const geometry = root.sourceGeometry
+        const sourceCenter = Qt.point(geometry.x + geometry.width / 2,
+            geometry.y + geometry.height / 2)
+        const globalCenter = root.parent.mapToGlobal(sourceCenter)
+        return root.targetSurface.mapFromGlobal(globalCenter)
     }
 
     // Map into the window content item so the extra distance stays in logical
@@ -75,6 +88,12 @@ Item {
         for (let item = root.sourceAnchor; item; item = item.parent) {
             geometryState += item.x + item.y + item.width + item.height
                 + item.scale + item.rotation + item.transformOrigin
+            // qmllint disable missing-property
+            const mappedGeometryRevision = Number(item["mappedGeometryRevision"])
+            // qmllint enable missing-property
+            if (Number.isFinite(mappedGeometryRevision)) {
+                geometryState += mappedGeometryRevision
+            }
         }
         if (!Number.isFinite(geometryState)) {
             return Qt.rect(0, 0, 0, 0)
@@ -126,8 +145,8 @@ Item {
     }
 
     function captureSourceGeometry() {
-        // Match Quickshell: horizontal docks keep the click-time icon rect,
-        // while vertical docks may follow the rendered icon during the popup.
+        // Horizontal placement remains click-stable. In vertical docks the
+        // callout follows live icon motion after the popup starts opening.
         const geometry = root.mappedSourceGeometry
         const valid = Number.isFinite(geometry.x)
             && Number.isFinite(geometry.y)
@@ -161,7 +180,6 @@ Item {
     onCenterHorizontallyChanged: root.scheduleRefresh()
     onCenterVerticallyChanged: root.scheduleRefresh()
     onHorizontalAnchorOffsetChanged: root.scheduleRefresh()
-    onFollowLiveSourceGeometryChanged: root.scheduleRefresh()
 
     Connections {
         target: root.popup
