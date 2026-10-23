@@ -1518,6 +1518,9 @@ FocusScope {
         enabled: target !== null
 
         function onTransactionCommitted(transactionId, operation, subjectId) {
+            if (operation === Punchi.PunchiMenuLayoutController.MoveNode) {
+                return
+            }
             root.operationMessage = root.applicationLayoutController.canUndo
                 ? i18nc("@info:status", "Application folder updated.")
                 : i18nc("@info:status", "Application folder change undone.")
