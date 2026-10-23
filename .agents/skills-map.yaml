@@ -35,6 +35,10 @@ skills:
     family: governance
     role: domain
     references: []
+  - name: bugfix-delivery-cycle
+    family: workflow
+    role: orchestrator
+    references: [review-cycle, git, preflight-security-review, testing]
   - name: code-review
     family: governance
     role: domain

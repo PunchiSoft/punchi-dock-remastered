@@ -42,7 +42,7 @@
     }
   ],
   "schema_version": 1,
-  "skill_count": 56,
+  "skill_count": 57,
   "skills": [
     {
       "aliases": [],
@@ -165,6 +165,68 @@
         "scripts": []
       },
       "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Conducir un error reportado desde la documentacion hasta la pull request en Punchi Dock, siempre en el mismo orden: documentar, preguntar si se procede, crear la rama de trabajo, implementar, validar, interpretar commit y push como aprobacion y abrir el PR con descripcion estructurada. Usar cuando el usuario reporte o pregunte por un error y espere una correccion, o cuando pida convertir ese recorrido en una rutina repetible.",
+      "family": "workflow",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "bugfix-delivery-cycle",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/bugfix-delivery-cycle",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/revisiones",
+          "source": "SKILL.md",
+          "value": "docs/revisiones/"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "fix/<descriptor>"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "tests",
+          "source": "SKILL.md",
+          "value": "tests/"
+        }
+      ],
+      "references": [
+        "git",
+        "preflight-security-review",
+        "review-cycle",
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "orchestrator"
     },
     {
       "aliases": [],
