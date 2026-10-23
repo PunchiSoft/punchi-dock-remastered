@@ -791,7 +791,7 @@ FocusScope {
         if (!sourceItem || nodeId.length === 0) {
             return false
         }
-        closeContextMenusExcept(null)
+        closeApplicationContextMenu(false)
         resetPageNavigation()
         resetWheelGesture()
         const position = sourceItem.mapToItem(root, x, y)
