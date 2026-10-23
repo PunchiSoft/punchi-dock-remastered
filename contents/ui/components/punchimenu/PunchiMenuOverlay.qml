@@ -360,6 +360,8 @@ FocusScope {
 
         function onTransactionCommitted(transactionId, operation, subjectId) {
             if (operation === Punchi.PunchiMenuLayoutController.MoveNode) {
+                root.operationMessage = ""
+                root.operationMessageIsError = false
                 return
             }
             root.operationMessage = root.applicationLayoutController.canUndo

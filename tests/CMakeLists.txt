@@ -958,6 +958,13 @@ punchi_add_qml_test(
     punchimenu_fullscreen_drag_test.qml
     "QT_LOGGING_RULES=kf.plasma.quick.warning=false"
 )
+# Reorder notices are asserted on headless component instances; the offscreen
+# PlasmaQuick surface still requests a window shadow it cannot create.
+punchi_add_qml_test(
+    punchimenu_reorder_notice_test
+    punchimenu_reorder_notice_test.qml
+    "QT_LOGGING_RULES=kf.plasma.quick.warning=false"
+)
 punchi_add_qml_test(
     folder_popup_motion_test
     folder_popup_motion_test.qml
