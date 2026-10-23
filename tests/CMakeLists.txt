@@ -949,6 +949,15 @@ punchi_add_qml_test(
     punchimenu_session_focus_test
     punchimenu_session_focus_test.qml
 )
+# The offscreen platform cannot create PlasmaQuick window shadows, and the
+# launcher tooltip dialog may request one at any point during the gesture. The
+# category is silenced in this process only, so failOnWarning() keeps guarding
+# project code and the shared QWARN output gate stays meaningful.
+punchi_add_qml_test(
+    punchimenu_fullscreen_drag_test
+    punchimenu_fullscreen_drag_test.qml
+    "QT_LOGGING_RULES=kf.plasma.quick.warning=false"
+)
 punchi_add_qml_test(
     folder_popup_motion_test
     folder_popup_motion_test.qml
