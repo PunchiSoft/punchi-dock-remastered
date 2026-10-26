@@ -1,0 +1,124 @@
+name: Bug report
+description: Report a reproducible problem with Punchi Dock Remastered.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Punchi Dock Remastered is under active development toward 1.0, and the
+        latest published package can lag behind the source tree. Read the README
+        compatibility notes before reporting.
+
+        Do not paste personal file paths, usernames, tokens, or private file
+        contents. Do not report security vulnerabilities in public issues;
+        contact the maintainer privately.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Configure the dock with ...
+        2. Click ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: input
+    id: dock-version
+    attributes:
+      label: Punchi Dock version
+      description: Use the version shown in the widget settings, in `metadata.json`, or in the release asset name.
+      placeholder: 0.9.7.84
+    validations:
+      required: true
+  - type: dropdown
+    id: package-origin
+    attributes:
+      label: Package origin
+      description: Choose how Punchi Dock was installed.
+      options:
+        - Prebuilt package from GitHub Releases
+        - Distribution package
+        - Built and installed from source
+        - Development checkout
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: distribution
+    attributes:
+      label: Distribution and version
+      placeholder: Fedora 44
+    validations:
+      required: true
+  - type: input
+    id: plasma
+    attributes:
+      label: KDE Plasma and KWin versions
+      description: Include the output of `plasmashell --version` and `kwin_wayland --version` or `kwin_x11 --version`.
+      placeholder: Plasma 6.x, KWin 6.x
+    validations:
+      required: true
+  - type: input
+    id: qt
+    attributes:
+      label: Qt version
+      description: Include the output of `qtpaths6 --qt-version`.
+      placeholder: Qt 6.x
+    validations:
+      required: true
+  - type: dropdown
+    id: session
+    attributes:
+      label: Session type
+      options:
+        - Wayland
+        - X11
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: placement
+    attributes:
+      label: Dock placement
+      options:
+        - Floating dock
+        - Inside a Plasma panel
+        - Other
+        - Not sure
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Remove personal paths, usernames and private data before pasting. For example, run `journalctl --user -b | grep -i punchi`.
+      render: shell
+    validations:
+      required: false
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Screenshots or additional context
+      description: Drag screenshots or recordings here and remove private information first.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I read the README compatibility notes.
+          required: true
+        - label: I searched existing issues.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true
