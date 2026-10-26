@@ -13,7 +13,7 @@
 [English](README.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt_BR.md)
 
 > [!WARNING]
-> **O suporte ao Plasma 6.8 está temporariamente incompleto.** Após o ciclo de atualização do 30.º aniversário do KDE e o lançamento do Plasma 6.8, o Punchi Dock Remastered não é compatível atualmente com o Plasma 6.8. O dock pode não carregar ou perder funcionalidades. O suporte completo para esta versão ainda não está disponível. O trabalho de compatibilidade está em andamento; obrigado pela paciência. Plasma 6.7 e anteriores continuam sendo os alvos testados.
+> **O pacote publicado 0.9.7.74 não é compatível com o Plasma 6.8; compilar a partir do código-fonte é.** A correção do Plasma 6.8 chegou na 0.9.7.77 e foi validada no Plasma 6.8. Pacotes compilados antes disso podem não carregar ou perder funcionalidades. Até o próximo release ser publicado, instale a partir do código-fonte com `scripts-user/setup.sh --install`.
 
 O Punchi Dock Remastered reúne lançadores de aplicativos, janelas abertas,
 pastas, controles de mídia e utilitários do desktop em uma dock personalizável
@@ -315,17 +315,17 @@ ou um pacote com arquivos ausentes antes que essas mudanças cheguem aos usuári
 
 Versões consultadas em 18 de outubro de 2026. Fedora 44 e Debian 13 descrevem os ambientes observados localmente; as demais linhas descrevem os repositórios das distribuições indicados abaixo. Distribuições de atualização contínua e atualizações podem alterar essas versões.
 
-| SO | Qt | Plasma | Frameworks | Compilação local | universal do Debian 13 | pacote do Fedora 44 |
+| SO | Qt | Plasma | Frameworks | Compilação local (script do repo) | universal do Debian 13 | pacote do Fedora 44 |
 |---|---|---|---|:---:|:---:|:---:|
 | Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | ❌ |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | 🤞 | 🤞 | 🤞 |
 | Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | 🤞 | ✅ | ❌ |
-| Arch Linux (extra) | 6.12.0 | 6.8.0 | 6.31.0 | ❌ | ❌ | ❌ |
+| Arch Linux (extra) | 6.12.0 | 6.8.0 | 6.31.0 | 🤞 | ❌ | ❌ |
 | Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | 🤞 | 🤞 | ⏳ |
-| KDE neon (User Edition) | 6.11.1 | 6.8.0 | 6.31.0 | ❌ | ❌ | ❌ |
+| KDE neon (User Edition) | 6.11.1 | 6.8.0 | 6.31.0 | 🤞 | ❌ | ❌ |
 | openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | 🤞 | 🤞 | ⏳ |
-| openSUSE Tumbleweed | 6.11.2 | 6.8.0 | 6.31.0 | ❌ | ❌ | ❌ |
+| openSUSE Tumbleweed | 6.11.2 | 6.8.0 | 6.31.0 | 🤞 | ❌ | ❌ |
 
 **Legenda dos estados de teste**
 
@@ -334,14 +334,14 @@ Versões consultadas em 18 de outubro de 2026. Fedora 44 e Debian 13 descrevem o
 - ⏳ Sem teste.
 - 🤞 Provavelmente funciona; sem teste.
 
-A coluna Compilação local registra a validação local do plasmoide; as colunas universal do Debian 13 e pacote do Fedora 44 indicam se esse pacote foi verificado nesse sistema. Nenhuma coluna certifica o pacote universal compilado no Debian em todos os sistemas. Uma versão posterior do Qt pode admitir binários compilados com uma versão anterior do Qt 6, mas as dependências de Qt, KDE e das bibliotecas do sistema precisam ser verificadas com o mesmo pacote.
+A coluna Compilação local (script do repo) registra uma compilação do repositório clonado instalada com `scripts-user/setup.sh --install` nesse sistema; as colunas universal do Debian 13 e pacote do Fedora 44 indicam se esse pacote foi verificado nesse sistema. Nenhuma coluna certifica o pacote universal compilado no Debian em todos os sistemas. Uma versão posterior do Qt pode admitir binários compilados com uma versão anterior do Qt 6, mas as dependências de Qt, KDE e das bibliotecas do sistema precisam ser verificadas com o mesmo pacote.
 
-**O trabalho de compatibilidade com o Plasma 6.8 está em andamento.** Obrigado pela paciência enquanto os problemas restantes são resolvidos.
+**A correção do Plasma 6.8 está no código-fonte atual (0.9.7.77 e posteriores); os pacotes comparados aqui foram compilados antes.**
 
 **Observações**
 
 - **Por que um pacote pode falhar:** as marcas ❌ vêm de diferenças de versão: um pacote compilado contra Qt e KDE Frameworks mais novos não funciona em sistemas com versões mais antigas. O pacote universal evita isso compilando contra a versão mínima suportada.
-- **Arch Linux:** Testado em 10 de outubro de 2026 com Plasma 6.7.5 usando o pacote do Fedora 44, o pacote universal compilado no Debian 13 e uma compilação nativa dentro do Arch. Nos três casos, o applet instalou, carregou e permaneceu funcional. O Arch já distribui Plasma 6.8.0, portanto a compatibilidade está temporariamente suspensa.
+- **Arch Linux:** Testado em 10 de outubro de 2026 com Plasma 6.7.5 usando o pacote do Fedora 44, o pacote universal compilado no Debian 13 e uma compilação nativa dentro do Arch. Nos três casos, o applet instalou, carregou e permaneceu funcional. O Arch já distribui Plasma 6.8.0; compilações do código-fonte incluem a correção, pacotes publicados não.
 
 Fontes dos repositórios: [Debian 14 Qt](https://packages.debian.org/forky/qt6-base-dev) · [Debian 14 Plasma](https://packages.debian.org/forky/plasma-desktop) · [Debian 14 Frameworks](https://packages.debian.org/forky/libkf6coreaddons6) · [Kubuntu Qt](https://packages.ubuntu.com/resolute/libdevel/qt6-base-dev) · [Atualizações do Plasma no Kubuntu](https://packages.ubuntu.com/resolute-updates/kde/plasma-desktop) · [Kubuntu Frameworks](https://packages.ubuntu.com/resolute/libs/libkf6coreaddons6) · [Arch Qt](https://archlinux.org/packages/extra/x86_64/qt6-base/) · [Arch Plasma](https://archlinux.org/packages/extra/x86_64/plasma-desktop/) · [Arch Frameworks](https://archlinux.org/packages/extra/x86_64/kcoreaddons/) · [Metadados de pacotes Manjaro stable](https://repo.manjaro.org/repo/stable/extra/x86_64/extra.db) · [Metadados de pacotes KDE neon User Edition](https://archive.neon.kde.org/user/dists/noble/main/binary-amd64/Packages.gz) · [Pacotes openSUSE Leap 16.0](https://download.opensuse.org/distribution/leap/16.0/repo/oss/x86_64/) · [openSUSE Tumbleweed Qt](https://news.opensuse.org/2026/09/02/tw-monthly-update-august/) · [openSUSE Tumbleweed Plasma / Frameworks](https://news.opensuse.org/2026/10/01/tw-monthly-update-september/).
 
