@@ -678,13 +678,15 @@ function(punchi_add_qml_test test_name qml_file)
     add_test(
         NAME ${test_name}
         COMMAND $<TARGET_FILE:punchi_qmltestrunner>
+            -import ${CMAKE_BINARY_DIR}/bin
             -input ${CMAKE_CURRENT_SOURCE_DIR}/${qml_file}
     )
     # Extra arguments are appended to the shared environment. Use them only for
     # a test that must adapt its runtime to a service it loads.
-    # QML component tests must load the module produced by this build. Without
-    # this path the plugin resolves an older installed libpunchidockintegration
-    # and reports properties that exist only in the work tree as missing.
+    # QML component tests must load the module produced by this build: the
+    # import path resolves org.punchi.dock and the library path keeps the
+    # plugin from picking up an older installed libpunchidockintegration that
+    # reports properties existing only in the work tree as missing.
     set(test_environment "${PUNCHI_QML_TEST_ENVIRONMENT};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/bin:$ENV{LD_LIBRARY_PATH}")
     list(APPEND test_environment ${ARGN})
     set_tests_properties(${test_name} PROPERTIES

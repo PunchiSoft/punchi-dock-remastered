@@ -256,7 +256,10 @@ if [[ "$PACKAGE_VALIDATION_MODE" == "full" ]]; then
     echo "==> Validating QML (developer mode)"
     echo "Using: $QMLLINT_BIN ($QMLLINT_VERSION)"
     mkdir -p "$BUILD_DIR"
-    if [[ "${PUNCHI_DEBIAN_QT68_COPY:-0}" == "1" ]]; then
+    # The copy helper only exists in a complete source tree; a partial tree
+    # (packaging scripts plus contents) still lints the plain UI tree.
+    if [[ "${PUNCHI_DEBIAN_QT68_COPY:-0}" == "1" \
+        && -r "$DEV_SCRIPTS_DIR/lib/lint-built-qml.sh" ]]; then
         # The Debian parent already built this disposable tree with native Qt.
         # Keep the original lint/build sequence for every other entry point.
         # shellcheck source=../../scripts-dev/lib/lint-built-qml.sh

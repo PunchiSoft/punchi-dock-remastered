@@ -38,9 +38,9 @@ PlasmoidItem {
     }
 
     // Plasma documents PlasmaCore.Action as the QAction factory for
-    // Plasmoid.contextualActions. Qt 6.8 qmllint cannot resolve that type from
-    // the installed Plasma metadata and reports cascading property warnings.
-    // qmllint disable import
+    // Plasmoid.contextualActions. Qt 6.8 qmllint cannot resolve that type nor
+    // its properties from the installed metadata and reports them as unresolved.
+    // qmllint disable import unresolved-type
     // qmllint disable missing-property
     // qmllint disable unqualified
     Plasmoid.contextualActions: [
@@ -111,7 +111,7 @@ PlasmoidItem {
         // qmllint enable unqualified
     ]
     // qmllint enable missing-property
-    // qmllint enable import
+    // qmllint enable import unresolved-type
 
     // A checkable PlasmaCore.Action rewrites its own checked state when it is
     // triggered, which removes a plain QML binding. Re-assert the effective
