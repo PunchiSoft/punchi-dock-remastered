@@ -63,7 +63,7 @@ body:
     id: plasma
     attributes:
       label: KDE Plasma and KWin versions
-      description: Include the output of `plasmashell --version` and `kwin_wayland --version` or `kwin_x11 --version`.
+      description: "Run this command and paste its output: `plasmashell --version; kwin_wayland --version 2>/dev/null || kwin_x11 --version`."
       placeholder: Plasma 6.x, KWin 6.x
     validations:
       required: true
@@ -96,11 +96,37 @@ body:
         - Not sure
     validations:
       required: false
+  - type: markdown
+    attributes:
+      value: |
+        ### How to capture Plasma logs
+
+        On the supported distributions (Fedora, Debian, Kubuntu, Arch Linux, and openSUSE), Plasma runs as a systemd user service, so the command is the same. Reproduce the problem and paste the output below.
+
+        To save the current session log:
+
+        ```bash
+        journalctl --user -b -u plasma-plasmashell.service --no-pager > plasmashell.log
+        ```
+
+        To watch the log while reproducing the problem:
+
+        ```bash
+        journalctl --user -b -f -u plasma-plasmashell.service
+        ```
+
+        If the service is not available, filter the session log instead:
+
+        ```bash
+        journalctl --user -b | grep -iE 'plasmashell|punchi'
+        ```
+
+        Remove personal paths, usernames, and private data before pasting.
   - type: textarea
     id: logs
     attributes:
       label: Relevant logs
-      description: Remove personal paths, usernames and private data before pasting. For example, run `journalctl --user -b | grep -i punchi`.
+      description: Paste the output captured with the commands above, and remove personal paths, usernames, and private data first.
       render: shell
     validations:
       required: false

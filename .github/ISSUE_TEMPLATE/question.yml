@@ -59,7 +59,7 @@ body:
     id: plasma
     attributes:
       label: KDE Plasma and KWin versions
-      description: Include the output of `plasmashell --version` and `kwin_wayland --version` or `kwin_x11 --version`.
+      description: "Run this command and paste its output: `plasmashell --version; kwin_wayland --version 2>/dev/null || kwin_x11 --version`."
       placeholder: Plasma 6.x, KWin 6.x
     validations:
       required: true
