@@ -317,7 +317,7 @@ Versions checked on October 18, 2026. Fedora 44 and Debian 13 describe the local
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | ❌ |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | 🤞 | 🤞 | 🤞 |
 | Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | 🤞 | ✅ | ❌ |
-| Arch Linux (extra) | 6.12.0 | 6.8.0 | 6.31.0 | 🤞 | ❌ | ❌ |
+| Arch Linux (extra) | 6.12.0 | 6.8.0 | 6.31.0 | ✅ | ❌ | ❌ |
 | Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | 🤞 | 🤞 | ⏳ |
 | KDE neon (User Edition) | 6.11.1 | 6.8.0 | 6.31.0 | 🤞 | ❌ | ❌ |
 | openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | 🤞 | 🤞 | ⏳ |
@@ -337,7 +337,7 @@ The Local build (repo script) column records a build from the cloned repository 
 **Observations**
 
 - **Why a package can fail:** the ❌ marks come from version differences: a package built against newer Qt and KDE Frameworks does not run on systems with older ones. The universal package avoids this by building against the lowest supported version.
-- **Arch Linux:** Tested on October 10, 2026 with Plasma 6.7.5 using the Fedora 44 package, the universal package built on Debian 13, and a native build inside Arch. In all three cases the applet installed, loaded and stayed functional. Arch now ships Plasma 6.8.0; source builds include the fix, published packages do not.
+- **Arch Linux:** Tested on October 10, 2026 with Plasma 6.7.5 using the Fedora 44 package, the universal package built on Debian 13, and a native build inside Arch. In all three cases the applet installed, loaded and stayed functional. On October 19, 2026 the source build was also tested on Arch with Plasma 6.8.0 and ran without runtime errors, and users confirmed the repository install on Arch-based distributions. Published packages were built before 0.9.7.77 and still target older Plasma.
 
 Repository sources: [Debian 14 Qt](https://packages.debian.org/forky/qt6-base-dev) · [Debian 14 Plasma](https://packages.debian.org/forky/plasma-desktop) · [Debian 14 Frameworks](https://packages.debian.org/forky/libkf6coreaddons6) · [Kubuntu Qt](https://packages.ubuntu.com/resolute/libdevel/qt6-base-dev) · [Kubuntu Plasma updates](https://packages.ubuntu.com/resolute-updates/kde/plasma-desktop) · [Kubuntu Frameworks](https://packages.ubuntu.com/resolute/libs/libkf6coreaddons6) · [Arch Qt](https://archlinux.org/packages/extra/x86_64/qt6-base/) · [Arch Plasma](https://archlinux.org/packages/extra/x86_64/plasma-desktop/) · [Arch Frameworks](https://archlinux.org/packages/extra/x86_64/kcoreaddons/) · [Manjaro stable package metadata](https://repo.manjaro.org/repo/stable/extra/x86_64/extra.db) · [KDE neon User Edition package metadata](https://archive.neon.kde.org/user/dists/noble/main/binary-amd64/Packages.gz) · [openSUSE Leap 16.0 packages](https://download.opensuse.org/distribution/leap/16.0/repo/oss/x86_64/) · [openSUSE Tumbleweed Qt](https://news.opensuse.org/2026/09/02/tw-monthly-update-august/) · [openSUSE Tumbleweed Plasma / Frameworks](https://news.opensuse.org/2026/10/01/tw-monthly-update-september/).
 
