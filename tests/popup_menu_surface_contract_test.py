@@ -663,8 +663,6 @@ def main() -> int:
          "The fan must declare the air between two rows"),
         ("preferredRowHeight",
          "The fan must expose the pitch its rows need"),
-        ("source: \"go-next-symbolic\"",
-         "The closing row must point towards the container it opens"),
         ("revealProgressForDistance(",
          "The fan reveal must sweep along its arc instead of by row order"),
         ("property real revealSweepShare:",
@@ -767,34 +765,49 @@ def main() -> int:
             "descriptive phrase belongs to the chrome row of the other "
             "presentations"
         )
+    for fragment, message in (
+        ('objectName: "folderFanLocationIcon"',
+         "The closing row of the fan must show the folder glyph of the action"),
+        ('source: "folder-open"',
+         "The closing row of the fan must open the container with folder-open"),
+    ):
+        require(folder_fan_view, fragment, message)
+    for retired_glyph in ("folderFanLocationDisc", "folderFanLocationArrow"):
+        if retired_glyph in folder_fan_view:
+            raise AssertionError(
+                "The closing row of the fan must not keep the disc with an "
+                "arrow of the reference: " + retired_glyph)
     if "renderShadow: root.textShadowsEnabled" in folder_fan_view:
         raise AssertionError(
             "A label of the fan must not enable the fixed texture shadow of the "
             "shared label: the amount belongs to the configuration"
         )
     # All presentations integrate the location action into their collection.
-    # The file manager name and glyph remain shared across presentations.
+    # The action keeps the short label of the fan and the folder glyph that
+    # names what it opens; the file manager name belongs to the count row.
     for fragment, message in (
-        ('i18nc("@action:button open the folder in the file manager"',
-         "The location action must name the file manager that opens a folder"),
-        ("folderOpenerName.length > 0",
-         "The location action must name the file manager the desktop resolved"),
+        ('i18nc("@action:button open the container", "Open"',
+         "The location action must keep the short label of the reference"),
+        ('? "folder-open"',
+         "The location action must show the folder glyph that opens the container"),
         ('? "folderOpenLocationGlyph"',
          "The list action must show the glyph of the reference"),
-        ('? "folderOpenLocationArrow"',
-         "The list action must carry the arrow of the reference"),
         ('"_punchiOpenLocationAction": true',
          "Grid must append a marked location action to its visual model"),
         ('? "folderGridOpenLocationAction"',
          "Grid must expose the location action as a normal final delegate"),
-        ('objectName: "folderGridOpenLocationArrow"',
-         "The Grid action must carry the arrow from the reference"),
         ("readonly property int openLocationRowHeight: 0",
          "The location action must not reserve a fixed footer"),
         ("? folderRoot.listItems : folderRoot.apps",
          "List and Detailed must consume the presentation model for folders"),
     ):
         require(folder_popup_component, fragment, message)
+    for retired_glyph in ("folderOpenLocationDisc", "folderOpenLocationArrow",
+                          "folderGridOpenLocationDisc", "folderGridOpenLocationArrow"):
+        if retired_glyph in folder_popup_component:
+            raise AssertionError(
+                "The location action must keep the folder glyph instead of the "
+                "disc with an arrow of the reference: " + retired_glyph)
     for retired_footer in ("folderOpenLocationIcon", "openLocationSlot",
                            "separateLocationRowActive"):
         if retired_footer in folder_popup_component:

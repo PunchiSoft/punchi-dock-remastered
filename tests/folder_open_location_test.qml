@@ -210,32 +210,22 @@ TestCase {
         compare(glyph.parent, row,
             "The glyph must live in the row, outside the pill")
 
-        // The glyph follows the reference: a disc that is the same themed
-        // surface as the pill beside it, with an arrow pointing towards the
-        // container it opens and the contrasting theme text colour, so it reads
-        // on a light surface and on a dark one. It must stay nearly opaque: the
-        // glyph has no pill behind it, so a translucent veil would dissolve
-        // into whatever the desktop shows through the fan.
-        const disc = findChild(action, "folderFanLocationDisc")
-        verify(disc !== null)
-        compare(String(disc.color),
-            String(Qt.alpha(Kirigami.Theme.backgroundColor, 0.88)),
-            "The glyph disc must be the same themed surface as the pill")
-        verify(disc.color.a > 0.8,
-            "The glyph disc must stay nearly opaque over the desktop: alpha="
-                + disc.color.a)
-        const arrow = findChild(action, "folderFanLocationArrow")
-        verify(arrow !== null)
-        compare(arrow.source, "go-next-symbolic")
+        // The glyph names what the row opens with the same folder glyph as the
+        // other presentations, instead of the disc with an arrow of the macOS
+        // reference: the pill beside it already carries the verb.
+        const icon = findChild(action, "folderFanLocationIcon")
+        verify(icon !== null)
+        compare(String(icon.source), "folder-open")
+        compare(findChild(action, "folderFanLocationDisc"), null,
+            "The closing row must not keep the disc of the reference")
+        compare(findChild(action, "folderFanLocationArrow"), null,
+            "The closing row must not keep the arrow of the reference")
         // The row is a button, so it must show the hand: the click belongs to
         // the delegate and the cursor is asked for with a hover handler.
         const cursor = findChild(action, "folderFanLocationCursor")
         verify(cursor !== null,
             "The closing row must ask for the hand cursor")
         compare(cursor.cursorShape, Qt.PointingHandCursor)
-        verify(String(arrow.color) !== String(disc.color),
-            "The arrow must contrast with the surface it sits on: arrow="
-                + arrow.color + " disc=" + disc.color)
     }
 
     // More entries than the fan shows: the closing row announces the rest, the
@@ -384,9 +374,11 @@ TestCase {
         compare(action.index, folderPopup.itemCount,
             "The location action must be the final Grid cell")
         compare(String(findChild(action,
-            "folderGridOpenLocationLabel").text), "Open in Dolphin")
-        compare(findChild(action, "folderGridOpenLocationArrow").source,
-            "go-next-symbolic")
+            "folderGridOpenLocationLabel").text), "Open")
+        compare(String(action.displayIcon), "folder-open",
+            "The Grid action must show the folder glyph that opens the container")
+        compare(findChild(action, "folderGridOpenLocationArrow"), null,
+            "The Grid action must not keep the arrow of the reference")
         compare(findChild(folderPopup, "folderOpenLocationAction"), null,
             "Grid must not expose a second location action outside its model")
         compare(findChild(folderPopup, "folderFanLocationAction"), null)
@@ -568,7 +560,7 @@ TestCase {
         keyClick(Qt.Key_Space)
         tryCompare(openSpy, "count", 1)
         compare(openSpy.signalArguments[0][0], "~")
-        compare(pointer.Accessible.name, "Open in Dolphin")
+        compare(pointer.Accessible.name, "Open")
         compare(pointer.Accessible.description,
             "Open this folder in the file manager")
     }
@@ -626,13 +618,16 @@ TestCase {
             compare(findChild(folderPopup, "folderOpenLocationSlot"), null)
             compare(String(findChild(row, "folderOpenLocationLabel").text), "Open")
             folderPopup.folderOpenerName = "Dolphin"
-            compare(String(findChild(row, "folderOpenLocationLabel").text), "Open in Dolphin")
+            compare(String(findChild(row, "folderOpenLocationLabel").text), "Open",
+                "The action must keep its short label whatever file manager the desktop resolves")
             verify(findChild(row, "folderOpenLocationGlyph") !== null)
-            compare(String(findChild(row, "folderOpenLocationDisc").color),
-                String(Qt.alpha(Kirigami.Theme.backgroundColor, 0.88)))
-            compare(findChild(row, "folderOpenLocationArrow").source, "go-next-symbolic")
+            compare(String(row.displayIcon), "folder-open")
+            compare(findChild(row, "folderOpenLocationDisc"), null,
+                "The list action must not keep the disc of the reference")
+            compare(findChild(row, "folderOpenLocationArrow"), null,
+                "The list action must not keep the arrow of the reference")
             verify(pointer.activeFocusOnTab)
-            compare(pointer.Accessible.name, "Open in Dolphin")
+            compare(pointer.Accessible.name, "Open")
             compare(pointer.Accessible.description, "Open this folder in the file manager")
             compare(findChild(folderPopup, "folderFanLocationAction"), null)
 
