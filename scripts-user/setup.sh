@@ -228,7 +228,7 @@ punchi_user_distro_family() {
         *neon*|*debian*|*ubuntu*|*kubuntu*|*pop*|*mint*)
             printf 'debian\n'
             ;;
-        *arch*|*manjaro*|*endeavouros*|*garuda*|*artix*)
+        *arch*|*manjaro*|*endeavouros*|*garuda*|*artix*|*cachyos*)
             printf 'arch\n'
             ;;
         *fedora*|*rhel*|*nobara*|*centos*)
@@ -270,9 +270,13 @@ punchi_debian_missing_dependencies() {
     fi
 
     local -a deb_pkgs=(
+        binutils
         build-essential
         cmake
         extra-cmake-modules
+        gettext
+        kpackagetool6
+        pkg-config
         qt6-base-dev
         qt6-declarative-dev
         qt6-shader-baker
@@ -283,6 +287,8 @@ punchi_debian_missing_dependencies() {
         libkf6config-dev
         libkf6i18n-dev
         libkf6kio-dev
+        unzip
+        zip
     )
     punchi_missing_deb_packages "${deb_pkgs[@]}"
 }
@@ -312,7 +318,10 @@ punchi_user_missing_dependencies() {
                 kconfig
                 ki18n
                 kio
+                kpackage
                 kservice
+                unzip
+                zip
             )
             for pkg in "${arch_pkgs[@]}"; do
                 if ! pacman -Qq "$pkg" >/dev/null 2>&1 && ! pacman -Qg "$pkg" >/dev/null 2>&1; then
@@ -333,9 +342,12 @@ punchi_user_missing_dependencies() {
             ;;
         fedora)
             local -a fedora_pkgs=(
+                binutils
                 gcc-c++
                 cmake
                 extra-cmake-modules
+                gettext
+                pkgconf-pkg-config
                 qt6-qtbase-devel
                 qt6-qtdeclarative-devel
                 qt6-qtshadertools
@@ -346,6 +358,9 @@ punchi_user_missing_dependencies() {
                 kf6-kconfig-devel
                 kf6-ki18n-devel
                 kf6-kio-devel
+                kf6-kpackage
+                unzip
+                zip
             )
             for pkg in "${fedora_pkgs[@]}"; do
                 if ! rpm -q "$pkg" >/dev/null 2>&1; then
@@ -465,8 +480,24 @@ require_action_commands() {
         command -v "$command_name" >/dev/null 2>&1 || missing+=("$command_name")
     done
 
+    if (( ${#missing[@]} == 0 )); then
+        return 0
+    fi
+
+    printf 'Commands required for %s are missing:\n' "$action" >&2
+    printf '  - %s\n' "${missing[@]}" >&2
+    echo "" >&2
+    # The command list alone does not say how to install them, so report the
+    # distribution packages that provide them before giving up.
+    punchi_check_and_report_dependencies || true
+
+    missing=()
+    for command_name in "${required[@]}"; do
+        command -v "$command_name" >/dev/null 2>&1 || missing+=("$command_name")
+    done
+
     if (( ${#missing[@]} > 0 )); then
-        printf 'Commands required for %s are missing:\n' "$action" >&2
+        printf 'Commands still missing for %s:\n' "$action" >&2
         printf '  - %s\n' "${missing[@]}" >&2
         return 1
     fi
