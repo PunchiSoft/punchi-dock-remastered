@@ -136,6 +136,10 @@ FocusScope {
         }
     }
 
+    // org.kde.notificationmanager omits "depends QtQml.Models" in its qmldir,
+    // so Notifications (a QSortFilterProxyModel) and the model import cannot be
+    // resolved by qmllint even though they exist at runtime.
+    // qmllint disable import unresolved-type
     NotificationManager.Notifications {
         id: notificationHistory
 
@@ -148,6 +152,7 @@ FocusScope {
             | NotificationManager.Notifications.NormalUrgency
             | NotificationManager.Notifications.CriticalUrgency
     }
+    // qmllint enable import unresolved-type
 
     NotificationManager.Settings {
         id: notificationSettings

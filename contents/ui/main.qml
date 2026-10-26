@@ -4323,7 +4323,9 @@ PlasmoidItem {
             popupDirection: popupCoordinator.popupDirection
             margin: dockGeometry.popupMargin
             floating: !root.inPanel
-            removeBorderStrategy: root.inPanel
+            // The RemoveBorders enum type is not exported in Plasma 6.3 qmllint
+            // metadata; the property exists and works at runtime.
+            removeBorderStrategy: root.inPanel // qmllint disable missing-type
                 ? PlasmaCore.AppletPopup.AtScreenEdges | PlasmaCore.AppletPopup.AtPanelEdges
                 : PlasmaCore.AppletPopup.AtScreenEdges
             visible: false

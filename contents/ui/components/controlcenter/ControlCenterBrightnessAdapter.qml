@@ -22,8 +22,10 @@ QtObject {
             isSilent: true
         }
 
+    // The Brightness module metadata does not expose the QAbstractListModel
+    // type of ScreenBrightnessControl.displays.
     readonly property Connections displayConnections: Connections {
-        target: root.screenControl.displays
+        target: root.screenControl.displays // qmllint disable unresolved-type
 
         function onDataChanged() {
             root.refreshDisplay()
@@ -47,7 +49,7 @@ QtObject {
     }
 
     function refreshDisplay() {
-        const displays = screenControl.displays
+        const displays = screenControl.displays // qmllint disable unresolved-type
         if (!displays || displays.rowCount() < 1) {
             displayName = ""
             brightness = 0

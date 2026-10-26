@@ -51,21 +51,22 @@ KCM.SimpleKCM {
                 Layout.maximumWidth: page.selectorWidthHint
                 showCancelButton: true
                 // Keep the Plasma 6.0-compatible properties. ShortcutPattern was
-                // introduced in a later KF6 release.
-                // qmllint disable deprecated
+                // introduced in a later KF6 release, and the current ShortcutEditor
+                // metadata no longer types these deprecated properties.
+                // qmllint disable deprecated missing-type incompatible-type
                 modifierOnlyAllowed: true
                 modifierlessAllowed: false
-                // qmllint enable deprecated
+                // qmllint enable deprecated missing-type incompatible-type
                 Accessible.name: i18n("PunchiMenu keyboard shortcut")
                 Accessible.description: i18n(
                     "Opens or closes PunchiMenu independently from Plasma's widget activation shortcut.")
                 onKeySequenceModified: {
                     if (!page.updatingShortcut) {
                         // QKeySequence exposes toString() at runtime, but the Qt
-                        // QML metadata does not advertise the method to qmllint.
-                        // qmllint disable missing-property
+                        // QML metadata does not advertise its type to qmllint.
+                        // qmllint disable missing-property unresolved-type
                         page.cfg_punchiMenuShortcut = keySequence.toString()
-                        // qmllint enable missing-property
+                        // qmllint enable missing-property unresolved-type
                     }
                 }
             }

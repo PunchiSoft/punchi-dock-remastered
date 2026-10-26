@@ -1,3 +1,5 @@
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls as Controls
 import QtQuick.Layouts
@@ -8,6 +10,9 @@ import org.kde.plasma.core as PlasmaCore
 import org.kde.ksvg as KSvg
 import "../../org/punchi/dock" as Punchi
 
+// The i18n* functions come from the plasmoid context, not from a QML import;
+// the linter reports each call as unqualified, so those lines carry a scoped
+// suppression instead of a rewrite.
 FocusScope {
     id: root
 
@@ -66,7 +71,7 @@ FocusScope {
     property bool operationMessageDismissalInProgress: false
     property int operationSecondsRemaining: 0
     property string activeCategoryKey: "All"
-    property string activeCategoryTitle: i18nc("@title:category", "All Applications")
+    property string activeCategoryTitle: i18nc("@title:category", "All Applications") // qmllint disable unqualified
     property string pendingCategoryKey: ""
     property bool suppressSearchChange: false
     property int preferredApplicationIndexAfterRefresh: -1
@@ -74,7 +79,7 @@ FocusScope {
 
     onShowCategoriesChanged: {
         if (!showCategories && activeCategoryKey !== "All") {
-            selectCategory("All", i18nc("@title:category", "All Applications"), false)
+            selectCategory("All", i18nc("@title:category", "All Applications"), false) // qmllint disable unqualified
         }
     }
 
@@ -90,12 +95,12 @@ FocusScope {
     readonly property string operationBaseMessage: operationMessage.length > 0
         ? operationMessage
         : applicationErrorMessage.length > 0
-            ? i18nc("@info:status", "Application could not be opened: %1",
+            ? i18nc("@info:status", "Application could not be opened: %1", // qmllint disable unqualified
                 applicationErrorMessage)
             : ""
     readonly property string operationCountdownText:
         operationBaseMessage.length > 0 && operationSecondsRemaining > 0
-            ? i18nc("@info:status %1 is the result and %2 is seconds remaining",
+            ? i18nc("@info:status %1 is the result and %2 is seconds remaining", // qmllint disable unqualified
                 "%1 · %2 s", operationBaseMessage, operationSecondsRemaining)
             : operationBaseMessage
     readonly property int headerControlSize: Kirigami.Units.gridUnit * 2
@@ -1282,7 +1287,7 @@ FocusScope {
         settingsErrorMessage = ""
         contentViewActive = "applications"
         activeCategoryKey = "All"
-        activeCategoryTitle = i18nc("@title:category", "All Applications")
+        activeCategoryTitle = i18nc("@title:category", "All Applications") // qmllint disable unqualified
         categoriesView.currentIndex = categoryIndexForKey(activeCategoryKey)
         categoriesView.positionViewAtBeginning()
         suppressSearchChange = true
@@ -1427,7 +1432,7 @@ FocusScope {
     }
 
     function showSettingsPersistenceError() {
-        settingsErrorMessage = i18nc("@info", "Changes could not be saved.")
+        settingsErrorMessage = i18nc("@info", "Changes could not be saved.") // qmllint disable unqualified
     }
 
     onHiddenApplicationIdsChanged: {
@@ -1478,7 +1483,7 @@ FocusScope {
     }
 
     Component.onCompleted: {
-        categoryModel.append({ categoryKey: "All", titleName: i18nc("@title:category", "All Applications") })
+        categoryModel.append({ categoryKey: "All", titleName: i18nc("@title:category", "All Applications") }) // qmllint disable unqualified
         categoryModel.append({ categoryKey: "Network", titleName: i18nc("@title:category", "Internet") })
         categoryModel.append({ categoryKey: "Graphics", titleName: i18nc("@title:category", "Graphics") })
         categoryModel.append({ categoryKey: "AudioVideo", titleName: i18nc("@title:category", "Multimedia") })
@@ -1531,7 +1536,7 @@ FocusScope {
         }
 
         function onTransactionFailed(transactionId, operation, errorCode) {
-            root.operationMessage = i18nc("@info:status",
+            root.operationMessage = i18nc("@info:status", // qmllint disable unqualified
                 "The application folder could not be updated.")
             root.operationMessageIsError = true
             root.updateOperationMessageTimer()
@@ -1704,8 +1709,8 @@ FocusScope {
                     id: searchField
                     Layout.fillWidth: true
                     enabled: root.menuOpen && root.applicationViewActive
-                    placeholderText: i18nc("@placeholder", "Search applications…")
-                    Accessible.name: i18nc("@label", "Search applications")
+                    placeholderText: i18nc("@placeholder", "Search applications…") // qmllint disable unqualified
+                    Accessible.name: i18nc("@label", "Search applications") // qmllint disable unqualified
                     background: PunchiMenuSearchBackground {
                         fieldActiveFocus: searchField.activeFocus
                         fieldHovered: searchField.hovered
@@ -1743,7 +1748,7 @@ FocusScope {
                         : root.Kirigami.Theme.textColor
                     display: PlasmaComponents.AbstractButton.IconOnly
                     text: root.settingsViewActive
-                        ? i18nc("@action:button", "Show applications")
+                        ? i18nc("@action:button", "Show applications") // qmllint disable unqualified
                         : i18n("Configure PunchiMenu")
                     checkable: true
                     checked: root.settingsViewActive
@@ -1803,7 +1808,7 @@ FocusScope {
                     enabled: root.menuOpen && !root.applicationLaunchPending
                     display: PlasmaComponents.AbstractButton.IconOnly
                     text: root.sessionViewActive
-                        ? i18nc("@action:button", "Show applications")
+                        ? i18nc("@action:button", "Show applications") // qmllint disable unqualified
                         : i18nc("@action:button", "Show session actions")
                     checkable: true
                     checked: root.sessionViewActive
@@ -1896,7 +1901,7 @@ FocusScope {
                         : root.Kirigami.Theme.textColor
                     display: PlasmaComponents.AbstractButton.IconOnly
                     text: root.revealHiddenApplications
-                        ? i18nc("@action:button", "Hide hidden applications")
+                        ? i18nc("@action:button", "Hide hidden applications") // qmllint disable unqualified
                         : i18nc("@action:button", "Show hidden applications")
                     checkable: true
                     checked: root.revealHiddenApplications
@@ -1952,7 +1957,7 @@ FocusScope {
                         ? root.Kirigami.Theme.highlightedTextColor
                         : root.Kirigami.Theme.textColor
                     display: PlasmaComponents.AbstractButton.IconOnly
-                    text: i18nc("@action:button", "Close")
+                    text: i18nc("@action:button", "Close") // qmllint disable unqualified
                     Accessible.name: text
                     KeyNavigation.backtab: hiddenApplicationsButton.visible
                             && root.applicationViewActive
@@ -2028,7 +2033,7 @@ FocusScope {
                             ? root.Kirigami.Theme.highlightedTextColor
                             : root.Kirigami.Theme.textColor
                         display: PlasmaComponents.AbstractButton.IconOnly
-                        text: i18nc("@action:button", "Scroll categories left")
+                        text: i18nc("@action:button", "Scroll categories left") // qmllint disable unqualified
                         Accessible.name: text
                         activeFocusOnTab: false
                         enabled: canScroll
@@ -2179,7 +2184,7 @@ FocusScope {
                             ? root.Kirigami.Theme.highlightedTextColor
                             : root.Kirigami.Theme.textColor
                         display: PlasmaComponents.AbstractButton.IconOnly
-                        text: i18nc("@action:button", "Scroll categories right")
+                        text: i18nc("@action:button", "Scroll categories right") // qmllint disable unqualified
                         Accessible.name: text
                         activeFocusOnTab: false
                         enabled: canScroll
@@ -2496,7 +2501,7 @@ FocusScope {
                         Accessible.name: isFolder
                             ? String(nodeData.folderLabel || "") : appName
                         Accessible.description: !isFolder && isHiddenApplication
-                            ? i18nc("@info:accessibility",
+                            ? i18nc("@info:accessibility", // qmllint disable unqualified
                                 "Hidden from the application listing")
                             : ""
                         Accessible.focused: keyboardFocused
@@ -2906,7 +2911,7 @@ FocusScope {
                     PlasmaComponents.Label {
                         Layout.fillWidth: true
                         text: root.applicationsLoading
-                            ? i18nc("@info:status", "Loading applications…")
+                            ? i18nc("@info:status", "Loading applications…") // qmllint disable unqualified
                             : searchField.text.length > 0
                                 ? i18nc("@info:status", "No applications match your search.")
                                 : i18nc("@info:status", "No applications were found in this category.")
@@ -2946,7 +2951,7 @@ FocusScope {
 
                     Kirigami.Heading {
                         level: 4
-                        text: i18nc("@title:section", "Favorites")
+                        text: i18nc("@title:section", "Favorites") // qmllint disable unqualified
                         Accessible.role: Accessible.Heading
                         Accessible.name: text
                     }
@@ -2977,7 +2982,7 @@ FocusScope {
                             ? root.Kirigami.Theme.highlightedTextColor
                             : root.Kirigami.Theme.textColor
                         display: PlasmaComponents.AbstractButton.IconOnly
-                        text: i18nc("@action:button", "Scroll favorites left")
+                        text: i18nc("@action:button", "Scroll favorites left") // qmllint disable unqualified
                         Accessible.name: text
                         enabled: canScroll
                         opacity: canScroll ? (hovered ? 0.90 : 0.55) : 0.0
@@ -3138,7 +3143,7 @@ FocusScope {
                             Accessible.role: Accessible.Button
                             Accessible.name: appName
                             Accessible.description: isHiddenApplication
-                                ? i18nc("@info:accessibility",
+                                ? i18nc("@info:accessibility", // qmllint disable unqualified
                                     "Hidden from the application listing")
                                 : ""
                             Accessible.focused: keyboardFocused
@@ -3274,7 +3279,7 @@ FocusScope {
                             ? root.Kirigami.Theme.highlightedTextColor
                             : root.Kirigami.Theme.textColor
                         display: PlasmaComponents.AbstractButton.IconOnly
-                        text: i18nc("@action:button", "Scroll favorites right")
+                        text: i18nc("@action:button", "Scroll favorites right") // qmllint disable unqualified
                         Accessible.name: text
                         enabled: canScroll
                         opacity: canScroll ? (hovered ? 0.90 : 0.55) : 0.0
@@ -3378,7 +3383,7 @@ FocusScope {
                     PunchiMenuSessionView {
                         userName: String(currentUser.fullName
                             || currentUser.loginName
-                            || i18nc("@info:user", "User"))
+                            || i18nc("@info:user", "User")) // qmllint disable unqualified
                         userAvatar: currentUser.faceIconUrl
                         canLogout: sessionActions.canLogout
                         canRestart: sessionActions.canReboot
@@ -3500,11 +3505,11 @@ FocusScope {
             : Kirigami.MessageType.Error
         text: root.operationCountdownText
         Accessible.name: root.operationBaseMessage
-        Accessible.description: i18nc("@info:accessible",
+        Accessible.description: i18nc("@info:accessible", // qmllint disable unqualified
             "Closes automatically")
         actions: [
             Kirigami.Action {
-                text: i18nc("@action:button", "Undo Folder Change")
+                text: i18nc("@action:button", "Undo Folder Change") // qmllint disable unqualified
                 icon.name: "edit-undo"
                 visible: root.operationMessage.length > 0
                     && root.applicationLayoutController

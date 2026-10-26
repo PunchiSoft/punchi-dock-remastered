@@ -198,7 +198,8 @@ KCM.SimpleKCM {
             if (path.startsWith("file://")) {
                 path = path.substring(7)
             }
-            var xhr = new XMLHttpRequest()
+            // XMLHttpRequest is a QJSEngine global, not a QML import.
+            var xhr = new XMLHttpRequest() // qmllint disable unqualified
             xhr.open("GET", "file://" + path)
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === XMLHttpRequest.DONE) {

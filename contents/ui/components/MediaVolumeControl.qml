@@ -37,9 +37,9 @@ RowLayout {
     function suppressSliderTickMarksWhenSupported() {
         // Kirigami before 6.24 does not expose this attached member in its
         // QML type metadata. Runtime detection keeps the fallback safe.
-        // qmllint disable missing-property
+        // qmllint disable missing-property unresolved-type
         const styleHints = volumeSlider.Kirigami.StyleHints
-        // qmllint enable missing-property
+        // qmllint enable missing-property unresolved-type
         if (!styleHints
                 || typeof styleHints["tickMarkStepSize"] === "undefined") {
             return

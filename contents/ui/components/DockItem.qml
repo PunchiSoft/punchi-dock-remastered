@@ -1231,8 +1231,9 @@ Item {
         interval: dockItemContainer.externalDropActivationDelay
         repeat: false
         onTriggered: {
+            // Nullable callback; the typeof guard keeps the var invocation safe.
             const activated = typeof dockItemContainer.externalDropActivator === "function"
-                && dockItemContainer.externalDropActivator()
+                && dockItemContainer.externalDropActivator() // qmllint disable use-proper-function
             dockItemContainer.externalDropActivationProgress = activated ? 1 : 0
             dockItemContainer.externalDropState = activated ? "activated" : "acceptable"
         }

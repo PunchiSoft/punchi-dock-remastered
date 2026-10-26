@@ -65,7 +65,8 @@ Controls.AbstractButton {
             }
             event.accepted = false
         } else if (typeof root.navigationHandler === "function") {
-            root.navigationHandler(root, event)
+            // Nullable callback; the typeof guard above keeps the var invocation safe.
+            root.navigationHandler(root, event) // qmllint disable use-proper-function
         } else {
             event.accepted = false
         }

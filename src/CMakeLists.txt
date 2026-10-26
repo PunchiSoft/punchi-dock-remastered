@@ -14,7 +14,12 @@ ecm_add_qml_module(punchidockintegration
     URI org.punchi.dock
     VERSION 1.0
     GENERATE_PLUGIN_SOURCE
-    DEPENDENCIES QtCore
+    # The exported types derive from QQuickItem and the QAbstractItemModel
+    # family; declare them so qmllint can resolve the module metadata.
+    DEPENDENCIES
+        QtCore
+        QtQuick
+        QtQml.Models
 )
 
 set_target_properties(punchidockintegration PROPERTIES
