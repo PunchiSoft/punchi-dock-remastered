@@ -5,4 +5,5 @@ classname org_punchi_dockPlugin
 typeinfo punchidockintegration.qmltypes
 depends QtCore
 depends QtQuick
+depends QtQml.Models
 prefer :/qt/qml/org/punchi/dock/

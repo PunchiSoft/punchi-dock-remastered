@@ -23,7 +23,7 @@ Item {
         * (horizontal ? width : height)
     readonly property string surfacePath: roundedRectanglePath()
 
-    property real flowProgress: 0
+    property real flowProgress
 
     function coordinate(value) {
         return Number(value).toFixed(2)

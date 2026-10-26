@@ -41,6 +41,10 @@ Item {
             active: root.isWayland && root.windowUuid.length > 0
             visible: root.isWayland
 
+            // org.kde.pipewire ships an incomplete qmltypes on Debian/Plasma 6.3:
+            // PipeWireSourceItem is not declared, so the type and its members
+            // stay unresolved even though they exist at runtime.
+            // qmllint disable import unresolved-type missing-property unqualified
             sourceComponent: PipeWire.PipeWireSourceItem {
                 id: waylandItem
 
@@ -73,6 +77,7 @@ Item {
                     uuid: root.windowUuid
                 }
             }
+            // qmllint enable import unresolved-type missing-property unqualified
         }
 
         Loader {
