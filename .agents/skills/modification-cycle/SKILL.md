@@ -1,6 +1,6 @@
 ---
 name: modification-cycle
-description: Conducir solicitudes de nuevas modificaciones de Punchi Dock siempre en el mismo orden, usando `docs/nuevas-modificaciones/` como fuente de verdad para registrar contexto, alcance confirmado, riesgos, plan, validacion, implementacion y decisiones futuras. Usar cuando el usuario proponga features, mejoras, nuevas opciones o ampliaciones del dock y no un bug correctivo.
+description: Conducir solicitudes de nuevas modificaciones de Punchi Dock siempre en el mismo orden, usando `docs/nuevas-modificaciones/` como fuente de verdad para registrar contexto, alcance confirmado, riesgos, plan, validacion, implementacion, entrega en rama propia con pull request y decisiones futuras. Usar cuando el usuario proponga features, mejoras, nuevas opciones o ampliaciones del dock y no un bug correctivo.
 ---
 
 # Ciclo de nuevas modificaciones
@@ -138,7 +138,27 @@ respuesta final**.
 
 Si el usuario confirma que la mejora funciona, esa evidencia debe quedar visible como validacion propia y no escondida como subpunto de cierre.
 
-### 9. Cerrar, mantener abierta o dejar pendiente de validación
+### 9. Entregar con rama y pull request
+
+- crear la rama desde `main` actualizado antes del primer cambio, con prefijo
+  `feat/<descriptor>`, o `docs/<descriptor>` cuando la modificacion solo cambie
+  documentacion, skills o textos no ejecutables;
+- una rama por modificacion; no reutilizar una rama ya fusionada;
+- tratar «commit y push» como aprobacion de lo implementado, no como
+  autorizacion para fusionar;
+- revisar `git status` y preparar rutas concretas con `git add --`; mensaje en
+  ingles con formato `feat(scope): resumen` o `docs(scope): resumen`, con el
+  trailer `Co-authored-by` del proyecto;
+- publicar con `git push -u origin <rama>` y abrir la PR contra `main` con
+  `gh pr create` salvo que el usuario pida lo contrario;
+- citar el issue de origen en el cuerpo de la PR con `Fixes #<numero>` cuando
+  exista, para que GitHub lo cierre y deje el enlace al codigo; un commit sin PR
+  tambien debe incluirlo si se trabajo directamente sobre `main`;
+- no crear tags, releases ni fusionar sin pedido explicito;
+- eliminar ramas ya fusionadas solo con autorizacion o cuando el usuario lo haya
+  pedido, y nunca borrar ramas con commits sin integrar.
+
+### 10. Cerrar, mantener abierta o dejar pendiente de validación
 
 Cerrar solo cuando:
 
@@ -200,6 +220,8 @@ No todas las subsecciones son obligatorias en todas las sesiones, pero el orden 
 - dejar confirmaciones del usuario escondidas como notas informales;
 - mezclar alcance confirmado con ideas futuras no comprometidas;
 - presentar como validada una mejora que solo tuvo inspeccion estatica;
+- entregar la modificacion directamente sobre `main` sin rama ni PR, dejando el
+  issue de origen sin enlace al codigo que lo implemento;
 - usar la seccion de implementacion para redefinir el objetivo original.
 
 ## Salida esperada

@@ -190,12 +190,28 @@
       "path": ".agents/skills/bugfix-delivery-cycle",
       "paths": [
         {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "docs/<descriptor>"
+        },
+        {
           "exists": true,
           "kind": "repo_root",
           "origin": "inline_code",
           "resolved": "docs/revisiones",
           "source": "SKILL.md",
           "value": "docs/revisiones/"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "feat/<descriptor>"
         },
         {
           "exists": null,
@@ -1377,7 +1393,7 @@
     {
       "aliases": [],
       "canonical": null,
-      "description": "Conducir solicitudes de nuevas modificaciones de Punchi Dock siempre en el mismo orden, usando `docs/nuevas-modificaciones/` como fuente de verdad para registrar contexto, alcance confirmado, riesgos, plan, validacion, implementacion y decisiones futuras. Usar cuando el usuario proponga features, mejoras, nuevas opciones o ampliaciones del dock y no un bug correctivo.",
+      "description": "Conducir solicitudes de nuevas modificaciones de Punchi Dock siempre en el mismo orden, usando `docs/nuevas-modificaciones/` como fuente de verdad para registrar contexto, alcance confirmado, riesgos, plan, validacion, implementacion, entrega en rama propia con pull request y decisiones futuras. Usar cuando el usuario proponga features, mejoras, nuevas opciones o ampliaciones del dock y no un bug correctivo.",
       "family": "workflow",
       "front_matter": {
         "keys": [
@@ -1414,6 +1430,14 @@
           "value": "AGENTS.md"
         },
         {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "docs/<descriptor>"
+        },
+        {
           "exists": true,
           "kind": "repo_root",
           "origin": "inline_code",
@@ -1428,6 +1452,14 @@
           "resolved": "docs/nuevas-modificaciones/plantilla-modificacion.md",
           "source": "SKILL.md",
           "value": "docs/nuevas-modificaciones/plantilla-modificacion.md"
+        },
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "feat/<descriptor>"
         }
       ],
       "references": [
