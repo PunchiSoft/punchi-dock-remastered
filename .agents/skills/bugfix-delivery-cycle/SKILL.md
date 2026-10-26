@@ -76,8 +76,13 @@ preguntar lo mismo.
 ### 5. Crear la rama de trabajo
 
 - hacerlo siempre antes de modificar, nunca sobre `main`;
-- nombre segun el tipo: `fix/<descriptor>` para correcciones;
-- una rama por asunto; no mezclar correcciones no solicitadas.
+- nombre segun el tipo: `fix/<descriptor>` para correcciones, `docs/<descriptor>`
+  cuando el cambio sea solo documentacion, skills o textos no ejecutables, y
+  `feat/<descriptor>` cuando el trabajo sea una funcion o mejora, que se conduce
+  con `modification-cycle`;
+- una rama por asunto; no mezclar correcciones no solicitadas;
+- si la rama correcta no es `fix/`, comprobar que la skill del tipo de trabajo
+  correspondiente ya cubre la entrega; no reutilizar una rama ya fusionada.
 
 ### 6. Implementar el cambio minimo
 
