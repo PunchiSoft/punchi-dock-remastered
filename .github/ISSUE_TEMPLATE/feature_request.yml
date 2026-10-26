@@ -1,0 +1,52 @@
+name: Feature request
+description: Suggest an improvement or a new capability for Punchi Dock Remastered.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Punchi Dock Remastered is under active development toward 1.0. Describe
+        the need behind the request, not only the preferred implementation.
+
+        Do not paste personal file paths, usernames, tokens, or private file
+        contents. Do not report security vulnerabilities in public issues;
+        contact the maintainer privately.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or need
+      description: What are you trying to do, and what gets in the way today?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe the behavior you would like to see.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Workarounds, other docks, or other approaches you tried.
+    validations:
+      required: false
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: Drag screenshots, sketches, or references here and remove private information first.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I searched existing issues.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true
