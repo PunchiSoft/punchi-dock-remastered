@@ -1246,18 +1246,13 @@ Item {
                         }
                     }
 
-                    // Glyph of the entry that opens the container, taken from the
-                    // macOS reference: a round grey disc with an arrow pointing
-                    // towards the folder, with the file manager named in the pill
-                    // beside it. The disc is the same themed surface as that pill,
-                    // so it stays nearly opaque and readable over the desktop or
-                    // over any window behind the fan instead of dissolving into
-                    // it, and it follows a light and a dark theme without a fixed
-                    // grey. The arrow then uses the contrasting theme text colour:
-                    // with a light theme the disc is light, so the arrow cannot be.
-                    // A translucent veil of the text colour is not valid here: the
-                    // glyph sits outside the pill, with no surface of its own
-                    // behind it.
+                    // Glyph of the entry that opens the container. It reuses the
+                    // folder glyph of the other presentations instead of the disc
+                    // with an arrow of the macOS reference: the row already says
+                    // "Open" in its pill, so the glyph only has to name what it
+                    // opens. The themed icon is opaque on its own, so it stays
+                    // readable over the desktop and follows a light and a dark
+                    // theme without a surface of its own.
                     Item {
                         id: locationGlyph
                         objectName: "folderFanLocationGlyph"
@@ -1268,26 +1263,10 @@ Item {
                         // No lean of its own: the row carries the angle, exactly
                         // like an application row.
 
-                        Rectangle {
-                            objectName: "folderFanLocationDisc"
-                            anchors.centerIn: parent
-                            width: Math.round(parent.width * 0.6)
-                            height: width
-                            radius: width / 2
-                            color: Qt.alpha(Kirigami.Theme.backgroundColor, 0.88)
-                            border.color: Qt.alpha(Kirigami.Theme.textColor, 0.12)
-                            border.width: 1
-                            antialiasing: true
-                        }
-
                         Kirigami.Icon {
-                            objectName: "folderFanLocationArrow"
-                            anchors.centerIn: parent
-                            width: Math.round(parent.width * 0.34)
-                            height: width
-                            // The reference points towards the container it opens.
-                            source: "go-next-symbolic"
-                            color: Kirigami.Theme.textColor
+                            objectName: "folderFanLocationIcon"
+                            anchors.fill: parent
+                            source: "folder-open"
                             Accessible.ignored: true
                         }
                     }

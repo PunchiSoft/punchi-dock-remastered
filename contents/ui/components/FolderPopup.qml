@@ -152,10 +152,7 @@ Item {
     readonly property bool folderPathAvailable: folderPath.length > 0
     // qmllint disable unqualified
     readonly property string openLocationActionText:
-        folderOpenerName.length > 0
-            ? i18nc("@action:button open the folder in the file manager",
-                "Open in %1", folderOpenerName)
-            : i18nc("@action:button open the container", "Open")
+        i18nc("@action:button open the container", "Open")
     // qmllint enable unqualified
 
     // Quick access entries.
@@ -818,9 +815,10 @@ Item {
                 readonly property string displayName: isOpenLocationAction
                     ? folderRoot.openLocationActionText
                     : ((modelData && modelData.name) ? modelData.name : "")
-                readonly property string displayIcon:
-                    (modelData && modelData.icon)
-                        ? modelData.icon : "application-x-executable"
+                readonly property string displayIcon: isOpenLocationAction
+                    ? "folder-open"
+                    : ((modelData && modelData.icon)
+                        ? modelData.icon : "application-x-executable")
 
                 objectName: isOpenLocationAction
                     ? (folderRoot.layoutMode === "grid"
@@ -893,31 +891,7 @@ Item {
                         Layout.preferredHeight: folderRoot.effectiveIconSize
                         Kirigami.Icon {
                             anchors.fill: parent
-                            visible: !appDelegate.isOpenLocationAction
                             source: appDelegate.displayIcon
-                            Accessible.ignored: true
-                        }
-                        Rectangle {
-                            objectName: appDelegate.isOpenLocationAction ? "folderOpenLocationDisc" : ""
-                            anchors.centerIn: parent
-                            visible: appDelegate.isOpenLocationAction
-                            width: Math.round(parent.width * 0.6)
-                            height: width
-                            radius: width / 2
-                            color: Qt.alpha(Kirigami.Theme.backgroundColor, 0.88)
-                            border.color: Qt.alpha(Kirigami.Theme.textColor, 0.12)
-                            border.width: 1
-                            antialiasing: true
-                            Accessible.ignored: true
-                        }
-                        Kirigami.Icon {
-                            objectName: appDelegate.isOpenLocationAction ? "folderOpenLocationArrow" : ""
-                            anchors.centerIn: parent
-                            visible: appDelegate.isOpenLocationAction
-                            width: Math.round(parent.width * 0.34)
-                            height: width
-                            source: "go-next-symbolic"
-                            color: Kirigami.Theme.textColor
                             Accessible.ignored: true
                         }
                     }
@@ -974,32 +948,7 @@ Item {
 
                         Kirigami.Icon {
                             anchors.fill: parent
-                            visible: !appDelegate.isOpenLocationAction
                             source: appDelegate.displayIcon
-                            Accessible.ignored: true
-                        }
-
-                        Rectangle {
-                            objectName: "folderGridOpenLocationDisc"
-                            anchors.centerIn: parent
-                            visible: appDelegate.isOpenLocationAction
-                            width: Math.round(parent.width * 0.72)
-                            height: width
-                            radius: width / 2
-                            color: Qt.alpha(Kirigami.Theme.backgroundColor, 0.88)
-                            border.color: Qt.alpha(Kirigami.Theme.textColor, 0.24)
-                            border.width: 1
-                            antialiasing: true
-                        }
-
-                        Kirigami.Icon {
-                            objectName: "folderGridOpenLocationArrow"
-                            anchors.centerIn: parent
-                            visible: appDelegate.isOpenLocationAction
-                            width: Math.round(parent.width * 0.44)
-                            height: width
-                            source: "go-next-symbolic"
-                            color: Kirigami.Theme.textColor
                             Accessible.ignored: true
                         }
                     }
