@@ -13,7 +13,7 @@
 [English](README.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt_BR.md)
 
 > [!WARNING]
-> **Plasma 6.8 support is temporarily incomplete.** After the KDE 30th anniversary update cycle and the Plasma 6.8 release, Punchi Dock Remastered is not currently compatible with Plasma 6.8. The dock may fail to load or lose functionality. Full support for this version is not available yet. Compatibility work is in progress; thank you for your patience. Plasma 6.7 and earlier remain the tested targets.
+> **The published 0.9.7.74 package does not support Plasma 6.8; building from source does.** The Plasma 6.8 fix landed in 0.9.7.77 and has been validated on Plasma 6.8. Packages built before it may fail to load or lose functionality. Until the next release is published, install from source with `scripts-user/setup.sh --install`.
 
 Punchi Dock Remastered brings application launchers, running windows, folders,
 media controls, and desktop utilities together in a customizable dock for KDE
@@ -311,17 +311,17 @@ required files before those changes reach users.
 
 Versions checked on October 18, 2026. Fedora 44 and Debian 13 describe the locally observed environments; other rows describe the distribution repositories listed below. Rolling distributions and updates can change these versions.
 
-| OS | Qt | Plasma | Frameworks | Local build | Debian 13 universal | Fedora 44 package |
+| OS | Qt | Plasma | Frameworks | Local build (repo script) | Debian 13 universal | Fedora 44 package |
 |---|---|---|---|:---:|:---:|:---:|
 | Fedora 44 | 6.11.2 | 6.7.5 | 6.30.0 | ✅ | ✅ | ✅ |
 | Debian 13 | 6.8.2 | 6.3.6 | 6.13.0 | ✅ | ✅ | ❌ |
 | Debian 14 (Forky/testing) | 6.11.2 | 6.7.4 | 6.30.0 | 🤞 | 🤞 | 🤞 |
 | Kubuntu 26.04 LTS | 6.10.2 | 6.6.6 | 6.24.0 | 🤞 | ✅ | ❌ |
-| Arch Linux (extra) | 6.12.0 | 6.8.0 | 6.31.0 | ❌ | ❌ | ❌ |
+| Arch Linux (extra) | 6.12.0 | 6.8.0 | 6.31.0 | 🤞 | ❌ | ❌ |
 | Manjaro (stable) | 6.11.2 | 6.7.4 | 6.29.0 | 🤞 | 🤞 | ⏳ |
-| KDE neon (User Edition) | 6.11.1 | 6.8.0 | 6.31.0 | ❌ | ❌ | ❌ |
+| KDE neon (User Edition) | 6.11.1 | 6.8.0 | 6.31.0 | 🤞 | ❌ | ❌ |
 | openSUSE Leap 16.0 | 6.9.1 | 6.4.2 | 6.16.0 | 🤞 | 🤞 | ⏳ |
-| openSUSE Tumbleweed | 6.11.2 | 6.8.0 | 6.31.0 | ❌ | ❌ | ❌ |
+| openSUSE Tumbleweed | 6.11.2 | 6.8.0 | 6.31.0 | 🤞 | ❌ | ❌ |
 
 **Test status legend**
 
@@ -330,14 +330,14 @@ Versions checked on October 18, 2026. Fedora 44 and Debian 13 describe the local
 - ⏳ Not tested.
 - 🤞 Likely to work; not tested.
 
-The Local build column records local plasmoid validation; the Debian 13 universal and Fedora 44 package columns record whether that same package was checked on that system. No column certifies the Debian-built universal package on every system. A newer Qt version can support binaries built with an older Qt 6 version, but matching Qt, KDE and system-library dependencies still need to be checked with the same package.
+The Local build (repo script) column records a build from the cloned repository installed with `scripts-user/setup.sh --install` on that system; the Debian 13 universal and Fedora 44 package columns record whether that same package was checked on that system. No column certifies the Debian-built universal package on every system. A newer Qt version can support binaries built with an older Qt 6 version, but matching Qt, KDE and system-library dependencies still need to be checked with the same package.
 
-**Plasma 6.8 compatibility work is in progress.** Thank you for your patience while the remaining issues are resolved.
+**The Plasma 6.8 fix is in the current source tree (0.9.7.77 and later); the packages compared here were built before it.**
 
 **Observations**
 
 - **Why a package can fail:** the ❌ marks come from version differences: a package built against newer Qt and KDE Frameworks does not run on systems with older ones. The universal package avoids this by building against the lowest supported version.
-- **Arch Linux:** Tested on October 10, 2026 with Plasma 6.7.5 using the Fedora 44 package, the universal package built on Debian 13, and a native build inside Arch. In all three cases the applet installed, loaded and stayed functional. Arch now ships Plasma 6.8.0, so compatibility is temporarily suspended.
+- **Arch Linux:** Tested on October 10, 2026 with Plasma 6.7.5 using the Fedora 44 package, the universal package built on Debian 13, and a native build inside Arch. In all three cases the applet installed, loaded and stayed functional. Arch now ships Plasma 6.8.0; source builds include the fix, published packages do not.
 
 Repository sources: [Debian 14 Qt](https://packages.debian.org/forky/qt6-base-dev) · [Debian 14 Plasma](https://packages.debian.org/forky/plasma-desktop) · [Debian 14 Frameworks](https://packages.debian.org/forky/libkf6coreaddons6) · [Kubuntu Qt](https://packages.ubuntu.com/resolute/libdevel/qt6-base-dev) · [Kubuntu Plasma updates](https://packages.ubuntu.com/resolute-updates/kde/plasma-desktop) · [Kubuntu Frameworks](https://packages.ubuntu.com/resolute/libs/libkf6coreaddons6) · [Arch Qt](https://archlinux.org/packages/extra/x86_64/qt6-base/) · [Arch Plasma](https://archlinux.org/packages/extra/x86_64/plasma-desktop/) · [Arch Frameworks](https://archlinux.org/packages/extra/x86_64/kcoreaddons/) · [Manjaro stable package metadata](https://repo.manjaro.org/repo/stable/extra/x86_64/extra.db) · [KDE neon User Edition package metadata](https://archive.neon.kde.org/user/dists/noble/main/binary-amd64/Packages.gz) · [openSUSE Leap 16.0 packages](https://download.opensuse.org/distribution/leap/16.0/repo/oss/x86_64/) · [openSUSE Tumbleweed Qt](https://news.opensuse.org/2026/09/02/tw-monthly-update-august/) · [openSUSE Tumbleweed Plasma / Frameworks](https://news.opensuse.org/2026/10/01/tw-monthly-update-september/).
 
