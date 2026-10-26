@@ -120,6 +120,10 @@ FocusScope {
     readonly property int gridRows: Math.max(3, Math.min(5,
         Math.floor(Math.max(1, pagesView.height) / (Kirigami.Units.gridUnit * 6))))
     readonly property int pageCapacity: Math.max(1, gridColumns * gridRows)
+    // The first open only builds the visible page; the adjacent pages are
+    // cached once the surface is already on screen, which keeps paging instant
+    // without paying the whole grid construction inside the opening gesture.
+    property real pagesCacheBuffer: 0
     readonly property string safeApplicationOrderMode:
         applicationOrderMode === "alphabetical"
             || applicationOrderMode === "categories"
@@ -1317,6 +1321,9 @@ FocusScope {
                 }
             })
         }
+        if (root.pagesCacheBuffer < pagesView.width) {
+            pageCacheWarmTimer.restart()
+        }
     }
 
     function forceClose() {
@@ -1614,6 +1621,19 @@ FocusScope {
         interval: root.animCloseDuration
         repeat: false
         onTriggered: root.closeFinished()
+    }
+
+    Timer {
+        // One screen of page cache, restored after the first frame so paging
+        // stays immediate and the opening gesture stays cheap.
+        id: pageCacheWarmTimer
+        interval: 600
+        repeat: false
+        onTriggered: {
+            if (root.menuOpen) {
+                root.pagesCacheBuffer = pagesView.width
+            }
+        }
     }
 
     Timer {
@@ -2191,7 +2211,7 @@ FocusScope {
                 preferredHighlightEnd: 0
                 highlightMoveDuration: root.motionEnabled ? Kirigami.Units.longDuration : 0
                 maximumFlickVelocity: 4 * width
-                cacheBuffer: Math.max(0, width)
+                cacheBuffer: root.pagesCacheBuffer
                 enabled: root.applicationViewActive
                     && !root.modeTransitionActive
                     && !root.applicationLaunchPending

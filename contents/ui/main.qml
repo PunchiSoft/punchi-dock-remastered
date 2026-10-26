@@ -1027,6 +1027,39 @@ PlasmoidItem {
     property var punchiMenuDialogInstance: null
     property var punchiMenuAnchorItem: null
 
+    // Native launchers never build their surface inside the first click: KDE
+    // keeps the dashboard window alive and toggles its visibility, and GNOME
+    // builds the app grid in deferred work. Pay the one-time construction while
+    // the dock is idle and keep the instance for later opens.
+    Timer {
+        id: punchiMenuWarmTimer
+        interval: 20000
+        repeat: false
+        running: true
+        onTriggered: root.warmPunchiMenuInstance()
+    }
+
+    function warmPunchiMenuInstance() {
+        if (punchiMenuDialogInstance || root.expanded
+                || (controlCenterDialogInstance
+                    && controlCenterDialogInstance.visible)) {
+            punchiMenuWarmTimer.restart()
+            return
+        }
+        const mode = root.configuredPunchiMenuMode
+        const component = mode === "normal"
+            ? punchiMenuNormalDialogComponent
+            : (mode === "compact"
+                ? punchiMenuCompactDialogComponent
+                : punchiMenuFullscreenDialogComponent)
+        const instance = component.createObject(root)
+        if (!instance) {
+            return
+        }
+        instance.visible = false
+        punchiMenuDialogInstance = instance
+    }
+
     function togglePunchiMenu(anchorItem) {
         if (controlCenterDialogInstance
                 && controlCenterDialogInstance.visible) {
@@ -2138,6 +2171,7 @@ PlasmoidItem {
         if (punchiMenuDialogInstance && !punchiMenuDialogInstance.visible) {
             punchiMenuDialogInstance.destroy()
             punchiMenuDialogInstance = null
+            punchiMenuWarmTimer.restart()
         }
     }
 

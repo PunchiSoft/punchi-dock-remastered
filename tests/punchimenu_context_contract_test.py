@@ -1628,7 +1628,13 @@ def main() -> int:
         "snapMode: ListView.SnapOneItem",
         "preferredHighlightEnd: 0",
         "maximumFlickVelocity: 4 * width",
-        "cacheBuffer: Math.max(0, width)",
+        # Progressive page cache: the opening gesture builds only the visible
+        # page and one screen of cache is restored after the first frame, so
+        # paging stays immediate without paying the grid construction on open.
+        "property real pagesCacheBuffer: 0",
+        "cacheBuffer: root.pagesCacheBuffer",
+        "root.pagesCacheBuffer = pagesView.width",
+        "pageCacheWarmTimer.restart()",
         "onMovementStarted: root.resetPageNavigation()",
         "preventStealing: internalDragLayer.active",
         "readonly property int pageCapacity",
