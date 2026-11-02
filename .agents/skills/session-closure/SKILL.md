@@ -35,21 +35,28 @@ Cuando se solicite el cierre de sesión, el agente **debe ejecutar en orden estr
      tampoco sirve, porque el conjunto depende del cambio que se cierra.
 
 4. **Commit Profesional**
-   - Crear un mensaje de commit claro y semántico que resuma el trabajo realizado.
-   - Ejecutar `git commit -m "feat/fix/docs: <Resumen general>"` según aplique.
+   - Delegar en `commit-push-versioning`: revisar el diff preparado, comprobar
+     `git diff --cached --check` y crear el mensaje semantico con
+     `feat(scope):`, `fix(scope):`, `docs(scope):`, `refactor(scope):` o
+     `chore(scope):` segun aplique.
 
 5. **Subida (Git Push)**
-   - Ejecutar `git push` para sincronizar los cambios con el repositorio remoto.
+   - Delegar en `commit-push-versioning` para empujar la rama sin forzar y
+     verificar el resultado; despues, `pr-delivery` abre la PR salvo que el
+     usuario pida detenerse en el push.
 
 6. **Publicacion de version cuando sea explicita**
-   - Si el usuario declara una version actual o solicita publicar una release,
-     actualizar `metadata.json`, `CMakeLists.txt`, `CHANGELOG.md` y ejemplos de
-     artefactos antes del commit.
+   - La version no se sube en cada respaldo: el trabajo pendiente se acumula en
+     `## Unreleased` de `CHANGELOG.md`.
+   - Si el usuario solicita publicar una release, mover las entradas de
+     `Unreleased` a una cabecera `## [<version>] - <fecha>`, sincronizar
+     `metadata.json`, `CMakeLists.txt` y `po/plasma_applet_org.kde.plasma.punchi-dock-remastered.pot`,
+     y validar con `python3 scripts-dev/check-version.py` antes del commit.
    - Generar y validar al menos el artefacto de la distribucion actual.
    - Crear un tag anotado `v<version>` con titulo y resumen tecnico.
    - Subir el tag y crear la GitHub Release con notas y artefactos validados.
-   - Si el usuario solo cierra una etapa sin declarar version, no crear tag ni
-     release.
+   - Si el usuario solo cierra una etapa sin declarar version, no cambiar la
+     version, no crear tag ni release.
 
 7. **Mensaje de Cierre y Reporte al Usuario**
    - Informar al usuario que la bitácora fue redactada y que los cambios están respaldados en Git.

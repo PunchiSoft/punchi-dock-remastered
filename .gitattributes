@@ -1,0 +1,6 @@
+# Exclude test suites and developer tooling from repository language statistics
+tests/** linguist-vendored
+scripts-dev/** linguist-vendored
+
+# Ensure C++ header files are classified as C++ rather than C
+*.h linguist-language=C++

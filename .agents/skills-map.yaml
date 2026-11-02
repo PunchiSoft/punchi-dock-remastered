@@ -35,6 +35,10 @@ skills:
     family: governance
     role: domain
     references: []
+  - name: branch-baseline
+    family: delivery
+    role: domain
+    references: [commit-push-versioning, git]
   - name: bugfix-delivery-cycle
     family: workflow
     role: orchestrator
@@ -51,6 +55,10 @@ skills:
     family: quality-assurance
     role: domain
     references: [plasma-config-review, safe-removal-review, testing]
+  - name: commit-push-versioning
+    family: delivery
+    role: domain
+    references: [branch-baseline, code-review, pr-delivery, testing]
   - name: controllers
     family: application-logic
     role: domain
@@ -74,7 +82,7 @@ skills:
   - name: git
     family: delivery
     role: domain
-    references: []
+    references: [branch-baseline, commit-push-versioning, pr-delivery, verification-before-completion]
   - name: github-issue-response
     family: workflow
     role: domain
@@ -179,6 +187,10 @@ skills:
     family: delivery
     role: domain
     references: [release, testing]
+  - name: pr-delivery
+    family: delivery
+    role: domain
+    references: [commit-push-versioning, verification-before-completion]
   - name: preflight-security-review
     family: governance
     role: domain
@@ -257,6 +269,10 @@ skills:
     family: interface
     role: domain
     references: [accessibility, ui-design, visual-review]
+  - name: verification-before-completion
+    family: quality-assurance
+    role: domain
+    references: [testing]
   - name: visual-review
     family: interface
     role: domain

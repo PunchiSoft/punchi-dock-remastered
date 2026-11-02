@@ -27,6 +27,7 @@ dockthemerepository_test
 translation_catalog_test
 plasma_config_auditor_test
 plasma_config_audit
+project_version_test
 punchimenu_context_contract_test
 control_center_contract_test
 items_page_layout_contract_test

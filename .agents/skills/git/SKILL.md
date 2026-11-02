@@ -1,30 +1,33 @@
 ---
 name: git
-description: "Activa esta skill para tareas relacionadas con: Reglas y flujos de trabajo de control de versiones con Git (commits, ramas)."
+description: Route Git work to the delivery skills that own each stage. Use when a task mentions Git, branches, commits, pushes, pull requests or versioning and the specific stage skill is not obvious yet.
 ---
 
-# Git Skill
+# Git entry point
 
-## Instrucciones Detalladas
-Esta skill se centra exclusivamente en: Reglas y flujos de trabajo de control de versiones con Git (commits, ramas).
-1. Mantén el enfoque únicamente en resolver problemas relacionados con git.
-2. Consulta la documentación oficial relevante (KDE/Qt/Plasma) cuando sea necesario.
-3. No combines responsabilidades: si necesitas cambiar algo fuera del ámbito de git, delega o activa la skill correspondiente.
+Git work is split by stage. Read the skill that owns the stage you are in instead
+of improvising a flow here.
 
-## Checklist
-- [ ] ¿Los cambios se limitan estrictamente al ámbito de git?
-- [ ] ¿Se ha mantenido la coherencia con el resto de la arquitectura del proyecto?
-- [ ] ¿El código introducido respeta las guías de estilo globales?
+| Stage | Skill | Use it when |
+|---|---|---|
+| Base | `branch-baseline` | starting a change, creating or switching a branch, or doubting the base |
+| Commit and push | `commit-push-versioning` | the user asks to commit, push, or both; version and changelog decision |
+| Pull request | `pr-delivery` | opening, updating or checking the delivery pull request |
+| Delivery evidence | `verification-before-completion` | deciding whether the collected evidence is enough to call it done |
 
-## Buenas Prácticas
-- Priorizar la modularidad y el bajo acoplamiento.
-- Documentar las decisiones importantes que afecten a git.
-- Mantener las implementaciones simples y legibles.
+## Rules that hold in every stage
 
-## Errores Comunes
-- **Combinar responsabilidades**: Intentar resolver múltiples problemas no relacionados en la misma iteración.
-- **Ignorar el contexto de Plasma 6**: Usar enfoques deprecados de Plasma 5 o genéricos que no aplican a este ecosistema.
+- Never commit on `main`; one branch per change, created from updated `main`.
+- Stage by exact path; `git add .`, `git add -A` and `git add --all` are
+  forbidden because they pull in unrelated files.
+- Never force push, rewrite published history, tag, release, merge or delete a
+  branch without an explicit request.
+- Preserve uncommitted work that is not yours.
+- Versions identify releases, not commits: pending work accumulates under
+  `## Unreleased` in `CHANGELOG.md`.
 
-## Criterios de Aceptación
-- La tarea se ha completado según las especificaciones de git.
-- No se han introducido regresiones en otras áreas del plasmoide.
+## Coordination
+
+`session-closure` runs the Git steps at the end of a working session.
+`modification-cycle` and `bugfix-delivery-cycle` decide what belongs in the
+change; the delivery skills only say how it reaches `main`.
