@@ -28,6 +28,7 @@ Common commands:
 ./scripts-dev/check-build-environment.sh
 python3 ./scripts-dev/audit-plasma-config.py --project-root .
 python3 ./scripts-dev/skill_inventory.py --check
+python3 ./scripts-dev/check-version.py
 ./scripts-dev/update-translations.sh
 ./scripts-dev/validar-empaquetado-limpio.sh
 ./scripts-dev/universal-package-validation-test.sh
@@ -45,6 +46,9 @@ python3 ./scripts-dev/skill_inventory.py --check
   runtime-consumer contract.
 - `skill_inventory.py`: validates the versioned agent skills and maintains their
   generated inventory.
+- `check-version.py`: verifies that the three version declarations agree, that
+  `CHANGELOG.md` keeps an `## Unreleased` section and that no dated release is
+  ahead of the declared version. Runs in CTest as `project_version_test`.
 - `test-integrity-guard.py` and `test-integrity/`: protects existing tests, the
   canonical CTest names, the per-profile test floor and the gate contracts. The
   policy lives in `AGENTS.md`; the operation is documented in

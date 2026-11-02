@@ -140,6 +140,11 @@ Si el usuario confirma que la mejora funciona, esa evidencia debe quedar visible
 
 ### 9. Entregar con rama y pull request
 
+Delegar en las skills de entrega en lugar de repetir comandos aqui:
+`branch-baseline` verifica la base y crea la rama, `commit-push-versioning`
+prepara el commit y el push, y `pr-delivery` abre y verifica la PR. Las reglas
+que siguen son el contrato que esas skills deben cumplir.
+
 - crear la rama desde `main` actualizado antes del primer cambio, con prefijo
   `feat/<descriptor>`, o `docs/<descriptor>` cuando la modificacion solo cambie
   documentacion, skills o textos no ejecutables;

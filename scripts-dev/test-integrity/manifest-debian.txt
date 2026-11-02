@@ -27,6 +27,7 @@ dockthemerepository_test
 translation_catalog_test
 plasma_config_auditor_test
 plasma_config_audit
+project_version_test
 punchimenu_context_contract_test
 control_center_contract_test
 items_page_layout_contract_test
@@ -141,6 +142,7 @@ folder_popup_motion_test
 popup_marquee_label_test
 folder_open_location_test
 folder_popup_visible_focus_test
+folder_container_sync_test
 folder_fan_view_test
 task_popup_surface_test
 app_actions_popup_runtime_test

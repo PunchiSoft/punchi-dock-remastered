@@ -1,3 +1,12 @@
+## Unreleased
+
+### Flujo de trabajo y entrega
+
+- Añadidas las skills `branch-baseline`, `commit-push-versioning`, `pr-delivery` y `verification-before-completion`; `git` pasa a ser el índice de entrega que delega en ellas.
+- Adoptado el modelo `Unreleased`: la versión declarada cambia solo al preparar una release, no en cada respaldo.
+- Añadidos `CONTRIBUTING.md`, `SECURITY.md`, `SUPPORT.md`, `.editorconfig`, `.gitattributes` y la plantilla de pull request.
+- Añadido `project_version_test` (`scripts-dev/check-version.py`) para detectar declaraciones de versión incoherentes y releases ausentes del CHANGELOG.
+
 ## [0.9.7.74] - 2026-10-05
 
 ### Cambios desde 0.9.7.61

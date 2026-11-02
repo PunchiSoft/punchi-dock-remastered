@@ -42,7 +42,7 @@
     }
   ],
   "schema_version": 1,
-  "skill_count": 58,
+  "skill_count": 62,
   "skills": [
     {
       "aliases": [],
@@ -169,6 +169,66 @@
     {
       "aliases": [],
       "canonical": null,
+      "description": "Create every work branch from an updated main after verifying the base with Git, and justify a sub-branch explicitly. Use when starting a change, creating or switching a branch, or checking whether the current tree is the right base.",
+      "family": "delivery",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "branch-baseline",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/branch-baseline",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs",
+          "source": "SKILL.md",
+          "value": "docs/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/nuevas-modificaciones",
+          "source": "SKILL.md",
+          "value": "docs/nuevas-modificaciones/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/revisiones",
+          "source": "SKILL.md",
+          "value": "docs/revisiones/"
+        }
+      ],
+      "references": [
+        "commit-push-versioning",
+        "git"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
       "description": "Conducir un error reportado desde la documentacion hasta la pull request en Punchi Dock, siempre en el mismo orden: documentar, preguntar si se procede, crear la rama de trabajo, implementar, validar, interpretar commit y push como aprobacion y abrir el PR con descripcion estructurada. Usar cuando el usuario reporte o pregunte por un error y espere una correccion, o cuando pida convertir ese recorrido en una rutina repetible.",
       "family": "workflow",
       "front_matter": {
@@ -277,6 +337,92 @@
         }
       ],
       "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Prepare an authorized commit and push, decide whether the work prepares a release, review the exact staged content, and hand the branch to pr-delivery. Use when the user asks to commit, push, or both.",
+      "family": "delivery",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "commit-push-versioning",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/commit-push-versioning",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "CHANGELOG.md",
+          "source": "SKILL.md",
+          "value": "CHANGELOG.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "CMakeLists.txt",
+          "source": "SKILL.md",
+          "value": "CMakeLists.txt"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "metadata.json",
+          "source": "SKILL.md",
+          "value": "metadata.json"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "po/plasma_applet_org.kde.plasma.punchi-dock-remastered.pot",
+          "source": "SKILL.md",
+          "value": "po/plasma_applet_org.kde.plasma.punchi-dock-remastered.pot"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev/update-translations.sh",
+          "source": "SKILL.md",
+          "value": "scripts-dev/update-translations.sh"
+        }
+      ],
+      "references": [
+        "branch-baseline",
+        "code-review",
+        "pr-delivery",
+        "testing"
+      ],
       "resources": {
         "assets": [],
         "other": [],
@@ -824,7 +970,7 @@
     {
       "aliases": [],
       "canonical": null,
-      "description": "Activa esta skill para tareas relacionadas con: Reglas y flujos de trabajo de control de versiones con Git (commits, ramas).",
+      "description": "Route Git work to the delivery skills that own each stage. Use when a task mentions Git, branches, commits, pushes, pull requests or versioning and the specific stage skill is not obvious yet.",
       "family": "delivery",
       "front_matter": {
         "keys": [
@@ -843,8 +989,22 @@
         "short_description": null
       },
       "path": ".agents/skills/git",
-      "paths": [],
-      "references": [],
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "CHANGELOG.md",
+          "source": "SKILL.md",
+          "value": "CHANGELOG.md"
+        }
+      ],
+      "references": [
+        "branch-baseline",
+        "commit-push-versioning",
+        "pr-delivery",
+        "verification-before-completion"
+      ],
       "resources": {
         "assets": [],
         "other": [],
@@ -2339,6 +2499,41 @@
     {
       "aliases": [],
       "canonical": null,
+      "description": "Open, verify, and close the delivery pull request for an approved branch, with a commit-derived title, a structured English body, real validation evidence, and rebase-only conflict handling. Use when the user asks to open, publish, update, or check a pull request.",
+      "family": "delivery",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "pr-delivery",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/pr-delivery",
+      "paths": [],
+      "references": [
+        "commit-push-versioning",
+        "verification-before-completion"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
       "description": "Revisar preventivamente seguridad, privacidad y alcance antes de cualquier modificación, commit, empaquetado, instalación o push de Punchi Dock. Usar para detectar secretos, datos personales, telemetría, rutas o artefactos locales, permisos, red, comandos peligrosos y archivos inesperados antes de escribir o publicar cambios; repetir la revisión antes de subir a GitHub.",
       "family": "governance",
       "front_matter": {
@@ -3191,6 +3386,14 @@
           "value": "po/*.po"
         },
         {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "po/plasma_applet_org.kde.plasma.punchi-dock-remastered.pot",
+          "source": "SKILL.md",
+          "value": "po/plasma_applet_org.kde.plasma.punchi-dock-remastered.pot"
+        },
+        {
           "exists": null,
           "kind": "placeholder",
           "origin": "inline_code",
@@ -3487,6 +3690,65 @@
         "accessibility",
         "ui-design",
         "visual-review"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Decide whether the collected evidence is enough to declare a change finished, and report what remains unverified. Use when a task looks complete, before claiming success, closing a review, or opening a pull request.",
+      "family": "quality-assurance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "verification-before-completion",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/verification-before-completion",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "CHANGELOG.md",
+          "source": "SKILL.md",
+          "value": "CHANGELOG.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs",
+          "source": "SKILL.md",
+          "value": "docs/"
+        }
+      ],
+      "references": [
+        "testing"
       ],
       "resources": {
         "assets": [],

@@ -260,6 +260,11 @@ add_test(
         --project-root ${CMAKE_SOURCE_DIR}
 )
 add_test(
+    NAME project_version_test
+    COMMAND ${PYTHON3_EXECUTABLE}
+        ${CMAKE_SOURCE_DIR}/scripts-dev/check-version.py
+)
+add_test(
     NAME punchimenu_context_contract_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/punchimenu_context_contract_test.py
 )

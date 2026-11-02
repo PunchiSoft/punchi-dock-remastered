@@ -28,6 +28,7 @@ Comandos comunes:
 ./scripts-dev/check-build-environment.sh
 python3 ./scripts-dev/audit-plasma-config.py --project-root .
 python3 ./scripts-dev/skill_inventory.py --check
+python3 ./scripts-dev/check-version.py
 ./scripts-dev/update-translations.sh
 ./scripts-dev/validar-empaquetado-limpio.sh
 ./scripts-dev/universal-package-validation-test.sh
@@ -46,6 +47,10 @@ python3 ./scripts-dev/skill_inventory.py --check
   páginas KCM y los consumidores del runtime.
 - `skill_inventory.py`: valida las skills versionadas para agentes y mantiene
   su inventario generado.
+- `check-version.py`: comprueba que las tres declaraciones de versión coinciden,
+  que `CHANGELOG.md` conserva una sección `## Unreleased` y que ninguna release
+  fechada supera la versión declarada. Se ejecuta en CTest como
+  `project_version_test`.
 - `instalar-plasmoide.sh`: selector de paquetes generados localmente.
 - `universal-package-validation-test.sh`: comprobacion manual de la validacion
   de paquetes universales que usa `scripts-user/setup-universal.sh`; ejecutarla

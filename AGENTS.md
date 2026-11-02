@@ -485,6 +485,41 @@ Durante el trabajo:
 - documentar decisiones que no sean evidentes desde el código;
 - mantener las operaciones reversibles siempre que sea posible.
 
+### Ramas y entrega con pull request
+
+La entrega se reparte entre cuatro skills y no se improvisa en el hilo:
+
+| Etapa | Skill | Qué decide |
+|---|---|---|
+| Base | `branch-baseline` | verificar `main` contra `origin/main`, crear la rama desde `main` actualizado y probar la base con `git rev-list --left-right --count main...HEAD` (`0 0`) |
+| Commit y push | `commit-push-versioning` | alcance preparado, `git diff --cached --check`, mensaje y decisión de versión o changelog |
+| Pull request | `pr-delivery` | título desde el commit principal, cuerpo estructurado con la evidencia real, rebase en vez de merge commit |
+| Evidencia | `verification-before-completion` | qué niveles se ejecutaron y qué queda sin verificar |
+
+Reglas derivadas:
+
+- nunca se trabaja ni se hace commit sobre `main`; una rama por cambio con
+  prefijo `feat/`, `fix/`, `docs/`, `refactor/` o `chore/`, y no se reutiliza una
+  rama ya fusionada;
+- una sub-rama necesita motivo escrito: el padre no está publicado y no puede
+  integrarse sin este cambio, o dos cambios independientes deben revisarse por
+  separado;
+- el staging es siempre por rutas concretas; `git add .`, `git add -A` y
+  `git add --all` están prohibidos;
+- merge, tag, release, force push y borrado de rama requieren solicitud explícita;
+- la plantilla [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md)
+  obliga a declarar CTest, baseline de `qmllint`, traducciones, integridad de
+  pruebas, preflight de seguridad y sesión real; una sección vacía se omite, no
+  se rellena con «ninguno»;
+- `main` recibe pull requests squash-merge; el borrado de la rama de entrega se
+  hace solo cuando el usuario lo pide.
+
+Los documentos publicados del proyecto son `README*.md`, `CHANGELOG.md`,
+`CONTRIBUTING.md`, `SECURITY.md`, `SUPPORT.md`, `NOTICE`, `LICENSE`, `metadata.json`,
+`.github/`, `.agents/`, `po/`, `contents/`, `src/`, `tests/` y `scripts-dev/`.
+`docs/`, `bitacora/`, `kde-sdk/`, `build/` y `dist/` son registro local ignorado y
+ningún archivo rastreado debe enlazarlos.
+
 ## Protocolo de validación proporcional posterior a modificaciones
 
 ### Preflight de entorno y limpieza de pruebas
@@ -572,6 +607,10 @@ Al preparar un commit o push:
 
 La inspección del diff preparado es una protección de integridad del commit, no
 una nueva fase de validación técnica del proyecto.
+
+Un commit ordinario no cambia la versión declarada ni exige entrada de
+`CHANGELOG.md`: el trabajo pendiente se acumula bajo `## Unreleased` y la versión
+solo cambia cuando se prepara una release.
 
 ## Integridad de las pruebas
 
@@ -829,31 +868,35 @@ No declarar que algo funciona en runtime si solo fue inspeccionado estáticament
 
 ## Cierre de Sesión y Respaldo (Git)
 
-### Versionado incremental de respaldos
+### Versionado por release
 
-- Cada respaldo Git solicitado debe incrementar en una unidad el cuarto
-  componente de la versión de desarrollo: `0.9.7.26`, `0.9.7.27` y así
-  sucesivamente.
-- Mantener esta secuencia hasta la transición a `0.9.8`, salvo que el usuario
-  indique explícitamente otra versión.
-- Sincronizar el valor en todos los archivos canónicos de versión antes del
-  commit y no crear un tag o una release salvo solicitud expresa.
-- Los campos que deben coincidir son `KPlugin.Version` de `metadata.json`,
+- Las versiones identifican releases, no commits. El trabajo pendiente se acumula
+  bajo `## Unreleased` al inicio de `CHANGELOG.md`.
+- La versión declarada cambia solo al preparar una release: mover las entradas de
+  `Unreleased` a una cabecera `## [<version>] - <YYYY-MM-DD>` y sincronizar los
+  tres campos canónicos en el mismo commit: `KPlugin.Version` de `metadata.json`,
   `project(... VERSION ...)` de `CMakeLists.txt` y `Project-Id-Version` de
-  `po/plasma_applet_org.kde.plasma.punchi-dock-remastered.pot`. El POT también
-  debe sincronizarse cuando el incremento acompañe solo documentación.
-- Si el único cambio de internacionalización es la versión, actualizar la
-  cabecera del POT y comprobar la igualdad exacta de esos tres campos antes
-  del commit. Esta comprobación de coherencia no implica repetir suites ya
-  validadas. Si cambian textos extraíbles, aplicar el ciclo ki18n completo.
+  `po/plasma_applet_org.kde.plasma.punchi-dock-remastered.pot`.
+- `0.9.7.84` es la versión pendiente que publicará la próxima release. No se
+  incrementa por respaldo ni por commit; se mantiene el esquema `0.9.x.y` hasta
+  que el usuario indique otro.
+- Cambios de pruebas, documentación, skills, metadata del repositorio o
+  herramientas de desarrollo no justifican release ni cambio de versión; se
+  registran con `docs:` o `chore:`.
+- Una release puede contener muchos commits y varias funciones: la versión avanza
+  una sola vez para la release completa.
+- `python3 scripts-dev/check-version.py` comprueba las tres declaraciones, la
+  existencia de `## Unreleased` y que ninguna release del CHANGELOG supere la
+  versión declarada. `project_version_test` ejecuta esa comprobación en CTest.
+- No crear un tag ni una release salvo solicitud expresa.
 
 Cualquier asistente de IA o agente autónomo (ej. Antigravity, Codex, Copilot) debe obedecer este protocolo estricto cuando el usuario solicite terminar la sesión de trabajo, finalizar el día o preparar el código para subir:
 
 1. **Escribir la Bitácora**: Antes de tocar Git, crear un resumen técnico del progreso del día en `bitacora/YYYY-MM-DD-resumen-sesion.md`.
-2. **Revisar estado**: Ejecutar `git status` asegurando que no haya basura expuesta (el `.gitignore` debe proteger esto).
+2. **Revisar estado**: Ejecutar `git status`, comprobar la rama actual y confirmar que la base es `main` actualizado; si el trabajo está sobre `main`, crear la rama de entrega antes de preparar nada.
 3. **Añadir cambios**: Ejecutar `git add -- <rutas concretas>` únicamente para los archivos del alcance autorizado y revisar el diff preparado antes del commit para evitar incluir cambios ajenos. No usar `git add .`.
-4. **Commit Profesional**: Ejecutar `git commit -m "feat/fix/docs/refactor: <resumen claro del trabajo>"`.
-5. **Sincronización**: Ejecutar `git push` para respaldar el código en remoto.
+4. **Commit Profesional**: Delegar en `commit-push-versioning` y ejecutar `git commit -m "<tipo>(<ámbito>): <resumen claro del trabajo>"` con el trailer de coautoría del proyecto.
+5. **Sincronización**: Empujar la rama de entrega con `git push`; después, `pr-delivery` abre o actualiza la pull request salvo que el usuario pida detenerse en el push.
 
 Nunca se debe usar git para forzar la subida de binarios u ocultar errores. Este proceso automatiza el fin del día del usuario.
 
