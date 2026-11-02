@@ -357,7 +357,7 @@ Item {
             color: Kirigami.Theme.disabledTextColor
         }
 
-        Controls.CheckBox {
+        Controls.Switch {
             id: showFolderHeaderCheck
             Kirigami.FormData.label: i18n("Title header:")
             text: i18n("Show folder name header at top of popups")
