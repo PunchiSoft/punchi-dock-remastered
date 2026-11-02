@@ -166,6 +166,37 @@ TestCase {
         compare(pathless.status, "invalid-target")
     }
 
+    function test_helper_keeps_subfolder_browsing_independent() {
+        const items = [{type: "folder", sourceType: "folder",
+            sourcePath: "/tmp", apps: []}]
+
+        const enabled = Items.setFolderBrowseSubfolders(items, 0, true)
+        verify(enabled.changed)
+        compare(enabled.items[0].browseSubfolders, true)
+        compare(enabled.items[0].syncFolder, undefined)
+        compare(items[0].browseSubfolders, undefined)
+
+        const disabled = Items.setFolderBrowseSubfolders(enabled.items, 0, false)
+        verify(disabled.changed)
+        compare(disabled.items[0].browseSubfolders, undefined)
+
+        const unchanged = Items.setFolderBrowseSubfolders(disabled.items, 0, false)
+        verify(!unchanged.changed)
+        compare(unchanged.status, "unchanged")
+
+        // Freezing the container never rewrites the subfolder preference.
+        const frozen = Items.setFolderSyncFolder(enabled.items, 0, false)
+        verify(frozen.changed)
+        compare(frozen.items[0].syncFolder, false)
+        compare(frozen.items[0].browseSubfolders, true)
+
+        const manual = Items.setFolderBrowseSubfolders(
+            [{type: "folder", sourceType: "manual", sourcePath: "/tmp", apps: []}],
+            0, true)
+        verify(!manual.changed)
+        compare(manual.status, "invalid-target")
+    }
+
     function test_browse_subfolders_note_explains_the_frozen_state() {
         const checkbox = openListDraft()
         const note = findChild(dialog, "containerBrowseSubfoldersNote")

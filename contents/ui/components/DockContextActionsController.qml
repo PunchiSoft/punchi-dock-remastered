@@ -588,10 +588,10 @@ QtObject {
                 itemActions.push(folderViewAction)
                 if (!recentContainer) {
                     // Only a container that points at a real folder can follow
-                    // it, so the toggle is absent for manual containers.
+                    // it, so the group is absent for manual containers.
                     if (String(item.sourceType || "manual") === "folder"
                             && String(item.sourcePath || "").trim().length > 0) {
-                        itemActions.push({
+                        const behaviorChildren = [{
                             // qmllint disable unqualified
                             "name": i18nc("@option:check folder container", "Live folder contents"),
                             // qmllint enable unqualified
@@ -601,6 +601,33 @@ QtObject {
                             "sync": item.syncFolder === false,
                             "targetIndex": persistentIndex,
                             "expectedFolderText": expectedFolderText
+                        }]
+                        const effectiveLayout = ConfigItemsJS.effectiveFolderLayout(
+                            item.layout, root.verticalDock)
+                        // The KCM only offers subfolder browsing for the two
+                        // layouts that can actually navigate.
+                        if (effectiveLayout === "list"
+                                || effectiveLayout === "detailed") {
+                            behaviorChildren.push({
+                                // qmllint disable unqualified
+                                "name": i18nc("@option:check folder container", "Browse subfolders"),
+                                // qmllint enable unqualified
+                                "kind": "setFolderBrowseSubfolders",
+                                "enabled": true,
+                                "checked": item.browseSubfolders === true,
+                                "browseSubfolders": item.browseSubfolders !== true,
+                                "targetIndex": persistentIndex,
+                                "expectedFolderText": expectedFolderText
+                            })
+                        }
+                        itemActions.push({
+                            // qmllint disable unqualified
+                            "name": i18nc("@title:menu", "Behavior"),
+                            // qmllint enable unqualified
+                            "icon": "preferences-system",
+                            "kind": "submenu",
+                            "enabled": true,
+                            "children": behaviorChildren
                         })
                     }
                     const currentSort = item.sortMode === "name"
@@ -995,6 +1022,11 @@ QtObject {
         if (action.kind === "setFolderSyncFolder") {
             return root.dockItemsController.setFolderSyncFolder(
                 action.targetIndex, action.sync === true,
+                String(action.expectedFolderText || ""))
+        }
+        if (action.kind === "setFolderBrowseSubfolders") {
+            return root.dockItemsController.setFolderBrowseSubfolders(
+                action.targetIndex, action.browseSubfolders === true,
                 String(action.expectedFolderText || ""))
         }
         if (action.kind === "setFolderSortMode") {

@@ -168,7 +168,7 @@ msgid_plural "%1 devices connected"
 msgstr[0] "%1 Gerät verbunden"
 msgstr[1] "%1 Geräte verbunden"
 
-#: contents/ui/components/DockItemsController.qml:1054
+#: contents/ui/components/DockItemsController.qml:1106
 #: contents/ui/config/ConfigItems.qml:737
 msgctxt "@info:status"
 msgid "%1 is already in %2."
@@ -190,7 +190,7 @@ msgctxt "@info:accessible"
 msgid "%1 is updated automatically and cannot accept applications"
 msgstr "%1 wird automatisch aktualisiert und kann keine Anwendungen aufnehmen"
 
-#: contents/ui/components/DockItemsController.qml:1059
+#: contents/ui/components/DockItemsController.qml:1111
 #: contents/ui/config/ConfigItems.qml:742
 msgctxt "@info:status"
 msgid ""
@@ -302,23 +302,23 @@ msgid_plural "%1 unread notifications"
 msgstr[0] "%1 ungelesene Benachrichtigung"
 msgstr[1] "%1 ungelesene Benachrichtigungen"
 
-#: contents/ui/components/DockItemsController.qml:1050
+#: contents/ui/components/DockItemsController.qml:1102
 #: contents/ui/config/ConfigItems.qml:733
 msgctxt "@info:status"
 msgid "%1 was added to %2."
 msgstr "%1 wurde zu %2 hinzugefügt."
 
-#: contents/ui/components/DockItemsController.qml:1000
+#: contents/ui/components/DockItemsController.qml:1052
 msgctxt "@info:status"
 msgid "%1 was moved on the Dock."
 msgstr "%1 wurde im Dock verschoben."
 
-#: contents/ui/components/DockItemsController.qml:997
+#: contents/ui/components/DockItemsController.qml:1049
 msgctxt "@info:status"
 msgid "%1 was pinned to the Dock."
 msgstr "%1 wurde an die Kontrollleiste angeheftet."
 
-#: contents/ui/components/DockItemsController.qml:1003
+#: contents/ui/components/DockItemsController.qml:1055
 msgctxt "@info:status"
 msgid "%1 was removed from the Dock."
 msgstr "%1 wurde von der Kontrollleiste entfernt."
@@ -728,12 +728,12 @@ msgstr ""
 "Ein Container ohne Ordner behält das Scrollen bei, damit keine "
 "Anwendungunerreichbar wird."
 
-#: contents/ui/components/DockItemsController.qml:1009
+#: contents/ui/components/DockItemsController.qml:1061
 msgctxt "@info:status"
 msgid "A desktop shortcut for %1 already exists."
 msgstr "Eine Desktop-Verknüpfung für %1 ist bereits vorhanden."
 
-#: contents/ui/components/DockItemsController.qml:1006
+#: contents/ui/components/DockItemsController.qml:1058
 msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Eine Desktop-Verknüpfung für %1 wurde erstellt."
@@ -758,7 +758,7 @@ msgstr "Aktionssymbol:"
 msgid "Action name:"
 msgstr "Aktionsname:"
 
-#: contents/ui/components/DockContextActionsController.qml:823
+#: contents/ui/components/DockContextActionsController.qml:850
 msgctxt "@title:group for section of menu items"
 msgid "Actions"
 msgstr "Aktionen"
@@ -1085,7 +1085,7 @@ msgstr "Nur Miniprogramme"
 
 #: contents/ui/components/DockItem.qml:1650
 #: contents/ui/components/DockItem.qml:1657
-#: contents/ui/components/DockItemsController.qml:970
+#: contents/ui/components/DockItemsController.qml:1022
 #: contents/ui/components/FolderFanView.qml:846
 #: contents/ui/components/FolderPopup.qml:1038
 #: contents/ui/config/code/itemTypeCatalog.js:45
@@ -1476,6 +1476,11 @@ msgstr "Abzeichen:"
 msgid "Balanced Mode"
 msgstr "Ausgewogener Modus"
 
+#: contents/ui/components/DockContextActionsController.qml:625
+msgctxt "@title:menu"
+msgid "Behavior"
+msgstr ""
+
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:450
 msgctxt "@action:button"
 msgid "Bluetooth"
@@ -1534,6 +1539,7 @@ msgstr "Von unten nach oben"
 msgid "Bounce"
 msgstr "Hüpfen"
 
+#: contents/ui/components/DockContextActionsController.qml:613
 #: contents/ui/config/ItemEditorPanel.qml:520
 msgctxt "@option:check folder container"
 msgid "Browse subfolders"
@@ -2085,8 +2091,8 @@ msgid "Configure Night Light"
 msgstr "Nachtlicht einrichten"
 
 #: contents/ui/components/DockContextActionsController.qml:123
-#: contents/ui/components/DockContextActionsController.qml:864
-#: contents/ui/components/DockContextActionsController.qml:886
+#: contents/ui/components/DockContextActionsController.qml:891
+#: contents/ui/components/DockContextActionsController.qml:913
 msgctxt "@action:context"
 msgid "Configure Punchi Dock…"
 msgstr "Punchi Dock einrichten…"
@@ -2221,7 +2227,7 @@ msgctxt "@option:recent-applications"
 msgid "Container"
 msgstr "Container"
 
-#: contents/ui/components/DockItemsController.qml:1046
+#: contents/ui/components/DockItemsController.qml:1098
 msgctxt "@title"
 msgid "Container"
 msgstr "Behälter"
@@ -2435,12 +2441,12 @@ msgstr "Benutzerdefinierte Panelbreite"
 msgid "Custom width:"
 msgstr "Benutzerdefinierte Breite:"
 
-#: contents/ui/components/DockContextActionsController.qml:653
+#: contents/ui/components/DockContextActionsController.qml:680
 msgctxt "@item:inmenu folder sort mode"
 msgid "Date Created"
 msgstr "Erstellungsdatum"
 
-#: contents/ui/components/DockContextActionsController.qml:642
+#: contents/ui/components/DockContextActionsController.qml:669
 msgctxt "@item:inmenu folder sort mode"
 msgid "Date Modified"
 msgstr "Änderungsdatum"
@@ -2564,7 +2570,7 @@ msgctxt "@item:inlistbox Separator shape"
 msgid "Diamond"
 msgstr "Diamond"
 
-#: contents/ui/components/DockContextActionsController.qml:690
+#: contents/ui/components/DockContextActionsController.qml:717
 msgctxt "@action:context"
 msgid "Disable recent applications"
 msgstr "Zuletzt verwendete Anwendungen deaktivieren"
@@ -4455,7 +4461,7 @@ msgctxt "@action:button"
 msgid "Mute media volume"
 msgstr "Medienlautstärke stumm schalten"
 
-#: contents/ui/components/DockContextActionsController.qml:620
+#: contents/ui/components/DockContextActionsController.qml:647
 msgctxt "@item:inmenu folder sort mode"
 msgid "Name"
 msgstr "Name"
@@ -4495,7 +4501,7 @@ msgstr "Neuer Desktop"
 msgid "New window"
 msgstr "Neues Fenster"
 
-#: contents/ui/components/DockContextActionsController.qml:754
+#: contents/ui/components/DockContextActionsController.qml:781
 msgctxt "@action:context"
 msgid "New window"
 msgstr "Neues Fenster"
@@ -4943,7 +4949,7 @@ msgctxt "@action:button"
 msgid "Open display settings"
 msgstr "Anzeigeeinstellungen öffnen"
 
-#: contents/ui/components/DockContextActionsController.qml:679
+#: contents/ui/components/DockContextActionsController.qml:706
 msgctxt "@action:context"
 msgid "Open in File Manager"
 msgstr "Im Dateiverwalter öffnen"
@@ -5229,7 +5235,7 @@ msgid "Pixel spectrum"
 msgstr "Pixelspektrum"
 
 #: contents/ui/components/DockContextActionsController.qml:262
-#: contents/ui/components/DockContextActionsController.qml:805
+#: contents/ui/components/DockContextActionsController.qml:832
 msgctxt "@title:group for section of menu items"
 msgid "Places"
 msgstr "Orte"
@@ -5483,7 +5489,7 @@ msgid "PunchiMenu panel distance"
 msgstr "Panelabstand von PunchiMenu"
 
 #: contents/ui/components/DockItem.qml:42
-#: contents/ui/components/DockItemsController.qml:1353
+#: contents/ui/components/DockItemsController.qml:1405
 msgctxt "@title"
 msgid "Quick Note"
 msgstr "Kurzer Hinweis"
@@ -5508,7 +5514,7 @@ msgid "Reactive particles"
 msgstr "Reaktive Partikel"
 
 #: contents/ui/components/DockContextActionsController.qml:275
-#: contents/ui/components/DockContextActionsController.qml:814
+#: contents/ui/components/DockContextActionsController.qml:841
 msgctxt "@title:group for section of menu items"
 msgid "Recent Files"
 msgstr "Zuletzt verwendete Dateien"
@@ -6208,7 +6214,7 @@ msgstr "Single"
 msgid "Single desktop"
 msgstr "Einzelner Desktop"
 
-#: contents/ui/components/DockContextActionsController.qml:631
+#: contents/ui/components/DockContextActionsController.qml:658
 msgctxt "@item:inmenu folder sort mode"
 msgid "Size"
 msgstr "Größe"
@@ -6243,7 +6249,7 @@ msgctxt "@option:check"
 msgid "Sort applications alphabetically"
 msgstr "Anwendungen alphabetisch sortieren"
 
-#: contents/ui/components/DockContextActionsController.qml:613
+#: contents/ui/components/DockContextActionsController.qml:640
 msgctxt "@title:menu"
 msgid "Sort by"
 msgstr "Sortieren nach"
@@ -6376,8 +6382,8 @@ msgstr "Textschatten:"
 msgid "Text shadows:"
 msgstr "Textschatten:"
 
-#: contents/ui/components/DockItemsController.qml:1018
-#: contents/ui/components/DockItemsController.qml:1072
+#: contents/ui/components/DockItemsController.qml:1070
+#: contents/ui/components/DockItemsController.qml:1124
 msgctxt "@info:status"
 msgid "The Dock configuration could not be saved."
 msgstr "Die Dock-Konfiguration konnte nicht gespeichert werden."
@@ -6394,7 +6400,7 @@ msgstr ""
 msgid "The application action could not be found."
 msgstr "Die Anwendungsaktion konnte nicht gefunden werden."
 
-#: contents/ui/components/DockItemsController.qml:1076
+#: contents/ui/components/DockItemsController.qml:1128
 msgctxt "@info:status"
 msgid "The application could not be added to the container."
 msgstr "Die Anwendung konnte dem Container nicht hinzugefügt werden."
@@ -6403,7 +6409,7 @@ msgstr "Die Anwendung konnte dem Container nicht hinzugefügt werden."
 msgid "The application could not be found."
 msgstr "Die Anwendung konnte nicht gefunden werden."
 
-#: contents/ui/components/DockItemsController.qml:1015
+#: contents/ui/components/DockItemsController.qml:1067
 msgctxt "@info:status"
 msgid "The application could not be resolved."
 msgstr "Die Anwendung konnte nicht aufgelöst werden."
@@ -6418,7 +6424,7 @@ msgctxt "@info:status"
 msgid "The application folder could not be updated."
 msgstr "Der Anwendungsordner konnte nicht aktualisiert werden."
 
-#: contents/ui/components/DockItemsController.qml:1012
+#: contents/ui/components/DockItemsController.qml:1064
 msgctxt "@info:status"
 msgid "The application identity is ambiguous."
 msgstr "Die Anwendungsidentität ist nicht eindeutig."
@@ -6479,23 +6485,23 @@ msgstr ""
 "muss. Ist der Ordner nicht verfügbar, zeigt der Container den zuletzt "
 "geladenen Inhalt."
 
-#: contents/ui/components/DockItemsController.qml:1025
+#: contents/ui/components/DockItemsController.qml:1077
 msgctxt "@info:status"
 msgid "The desktop folder is not available."
 msgstr "Der Desktop-Ordner ist nicht verfügbar."
 
-#: contents/ui/components/DockItemsController.qml:1032
+#: contents/ui/components/DockItemsController.qml:1084
 msgctxt "@info:status"
 msgid "The desktop shortcut could not be written."
 msgstr "Die Desktop-Verknüpfung konnte nicht geschrieben werden."
 
-#: contents/ui/components/DockItemsController.qml:1028
+#: contents/ui/components/DockItemsController.qml:1080
 msgctxt "@info:status"
 msgid "The desktop shortcut permissions could not be set."
 msgstr ""
 "Die Berechtigungen der Desktop-Verknüpfung konnten nicht gesetzt werden."
 
-#: contents/ui/components/DockItemsController.qml:1022
+#: contents/ui/components/DockItemsController.qml:1074
 msgctxt "@info:status"
 msgid "The desktop shortcut source is not safe."
 msgstr "Die Quelle der Desktop-Verknüpfung ist nicht sicher."
@@ -6540,7 +6546,7 @@ msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Die abgelegten Dateien konnten nicht geöffnet werden."
 
-#: contents/ui/components/DockItemsController.qml:1064
+#: contents/ui/components/DockItemsController.qml:1116
 #: contents/ui/config/ConfigItems.qml:750
 msgctxt "@info:status"
 msgid "The dropped launcher could not be resolved safely."
@@ -6633,7 +6639,7 @@ msgstr ""
 "Die Reflexion ist dekorativ und verändert weder die Größe noch den "
 "Interaktionsbereich von Dock-Elementen."
 
-#: contents/ui/components/DockItemsController.qml:1035
+#: contents/ui/components/DockItemsController.qml:1087
 msgctxt "@info:status"
 msgid "The requested application action could not be completed."
 msgstr "Die angeforderte Anwendungsaktion konnte nicht abgeschlossen werden."
@@ -6703,7 +6709,7 @@ msgstr "Der Ton konnte nicht abgespielt werden: %1"
 msgid "The spectrum is drawn over the Plasma-themed dock background."
 msgstr "Das Spektrum wird über den Dock-Hintergrund im Plasma-Stil gezeichnet."
 
-#: contents/ui/components/DockItemsController.qml:1068
+#: contents/ui/components/DockItemsController.qml:1120
 #: contents/ui/config/ConfigItems.qml:747
 msgctxt "@info:status"
 msgid "The target container changed before the application could be added."
@@ -6921,7 +6927,7 @@ msgctxt "@info"
 msgid "Turn on Wi-Fi to search for networks."
 msgstr "Schalten Sie WLAN ein, um nach Netzwerken zu suchen."
 
-#: contents/ui/components/DockContextActionsController.qml:664
+#: contents/ui/components/DockContextActionsController.qml:691
 msgctxt "@item:inmenu folder sort mode"
 msgid "Type"
 msgstr "Typ"
@@ -6974,7 +6980,7 @@ msgctxt "@info"
 msgid "Unnamed audio device"
 msgstr "Unbenanntes Audiogerät"
 
-#: contents/ui/components/DockContextActionsController.qml:698
+#: contents/ui/components/DockContextActionsController.qml:725
 msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Vom Dock lösen"

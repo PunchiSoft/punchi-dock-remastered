@@ -1153,6 +1153,36 @@ function setFolderSyncFolder(items, targetIndex, sync) {
     return { "items": nextItems, "changed": true, "status": "updated" }
 }
 
+// Subfolder browsing is opt-in and its own value: enabling or disabling it
+// never touches the sync choice stored in `syncFolder`.
+function setFolderBrowseSubfolders(items, targetIndex, enabled) {
+    var source = items instanceof Array ? items : []
+    var index = Number(targetIndex)
+    if (!Number.isInteger(index) || index < 0 || index >= source.length) {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+
+    var currentFolder = source[index]
+    if (!currentFolder || currentFolder.type !== "folder"
+            || String(currentFolder.sourceType || "manual") !== "folder"
+            || String(currentFolder.sourcePath || "").trim().length === 0) {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+
+    var nextEnabled = enabled === true
+    if ((currentFolder.browseSubfolders === true) === nextEnabled) {
+        return { "items": source, "changed": false, "status": "unchanged" }
+    }
+
+    var nextItems = clone(source)
+    if (nextEnabled) {
+        nextItems[index].browseSubfolders = true
+    } else {
+        delete nextItems[index].browseSubfolders
+    }
+    return { "items": nextItems, "changed": true, "status": "updated" }
+}
+
 function newItem(type, defaultTrashEmptySound) {
     if (type === "dynamic-applications") {
         return {

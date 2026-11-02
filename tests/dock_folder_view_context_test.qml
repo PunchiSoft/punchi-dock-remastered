@@ -44,6 +44,9 @@ TestCase {
         property int syncCallCount: 0
         property bool lastSync: true
         property string lastSyncExpectedFolderText: ""
+        property int browseCallCount: 0
+        property bool lastBrowseSubfolders: false
+        property string lastBrowseExpectedFolderText: ""
 
         function canonicalJsonText(value) {
             return JSON.stringify(value)
@@ -62,6 +65,14 @@ TestCase {
             lastTargetIndex = targetIndex
             lastSync = sync
             lastSyncExpectedFolderText = expectedFolderText
+            return true
+        }
+
+        function setFolderBrowseSubfolders(targetIndex, enabled, expectedFolderText) {
+            browseCallCount++
+            lastTargetIndex = targetIndex
+            lastBrowseSubfolders = enabled
+            lastBrowseExpectedFolderText = expectedFolderText
             return true
         }
     }
@@ -83,6 +94,18 @@ TestCase {
         fakeDockItemsController.syncCallCount = 0
         fakeDockItemsController.lastSync = true
         fakeDockItemsController.lastSyncExpectedFolderText = ""
+        fakeDockItemsController.browseCallCount = 0
+        fakeDockItemsController.lastBrowseSubfolders = false
+        fakeDockItemsController.lastBrowseExpectedFolderText = ""
+    }
+
+    function behaviorAction(actions) {
+        for (let index = 0; index < actions.length; index++) {
+            if (actions[index].name === "Behavior") {
+                return actions[index]
+            }
+        }
+        return null
     }
 
     function actionByKind(actions, kind) {
@@ -152,9 +175,9 @@ TestCase {
         }
     }
 
-    function test_manualContainerHidesTheFolderSyncToggle() {
+    function test_manualContainerHidesTheBehaviorGroup() {
         const actions = contextController.actionsForItem(folder, [], "pinned", 0)
-        compare(actionByKind(actions, "setFolderSyncFolder"), null)
+        compare(behaviorAction(actions), null)
 
         const pathless = {
             "type": "folder",
@@ -168,46 +191,96 @@ TestCase {
         fakeDockItemsController.dockItems = [pathless]
         const pathlessActions = contextController.actionsForItem(
             pathless, [], "pinned", 0)
-        compare(actionByKind(pathlessActions, "setFolderSyncFolder"), null)
+        compare(behaviorAction(pathlessActions), null)
     }
 
-    function test_folderContainerOffersCheckedSyncToggleAfterFolderView() {
+    function test_folderContainerOffersBehaviorGroupAfterFolderView() {
         fakeDockItemsController.dockItems = [folderContainer]
         const actions = contextController.actionsForItem(
             folderContainer, [], "pinned", 0)
-        const toggle = actionByKind(actions, "setFolderSyncFolder")
-        verify(toggle !== null)
-        compare(toggle.name, "Live folder contents")
-        compare(toggle.enabled, true)
-        verify(toggle.checked)
-        compare(toggle.sync, false)
-        compare(toggle.targetIndex, 0)
-        compare(toggle.expectedFolderText, JSON.stringify(folderContainer))
+        const behavior = behaviorAction(actions)
+        verify(behavior !== null)
+        compare(behavior.kind, "submenu")
+        compare(behavior.children.length, 2)
+
+        const sync = actionByKind(behavior.children, "setFolderSyncFolder")
+        verify(sync !== null)
+        compare(sync.name, "Live folder contents")
+        compare(sync.enabled, true)
+        verify(sync.checked)
+        compare(sync.sync, false)
+        compare(sync.targetIndex, 0)
+        compare(sync.expectedFolderText, JSON.stringify(folderContainer))
+
+        const browse = actionByKind(behavior.children, "setFolderBrowseSubfolders")
+        verify(browse !== null)
+        compare(browse.name, "Browse subfolders")
+        compare(browse.enabled, true)
+        verify(!browse.checked)
+        compare(browse.browseSubfolders, true)
+        compare(browse.targetIndex, 0)
+        compare(browse.expectedFolderText, JSON.stringify(folderContainer))
 
         let folderViewIndex = -1
         let sortIndex = -1
-        let toggleIndex = -1
+        let behaviorIndex = -1
         for (let index = 0; index < actions.length; index++) {
             if (actions[index].name === "Folder view") { folderViewIndex = index }
             if (actions[index].name === "Sort by") { sortIndex = index }
-            if (actions[index].kind === "setFolderSyncFolder") { toggleIndex = index }
+            if (actions[index].name === "Behavior") { behaviorIndex = index }
         }
         verify(folderViewIndex >= 0)
         verify(sortIndex >= 0)
-        compare(toggleIndex, folderViewIndex + 1)
-        verify(toggleIndex < sortIndex)
+        compare(behaviorIndex, folderViewIndex + 1)
+        verify(behaviorIndex < sortIndex)
+    }
+
+    function test_gridLayoutOnlyOffersTheSyncChoice() {
+        const gridContainer = {
+            "type": "folder",
+            "name": "Downloads",
+            "icon": "folder-download",
+            "layout": "grid",
+            "sourceType": "folder",
+            "sourcePath": "/home/user/Downloads",
+            "apps": []
+        }
+        fakeDockItemsController.dockItems = [gridContainer]
+        const actions = contextController.actionsForItem(
+            gridContainer, [], "pinned", 0)
+        const behavior = behaviorAction(actions)
+        verify(behavior !== null)
+        compare(behavior.children.length, 1)
+        verify(actionByKind(behavior.children, "setFolderSyncFolder") !== null)
+        compare(actionByKind(behavior.children, "setFolderBrowseSubfolders"), null)
     }
 
     function test_folderSyncToggleFreezesTheContainer() {
         fakeDockItemsController.dockItems = [folderContainer]
         const actions = contextController.actionsForItem(
             folderContainer, [], "pinned", 0)
-        const toggle = actionByKind(actions, "setFolderSyncFolder")
+        const behavior = behaviorAction(actions)
+        const toggle = actionByKind(behavior.children, "setFolderSyncFolder")
         verify(contextController.triggerAction(toggle))
         compare(fakeDockItemsController.syncCallCount, 1)
         compare(fakeDockItemsController.lastTargetIndex, 0)
         compare(fakeDockItemsController.lastSync, false)
         compare(fakeDockItemsController.lastSyncExpectedFolderText,
+            JSON.stringify(folderContainer))
+    }
+
+    function test_folderBrowseToggleKeepsTheSyncChoice() {
+        fakeDockItemsController.dockItems = [folderContainer]
+        const actions = contextController.actionsForItem(
+            folderContainer, [], "pinned", 0)
+        const behavior = behaviorAction(actions)
+        const browse = actionByKind(behavior.children, "setFolderBrowseSubfolders")
+        verify(contextController.triggerAction(browse))
+        compare(fakeDockItemsController.browseCallCount, 1)
+        compare(fakeDockItemsController.syncCallCount, 0)
+        compare(fakeDockItemsController.lastTargetIndex, 0)
+        compare(fakeDockItemsController.lastBrowseSubfolders, true)
+        compare(fakeDockItemsController.lastBrowseExpectedFolderText,
             JSON.stringify(folderContainer))
     }
 
@@ -220,15 +293,25 @@ TestCase {
             "sourceType": "folder",
             "sourcePath": "/home/user/Downloads",
             "syncFolder": false,
+            "browseSubfolders": true,
             "apps": []
         }
         fakeDockItemsController.dockItems = [frozen]
         const actions = contextController.actionsForItem(frozen, [], "pinned", 0)
-        const toggle = actionByKind(actions, "setFolderSyncFolder")
-        verify(toggle !== null)
-        verify(!toggle.checked)
-        compare(toggle.sync, true)
-        verify(contextController.triggerAction(toggle))
+        const behavior = behaviorAction(actions)
+        const sync = actionByKind(behavior.children, "setFolderSyncFolder")
+        verify(sync !== null)
+        verify(!sync.checked)
+        compare(sync.sync, true)
+        // The two choices keep their own value: freezing the container does not
+        // clear the stored subfolder preference.
+        const browse = actionByKind(behavior.children, "setFolderBrowseSubfolders")
+        verify(browse !== null)
+        verify(browse.checked)
+        compare(browse.browseSubfolders, false)
+
+        verify(contextController.triggerAction(sync))
         compare(fakeDockItemsController.lastSync, true)
+        compare(fakeDockItemsController.browseCallCount, 0)
     }
 }

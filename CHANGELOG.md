@@ -2,7 +2,7 @@
 
 ### Carpetas del dock
 
-- Añadida la acción «Contenido de la carpeta en vivo» al menú contextual de un contenedor de carpeta, para activar o desactivar la sincronización sin abrir la configuración.
+- Añadido el submenú «Comportamiento» al menú contextual de un contenedor de carpeta, con las opciones «Contenido de la carpeta en vivo» y «Navegar por subcarpetas», para cambiar ambas decisiones sin abrir la configuración.
 - Añadida una nota bajo «Navegar por subcarpetas» que recuerda que hay que activar el contenido de la carpeta en vivo para abrir subcarpetas.
 
 ### Interacción del ratón
