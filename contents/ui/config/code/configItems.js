@@ -1123,6 +1123,36 @@ function setFolderSortMode(items, targetIndex, sortMode) {
     return { "items": nextItems, "changed": true, "status": "updated" }
 }
 
+// Following the folder is the default, so enabling the sync removes the key
+// instead of storing `true`. Only an explicit `false` freezes the container.
+function setFolderSyncFolder(items, targetIndex, sync) {
+    var source = items instanceof Array ? items : []
+    var index = Number(targetIndex)
+    if (!Number.isInteger(index) || index < 0 || index >= source.length) {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+
+    var currentFolder = source[index]
+    if (!currentFolder || currentFolder.type !== "folder"
+            || String(currentFolder.sourceType || "manual") !== "folder"
+            || String(currentFolder.sourcePath || "").trim().length === 0) {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+
+    var nextSync = sync === true
+    if ((currentFolder.syncFolder !== false) === nextSync) {
+        return { "items": source, "changed": false, "status": "unchanged" }
+    }
+
+    var nextItems = clone(source)
+    if (nextSync) {
+        delete nextItems[index].syncFolder
+    } else {
+        nextItems[index].syncFolder = false
+    }
+    return { "items": nextItems, "changed": true, "status": "updated" }
+}
+
 function newItem(type, defaultTrashEmptySound) {
     if (type === "dynamic-applications") {
         return {

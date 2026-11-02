@@ -587,6 +587,22 @@ QtObject {
                 }
                 itemActions.push(folderViewAction)
                 if (!recentContainer) {
+                    // Only a container that points at a real folder can follow
+                    // it, so the toggle is absent for manual containers.
+                    if (String(item.sourceType || "manual") === "folder"
+                            && String(item.sourcePath || "").trim().length > 0) {
+                        itemActions.push({
+                            // qmllint disable unqualified
+                            "name": i18nc("@option:check folder container", "Live folder contents"),
+                            // qmllint enable unqualified
+                            "kind": "setFolderSyncFolder",
+                            "enabled": true,
+                            "checked": item.syncFolder !== false,
+                            "sync": item.syncFolder === false,
+                            "targetIndex": persistentIndex,
+                            "expectedFolderText": expectedFolderText
+                        })
+                    }
                     const currentSort = item.sortMode === "name"
                             || item.sortMode === "size"
                             || item.sortMode === "created"
@@ -974,6 +990,11 @@ QtObject {
             }
             return root.dockItemsController.setFolderLayout(
                 action.targetIndex, String(action.layout || ""),
+                String(action.expectedFolderText || ""))
+        }
+        if (action.kind === "setFolderSyncFolder") {
+            return root.dockItemsController.setFolderSyncFolder(
+                action.targetIndex, action.sync === true,
                 String(action.expectedFolderText || ""))
         }
         if (action.kind === "setFolderSortMode") {

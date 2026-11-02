@@ -522,6 +522,20 @@ GridLayout {
     }
 
     Controls.Label {
+        objectName: "containerBrowseSubfoldersNote"
+        Layout.columnSpan: 2
+        Layout.fillWidth: true
+        // The note belongs to the checkbox above and only makes sense while the
+        // container shows the snapshot instead of the folder.
+        visible: browseSubfolders.visible && !syncFolder.checked
+        // qmllint disable unqualified
+        text: i18n("Turn on Live folder contents to open subfolders.")
+        // qmllint enable unqualified
+        wrapMode: Text.WordWrap
+        color: Kirigami.Theme.disabledTextColor
+    }
+
+    Controls.Label {
         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         Layout.preferredWidth: Kirigami.Units.gridUnit * 5
         visible: root.itemModeValue === "container" && containerSource.currentValue === "folder"

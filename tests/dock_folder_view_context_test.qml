@@ -16,6 +16,16 @@ TestCase {
         "apps": []
     })
 
+    property var folderContainer: ({
+        "type": "folder",
+        "name": "Downloads",
+        "icon": "folder-download",
+        "layout": "list",
+        "sourceType": "folder",
+        "sourcePath": "/home/user/Downloads",
+        "apps": []
+    })
+
     QtObject {
         id: fakeTaskController
 
@@ -31,6 +41,9 @@ TestCase {
         property int lastTargetIndex: -1
         property string lastLayout: ""
         property string lastExpectedFolderText: ""
+        property int syncCallCount: 0
+        property bool lastSync: true
+        property string lastSyncExpectedFolderText: ""
 
         function canonicalJsonText(value) {
             return JSON.stringify(value)
@@ -41,6 +54,14 @@ TestCase {
             lastTargetIndex = targetIndex
             lastLayout = layout
             lastExpectedFolderText = expectedFolderText
+            return true
+        }
+
+        function setFolderSyncFolder(targetIndex, sync, expectedFolderText) {
+            syncCallCount++
+            lastTargetIndex = targetIndex
+            lastSync = sync
+            lastSyncExpectedFolderText = expectedFolderText
             return true
         }
     }
@@ -59,6 +80,9 @@ TestCase {
         fakeDockItemsController.lastTargetIndex = -1
         fakeDockItemsController.lastLayout = ""
         fakeDockItemsController.lastExpectedFolderText = ""
+        fakeDockItemsController.syncCallCount = 0
+        fakeDockItemsController.lastSync = true
+        fakeDockItemsController.lastSyncExpectedFolderText = ""
     }
 
     function actionByKind(actions, kind) {
@@ -126,5 +150,85 @@ TestCase {
         for (let index = 0; index < actions.length; index++) {
             verify(actions[index].name !== "Folder view")
         }
+    }
+
+    function test_manualContainerHidesTheFolderSyncToggle() {
+        const actions = contextController.actionsForItem(folder, [], "pinned", 0)
+        compare(actionByKind(actions, "setFolderSyncFolder"), null)
+
+        const pathless = {
+            "type": "folder",
+            "name": "Empty",
+            "icon": "folder",
+            "layout": "list",
+            "sourceType": "folder",
+            "sourcePath": "",
+            "apps": []
+        }
+        fakeDockItemsController.dockItems = [pathless]
+        const pathlessActions = contextController.actionsForItem(
+            pathless, [], "pinned", 0)
+        compare(actionByKind(pathlessActions, "setFolderSyncFolder"), null)
+    }
+
+    function test_folderContainerOffersCheckedSyncToggleAfterFolderView() {
+        fakeDockItemsController.dockItems = [folderContainer]
+        const actions = contextController.actionsForItem(
+            folderContainer, [], "pinned", 0)
+        const toggle = actionByKind(actions, "setFolderSyncFolder")
+        verify(toggle !== null)
+        compare(toggle.name, "Live folder contents")
+        compare(toggle.enabled, true)
+        verify(toggle.checked)
+        compare(toggle.sync, false)
+        compare(toggle.targetIndex, 0)
+        compare(toggle.expectedFolderText, JSON.stringify(folderContainer))
+
+        let folderViewIndex = -1
+        let sortIndex = -1
+        let toggleIndex = -1
+        for (let index = 0; index < actions.length; index++) {
+            if (actions[index].name === "Folder view") { folderViewIndex = index }
+            if (actions[index].name === "Sort by") { sortIndex = index }
+            if (actions[index].kind === "setFolderSyncFolder") { toggleIndex = index }
+        }
+        verify(folderViewIndex >= 0)
+        verify(sortIndex >= 0)
+        compare(toggleIndex, folderViewIndex + 1)
+        verify(toggleIndex < sortIndex)
+    }
+
+    function test_folderSyncToggleFreezesTheContainer() {
+        fakeDockItemsController.dockItems = [folderContainer]
+        const actions = contextController.actionsForItem(
+            folderContainer, [], "pinned", 0)
+        const toggle = actionByKind(actions, "setFolderSyncFolder")
+        verify(contextController.triggerAction(toggle))
+        compare(fakeDockItemsController.syncCallCount, 1)
+        compare(fakeDockItemsController.lastTargetIndex, 0)
+        compare(fakeDockItemsController.lastSync, false)
+        compare(fakeDockItemsController.lastSyncExpectedFolderText,
+            JSON.stringify(folderContainer))
+    }
+
+    function test_frozenFolderContainerShowsUncheckedToggle() {
+        const frozen = {
+            "type": "folder",
+            "name": "Downloads",
+            "icon": "folder-download",
+            "layout": "list",
+            "sourceType": "folder",
+            "sourcePath": "/home/user/Downloads",
+            "syncFolder": false,
+            "apps": []
+        }
+        fakeDockItemsController.dockItems = [frozen]
+        const actions = contextController.actionsForItem(frozen, [], "pinned", 0)
+        const toggle = actionByKind(actions, "setFolderSyncFolder")
+        verify(toggle !== null)
+        verify(!toggle.checked)
+        compare(toggle.sync, true)
+        verify(contextController.triggerAction(toggle))
+        compare(fakeDockItemsController.lastSync, true)
     }
 }

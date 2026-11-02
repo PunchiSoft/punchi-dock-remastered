@@ -1,5 +1,10 @@
 ## Unreleased
 
+### Carpetas del dock
+
+- Añadida la acción «Contenido de la carpeta en vivo» al menú contextual de un contenedor de carpeta, para activar o desactivar la sincronización sin abrir la configuración.
+- Añadida una nota bajo «Navegar por subcarpetas» que recuerda que hay que activar el contenido de la carpeta en vivo para abrir subcarpetas.
+
 ### Interacción del ratón
 
 - Añadido el botón central sobre las aplicaciones del dock: abre una ventana nueva, replicando el valor por defecto del *Icons-only Task Manager*, con un interruptor `Middle-click:` activado por defecto. Los lanzadores sin ventanas, carpetas, papelera, elemento de medios y aplicaciones recientes siguen ignorando el gesto.

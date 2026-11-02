@@ -22,6 +22,7 @@ TestCase {
     readonly property string approvedNote: "The container lists the folder as it is now, "
         + "so added or removed files appear without pressing Load content. If the folder "
         + "is unavailable, the container shows the contents loaded last."
+    readonly property string approvedBrowseNote: "Turn on Live folder contents to open subfolders."
     readonly property var storedSnapshot: [
         {type: "app", name: "Stored", icon: "folder", command: "stored"}
     ]
@@ -82,6 +83,15 @@ TestCase {
         tryVerify(function() { return checkbox !== null })
         return checkbox
     }
+    function openListDraft() {
+        dialog.openFor("folder")
+        controller.setDraftValues({name: "Fixture", layout: "list",
+            sourceType: "folder", sourcePath: testCase.fixture})
+        dialog.refreshEditorFields(true)
+        const checkbox = findChild(dialog, "containerSyncFolderCheckBox")
+        tryVerify(function() { return checkbox !== null })
+        return checkbox
+    }
 
     function test_pruning_keeps_only_an_explicit_freeze() {
         const synced = {type: "folder", sourceType: "folder",
@@ -125,6 +135,47 @@ TestCase {
         verify(controller.accept())
         compare(acceptedSpy.count, 1)
         compare(acceptedSpy.signalArguments[0][0].syncFolder, false)
+    }
+
+    function test_helper_freezes_and_releases_the_container() {
+        const items = [
+            {type: "folder", sourceType: "folder", sourcePath: "/tmp", apps: []},
+            {type: "folder", sourceType: "manual", sourcePath: "/tmp", apps: []}
+        ]
+        const frozen = Items.setFolderSyncFolder(items, 0, false)
+        verify(frozen.changed)
+        compare(frozen.status, "updated")
+        compare(frozen.items[0].syncFolder, false)
+        compare(items[0].syncFolder, undefined)
+
+        const released = Items.setFolderSyncFolder(frozen.items, 0, true)
+        verify(released.changed)
+        compare(released.items[0].syncFolder, undefined)
+
+        const unchanged = Items.setFolderSyncFolder(released.items, 0, true)
+        verify(!unchanged.changed)
+        compare(unchanged.status, "unchanged")
+
+        const manual = Items.setFolderSyncFolder(items, 1, false)
+        verify(!manual.changed)
+        compare(manual.status, "invalid-target")
+
+        const pathless = Items.setFolderSyncFolder(
+            [{type: "folder", sourceType: "folder", sourcePath: "", apps: []}], 0, false)
+        verify(!pathless.changed)
+        compare(pathless.status, "invalid-target")
+    }
+
+    function test_browse_subfolders_note_explains_the_frozen_state() {
+        const checkbox = openListDraft()
+        const note = findChild(dialog, "containerBrowseSubfoldersNote")
+        verify(note !== null)
+        verify(!note.visible)
+
+        checkbox.checked = false
+        checkbox.toggled()
+        verify(note.visible)
+        compare(note.text, testCase.approvedBrowseNote)
     }
 
     function test_synced_container_lists_the_folder() {
