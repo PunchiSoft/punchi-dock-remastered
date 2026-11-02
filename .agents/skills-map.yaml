@@ -43,6 +43,10 @@ skills:
     family: governance
     role: domain
     references: []
+  - name: config-control-choice
+    family: interface
+    role: domain
+    references: [accessibility, plasma-config-review, ui-design]
   - name: control-connection-review
     family: quality-assurance
     role: domain

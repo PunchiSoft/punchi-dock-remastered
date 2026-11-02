@@ -1,0 +1,4 @@
+interface:
+  display_name: "Controles de configuración"
+  short_description: "Interruptor primero, casilla solo como excepción"
+  default_prompt: "Usa $config-control-choice para elegir o convertir el control de este ajuste de Punchi Dock."

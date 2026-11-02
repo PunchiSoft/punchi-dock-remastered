@@ -131,6 +131,20 @@ La estructura real del repositorio puede evolucionar. No crear carpetas o abstra
 - **Geometría de Diálogos Flotantes a Pantalla Completa:** Utilizar `PlasmaCore.Dialog` con `location: Floating`, `x: 0, y: 0`, `width: Screen.width, height: Screen.height` e integración `openWithReveal()` / `closeWithFade()` para cubrir el monitor sin interferencia de struts.
 - **Poblado Reactivo de Vistas QML:** Alimentar vistas dinámicas asíncronas (`GridView` / `ListView`) desde C++ a través de un `ListModel` reactivo para garantizar la renderización inmediata de elementos.
 
+### Controles de configuración
+
+En los paneles de configuración y ajustes, el control por defecto para encender
+o apagar una capacidad, un detalle de presentación o un comportamiento es el
+interruptor (`Controls.Switch`). La casilla (`Controls.CheckBox`) queda limitada
+a selección múltiple, estados triples y filas densas de edición.
+
+- un ajuste nuevo que activa o desactiva algo se implementa con interruptor;
+- convertir una casilla existente conserva `id`, textos, `Accessible.description`
+  y la clave KConfig, y se valida con `qmllint`, CTest y revisión visual;
+- no se convierten varias páginas en el mismo cambio.
+
+El procedimiento completo vive en la skill `config-control-choice`.
+
 ### Región de blur en superficies temáticas Plasma
 
 Cuando una superficie visible use un `KSvg.FrameSvgItem`, especialmente
