@@ -81,6 +81,9 @@ function refreshItemForm() {
     if (actionDialog.containerBrowseSubfoldersChecked !== undefined) {
         actionDialog.containerBrowseSubfoldersChecked = item.browseSubfolders === true
     }
+    if (actionDialog.containerSyncFolderChecked !== undefined) {
+        actionDialog.containerSyncFolderChecked = item.syncFolder !== false
+    }
     actionDialog.containerCategoryIndex = actionDialog.categoryIndexFor(item.sourceCategory || "Development")
     trashDialog.nameText = item.name || ""
     trashDialog.emptyIconText = item.icon || ""
@@ -230,6 +233,7 @@ function applyItemForm(force) {
         item.sourceType = actionDialog.containerSourceValue || "manual"
         item.sourcePath = actionDialog.containerPathText || ""
         item.browseSubfolders = actionDialog.containerBrowseSubfoldersChecked === true
+        item.syncFolder = actionDialog.containerSyncFolderChecked !== false
         item.sourceCategory = actionDialog.containerCategoryValue || "Development"
         item.apps = item.apps instanceof Array ? item.apps : []
         ConfigItemsJS.pruneFolder(item)

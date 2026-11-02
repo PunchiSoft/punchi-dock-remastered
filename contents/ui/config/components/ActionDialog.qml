@@ -53,6 +53,7 @@ Controls.Dialog {
     property alias containerSourceIndex: itemEditor.containerSourceIndex
     property alias containerPathText: itemEditor.containerPathText
     property alias containerBrowseSubfoldersChecked: itemEditor.containerBrowseSubfoldersChecked
+    property alias containerSyncFolderChecked: itemEditor.containerSyncFolderChecked
     readonly property string containerCategoryValue: itemEditor.containerCategoryValue
     property alias containerCategoryIndex: itemEditor.containerCategoryIndex
     property int actionCount: actionEditor.actionCount
