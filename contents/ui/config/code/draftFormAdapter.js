@@ -69,6 +69,7 @@ function fieldsFor(draft, panel, type) {
             "sourceType": String(panel.containerSourceValue || "manual"),
             "sourcePath": String(panel.containerPathText || ""),
             "browseSubfolders": panel.containerBrowseSubfoldersChecked === true,
+            "syncFolder": panel.containerSyncFolderChecked !== false,
             "sourceCategory": String(panel.containerCategoryValue || "Development")
         }
     }
@@ -273,6 +274,9 @@ function applyToPanel(draft, panel, type) {
     panel.containerPathText = String(item.sourcePath || "")
     if (panel.containerBrowseSubfoldersChecked !== undefined) {
         panel.containerBrowseSubfoldersChecked = item.browseSubfolders === true
+    }
+    if (panel.containerSyncFolderChecked !== undefined) {
+        panel.containerSyncFolderChecked = item.syncFolder !== false
     }
     if (kind === "folder") {
         const layout = String(item.layout || "grid")

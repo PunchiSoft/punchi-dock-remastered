@@ -47,6 +47,7 @@ GridLayout {
     property alias containerSourceIndex: containerSource.currentIndex
     property alias containerPathText: containerPath.text
     property alias containerBrowseSubfoldersChecked: browseSubfolders.checked
+    property alias containerSyncFolderChecked: syncFolder.checked
     readonly property string containerCategoryValue: containerCategory.currentValue || "Development"
     property alias containerCategoryIndex: containerCategory.currentIndex
     property string containerLoadStatusText: ""
@@ -551,6 +552,33 @@ GridLayout {
             enabled: root.selectedItemType === "folder"
             onClicked: root.folderPickerRequested()
         }
+    }
+
+    Controls.CheckBox {
+        id: syncFolder
+        objectName: "containerSyncFolderCheckBox"
+        Layout.columnSpan: 2
+        Layout.fillWidth: true
+        visible: root.itemModeValue === "container"
+            && root.containerSourceValue === "folder"
+        enabled: root.selectedItemType === "folder"
+        // Following the folder is the default; the draft adapter and the action
+        // dialog overwrite this value with the one the container stores.
+        checked: true
+        text: i18nc("@option:check folder container", "Live folder contents") // qmllint disable unqualified
+        onToggled: root.formChanged()
+    }
+
+    Controls.Label {
+        objectName: "containerSyncFolderNote"
+        Layout.columnSpan: 2
+        Layout.fillWidth: true
+        visible: syncFolder.visible
+        // qmllint disable unqualified
+        text: i18n("The container lists the folder as it is now, so added or removed files appear without pressing Load content. If the folder is unavailable, the container shows the contents loaded last.")
+        // qmllint enable unqualified
+        wrapMode: Text.WordWrap
+        color: Kirigami.Theme.disabledTextColor
     }
 
     Controls.Label {

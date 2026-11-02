@@ -990,6 +990,17 @@ set_tests_properties(folder_popup_visible_focus_test PROPERTIES
     ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/bin:$ENV{LD_LIBRARY_PATH}"
     FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
     TIMEOUT 30)
+add_test(NAME folder_container_sync_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_folder_navigation_test.py
+        $<TARGET_FILE:punchi_qmltestrunner>
+        -import ${CMAKE_BINARY_DIR}/bin
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/folder_container_sync_test.qml)
+set_tests_properties(folder_container_sync_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/bin:$ENV{LD_LIBRARY_PATH}"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30)
 punchi_add_qml_test(
     folder_fan_view_test
     folder_fan_view_test.qml

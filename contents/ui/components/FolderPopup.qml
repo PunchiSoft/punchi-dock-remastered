@@ -37,9 +37,19 @@ Item {
     property real headerCloseButtonReserve: showCloseButton ? classicCloseButton.width : 0
     property bool backAvailable: narrowNavigation
     property int navigationDepth: navigator.history.length
-    readonly property bool navigationActive: !embeddedNavigationPane
-        && folderItem.browseSubfolders === true
+    // A container can follow a folder only when it points at one. Every other
+    // source keeps using the applications stored in the configuration.
+    readonly property string containerSourcePath: String(folderItem.sourcePath || "").trim()
+    readonly property bool folderSourceActive: !embeddedNavigationPane
         && folderItem.sourceType === "folder"
+        && containerSourcePath.length > 0
+    // Following the folder is the default; only an explicit «syncFolder: false»
+    // freezes the container on the snapshot loaded in the configuration.
+    readonly property bool liveContent: folderSourceActive
+        && folderItem.syncFolder !== false
+    // Entering subfolders is a separate opt-in and needs the live listing.
+    readonly property bool navigationActive: liveContent
+        && folderItem.browseSubfolders === true
         && (layoutMode === "list" || layoutMode === "detailed")
     readonly property bool lateralNavigationAvailable:
         maximumAvailableWidth >= presentationWidth * 2 + Kirigami.Units.smallSpacing
@@ -60,9 +70,18 @@ Item {
         expanded: folderRoot.lateralNavigation
         motionEnabled: folderRoot.navigationMotionEnabled
     }
-    readonly property Punchi.FolderNavigationModel directoryModel: modelOverride
-        ? modelOverride : (navigationActive
-            ? (narrowNavigation ? navigator.childModel : navigator.rootModel) : null)
+    readonly property Punchi.FolderNavigationModel directoryModel: {
+        const candidate = modelOverride !== null
+            ? modelOverride
+            : (folderRoot.liveContent
+                ? (narrowNavigation ? navigator.childModel : navigator.rootModel) : null)
+        // A folder that cannot be resolved or listed has no rows to show, so the
+        // presentation falls back to the snapshot stored in the configuration.
+        if (!candidate || candidate.location.length === 0 || candidate.error !== "") {
+            return null
+        }
+        return candidate
+    }
     readonly property string headerTitle: titleOverride.length > 0
         ? titleOverride : (narrowNavigation ? navigator.breadcrumb
             : String(folderItem.name || ""))
@@ -94,7 +113,7 @@ Item {
 
     FolderNavigationController {
         id: navigator
-        enabled: folderRoot.navigationActive && folderRoot.sessionActive
+        enabled: folderRoot.liveContent && folderRoot.sessionActive
         retainChildModel: folderRoot.lateralRevealProgress > 0
             && folderRoot.navigationMotionEnabled
         rootPath: String(folderRoot.folderItem.sourcePath || "")
@@ -106,6 +125,11 @@ Item {
             }
         }
         onRestoreRequested: function(primary, index, scroll) {
+            // A container that only follows its folder has no navigation to
+            // restore: the listing completing must not steal the focus.
+            if (!folderRoot.navigationActive) {
+                return
+            }
             if (primary || !folderRoot.lateralNavigation) {
                 folderRoot.restoreView(index, scroll, folderRoot.navigationFocusReason)
             } else if (navigationPane.item) {
@@ -155,10 +179,23 @@ Item {
         i18nc("@action:button open the container", "Open")
     // qmllint enable unqualified
 
-    // Quick access entries.
-    property var apps: folderItem.apps || []
-    property int itemCount: directoryModel ? directoryModel.count
-        : Math.max(0, Number(apps && apps.length) || 0)
+    // Quick access entries. A container that follows its folder shows the rows
+    // of the directory itself; any other container, and one whose folder cannot
+    // be listed, keeps the snapshot stored in the configuration. While the
+    // listing is still in flight the snapshot stays on screen, so opening the
+    // popup never shows an empty container for a frame.
+    readonly property var apps: {
+        const model = folderRoot.directoryModel
+        if (!folderRoot.liveContent || !model || model.loading) {
+            return folderItem.apps || []
+        }
+        const rows = []
+        for (let index = 0; index < model.count; ++index) {
+            rows.push(model.get(index))
+        }
+        return rows
+    }
+    property int itemCount: Math.max(0, Number(apps && apps.length) || 0)
     // The reference integrates the location action as the final Grid cell. This
     // derived array belongs only to Grid. List and Detailed adapt native rows
     // without copying them; Fan keeps its dedicated model below.
@@ -713,7 +750,7 @@ Item {
                 ? folderRoot.gridItems
                 : ((folderRoot.layoutMode === "list"
                     || folderRoot.layoutMode === "detailed")
-                    ? (folderRoot.directoryModel || folderRoot.folderPathAvailable
+                    ? (folderRoot.folderPathAvailable
                         ? folderRoot.listItems : folderRoot.apps) : [])
             onCountChanged: {
                 if (folderRoot.pendingViewIndex < 0 && gridView.count > 0) {

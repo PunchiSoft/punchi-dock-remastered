@@ -1041,6 +1041,12 @@ function pruneFolder(item) {
     if (item.browseSubfolders !== true) {
         delete item.browseSubfolders
     }
+    // Following the folder is the default. Only a container that points at a
+    // folder can freeze that choice, so the absence of the key always means
+    // «keep the contents in sync».
+    if (item.syncFolder !== false || String(item.sourceType || "manual") !== "folder") {
+        delete item.syncFolder
+    }
     delete item.actionPopupMaxVisibleRows
     removeKeys(item, ["command", "actions", "actionsEnabled"])
     removeKeys(item, ["radialBackground", "radialIconSlots", "radialDistance", "fanCenterDistance"])
