@@ -21,6 +21,7 @@ KCM.SimpleKCM {
     property string cfg_clickEffect: "bounce"
     property string cfg_windowMinimizeEffect: "none"
     property alias cfg_dockMotionSpeedPercent: dockMotionSpeedSlider.value
+    property alias cfg_middleClickEnabled: middleClickEnabledSwitch.checked
     property alias cfg_enableAppDragAndDrop: enableAppDragAndDropCheck.checked
     property alias cfg_enableFloatingItemDragReordering:
         enableFloatingItemDragReorderingCheck.checked
@@ -234,6 +235,15 @@ KCM.SimpleKCM {
         }
         // qmllint enable unqualified
 
+
+        // qmllint disable unqualified
+        Controls.Switch {
+            id: middleClickEnabledSwitch
+            Kirigami.FormData.label: i18n("Middle-click:")
+            text: i18n("Enable middle-click actions")
+            Layout.maximumWidth: page.contentWidthHint
+        }
+        // qmllint enable unqualified
 
         // qmllint disable unqualified
         Controls.CheckBox {

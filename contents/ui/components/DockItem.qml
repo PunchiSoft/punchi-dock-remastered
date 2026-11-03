@@ -147,6 +147,9 @@ Item {
     property real indicatorOpacity: 1.0
     property bool windowCountBadgeEnabled: false
     property string windowCountBadgePosition: "top-right"
+    property bool middleClickEnabled: false
+    readonly property bool middleClickActive: middleClickEnabled
+        && itemType === "app"
     property bool windowGroupingEnabled: false
     property string windowCountEmblemColor: ""
     property real windowCountEmblemOpacity: 1.0
@@ -624,6 +627,7 @@ Item {
     }
 
     signal itemClicked(string cmd)
+    signal middleClicked()
     signal contextMenuRequested(var visualParent, bool keyboardInvoked)
     signal mediaControlsRequested(var visualParent)
     signal mediaExpansionChanged(bool expanded, int transitionDuration)
@@ -1694,12 +1698,20 @@ Item {
                 : ""
         }
         // qmllint enable unqualified
-        acceptedButtons: (dockItemContainer.separatorItem || dockItemContainer.spacerItem)
-                && !dockItemContainer.persistentReorderEnabled
-            ? Qt.NoButton
-            : ((dockItemContainer.itemType === "trash" || dockItemContainer.supportsContextMenu)
+        acceptedButtons: {
+            if ((dockItemContainer.separatorItem || dockItemContainer.spacerItem)
+                    && !dockItemContainer.persistentReorderEnabled) {
+                return Qt.NoButton
+            }
+            let buttons = (dockItemContainer.itemType === "trash"
+                || dockItemContainer.supportsContextMenu)
                 ? Qt.LeftButton | Qt.RightButton
-                : Qt.LeftButton)
+                : Qt.LeftButton
+            if (dockItemContainer.middleClickActive) {
+                buttons = buttons | Qt.MiddleButton
+            }
+            return buttons
+        }
         
         onContainsMouseChanged: {
             if (dockItemContainer.separatorItem || dockItemContainer.spacerItem || dockItemContainer.itemType === "calendar") {
@@ -1818,6 +1830,12 @@ Item {
                 return
             }
             if (dockItemContainer.separatorItem || dockItemContainer.spacerItem) {
+                return
+            }
+            if (mouse.button === Qt.MiddleButton) {
+                if (dockItemContainer.middleClickActive) {
+                    dockItemContainer.middleClicked()
+                }
                 return
             }
             if (mouse.button === Qt.RightButton) {

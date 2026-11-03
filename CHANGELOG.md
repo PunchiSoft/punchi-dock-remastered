@@ -1,5 +1,9 @@
 ## Unreleased
 
+### Interacción del ratón
+
+- Añadido el botón central sobre las aplicaciones del dock: abre una ventana nueva, replicando el valor por defecto del *Icons-only Task Manager*, con un interruptor `Middle-click:` activado por defecto. Los lanzadores sin ventanas, carpetas, papelera, elemento de medios y aplicaciones recientes siguen ignorando el gesto.
+
 ### Flujo de trabajo y entrega
 
 - Añadidas las skills `branch-baseline`, `commit-push-versioning`, `pr-delivery` y `verification-before-completion`; `git` pasa a ser el índice de entrega que delega en ellas.

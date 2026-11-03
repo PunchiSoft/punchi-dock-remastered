@@ -235,6 +235,20 @@ Item {
         root.launchDockItem(item)
     }
 
+    function handleDockItemMiddleClick(item) {
+        if (!item || item.type !== "app" || !root.taskController) {
+            return
+        }
+
+        const taskState = root.taskController.taskStateForDockItem(item)
+        if (taskState.firstRow < 0) {
+            return
+        }
+
+        // The Icons-only Task Manager default: a middle click opens a new window.
+        root.taskController.requestNewInstanceForTaskRow(taskState.firstRow)
+    }
+
     function validateDroppedUrls(urls) {
         if (!root.systemDiscovery) {
             return {

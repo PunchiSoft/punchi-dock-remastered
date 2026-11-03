@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.78\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-11-02 17:23-0300\n"
+"POT-Creation-Date: 2026-11-03 20:37-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -166,7 +166,7 @@ msgid_plural "%1 devices connected"
 msgstr[0] "%1 dispositivo conectado"
 msgstr[1] "%1 dispositivos conectados"
 
-#: contents/ui/components/DockItemsController.qml:988
+#: contents/ui/components/DockItemsController.qml:1002
 #: contents/ui/config/ConfigItems.qml:737
 msgctxt "@info:status"
 msgid "%1 is already in %2."
@@ -177,17 +177,17 @@ msgctxt "@info:media"
 msgid "%1 is not running"
 msgstr "%1 não está em execução"
 
-#: contents/ui/components/DockItem.qml:1635
+#: contents/ui/components/DockItem.qml:1639
 msgctxt "@info:accessible"
 msgid "%1 is now in front; release to open the local files"
 msgstr "%1 está agora em primeiro plano; solte para abrir os arquivos locais"
 
-#: contents/ui/components/DockItem.qml:1659
+#: contents/ui/components/DockItem.qml:1663
 msgctxt "@info:accessible"
 msgid "%1 is updated automatically and cannot accept applications"
 msgstr "%1 é atualizado automaticamente e não pode aceitar aplicativos"
 
-#: contents/ui/components/DockItemsController.qml:993
+#: contents/ui/components/DockItemsController.qml:1007
 #: contents/ui/config/ConfigItems.qml:742
 msgctxt "@info:status"
 msgid ""
@@ -228,7 +228,7 @@ msgid_plural "%1 more in %2"
 msgstr[0] "%1 mais em %2"
 msgstr[1] "%1 mais em %2"
 
-#: contents/ui/main.qml:4003
+#: contents/ui/main.qml:4009
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] "%1 grupo de janelas adicional"
@@ -247,14 +247,14 @@ msgstr "%1 de %2 caracteres"
 msgid "%1 of %2 items"
 msgstr "%1 de %2 itens"
 
-#: contents/ui/components/DockItem.qml:1689
+#: contents/ui/components/DockItem.qml:1693
 #: contents/ui/components/TaskOverflowPopup.qml:111
 msgid "%1 open window"
 msgid_plural "%1 open windows"
 msgstr[0] "%1 janela aberta"
 msgstr[1] "%1 janelas abertas"
 
-#: contents/ui/components/DockItem.qml:1685
+#: contents/ui/components/DockItem.qml:1689
 msgid "%1 open window. Press M to open media controls."
 msgid_plural "%1 open windows. Press M to open media controls."
 msgstr[0] "%1 janela aberta. Pressione M para abrir os controles de mídia."
@@ -297,23 +297,23 @@ msgid_plural "%1 unread notifications"
 msgstr[0] "%1 notificação não lida"
 msgstr[1] "%1 notificações não lidas"
 
-#: contents/ui/components/DockItemsController.qml:984
+#: contents/ui/components/DockItemsController.qml:998
 #: contents/ui/config/ConfigItems.qml:733
 msgctxt "@info:status"
 msgid "%1 was added to %2."
 msgstr "%1 foi adicionado a %2."
 
-#: contents/ui/components/DockItemsController.qml:934
+#: contents/ui/components/DockItemsController.qml:948
 msgctxt "@info:status"
 msgid "%1 was moved on the Dock."
 msgstr "%1 foi movido no Dock."
 
-#: contents/ui/components/DockItemsController.qml:931
+#: contents/ui/components/DockItemsController.qml:945
 msgctxt "@info:status"
 msgid "%1 was pinned to the Dock."
 msgstr "%1 foi fixado no Dock."
 
-#: contents/ui/components/DockItemsController.qml:937
+#: contents/ui/components/DockItemsController.qml:951
 msgctxt "@info:status"
 msgid "%1 was removed from the Dock."
 msgstr "%1 foi removido do Dock."
@@ -364,8 +364,8 @@ msgstr "%1 — %2 — %3"
 #: contents/ui/config/ConfigMenus.qml:284
 #: contents/ui/config/ConfigMenus.qml:318
 #: contents/ui/config/ConfigMenus.qml:393
-#: contents/ui/config/ConfigMouse.qml:133
-#: contents/ui/config/ConfigMouse.qml:171
+#: contents/ui/config/ConfigMouse.qml:134
+#: contents/ui/config/ConfigMouse.qml:172
 #: contents/ui/config/ConfigPopups.qml:213
 #: contents/ui/config/ConfigPopups.qml:252
 #: contents/ui/config/ConfigPopups.qml:288
@@ -440,7 +440,7 @@ msgstr ""
 "100 por cento usa o tamanho base recomendado. As visualizações maiores "
 "mantêm a proporção e permanecem limitadas pelo espaço disponível na tela."
 
-#: contents/ui/config/ConfigMouse.qml:178
+#: contents/ui/config/ConfigMouse.qml:179
 msgid ""
 "100% preserves the current timing. Lower values are slower and higher values "
 "are faster."
@@ -713,12 +713,12 @@ msgstr ""
 "Um contêiner sem pasta mantém a rolagem ativada, para que nenhumaplicativo "
 "fique inacessível."
 
-#: contents/ui/components/DockItemsController.qml:943
+#: contents/ui/components/DockItemsController.qml:957
 msgctxt "@info:status"
 msgid "A desktop shortcut for %1 already exists."
 msgstr "Já existe um atalho na área de trabalho para %1."
 
-#: contents/ui/components/DockItemsController.qml:940
+#: contents/ui/components/DockItemsController.qml:954
 msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Foi criado um atalho na área de trabalho para %1."
@@ -892,7 +892,7 @@ msgctxt "@info"
 msgid "Adjust the warmth of the screen filter"
 msgstr "Ajustar o calor do filtro da tela"
 
-#: contents/ui/config/ConfigMouse.qml:126
+#: contents/ui/config/ConfigMouse.qml:127
 msgid "Adjusts additional hover enlargement between 0 and 100 percent."
 msgstr ""
 "Ajusta a ampliação adicional ao passar o ponteiro entre 0 e 100 por cento."
@@ -1015,7 +1015,7 @@ msgid ""
 msgstr ""
 "Anima o item completo do aplicativo, incluindo o fundo, o ícone e o nome."
 
-#: contents/ui/config/ConfigMouse.qml:228
+#: contents/ui/config/ConfigMouse.qml:229
 msgid ""
 "Animates the matching dock item when a window is minimized. Lateral ripple "
 "also moves the nearest items."
@@ -1061,11 +1061,11 @@ msgstr "Aparência:"
 msgid "Applets only"
 msgstr "Apenas miniaplicativos"
 
-#: contents/ui/components/DockItem.qml:1646
-#: contents/ui/components/DockItem.qml:1653
-#: contents/ui/components/DockItemsController.qml:904
+#: contents/ui/components/DockItem.qml:1650
+#: contents/ui/components/DockItem.qml:1657
+#: contents/ui/components/DockItemsController.qml:918
 #: contents/ui/components/FolderFanView.qml:846
-#: contents/ui/components/FolderPopup.qml:1070
+#: contents/ui/components/FolderPopup.qml:1038
 #: contents/ui/config/code/itemTypeCatalog.js:45
 msgid "Application"
 msgstr "Aplicação"
@@ -1100,7 +1100,7 @@ msgctxt "@info:status"
 msgid "Application could not be opened: %1"
 msgstr "Não foi possível abrir o aplicativo: %1"
 
-#: contents/ui/config/ConfigMouse.qml:241
+#: contents/ui/config/ConfigMouse.qml:251
 msgid "Application file drop:"
 msgstr "Arrastar arquivos para aplicativos:"
 
@@ -1211,7 +1211,7 @@ msgstr "Configuração do Arch concluída"
 msgid "Assembling package..."
 msgstr "Preparando conteúdo do pacote..."
 
-#: contents/ui/config/ConfigMouse.qml:148
+#: contents/ui/config/ConfigMouse.qml:149
 msgid "At 0%, the hover enlargement animation is disabled."
 msgstr "Ao selecionar 0%, a animação de ampliação fica desativada."
 
@@ -1351,7 +1351,7 @@ msgstr "Selecionar automaticamente o reprodutor ativo"
 msgid "Available when dock item names are shown."
 msgstr "Available when dock item names are shown."
 
-#: contents/ui/config/ConfigMouse.qml:45
+#: contents/ui/config/ConfigMouse.qml:46
 msgid "Axis zoom"
 msgstr "Zoom no eixo"
 
@@ -1362,7 +1362,7 @@ msgctxt "@action:button"
 msgid "Back"
 msgstr "Voltar"
 
-#: contents/ui/components/FolderPopup.qml:757
+#: contents/ui/components/FolderPopup.qml:725
 msgctxt "@action:button folder navigation"
 msgid "Back"
 msgstr "Voltar"
@@ -1506,7 +1506,7 @@ msgstr "De baixo para cima"
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:29
 #: contents/ui/config/components/PopupAnimationSettings.qml:19
-#: contents/ui/config/ConfigMouse.qml:52
+#: contents/ui/config/ConfigMouse.qml:53
 msgid "Bounce"
 msgstr "Saltar"
 
@@ -1926,7 +1926,7 @@ msgstr "Limpar pesquisa"
 msgid "Cleared"
 msgstr "Desmarcado"
 
-#: contents/ui/config/ConfigMouse.qml:187
+#: contents/ui/config/ConfigMouse.qml:188
 msgid "Click effect:"
 msgstr "Efeito de clique:"
 
@@ -2192,7 +2192,7 @@ msgctxt "@option:recent-applications"
 msgid "Container"
 msgstr "Contêiner"
 
-#: contents/ui/components/DockItemsController.qml:980
+#: contents/ui/components/DockItemsController.qml:994
 msgctxt "@title"
 msgid "Container"
 msgstr "Recipiente"
@@ -2269,7 +2269,7 @@ msgstr "Item da central de controle"
 msgid "Controlled by the active custom JSON theme (No background)."
 msgstr "Controlado pelo tema JSON ativo (Sem plano de fundo)."
 
-#: contents/ui/config/ConfigMouse.qml:166
+#: contents/ui/config/ConfigMouse.qml:167
 msgid ""
 "Controls how quickly dock items enter, move, and resize. It does not change "
 "popup or menu animations."
@@ -2550,7 +2550,7 @@ msgctxt "@item:inlistbox Media player hover mode"
 msgid "Disabled"
 msgstr "Desativado"
 
-#: contents/ui/config/ConfigMouse.qml:269
+#: contents/ui/config/ConfigMouse.qml:279
 msgid ""
 "Disabled by default because dragging in floating mode also moves the widget."
 msgstr ""
@@ -2657,11 +2657,11 @@ msgstr "Fundo da doca:"
 msgid "Dock context menu distance"
 msgstr "Distância do menu de contexto do dock"
 
-#: contents/ui/config/ConfigMouse.qml:165
+#: contents/ui/config/ConfigMouse.qml:166
 msgid "Dock motion speed"
 msgstr "Velocidade de movimento do dock"
 
-#: contents/ui/config/ConfigMouse.qml:154
+#: contents/ui/config/ConfigMouse.qml:155
 msgid "Dock motion speed:"
 msgstr "Velocidade de movimento do dock:"
 
@@ -2698,7 +2698,7 @@ msgstr "Double line"
 msgid "Drag files"
 msgstr "Arrastar arquivos"
 
-#: contents/ui/components/DockItem.qml:1628
+#: contents/ui/components/DockItem.qml:1632
 msgctxt "@info:accessible"
 msgid ""
 "Drag to move the open applications section. Use an arrow key to move it one "
@@ -2707,7 +2707,7 @@ msgstr ""
 "Arraste para mover a seção de aplicativos abertos. Use uma tecla de seta "
 "para movê-la uma posição ou Escape para cancelar."
 
-#: contents/ui/components/DockItem.qml:1675
+#: contents/ui/components/DockItem.qml:1679
 msgctxt "@info:accessible"
 msgid ""
 "Drag to move this Dock item. Use Control+Shift with an arrow key to move it "
@@ -2824,13 +2824,17 @@ msgctxt "@option:check"
 msgid "Enable background blur (BlurBehind)"
 msgstr "Ativar desfoque de fundo (BlurBehind)"
 
-#: contents/ui/config/ConfigMouse.qml:262
+#: contents/ui/config/ConfigMouse.qml:272
 msgid "Enable drag-to-reorder items"
 msgstr "Ativar reordenação arrastando itens"
 
-#: contents/ui/config/ConfigMouse.qml:242
+#: contents/ui/config/ConfigMouse.qml:252
 msgid "Enable file drag and drop onto application icons"
 msgstr "Permitir arrastar e soltar arquivos nos ícones de aplicativos"
+
+#: contents/ui/config/ConfigMouse.qml:243
+msgid "Enable middle-click actions"
+msgstr "Ativar ações do botão do meio"
 
 #: contents/ui/config/ConfigItems.qml:1083
 #: contents/ui/config/ItemConfigurationDialog.qml:784
@@ -3104,7 +3108,7 @@ msgctxt "@option:control-center-mode"
 msgid "Floating"
 msgstr "Flutuante"
 
-#: contents/ui/config/ConfigMouse.qml:260
+#: contents/ui/config/ConfigMouse.qml:270
 msgid "Floating Dock reordering:"
 msgstr "Reordenação do dock flutuante:"
 
@@ -3132,7 +3136,7 @@ msgstr "Fluir para a esquerda"
 msgid "Flow to the right"
 msgstr "Fluir para a direita"
 
-#: contents/ui/components/FolderPopup.qml:733
+#: contents/ui/components/FolderPopup.qml:701
 #: contents/ui/config/ConfigItems.qml:1078
 #: contents/ui/config/ItemConfigurationDialog.qml:692
 msgid "Folder"
@@ -3489,7 +3493,7 @@ msgstr "Horizontais"
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:215
 #: contents/ui/components/punchimenu/PunchiMenuNormalSettingsView.qml:344
-#: contents/ui/config/ConfigMouse.qml:91
+#: contents/ui/config/ConfigMouse.qml:92
 msgid "Hover animation:"
 msgstr "Animação flutuante:"
 
@@ -3502,11 +3506,11 @@ msgstr "Animação ao passar o cursor:"
 msgid "Hover background:"
 msgstr "Passar o mouse sobre o fundo:"
 
-#: contents/ui/config/ConfigMouse.qml:125
+#: contents/ui/config/ConfigMouse.qml:126
 msgid "Hover enlargement"
 msgstr "Ampliação ao passar o ponteiro"
 
-#: contents/ui/config/ConfigMouse.qml:113
+#: contents/ui/config/ConfigMouse.qml:114
 msgid "Hover enlargement:"
 msgstr "Ampliação ao passar o ponteiro:"
 
@@ -3800,7 +3804,7 @@ msgctxt "@action:button"
 msgid "Keep editing"
 msgstr "Continuar editando"
 
-#: contents/ui/components/DockItem.qml:1631
+#: contents/ui/components/DockItem.qml:1635
 msgctxt "@info:accessible"
 msgid "Keep holding to bring %1 to the front"
 msgstr "Continue segurando para trazer %1 para o primeiro plano"
@@ -3839,7 +3843,7 @@ msgctxt "@item:inlistbox Context menu size"
 msgid "Large"
 msgstr "Grande"
 
-#: contents/ui/config/ConfigMouse.qml:59
+#: contents/ui/config/ConfigMouse.qml:60
 msgid "Lateral ripple"
 msgstr "Ondulação lateral"
 
@@ -3940,8 +3944,7 @@ msgstr "Vista simples"
 #: contents/ui/config/ItemEditorPanel.qml:568
 msgctxt "@option:check folder container"
 msgid "Live folder contents"
-msgstr ""
-"Conteúdo da pasta ao vivo"
+msgstr "Conteúdo da pasta ao vivo"
 
 #: contents/ui/config/ConfigItems.qml:1082
 #: contents/ui/config/ItemConfigurationDialog.qml:696
@@ -4253,6 +4256,10 @@ msgstr ""
 "visualização de janela. Os limites da tela podem reduzir o tamanho efetivo "
 "com segurança."
 
+#: contents/ui/config/ConfigMouse.qml:242
+msgid "Middle-click:"
+msgstr "Botão do meio:"
+
 #: contents/ui/components/TaskModelController.qml:877
 msgid "Minimize"
 msgstr "Minimizar"
@@ -4364,7 +4371,7 @@ msgstr "Mover para uma pasta"
 msgid "Move “%1” to the Trash…"
 msgstr "Mover “%1” para a Lixeira…"
 
-#: contents/ui/components/DockItem.qml:1669
+#: contents/ui/components/DockItem.qml:1673
 msgctxt "@info:accessible"
 msgid "Moving Dock item. Drop to place it at position %1 of %2."
 msgstr "Movendo um item do Dock. Solte para colocá-lo na posição %1 de %2."
@@ -4578,8 +4585,8 @@ msgstr "Nenhum desktop virtual foi encontrado."
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:26
 #: contents/ui/config/components/PopupAnimationSettings.qml:22
 #: contents/ui/config/ConfigAspect.qml:164
-#: contents/ui/config/ConfigMouse.qml:42 contents/ui/config/ConfigMouse.qml:49
-#: contents/ui/config/ConfigMouse.qml:57 contents/ui/config/ConfigPopups.qml:39
+#: contents/ui/config/ConfigMouse.qml:43 contents/ui/config/ConfigMouse.qml:50
+#: contents/ui/config/ConfigMouse.qml:58 contents/ui/config/ConfigPopups.qml:39
 msgid "None"
 msgstr "Nenhum"
 
@@ -4827,7 +4834,7 @@ msgid "Opaque"
 msgstr "Opaco"
 
 #: contents/ui/components/FolderFanView.qml:433
-#: contents/ui/components/FolderPopup.qml:207
+#: contents/ui/components/FolderPopup.qml:179
 msgctxt "@action:button open the container"
 msgid "Open"
 msgstr "Abrir"
@@ -4959,7 +4966,7 @@ msgid "Open this application folder"
 msgstr "Abrir esta pasta de aplicativos"
 
 #: contents/ui/components/FolderFanView.qml:1112
-#: contents/ui/components/FolderPopup.qml:1074
+#: contents/ui/components/FolderPopup.qml:1042
 msgctxt "@info:accessible"
 msgid "Open this folder in the file manager"
 msgstr "Abrir esta pasta no gerenciador de arquivos"
@@ -5199,7 +5206,7 @@ msgstr "Plasma Shell reiniciado com sucesso (novo PID: %s).\\n"
 msgid "Plasma color"
 msgstr "Cor do Plasma"
 
-#: contents/ui/config/ConfigMouse.qml:149
+#: contents/ui/config/ConfigMouse.qml:150
 msgid ""
 "Plasma panels limit hover enlargement to 65% and reduce it further when the "
 "custom panel size requires it. With an active custom JSON theme, these "
@@ -5269,11 +5276,11 @@ msgctxt "@label:listbox"
 msgid "Presentation:"
 msgstr "Apresentação:"
 
-#: contents/ui/config/ConfigMouse.qml:51
+#: contents/ui/config/ConfigMouse.qml:52
 msgid "Press"
 msgstr "Clicar"
 
-#: contents/ui/components/DockItem.qml:1693
+#: contents/ui/components/DockItem.qml:1697
 msgctxt "@info:accessible"
 msgid "Press M to open media controls"
 msgstr "Pressione M para abrir os controles de mídia"
@@ -5341,7 +5348,7 @@ msgstr ""
 "monitoramento de saída usa um fluxo de áudio de entrada."
 
 #: contents/ui/components/punchimenu/PunchiMenuSettingsBase.qml:28
-#: contents/ui/config/ConfigMouse.qml:46 contents/ui/config/ConfigMouse.qml:50
+#: contents/ui/config/ConfigMouse.qml:47 contents/ui/config/ConfigMouse.qml:51
 msgid "Pulse"
 msgstr "Pulso"
 
@@ -5423,7 +5430,7 @@ msgid "PunchiMenu panel distance"
 msgstr "Distância do PunchiMenu ao painel"
 
 #: contents/ui/components/DockItem.qml:42
-#: contents/ui/components/DockItemsController.qml:1287
+#: contents/ui/components/DockItemsController.qml:1301
 msgctxt "@title"
 msgid "Quick Note"
 msgstr "Nota rápida"
@@ -5494,17 +5501,17 @@ msgstr "Opacidade de reflexão:"
 msgid "Reflection:"
 msgstr "Reflexão:"
 
-#: contents/ui/components/DockItem.qml:1650
+#: contents/ui/components/DockItem.qml:1654
 msgctxt "@info:accessible"
 msgid "Release to add %1 to %2"
 msgstr "Solte para adicionar %1 a %2"
 
-#: contents/ui/components/DockItem.qml:1643
+#: contents/ui/components/DockItem.qml:1647
 msgctxt "@info:accessible"
 msgid "Release to insert %1 in the Dock"
 msgstr "Solte para inserir %1 no Dock"
 
-#: contents/ui/components/DockItem.qml:1639
+#: contents/ui/components/DockItem.qml:1643
 msgctxt "@info:accessible"
 msgid "Release to open local files with %1"
 msgstr "Solte para abrir arquivos locais com %1"
@@ -6133,12 +6140,12 @@ msgctxt "@action:button"
 msgid "Shut Down"
 msgstr "Desligar"
 
-#: contents/ui/config/ConfigMouse.qml:53
+#: contents/ui/config/ConfigMouse.qml:54
 msgctxt "@item:inlistbox click effect"
 msgid "Side collision"
 msgstr "Choque lateral"
 
-#: contents/ui/config/ConfigMouse.qml:44
+#: contents/ui/config/ConfigMouse.qml:45
 msgid "Single"
 msgstr "Solteiro"
 
@@ -6165,7 +6172,7 @@ msgstr "Ignorando a instalação de dependências pelo pacman"
 msgid "Slide from the dock"
 msgstr "Deslize da doca"
 
-#: contents/ui/config/ConfigMouse.qml:58
+#: contents/ui/config/ConfigMouse.qml:59
 msgid "Slow bounce"
 msgstr "Salto lento"
 
@@ -6316,8 +6323,8 @@ msgstr "Sombra de texto:"
 msgid "Text shadows:"
 msgstr "Sombras de texto:"
 
-#: contents/ui/components/DockItemsController.qml:952
-#: contents/ui/components/DockItemsController.qml:1006
+#: contents/ui/components/DockItemsController.qml:966
+#: contents/ui/components/DockItemsController.qml:1020
 msgctxt "@info:status"
 msgid "The Dock configuration could not be saved."
 msgstr "A configuração do Dock não pôde ser salva."
@@ -6334,7 +6341,7 @@ msgstr ""
 msgid "The application action could not be found."
 msgstr "A ação do aplicativo não foi encontrada."
 
-#: contents/ui/components/DockItemsController.qml:1010
+#: contents/ui/components/DockItemsController.qml:1024
 msgctxt "@info:status"
 msgid "The application could not be added to the container."
 msgstr "Não foi possível adicionar o aplicativo ao contêiner."
@@ -6343,7 +6350,7 @@ msgstr "Não foi possível adicionar o aplicativo ao contêiner."
 msgid "The application could not be found."
 msgstr "O aplicativo não foi encontrado."
 
-#: contents/ui/components/DockItemsController.qml:949
+#: contents/ui/components/DockItemsController.qml:963
 msgctxt "@info:status"
 msgid "The application could not be resolved."
 msgstr "O aplicativo não pôde ser resolvido."
@@ -6358,7 +6365,7 @@ msgctxt "@info:status"
 msgid "The application folder could not be updated."
 msgstr "Não foi possível atualizar a pasta de aplicativos."
 
-#: contents/ui/components/DockItemsController.qml:946
+#: contents/ui/components/DockItemsController.qml:960
 msgctxt "@info:status"
 msgid "The application identity is ambiguous."
 msgstr "A identidade do aplicativo é ambígua."
@@ -6411,25 +6418,26 @@ msgid ""
 "container shows the contents loaded last."
 msgstr ""
 "O contêiner lista a pasta como ela está agora, de modo que os arquivos "
-"adicionados ou removidos aparecem sem pressionar Carregar conteúdo. Se a pasta "
-"não estiver disponível, o contêiner mostra o conteúdo carregado por último."
+"adicionados ou removidos aparecem sem pressionar Carregar conteúdo. Se a "
+"pasta não estiver disponível, o contêiner mostra o conteúdo carregado por "
+"último."
 
-#: contents/ui/components/DockItemsController.qml:959
+#: contents/ui/components/DockItemsController.qml:973
 msgctxt "@info:status"
 msgid "The desktop folder is not available."
 msgstr "A pasta da área de trabalho não está disponível."
 
-#: contents/ui/components/DockItemsController.qml:966
+#: contents/ui/components/DockItemsController.qml:980
 msgctxt "@info:status"
 msgid "The desktop shortcut could not be written."
 msgstr "O atalho da área de trabalho não pôde ser gravado."
 
-#: contents/ui/components/DockItemsController.qml:962
+#: contents/ui/components/DockItemsController.qml:976
 msgctxt "@info:status"
 msgid "The desktop shortcut permissions could not be set."
 msgstr "As permissões do atalho da área de trabalho não puderam ser definidas."
 
-#: contents/ui/components/DockItemsController.qml:956
+#: contents/ui/components/DockItemsController.qml:970
 msgctxt "@info:status"
 msgid "The desktop shortcut source is not safe."
 msgstr "A origem do atalho da área de trabalho não é segura."
@@ -6473,7 +6481,7 @@ msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Os arquivos soltos não puderam ser abertos."
 
-#: contents/ui/components/DockItemsController.qml:998
+#: contents/ui/components/DockItemsController.qml:1012
 #: contents/ui/config/ConfigItems.qml:750
 msgctxt "@info:status"
 msgid "The dropped launcher could not be resolved safely."
@@ -6563,7 +6571,7 @@ msgstr ""
 "O reflexo é decorativo e não altera o tamanho ou a área de interação dos "
 "itens de encaixe."
 
-#: contents/ui/components/DockItemsController.qml:969
+#: contents/ui/components/DockItemsController.qml:983
 msgctxt "@info:status"
 msgid "The requested application action could not be completed."
 msgstr "A ação solicitada do aplicativo não pôde ser concluída."
@@ -6630,7 +6638,7 @@ msgstr "O som não pôde ser reproduzido: %1"
 msgid "The spectrum is drawn over the Plasma-themed dock background."
 msgstr "O espectro é desenhado sobre o fundo da doca com tema Plasma."
 
-#: contents/ui/components/DockItemsController.qml:1002
+#: contents/ui/components/DockItemsController.qml:1016
 #: contents/ui/config/ConfigItems.qml:747
 msgctxt "@info:status"
 msgid "The target container changed before the application could be added."
@@ -6685,7 +6693,7 @@ msgctxt "@info:status"
 msgid "This application could not be resolved safely."
 msgstr "Este aplicativo não pôde ser resolvido com segurança."
 
-#: contents/ui/components/DockItem.qml:1663
+#: contents/ui/components/DockItem.qml:1667
 msgctxt "@info:accessible"
 msgid "This file drop cannot be accepted"
 msgstr "Este arrastar e soltar de arquivos não pode ser aceito"
@@ -7170,7 +7178,7 @@ msgctxt "@action:button %1 is an audio device name"
 msgid "Use %1 as the default device"
 msgstr "Usar %1 como dispositivo padrão"
 
-#: contents/ui/components/DockItem.qml:1679
+#: contents/ui/components/DockItem.qml:1683
 msgctxt "@info:accessible"
 msgid "Use Control+Shift with an arrow key to move this Dock item."
 msgstr "Use Ctrl+Shift com uma tecla de seta para mover este item do dock."
@@ -7325,7 +7333,7 @@ msgstr ""
 "Aviso: a versão do pacote selecionado %s é anterior à versão do código-fonte "
 "%s.\\n"
 
-#: contents/ui/config/ConfigMouse.qml:43
+#: contents/ui/config/ConfigMouse.qml:44
 msgid "Wave"
 msgstr "Onda"
 
@@ -7333,7 +7341,7 @@ msgstr "Onda"
 msgid "What would you like to do?"
 msgstr "O que você deseja fazer?"
 
-#: contents/ui/config/ConfigMouse.qml:248
+#: contents/ui/config/ConfigMouse.qml:258
 msgid ""
 "When disabled, application icons ignore dragged files. The Trash can still "
 "receive files."
@@ -7392,7 +7400,7 @@ msgstr ""
 "Os indicadores da janela permanecem visíveis quando o plano de fundo do item "
 "está oculto."
 
-#: contents/ui/config/ConfigMouse.qml:208
+#: contents/ui/config/ConfigMouse.qml:209
 msgid "Window minimize effect:"
 msgstr "Efeito de minimização da janela:"
 
