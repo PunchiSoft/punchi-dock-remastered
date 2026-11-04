@@ -21,7 +21,7 @@ para KDE Plasma 6. Use como dock flutuante ou dentro de um painel do Plasma,
 na horizontal ou vertical, com o tema Plasma ativo ou um fundo personalizado.
 
 Inclui o PunchiMenu para encontrar e organizar aplicativos e é uma reescrita
-modular do [Punchi Dock Plasmoid original](https://github.com/PunchiSoft/punchi-dock-plasmoid).
+modular do Punchi Dock Plasmoid original.
 O projeto está em desenvolvimento ativo rumo à versão 1.0.
 
 [Recursos](#recursos) · [Capturas](#capturas-de-tela) · [Instalação](#instalação) · [Compatibilidade](#compatibilidade) · [Testes](#testes-e-qualidade) · [Suporte](#suporte-e-contribuições)
@@ -88,6 +88,11 @@ recursos marcados como em desenvolvimento podem não estar incluídos na versão
   temáticas de popup, sombras e desfoque quando disponíveis.
 - **Aparência personalizada:** Escolha fundos planos 2D ou de prateleira 2.5D,
   temas JSON externos, indicadores, rótulos, espaçamento e efeitos ao passar o ponteiro.
+- **Exemplos de temas:** Baixe a coleção de exemplo de temas JSON externos
+  ([`themes demo V 0.1.5.tar.gz`](<Themes demo/themes demo V 0.1.5.tar.gz>)), extraia-a
+  e importe a pasta `themes/` resultante em **Aparência → Tema de fundo do Dock →
+  Pasta de importação…**. Os exemplos não são instalados com o dock; consulte o
+  [guia dos temas de exemplo](<Themes demo/README.md>).
 - **Configuração imediata:** Aplique preferências sem reiniciar o Plasma Shell,
   preservando navegação por teclado, nomes acessíveis, escala e movimento reduzido.
 
@@ -141,6 +146,12 @@ baseada em capturas do desktop de 1 de outubro de 2026.
 ## Instalação
 
 ### Pacote pré-compilado
+
+> [!NOTE]
+> O Punchi Dock Remastered também está publicado na [KDE Store](https://store.kde.org/p/2364290/).
+> As versões disponíveis lá são mais antigas que as do GitHub; use as
+> [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases) ou uma
+> compilação a partir do código-fonte para obter a versão atual.
 
 Para usar um pacote pré-compilado, escolha um arquivo para seu sistema no
 [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases).
@@ -374,6 +385,14 @@ aplica as verificações independentes de lint, catálogos, integridade e
 empacotamento. Veja [scripts de desenvolvimento](scripts-dev/README.md) e
 [integridade dos testes](scripts-dev/test-integrity/README.md).
 
+## Projetos relacionados
+
+- **[Punchi Dock Quickshell](https://github.com/PunchiSoft/punchi-dock-quickshell):** Projeto
+  irmão em desenvolvimento que reconstrói o dock como um aplicativo independente de
+  Quickshell para o KDE Plasma no Wayland. Diferente de um plasmóide, ele controla a própria
+  superfície de janela, o comportamento de borda e o modelo de entrada em vez de herdá-los do
+  painel. Ainda não tem versão publicada nem pacote.
+
 ## Suporte e contribuições
 
 Relate problemas no [GitHub Issues](https://github.com/PunchiSoft/punchi-dock-remastered/issues).
@@ -403,7 +422,7 @@ Notas internas, arquivos de desenvolvimento e ferramentas de testes ficam fora d
 
 Os agentes de IA são um apoio integral ao desenvolvimento para agilizar a programação, investigar problemas, apoiar refatorações e preparar documentação e testes. Suas instruções são versionadas em [AGENTS.md](AGENTS.md) e [`.agents/`](.agents/). Os mantenedores continuam responsáveis pelas decisões técnicas, pela revisão e pela validação.
 
-As instruções para os agentes e suas skills foram criadas e configuradas pelo autor do Punchi Dock Remastered a partir de pesquisa própria, leitura de recursos na internet, Wikipedia e discussões no Reddit. Essas instruções são adaptadas à arquitetura e ao fluxo de desenvolvimento do projeto.
+As instruções para os agentes e suas skills foram criadas e configuradas pela PunchiSoft a partir de pesquisa própria, leitura de recursos na internet, Wikipedia e discussões no Reddit. Essas instruções são adaptadas à arquitetura e ao fluxo de desenvolvimento do projeto.
 
 O apoio financeiro é opcional: [doações pelo PayPal](https://www.paypal.com/donate/?hosted_button_id=HXFSZU4K8C38W).
 Doações nunca são necessárias para usar o projeto.

@@ -21,7 +21,7 @@ Verwende es als schwebendes Dock oder innerhalb eines Plasma-Panels, horizontal
 oder vertikal, mit dem aktiven Plasma-Design oder einem eigenen Hintergrund.
 
 Es enthält PunchiMenu zum Finden und Organisieren von Anwendungen und ist eine
-modulare Neufassung des ursprünglichen [Punchi Dock Plasmoids](https://github.com/PunchiSoft/punchi-dock-plasmoid).
+modulare Neufassung des ursprünglichen Punchi Dock Plasmoids.
 Das Projekt wird aktiv auf dem Weg zu Version 1.0 weiterentwickelt.
 
 [Funktionen](#funktionen) · [Screenshots](#screenshots) · [Installation](#installation) · [Kompatibilität](#kompatibilität) · [Tests](#tests-und-qualität) · [Support](#support-und-mitwirkung)
@@ -88,6 +88,12 @@ als in Entwicklung gekennzeichnete Funktionen können in der neuesten Veröffent
   Popup-Oberflächen, Schatten und Unschärfe, soweit unterstützt.
 - **Eigenes Erscheinungsbild:** Wähle flache 2D- oder regalartige 2,5D-Hintergründe,
   externe JSON-Designs, Indikatoren, Beschriftungen, Abstände und Hover-Effekte.
+- **Designbeispiele:** Lade die Beispielsammlung externer JSON-Designs
+  ([`themes demo V 0.1.5.tar.gz`](<Themes demo/themes demo V 0.1.5.tar.gz>)) herunter,
+  entpacke sie und importiere den entstandenen Ordner `themes/` über
+  **Aussehen → Dock-Hintergrundthema → Ordner importieren…**. Die Beispiele werden
+  nicht mit dem Dock installiert; weitere Hinweise findest du in der
+  [Anleitung zu den Beispiel-Designs](<Themes demo/README.md>).
 - **Direkte Konfiguration:** Übernimm Einstellungen ohne Neustart der Plasma Shell,
   mit Tastaturnavigation, zugänglichen Namen, Skalierung und reduziertem Bewegungsverhalten.
 
@@ -141,6 +147,12 @@ basierend auf Desktop-Aufnahmen vom 1. Oktober 2026.
 ## Installation
 
 ### Vorkompiliertes Paket
+
+> [!NOTE]
+> Punchi Dock Remastered ist außerdem im [KDE Store](https://store.kde.org/p/2364290/)
+> veröffentlicht. Die dort verfügbaren Versionen sind älter als die GitHub Releases;
+> nutze die [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases)
+> oder einen Quellcode-Build, um die aktuelle Version zu erhalten.
 
 Wähle für ein vorgefertigtes Paket eine zu deinem System passende Datei aus den
 [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases).
@@ -375,6 +387,14 @@ wendet zusätzlich die getrennten Prüfungen für Lint, Kataloge, Integrität un
 Paketierung an. Siehe [Entwicklerskripte](scripts-dev/README.md) und
 [Testintegrität](scripts-dev/test-integrity/README.md).
 
+## Verwandte Projekte
+
+- **[Punchi Dock Quickshell](https://github.com/PunchiSoft/punchi-dock-quickshell):** Ein
+  verwandtes Projekt in Entwicklung, das den Dock als eigenständige Quickshell-Anwendung für
+  KDE Plasma unter Wayland neu aufbaut. Anders als ein Plasma-Applet besitzt es eine eigene
+  Fensterfläche, eigenes Randverhalten und ein eigenes Eingabemodell, statt sie vom Panel zu
+  erben. Es gibt noch keine veröffentlichte Version und kein Paket.
+
 ## Support und Mitwirkung
 
 Melde Probleme über [GitHub Issues](https://github.com/PunchiSoft/punchi-dock-remastered/issues).
@@ -404,7 +424,7 @@ Interne Notizen, Entwicklungsdateien und Testwerkzeuge werden nicht in das insta
 
 KI-Agenten sind eine integrale Entwicklungshilfe, um Programmierung zu beschleunigen, Probleme zu untersuchen, Refactorings zu unterstützen und Dokumentation sowie Tests vorzubereiten. Ihre Anweisungen werden in [AGENTS.md](AGENTS.md) und [`.agents/`](.agents/) versioniert. Die Projektverantwortlichen bleiben für technische Entscheidungen, Überprüfung und Validierung verantwortlich.
 
-Die Agentenanweisungen und Skills wurden vom Autor von Punchi Dock Remastered durch eigene Recherche, das Lesen von Online-Ressourcen, Wikipedia und Reddit-Diskussionen erstellt und konfiguriert. Diese Anweisungen sind auf die Architektur und den Entwicklungsablauf des Projekts abgestimmt.
+Die Agentenanweisungen und Skills wurden von PunchiSoft durch eigene Recherche, das Lesen von Online-Ressourcen, Wikipedia und Reddit-Diskussionen erstellt und konfiguriert. Diese Anweisungen sind auf die Architektur und den Entwicklungsablauf des Projekts abgestimmt.
 
 Finanzielle Unterstützung ist freiwillig: [Spenden über PayPal](https://www.paypal.com/donate/?hosted_button_id=HXFSZU4K8C38W).
 Eine Spende ist niemals Voraussetzung für die Nutzung des Projekts.

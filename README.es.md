@@ -21,7 +21,7 @@ personalizable para KDE Plasma 6. Úsalo como dock flotante o dentro de un panel
 de Plasma, en horizontal o vertical, con el tema Plasma activo o un fondo personalizado.
 
 Incluye PunchiMenu para buscar y organizar aplicaciones y es una reescritura
-modular del [Plasmoide Punchi Dock original](https://github.com/PunchiSoft/punchi-dock-plasmoid).
+modular del Plasmoide Punchi Dock original.
 El proyecto está en desarrollo activo hacia la versión 1.0.
 
 [Funciones](#funciones) · [Capturas](#capturas) · [Instalación](#instalación) · [Compatibilidad](#compatibilidad) · [Pruebas](#pruebas-y-calidad) · [Soporte](#soporte-y-contribuciones)
@@ -88,6 +88,11 @@ las funciones marcadas como desarrollo pueden no estar incluidas en la última v
   de popup temáticas, sombras y desenfoque cuando estén disponibles.
 - **Apariencia personalizada:** Elige fondos planos 2D o de repisa 2.5D, temas JSON
   externos, indicadores, etiquetas, espaciado y efectos al pasar el puntero.
+- **Ejemplos de temas:** Descarga la colección de ejemplo de temas JSON externos
+  ([`themes demo V 0.1.5.tar.gz`](<Themes demo/themes demo V 0.1.5.tar.gz>)), extráela
+  e importa la carpeta `themes/` resultante desde **Apariencia → Tema de fondo del dock →
+  Importar carpeta…**. Los ejemplos no se instalan con el dock; consulta la
+  [guía de temas de ejemplo](<Themes demo/README.md>).
 - **Configuración inmediata:** Aplica preferencias sin reiniciar Plasma Shell,
   conservando navegación por teclado, nombres accesibles, escalado y movimiento reducido.
 
@@ -141,6 +146,12 @@ basada en capturas del escritorio del 1 de octubre de 2026.
 ## Instalación
 
 ### Paquete precompilado
+
+> [!NOTE]
+> Punchi Dock Remastered también está publicado en la [KDE Store](https://store.kde.org/p/2364290/).
+> Las versiones disponibles allí son anteriores a las de GitHub; usa
+> [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases) o una
+> compilación desde el código fuente para obtener la versión actual.
 
 Para utilizar un paquete precompilado, elige un archivo para tu sistema en
 [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases).
@@ -375,6 +386,14 @@ también aplica las comprobaciones independientes de lint, catálogos, integrida
 y empaquetado. Consulta [scripts de desarrollo](scripts-dev/README.es.md) e
 [integridad de pruebas](scripts-dev/test-integrity/README.md).
 
+## Proyectos relacionados
+
+- **[Punchi Dock Quickshell](https://github.com/PunchiSoft/punchi-dock-quickshell):** Proyecto
+  hermano en desarrollo que reconstruye el dock como una aplicación independiente de
+  Quickshell para KDE Plasma en Wayland. A diferencia de un plasmoide, controla su propia
+  superficie de ventana, su comportamiento de borde y su modelo de entrada en lugar de
+  heredarlos del panel. Todavía no tiene versión publicada ni paquete.
+
 ## Soporte y contribuciones
 
 Reporta problemas en [GitHub Issues](https://github.com/PunchiSoft/punchi-dock-remastered/issues).
@@ -404,7 +423,7 @@ Las notas internas, archivos de desarrollo y herramientas de pruebas quedan fuer
 
 Los agentes de IA son un apoyo integral al desarrollo para agilizar la programación, investigar problemas, apoyar refactorizaciones y preparar documentación y pruebas. Sus instrucciones se versionan en [AGENTS.md](AGENTS.md) y [`.agents/`](.agents/). Los mantenedores conservan la responsabilidad de las decisiones técnicas, la revisión y la validación.
 
-Las instrucciones para los agentes y sus skills fueron creadas y configuradas por el autor de Punchi Dock Remastered a partir de investigación propia, lectura de recursos en internet, Wikipedia y debates en Reddit. Estas instrucciones se adaptan a la arquitectura y al flujo de desarrollo del proyecto.
+Las instrucciones para los agentes y sus skills fueron creadas y configuradas por PunchiSoft a partir de investigación propia, lectura de recursos en internet, Wikipedia y debates en Reddit. Estas instrucciones se adaptan a la arquitectura y al flujo de desarrollo del proyecto.
 
 El apoyo económico es opcional: [donaciones mediante PayPal](https://www.paypal.com/donate/?hosted_button_id=HXFSZU4K8C38W).
 Nunca es necesario donar para utilizar el proyecto.

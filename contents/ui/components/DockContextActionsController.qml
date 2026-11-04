@@ -587,6 +587,8 @@ QtObject {
                 }
                 itemActions.push(folderViewAction)
                 if (!recentContainer) {
+                    // Presentation comes first: the sort choice is what the
+                    // folder shows, and the behaviour follows it.
                     const currentSort = item.sortMode === "name"
                             || item.sortMode === "size"
                             || item.sortMode === "created"
@@ -657,14 +659,106 @@ QtObject {
                             }
                         ]
                     })
-                    const folderPath = String(item.sourcePath || "").trim()
-                    if (folderPath.length > 0) {
+                    // Only a container that points at a real folder can follow
+                    // it, so the content group is absent for manual containers.
+                    const folderSourcePath = String(item.sourcePath || "").trim()
+                    const folderSource = String(item.sourceType || "manual") === "folder"
+                        && folderSourcePath.length > 0
+                    if (folderSource) {
+                        // Every setting below is stored per item, so the title
+                        // names the folder it belongs to.
+                        const folderName = String(item.name || "").trim()
+                        const contentEnabled = item.syncFolder !== false
+                        const browsingEnabled = item.browseSubfolders === true
+                        const contentChildren = [{
+                            // qmllint disable unqualified
+                            "name": i18nc("@title:menu Folder popup content group", "Live folder contents"),
+                            // qmllint enable unqualified
+                            "kind": "section"
+                        }, {
+                            // qmllint disable unqualified
+                            "name": i18nc("@option:radio folder container", "Enable"),
+                            // qmllint enable unqualified
+                            "icon": "checkmark",
+                            "kind": "setFolderSyncFolder",
+                            "enabled": true,
+                            "checked": contentEnabled,
+                            "exclusive": true,
+                            "sync": false,
+                            "targetIndex": persistentIndex,
+                            "expectedFolderText": expectedFolderText
+                        }, {
+                            // qmllint disable unqualified
+                            "name": i18nc("@option:radio folder container", "Disable"),
+                            // qmllint enable unqualified
+                            "icon": "dialog-cancel",
+                            "kind": "setFolderSyncFolder",
+                            "enabled": true,
+                            "checked": !contentEnabled,
+                            "exclusive": true,
+                            "sync": true,
+                            "targetIndex": persistentIndex,
+                            "expectedFolderText": expectedFolderText
+                        }]
+                        // The KCM only offers subfolder browsing for the two
+                        // layouts that can actually navigate.
+                        const effectiveLayout = ConfigItemsJS.effectiveFolderLayout(
+                            item.layout, root.verticalDock)
+                        if (effectiveLayout === "list"
+                                || effectiveLayout === "detailed") {
+                            contentChildren.push({
+                                // qmllint disable unqualified
+                                "name": i18nc("@title:menu Folder popup content group", "Navigate subfolders"),
+                                // qmllint enable unqualified
+                                "kind": "section"
+                            }, {
+                                // qmllint disable unqualified
+                                "name": i18nc("@option:radio folder container", "Enable"),
+                                // qmllint enable unqualified
+                                "icon": "checkmark",
+                                "kind": "setFolderBrowseSubfolders",
+                                // Entering subfolders reads the live listing, so
+                                // the pair stays visible but inert until the
+                                // folder follows its contents.
+                                "enabled": contentEnabled,
+                                "checked": browsingEnabled,
+                                "exclusive": true,
+                                "browseSubfolders": true,
+                                "targetIndex": persistentIndex,
+                                "expectedFolderText": expectedFolderText
+                            }, {
+                                // qmllint disable unqualified
+                                "name": i18nc("@option:radio folder container", "Disable"),
+                                // qmllint enable unqualified
+                                "icon": "dialog-cancel",
+                                "kind": "setFolderBrowseSubfolders",
+                                "enabled": contentEnabled,
+                                "checked": !browsingEnabled,
+                                "exclusive": true,
+                                "browseSubfolders": false,
+                                "targetIndex": persistentIndex,
+                                "expectedFolderText": expectedFolderText
+                            })
+                        }
+                        itemActions.push({
+                            // qmllint disable unqualified
+                            "name": folderName.length > 0
+                                ? i18nc("@title:menu Folder content submenu, %1 is the folder name", "Content — %1", folderName)
+                                : i18nc("@title:menu", "Content"),
+                            // qmllint enable unqualified
+                            "icon": "document-multiple",
+                            "kind": "submenu",
+                            "enabled": true,
+                            "children": contentChildren
+                        })
+                    }
+                    if (folderSourcePath.length > 0) {
                         itemActions.push({
                             "name": i18nc("@action:context", "Open in File Manager"), // qmllint disable unqualified
                             "icon": "document-open-folder",
                             "kind": "openFolderLocation",
                             "enabled": true,
-                            "targetPath": folderPath
+                            "targetPath": folderSourcePath
                         })
                     }
                 }
@@ -974,6 +1068,16 @@ QtObject {
             }
             return root.dockItemsController.setFolderLayout(
                 action.targetIndex, String(action.layout || ""),
+                String(action.expectedFolderText || ""))
+        }
+        if (action.kind === "setFolderSyncFolder") {
+            return root.dockItemsController.setFolderSyncFolder(
+                action.targetIndex, action.sync === true,
+                String(action.expectedFolderText || ""))
+        }
+        if (action.kind === "setFolderBrowseSubfolders") {
+            return root.dockItemsController.setFolderBrowseSubfolders(
+                action.targetIndex, action.browseSubfolders === true,
                 String(action.expectedFolderText || ""))
         }
         if (action.kind === "setFolderSortMode") {
