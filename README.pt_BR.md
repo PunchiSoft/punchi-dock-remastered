@@ -57,7 +57,16 @@ recursos marcados como em desenvolvimento podem não estar incluídos na versão
 - **Quatro apresentações:** Escolha Grade, Lista, Detalhada ou Leque, com ícones,
   rótulos, tipografia, escala e animações de abertura configuráveis.
 - **Conteúdo flexível:** Crie coleções manuais, preencha com categorias de
-  aplicativos instalados ou abra itens de uma pasta do sistema de arquivos.
+  aplicativos instalados ou siga uma pasta do sistema de arquivos para que arquivos
+  adicionados e removidos apareçam sem recarregar.
+- **Opções de pasta no menu:** `Conteúdo — <pasta>` no menu de contexto ativa ou
+  desativa o conteúdo ao vivo e a navegação por subpastas desse contêiner, e o
+  contêiner adota o nome da pasta enquanto você mantém o nome padrão.
+- **Congelar com a listagem atual:** Ao desativar o conteúdo ao vivo é guardado o
+  que a pasta mostra naquele momento; o popup avisa quando a pasta não pode ser
+  lida ou quando um contêiner congelado não tem conteúdo salvo.
+- **Navegação por subpastas:** Abra subpastas em Grade, Lista e Detalhada. O Leque
+  apresenta uma única pasta e por isso não navega.
 - **Interação direta:** Arraste lançadores do PunchiMenu ou do desktop, altere
   a apresentação pelo menu de contexto e abra a pasta de origem no Dolphin.
 

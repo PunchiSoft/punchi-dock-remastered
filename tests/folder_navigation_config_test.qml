@@ -42,10 +42,15 @@ TestCase {
         compare(checkbox().checked, false)
         checkbox().checked = true
         checkbox().toggled()
+        // Every layout except the fan can enter subfolders, so the option stays
+        // visible on the grid and keeps its stored value.
         controller.setDraftValues({layout: "grid"})
         dialog.refreshEditorFields(true)
-        compare(checkbox().visible, false)
+        compare(checkbox().visible, true)
         compare(controller.draft.browseSubfolders, true)
+        controller.setDraftValues({layout: "fan"})
+        dialog.refreshEditorFields(true)
+        compare(checkbox().visible, false)
         controller.setDraftValues({layout: "list"})
         dialog.refreshEditorFields(true)
         compare(checkbox().checked, true)

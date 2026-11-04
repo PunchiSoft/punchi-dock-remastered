@@ -22,7 +22,7 @@ TestCase {
     readonly property string approvedNote: "The container lists the folder as it is now, "
         + "so added or removed files appear without pressing Load content. If the folder "
         + "is unavailable, the container shows the contents loaded last."
-    readonly property string approvedBrowseNote: "Turn on Live folder contents to open subfolders."
+    readonly property string approvedBrowseNote: "Turn on Sync folder to open subfolders."
     readonly property string approvedUnavailableTitle: "Folder unavailable"
     readonly property string approvedUnavailableDetail: "Punchi Dock cannot read this folder. "
         + "Check that it still exists or pick another one in the container settings."
@@ -198,6 +198,46 @@ TestCase {
             [{type: "folder", sourceType: "manual", apps: []}], 0, entries)
         verify(!manual.changed)
         compare(manual.status, "invalid-target")
+    }
+
+    function test_helper_derives_the_container_name_from_the_folder() {
+        compare(Items.folderNameFromPath("/home/u/Descargas/"), "Descargas")
+        compare(Items.folderNameFromPath("file:///home/u/Mis%20Documentos"),
+            "Mis Documentos")
+        compare(Items.folderNameFromPath("/"), "")
+        compare(Items.folderNameFromPath(""), "")
+
+        // The default label and an empty name follow the chosen folder.
+        compare(Items.containerNameForFolder("Folder", "", "/home/u/Descargas/"),
+            "Descargas")
+        compare(Items.containerNameForFolder("", "", "/home/u/Descargas/"),
+            "Descargas")
+        // A name that still matches the previous folder keeps following it.
+        compare(Items.containerNameForFolder(
+            "Descargas", "/home/u/Descargas/", "/home/u/Imagenes/"), "Imagenes")
+        // A name written by hand is never replaced.
+        compare(Items.containerNameForFolder(
+            "Mi nombre", "/home/u/Descargas/", "/home/u/Imagenes/"), "Mi nombre")
+        // A path without a usable name keeps the current one.
+        compare(Items.containerNameForFolder("Descargas", "", "/"), "Descargas")
+    }
+
+    function test_folder_picker_adopts_the_folder_name() {
+        dialog.openFor("folder")
+        compare(controller.draft.name, "Folder")
+        const generation = controller.generation
+
+        verify(controller.applyContainerFolder(generation, "/home/user/Descargas/"))
+        compare(controller.draft.sourcePath, "/home/user/Descargas/")
+        compare(controller.draft.name, "Descargas")
+
+        verify(controller.applyContainerFolder(generation, "/home/user/Imagenes/"))
+        compare(controller.draft.name, "Imagenes")
+
+        controller.setDraftValues({"name": "Mi carpeta"})
+        verify(controller.applyContainerFolder(generation, "/home/user/Videos/"))
+        compare(controller.draft.name, "Mi carpeta")
+        compare(controller.draft.sourcePath, "/home/user/Videos/")
     }
 
     function test_helper_keeps_subfolder_browsing_independent() {        const items = [{type: "folder", sourceType: "folder",

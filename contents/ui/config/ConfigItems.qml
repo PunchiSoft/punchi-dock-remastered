@@ -576,9 +576,8 @@ KCM.SimpleKCM {
             "folder-picker")
         if (operation !== null) {
             itemConfigurationDialog.invalidateContainerLoad()
-            itemDraftController.applyExternalValue(
-                Number(operation.generation), "folder", "sourcePath",
-                String(path || ""))
+            itemDraftController.applyContainerFolder(
+                Number(operation.generation), String(path || ""))
             itemConfigurationDialog.refreshEditorFields()
             return
         }
