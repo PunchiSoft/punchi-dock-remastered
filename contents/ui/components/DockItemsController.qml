@@ -778,7 +778,11 @@ Item {
         return true
     }
 
-    function setFolderSyncFolder(targetIndex, sync, expectedFolderText) {
+    // The menu row carries `sync: true` when the choice has to freeze the
+    // listing the container shows right now, and `sync: false` when the
+    // container follows the folder again. The flag is named `freeze` here
+    // because the payload name does not describe what the value means.
+    function setFolderSyncFolder(targetIndex, freeze, expectedFolderText) {
         const index = Number(targetIndex)
         if (!Number.isInteger(index) || index < 0
                 || index >= root.dockItems.length) {
@@ -792,9 +796,9 @@ Item {
             return false
         }
 
-        if (sync !== true) {
+        if (freeze !== true) {
             return root.commitDockItemsUpdate(
-                ConfigItemsJS.setFolderSyncFolder(root.dockItems, index, false))
+                ConfigItemsJS.setFolderSyncFolder(root.dockItems, index, true))
         }
 
         // Freezing keeps what the folder shows right now, so the listing is read

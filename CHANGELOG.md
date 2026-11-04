@@ -10,6 +10,7 @@
 - Al desactivar el contenido en vivo, el contenedor guarda el listado actual como instantánea en lugar de quedar vacío, y el popup explica los dos estados sin contenido: carpeta no disponible y contenedor sin instantánea guardada.
 - «Navegar por subcarpetas» deja de limitarse a Lista y Detallada y se ofrece en todos los diseños de carpeta salvo Abanico, que presenta una sola carpeta y nunca navega.
 - El grupo de configuración del contenedor pasa a llamarse «Contenido», y el icono del elemento se elige solo con el selector, sin campo de texto libre.
+- Corregido el par «Activar»/«Desactivar» de «Sincronizar carpeta» en el submenú «Contenido» del contenedor: la opción de activar guardaba el contenedor como congelado, así que el menú solo podía desactivar la sincronización y nunca volver a activarla.
 
 ### Menú contextual
 
