@@ -11,6 +11,7 @@
 - «Navegar por subcarpetas» deja de limitarse a Lista y Detallada y se ofrece en todos los diseños de carpeta salvo Abanico, que presenta una sola carpeta y nunca navega.
 - El grupo de configuración del contenedor pasa a llamarse «Contenido», y el icono del elemento se elige solo con el selector, sin campo de texto libre.
 - Corregido el par «Activar»/«Desactivar» de «Sincronizar carpeta» en el submenú «Contenido» del contenedor: la opción de activar guardaba el contenedor como congelado, así que el menú solo podía desactivar la sincronización y nunca volver a activarla.
+- Corregido el estado de navegación al desactivar «Abrir subcarpetas» con una subcarpeta abierta: el historial se libera, así que volver a activarlo empieza en la carpeta del contenedor y no dentro de la subcarpeta abandonada.
 
 ### Menú contextual
 

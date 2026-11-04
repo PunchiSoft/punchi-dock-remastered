@@ -5,6 +5,10 @@ import "../org/punchi/dock" as Punchi
 QtObject {
     id: root
     property bool enabled: false
+    // Entering subfolders is opt-in. Turning it off ends the navigation even
+    // though the root listing keeps following the folder, so re-enabling it
+    // starts again at the container folder instead of an abandoned subfolder.
+    property bool navigationAllowed: true
     // The view may retain the last child listing during its exit transition.
     // Session cancellation still releases it immediately through enabled.
     property bool retainChildModel: false
@@ -48,6 +52,11 @@ QtObject {
     signal navigationChanged()
 
     onEnabledChanged: reset()
+    onNavigationAllowedChanged: {
+        if (!root.navigationAllowed) {
+            reset()
+        }
+    }
     onRootPathChanged: reset()
 
     function reset() {
