@@ -23,6 +23,8 @@ Item {
 
     property var dockItems: []
     property bool dockItemsLoaded: false
+    // Set while a freeze waits for the folder listing it will store as snapshot.
+    property var pendingFolderFreeze: null
     property string recentlyTransitionedAppId: ""
     property string recentlyTransitionedLauncherUrl: ""
     property int minimizeReactionRevision: 0
@@ -43,6 +45,21 @@ Item {
         onTriggered: {
             root.recentlyTransitionedAppId = ""
             root.recentlyTransitionedLauncherUrl = ""
+        }
+    }
+
+    Connections {
+        target: root.systemDiscovery
+        ignoreUnknownSignals: true
+
+        function onFolderEntriesReady(entries) {
+            root.completePendingFolderFreeze(entries)
+        }
+
+        function onOperationFailed(operation, message) {
+            if (String(operation) === "folder") {
+                root.cancelPendingFolderFreeze()
+            }
         }
     }
 
@@ -724,24 +741,9 @@ Item {
         return true
     }
 
-    function setFolderSyncFolder(targetIndex, sync, expectedFolderText) {
-        const index = Number(targetIndex)
-        if (!Number.isInteger(index) || index < 0
-                || index >= root.dockItems.length) {
-            return false
-        }
-
-        const expectedText = String(expectedFolderText || "")
-        const currentFolder = root.dockItems[index]
-        if (expectedText.length === 0
-                || root.canonicalJsonText(currentFolder) !== expectedText) {
-            return false
-        }
-
-        const update = ConfigItemsJS.setFolderSyncFolder(
-            root.dockItems, index, sync === true)
-        if (!update.changed) {
-            return update.status === "unchanged"
+    function commitDockItemsUpdate(update) {
+        if (!update || !update.changed) {
+            return !!update && update.status === "unchanged"
         }
 
         if (!root.persistenceAdapter
@@ -774,6 +776,60 @@ Item {
         }
         root.configurationChanged()
         return true
+    }
+
+    function setFolderSyncFolder(targetIndex, sync, expectedFolderText) {
+        const index = Number(targetIndex)
+        if (!Number.isInteger(index) || index < 0
+                || index >= root.dockItems.length) {
+            return false
+        }
+
+        const expectedText = String(expectedFolderText || "")
+        const currentFolder = root.dockItems[index]
+        if (expectedText.length === 0
+                || root.canonicalJsonText(currentFolder) !== expectedText) {
+            return false
+        }
+
+        if (sync !== true) {
+            return root.commitDockItemsUpdate(
+                ConfigItemsJS.setFolderSyncFolder(root.dockItems, index, false))
+        }
+
+        // Freezing keeps what the folder shows right now, so the listing is read
+        // before the choice is stored. A failed read leaves the container synced.
+        const folderPath = String(currentFolder.sourcePath || "").trim()
+        if (folderPath.length === 0 || !root.systemDiscovery
+                || typeof root.systemDiscovery.requestFolderEntries
+                    !== "function") {
+            return false
+        }
+        root.pendingFolderFreeze = {
+            "index": index,
+            "expectedFolderText": expectedText
+        }
+        root.systemDiscovery.requestFolderEntries(folderPath)
+        return true
+    }
+
+    function completePendingFolderFreeze(entries) {
+        const pending = root.pendingFolderFreeze
+        if (!pending) {
+            return
+        }
+        root.pendingFolderFreeze = null
+        const target = root.dockItems[pending.index]
+        if (!target
+                || root.canonicalJsonText(target) !== pending.expectedFolderText) {
+            return
+        }
+        root.commitDockItemsUpdate(ConfigItemsJS.freezeFolderWithSnapshot(
+            root.dockItems, pending.index, entries))
+    }
+
+    function cancelPendingFolderFreeze() {
+        root.pendingFolderFreeze = null
     }
 
     function setFolderBrowseSubfolders(targetIndex, enabled, expectedFolderText) {

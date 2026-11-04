@@ -166,7 +166,7 @@ msgid_plural "%1 devices connected"
 msgstr[0] "%1 dispositivo conectado"
 msgstr[1] "%1 dispositivos conectados"
 
-#: contents/ui/components/DockItemsController.qml:1106
+#: contents/ui/components/DockItemsController.qml:1162
 #: contents/ui/config/ConfigItems.qml:737
 msgctxt "@info:status"
 msgid "%1 is already in %2."
@@ -187,7 +187,7 @@ msgctxt "@info:accessible"
 msgid "%1 is updated automatically and cannot accept applications"
 msgstr "%1 é atualizado automaticamente e não pode aceitar aplicativos"
 
-#: contents/ui/components/DockItemsController.qml:1111
+#: contents/ui/components/DockItemsController.qml:1167
 #: contents/ui/config/ConfigItems.qml:742
 msgctxt "@info:status"
 msgid ""
@@ -297,23 +297,23 @@ msgid_plural "%1 unread notifications"
 msgstr[0] "%1 notificação não lida"
 msgstr[1] "%1 notificações não lidas"
 
-#: contents/ui/components/DockItemsController.qml:1102
+#: contents/ui/components/DockItemsController.qml:1158
 #: contents/ui/config/ConfigItems.qml:733
 msgctxt "@info:status"
 msgid "%1 was added to %2."
 msgstr "%1 foi adicionado a %2."
 
-#: contents/ui/components/DockItemsController.qml:1052
+#: contents/ui/components/DockItemsController.qml:1108
 msgctxt "@info:status"
 msgid "%1 was moved on the Dock."
 msgstr "%1 foi movido no Dock."
 
-#: contents/ui/components/DockItemsController.qml:1049
+#: contents/ui/components/DockItemsController.qml:1105
 msgctxt "@info:status"
 msgid "%1 was pinned to the Dock."
 msgstr "%1 foi fixado no Dock."
 
-#: contents/ui/components/DockItemsController.qml:1055
+#: contents/ui/components/DockItemsController.qml:1111
 msgctxt "@info:status"
 msgid "%1 was removed from the Dock."
 msgstr "%1 foi removido do Dock."
@@ -713,12 +713,12 @@ msgstr ""
 "Um contêiner sem pasta mantém a rolagem ativada, para que nenhumaplicativo "
 "fique inacessível."
 
-#: contents/ui/components/DockItemsController.qml:1061
+#: contents/ui/components/DockItemsController.qml:1117
 msgctxt "@info:status"
 msgid "A desktop shortcut for %1 already exists."
 msgstr "Já existe um atalho na área de trabalho para %1."
 
-#: contents/ui/components/DockItemsController.qml:1058
+#: contents/ui/components/DockItemsController.qml:1114
 msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr "Foi criado um atalho na área de trabalho para %1."
@@ -743,7 +743,7 @@ msgstr "Ícone de ação:"
 msgid "Action name:"
 msgstr "Nome da ação:"
 
-#: contents/ui/components/DockContextActionsController.qml:850
+#: contents/ui/components/DockContextActionsController.qml:901
 msgctxt "@title:group for section of menu items"
 msgid "Actions"
 msgstr "Ações"
@@ -1063,9 +1063,9 @@ msgstr "Apenas miniaplicativos"
 
 #: contents/ui/components/DockItem.qml:1650
 #: contents/ui/components/DockItem.qml:1657
-#: contents/ui/components/DockItemsController.qml:1022
+#: contents/ui/components/DockItemsController.qml:1078
 #: contents/ui/components/FolderFanView.qml:846
-#: contents/ui/components/FolderPopup.qml:1038
+#: contents/ui/components/FolderPopup.qml:1072
 #: contents/ui/config/code/itemTypeCatalog.js:45
 msgid "Application"
 msgstr "Aplicação"
@@ -1362,7 +1362,7 @@ msgctxt "@action:button"
 msgid "Back"
 msgstr "Voltar"
 
-#: contents/ui/components/FolderPopup.qml:725
+#: contents/ui/components/FolderPopup.qml:758
 msgctxt "@action:button folder navigation"
 msgid "Back"
 msgstr "Voltar"
@@ -1452,11 +1452,6 @@ msgstr "Emblema:"
 msgid "Balanced Mode"
 msgstr "Modo Equilibrado"
 
-#: contents/ui/components/DockContextActionsController.qml:625
-msgctxt "@title:menu"
-msgid "Behavior"
-msgstr ""
-
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:450
 msgctxt "@action:button"
 msgid "Bluetooth"
@@ -1515,7 +1510,6 @@ msgstr "De baixo para cima"
 msgid "Bounce"
 msgstr "Saltar"
 
-#: contents/ui/components/DockContextActionsController.qml:613
 #: contents/ui/config/ItemEditorPanel.qml:520
 msgctxt "@option:check folder container"
 msgid "Browse subfolders"
@@ -2064,8 +2058,8 @@ msgid "Configure Night Light"
 msgstr "Configurar Luz noturna"
 
 #: contents/ui/components/DockContextActionsController.qml:123
-#: contents/ui/components/DockContextActionsController.qml:891
-#: contents/ui/components/DockContextActionsController.qml:913
+#: contents/ui/components/DockContextActionsController.qml:942
+#: contents/ui/components/DockContextActionsController.qml:964
 msgctxt "@action:context"
 msgid "Configure Punchi Dock…"
 msgstr "Configurar o Punchi Dock…"
@@ -2198,7 +2192,7 @@ msgctxt "@option:recent-applications"
 msgid "Container"
 msgstr "Contêiner"
 
-#: contents/ui/components/DockItemsController.qml:1098
+#: contents/ui/components/DockItemsController.qml:1154
 msgctxt "@title"
 msgid "Container"
 msgstr "Recipiente"
@@ -2217,6 +2211,16 @@ msgstr "Visualização do recipiente"
 msgctxt "@label:listbox"
 msgid "Container view:"
 msgstr "Visualização do recipiente:"
+
+#: contents/ui/components/DockContextActionsController.qml:747
+msgctxt "@title:menu"
+msgid "Content"
+msgstr "Conteúdo"
+
+#: contents/ui/components/DockContextActionsController.qml:746
+msgctxt "@title:menu Folder content submenu, %1 is the folder name"
+msgid "Content — %1"
+msgstr "Conteúdo — %1"
 
 #: contents/ui/config/ConfigItems.qml:1076
 #: contents/ui/config/ItemConfigurationDialog.qml:690
@@ -2410,12 +2414,12 @@ msgstr "Largura do painel personalizada"
 msgid "Custom width:"
 msgstr "Largura personalizada:"
 
-#: contents/ui/components/DockContextActionsController.qml:680
+#: contents/ui/components/DockContextActionsController.qml:639
 msgctxt "@item:inmenu folder sort mode"
 msgid "Date Created"
 msgstr "Data de criação"
 
-#: contents/ui/components/DockContextActionsController.qml:669
+#: contents/ui/components/DockContextActionsController.qml:628
 msgctxt "@item:inmenu folder sort mode"
 msgid "Date Modified"
 msgstr "Data de modificação"
@@ -2537,7 +2541,13 @@ msgctxt "@item:inlistbox Separator shape"
 msgid "Diamond"
 msgstr "Diamond"
 
-#: contents/ui/components/DockContextActionsController.qml:717
+#: contents/ui/components/DockContextActionsController.qml:692
+#: contents/ui/components/DockContextActionsController.qml:731
+msgctxt "@option:radio folder container"
+msgid "Disable"
+msgstr "Desativar"
+
+#: contents/ui/components/DockContextActionsController.qml:768
 msgctxt "@action:context"
 msgid "Disable recent applications"
 msgstr "Desativar aplicativos recentes"
@@ -2824,6 +2834,12 @@ msgstr "Esvaziar lixo"
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:29
 msgid "Emptying trash…"
 msgstr "Esvaziando o lixo…"
+
+#: contents/ui/components/DockContextActionsController.qml:680
+#: contents/ui/components/DockContextActionsController.qml:716
+msgctxt "@option:radio folder container"
+msgid "Enable"
+msgstr "Ativar"
 
 #: contents/ui/components/punchimenu/PunchiMenuCompactSettingsView.qml:70
 msgctxt "@option:check"
@@ -3142,7 +3158,7 @@ msgstr "Fluir para a esquerda"
 msgid "Flow to the right"
 msgstr "Fluir para a direita"
 
-#: contents/ui/components/FolderPopup.qml:701
+#: contents/ui/components/FolderPopup.qml:734
 #: contents/ui/config/ConfigItems.qml:1078
 #: contents/ui/config/ItemConfigurationDialog.qml:692
 msgid "Folder"
@@ -3220,6 +3236,11 @@ msgstr "Intensidade da sombra do texto do pop-up da pasta"
 #: contents/ui/config/ConfigFolderPopups.qml:244
 msgid "Folder popups"
 msgstr "Pop-ups de pasta"
+
+#: contents/ui/components/FolderPopup.qml:1205
+msgctxt "@title folder popup empty state"
+msgid "Folder unavailable"
+msgstr "Pasta indisponível"
 
 #: contents/ui/components/DockContextActionsController.qml:517
 msgctxt "@title:menu"
@@ -3947,9 +3968,13 @@ msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
 msgstr "Vista simples"
 
-#: contents/ui/components/DockContextActionsController.qml:596
 #: contents/ui/config/ItemEditorPanel.qml:582
 msgctxt "@option:check folder container"
+msgid "Live folder contents"
+msgstr "Conteúdo da pasta ao vivo"
+
+#: contents/ui/components/DockContextActionsController.qml:675
+msgctxt "@title:menu Folder popup content group"
 msgid "Live folder contents"
 msgstr "Conteúdo da pasta ao vivo"
 
@@ -4413,7 +4438,7 @@ msgctxt "@action:button"
 msgid "Mute media volume"
 msgstr "Silenciar volume de mídia"
 
-#: contents/ui/components/DockContextActionsController.qml:647
+#: contents/ui/components/DockContextActionsController.qml:606
 msgctxt "@item:inmenu folder sort mode"
 msgid "Name"
 msgstr "Nome"
@@ -4424,6 +4449,11 @@ msgstr "Nome"
 #: contents/ui/config/TrashOptionsPanel.qml:64
 msgid "Name:"
 msgstr "Nome:"
+
+#: contents/ui/components/DockContextActionsController.qml:711
+msgctxt "@title:menu Folder popup content group"
+msgid "Navigate subfolders"
+msgstr "Navegar pelas subpastas"
 
 #: scripts-user/setup.sh:593
 msgid "Needs attention"
@@ -4453,7 +4483,7 @@ msgstr "Nova área de trabalho"
 msgid "New window"
 msgstr "Nova janela"
 
-#: contents/ui/components/DockContextActionsController.qml:781
+#: contents/ui/components/DockContextActionsController.qml:832
 msgctxt "@action:context"
 msgid "New window"
 msgstr "Nova janela"
@@ -4580,6 +4610,11 @@ msgstr "Nenhum movimento"
 msgctxt "@info"
 msgid "No notifications"
 msgstr "Nenhuma notificação"
+
+#: contents/ui/components/FolderPopup.qml:1207
+msgctxt "@title folder popup empty state"
+msgid "No saved contents"
+msgstr "Nenhum conteúdo salvo"
 
 #: src/dockruntimeservice.cpp:130
 msgid "No sound player or usable sound was found."
@@ -4841,7 +4876,7 @@ msgid "Opaque"
 msgstr "Opaco"
 
 #: contents/ui/components/FolderFanView.qml:433
-#: contents/ui/components/FolderPopup.qml:179
+#: contents/ui/components/FolderPopup.qml:206
 msgctxt "@action:button open the container"
 msgid "Open"
 msgstr "Abrir"
@@ -4902,7 +4937,7 @@ msgctxt "@action:button"
 msgid "Open display settings"
 msgstr "Abrir configurações de tela"
 
-#: contents/ui/components/DockContextActionsController.qml:706
+#: contents/ui/components/DockContextActionsController.qml:757
 msgctxt "@action:context"
 msgid "Open in File Manager"
 msgstr "Abrir no gerenciador de arquivos"
@@ -4973,7 +5008,7 @@ msgid "Open this application folder"
 msgstr "Abrir esta pasta de aplicativos"
 
 #: contents/ui/components/FolderFanView.qml:1112
-#: contents/ui/components/FolderPopup.qml:1042
+#: contents/ui/components/FolderPopup.qml:1076
 msgctxt "@info:accessible"
 msgid "Open this folder in the file manager"
 msgstr "Abrir esta pasta no gerenciador de arquivos"
@@ -5185,7 +5220,7 @@ msgid "Pixel spectrum"
 msgstr "Espectro de pixels"
 
 #: contents/ui/components/DockContextActionsController.qml:262
-#: contents/ui/components/DockContextActionsController.qml:832
+#: contents/ui/components/DockContextActionsController.qml:883
 msgctxt "@title:group for section of menu items"
 msgid "Places"
 msgstr "Locais"
@@ -5375,6 +5410,15 @@ msgstr ""
 "Por motivos de segurança, o Punchi Dock não pode importar temas aqui: a "
 "pasta selecionada é somente leitura ou requer permissões de administrador."
 
+#: contents/ui/components/FolderPopup.qml:1219
+msgctxt "@info folder popup empty state"
+msgid ""
+"Punchi Dock cannot read this folder. Check that it still exists or pick "
+"another one in the container settings."
+msgstr ""
+"O Punchi Dock não consegue ler esta pasta. Verifique se ela ainda existe ou "
+"escolha outra nas configurações do contêiner."
+
 #: contents/ui/config/ConfigAspect.qml:307
 msgid "Punchi Dock could not store the imported theme."
 msgstr "Punchi Dock não conseguiu armazenar o tema importado."
@@ -5437,7 +5481,7 @@ msgid "PunchiMenu panel distance"
 msgstr "Distância do PunchiMenu ao painel"
 
 #: contents/ui/components/DockItem.qml:42
-#: contents/ui/components/DockItemsController.qml:1405
+#: contents/ui/components/DockItemsController.qml:1461
 msgctxt "@title"
 msgid "Quick Note"
 msgstr "Nota rápida"
@@ -5462,7 +5506,7 @@ msgid "Reactive particles"
 msgstr "Partículas reativas"
 
 #: contents/ui/components/DockContextActionsController.qml:275
-#: contents/ui/components/DockContextActionsController.qml:841
+#: contents/ui/components/DockContextActionsController.qml:892
 msgctxt "@title:group for section of menu items"
 msgid "Recent Files"
 msgstr "Arquivos recentes"
@@ -6160,7 +6204,7 @@ msgstr "Solteiro"
 msgid "Single desktop"
 msgstr "Área de trabalho única"
 
-#: contents/ui/components/DockContextActionsController.qml:658
+#: contents/ui/components/DockContextActionsController.qml:617
 msgctxt "@item:inmenu folder sort mode"
 msgid "Size"
 msgstr "Tamanho"
@@ -6196,7 +6240,7 @@ msgctxt "@option:check"
 msgid "Sort applications alphabetically"
 msgstr "Ordenar aplicativos em ordem alfabética"
 
-#: contents/ui/components/DockContextActionsController.qml:640
+#: contents/ui/components/DockContextActionsController.qml:599
 msgctxt "@title:menu"
 msgid "Sort by"
 msgstr "Ordenar por"
@@ -6330,8 +6374,8 @@ msgstr "Sombra de texto:"
 msgid "Text shadows:"
 msgstr "Sombras de texto:"
 
-#: contents/ui/components/DockItemsController.qml:1070
-#: contents/ui/components/DockItemsController.qml:1124
+#: contents/ui/components/DockItemsController.qml:1126
+#: contents/ui/components/DockItemsController.qml:1180
 msgctxt "@info:status"
 msgid "The Dock configuration could not be saved."
 msgstr "A configuração do Dock não pôde ser salva."
@@ -6348,7 +6392,7 @@ msgstr ""
 msgid "The application action could not be found."
 msgstr "A ação do aplicativo não foi encontrada."
 
-#: contents/ui/components/DockItemsController.qml:1128
+#: contents/ui/components/DockItemsController.qml:1184
 msgctxt "@info:status"
 msgid "The application could not be added to the container."
 msgstr "Não foi possível adicionar o aplicativo ao contêiner."
@@ -6357,7 +6401,7 @@ msgstr "Não foi possível adicionar o aplicativo ao contêiner."
 msgid "The application could not be found."
 msgstr "O aplicativo não foi encontrado."
 
-#: contents/ui/components/DockItemsController.qml:1067
+#: contents/ui/components/DockItemsController.qml:1123
 msgctxt "@info:status"
 msgid "The application could not be resolved."
 msgstr "O aplicativo não pôde ser resolvido."
@@ -6372,7 +6416,7 @@ msgctxt "@info:status"
 msgid "The application folder could not be updated."
 msgstr "Não foi possível atualizar a pasta de aplicativos."
 
-#: contents/ui/components/DockItemsController.qml:1064
+#: contents/ui/components/DockItemsController.qml:1120
 msgctxt "@info:status"
 msgid "The application identity is ambiguous."
 msgstr "A identidade do aplicativo é ambígua."
@@ -6429,22 +6473,22 @@ msgstr ""
 "pasta não estiver disponível, o contêiner mostra o conteúdo carregado por "
 "último."
 
-#: contents/ui/components/DockItemsController.qml:1077
+#: contents/ui/components/DockItemsController.qml:1133
 msgctxt "@info:status"
 msgid "The desktop folder is not available."
 msgstr "A pasta da área de trabalho não está disponível."
 
-#: contents/ui/components/DockItemsController.qml:1084
+#: contents/ui/components/DockItemsController.qml:1140
 msgctxt "@info:status"
 msgid "The desktop shortcut could not be written."
 msgstr "O atalho da área de trabalho não pôde ser gravado."
 
-#: contents/ui/components/DockItemsController.qml:1080
+#: contents/ui/components/DockItemsController.qml:1136
 msgctxt "@info:status"
 msgid "The desktop shortcut permissions could not be set."
 msgstr "As permissões do atalho da área de trabalho não puderam ser definidas."
 
-#: contents/ui/components/DockItemsController.qml:1074
+#: contents/ui/components/DockItemsController.qml:1130
 msgctxt "@info:status"
 msgid "The desktop shortcut source is not safe."
 msgstr "A origem do atalho da área de trabalho não é segura."
@@ -6488,7 +6532,7 @@ msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr "Os arquivos soltos não puderam ser abertos."
 
-#: contents/ui/components/DockItemsController.qml:1116
+#: contents/ui/components/DockItemsController.qml:1172
 #: contents/ui/config/ConfigItems.qml:750
 msgctxt "@info:status"
 msgid "The dropped launcher could not be resolved safely."
@@ -6578,7 +6622,7 @@ msgstr ""
 "O reflexo é decorativo e não altera o tamanho ou a área de interação dos "
 "itens de encaixe."
 
-#: contents/ui/components/DockItemsController.qml:1087
+#: contents/ui/components/DockItemsController.qml:1143
 msgctxt "@info:status"
 msgid "The requested application action could not be completed."
 msgstr "A ação solicitada do aplicativo não pôde ser concluída."
@@ -6645,7 +6689,7 @@ msgstr "O som não pôde ser reproduzido: %1"
 msgid "The spectrum is drawn over the Plasma-themed dock background."
 msgstr "O espectro é desenhado sobre o fundo da doca com tema Plasma."
 
-#: contents/ui/components/DockItemsController.qml:1120
+#: contents/ui/components/DockItemsController.qml:1176
 #: contents/ui/config/ConfigItems.qml:747
 msgctxt "@info:status"
 msgid "The target container changed before the application could be added."
@@ -6845,7 +6889,7 @@ msgstr "Ative o Bluetooth para gerenciar dispositivos pareados."
 
 #: contents/ui/config/ItemEditorPanel.qml:532
 msgid "Turn on Live folder contents to open subfolders."
-msgstr "Ative o conteúdo da pasta ao vivo para poder abrir subpastas."
+msgstr "Ative “Conteúdo da pasta ao vivo” para poder abrir subpastas."
 
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:733
 msgctxt "@action:button"
@@ -6857,7 +6901,16 @@ msgctxt "@info"
 msgid "Turn on Wi-Fi to search for networks."
 msgstr "Ative o Wi-Fi para procurar redes."
 
-#: contents/ui/components/DockContextActionsController.qml:691
+#: contents/ui/components/FolderPopup.qml:1221
+msgctxt "@info folder popup empty state"
+msgid ""
+"Turn on live folder contents, or load the folder contents in the container "
+"settings."
+msgstr ""
+"Ative o conteúdo da pasta em tempo real ou carregue o conteúdo da pasta nas "
+"configurações do contêiner."
+
+#: contents/ui/components/DockContextActionsController.qml:650
 msgctxt "@item:inmenu folder sort mode"
 msgid "Type"
 msgstr "Tipo"
@@ -6910,7 +6963,7 @@ msgctxt "@info"
 msgid "Unnamed audio device"
 msgstr "Dispositivo de áudio sem nome"
 
-#: contents/ui/components/DockContextActionsController.qml:725
+#: contents/ui/components/DockContextActionsController.qml:776
 msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr "Desafixar do Dock"

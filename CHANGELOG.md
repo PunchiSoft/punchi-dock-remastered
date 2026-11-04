@@ -2,8 +2,9 @@
 
 ### Carpetas del dock
 
-- Añadido el submenú «Comportamiento» al menú contextual de un contenedor de carpeta, con las opciones «Contenido de la carpeta en vivo» y «Navegar por subcarpetas», para cambiar ambas decisiones sin abrir la configuración.
+- Añadido el submenú «Contenido» al menú contextual de un contenedor de carpeta, con un par «Activar»/«Desactivar» para «Contenido de la carpeta en vivo» y otro para «Navegar por subcarpetas», para cambiar ambas decisiones sin abrir la configuración. El título incluye el nombre de la carpeta a la que pertenecen los ajustes.
 - Añadida una nota bajo «Navegar por subcarpetas» que recuerda que hay que activar el contenido de la carpeta en vivo para abrir subcarpetas.
+- Al desactivar el contenido en vivo, el contenedor guarda el listado actual como instantánea en lugar de quedar vacío, y el popup explica los dos estados sin contenido: carpeta no disponible y contenedor sin instantánea guardada.
 
 ### Interacción del ratón
 

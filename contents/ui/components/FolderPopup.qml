@@ -12,12 +12,14 @@ Item {
     id: folderRoot
     Kirigami.Theme.inherit: false
     Kirigami.Theme.colorSet: Kirigami.Theme.Window
-    readonly property real presentationWidth: layoutMode === "grid"
-        ? Math.min(desiredGridWidth + scrollBarGutter, safeMaximumWidth)
-        : (layoutMode === "fan"
-            ? Math.min(fanView.implicitWidth + classicMargin * 2,
-                safeMaximumWidth)
-            : Math.min(Math.round(280 * effectiveScale), safeMaximumWidth))
+    readonly property real presentationWidth: contentStateActive
+        ? Math.min(contentStatePanelWidth + classicMargin * 2, safeMaximumWidth)
+        : (layoutMode === "grid"
+            ? Math.min(desiredGridWidth + scrollBarGutter, safeMaximumWidth)
+            : (layoutMode === "fan"
+                ? Math.min(fanView.implicitWidth + classicMargin * 2,
+                    safeMaximumWidth)
+                : Math.min(Math.round(280 * effectiveScale), safeMaximumWidth)))
     implicitWidth: presentationWidth + lateralRevealExtent
     implicitHeight: classicPopupHeight + lateralRevealProgress * Math.max(0,
         (navigationPane.item ? (navigationPane.item as FolderPopup).implicitHeight
@@ -70,18 +72,43 @@ Item {
         expanded: folderRoot.lateralNavigation
         motionEnabled: folderRoot.navigationMotionEnabled
     }
-    readonly property Punchi.FolderNavigationModel directoryModel: {
+    readonly property Punchi.FolderNavigationModel listedDirectoryModel: {
         const candidate = modelOverride !== null
             ? modelOverride
             : (folderRoot.liveContent
                 ? (narrowNavigation ? navigator.childModel : navigator.rootModel) : null)
-        // A folder that cannot be resolved or listed has no rows to show, so the
-        // presentation falls back to the snapshot stored in the configuration.
-        if (!candidate || candidate.location.length === 0 || candidate.error !== "") {
+        if (!candidate || candidate.location.length === 0) {
             return null
         }
         return candidate
     }
+    // A folder that cannot be resolved or listed has no rows to show, so the
+    // presentation falls back to the snapshot stored in the configuration.
+    readonly property Punchi.FolderNavigationModel directoryModel:
+        folderRoot.listedDirectoryModel !== null
+        && folderRoot.listedDirectoryModel.error === ""
+            ? folderRoot.listedDirectoryModel : null
+    // The two states that leave nothing to list: a folder that cannot be read,
+    // and a frozen container that never stored a snapshot. A stale snapshot is
+    // still useful, so it keeps the surface instead of the message.
+    readonly property bool folderUnreadable: folderSourceActive && liveContent
+        && (folderRoot.listedDirectoryModel === null
+            || folderRoot.listedDirectoryModel.error !== "")
+    readonly property bool hasStoredSnapshot: !!folderItem.apps
+        && folderItem.apps.length > 0
+    readonly property bool folderUnavailable: folderUnreadable
+        && !hasStoredSnapshot
+    readonly property bool frozenWithoutSnapshot: folderSourceActive
+        && !liveContent
+        && !hasStoredSnapshot
+    readonly property int contentStateActive: folderUnavailable
+        || frozenWithoutSnapshot
+    // The message is read as text, not as a grid row: it keeps its own readable
+    // column and height instead of the item metrics.
+    readonly property int contentStatePanelWidth: Math.max(
+        Kirigami.Units.gridUnit * 15,
+        Math.min(desiredGridWidth,
+            Math.max(0, safeMaximumWidth - classicMargin * 2)))
     readonly property string headerTitle: titleOverride.length > 0
         ? titleOverride : (narrowNavigation ? navigator.breadcrumb
             : String(folderItem.name || ""))
@@ -201,7 +228,7 @@ Item {
     // without copying them; Fan keeps its dedicated model below.
     readonly property var gridItems: {
         const sourceItems = apps || []
-        if (!folderPathAvailable) {
+        if (!folderPathAvailable || folderRoot.folderUnreadable) {
             return sourceItems
         }
         const visibleItems = sourceItems.slice()
@@ -214,6 +241,7 @@ Item {
             && (folderRoot.layoutMode === "list" || folderRoot.layoutMode === "detailed")
             ? folderRoot.apps : []
         appendOpenLocation: folderRoot.folderPathAvailable
+            && !folderRoot.folderUnreadable
             && (folderRoot.layoutMode === "list" || folderRoot.layoutMode === "detailed")
     }
     readonly property int classicItemCount: layoutMode === "grid"
@@ -343,7 +371,12 @@ Item {
             : effectiveMaximumHeight
         return Math.max(0, ceiling - classicChromeHeight)
     }
-    readonly property int classicPopupHeight: Math.min(classicNaturalHeight, effectiveMaximumHeight)
+    readonly property int classicPopupHeight: Math.min(contentStateActive
+        ? Math.max(classicNaturalHeight, contentStateNaturalHeight)
+        : classicNaturalHeight, effectiveMaximumHeight)
+    // Height the message needs on its own, without borrowing the row metrics.
+    readonly property int contentStateNaturalHeight: classicChromeHeight
+        + contentStatePanel.implicitHeight
     readonly property bool motionEnabled: Kirigami.Units.longDuration > 1
     readonly property bool revealMotionEnabled: motionEnabled
         && animationStyle !== "none"
@@ -738,6 +771,7 @@ Item {
             id: gridView
             objectName: "folderPopupGridView"
             visible: folderRoot.layoutMode !== "fan"
+                && !folderRoot.contentStateActive
             Layout.fillWidth: true
             Layout.fillHeight: true
             // Keep cellWidth from producing scrollbars or horizontal clipping.
@@ -1092,12 +1126,13 @@ Item {
             id: fanView
             objectName: "folderFanView"
             visible: folderRoot.layoutMode === "fan"
+                && !folderRoot.contentStateActive
             enabled: folderRoot.layoutMode === "fan"
             Layout.fillWidth: true
             Layout.fillHeight: true
             apps: folderRoot.layoutMode === "fan" ? folderRoot.apps : []
             folderPath: folderRoot.layoutMode === "fan"
-                ? folderRoot.folderPath : ""
+                && !folderRoot.folderUnreadable ? folderRoot.folderPath : ""
             iconSize: folderRoot.effectiveIconSize
             rowLimit: folderRoot.configuredRowLimit
             rowHeight: folderRoot.classicCellHeight
@@ -1127,6 +1162,66 @@ Item {
                 folderRoot.openLocationRequested(path)
             }
             onCloseRequested: folderRoot.closeRequested()
+        }
+
+        // Neither state has rows to list, so the message takes the place of the
+        // content instead of covering it.
+        Item {
+            id: contentStatePanel
+            objectName: "folderContentState"
+            visible: folderRoot.contentStateActive
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            implicitWidth: contentStateColumn.implicitWidth
+            implicitHeight: contentStateColumn.implicitHeight
+            // A short screen shrinks the popup; the message is clipped instead of
+            // overlapping the header.
+            clip: true
+
+            Column {
+                id: contentStateColumn
+                anchors.centerIn: parent
+                width: parent.width
+                spacing: Kirigami.Units.smallSpacing
+
+                Kirigami.Icon {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    implicitWidth: Kirigami.Units.iconSizes.medium
+                    implicitHeight: Kirigami.Units.iconSizes.medium
+                    source: "dialog-warning"
+                    color: Kirigami.Theme.neutralTextColor
+                    isMask: true
+                }
+                Controls.Label {
+                    objectName: "folderContentStateTitle"
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                    font.bold: true
+                    color: Kirigami.Theme.textColor
+                    // qmllint disable unqualified
+                    text: folderRoot.folderUnavailable
+                        ? i18nc("@title folder popup empty state",
+                            "Folder unavailable")
+                        : i18nc("@title folder popup empty state",
+                            "No saved contents")
+                    // qmllint enable unqualified
+                }
+                Controls.Label {
+                    objectName: "folderContentStateDetail"
+                    width: parent.width
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.WordWrap
+                    color: Kirigami.Theme.disabledTextColor
+                    // qmllint disable unqualified
+                    text: folderRoot.folderUnavailable
+                        ? i18nc("@info folder popup empty state",
+                            "Punchi Dock cannot read this folder. Check that it still exists or pick another one in the container settings.")
+                        : i18nc("@info folder popup empty state",
+                            "Turn on live folder contents, or load the folder contents in the container settings.")
+                    // qmllint enable unqualified
+                }
+            }
         }
 
     }

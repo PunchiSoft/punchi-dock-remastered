@@ -1153,6 +1153,28 @@ function setFolderSyncFolder(items, targetIndex, sync) {
     return { "items": nextItems, "changed": true, "status": "updated" }
 }
 
+// Freezing keeps what the folder shows at that moment, so the listing read from
+// disk replaces any snapshot the configuration had stored before.
+function freezeFolderWithSnapshot(items, targetIndex, entries) {
+    var source = items instanceof Array ? items : []
+    var index = Number(targetIndex)
+    if (!Number.isInteger(index) || index < 0 || index >= source.length) {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+
+    var currentFolder = source[index]
+    if (!currentFolder || currentFolder.type !== "folder"
+            || String(currentFolder.sourceType || "manual") !== "folder"
+            || String(currentFolder.sourcePath || "").trim().length === 0) {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+
+    var nextItems = clone(source)
+    nextItems[index].syncFolder = false
+    nextItems[index].apps = clone(entries instanceof Array ? entries : [])
+    return { "items": nextItems, "changed": true, "status": "updated" }
+}
+
 // Subfolder browsing is opt-in and its own value: enabling or disabling it
 // never touches the sync choice stored in `syncFolder`.
 function setFolderBrowseSubfolders(items, targetIndex, enabled) {

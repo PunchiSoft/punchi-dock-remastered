@@ -99,10 +99,21 @@ TestCase {
         fakeDockItemsController.lastBrowseExpectedFolderText = ""
     }
 
-    function behaviorAction(actions) {
+    function contentAction(actions) {
         for (let index = 0; index < actions.length; index++) {
-            if (actions[index].name === "Behavior") {
+            // The title carries the folder name, so the lookup matches the
+            // stable prefix instead of the whole text.
+            if (String(actions[index].name || "").startsWith("Content")) {
                 return actions[index]
+            }
+        }
+        return null
+    }
+
+    function childByName(action, name) {
+        for (let index = 0; index < action.children.length; index++) {
+            if (action.children[index].name === name) {
+                return action.children[index]
             }
         }
         return null
@@ -112,6 +123,18 @@ TestCase {
         for (let index = 0; index < actions.length; index++) {
             if (actions[index].kind === kind) {
                 return actions[index]
+            }
+        }
+        return null
+    }
+
+    // The content group repeats "Enable" and "Disable" for each setting, so the
+    // kind and the label together identify one row.
+    function actionByKindAndName(children, kind, name) {
+        for (let index = 0; index < children.length; index++) {
+            if (children[index].kind === kind
+                    && children[index].name === name) {
+                return children[index]
             }
         }
         return null
@@ -175,9 +198,9 @@ TestCase {
         }
     }
 
-    function test_manualContainerHidesTheBehaviorGroup() {
+    function test_manualContainerHidesTheContentGroup() {
         const actions = contextController.actionsForItem(folder, [], "pinned", 0)
-        compare(behaviorAction(actions), null)
+        compare(contentAction(actions), null)
 
         const pathless = {
             "type": "folder",
@@ -191,48 +214,73 @@ TestCase {
         fakeDockItemsController.dockItems = [pathless]
         const pathlessActions = contextController.actionsForItem(
             pathless, [], "pinned", 0)
-        compare(behaviorAction(pathlessActions), null)
+        compare(contentAction(pathlessActions), null)
     }
 
-    function test_folderContainerOffersBehaviorGroupAfterFolderView() {
+    function test_folderContainerOffersContentGroupAfterSort() {
         fakeDockItemsController.dockItems = [folderContainer]
         const actions = contextController.actionsForItem(
             folderContainer, [], "pinned", 0)
-        const behavior = behaviorAction(actions)
-        verify(behavior !== null)
-        compare(behavior.kind, "submenu")
-        compare(behavior.children.length, 2)
+        const content = contentAction(actions)
+        verify(content !== null)
+        compare(content.kind, "submenu")
+        // Every setting below is stored per item, so the title names the folder
+        // it belongs to.
+        compare(content.name, "Content — Downloads")
+        // A section per setting plus an exclusive Enable/Disable pair each.
+        compare(content.children.length, 6)
 
-        const sync = actionByKind(behavior.children, "setFolderSyncFolder")
-        verify(sync !== null)
-        compare(sync.name, "Live folder contents")
-        compare(sync.enabled, true)
-        verify(sync.checked)
-        compare(sync.sync, false)
-        compare(sync.targetIndex, 0)
-        compare(sync.expectedFolderText, JSON.stringify(folderContainer))
+        compare(content.children[0].kind, "section")
+        compare(content.children[0].name, "Live folder contents")
+        const contentOn = actionByKindAndName(
+            content.children, "setFolderSyncFolder", "Enable")
+        const contentOff = actionByKindAndName(
+            content.children, "setFolderSyncFolder", "Disable")
+        verify(contentOn !== null)
+        verify(contentOff !== null)
+        compare(contentOn.icon, "checkmark")
+        compare(contentOff.icon, "dialog-cancel")
+        verify(contentOn.checked)
+        verify(!contentOff.checked)
+        verify(contentOn.exclusive)
+        verify(contentOff.exclusive)
+        compare(contentOn.sync, false)
+        compare(contentOff.sync, true)
+        compare(contentOff.targetIndex, 0)
+        compare(contentOff.expectedFolderText, JSON.stringify(folderContainer))
 
-        const browse = actionByKind(behavior.children, "setFolderBrowseSubfolders")
-        verify(browse !== null)
-        compare(browse.name, "Browse subfolders")
-        compare(browse.enabled, true)
-        verify(!browse.checked)
-        compare(browse.browseSubfolders, true)
-        compare(browse.targetIndex, 0)
-        compare(browse.expectedFolderText, JSON.stringify(folderContainer))
+        compare(content.children[3].kind, "section")
+        compare(content.children[3].name, "Navigate subfolders")
+        const browseOn = actionByKindAndName(
+            content.children, "setFolderBrowseSubfolders", "Enable")
+        const browseOff = actionByKindAndName(
+            content.children, "setFolderBrowseSubfolders", "Disable")
+        verify(browseOn !== null)
+        verify(browseOff !== null)
+        compare(browseOn.enabled, true)
+        compare(browseOn.browseSubfolders, true)
+        compare(browseOff.browseSubfolders, false)
+        verify(!browseOn.checked)
+        verify(browseOff.checked)
+        compare(browseOff.expectedFolderText, JSON.stringify(folderContainer))
 
         let folderViewIndex = -1
         let sortIndex = -1
-        let behaviorIndex = -1
+        let contentIndex = -1
         for (let index = 0; index < actions.length; index++) {
             if (actions[index].name === "Folder view") { folderViewIndex = index }
             if (actions[index].name === "Sort by") { sortIndex = index }
-            if (actions[index].name === "Behavior") { behaviorIndex = index }
+            if (String(actions[index].name || "").startsWith("Content")) {
+                contentIndex = index
+            }
         }
         verify(folderViewIndex >= 0)
         verify(sortIndex >= 0)
-        compare(behaviorIndex, folderViewIndex + 1)
-        verify(behaviorIndex < sortIndex)
+        verify(contentIndex >= 0)
+        // Presentation comes first: both content choices live in a single group
+        // below the sort choice.
+        verify(folderViewIndex < sortIndex)
+        verify(sortIndex < contentIndex)
     }
 
     function test_gridLayoutOnlyOffersTheSyncChoice() {
@@ -248,23 +296,31 @@ TestCase {
         fakeDockItemsController.dockItems = [gridContainer]
         const actions = contextController.actionsForItem(
             gridContainer, [], "pinned", 0)
-        const behavior = behaviorAction(actions)
-        verify(behavior !== null)
-        compare(behavior.children.length, 1)
-        verify(actionByKind(behavior.children, "setFolderSyncFolder") !== null)
-        compare(actionByKind(behavior.children, "setFolderBrowseSubfolders"), null)
+        const content = contentAction(actions)
+        verify(content !== null)
+        compare(content.children.length, 3)
+        compare(content.children[0].kind, "section")
+        verify(actionByKindAndName(
+            content.children, "setFolderSyncFolder", "Enable") !== null)
+        verify(actionByKindAndName(
+            content.children, "setFolderSyncFolder", "Disable") !== null)
+        compare(actionByKind(content.children, "setFolderBrowseSubfolders"), null)
+        // Only the two layouts that can navigate offer the subfolder choice.
+        compare(childByName(content, "Navigate subfolders"), null)
     }
 
     function test_folderSyncToggleFreezesTheContainer() {
         fakeDockItemsController.dockItems = [folderContainer]
         const actions = contextController.actionsForItem(
             folderContainer, [], "pinned", 0)
-        const behavior = behaviorAction(actions)
-        const toggle = actionByKind(behavior.children, "setFolderSyncFolder")
+        const content = contentAction(actions)
+        const toggle = actionByKindAndName(
+            content.children, "setFolderSyncFolder", "Disable")
+        verify(toggle !== null)
         verify(contextController.triggerAction(toggle))
         compare(fakeDockItemsController.syncCallCount, 1)
         compare(fakeDockItemsController.lastTargetIndex, 0)
-        compare(fakeDockItemsController.lastSync, false)
+        compare(fakeDockItemsController.lastSync, true)
         compare(fakeDockItemsController.lastSyncExpectedFolderText,
             JSON.stringify(folderContainer))
     }
@@ -273,8 +329,11 @@ TestCase {
         fakeDockItemsController.dockItems = [folderContainer]
         const actions = contextController.actionsForItem(
             folderContainer, [], "pinned", 0)
-        const behavior = behaviorAction(actions)
-        const browse = actionByKind(behavior.children, "setFolderBrowseSubfolders")
+        const content = contentAction(actions)
+        const browse = actionByKindAndName(
+            content.children, "setFolderBrowseSubfolders", "Enable")
+        verify(browse !== null)
+        verify(browse.checked === false)
         verify(contextController.triggerAction(browse))
         compare(fakeDockItemsController.browseCallCount, 1)
         compare(fakeDockItemsController.syncCallCount, 0)
@@ -298,20 +357,31 @@ TestCase {
         }
         fakeDockItemsController.dockItems = [frozen]
         const actions = contextController.actionsForItem(frozen, [], "pinned", 0)
-        const behavior = behaviorAction(actions)
-        const sync = actionByKind(behavior.children, "setFolderSyncFolder")
-        verify(sync !== null)
-        verify(!sync.checked)
-        compare(sync.sync, true)
+        const content = contentAction(actions)
+        const contentOn = actionByKindAndName(
+            content.children, "setFolderSyncFolder", "Enable")
+        const contentOff = actionByKindAndName(
+            content.children, "setFolderSyncFolder", "Disable")
+        verify(contentOn !== null)
+        verify(contentOff !== null)
+        verify(!contentOn.checked)
+        verify(contentOff.checked)
         // The two choices keep their own value: freezing the container does not
-        // clear the stored subfolder preference.
-        const browse = actionByKind(behavior.children, "setFolderBrowseSubfolders")
-        verify(browse !== null)
-        verify(browse.checked)
-        compare(browse.browseSubfolders, false)
+        // clear the stored subfolder preference, and the subfolder pair stays
+        // visible but inert while the listing is frozen.
+        const browseOn = actionByKindAndName(
+            content.children, "setFolderBrowseSubfolders", "Enable")
+        const browseOff = actionByKindAndName(
+            content.children, "setFolderBrowseSubfolders", "Disable")
+        verify(browseOn !== null)
+        verify(browseOff !== null)
+        compare(browseOn.enabled, false)
+        compare(browseOff.enabled, false)
+        verify(browseOn.checked)
+        verify(!browseOff.checked)
 
-        verify(contextController.triggerAction(sync))
-        compare(fakeDockItemsController.lastSync, true)
+        verify(contextController.triggerAction(contentOn))
+        compare(fakeDockItemsController.lastSync, false)
         compare(fakeDockItemsController.browseCallCount, 0)
     }
 }

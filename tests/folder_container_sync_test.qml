@@ -23,6 +23,12 @@ TestCase {
         + "so added or removed files appear without pressing Load content. If the folder "
         + "is unavailable, the container shows the contents loaded last."
     readonly property string approvedBrowseNote: "Turn on Live folder contents to open subfolders."
+    readonly property string approvedUnavailableTitle: "Folder unavailable"
+    readonly property string approvedUnavailableDetail: "Punchi Dock cannot read this folder. "
+        + "Check that it still exists or pick another one in the container settings."
+    readonly property string approvedNoSnapshotTitle: "No saved contents"
+    readonly property string approvedNoSnapshotDetail: "Turn on live folder contents, "
+        + "or load the folder contents in the container settings."
     readonly property var storedSnapshot: [
         {type: "app", name: "Stored", icon: "folder", command: "stored"}
     ]
@@ -166,8 +172,35 @@ TestCase {
         compare(pathless.status, "invalid-target")
     }
 
-    function test_helper_keeps_subfolder_browsing_independent() {
+    function test_helper_freezes_with_the_current_listing() {
         const items = [{type: "folder", sourceType: "folder",
+            sourcePath: "/tmp", apps: testCase.storedSnapshot, layout: "grid"}]
+        const entries = [{type: "app", name: "Fresh", icon: "folder",
+            url: "file:///tmp/fresh"}]
+
+        const frozen = Items.freezeFolderWithSnapshot(items, 0, entries)
+        verify(frozen.changed)
+        compare(frozen.status, "updated")
+        compare(frozen.items[0].syncFolder, false)
+        compare(frozen.items[0].layout, "grid")
+        compare(frozen.items[0].apps.length, 1)
+        compare(frozen.items[0].apps[0].name, "Fresh")
+        // The source list stays untouched, and the snapshot is a copy.
+        compare(items[0].apps[0].name, "Stored")
+        frozen.items[0].apps[0].name = "Edited"
+        compare(entries[0].name, "Fresh")
+
+        const empty = Items.freezeFolderWithSnapshot(items, 0, [])
+        verify(empty.changed)
+        compare(empty.items[0].apps.length, 0)
+
+        const manual = Items.freezeFolderWithSnapshot(
+            [{type: "folder", sourceType: "manual", apps: []}], 0, entries)
+        verify(!manual.changed)
+        compare(manual.status, "invalid-target")
+    }
+
+    function test_helper_keeps_subfolder_browsing_independent() {        const items = [{type: "folder", sourceType: "folder",
             sourcePath: "/tmp", apps: []}]
 
         const enabled = Items.setFolderBrowseSubfolders(items, 0, true)
@@ -248,5 +281,60 @@ TestCase {
         tryVerify(function() { return popup.directoryModel === null })
         tryVerify(function() { return names(popup.apps) === "Stored" })
         compare(popup.itemCount, 1)
+    }
+
+    function test_frozen_container_without_snapshot_explains_the_state() {
+        popup.folderItem = testCase.folderItem({syncFolder: false, apps: []})
+        popup.sessionActive = true
+        compare(popup.liveContent, false)
+        verify(popup.frozenWithoutSnapshot)
+        verify(popup.contentStateActive)
+        const panel = findChild(popup, "folderContentState")
+        verify(panel !== null)
+        verify(panel.visible)
+        verify(!findChild(popup, "folderPopupGridView").visible)
+        compare(findChild(popup, "folderContentStateTitle").text,
+            testCase.approvedNoSnapshotTitle)
+        compare(findChild(popup, "folderContentStateDetail").text,
+            testCase.approvedNoSnapshotDetail)
+    }
+
+    function test_unavailable_folder_without_snapshot_explains_the_state() {
+        popup.folderItem = testCase.folderItem({
+            sourcePath: testCase.fixture + "/missing", apps: []})
+        popup.sessionActive = true
+        verify(popup.liveContent)
+        tryVerify(function() { return popup.folderUnreadable })
+        verify(popup.contentStateActive)
+        verify(findChild(popup, "folderContentState").visible)
+        compare(findChild(popup, "folderContentStateTitle").text,
+            testCase.approvedUnavailableTitle)
+        compare(findChild(popup, "folderContentStateDetail").text,
+            testCase.approvedUnavailableDetail)
+        // Opening a folder that cannot be read is not offered.
+        compare(popup.gridItems.length, 0)
+    }
+
+    function test_unavailable_folder_keeps_the_stored_snapshot_on_screen() {
+        popup.folderItem = testCase.folderItem({
+            sourcePath: testCase.fixture + "/missing"})
+        popup.sessionActive = true
+        verify(popup.liveContent)
+        tryVerify(function() { return popup.folderUnreadable })
+        verify(!popup.contentStateActive)
+        verify(!findChild(popup, "folderContentState").visible)
+        compare(names(popup.apps), "Stored")
+        // The stale snapshot stays visible, but opening the missing folder is
+        // still not offered.
+        compare(popup.gridItems.length, 1)
+        compare(popup.gridItems[0]._punchiOpenLocationAction, undefined)
+    }
+
+    function test_frozen_container_with_snapshot_keeps_the_grid() {
+        popup.folderItem = testCase.folderItem({syncFolder: false})
+        popup.sessionActive = true
+        verify(!popup.contentStateActive)
+        verify(findChild(popup, "folderPopupGridView").visible)
+        compare(names(popup.apps), "Stored")
     }
 }
