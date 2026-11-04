@@ -21,7 +21,7 @@ Plasma 6. Use it as a floating dock or inside a Plasma panel, horizontally or
 vertically, with the active Plasma theme or a custom background.
 
 It includes PunchiMenu for finding and organizing applications and is a modular
-rewrite of the original [Punchi Dock Plasmoid](https://github.com/PunchiSoft/punchi-dock-plasmoid).
+rewrite of the original Punchi Dock Plasmoid.
 The project is in active development toward version 1.0.
 
 [Features](#features) · [Screenshots](#screenshots) · [Installation](#installation) · [Compatibility](#compatibility) · [Testing](#testing-and-quality) · [Support](#support-and-contributing)
@@ -84,6 +84,11 @@ features marked as development may not be included in the latest release.
   surfaces, shadows, and blur where supported.
 - **Custom appearance:** Choose flat 2D or shelf-style 2.5D backgrounds, external
   JSON themes, indicators, labels, spacing, and hover effects.
+- **Theme examples:** Download the sample collection of external JSON themes
+  ([`themes demo V 0.1.5.tar.gz`](<Themes demo/themes demo V 0.1.5.tar.gz>)), extract it,
+  and import the resulting `themes/` folder from **Appearance → Dock background theme →
+  Import folder…**. The samples are not installed with the dock; see the
+  [demo theme guide](<Themes demo/README.md>).
 - **Live configuration:** Apply preferences without restarting Plasma Shell,
   while preserving keyboard navigation, accessible names, scaling, and reduced motion.
 
@@ -137,6 +142,12 @@ based on desktop captures from October 1, 2026.
 ## Installation
 
 ### Prebuilt package
+
+> [!NOTE]
+> Punchi Dock Remastered is also published on the [KDE Store](https://store.kde.org/p/2364290/).
+> The versions available there are older than the GitHub releases; use
+> [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases) or a source
+> build for the current version.
 
 For a prebuilt package, choose an asset for your system from
 [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases).
@@ -368,6 +379,14 @@ This runs the configured CTest suite; the complete maintenance workflow also
 applies the separate lint, catalog, integrity, and packaging checks. See
 [developer scripts](scripts-dev/README.md) and [test integrity](scripts-dev/test-integrity/README.md).
 
+## Related projects
+
+- **[Punchi Dock Quickshell](https://github.com/PunchiSoft/punchi-dock-quickshell):** A sibling
+  project in development that rebuilds the dock as a standalone Quickshell application for
+  KDE Plasma on Wayland. Unlike a Plasma applet, it owns its window surface, edge behavior
+  and input model instead of inheriting them from the panel. It has no published release or
+  package yet.
+
 ## Support and contributing
 
 Report problems through [GitHub Issues](https://github.com/PunchiSoft/punchi-dock-remastered/issues).
@@ -397,7 +416,7 @@ Internal notes, development files, and test tools are excluded from the installe
 
 AI agents are an integral development aid for accelerating programming, investigating issues, supporting refactoring, and preparing documentation and tests. Their instructions are versioned in [AGENTS.md](AGENTS.md) and [`.agents/`](.agents/). Maintainers remain responsible for technical decisions, review, and validation.
 
-The agent instructions and skills were created and configured by the author of Punchi Dock Remastered through independent research, reading online resources, Wikipedia, and Reddit discussions. These instructions are tailored to the project's architecture and development workflow.
+The agent instructions and skills were created and configured by PunchiSoft through independent research, reading online resources, Wikipedia, and Reddit discussions. These instructions are tailored to the project's architecture and development workflow.
 
 Financial support is optional: [donate through PayPal](https://www.paypal.com/donate/?hosted_button_id=HXFSZU4K8C38W).
 Donations are never required to use the project.
