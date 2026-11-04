@@ -1072,7 +1072,7 @@ KCM.SimpleKCM {
         spacerSizeLabel: i18n("Spacer size:")
         chooseIconText: i18n("Choose icon")
         rightClickCommandsText: i18n("Right-click commands")
-        containerApplicationsText: i18n("Container applications")
+        containerApplicationsText: i18n("Content")
         containerSourceLabel: i18n("Content:")
         manualContainerText: i18n("Manual")
         folderContainerText: i18n("Folder")

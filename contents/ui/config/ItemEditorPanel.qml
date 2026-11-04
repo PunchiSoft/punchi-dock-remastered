@@ -16,7 +16,9 @@ GridLayout {
     property alias appNameText: appName.text
     property alias appAliasText: appAlias.text
     property alias appDescriptionText: appDescription.text
-    property alias appIconText: appIconName.text
+    // The icon is chosen with the picker; this used to be a text field, so the
+    // value lives in the panel now.
+    property string appIconText: ""
     property alias appCommandText: appCommand.text
     readonly property bool dynamicApplicationsItem:
         selectedItemType === "dynamic-applications"
@@ -321,8 +323,8 @@ GridLayout {
 
         Controls.Button {
             HoverHandler { cursorShape: Qt.PointingHandCursor }
-            icon.name: root.iconPreview(appIconName.text, "application-x-executable")
-            icon.source: root.iconPreview(appIconName.text, "application-x-executable")
+            icon.name: root.iconPreview(root.appIconText, "application-x-executable")
+            icon.source: root.iconPreview(root.appIconText, "application-x-executable")
             display: Controls.AbstractButton.IconOnly
             onClicked: root.iconPickerRequested("item")
 
@@ -330,12 +332,54 @@ GridLayout {
             Controls.ToolTip.text: root.chooseIconText
         }
 
-        Controls.TextField {
-            id: appIconName
-            Layout.fillWidth: true
-            placeholderText: "firefox"
-            onEditingFinished: root.formChanged()
+        Controls.Label {
+            objectName: "itemEditorViewLabel"
+
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            Layout.leftMargin: Kirigami.Units.largeSpacing
+            visible: root.itemModeValue === "container"
+            text: root.viewLabel
+            horizontalAlignment: Text.AlignLeft
+            opacity: 0.75
         }
+
+        Controls.ComboBox {
+            id: containerLayout
+            Layout.alignment: Qt.AlignLeft
+            Layout.preferredWidth: Kirigami.Units.gridUnit * 8
+            visible: root.itemModeValue === "container"
+            enabled: root.selectedItemType === "folder"
+            textRole: "text"
+            valueRole: "value"
+            model: [
+                { "text": root.gridText, "value": "grid" },
+                { "text": root.listText, "value": "list" },
+                { "text": root.detailedText, "value": "detailed" },
+                { "text": root.fanText, "value": "fan", "disabled": root.verticalDock }
+            ]
+            onActivated: function(index) {
+                const option = containerLayout.model[index]
+                if (option && !option.disabled) {
+                    root.stableContainerLayout = String(option.value)
+                    root.containerLayoutChanged(currentValue)
+                    return
+                }
+                root.restoreContainerLayout()
+            }
+            delegate: Controls.ItemDelegate {
+                // ComboBox exposes its roles through `model`, matching KDE's own
+                // ComboBox delegates.
+                required property var model
+
+                width: ListView.view ? ListView.view.width : parent.width
+                text: String(model.text)
+                enabled: !model.disabled
+                highlighted: ListView.isCurrentItem
+                Accessible.name: String(model.text)
+            }
+        }
+
+        Item { Layout.fillWidth: true }
     }
 
     Controls.Label {
@@ -408,53 +452,6 @@ GridLayout {
     }
 
     Controls.Label {
-        objectName: "itemEditorViewLabel"
-
-        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-        Layout.preferredWidth: Kirigami.Units.gridUnit * 5
-        visible: root.itemModeValue === "container"
-        text: root.viewLabel
-        horizontalAlignment: Text.AlignLeft
-        opacity: 0.75
-    }
-
-    Controls.ComboBox {
-        id: containerLayout
-        Layout.alignment: Qt.AlignLeft
-        Layout.preferredWidth: Kirigami.Units.gridUnit * 8
-        visible: root.itemModeValue === "container"
-        enabled: root.selectedItemType === "folder"
-        textRole: "text"
-        valueRole: "value"
-        model: [
-            { "text": root.gridText, "value": "grid" },
-            { "text": root.listText, "value": "list" },
-            { "text": root.detailedText, "value": "detailed" },
-            { "text": root.fanText, "value": "fan", "disabled": root.verticalDock }
-        ]
-        onActivated: function(index) {
-            const option = containerLayout.model[index]
-            if (option && !option.disabled) {
-                root.stableContainerLayout = String(option.value)
-                root.containerLayoutChanged(currentValue)
-                return
-            }
-            root.restoreContainerLayout()
-        }
-        delegate: Controls.ItemDelegate {
-            // ComboBox exposes its roles through `model`, matching KDE's own
-            // ComboBox delegates.
-            required property var model
-
-            width: ListView.view ? ListView.view.width : parent.width
-            text: String(model.text)
-            enabled: !model.disabled
-            highlighted: ListView.isCurrentItem
-            Accessible.name: String(model.text)
-        }
-    }
-
-    Controls.Label {
         objectName: "containerLayoutFanUnavailableNote"
         Layout.columnSpan: 2
         Layout.fillWidth: true
@@ -512,10 +509,10 @@ GridLayout {
         objectName: "containerBrowseSubfoldersCheckBox"
         Layout.columnSpan: 2
         Layout.fillWidth: true
+        // Only the fan lacks navigation; every other layout can enter subfolders.
         visible: root.itemModeValue === "container"
             && root.containerSourceValue === "folder"
-            && (root.containerLayoutValue === "list"
-                || root.containerLayoutValue === "detailed")
+            && root.containerLayoutValue !== "fan"
         enabled: root.selectedItemType === "folder"
         text: i18nc("@option:check folder container", "Browse subfolders") // qmllint disable unqualified
         onToggled: root.formChanged()

@@ -700,12 +700,11 @@ QtObject {
                             "targetIndex": persistentIndex,
                             "expectedFolderText": expectedFolderText
                         }]
-                        // The KCM only offers subfolder browsing for the two
-                        // layouts that can actually navigate.
+                        // The fan shows a single folder, so only the other
+                        // layouts offer subfolder browsing.
                         const effectiveLayout = ConfigItemsJS.effectiveFolderLayout(
                             item.layout, root.verticalDock)
-                        if (effectiveLayout === "list"
-                                || effectiveLayout === "detailed") {
+                        if (effectiveLayout !== "fan") {
                             contentChildren.push({
                                 // qmllint disable unqualified
                                 "name": i18nc("@title:menu Folder popup content group", "Navigate subfolders"),

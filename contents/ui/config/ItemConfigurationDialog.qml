@@ -780,7 +780,7 @@ Controls.Dialog {
                         appIconText: editorPanel.appIconText
                         // qmllint disable unqualified
                         rightClickCommandsText: i18n("Right-click commands")
-                        containerApplicationsText: i18n("Container applications")
+                        containerApplicationsText: i18n("Content")
                         enableRightClickMenuText: i18n("Enable right-click menu")
                         limitContextMenuRowsText: i18n("Limit menu rows")
                         rowsText: i18n("rows")
