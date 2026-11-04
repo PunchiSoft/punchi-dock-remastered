@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.84\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-11-04 02:04-0300\n"
+"POT-Creation-Date: 2026-11-04 05:20-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -161,7 +161,7 @@ msgid_plural "%1 devices connected"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/components/DockItemsController.qml:1162
+#: contents/ui/components/DockItemsController.qml:1166
 #: contents/ui/config/ConfigItems.qml:736
 msgctxt "@info:status"
 msgid "%1 is already in %2."
@@ -182,7 +182,7 @@ msgctxt "@info:accessible"
 msgid "%1 is updated automatically and cannot accept applications"
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1167
+#: contents/ui/components/DockItemsController.qml:1171
 #: contents/ui/config/ConfigItems.qml:741
 msgctxt "@info:status"
 msgid ""
@@ -289,23 +289,23 @@ msgid_plural "%1 unread notifications"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/components/DockItemsController.qml:1158
+#: contents/ui/components/DockItemsController.qml:1162
 #: contents/ui/config/ConfigItems.qml:732
 msgctxt "@info:status"
 msgid "%1 was added to %2."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1108
+#: contents/ui/components/DockItemsController.qml:1112
 msgctxt "@info:status"
 msgid "%1 was moved on the Dock."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1105
+#: contents/ui/components/DockItemsController.qml:1109
 msgctxt "@info:status"
 msgid "%1 was pinned to the Dock."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1111
+#: contents/ui/components/DockItemsController.qml:1115
 msgctxt "@info:status"
 msgid "%1 was removed from the Dock."
 msgstr ""
@@ -652,12 +652,12 @@ msgid ""
 "becomes unreachable."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1117
+#: contents/ui/components/DockItemsController.qml:1121
 msgctxt "@info:status"
 msgid "A desktop shortcut for %1 already exists."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1114
+#: contents/ui/components/DockItemsController.qml:1118
 msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr ""
@@ -984,9 +984,9 @@ msgstr ""
 
 #: contents/ui/components/DockItem.qml:1652
 #: contents/ui/components/DockItem.qml:1659
-#: contents/ui/components/DockItemsController.qml:1078
+#: contents/ui/components/DockItemsController.qml:1082
 #: contents/ui/components/FolderFanView.qml:846
-#: contents/ui/components/FolderPopup.qml:1073
+#: contents/ui/components/FolderPopup.qml:1139
 #: contents/ui/config/code/itemTypeCatalog.js:45
 msgid "Application"
 msgstr ""
@@ -1271,7 +1271,7 @@ msgctxt "@action:button"
 msgid "Back"
 msgstr ""
 
-#: contents/ui/components/FolderPopup.qml:759
+#: contents/ui/components/FolderPopup.qml:818
 msgctxt "@action:button folder navigation"
 msgid "Back"
 msgstr ""
@@ -2044,7 +2044,7 @@ msgctxt "@option:recent-applications"
 msgid "Container"
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1154
+#: contents/ui/components/DockItemsController.qml:1158
 msgctxt "@title"
 msgid "Container"
 msgstr ""
@@ -2223,7 +2223,7 @@ msgctxt "@item:inlistbox Context menu size"
 msgid "Custom"
 msgstr ""
 
-#: contents/ui/components/AppActionsPopup.qml:475
+#: contents/ui/components/AppActionsPopup.qml:453
 msgid "Custom action"
 msgstr ""
 
@@ -2962,7 +2962,7 @@ msgstr ""
 msgid "Flow to the right"
 msgstr ""
 
-#: contents/ui/components/FolderPopup.qml:735
+#: contents/ui/components/FolderPopup.qml:794
 #: contents/ui/config/ConfigItems.qml:1077
 #: contents/ui/config/ItemConfigurationDialog.qml:704
 msgid "Folder"
@@ -3032,7 +3032,7 @@ msgstr ""
 msgid "Folder popups"
 msgstr ""
 
-#: contents/ui/components/FolderPopup.qml:1206
+#: contents/ui/components/FolderPopup.qml:1272
 msgctxt "@title folder popup empty state"
 msgid "Folder unavailable"
 msgstr ""
@@ -4348,7 +4348,7 @@ msgctxt "@info"
 msgid "No notifications"
 msgstr ""
 
-#: contents/ui/components/FolderPopup.qml:1208
+#: contents/ui/components/FolderPopup.qml:1274
 msgctxt "@title folder popup empty state"
 msgid "No saved contents"
 msgstr ""
@@ -4599,7 +4599,7 @@ msgid "Opaque"
 msgstr ""
 
 #: contents/ui/components/FolderFanView.qml:433
-#: contents/ui/components/FolderPopup.qml:207
+#: contents/ui/components/FolderPopup.qml:221
 msgctxt "@action:button open the container"
 msgid "Open"
 msgstr ""
@@ -4697,7 +4697,7 @@ msgctxt "@action:button"
 msgid "Open sound settings"
 msgstr ""
 
-#: contents/ui/config/ItemEditorPanel.qml:577
+#: contents/ui/config/ItemEditorPanel.qml:574
 msgctxt "@option:switch folder container"
 msgid "Open subfolders"
 msgstr ""
@@ -4730,7 +4730,7 @@ msgid "Open this application folder"
 msgstr ""
 
 #: contents/ui/components/FolderFanView.qml:1112
-#: contents/ui/components/FolderPopup.qml:1077
+#: contents/ui/components/FolderPopup.qml:1143
 msgctxt "@info:accessible"
 msgid "Open this folder in the file manager"
 msgstr ""
@@ -5116,7 +5116,7 @@ msgid ""
 "folder is read-only or requires administrator permissions."
 msgstr ""
 
-#: contents/ui/components/FolderPopup.qml:1220
+#: contents/ui/components/FolderPopup.qml:1286
 msgctxt "@info folder popup empty state"
 msgid ""
 "Punchi Dock cannot read this folder. Check that it still exists or pick "
@@ -5185,7 +5185,7 @@ msgid "PunchiMenu panel distance"
 msgstr ""
 
 #: contents/ui/components/DockItem.qml:42
-#: contents/ui/components/DockItemsController.qml:1461
+#: contents/ui/components/DockItemsController.qml:1465
 msgctxt "@title"
 msgid "Quick Note"
 msgstr ""
@@ -5987,7 +5987,7 @@ msgctxt "@action:button"
 msgid "Switch to light mode"
 msgstr ""
 
-#: contents/ui/config/ItemEditorPanel.qml:565
+#: contents/ui/config/ItemEditorPanel.qml:564
 msgctxt "@option:switch folder container"
 msgid "Sync folder"
 msgstr ""
@@ -6058,8 +6058,8 @@ msgstr ""
 msgid "Text shadows:"
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1126
-#: contents/ui/components/DockItemsController.qml:1180
+#: contents/ui/components/DockItemsController.qml:1130
+#: contents/ui/components/DockItemsController.qml:1184
 msgctxt "@info:status"
 msgid "The Dock configuration could not be saved."
 msgstr ""
@@ -6070,20 +6070,20 @@ msgid ""
 "shadow completely, so the text keeps only its surface behind it."
 msgstr ""
 
-#: src/systemdiscovery.cpp:1142
+#: src/systemdiscovery.cpp:1149
 msgid "The application action could not be found."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1184
+#: contents/ui/components/DockItemsController.qml:1188
 msgctxt "@info:status"
 msgid "The application could not be added to the container."
 msgstr ""
 
-#: src/systemdiscovery.cpp:1033
+#: src/systemdiscovery.cpp:1040
 msgid "The application could not be found."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1123
+#: contents/ui/components/DockItemsController.qml:1127
 msgctxt "@info:status"
 msgid "The application could not be resolved."
 msgstr ""
@@ -6098,7 +6098,7 @@ msgctxt "@info:status"
 msgid "The application folder could not be updated."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1120
+#: contents/ui/components/DockItemsController.qml:1124
 msgctxt "@info:status"
 msgid "The application identity is ambiguous."
 msgstr ""
@@ -6139,22 +6139,22 @@ msgid ""
 "used."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1133
+#: contents/ui/components/DockItemsController.qml:1137
 msgctxt "@info:status"
 msgid "The desktop folder is not available."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1140
+#: contents/ui/components/DockItemsController.qml:1144
 msgctxt "@info:status"
 msgid "The desktop shortcut could not be written."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1136
+#: contents/ui/components/DockItemsController.qml:1140
 msgctxt "@info:status"
 msgid "The desktop shortcut permissions could not be set."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1130
+#: contents/ui/components/DockItemsController.qml:1134
 msgctxt "@info:status"
 msgid "The desktop shortcut source is not safe."
 msgstr ""
@@ -6194,7 +6194,7 @@ msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1172
+#: contents/ui/components/DockItemsController.qml:1176
 #: contents/ui/config/ConfigItems.qml:749
 msgctxt "@info:status"
 msgid "The dropped launcher could not be resolved safely."
@@ -6217,11 +6217,11 @@ msgctxt "@info"
 msgid "The folder change could not be applied. Please try again."
 msgstr ""
 
-#: src/systemdiscovery.cpp:572 src/systemdiscovery.cpp:1293
+#: src/systemdiscovery.cpp:572 src/systemdiscovery.cpp:1300
 msgid "The folder location is invalid."
 msgstr ""
 
-#: contents/ui/config/ItemEditorPanel.qml:590
+#: contents/ui/config/ItemEditorPanel.qml:587
 msgid "The folder updates on its own. Loading it is not needed."
 msgstr ""
 
@@ -6231,7 +6231,7 @@ msgctxt "@info:status"
 msgid "The last folder change could not be undone."
 msgstr ""
 
-#: src/systemdiscovery.cpp:1163
+#: src/systemdiscovery.cpp:1170
 msgid "The menu editor could not be found."
 msgstr ""
 
@@ -6270,7 +6270,7 @@ msgid ""
 "area of dock items."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1143
+#: contents/ui/components/DockItemsController.qml:1147
 msgctxt "@info:status"
 msgid "The requested application action could not be completed."
 msgstr ""
@@ -6333,7 +6333,7 @@ msgstr ""
 msgid "The spectrum is drawn over the Plasma-themed dock background."
 msgstr ""
 
-#: contents/ui/components/DockItemsController.qml:1176
+#: contents/ui/components/DockItemsController.qml:1180
 #: contents/ui/config/ConfigItems.qml:746
 msgctxt "@info:status"
 msgid "The target container changed before the application could be added."
@@ -6528,7 +6528,7 @@ msgctxt "@info"
 msgid "Turn on Wi-Fi to search for networks."
 msgstr ""
 
-#: contents/ui/components/FolderPopup.qml:1222
+#: contents/ui/components/FolderPopup.qml:1288
 msgctxt "@info folder popup empty state"
 msgid ""
 "Turn on live folder contents, or load the folder contents in the container "

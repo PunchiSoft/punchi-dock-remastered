@@ -72,7 +72,10 @@ int FolderNavigationModel::depth() const
 
 QString FolderNavigationModel::directoryTarget(const QVariantMap &entry) const
 {
-    if (!entry.value(QStringLiteral("isDirectory")).toBool() || depth() >= maximumDepth()) { return {}; }
+    // Older frozen snapshots do not carry isDirectory. Resolve the saved URL
+    // against the filesystem and root boundary instead of trusting or requiring
+    // snapshot metadata.
+    if (depth() >= maximumDepth()) { return {}; }
     const QString target = boundedDirectory(entry.value(QStringLiteral("url")).toString());
     const QString current = QUrl(m_location).toLocalFile();
     return target.isEmpty() || target == current || current.startsWith(target + QLatin1Char('/')) ? QString() : QUrl::fromLocalFile(target).toString();

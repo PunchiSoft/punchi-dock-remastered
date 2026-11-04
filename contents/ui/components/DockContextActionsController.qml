@@ -716,8 +716,8 @@ QtObject {
                                 // qmllint enable unqualified
                                 "icon": "checkmark",
                                 "kind": "setFolderBrowseSubfolders",
-                                // Choosing to browse also releases a frozen
-                                // container, so the pair is never inert.
+                                // Browsing works from a frozen root too, so the
+                                // pair is never inert.
                                 "enabled": true,
                                 "checked": browsingEnabled,
                                 "exclusive": true,

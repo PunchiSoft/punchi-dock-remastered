@@ -4,7 +4,12 @@ import "../org/punchi/dock" as Punchi
 
 QtObject {
     id: root
+    // Reading the root live belongs to the sync choice: a synced container
+    // lists the folder, a frozen one keeps its snapshot. Entering and going
+    // back is the browsing choice and works from either root, so the two are
+    // independent.
     property bool enabled: false
+    property bool navigationEnabled: false
     // Entering subfolders is opt-in. Turning it off ends the navigation even
     // though the root listing keeps following the folder, so re-enabling it
     // starts again at the container folder instead of an abandoned subfolder.
@@ -38,7 +43,7 @@ QtObject {
         }
     }
     readonly property Punchi.FolderNavigationModel childModel: Punchi.FolderNavigationModel {
-        enabled: root.enabled && (root.hasChild || root.retainChildModel)
+        enabled: root.navigationEnabled && (root.hasChild || root.retainChildModel)
         rootPath: root.rootPath
         sortMode: root.sortMode
         onStateChanged: {
@@ -66,9 +71,13 @@ QtObject {
     }
 
     function enter(entry, index, scroll, primary) {
+        // The root model stays rooted at the container folder even when sync
+        // disables its listing. Resolve first-level entries there so a stale
+        // child-model location from an earlier browsing session cannot reject
+        // a directory in a frozen snapshot.
         const model = primary ? root.rootModel : root.childModel
         const target = model.directoryTarget(entry)
-        if (!root.enabled || !target.length
+        if (!root.navigationEnabled || !target.length
                 || (!primary && root.history.length >= model.maximumDepth)) {
             return false
         }

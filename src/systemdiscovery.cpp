@@ -627,8 +627,15 @@ void SystemDiscovery::requestFolderEntries(const QString &path)
                 {QStringLiteral("type"), QStringLiteral("app")},
                 {QStringLiteral("name"), displayName},
                 {QStringLiteral("icon"), iconName},
-                {QStringLiteral("url"), entryUrl.toString()}
+                {QStringLiteral("url"), entryUrl.toString()},
+                {QStringLiteral("isDirectory"), directory}
             };
+            // The snapshot feeds the frozen container, and every snapshot row is
+            // a direct child of the container folder, so any directory is a
+            // browsable entry there. This mirrors FolderNavigationModel's rows.
+            if (directory) {
+                itemMap.insert(QStringLiteral("navigable"), true);
+            }
             if (!storageId.isEmpty()) {
                 itemMap.insert(QStringLiteral("storageId"), storageId);
             }

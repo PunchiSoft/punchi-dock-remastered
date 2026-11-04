@@ -238,16 +238,16 @@ TestCase {
         compare(controller.draft.sourcePath, "/home/user/Videos/")
     }
 
-    function test_helper_releases_the_freeze_when_browsing_is_enabled() {
+    function test_helper_keeps_the_freeze_when_browsing_is_enabled() {
         const items = [{type: "folder", sourceType: "folder",
             sourcePath: "/tmp", apps: [], syncFolder: false}]
 
         const enabled = Items.setFolderBrowseSubfolders(items, 0, true)
         verify(enabled.changed)
         compare(enabled.items[0].browseSubfolders, true)
-        // Browsing reads the listing, so it releases a frozen container in the
-        // same step instead of leaving a preference that could never apply.
-        compare(enabled.items[0].syncFolder, undefined)
+        // Browsing and sync are independent: enabling browsing never releases
+        // the frozen container.
+        compare(enabled.items[0].syncFolder, false)
         compare(items[0].browseSubfolders, undefined)
         compare(items[0].syncFolder, false)
 
@@ -260,7 +260,12 @@ TestCase {
         compare(unchanged.status, "unchanged")
 
         // Freezing the container never rewrites the subfolder preference.
-        const frozen = Items.setFolderSyncFolder(enabled.items, 0, false)
+        const syncedWithBrowse = Items.setFolderBrowseSubfolders(
+            [{type: "folder", sourceType: "folder", sourcePath: "/tmp", apps: []}],
+            0, true)
+        verify(syncedWithBrowse.changed)
+        compare(syncedWithBrowse.items[0].syncFolder, undefined)
+        const frozen = Items.setFolderSyncFolder(syncedWithBrowse.items, 0, false)
         verify(frozen.changed)
         compare(frozen.items[0].syncFolder, false)
         compare(frozen.items[0].browseSubfolders, true)
@@ -272,11 +277,11 @@ TestCase {
         compare(manual.status, "invalid-target")
     }
 
-    function test_choosing_subfolders_releases_the_freeze() {
+    function test_choosing_subfolders_keeps_the_freeze() {
         const sync = openListDraft()
         const browse = findChild(dialog, "containerBrowseSubfoldersCheckBox")
         verify(browse !== null)
-        // No note asks for the sync switch any more: the action resolves it.
+        // No note asks for the sync switch: browsing works from a frozen root.
         compare(findChild(dialog, "containerBrowseSubfoldersNote"), null)
 
         sync.checked = false
@@ -286,7 +291,7 @@ TestCase {
         browse.checked = true
         browse.toggled()
         compare(controller.draft.browseSubfolders, true)
-        compare(controller.draft.syncFolder, undefined)
+        compare(controller.draft.syncFolder, false)
     }
 
     function test_switches_follow_the_live_state() {
@@ -303,8 +308,9 @@ TestCase {
 
         sync.checked = false
         sync.toggled()
-        // Freezing keeps the subfolder switch usable: choosing it releases the
-        // freeze. Only the note about the live listing stops applying.
+        // Freezing keeps the subfolder switch usable because browsing is
+        // independent of sync. Only the note about the live listing stops
+        // applying.
         verify(browse.visible)
         compare(browse.enabled, true)
         verify(!syncNote.visible)
