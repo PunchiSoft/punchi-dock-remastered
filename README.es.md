@@ -56,7 +56,16 @@ las funciones marcadas como desarrollo pueden no estar incluidas en la última v
 - **Cuatro presentaciones:** Elige Cuadrícula, Lista, Detalle o Abanico, con iconos,
   etiquetas, tipografía, escala y animaciones de apertura configurables.
 - **Contenido flexible:** Crea colecciones manuales, complétalas desde categorías
-  de aplicaciones instaladas o abre elementos de una carpeta del sistema de archivos.
+  de aplicaciones instaladas o sigue una carpeta del sistema de archivos para que
+  los archivos añadidos y eliminados aparezcan sin recargar.
+- **Opciones de carpeta en el menú:** `Contenido — <carpeta>` en el menú contextual
+  activa o desactiva el contenido en vivo y la navegación por subcarpetas de ese
+  contenedor, y el contenedor adopta el nombre de la carpeta mientras no escribas otro.
+- **Congelar con el listado actual:** Al desactivar el contenido en vivo se guarda
+  lo que la carpeta muestra en ese momento; el popup avisa cuando la carpeta no se
+  puede leer o cuando un contenedor congelado no tiene contenido guardado.
+- **Navegación por subcarpetas:** Abre subcarpetas en Cuadrícula, Lista y Detalle.
+  Abanico presenta una sola carpeta, así que no navega.
 - **Interacción directa:** Arrastra lanzadores desde PunchiMenu o el escritorio,
   cambia la presentación desde el menú contextual y abre la carpeta de origen en Dolphin.
 

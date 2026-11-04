@@ -57,7 +57,16 @@ als in Entwicklung gekennzeichnete Funktionen können in der neuesten Veröffent
 - **Vier Darstellungen:** Wähle Raster, Liste, Detail oder Fächer mit einstellbaren
   Symbolen, Beschriftungen, Typografie, Skalierung und Öffnungsanimationen.
 - **Flexible Inhalte:** Erstelle eigene Sammlungen, befülle sie aus Kategorien
-  installierter Anwendungen oder öffne Einträge aus einem Ordner im Dateisystem.
+  installierter Anwendungen oder folge einem Ordner im Dateisystem, sodass
+  hinzugefügte und entfernte Dateien ohne Neuladen erscheinen.
+- **Ordneroptionen im Menü:** `Inhalt — <Ordner>` im Kontextmenü schaltet den
+  Live-Inhalt und das Durchsuchen von Unterordnern für diesen Container ein oder
+  aus; der Container übernimmt den Ordnernamen, solange du den Standardnamen behältst.
+- **Mit der aktuellen Liste einfrieren:** Beim Ausschalten des Live-Inhalts wird
+  gespeichert, was der Ordner gerade zeigt; das Popup meldet, wenn der Ordner nicht
+  gelesen werden kann oder ein eingefrorener Container keinen gespeicherten Inhalt hat.
+- **Unterordner durchsuchen:** Öffne Unterordner in Raster, Liste und Detail.
+  Der Fächer zeigt einen einzelnen Ordner und navigiert daher nicht.
 - **Direkte Bedienung:** Ziehe Starter aus PunchiMenu oder vom Desktop hinein,
   wechsle die Darstellung im Kontextmenü und öffne den zugehörigen Ordner in Dolphin.
 

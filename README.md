@@ -54,7 +54,16 @@ features marked as development may not be included in the latest release.
 - **Four presentations:** Choose Grid, List, Detailed, or Fan, with configurable
   icons, labels, typography, scale, and opening animations.
 - **Flexible content:** Create manual collections, populate them from installed
-  application categories, or open entries from a filesystem folder.
+  application categories, or follow a filesystem folder so added and removed
+  files appear without reloading.
+- **Folder options in the menu:** `Content — <folder>` in the context menu turns
+  live contents and subfolder browsing on or off for that container, and the
+  container takes the folder name while you keep the default one.
+- **Freeze with the current listing:** Turning live contents off stores what the
+  folder shows at that moment; the popup says when the folder cannot be read or
+  when a frozen container has no saved contents.
+- **Subfolder navigation:** Open subfolders in Grid, List, and Detailed. Fan
+  presents a single folder, so it never navigates.
 - **Direct interaction:** Drop launchers from PunchiMenu or the desktop, switch
   presentation from the context menu, and open the backing folder in Dolphin.
 
