@@ -26,6 +26,9 @@ Definición del alcance exacto de esta skill dentro del contexto del plasmoide P
   post confirmado como publicado. Conservar su orden de secciones, tabla
   comparativa y changelog temático; cambiar solo el contenido propio de la
   versión salvo autorización explícita del usuario para rediseñar el formato.
+- Regla 7: Toda prosa nueva o revisada se redacta con `editorial-voice`, que fija
+  voz, claridad, brevedad y registro; esta skill sigue decidiendo estructura,
+  plantillas y formato.
 
 ## Checklist
 - [ ] ¿Los cambios se ajustan al scope de esta skill?

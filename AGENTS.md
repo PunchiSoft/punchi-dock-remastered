@@ -437,6 +437,35 @@ El énfasis forma parte de la decisión: qué parte va en negrita y qué parte q
 en peso normal se propone junto con el texto. Pedir «mejóralo» no delega el
 contenido. Aplicar la skill `notice-copy-approval` para el procedimiento completo.
 
+## Voz editorial y generación de texto
+
+Punchi Dock Remastered lo mantiene una sola persona, con asistencia de agentes
+de IA declarada en el propio proyecto. La redacción debe reflejarlo.
+
+- Nunca usar primera persona plural ni plural institucional: `we`, `our`,
+  `nosotros`, `nuestro`, `wir`, `uns`, `nós`, `nosso` y sus variantes quedan
+  prohibidos en el texto propio.
+- Describir funciones en tercera persona del producto e instruir en segunda
+  persona singular.
+- Reservar la primera persona singular (`I`) para declaraciones personales del
+  autor que asumen una afirmación concreta.
+- Usar `PunchiSoft` solo como titular de derechos y propietario del repositorio,
+  nunca como equipo con opiniones o compromisos.
+- Declarar la asistencia de IA al describir el proceso de desarrollo y no
+  atribuirle decisiones técnicas.
+- Redactar con claridad, brevedad, registro formal culto y lectura pensada para
+  usuario final: una idea por frase, sin repetir datos de bloques cercanos y sin
+  adjetivos promocionales.
+- Conservar la paridad de hechos, alcance y estado de validación entre el texto
+  inglés y sus traducciones.
+- Este alcance cubre todo texto del repositorio, incluidos `docs/` y `bitacora/`,
+  pero no autoriza reescribir documentos históricos ni citas textuales.
+- Los textos explicativos siguen pasando por `notice-copy-approval` y los
+  textos visibles de interfaz por `ki18n-localization`.
+
+Activar la skill `editorial-voice` al crear o revisar cualquier texto del
+repositorio.
+
 ## Empaquetado
 
 - Mantener `metadata.json` coherente con las capacidades reales del plasmoide.

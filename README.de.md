@@ -203,7 +203,9 @@ Füge Punchi Dock Remastered anschließend über Plasmas Oberfläche zum Hinzuf�
 von Miniprogrammen hinzu. Falls ein aktualisiertes natives Modul weiterhin geladen
 ist, melde dich ab und wieder an, um die neue Version zu laden.
 
-Wir empfehlen `./scripts-user/setup.sh --install --no-restart`, um das native Modul mit den Qt- und KDE-Bibliotheken deines Systems zu kompilieren. Dieser Ablauf erfordert KDE Plasma 6 und die Entwicklungsabhängigkeiten des Projekts. Die dokumentierten lokalen Tests dieses Zyklus betreffen Fedora 44 und Debian 13.
+Das Kompilieren aus dem Quellcode erfordert KDE Plasma 6 und die
+Entwicklungsabhängigkeiten des Projekts. Die dokumentierten lokalen Tests dieses
+Zyklus betreffen Fedora 44 und Debian 13.
 
 ### Welches Skript sollte ich verwenden?
 
@@ -431,7 +433,7 @@ Interne Notizen, Entwicklungsdateien und Testwerkzeuge werden nicht in das insta
 
 ### KI-gestützte Entwicklung
 
-KI-Agenten sind eine integrale Entwicklungshilfe, um Programmierung zu beschleunigen, Probleme zu untersuchen, Refactorings zu unterstützen und Dokumentation sowie Tests vorzubereiten. Ihre Anweisungen werden in [AGENTS.md](AGENTS.md) und [`.agents/`](.agents/) versioniert. Die Projektverantwortlichen bleiben für technische Entscheidungen, Überprüfung und Validierung verantwortlich.
+KI-Agenten sind eine integrale Entwicklungshilfe, um Programmierung zu beschleunigen, Probleme zu untersuchen, Refactorings zu unterstützen und Dokumentation sowie Tests vorzubereiten. Ihre Anweisungen werden in [AGENTS.md](AGENTS.md) und [`.agents/`](.agents/) versioniert. Der Projektverantwortliche bleibt für technische Entscheidungen, Überprüfung und Validierung verantwortlich.
 
 Die Agentenanweisungen und Skills wurden von PunchiSoft durch eigene Recherche, das Lesen von Online-Ressourcen, Wikipedia und Reddit-Diskussionen erstellt und konfiguriert. Diese Anweisungen sind auf die Architektur und den Entwicklungsablauf des Projekts abgestimmt.
 

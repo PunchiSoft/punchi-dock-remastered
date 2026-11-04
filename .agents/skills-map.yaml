@@ -75,6 +75,10 @@ skills:
     family: documentation-localization
     role: domain
     references: []
+  - name: editorial-voice
+    family: documentation-localization
+    role: domain
+    references: [documentation, github-issue-response, ki18n-localization, notice-copy-approval]
   - name: fedora
     family: delivery
     role: domain
@@ -179,6 +183,10 @@ skills:
     family: motion-effects
     role: domain
     references: [plasma-animation-performance, plasma-fluid-motion, qml-runtime-load-review, visual-review]
+  - name: plasma-memory-budget
+    family: quality-assurance
+    role: domain
+    references: [performance, plasma-animation-performance, plasma-config-review, testing]
   - name: plasma-motion-review
     family: motion-effects
     role: domain

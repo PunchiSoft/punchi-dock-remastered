@@ -83,4 +83,4 @@ the C++ build toolchain. Each action checks only the commands it actually uses.
 - `lib/`: shared packaging and installation implementations; users should not
   invoke these files directly.
 
-Project maintainers should use [the developer scripts](../scripts-dev/README.md).
+For project maintenance, use [the developer scripts](../scripts-dev/README.md).

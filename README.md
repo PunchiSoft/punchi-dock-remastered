@@ -197,7 +197,9 @@ use `--upgrade` instead of `--install` to update an existing installation.
 Then add Punchi Dock Remastered through Plasma's Add Widgets interface. If an
 updated native module remains loaded, log out and back in to load the new version.
 
-We recommend `./scripts-user/setup.sh --install --no-restart` to build the native module against your system’s Qt and KDE libraries. This workflow requires KDE Plasma 6 and the project’s development dependencies. Documented local testing for this cycle covers Fedora 44 and Debian 13.
+Building from source requires KDE Plasma 6 and the project’s development
+dependencies. Documented local testing for this cycle covers Fedora 44 and
+Debian 13.
 
 ### Which script should I use?
 
@@ -423,7 +425,7 @@ Internal notes, development files, and test tools are excluded from the installe
 
 ### AI-assisted development
 
-AI agents are an integral development aid for accelerating programming, investigating issues, supporting refactoring, and preparing documentation and tests. Their instructions are versioned in [AGENTS.md](AGENTS.md) and [`.agents/`](.agents/). Maintainers remain responsible for technical decisions, review, and validation.
+AI agents are an integral development aid for accelerating programming, investigating issues, supporting refactoring, and preparing documentation and tests. Their instructions are versioned in [AGENTS.md](AGENTS.md) and [`.agents/`](.agents/). The maintainer remains responsible for technical decisions, review, and validation.
 
 The agent instructions and skills were created and configured by PunchiSoft through independent research, reading online resources, Wikipedia, and Reddit discussions. These instructions are tailored to the project's architecture and development workflow.
 
