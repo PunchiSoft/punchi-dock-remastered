@@ -214,8 +214,13 @@ Item {
     // popup never shows an empty container for a frame.
     readonly property var apps: {
         const model = folderRoot.directoryModel
-        if (!folderRoot.liveContent || !model || model.loading) {
-            return folderItem.apps || []
+        // The embedded navigation pane owns no source of its own: the model the
+        // parent popup injects is its only listing. Its snapshot belongs to the
+        // container above, so it must never stand in for the child directory.
+        const ownsListing = folderRoot.liveContent
+            || folderRoot.embeddedNavigationPane
+        if (!ownsListing || !model || model.loading) {
+            return folderRoot.embeddedNavigationPane ? [] : (folderItem.apps || [])
         }
         const rows = []
         for (let index = 0; index < model.count; ++index) {
