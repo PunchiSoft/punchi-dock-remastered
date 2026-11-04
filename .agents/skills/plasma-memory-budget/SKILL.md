@@ -62,8 +62,10 @@ Reglas:
 ## Protocolo de medición
 
 ```bash
-python3 scripts-dev/memory-budget.py             # mide e informa
-python3 scripts-dev/memory-budget.py --check     # falla si supera el baseline
+python3 scripts-dev/memory-budget.py                     # mide e informa
+python3 scripts-dev/memory-budget.py --check              # falla si supera el baseline
+python3 scripts-dev/memory-budget.py --soak 40            # busca crecimiento en reposo
+python3 scripts-dev/memory-budget.py --soak 20 --soak-instances 0   # control sin dock
 ```
 
 El arnés:
@@ -78,6 +80,20 @@ El arnés:
 5. elimina el entorno temporal en todas las rutas de salida.
 
 Nunca toca la sesión del usuario ni requiere red.
+
+### Fugas frente a consumo
+
+Son dos preguntas distintas y se miden distinto:
+
+- **consumo** se mide con el presupuesto y se compara con el baseline;
+- **fuga** se mide con `--soak`, que informa crecimiento y pendiente por minuto.
+  Un soak sin el dock (`--soak-instances 0`) es el control obligatorio: el shell
+  también puede crecer y atribuirle al plasmoide lo que no es suyo cuesta caro.
+
+Una pendiente distinta de cero no basta para declarar fuga; hace falta que el
+crecimiento sea monótono y que el control esté plano. Y un crecimiento pequeño
+debe atribuirse por configuración antes de tocar código: el 2026-11-04, quitar 33
+de los 34 elementos redujo la pendiente a la mitad, no a cero.
 
 ### Atribución por componente
 

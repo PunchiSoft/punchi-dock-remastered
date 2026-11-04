@@ -494,6 +494,86 @@ def check_baseline(metrics: Metrics) -> int:
     return 0 if failures == 0 else 1
 
 
+def linear_slope_per_minute(points: list[tuple[float, float]]) -> float:
+    """Least-squares slope of memory over elapsed seconds, reported per minute."""
+
+    if len(points) < 3:
+        return 0.0
+    count = len(points)
+    mean_x = sum(point[0] for point in points) / count
+    mean_y = sum(point[1] for point in points) / count
+    covariance = sum((x - mean_x) * (y - mean_y) for x, y in points)
+    variance = sum((x - mean_x) ** 2 for x, _ in points)
+    if variance == 0:
+        return 0.0
+    return covariance / variance * 60.0
+
+
+def third_medians(values: list[float]) -> tuple[float, float]:
+    """Median of the first and last third, which ignores start-up transients."""
+
+    if len(values) < 6:
+        return (values[0], values[-1]) if values else (0.0, 0.0)
+
+    def median(items: list[float]) -> float:
+        ordered = sorted(items)
+        middle = len(ordered) // 2
+        if len(ordered) % 2:
+            return ordered[middle]
+        return (ordered[middle - 1] + ordered[middle]) / 2
+
+    size = len(values) // 3
+    return median(values[:size]), median(values[-size:])
+
+
+def soak(minutes: float, interval: float, package_root: Path, instance_count: int) -> dict:
+    """Hold the dock open and look for memory that keeps growing."""
+
+    require_tools()
+    session = IsolatedSession(package_root)
+    points: list[tuple[float, float]] = []
+    values: list[float] = []
+    try:
+        log("Starting isolated Plasma session for the soak...")
+        session.start()
+        for _ in range(instance_count):
+            session.add_dock()
+        if session.plasmashell_pid is None:
+            raise MeasurementError("plasmashell is not running.")
+        # Let the dock settle before the series starts, so the ramp of the first
+        # seconds is not mistaken for growth.
+        time.sleep(25.0)
+        deadline = time.monotonic() + minutes * 60.0
+        started = time.monotonic()
+        while time.monotonic() < deadline:
+            value = read_anon_mb(session.plasmashell_pid)
+            if value is None:
+                raise MeasurementError("plasmashell disappeared during the soak.")
+            elapsed = time.monotonic() - started
+            points.append((elapsed, value))
+            values.append(value)
+            time.sleep(interval)
+    finally:
+        session.stop()
+
+    first_median, last_median = third_medians(values)
+    slope = linear_slope_per_minute(points)
+    growth = last_median - first_median
+    return {
+        "minutes": round(minutes, 1),
+        "interval_s": interval,
+        "instances": instance_count,
+        "samples": len(values),
+        "first_third_median_mb": round(first_median, 1),
+        "last_third_median_mb": round(last_median, 1),
+        "growth_mb": round(growth, 1),
+        "slope_mb_per_minute": round(slope, 2),
+        "min_mb": round(min(values), 1) if values else 0.0,
+        "max_mb": round(max(values), 1) if values else 0.0,
+        "series": [[round(t, 1), round(v, 1)] for t, v in points],
+    }
+
+
 def measure(settle_seconds: float, sample_seconds: float, package_root: Path) -> Metrics:
     require_tools()
     session = IsolatedSession(package_root)
@@ -537,6 +617,25 @@ def parse_arguments(argv: list[str]) -> argparse.Namespace:
         help="Package root to measure instead of the working tree (component bisection)",
     )
     parser.add_argument("--json", action="store_true", help="Print the metrics as JSON")
+    parser.add_argument(
+        "--soak",
+        type=float,
+        metavar="MINUTES",
+        help="Hold the dock open for this long and report memory growth instead of the budget",
+    )
+    parser.add_argument(
+        "--soak-interval",
+        type=float,
+        default=10.0,
+        help="Seconds between soak samples",
+    )
+    parser.add_argument(
+        "--soak-instances",
+        type=int,
+        default=1,
+        help="Number of dock instances held open during the soak; 0 measures the "
+        "shell alone as a control",
+    )
     parser.add_argument("--check", action="store_true", help="Fail when a metric exceeds the baseline")
     parser.add_argument("--write-baseline", action="store_true", help="Record the measured values")
     parser.add_argument(
@@ -560,6 +659,29 @@ def main(argv: list[str]) -> int:
         package_root = arguments.package.resolve()
         if not (package_root / "metadata.json").exists():
             raise MeasurementError(f"{package_root} does not look like a plasmoid package.")
+        if arguments.soak:
+            result = soak(
+                arguments.soak,
+                arguments.soak_interval,
+                package_root,
+                max(0, arguments.soak_instances),
+            )
+            if arguments.json:
+                print(json.dumps(result, indent=2))
+            else:
+                log(
+                    "Soak %.1f min: growth %.1f MB, slope %.2f MB/min, "
+                    "range %.1f-%.1f MB over %d samples"
+                    % (
+                        result["minutes"],
+                        result["growth_mb"],
+                        result["slope_mb_per_minute"],
+                        result["min_mb"],
+                        result["max_mb"],
+                        result["samples"],
+                    )
+                )
+            return 0
         metrics = measure(arguments.settle, arguments.sample, package_root)
     except Terminated as error:
         log(f"Interrupted by signal {error.signum}.")
