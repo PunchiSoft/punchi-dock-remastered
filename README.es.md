@@ -202,7 +202,9 @@ Después añade Punchi Dock Remastered desde la interfaz Añadir elementos gráf
 de Plasma. Si un módulo nativo actualizado sigue cargado, cierra y vuelve a iniciar
 sesión para cargar la nueva versión.
 
-Recomendamos `./scripts-user/setup.sh --install --no-restart` para compilar el módulo nativo con las bibliotecas Qt y KDE de tu equipo. Este flujo requiere KDE Plasma 6 y las dependencias de desarrollo del proyecto. Las pruebas locales documentadas de este ciclo corresponden a Fedora 44 y Debian 13.
+La compilación desde el código fuente requiere KDE Plasma 6 y las dependencias de
+desarrollo del proyecto. Las pruebas locales documentadas de este ciclo
+corresponden a Fedora 44 y Debian 13.
 
 ### ¿Qué script debo utilizar?
 
@@ -430,7 +432,7 @@ Las notas internas, archivos de desarrollo y herramientas de pruebas quedan fuer
 
 ### Desarrollo asistido por IA
 
-Los agentes de IA son un apoyo integral al desarrollo para agilizar la programación, investigar problemas, apoyar refactorizaciones y preparar documentación y pruebas. Sus instrucciones se versionan en [AGENTS.md](AGENTS.md) y [`.agents/`](.agents/). Los mantenedores conservan la responsabilidad de las decisiones técnicas, la revisión y la validación.
+Los agentes de IA son un apoyo integral al desarrollo para agilizar la programación, investigar problemas, apoyar refactorizaciones y preparar documentación y pruebas. Sus instrucciones se versionan en [AGENTS.md](AGENTS.md) y [`.agents/`](.agents/). El mantenedor conserva la responsabilidad de las decisiones técnicas, la revisión y la validación.
 
 Las instrucciones para los agentes y sus skills fueron creadas y configuradas por PunchiSoft a partir de investigación propia, lectura de recursos en internet, Wikipedia y debates en Reddit. Estas instrucciones se adaptan a la arquitectura y al flujo de desarrollo del proyecto.
 

@@ -42,7 +42,7 @@
     }
   ],
   "schema_version": 1,
-  "skill_count": 62,
+  "skill_count": 64,
   "skills": [
     {
       "aliases": [],
@@ -925,6 +925,60 @@
         }
       ],
       "references": [],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Redactar y revisar cualquier texto de Punchi Dock con una voz de una sola persona responsable, sin plural institucional, con claridad, brevedad, registro formal culto y lectura pensada para quien usa el dock. Usar al crear o editar README, CHANGELOG, manuales, guías, textos de tienda, notas de publicación, respuestas externas, mensajes de la interfaz y documentación interna nueva; no sustituye la aprobación previa de `notice-copy-approval` ni la gestión de catálogos de `ki18n-localization`.",
+      "family": "documentation-localization",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "editorial-voice",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/editorial-voice",
+      "paths": [
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs",
+          "source": "SKILL.md",
+          "value": "docs/"
+        }
+      ],
+      "references": [
+        "documentation",
+        "github-issue-response",
+        "ki18n-localization",
+        "notice-copy-approval"
+      ],
       "resources": {
         "assets": [],
         "other": [],
@@ -2277,6 +2331,100 @@
         "references": [
           "references/effect-levels.md"
         ],
+        "scripts": []
+      },
+      "role": "domain"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Presupuestar, medir y reducir el consumo de memoria de Punchi Dock dentro de plasmashell, incluida la atribución por componente, la carga diferida de diálogos y superficies pesadas, el coste marginal por instancia, la retención tras cerrar y el gate de memoria del repositorio. Usar al añadir componentes pesados, al revisar consumo, al investigar crecimiento de plasmashell, al abrir o cerrar overlays y al decidir si una superficie debe instanciarse al cargar o bajo demanda; complementar con `plasma-animation-performance` para coste por fotograma y con `performance` para el diagnóstico global.",
+      "family": "quality-assurance",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "plasma-memory-budget",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/plasma-memory-budget",
+      "paths": [
+        {
+          "exists": null,
+          "kind": "placeholder",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "/proc/<plasmashell>/smaps_rollup"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "AGENTS.md",
+          "source": "SKILL.md",
+          "value": "AGENTS.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "contents/ui/main.qml",
+          "source": "SKILL.md",
+          "value": "contents/ui/main.qml"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/Referencias/referencia-memoria-plasma-qt.md",
+          "source": "SKILL.md",
+          "value": "docs/Referencias/referencia-memoria-plasma-qt.md"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/nuevas-modificaciones",
+          "source": "SKILL.md",
+          "value": "docs/nuevas-modificaciones/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev/memory-baseline.env",
+          "source": "SKILL.md",
+          "value": "scripts-dev/memory-baseline.env"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "scripts-dev/memory-budget.py",
+          "source": "SKILL.md",
+          "value": "scripts-dev/memory-budget.py"
+        }
+      ],
+      "references": [
+        "performance",
+        "plasma-animation-performance",
+        "plasma-config-review",
+        "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
         "scripts": []
       },
       "role": "domain"

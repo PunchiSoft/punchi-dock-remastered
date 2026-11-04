@@ -83,5 +83,5 @@ de compilación C++. Cada acción comprueba únicamente los comandos que utiliza
 - `lib/`: implementaciones compartidas de empaquetado e instalación; el usuario
   no debe ejecutarlas directamente.
 
-Quienes desarrollan el proyecto deben usar los
+Para mantener el proyecto, usa los
 [scripts de desarrollo](../scripts-dev/README.es.md).

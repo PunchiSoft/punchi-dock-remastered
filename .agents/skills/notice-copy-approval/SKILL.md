@@ -117,6 +117,8 @@ variantes, marcar la recomendada y explicar la diferencia en una línea.
 
 - `modification-cycle`: el paso de confirmar el alcance de la sesión es donde se
   presenta la propuesta de texto.
+- `editorial-voice`: gobierna voz, claridad, brevedad y registro de la propuesta;
+  no decide su contenido ni sustituye la confirmación.
 - `ki18n-localization`: se aplica **después** de la aprobación, para extracción,
   traducción y validación de catálogos.
 - `ux-review` y `ui-design`: pueden aportar dónde hace falta una nota y por qué;

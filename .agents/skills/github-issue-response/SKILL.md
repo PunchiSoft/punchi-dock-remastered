@@ -63,6 +63,7 @@ implementacion, aplicar por separado `review-cycle` para bugs o
 - Redactar con tono formal, respetuoso, directo y tecnicamente verificable.
 - Hablar siempre en singular: usar `I`, `I have reviewed`, `I can confirm` o
   equivalentes. No usar `we`, `our team` ni atribuir decisiones a un equipo.
+  La voz, la claridad y el registro siguen `editorial-voice`.
 - Mantener el contexto de Punchi Dock Remastered y nombrar la funcion concreta;
   no responder como si se tratara de KDE Plasma en general.
 - Agradecer el reporte sin confirmar prematuramente su diagnostico.
