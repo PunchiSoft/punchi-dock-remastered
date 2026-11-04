@@ -9,6 +9,10 @@
 - «Navegar por subcarpetas» deja de limitarse a Lista y Detallada y se ofrece en todos los diseños de carpeta salvo Abanico, que presenta una sola carpeta y nunca navega.
 - El grupo de configuración del contenedor pasa a llamarse «Contenido», y el icono del elemento se elige solo con el selector, sin campo de texto libre.
 
+### Menú contextual
+
+- Corregida la barra de desplazamiento que aparecía en el menú contextual del dock cuando los márgenes del marco temático traían fracciones de píxel: los márgenes efectivos se cuantizan a píxeles enteros, de modo que la lista recibe exactamente la altura de su viewport y su contenido nunca la supera por una fracción.
+
 ### Interacción del ratón
 
 - Añadido el botón central sobre las aplicaciones del dock: abre una ventana nueva, replicando el valor por defecto del *Icons-only Task Manager*, con un interruptor `Middle-click:` activado por defecto. Los lanzadores sin ventanas, carpetas, papelera, elemento de medios y aplicaciones recientes siguen ignorando el gesto.
