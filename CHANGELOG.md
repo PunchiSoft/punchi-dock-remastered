@@ -15,6 +15,7 @@
 ### Menú contextual
 
 - Corregida la barra de desplazamiento que aparecía en el menú contextual del dock cuando los márgenes del marco temático traían fracciones de píxel: los márgenes efectivos se cuantizan a píxeles enteros, de modo que la lista recibe exactamente la altura de su viewport y su contenido nunca la supera por una fracción.
+- Corregido el modo Cuadrícula al entrar en una subcarpeta: el panel de la subcarpeta mostraba la instantánea guardada del contenedor superior en lugar del contenido real de la carpeta, así que parecía duplicar la vista y omitir la carpeta elegida.
 
 ### Interacción del ratón
 
