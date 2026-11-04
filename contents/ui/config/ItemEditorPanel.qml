@@ -547,9 +547,8 @@ GridLayout {
     }
 
     // Both decisions about the chosen folder share one block and one control, so
-    // they read as what they are: two switches that depend on each other. The
-    // draft adapter and the action dialog overwrite these values with the ones
-    // the container stores.
+    // Both switches represent independent container preferences. The draft
+    // adapter and action dialog overwrite these values with the stored ones.
     Flow {
         Layout.columnSpan: 2
         Layout.fillWidth: true
@@ -571,18 +570,9 @@ GridLayout {
             objectName: "containerBrowseSubfoldersCheckBox"
             // Only the fan lacks navigation; every other layout can enter subfolders.
             visible: syncFolder.visible && root.containerLayoutValue !== "fan"
-            // Choosing to browse also releases a frozen container, so the switch
-            // never appears inert.
             enabled: root.selectedItemType === "folder"
             text: i18nc("@option:switch folder container", "Open subfolders") // qmllint disable unqualified
-            onToggled: {
-                // Browsing needs the listing, so choosing it also releases the
-                // freeze; the user sees both switches move together.
-                if (checked && !syncFolder.checked) {
-                    syncFolder.checked = true
-                }
-                root.formChanged()
-            }
+            onToggled: root.formChanged()
         }
     }
 

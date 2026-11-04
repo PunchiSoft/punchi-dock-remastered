@@ -185,3 +185,4 @@ themed_separator_lifecycle_test
 separator_appearance_source_test
 popup_appearance_defaults_test
 dock_note_context_test
+folder_navigation_test

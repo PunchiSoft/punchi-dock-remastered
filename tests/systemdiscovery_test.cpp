@@ -8,6 +8,7 @@
 
 #include <QCoreApplication>
 #include <QDebug>
+#include <QDir>
 #include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
@@ -226,6 +227,69 @@ bool validateInterruptedFolderRequests()
     settleLoop.exec();
     return true;
 }
+
+bool validateFolderEntryNavigationMetadata()
+{
+    QTemporaryDir directory;
+    if (!directory.isValid()
+        || !QDir().mkdir(directory.filePath(QStringLiteral("child")))
+        || !writeFile(directory.filePath(QStringLiteral("document.txt")),
+                      QByteArrayLiteral("folder snapshot\n"))) {
+        std::cerr << "Could not create the folder navigation metadata fixture.\n";
+        return false;
+    }
+
+    SystemDiscovery discovery;
+    QEventLoop resultLoop;
+    QVariantList entries;
+    QString error;
+    bool completed = false;
+    QObject::connect(&discovery, &SystemDiscovery::folderEntriesReady, &resultLoop,
+                     [&](const QVariantList &result) {
+        entries = result;
+        completed = true;
+        resultLoop.quit();
+    });
+    QObject::connect(&discovery, &SystemDiscovery::operationFailed, &resultLoop,
+                     [&](const QString &operation, const QString &message) {
+        if (operation == QLatin1String("folder")) {
+            error = message;
+            resultLoop.quit();
+        }
+    });
+
+    QTimer::singleShot(5000, &resultLoop, &QEventLoop::quit);
+    discovery.requestFolderEntries(directory.path());
+    resultLoop.exec();
+    if (!completed || !error.isEmpty()) {
+        std::cerr << "Folder entry discovery did not complete successfully: "
+                  << error.toStdString() << '\n';
+        return false;
+    }
+
+    QVariantMap childEntry;
+    QVariantMap fileEntry;
+    for (const QVariant &entry : entries) {
+        const QVariantMap row = entry.toMap();
+        const QString name = row.value(QStringLiteral("name")).toString();
+        if (name == QLatin1String("child")) {
+            childEntry = row;
+        } else if (name == QLatin1String("document.txt")) {
+            fileEntry = row;
+        }
+    }
+    if (childEntry.isEmpty() || !childEntry.value(QStringLiteral("isDirectory")).toBool()
+        || !childEntry.value(QStringLiteral("navigable")).toBool()) {
+        std::cerr << "A directory snapshot entry is missing its navigation metadata.\n";
+        return false;
+    }
+    if (fileEntry.isEmpty() || fileEntry.value(QStringLiteral("isDirectory")).toBool()
+        || fileEntry.value(QStringLiteral("navigable")).toBool()) {
+        std::cerr << "A file snapshot entry was incorrectly marked as a directory.\n";
+        return false;
+    }
+    return true;
+}
 }
 
 int main(int argc, char *argv[])
@@ -249,6 +313,7 @@ int main(int argc, char *argv[])
     }
     passed = validateFolderDesktopLaunchers() && passed;
     passed = validateApplicationLauncherDrops(discovery) && passed;
+    passed = validateFolderEntryNavigationMetadata() && passed;
     passed = validateInterruptedFolderRequests() && passed;
 
     QObject::connect(&discovery, &SystemDiscovery::applicationsReady,

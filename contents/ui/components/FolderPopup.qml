@@ -49,13 +49,19 @@ Item {
     // freezes the container on the snapshot loaded in the configuration.
     readonly property bool liveContent: folderSourceActive
         && folderItem.syncFolder !== false
-    // Entering subfolders is a separate opt-in and needs the live listing. The
-    // fan presents a single folder, so it never navigates.
-    readonly property bool navigationActive: liveContent
+    // Entering subfolders is a separate opt-in and works from either root: a
+    // synced container navigates its live listing, a frozen one navigates from
+    // its snapshot and reads the entered folder on demand. The fan presents a
+    // single folder, so it never navigates.
+    readonly property bool navigationActive: folderSourceActive
         && folderItem.browseSubfolders === true
         && layoutMode !== "fan"
+    readonly property real lateralNavigationWidth:
+        layoutMode === "grid" && navigationActive
+            ? navigationRootGridPresentationWidth : presentationWidth
     readonly property bool lateralNavigationAvailable:
-        maximumAvailableWidth >= presentationWidth * 2 + Kirigami.Units.smallSpacing
+        maximumAvailableWidth >= lateralNavigationWidth * 2
+            + Kirigami.Units.smallSpacing
     readonly property bool lateralNavigation: navigationActive && navigator.hasChild
         && lateralNavigationAvailable
     readonly property bool narrowNavigation: navigationActive && navigator.hasChild
@@ -76,13 +82,19 @@ Item {
     readonly property Punchi.FolderNavigationModel listedDirectoryModel: {
         const candidate = modelOverride !== null
             ? modelOverride
-            : (folderRoot.liveContent
-                ? (narrowNavigation ? navigator.childModel : navigator.rootModel) : null)
+            : (narrowNavigation
+                ? navigator.childModel
+                : (folderRoot.liveContent ? navigator.rootModel : null))
         if (!candidate || candidate.location.length === 0) {
             return null
         }
         return candidate
     }
+    readonly property Punchi.FolderNavigationModel entryNavigationModel:
+        listedDirectoryModel !== null
+            ? listedDirectoryModel
+            : (narrowNavigation || embeddedNavigationPane
+                ? navigator.childModel : navigator.rootModel)
     // A folder that cannot be resolved or listed has no rows to show, so the
     // presentation falls back to the snapshot stored in the configuration.
     readonly property Punchi.FolderNavigationModel directoryModel:
@@ -142,6 +154,7 @@ Item {
     FolderNavigationController {
         id: navigator
         enabled: folderRoot.liveContent && folderRoot.sessionActive
+        navigationEnabled: folderRoot.navigationActive && folderRoot.sessionActive
         navigationAllowed: folderRoot.navigationActive
         retainChildModel: folderRoot.lateralRevealProgress > 0
             && folderRoot.navigationMotionEnabled
@@ -215,13 +228,13 @@ Item {
     // popup never shows an empty container for a frame.
     readonly property var apps: {
         const model = folderRoot.directoryModel
-        // The embedded navigation pane owns no source of its own: the model the
-        // parent popup injects is its only listing. Its snapshot belongs to the
-        // container above, so it must never stand in for the child directory.
-        const ownsListing = folderRoot.liveContent
-            || folderRoot.embeddedNavigationPane
-        if (!ownsListing || !model || model.loading) {
-            return folderRoot.embeddedNavigationPane ? [] : (folderItem.apps || [])
+        // A live directory model (the synced root, or the child in narrow or
+        // embedded navigation) is the source of truth. Only a root listing may
+        // fall back to its snapshot while loading; child navigation must never
+        // show actionable rows from the parent snapshot.
+        if (!model || model.loading) {
+            return folderRoot.embeddedNavigationPane || folderRoot.narrowNavigation
+                ? [] : (folderItem.apps || [])
         }
         const rows = []
         for (let index = 0; index < model.count; ++index) {
@@ -254,6 +267,21 @@ Item {
     readonly property int classicItemCount: layoutMode === "grid"
         ? gridItems.length : ((layoutMode === "list" || layoutMode === "detailed")
             ? (directoryModel || folderPathAvailable ? listItems.count : itemCount) : itemCount)
+    readonly property int navigationRootApplicationCount: {
+        const model = navigator.rootModel
+        if (folderSourceActive && liveContent && model.enabled
+                && !model.loading && model.error === "") {
+            return model.count
+        }
+        return folderSourceActive && folderItem.apps
+            ? folderItem.apps.length : 0
+    }
+    readonly property bool navigationRootPathAvailable: folderSourceActive
+        && containerSourcePath.length > 0
+        && !(liveContent && navigator.rootModel.enabled
+            && navigator.rootModel.error !== "")
+    readonly property int navigationRootGridItemCount:
+        navigationRootApplicationCount + (navigationRootPathAvailable ? 1 : 0)
     readonly property real effectiveScale: Math.max(0.5, Math.min(3.0,
         Number(profileScale || 1.5)))
     readonly property int classicMargin: Math.round(
@@ -323,6 +351,31 @@ Item {
             ? automaticRowLimit : configuredRowLimit
     readonly property int desiredGridWidth: classicMargin * 2
         + effectiveGridColumnRequest * gridCellWidth
+    readonly property int navigationRootGridColumnCount:
+        profileAutoLayout && layoutMode === "grid"
+            ? automaticGridColumnCount(navigationRootGridItemCount,
+                navigationRootApplicationCount, navigationRootPathAvailable,
+                automaticMaximumColumnCount, automaticRowLimit,
+                automaticTargetRatio, automaticOrphanPenalty,
+                automaticOverflowWeight)
+            : configuredColumnCount
+    readonly property int navigationRootGridWidth: classicMargin * 2
+        + navigationRootGridColumnCount * gridCellWidth
+    readonly property int navigationRootGridColumnsWithoutScrollBar:
+        Math.max(1, Math.min(navigationRootGridColumnCount, Math.floor(
+            (Math.min(navigationRootGridWidth, safeMaximumWidth)
+                - classicMargin * 2) / gridCellWidth)))
+    readonly property int navigationRootGridScrollBarGutter:
+        navigationRootGridItemCount > effectiveClassicRowLimit
+            * navigationRootGridColumnsWithoutScrollBar
+            ? Math.ceil(verticalScrollBar.implicitWidth)
+                + Kirigami.Units.smallSpacing : 0
+    // Narrow navigation swaps the visible grid to the child model. Keep the
+    // two-pane threshold rooted in the container snapshot to avoid a sizing
+    // cycle through that model switch.
+    readonly property real navigationRootGridPresentationWidth: Math.min(
+        navigationRootGridWidth + navigationRootGridScrollBarGutter,
+        safeMaximumWidth)
     readonly property int gridColumnsWithoutScrollBar: Math.max(1,
         Math.min(effectiveGridColumnRequest, Math.floor(
             (Math.min(desiredGridWidth, safeMaximumWidth)
@@ -883,10 +936,17 @@ Item {
                 onActiveFocusChanged: {
                     if (activeFocus) { itemMouse.forceActiveFocus(Qt.OtherFocusReason) }
                 }
-                readonly property bool browsableDirectory: folderRoot.directoryNavigationEnabled
-                    && !!(modelData && modelData.navigable)
-                    && (!(folderRoot.embeddedNavigationPane || folderRoot.narrowNavigation)
-                        || folderRoot.navigationDepth < 3)
+                readonly property bool browsableDirectory: {
+                    if (!folderRoot.directoryNavigationEnabled || !modelData) {
+                        return false
+                    }
+                    if (modelData.navigable !== undefined) {
+                        return !!modelData.navigable
+                    }
+                    return folderRoot.entryNavigationModel.directoryTarget(modelData).length > 0
+                        && (!(folderRoot.embeddedNavigationPane || folderRoot.narrowNavigation)
+                            || folderRoot.navigationDepth < 3)
+                }
 
                 readonly property bool isOpenLocationAction:
                     !!(modelData && modelData._punchiOpenLocationAction)

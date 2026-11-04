@@ -28,6 +28,7 @@ TestCase {
     SignalSpy { id: launchSpy; target: popup; signalName: "appLaunched" }
     SignalSpy { id: locationSpy; target: popup; signalName: "openLocationRequested" }
     SignalSpy { id: closeSpy; target: popup; signalName: "closeRequested" }
+    SignalSpy { id: directorySpy; target: popup; signalName: "directoryActivated" }
     function entry(model, name) {
         for (let i = 0; i < model.count; ++i) {
             if (model.get(i).name === name) { return {data: model.get(i), index: i} }
@@ -63,6 +64,35 @@ TestCase {
             mouseClick(pointer, pointer.width / 2, pointer.height / 2)
         }
     }
+    function activateFrozenSnapshotEntry(name) {
+        let rowIndex = -1
+        for (let index = 0; index < popup.apps.length; ++index) {
+            if (popup.apps[index] && popup.apps[index].name === name) {
+                rowIndex = index
+                break
+            }
+        }
+        verify(rowIndex >= 0)
+        verify(popup.apps[rowIndex].isDirectory === undefined)
+        verify(popup.apps[rowIndex].navigable === undefined)
+        verify(popup.navigationController.rootModel
+            .directoryTarget(popup.apps[rowIndex]).length > 0)
+        compare(popup.navigationController.rootModel
+            .directoryTarget(popup.apps[1]), "")
+        const grid = findChild(popup, "folderPopupGridView")
+        grid.positionViewAtIndex(rowIndex, GridView.Contain)
+        let delegate = null
+        tryVerify(function() {
+            delegate = findChild(popup, "folderPopupDelegate-" + rowIndex)
+            return delegate !== null
+        })
+        waitForRendering(delegate)
+        verify(delegate.browsableDirectory)
+        compare(delegate.modelData.name, name)
+        const pointer = findChild(popup, "folderPopupPointer-" + rowIndex)
+        mouseMove(pointer, pointer.width / 2, pointer.height / 2)
+        mouseClick(pointer, pointer.width / 2, pointer.height / 2)
+    }
     function initTestCase() {
         testCase.Window.window.width = 1100
         testCase.Window.window.height = 700
@@ -78,6 +108,7 @@ TestCase {
         settle(popup.navigationController.rootModel)
         tryVerify(function() { return popup.itemCount > 0 })
         launchSpy.clear(); locationSpy.clear(); closeSpy.clear()
+        directorySpy.clear()
         isolatedModel.enabled = false
         isolatedModel.rootPath = fixture
     }
@@ -199,7 +230,7 @@ TestCase {
             browseSubfolders: true, apps: []}
         settle(popup.navigationController.rootModel)
         popup.layoutMode = "grid"
-        compare(popup.navigationActive, false)
+        compare(popup.navigationActive, true)
         popup.layoutMode = "fan"
         compare(popup.navigationActive, false)
         popup.layoutMode = "list"
@@ -208,6 +239,64 @@ TestCase {
             const instance = Qt.createQmlObject('import QtQuick; import "../contents/ui/components" as C; C.FolderPopup { layoutMode: "list"; animationStyle: "none" }', testCase)
             instance.folderItem = popup.folderItem
             instance.destroy()
+        }
+    }
+    function test_frozenRootsNavigateFromSnapshotsInListAndDetailed() {
+        const frozenSnapshot = [
+            {name: "one", url: fixture + "/one"},
+            {name: "document.txt", url: fixture + "/document.txt"}
+        ]
+        const layouts = ["list", "detailed"]
+        for (let layoutIndex = 0; layoutIndex < layouts.length; ++layoutIndex) {
+            popup.sessionActive = false
+            popup.layoutMode = layouts[layoutIndex]
+            popup.maximumAvailableWidth = 1000
+            popup.folderItem = {name: "Fixture", sourceType: "folder",
+                sourcePath: fixture, layout: layouts[layoutIndex],
+                browseSubfolders: true, apps: []}
+            popup.sessionActive = true
+
+            settle(popup.navigationController.rootModel)
+            activate(popup, "one", false)
+            tryCompare(popup, "navigationDepth", 1)
+            settle(popup.navigationController.childModel)
+
+            popup.folderItem = {name: "Fixture", sourceType: "folder",
+                sourcePath: fixture, layout: layouts[layoutIndex],
+                browseSubfolders: false, syncFolder: false,
+                apps: frozenSnapshot}
+            tryCompare(popup, "navigationDepth", 0)
+            compare(popup.navigationController.childModel.depth, 1)
+            popup.folderItem = {name: "Fixture", sourceType: "folder",
+                sourcePath: fixture, layout: layouts[layoutIndex],
+                browseSubfolders: true, syncFolder: false,
+                apps: frozenSnapshot}
+
+            verify(!popup.liveContent)
+            verify(popup.navigationActive)
+            verify(popup.navigationController.navigationEnabled)
+            compare(popup.directoryModel, null)
+            tryCompare(popup, "itemCount", frozenSnapshot.length)
+            compare(popup.apps[0].name, "one")
+
+            activateFrozenSnapshotEntry("one")
+            verify(directorySpy.count > 0)
+            compare(launchSpy.count, 0)
+            tryCompare(popup, "navigationDepth", 1)
+            settle(popup.navigationController.childModel)
+            const childView = pane()
+            tryVerify(function() { return childView.itemCount > 0 })
+            let childNames = []
+            for (let index = 0; index < childView.apps.length; ++index) {
+                childNames.push(String(childView.apps[index].name))
+            }
+            verify(childNames.indexOf("two") !== -1)
+            verify(childNames.indexOf("document.txt") === -1)
+
+            popup.navigationController.back()
+            tryCompare(popup, "navigationDepth", 0)
+            compare(popup.directoryModel, null)
+            compare(popup.itemCount, frozenSnapshot.length)
         }
     }
 }

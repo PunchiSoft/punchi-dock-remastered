@@ -143,6 +143,7 @@ folder_popup_motion_test
 popup_marquee_label_test
 folder_open_location_test
 folder_navigation_grid_test
+folder_navigation_test
 folder_popup_visible_focus_test
 folder_container_sync_test
 folder_fan_view_test
