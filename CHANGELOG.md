@@ -27,6 +27,7 @@
 - Adoptado el modelo `Unreleased`: la versión declarada cambia solo al preparar una release, no en cada respaldo.
 - Añadidos `CONTRIBUTING.md`, `SECURITY.md`, `SUPPORT.md`, `.editorconfig`, `.gitattributes` y la plantilla de pull request.
 - Añadido `project_version_test` (`scripts-dev/check-version.py`) para detectar declaraciones de versión incoherentes y releases ausentes del CHANGELOG.
+- Añadida cobertura de pruebas para la navegación a subcarpetas en modo Cuadrícula (`folder_navigation_grid_test`), que hasta ahora no se ejercitaba en CTest.
 
 ## [0.9.7.74] - 2026-10-05
 
