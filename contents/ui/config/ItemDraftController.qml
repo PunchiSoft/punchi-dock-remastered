@@ -385,6 +385,26 @@ QtObject {
         return true
     }
 
+    function applyContainerFolder(generation, path) {
+        if (!root.isCurrent(generation) || root.draft === null
+                || String(root.draftType) !== "folder") {
+            return false
+        }
+        const requestedPath = String(path || "")
+        const currentName = String(root.draft.name || "")
+        // The container follows the folder name until the user writes one, and it
+        // keeps following it while the name still matches the previous folder.
+        const adoptedName = ConfigItemsJS.containerNameForFolder(
+            currentName, String(root.draft.sourcePath || ""), requestedPath)
+        const values = { "sourcePath": requestedPath }
+        if (adoptedName !== currentName) {
+            values.name = adoptedName
+        }
+        root.setDraftValues(values)
+        root.pruneDraft()
+        return true
+    }
+
     function applyExternalValue(generation, expectedType, name, value) {
         if (!root.isCurrent(generation) || root.draft === null
                 || (String(expectedType || "").length > 0

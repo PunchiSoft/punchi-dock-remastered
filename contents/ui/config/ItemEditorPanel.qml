@@ -565,7 +565,7 @@ GridLayout {
         }
     }
 
-    Controls.CheckBox {
+    Controls.Switch {
         id: syncFolder
         objectName: "containerSyncFolderCheckBox"
         Layout.columnSpan: 2
@@ -576,7 +576,7 @@ GridLayout {
         // Following the folder is the default; the draft adapter and the action
         // dialog overwrite this value with the one the container stores.
         checked: true
-        text: i18nc("@option:check folder container", "Live folder contents") // qmllint disable unqualified
+        text: i18nc("@option:switch folder container", "Live folder contents") // qmllint disable unqualified
         onToggled: root.formChanged()
     }
 

@@ -1153,6 +1153,43 @@ function setFolderSyncFolder(items, targetIndex, sync) {
     return { "items": nextItems, "changed": true, "status": "updated" }
 }
 
+// Directory name of a folder source, decoded and without a trailing separator.
+function folderNameFromPath(path) {
+    var text = String(path || "").trim()
+    if (text.length === 0) {
+        return ""
+    }
+    if (text.indexOf("file:") === 0) {
+        try {
+            text = decodeURIComponent(text)
+        } catch (error) {
+            // Keep the raw text when the escape sequence is malformed.
+        }
+    }
+    text = text.replace(/[?#].*$/, "").replace(/[/\\]+$/, "")
+    var separator = Math.max(text.lastIndexOf("/"), text.lastIndexOf("\\"))
+    var name = separator >= 0 ? text.substring(separator + 1) : text
+    try {
+        name = decodeURIComponent(name)
+    } catch (error) {
+        // Keep the current name when the escape sequence is malformed.
+    }
+    return name.trim()
+}
+
+// A container adopts the folder name while it still shows the default label or
+// the name of the folder chosen before, so a name written by hand is never lost.
+function containerNameForFolder(currentName, previousPath, nextPath) {
+    var name = String(currentName || "").trim()
+    var previousName = folderNameFromPath(previousPath)
+    var followsPrevious = previousName.length > 0 && name === previousName
+    if (name.length > 0 && name !== "Folder" && !followsPrevious) {
+        return name
+    }
+    var nextName = folderNameFromPath(nextPath)
+    return nextName.length > 0 ? nextName : name
+}
+
 // Freezing keeps what the folder shows at that moment, so the listing read from
 // disk replaces any snapshot the configuration had stored before.
 function freezeFolderWithSnapshot(items, targetIndex, entries) {

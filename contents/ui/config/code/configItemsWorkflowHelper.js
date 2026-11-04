@@ -78,8 +78,21 @@ function openContainerFolderPicker() {
 }
 
 function setContainerFolder(path) {
+    var selected = selectedItem()
+    var previousPath = selected ? String(selected.sourcePath || "") : ""
     actionDialog.containerPathText = path || ""
     applyItemForm()
+    var item = selectedItem()
+    if (!item) {
+        return
+    }
+    // The chosen folder names the container until the user writes a name.
+    var adoptedName = ConfigItemsJS.containerNameForFolder(
+        String(item.name || ""), previousPath, path)
+    if (adoptedName !== String(item.name || "")) {
+        actionDialog.appNameText = adoptedName
+        applyItemForm()
+    }
 }
 
 function refreshContainerContent() {
