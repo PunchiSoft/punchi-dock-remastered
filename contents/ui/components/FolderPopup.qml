@@ -142,6 +142,7 @@ Item {
     FolderNavigationController {
         id: navigator
         enabled: folderRoot.liveContent && folderRoot.sessionActive
+        navigationAllowed: folderRoot.navigationActive
         retainChildModel: folderRoot.lateralRevealProgress > 0
             && folderRoot.navigationMotionEnabled
         rootPath: String(folderRoot.folderItem.sourcePath || "")
