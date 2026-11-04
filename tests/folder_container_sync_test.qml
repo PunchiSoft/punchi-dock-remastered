@@ -282,6 +282,43 @@ TestCase {
         compare(note.text, testCase.approvedBrowseNote)
     }
 
+    function test_switches_follow_the_live_state() {
+        const sync = openDraft()
+        const browse = findChild(dialog, "containerBrowseSubfoldersCheckBox")
+        const syncNote = findChild(dialog, "containerSyncFolderNote")
+        verify(browse !== null)
+        verify(syncNote !== null)
+        // Following the folder enables entering subfolders and explains why the
+        // load action is not needed.
+        verify(sync.checked)
+        compare(browse.enabled, true)
+        verify(syncNote.visible)
+
+        sync.checked = false
+        sync.toggled()
+        // Freezing leaves the subfolder switch visible but inert, and the note
+        // about the live listing no longer applies.
+        verify(browse.visible)
+        compare(browse.enabled, false)
+        verify(!syncNote.visible)
+    }
+
+    function test_stored_list_stays_out_of_sight_while_following_the_folder() {
+        dialog.openFor("folder")
+        controller.setDraftValues({name: "Fixture", layout: "grid",
+            sourceType: "folder", sourcePath: testCase.fixture})
+        dialog.refreshEditorFields(true)
+        const editor = findChild(dialog, "itemConfigurationActionEditor")
+        verify(editor !== null)
+        // The live listing replaces the stored one, so its editor is hidden but
+        // keeps being rebuilt: freezing the folder shows it at once.
+        verify(!editor.visible)
+
+        controller.setDraftValues({"syncFolder": false})
+        dialog.refreshEditorFields(true)
+        verify(editor.visible)
+    }
+
     function test_synced_container_lists_the_folder() {
         popup.folderItem = testCase.folderItem({})
         popup.sessionActive = true

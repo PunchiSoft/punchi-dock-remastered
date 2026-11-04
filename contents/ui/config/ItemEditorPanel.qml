@@ -50,6 +50,10 @@ GridLayout {
     property alias containerPathText: containerPath.text
     property alias containerBrowseSubfoldersChecked: browseSubfolders.checked
     property alias containerSyncFolderChecked: syncFolder.checked
+    // True while the container follows its folder: the listing is live, so the
+    // manual load and the stored application list have nothing to contribute.
+    readonly property bool liveFolderSource: containerSource.currentValue === "folder"
+        && syncFolder.checked
     readonly property string containerCategoryValue: containerCategory.currentValue || "Development"
     property alias containerCategoryIndex: containerCategory.currentIndex
     property string containerLoadStatusText: ""
@@ -499,43 +503,21 @@ GridLayout {
             visible: root.selectedItemType === "folder" && containerSource.currentValue !== "manual"
             text: root.refreshContentText
             icon.name: "view-refresh-symbolic"
-            enabled: root.selectedItemType === "folder" && containerSource.currentValue !== "manual"
+            // A followed folder already shows its current listing, so loading it
+            // would only repeat the work the switch does.
+            enabled: root.selectedItemType === "folder"
+                && containerSource.currentValue !== "manual"
+                && !root.liveFolderSource
             onClicked: root.containerRefreshRequested()
         }
 
-        // Following the folder belongs to the chosen source, so it shares the row.
-        // The draft adapter and the action dialog overwrite this value with the
-        // one the container stores.
-        Controls.Switch {
-            id: syncFolder
-            objectName: "containerSyncFolderCheckBox"
-            visible: containerSource.currentValue === "folder"
-            enabled: root.selectedItemType === "folder"
-            checked: true
-            text: i18nc("@option:switch folder container", "Sync folder") // qmllint disable unqualified
-            onToggled: root.formChanged()
-        }
-    }
-
-    Controls.CheckBox {
-        id: browseSubfolders
-        objectName: "containerBrowseSubfoldersCheckBox"
-        Layout.columnSpan: 2
-        Layout.fillWidth: true
-        // Only the fan lacks navigation; every other layout can enter subfolders.
-        visible: root.itemModeValue === "container"
-            && root.containerSourceValue === "folder"
-            && root.containerLayoutValue !== "fan"
-        enabled: root.selectedItemType === "folder"
-        text: i18nc("@option:check folder container", "Browse subfolders") // qmllint disable unqualified
-        onToggled: root.formChanged()
     }
 
     Controls.Label {
         objectName: "containerBrowseSubfoldersNote"
         Layout.columnSpan: 2
         Layout.fillWidth: true
-        // The note belongs to the checkbox above and only makes sense while the
+        // The note belongs to the switch above and only makes sense while the
         // container shows the snapshot instead of the folder.
         visible: browseSubfolders.visible && !syncFolder.checked
         // qmllint disable unqualified
@@ -578,11 +560,46 @@ GridLayout {
         }
     }
 
+    // Both decisions about the chosen folder share one block and one control, so
+    // they read as what they are: two switches that depend on each other. The
+    // draft adapter and the action dialog overwrite these values with the ones
+    // the container stores.
+    Flow {
+        Layout.columnSpan: 2
+        Layout.fillWidth: true
+        spacing: Kirigami.Units.largeSpacing
+
+        Controls.Switch {
+            id: syncFolder
+            objectName: "containerSyncFolderCheckBox"
+            visible: root.itemModeValue === "container"
+                && root.containerSourceValue === "folder"
+            enabled: root.selectedItemType === "folder"
+            checked: true
+            text: i18nc("@option:switch folder container", "Sync folder") // qmllint disable unqualified
+            onToggled: root.formChanged()
+        }
+
+        Controls.Switch {
+            id: browseSubfolders
+            objectName: "containerBrowseSubfoldersCheckBox"
+            // Only the fan lacks navigation; every other layout can enter subfolders.
+            visible: syncFolder.visible && root.containerLayoutValue !== "fan"
+            // Entering subfolders reads the live listing, so the switch stays
+            // visible but inert while the folder is not being followed.
+            enabled: root.selectedItemType === "folder" && syncFolder.checked
+            text: i18nc("@option:switch folder container", "Browse subfolders") // qmllint disable unqualified
+            onToggled: root.formChanged()
+        }
+    }
+
     Controls.Label {
         objectName: "containerSyncFolderNote"
         Layout.columnSpan: 2
         Layout.fillWidth: true
-        visible: syncFolder.visible
+        // The note explains why loading the folder is unnecessary, so it belongs
+        // to the live state only.
+        visible: syncFolder.visible && syncFolder.checked
         // qmllint disable unqualified
         text: i18n("The container lists the folder as it is now, so added or removed files appear without pressing Load content. If the folder is unavailable, the container shows the contents loaded last.")
         // qmllint enable unqualified
