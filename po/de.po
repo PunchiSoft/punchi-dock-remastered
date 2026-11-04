@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.78\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-11-04 01:05-0300\n"
+"POT-Creation-Date: 2026-11-04 01:34-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: German\n"
@@ -1533,11 +1533,6 @@ msgstr "Von unten nach oben"
 #: contents/ui/config/ConfigMouse.qml:53
 msgid "Bounce"
 msgstr "Hüpfen"
-
-#: contents/ui/config/ItemEditorPanel.qml:591
-msgctxt "@option:switch folder container"
-msgid "Browse subfolders"
-msgstr "Unterordner durchsuchen"
 
 #: scripts-user/setup.sh:90
 msgid "Build and install the updated source now? [Y/n]: "
@@ -5017,6 +5012,11 @@ msgctxt "@action:button"
 msgid "Open sound settings"
 msgstr "Klangeinstellungen öffnen"
 
+#: contents/ui/config/ItemEditorPanel.qml:591
+msgctxt "@option:switch folder container"
+msgid "Open subfolders"
+msgstr "Unterordner öffnen"
+
 #: contents/ui/config/code/itemTypeCatalog.js:73
 msgid "Open system controls and notifications"
 msgstr "Systemsteuerung und Benachrichtigungen öffnen"
@@ -6518,17 +6518,6 @@ msgstr ""
 "Das konfigurierte externe Design ist nicht verfügbar. Es wird der Plasma-"
 "Hintergrund verwendet."
 
-#: contents/ui/config/ItemEditorPanel.qml:604
-msgid ""
-"The container lists the folder as it is now, so added or removed files "
-"appear without pressing Load content. If the folder is unavailable, the "
-"container shows the contents loaded last."
-msgstr ""
-"Der Container listet den Ordner so, wie er gerade ist: hinzugefügte oder "
-"entfernte Dateien erscheinen, ohne dass „Inhalte laden“ gedrückt werden "
-"muss. Ist der Ordner nicht verfügbar, zeigt der Container den zuletzt "
-"geladenen Inhalt."
-
 #: contents/ui/components/DockItemsController.qml:1133
 msgctxt "@info:status"
 msgid "The desktop folder is not available."
@@ -6627,6 +6616,10 @@ msgstr ""
 #: src/systemdiscovery.cpp:572 src/systemdiscovery.cpp:1293
 msgid "The folder location is invalid."
 msgstr "Der Ordnerspeicherort ist ungültig."
+
+#: contents/ui/config/ItemEditorPanel.qml:604
+msgid "The folder updates on its own. Loading it is not needed."
+msgstr "Der Ordner wird selbst aktualisiert. Inhalt laden ist nicht nötig."
 
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:259
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:436

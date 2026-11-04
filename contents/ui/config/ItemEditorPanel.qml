@@ -588,7 +588,7 @@ GridLayout {
             // Entering subfolders reads the live listing, so the switch stays
             // visible but inert while the folder is not being followed.
             enabled: root.selectedItemType === "folder" && syncFolder.checked
-            text: i18nc("@option:switch folder container", "Browse subfolders") // qmllint disable unqualified
+            text: i18nc("@option:switch folder container", "Open subfolders") // qmllint disable unqualified
             onToggled: root.formChanged()
         }
     }
@@ -601,7 +601,7 @@ GridLayout {
         // to the live state only.
         visible: syncFolder.visible && syncFolder.checked
         // qmllint disable unqualified
-        text: i18n("The container lists the folder as it is now, so added or removed files appear without pressing Load content. If the folder is unavailable, the container shows the contents loaded last.")
+        text: i18n("The folder updates on its own. Loading it is not needed.")
         // qmllint enable unqualified
         wrapMode: Text.WordWrap
         color: Kirigami.Theme.disabledTextColor

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.78\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-11-04 01:05-0300\n"
+"POT-Creation-Date: 2026-11-04 01:34-0300\n"
 "PO-Revision-Date: 2026-08-26 23:00-0400\n"
 "Last-Translator: Punchi Dock Contributors\n"
 "Language-Team: Brazilian Portuguese\n"
@@ -1509,11 +1509,6 @@ msgstr "De baixo para cima"
 #: contents/ui/config/ConfigMouse.qml:53
 msgid "Bounce"
 msgstr "Saltar"
-
-#: contents/ui/config/ItemEditorPanel.qml:591
-msgctxt "@option:switch folder container"
-msgid "Browse subfolders"
-msgstr "Navegar pelas subpastas"
 
 #: scripts-user/setup.sh:90
 msgid "Build and install the updated source now? [Y/n]: "
@@ -4970,6 +4965,11 @@ msgctxt "@action:button"
 msgid "Open sound settings"
 msgstr "Abrir configurações de som"
 
+#: contents/ui/config/ItemEditorPanel.qml:591
+msgctxt "@option:switch folder container"
+msgid "Open subfolders"
+msgstr "Abrir subpastas"
+
 #: contents/ui/config/code/itemTypeCatalog.js:73
 msgid "Open system controls and notifications"
 msgstr "Abrir controles do sistema e notificações"
@@ -6462,17 +6462,6 @@ msgid ""
 msgstr ""
 "O tema externo configurado não está disponível. O fundo Plasma será usado."
 
-#: contents/ui/config/ItemEditorPanel.qml:604
-msgid ""
-"The container lists the folder as it is now, so added or removed files "
-"appear without pressing Load content. If the folder is unavailable, the "
-"container shows the contents loaded last."
-msgstr ""
-"O contêiner lista a pasta como ela está agora, de modo que os arquivos "
-"adicionados ou removidos aparecem sem pressionar Carregar conteúdo. Se a "
-"pasta não estiver disponível, o contêiner mostra o conteúdo carregado por "
-"último."
-
 #: contents/ui/components/DockItemsController.qml:1133
 msgctxt "@info:status"
 msgid "The desktop folder is not available."
@@ -6566,6 +6555,10 @@ msgstr "Não foi possível aplicar a alteração da pasta. Tente novamente."
 #: src/systemdiscovery.cpp:572 src/systemdiscovery.cpp:1293
 msgid "The folder location is invalid."
 msgstr "O local da pasta é inválido."
+
+#: contents/ui/config/ItemEditorPanel.qml:604
+msgid "The folder updates on its own. Loading it is not needed."
+msgstr "A pasta é atualizada sozinha. Não é preciso carregar o conteúdo."
 
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:259
 #: contents/ui/components/punchimenu/PunchiMenuOverlay.qml:436

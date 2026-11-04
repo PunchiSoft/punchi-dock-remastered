@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.84\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-11-04 01:05-0300\n"
+"POT-Creation-Date: 2026-11-04 01:34-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1414,11 +1414,6 @@ msgstr ""
 #: contents/ui/config/components/PopupAnimationSettings.qml:19
 #: contents/ui/config/ConfigMouse.qml:53
 msgid "Bounce"
-msgstr ""
-
-#: contents/ui/config/ItemEditorPanel.qml:591
-msgctxt "@option:switch folder container"
-msgid "Browse subfolders"
 msgstr ""
 
 #: scripts-user/setup.sh:90
@@ -4702,6 +4697,11 @@ msgctxt "@action:button"
 msgid "Open sound settings"
 msgstr ""
 
+#: contents/ui/config/ItemEditorPanel.qml:591
+msgctxt "@option:switch folder container"
+msgid "Open subfolders"
+msgstr ""
+
 #: contents/ui/config/code/itemTypeCatalog.js:73
 msgid "Open system controls and notifications"
 msgstr ""
@@ -6139,13 +6139,6 @@ msgid ""
 "used."
 msgstr ""
 
-#: contents/ui/config/ItemEditorPanel.qml:604
-msgid ""
-"The container lists the folder as it is now, so added or removed files "
-"appear without pressing Load content. If the folder is unavailable, the "
-"container shows the contents loaded last."
-msgstr ""
-
 #: contents/ui/components/DockItemsController.qml:1133
 msgctxt "@info:status"
 msgid "The desktop folder is not available."
@@ -6226,6 +6219,10 @@ msgstr ""
 
 #: src/systemdiscovery.cpp:572 src/systemdiscovery.cpp:1293
 msgid "The folder location is invalid."
+msgstr ""
+
+#: contents/ui/config/ItemEditorPanel.qml:604
+msgid "The folder updates on its own. Loading it is not needed."
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuNormal.qml:259
