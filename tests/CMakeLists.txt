@@ -275,6 +275,11 @@ add_test(
 )
 
 add_test(
+    NAME dock_middle_click_contract_test
+    COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/dock_middle_click_contract_test.py
+)
+
+add_test(
     NAME items_page_layout_contract_test
     COMMAND ${PYTHON3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/items_page_layout_contract_test.py
 )

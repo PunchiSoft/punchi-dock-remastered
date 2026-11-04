@@ -1245,6 +1245,15 @@ Item {
         return true
     }
 
+    function requestNewInstanceForTaskRow(row) {
+        const taskIndex = tasksModel.index(row, 0)
+        if (!taskIndex.valid) {
+            return false
+        }
+        tasksModel.requestNewInstance(taskIndex)
+        return true
+    }
+
     function closeTaskRow(row) {
         const taskIndex = tasksModel.index(row, 0)
         if (!taskIndex.valid || !tasksModel.data(taskIndex, TaskManager.AbstractTasksModel.IsClosable)) {

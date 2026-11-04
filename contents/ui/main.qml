@@ -3560,6 +3560,7 @@ PlasmoidItem {
                         windowCountEmblemColor: dockConfig.windowCountEmblemColor
                         windowCountEmblemOpacity: dockConfig.windowCountEmblemOpacity
                         windowCountEmblemScale: dockConfig.windowCountEmblemScale
+                        middleClickEnabled: dockConfig.middleClickEnabled
                         // qmllint enable unqualified
                         customSeparatorEnabled: dockConfig.customDockSeparatorActive
                         separatorTheme: dockConfig.customDockSeparatorTheme
@@ -3691,6 +3692,8 @@ PlasmoidItem {
                                 dockItemsController.handleDockItemActivation(dockItemDelegate.modelData, dockItemDelegate)
                             }
                         }
+                        onMiddleClicked: dockItemsController.handleDockItemMiddleClick(
+                            dockItemDelegate.modelData)
                         // qmllint disable unqualified
                         onTaskMinimized: function(minimizedItemIndex) {
                             dockItemsController.triggerMinimizeReaction(minimizedItemIndex)
@@ -3851,6 +3854,7 @@ PlasmoidItem {
                         windowCountEmblemColor: dockConfig.windowCountEmblemColor
                         windowCountEmblemOpacity: dockConfig.windowCountEmblemOpacity
                         windowCountEmblemScale: dockConfig.windowCountEmblemScale
+                        middleClickEnabled: dockConfig.middleClickEnabled
                         // qmllint enable unqualified
                         hoverZoomProgress: dockLayout.hoverZoomProgress
                         lastHoveredIndex: dockLayout.lastHoveredIndex
@@ -3911,6 +3915,8 @@ PlasmoidItem {
                                 taskController.activateTaskRow(taskData.firstRow)
                             }
                         }
+                        onMiddleClicked: dockItemsController.handleDockItemMiddleClick(
+                            modelData)
                         // qmllint disable unqualified
                         onTaskMinimized: function(minimizedItemIndex) {
                             dockItemsController.triggerMinimizeReaction(minimizedItemIndex)
