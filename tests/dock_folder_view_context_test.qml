@@ -283,7 +283,7 @@ TestCase {
         verify(sortIndex < contentIndex)
     }
 
-    function test_gridLayoutOnlyOffersTheSyncChoice() {
+    function test_gridLayoutOffersSyncAndSubfolderChoices() {
         const gridContainer = {
             "type": "folder",
             "name": "Downloads",
@@ -298,6 +298,35 @@ TestCase {
             gridContainer, [], "pinned", 0)
         const content = contentAction(actions)
         verify(content !== null)
+        compare(content.children.length, 6)
+        compare(content.children[0].kind, "section")
+        verify(actionByKindAndName(
+            content.children, "setFolderSyncFolder", "Enable") !== null)
+        verify(actionByKindAndName(
+            content.children, "setFolderSyncFolder", "Disable") !== null)
+        // Grid navigates too; only the fan presents a single folder.
+        verify(actionByKindAndName(
+            content.children, "setFolderBrowseSubfolders", "Enable") !== null)
+        verify(actionByKindAndName(
+            content.children, "setFolderBrowseSubfolders", "Disable") !== null)
+        verify(childByName(content, "Navigate subfolders") !== null)
+    }
+
+    function test_fanLayoutOnlyOffersTheSyncChoice() {
+        const fanContainer = {
+            "type": "folder",
+            "name": "Downloads",
+            "icon": "folder-download",
+            "layout": "fan",
+            "sourceType": "folder",
+            "sourcePath": "/home/user/Downloads",
+            "apps": []
+        }
+        fakeDockItemsController.dockItems = [fanContainer]
+        const actions = contextController.actionsForItem(
+            fanContainer, [], "pinned", 0)
+        const content = contentAction(actions)
+        verify(content !== null)
         compare(content.children.length, 3)
         compare(content.children[0].kind, "section")
         verify(actionByKindAndName(
@@ -305,7 +334,7 @@ TestCase {
         verify(actionByKindAndName(
             content.children, "setFolderSyncFolder", "Disable") !== null)
         compare(actionByKind(content.children, "setFolderBrowseSubfolders"), null)
-        // Only the two layouts that can navigate offer the subfolder choice.
+        // The fan shows a single folder, so it never offers subfolder browsing.
         compare(childByName(content, "Navigate subfolders"), null)
     }
 

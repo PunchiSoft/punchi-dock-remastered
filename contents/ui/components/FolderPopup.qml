@@ -49,10 +49,11 @@ Item {
     // freezes the container on the snapshot loaded in the configuration.
     readonly property bool liveContent: folderSourceActive
         && folderItem.syncFolder !== false
-    // Entering subfolders is a separate opt-in and needs the live listing.
+    // Entering subfolders is a separate opt-in and needs the live listing. The
+    // fan presents a single folder, so it never navigates.
     readonly property bool navigationActive: liveContent
         && folderItem.browseSubfolders === true
-        && (layoutMode === "list" || layoutMode === "detailed")
+        && layoutMode !== "fan"
     readonly property bool lateralNavigationAvailable:
         maximumAvailableWidth >= presentationWidth * 2 + Kirigami.Units.smallSpacing
     readonly property bool lateralNavigation: navigationActive && navigator.hasChild

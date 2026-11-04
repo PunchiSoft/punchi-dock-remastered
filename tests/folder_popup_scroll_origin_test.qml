@@ -213,6 +213,10 @@ TestCase {
         verify(grid.itemAtIndex(0).isOpenLocationAction)
         compare(grid.cacheBuffer, 0)
         host.popup.layoutMode = "grid"
+        // Grid keeps navigating its live listing; only the fan stops.
+        tryCompare(host.popup, "navigationActive", true)
+        compare(grid.cacheBuffer, 0)
+        host.popup.layoutMode = "fan"
         tryCompare(host.popup, "navigationActive", false)
         compare(grid.cacheBuffer, originalCacheBuffer)
         host.popup.layoutMode = "detailed"
