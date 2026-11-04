@@ -90,18 +90,23 @@ Item {
     // does. The item padding still follows the theme for the content itself.
     readonly property int actionHighlightInset: Math.max(1,
         Math.round(Kirigami.Units.smallSpacing / 2))
-    readonly property real effectiveSurfaceMarginLeft: surfaceMargins
+    // FrameSvg margins carry sub-pixel values. Rounding them once here keeps
+    // the layout chain integral: the row viewport is an exact pixel count, so
+    // the ColumnLayout cannot hand the action list a height smaller than its
+    // content by a floating-point residue (which showed a scrollbar that had
+    // nothing to scroll).
+    readonly property int effectiveSurfaceMarginLeft: surfaceMargins
         && Number.isFinite(Number(surfaceMargins.left))
-        ? Math.max(0, Number(surfaceMargins.left)) : Kirigami.Units.smallSpacing
-    readonly property real effectiveSurfaceMarginTop: surfaceMargins
+        ? Math.max(0, Math.round(Number(surfaceMargins.left))) : Kirigami.Units.smallSpacing
+    readonly property int effectiveSurfaceMarginTop: surfaceMargins
         && Number.isFinite(Number(surfaceMargins.top))
-        ? Math.max(0, Number(surfaceMargins.top)) : Kirigami.Units.smallSpacing
-    readonly property real effectiveSurfaceMarginRight: surfaceMargins
+        ? Math.max(0, Math.round(Number(surfaceMargins.top))) : Kirigami.Units.smallSpacing
+    readonly property int effectiveSurfaceMarginRight: surfaceMargins
         && Number.isFinite(Number(surfaceMargins.right))
-        ? Math.max(0, Number(surfaceMargins.right)) : Kirigami.Units.smallSpacing
-    readonly property real effectiveSurfaceMarginBottom: surfaceMargins
+        ? Math.max(0, Math.round(Number(surfaceMargins.right))) : Kirigami.Units.smallSpacing
+    readonly property int effectiveSurfaceMarginBottom: surfaceMargins
         && Number.isFinite(Number(surfaceMargins.bottom))
-        ? Math.max(0, Number(surfaceMargins.bottom)) : Kirigami.Units.smallSpacing
+        ? Math.max(0, Math.round(Number(surfaceMargins.bottom))) : Kirigami.Units.smallSpacing
     readonly property int displayedActionCount: {
         let count = 0
         for (let index = 0; index < displayedActions.length; index++) {
