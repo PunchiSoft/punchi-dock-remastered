@@ -1510,7 +1510,7 @@ msgstr "De baixo para cima"
 msgid "Bounce"
 msgstr "Saltar"
 
-#: contents/ui/config/ItemEditorPanel.qml:517
+#: contents/ui/config/ItemEditorPanel.qml:530
 msgctxt "@option:check folder container"
 msgid "Browse subfolders"
 msgstr "Navegar pelas subpastas"
@@ -3968,16 +3968,6 @@ msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
 msgstr "Vista simples"
 
-#: contents/ui/config/ItemEditorPanel.qml:579
-msgctxt "@option:switch folder container"
-msgid "Live folder contents"
-msgstr "Conteúdo da pasta ao vivo"
-
-#: contents/ui/components/DockContextActionsController.qml:675
-msgctxt "@title:menu Folder popup content group"
-msgid "Live folder contents"
-msgstr "Conteúdo da pasta ao vivo"
-
 #: contents/ui/config/ConfigItems.qml:1081
 #: contents/ui/config/ItemConfigurationDialog.qml:696
 msgid "Load content"
@@ -6313,6 +6303,16 @@ msgctxt "@action:button"
 msgid "Switch to light mode"
 msgstr "Alternar para o modo claro"
 
+#: contents/ui/config/ItemEditorPanel.qml:515
+msgctxt "@option:switch folder container"
+msgid "Sync folder"
+msgstr "Sincronizar pasta"
+
+#: contents/ui/components/DockContextActionsController.qml:675
+msgctxt "@title:menu Folder popup content group"
+msgid "Sync folder"
+msgstr "Sincronizar pasta"
+
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:110
 #: contents/ui/components/punchimenu/PunchiMenuCompact.qml:210
 msgctxt "@title:application-category"
@@ -6462,7 +6462,7 @@ msgid ""
 msgstr ""
 "O tema externo configurado não está disponível. O fundo Plasma será usado."
 
-#: contents/ui/config/ItemEditorPanel.qml:589
+#: contents/ui/config/ItemEditorPanel.qml:587
 msgid ""
 "The container lists the folder as it is now, so added or removed files "
 "appear without pressing Load content. If the folder is unavailable, the "
@@ -6887,14 +6887,14 @@ msgctxt "@info"
 msgid "Turn on Bluetooth to manage paired devices."
 msgstr "Ative o Bluetooth para gerenciar dispositivos pareados."
 
-#: contents/ui/config/ItemEditorPanel.qml:529
-msgid "Turn on Live folder contents to open subfolders."
-msgstr "Ative “Conteúdo da pasta ao vivo” para poder abrir subpastas."
-
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:733
 msgctxt "@action:button"
 msgid "Turn on Night Light"
 msgstr "Ativar Luz noturna"
+
+#: contents/ui/config/ItemEditorPanel.qml:542
+msgid "Turn on Sync folder to open subfolders."
+msgstr "Ative «Sincronizar pasta» para poder abrir subpastas."
 
 #: contents/ui/components/controlcenter/ControlCenterNetworkPage.qml:142
 msgctxt "@info"

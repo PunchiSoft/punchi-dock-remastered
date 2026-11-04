@@ -672,7 +672,7 @@ QtObject {
                         const browsingEnabled = item.browseSubfolders === true
                         const contentChildren = [{
                             // qmllint disable unqualified
-                            "name": i18nc("@title:menu Folder popup content group", "Live folder contents"),
+                            "name": i18nc("@title:menu Folder popup content group", "Sync folder"),
                             // qmllint enable unqualified
                             "kind": "section"
                         }, {

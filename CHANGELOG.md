@@ -4,7 +4,7 @@
 
 - Añadido el submenú «Contenido» al menú contextual de un contenedor de carpeta, con un par «Activar»/«Desactivar» para «Contenido de la carpeta en vivo» y otro para «Navegar por subcarpetas», para cambiar ambas decisiones sin abrir la configuración. El título incluye el nombre de la carpeta a la que pertenecen los ajustes.
 - Añadida una nota bajo «Navegar por subcarpetas» que recuerda que hay que activar el contenido de la carpeta en vivo para abrir subcarpetas.
-- El contenedor de carpeta adopta el nombre de la carpeta elegida en el selector mientras no se escriba uno propio, y el ajuste de contenido en vivo se ofrece con un interruptor.
+- El contenedor de carpeta adopta el nombre de la carpeta elegida en el selector mientras no se escriba uno propio, y el ajuste de sincronización se ofrece con un interruptor «Sincronizar carpeta» junto al origen del contenido.
 - Al desactivar el contenido en vivo, el contenedor guarda el listado actual como instantánea en lugar de quedar vacío, y el popup explica los dos estados sin contenido: carpeta no disponible y contenedor sin instantánea guardada.
 - «Navegar por subcarpetas» deja de limitarse a Lista y Detallada y se ofrece en todos los diseños de carpeta salvo Abanico, que presenta una sola carpeta y nunca navega.
 - El grupo de configuración del contenedor pasa a llamarse «Contenido», y el icono del elemento se elige solo con el selector, sin campo de texto libre.

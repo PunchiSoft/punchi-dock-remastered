@@ -1534,7 +1534,7 @@ msgstr "De abajo a arriba"
 msgid "Bounce"
 msgstr "Rebote"
 
-#: contents/ui/config/ItemEditorPanel.qml:517
+#: contents/ui/config/ItemEditorPanel.qml:530
 msgctxt "@option:check folder container"
 msgid "Browse subfolders"
 msgstr "Navegar por subcarpetas"
@@ -4002,16 +4002,6 @@ msgctxt "@item:inlistbox Folder popup layout"
 msgid "List"
 msgstr "Vista simple"
 
-#: contents/ui/config/ItemEditorPanel.qml:579
-msgctxt "@option:switch folder container"
-msgid "Live folder contents"
-msgstr "Contenido de la carpeta en vivo"
-
-#: contents/ui/components/DockContextActionsController.qml:675
-msgctxt "@title:menu Folder popup content group"
-msgid "Live folder contents"
-msgstr "Contenido de la carpeta en vivo"
-
 #: contents/ui/config/ConfigItems.qml:1081
 #: contents/ui/config/ItemConfigurationDialog.qml:696
 msgid "Load content"
@@ -6357,6 +6347,16 @@ msgctxt "@action:button"
 msgid "Switch to light mode"
 msgstr "Cambiar al modo claro"
 
+#: contents/ui/config/ItemEditorPanel.qml:515
+msgctxt "@option:switch folder container"
+msgid "Sync folder"
+msgstr "Sincronizar carpeta"
+
+#: contents/ui/components/DockContextActionsController.qml:675
+msgctxt "@title:menu Folder popup content group"
+msgid "Sync folder"
+msgstr "Sincronizar carpeta"
+
 #: contents/ui/components/punchimenu/PunchiMenuCategorySectionsView.qml:110
 #: contents/ui/components/punchimenu/PunchiMenuCompact.qml:210
 msgctxt "@title:application-category"
@@ -6508,7 +6508,7 @@ msgid ""
 msgstr ""
 "El tema externo configurado no está disponible. Se usará el fondo de Plasma."
 
-#: contents/ui/config/ItemEditorPanel.qml:589
+#: contents/ui/config/ItemEditorPanel.qml:587
 msgid ""
 "The container lists the folder as it is now, so added or removed files "
 "appear without pressing Load content. If the folder is unavailable, the "
@@ -6939,14 +6939,14 @@ msgctxt "@info"
 msgid "Turn on Bluetooth to manage paired devices."
 msgstr "Activa Bluetooth para gestionar los dispositivos emparejados."
 
-#: contents/ui/config/ItemEditorPanel.qml:529
-msgid "Turn on Live folder contents to open subfolders."
-msgstr "Activa «Contenido de la carpeta en vivo» para poder abrir subcarpetas."
-
 #: contents/ui/components/controlcenter/ControlCenterHomePage.qml:733
 msgctxt "@action:button"
 msgid "Turn on Night Light"
 msgstr "Activar Luz nocturna"
+
+#: contents/ui/config/ItemEditorPanel.qml:542
+msgid "Turn on Sync folder to open subfolders."
+msgstr "Activa «Sincronizar carpeta» para poder abrir subcarpetas."
 
 #: contents/ui/components/controlcenter/ControlCenterNetworkPage.qml:142
 msgctxt "@info"

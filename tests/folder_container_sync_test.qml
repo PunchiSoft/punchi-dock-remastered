@@ -22,7 +22,7 @@ TestCase {
     readonly property string approvedNote: "The container lists the folder as it is now, "
         + "so added or removed files appear without pressing Load content. If the folder "
         + "is unavailable, the container shows the contents loaded last."
-    readonly property string approvedBrowseNote: "Turn on Live folder contents to open subfolders."
+    readonly property string approvedBrowseNote: "Turn on Sync folder to open subfolders."
     readonly property string approvedUnavailableTitle: "Folder unavailable"
     readonly property string approvedUnavailableDetail: "Punchi Dock cannot read this folder. "
         + "Check that it still exists or pick another one in the container settings."

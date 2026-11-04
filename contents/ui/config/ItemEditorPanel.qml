@@ -502,6 +502,19 @@ GridLayout {
             enabled: root.selectedItemType === "folder" && containerSource.currentValue !== "manual"
             onClicked: root.containerRefreshRequested()
         }
+
+        // Following the folder belongs to the chosen source, so it shares the row.
+        // The draft adapter and the action dialog overwrite this value with the
+        // one the container stores.
+        Controls.Switch {
+            id: syncFolder
+            objectName: "containerSyncFolderCheckBox"
+            visible: containerSource.currentValue === "folder"
+            enabled: root.selectedItemType === "folder"
+            checked: true
+            text: i18nc("@option:switch folder container", "Sync folder") // qmllint disable unqualified
+            onToggled: root.formChanged()
+        }
     }
 
     Controls.CheckBox {
@@ -526,7 +539,7 @@ GridLayout {
         // container shows the snapshot instead of the folder.
         visible: browseSubfolders.visible && !syncFolder.checked
         // qmllint disable unqualified
-        text: i18n("Turn on Live folder contents to open subfolders.")
+        text: i18n("Turn on Sync folder to open subfolders.")
         // qmllint enable unqualified
         wrapMode: Text.WordWrap
         color: Kirigami.Theme.disabledTextColor
@@ -563,21 +576,6 @@ GridLayout {
             enabled: root.selectedItemType === "folder"
             onClicked: root.folderPickerRequested()
         }
-    }
-
-    Controls.Switch {
-        id: syncFolder
-        objectName: "containerSyncFolderCheckBox"
-        Layout.columnSpan: 2
-        Layout.fillWidth: true
-        visible: root.itemModeValue === "container"
-            && root.containerSourceValue === "folder"
-        enabled: root.selectedItemType === "folder"
-        // Following the folder is the default; the draft adapter and the action
-        // dialog overwrite this value with the one the container stores.
-        checked: true
-        text: i18nc("@option:switch folder container", "Live folder contents") // qmllint disable unqualified
-        onToggled: root.formChanged()
     }
 
     Controls.Label {

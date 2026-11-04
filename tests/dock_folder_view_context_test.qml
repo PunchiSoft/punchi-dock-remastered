@@ -231,7 +231,7 @@ TestCase {
         compare(content.children.length, 6)
 
         compare(content.children[0].kind, "section")
-        compare(content.children[0].name, "Live folder contents")
+        compare(content.children[0].name, "Sync folder")
         const contentOn = actionByKindAndName(
             content.children, "setFolderSyncFolder", "Enable")
         const contentOff = actionByKindAndName(
