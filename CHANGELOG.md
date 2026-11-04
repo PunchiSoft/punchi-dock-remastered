@@ -6,6 +6,7 @@
 - Añadida una nota bajo «Navegar por subcarpetas» que recuerda que hay que activar el contenido de la carpeta en vivo para abrir subcarpetas.
 - El contenedor de carpeta adopta el nombre de la carpeta elegida en el selector mientras no se escriba uno propio, y el ajuste de sincronización se ofrece con un interruptor «Sincronizar carpeta» junto al origen del contenido.
 - «Sincronizar carpeta» y «Abrir subcarpetas» comparten bloque como dos interruptores encadenados: cargar contenido y la lista guardada se desactivan u ocultan mientras la carpeta se sigue en vivo.
+- Activar «Abrir subcarpetas» libera el contenedor congelado en el mismo paso, así que la navegación vuelve a estar a un clic y no exige activar antes la sincronización.
 - Al desactivar el contenido en vivo, el contenedor guarda el listado actual como instantánea en lugar de quedar vacío, y el popup explica los dos estados sin contenido: carpeta no disponible y contenedor sin instantánea guardada.
 - «Navegar por subcarpetas» deja de limitarse a Lista y Detallada y se ofrece en todos los diseños de carpeta salvo Abanico, que presenta una sola carpeta y nunca navega.
 - El grupo de configuración del contenedor pasa a llamarse «Contenido», y el icono del elemento se elige solo con el selector, sin campo de texto libre.

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.84\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-11-04 01:34-0300\n"
+"POT-Creation-Date: 2026-11-04 02:04-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -682,7 +682,7 @@ msgstr ""
 msgid "Action name:"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:900
+#: contents/ui/components/DockContextActionsController.qml:899
 msgctxt "@title:group for section of menu items"
 msgid "Actions"
 msgstr ""
@@ -1916,8 +1916,8 @@ msgid "Configure Night Light"
 msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:123
-#: contents/ui/components/DockContextActionsController.qml:941
-#: contents/ui/components/DockContextActionsController.qml:963
+#: contents/ui/components/DockContextActionsController.qml:940
+#: contents/ui/components/DockContextActionsController.qml:962
 msgctxt "@action:context"
 msgid "Configure Punchi Dock…"
 msgstr ""
@@ -2064,12 +2064,12 @@ msgstr ""
 msgid "Content"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:746
+#: contents/ui/components/DockContextActionsController.qml:745
 msgctxt "@title:menu"
 msgid "Content"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:745
+#: contents/ui/components/DockContextActionsController.qml:744
 msgctxt "@title:menu Folder content submenu, %1 is the folder name"
 msgid "Content — %1"
 msgstr ""
@@ -2223,7 +2223,7 @@ msgctxt "@item:inlistbox Context menu size"
 msgid "Custom"
 msgstr ""
 
-#: contents/ui/components/AppActionsPopup.qml:448
+#: contents/ui/components/AppActionsPopup.qml:475
 msgid "Custom action"
 msgstr ""
 
@@ -2380,12 +2380,12 @@ msgid "Diamond"
 msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:692
-#: contents/ui/components/DockContextActionsController.qml:730
+#: contents/ui/components/DockContextActionsController.qml:729
 msgctxt "@option:radio folder container"
 msgid "Disable"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:767
+#: contents/ui/components/DockContextActionsController.qml:766
 msgctxt "@action:context"
 msgid "Disable recent applications"
 msgstr ""
@@ -4223,7 +4223,7 @@ msgstr ""
 msgid "New window"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:831
+#: contents/ui/components/DockContextActionsController.qml:830
 msgctxt "@action:context"
 msgid "New window"
 msgstr ""
@@ -4657,7 +4657,7 @@ msgctxt "@action:button"
 msgid "Open display settings"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:756
+#: contents/ui/components/DockContextActionsController.qml:755
 msgctxt "@action:context"
 msgid "Open in File Manager"
 msgstr ""
@@ -4697,7 +4697,7 @@ msgctxt "@action:button"
 msgid "Open sound settings"
 msgstr ""
 
-#: contents/ui/config/ItemEditorPanel.qml:591
+#: contents/ui/config/ItemEditorPanel.qml:577
 msgctxt "@option:switch folder container"
 msgid "Open subfolders"
 msgstr ""
@@ -4938,7 +4938,7 @@ msgid "Pixel spectrum"
 msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:262
-#: contents/ui/components/DockContextActionsController.qml:882
+#: contents/ui/components/DockContextActionsController.qml:881
 msgctxt "@title:group for section of menu items"
 msgid "Places"
 msgstr ""
@@ -5210,7 +5210,7 @@ msgid "Reactive particles"
 msgstr ""
 
 #: contents/ui/components/DockContextActionsController.qml:275
-#: contents/ui/components/DockContextActionsController.qml:891
+#: contents/ui/components/DockContextActionsController.qml:890
 msgctxt "@title:group for section of menu items"
 msgid "Recent Files"
 msgstr ""
@@ -5987,7 +5987,7 @@ msgctxt "@action:button"
 msgid "Switch to light mode"
 msgstr ""
 
-#: contents/ui/config/ItemEditorPanel.qml:579
+#: contents/ui/config/ItemEditorPanel.qml:565
 msgctxt "@option:switch folder container"
 msgid "Sync folder"
 msgstr ""
@@ -6221,7 +6221,7 @@ msgstr ""
 msgid "The folder location is invalid."
 msgstr ""
 
-#: contents/ui/config/ItemEditorPanel.qml:604
+#: contents/ui/config/ItemEditorPanel.qml:590
 msgid "The folder updates on its own. Loading it is not needed."
 msgstr ""
 
@@ -6523,10 +6523,6 @@ msgctxt "@action:button"
 msgid "Turn on Night Light"
 msgstr ""
 
-#: contents/ui/config/ItemEditorPanel.qml:524
-msgid "Turn on Sync folder to open subfolders."
-msgstr ""
-
 #: contents/ui/components/controlcenter/ControlCenterNetworkPage.qml:142
 msgctxt "@info"
 msgid "Turn on Wi-Fi to search for networks."
@@ -6591,7 +6587,7 @@ msgctxt "@info"
 msgid "Unnamed audio device"
 msgstr ""
 
-#: contents/ui/components/DockContextActionsController.qml:775
+#: contents/ui/components/DockContextActionsController.qml:774
 msgctxt "@action:context"
 msgid "Unpin from Dock"
 msgstr ""

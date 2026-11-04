@@ -395,17 +395,16 @@ TestCase {
         verify(contentOff !== null)
         verify(!contentOn.checked)
         verify(contentOff.checked)
-        // The two choices keep their own value: freezing the container does not
-        // clear the stored subfolder preference, and the subfolder pair stays
-        // visible but inert while the listing is frozen.
+        // Freezing keeps the subfolder preference and leaves its pair operable:
+        // choosing to browse releases the freeze in the same action.
         const browseOn = actionByKindAndName(
             content.children, "setFolderBrowseSubfolders", "Enable")
         const browseOff = actionByKindAndName(
             content.children, "setFolderBrowseSubfolders", "Disable")
         verify(browseOn !== null)
         verify(browseOff !== null)
-        compare(browseOn.enabled, false)
-        compare(browseOff.enabled, false)
+        compare(browseOn.enabled, true)
+        compare(browseOff.enabled, true)
         verify(browseOn.checked)
         verify(!browseOff.checked)
 

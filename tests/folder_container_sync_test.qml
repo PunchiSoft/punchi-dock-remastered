@@ -21,7 +21,6 @@ TestCase {
         StandardPaths.RuntimeLocation) + "/navigation"
     readonly property string approvedNote: "The folder updates on its own. "
         + "Loading it is not needed."
-    readonly property string approvedBrowseNote: "Turn on Sync folder to open subfolders."
     readonly property string approvedUnavailableTitle: "Folder unavailable"
     readonly property string approvedUnavailableDetail: "Punchi Dock cannot read this folder. "
         + "Check that it still exists or pick another one in the container settings."
@@ -239,14 +238,18 @@ TestCase {
         compare(controller.draft.sourcePath, "/home/user/Videos/")
     }
 
-    function test_helper_keeps_subfolder_browsing_independent() {        const items = [{type: "folder", sourceType: "folder",
-            sourcePath: "/tmp", apps: []}]
+    function test_helper_releases_the_freeze_when_browsing_is_enabled() {
+        const items = [{type: "folder", sourceType: "folder",
+            sourcePath: "/tmp", apps: [], syncFolder: false}]
 
         const enabled = Items.setFolderBrowseSubfolders(items, 0, true)
         verify(enabled.changed)
         compare(enabled.items[0].browseSubfolders, true)
+        // Browsing reads the listing, so it releases a frozen container in the
+        // same step instead of leaving a preference that could never apply.
         compare(enabled.items[0].syncFolder, undefined)
         compare(items[0].browseSubfolders, undefined)
+        compare(items[0].syncFolder, false)
 
         const disabled = Items.setFolderBrowseSubfolders(enabled.items, 0, false)
         verify(disabled.changed)
@@ -269,16 +272,21 @@ TestCase {
         compare(manual.status, "invalid-target")
     }
 
-    function test_browse_subfolders_note_explains_the_frozen_state() {
-        const checkbox = openListDraft()
-        const note = findChild(dialog, "containerBrowseSubfoldersNote")
-        verify(note !== null)
-        verify(!note.visible)
+    function test_choosing_subfolders_releases_the_freeze() {
+        const sync = openListDraft()
+        const browse = findChild(dialog, "containerBrowseSubfoldersCheckBox")
+        verify(browse !== null)
+        // No note asks for the sync switch any more: the action resolves it.
+        compare(findChild(dialog, "containerBrowseSubfoldersNote"), null)
 
-        checkbox.checked = false
-        checkbox.toggled()
-        verify(note.visible)
-        compare(note.text, testCase.approvedBrowseNote)
+        sync.checked = false
+        sync.toggled()
+        compare(controller.draft.syncFolder, false)
+
+        browse.checked = true
+        browse.toggled()
+        compare(controller.draft.browseSubfolders, true)
+        compare(controller.draft.syncFolder, undefined)
     }
 
     function test_switches_follow_the_live_state() {
@@ -295,10 +303,10 @@ TestCase {
 
         sync.checked = false
         sync.toggled()
-        // Freezing leaves the subfolder switch visible but inert, and the note
-        // about the live listing no longer applies.
+        // Freezing keeps the subfolder switch usable: choosing it releases the
+        // freeze. Only the note about the live listing stops applying.
         verify(browse.visible)
-        compare(browse.enabled, false)
+        compare(browse.enabled, true)
         verify(!syncNote.visible)
     }
 

@@ -514,20 +514,6 @@ GridLayout {
     }
 
     Controls.Label {
-        objectName: "containerBrowseSubfoldersNote"
-        Layout.columnSpan: 2
-        Layout.fillWidth: true
-        // The note belongs to the switch above and only makes sense while the
-        // container shows the snapshot instead of the folder.
-        visible: browseSubfolders.visible && !syncFolder.checked
-        // qmllint disable unqualified
-        text: i18n("Turn on Sync folder to open subfolders.")
-        // qmllint enable unqualified
-        wrapMode: Text.WordWrap
-        color: Kirigami.Theme.disabledTextColor
-    }
-
-    Controls.Label {
         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
         Layout.preferredWidth: Kirigami.Units.gridUnit * 5
         visible: root.itemModeValue === "container" && containerSource.currentValue === "folder"
@@ -585,11 +571,18 @@ GridLayout {
             objectName: "containerBrowseSubfoldersCheckBox"
             // Only the fan lacks navigation; every other layout can enter subfolders.
             visible: syncFolder.visible && root.containerLayoutValue !== "fan"
-            // Entering subfolders reads the live listing, so the switch stays
-            // visible but inert while the folder is not being followed.
-            enabled: root.selectedItemType === "folder" && syncFolder.checked
+            // Choosing to browse also releases a frozen container, so the switch
+            // never appears inert.
+            enabled: root.selectedItemType === "folder"
             text: i18nc("@option:switch folder container", "Open subfolders") // qmllint disable unqualified
-            onToggled: root.formChanged()
+            onToggled: {
+                // Browsing needs the listing, so choosing it also releases the
+                // freeze; the user sees both switches move together.
+                if (checked && !syncFolder.checked) {
+                    syncFolder.checked = true
+                }
+                root.formChanged()
+            }
         }
     }
 
