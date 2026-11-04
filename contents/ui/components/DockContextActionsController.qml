@@ -716,10 +716,9 @@ QtObject {
                                 // qmllint enable unqualified
                                 "icon": "checkmark",
                                 "kind": "setFolderBrowseSubfolders",
-                                // Entering subfolders reads the live listing, so
-                                // the pair stays visible but inert until the
-                                // folder follows its contents.
-                                "enabled": contentEnabled,
+                                // Choosing to browse also releases a frozen
+                                // container, so the pair is never inert.
+                                "enabled": true,
                                 "checked": browsingEnabled,
                                 "exclusive": true,
                                 "browseSubfolders": true,
@@ -731,7 +730,7 @@ QtObject {
                                 // qmllint enable unqualified
                                 "icon": "dialog-cancel",
                                 "kind": "setFolderBrowseSubfolders",
-                                "enabled": contentEnabled,
+                                "enabled": true,
                                 "checked": !browsingEnabled,
                                 "exclusive": true,
                                 "browseSubfolders": false,

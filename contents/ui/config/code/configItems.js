@@ -1236,6 +1236,10 @@ function setFolderBrowseSubfolders(items, targetIndex, enabled) {
     var nextItems = clone(source)
     if (nextEnabled) {
         nextItems[index].browseSubfolders = true
+        // Entering a subfolder reads the listing, so browsing cannot be chosen
+        // while the container shows a frozen snapshot: the same action also
+        // releases the freeze instead of leaving a setting that never applies.
+        delete nextItems[index].syncFolder
     } else {
         delete nextItems[index].browseSubfolders
     }

@@ -134,6 +134,18 @@ Controls.Dialog {
     // draft, so it is reset whenever the dialog opens, closes, changes type or
     // replaces its draft.
     property int selectedActionIndex: -1
+    // A container that follows its folder shows the live listing, so its stored
+    // application list has nothing to edit while the folder is being followed.
+    readonly property bool liveFolderContainer: {
+        if (!root.draftAvailable) {
+            return false
+        }
+        root.draftController.draftRevision
+        const draft = root.draftController.draft
+        return String(root.draftController.draftType) === "folder"
+            && String(draft.sourceType || "manual") === "folder"
+            && draft.syncFolder !== false
+    }
     readonly property bool nestedEditorVisible: root.formEditorVisible
         && root.draftController.draftNestedEditable
 
@@ -759,7 +771,11 @@ Controls.Dialog {
                         // its delegates size themselves from the list, and that
                         // chain would close a cycle on implicitWidth.
                         Layout.preferredWidth: 0
+                        // The projection keeps being rebuilt while the folder is
+                        // followed, so freezing the folder shows its stored list
+                        // immediately; only the surface is hidden.
                         visible: root.nestedEditorVisible
+                            && !root.liveFolderContainer
                         actionModel: actionModel
                         editableItemAvailable: root.draftAvailable
                         applicationLauncherDropEnabled: {

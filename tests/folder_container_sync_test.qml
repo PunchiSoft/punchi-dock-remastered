@@ -19,10 +19,8 @@ TestCase {
 
     readonly property string fixture: StandardPaths.writableLocation(
         StandardPaths.RuntimeLocation) + "/navigation"
-    readonly property string approvedNote: "The container lists the folder as it is now, "
-        + "so added or removed files appear without pressing Load content. If the folder "
-        + "is unavailable, the container shows the contents loaded last."
-    readonly property string approvedBrowseNote: "Turn on Sync folder to open subfolders."
+    readonly property string approvedNote: "The folder updates on its own. "
+        + "Loading it is not needed."
     readonly property string approvedUnavailableTitle: "Folder unavailable"
     readonly property string approvedUnavailableDetail: "Punchi Dock cannot read this folder. "
         + "Check that it still exists or pick another one in the container settings."
@@ -240,14 +238,18 @@ TestCase {
         compare(controller.draft.sourcePath, "/home/user/Videos/")
     }
 
-    function test_helper_keeps_subfolder_browsing_independent() {        const items = [{type: "folder", sourceType: "folder",
-            sourcePath: "/tmp", apps: []}]
+    function test_helper_releases_the_freeze_when_browsing_is_enabled() {
+        const items = [{type: "folder", sourceType: "folder",
+            sourcePath: "/tmp", apps: [], syncFolder: false}]
 
         const enabled = Items.setFolderBrowseSubfolders(items, 0, true)
         verify(enabled.changed)
         compare(enabled.items[0].browseSubfolders, true)
+        // Browsing reads the listing, so it releases a frozen container in the
+        // same step instead of leaving a preference that could never apply.
         compare(enabled.items[0].syncFolder, undefined)
         compare(items[0].browseSubfolders, undefined)
+        compare(items[0].syncFolder, false)
 
         const disabled = Items.setFolderBrowseSubfolders(enabled.items, 0, false)
         verify(disabled.changed)
@@ -270,16 +272,58 @@ TestCase {
         compare(manual.status, "invalid-target")
     }
 
-    function test_browse_subfolders_note_explains_the_frozen_state() {
-        const checkbox = openListDraft()
-        const note = findChild(dialog, "containerBrowseSubfoldersNote")
-        verify(note !== null)
-        verify(!note.visible)
+    function test_choosing_subfolders_releases_the_freeze() {
+        const sync = openListDraft()
+        const browse = findChild(dialog, "containerBrowseSubfoldersCheckBox")
+        verify(browse !== null)
+        // No note asks for the sync switch any more: the action resolves it.
+        compare(findChild(dialog, "containerBrowseSubfoldersNote"), null)
 
-        checkbox.checked = false
-        checkbox.toggled()
-        verify(note.visible)
-        compare(note.text, testCase.approvedBrowseNote)
+        sync.checked = false
+        sync.toggled()
+        compare(controller.draft.syncFolder, false)
+
+        browse.checked = true
+        browse.toggled()
+        compare(controller.draft.browseSubfolders, true)
+        compare(controller.draft.syncFolder, undefined)
+    }
+
+    function test_switches_follow_the_live_state() {
+        const sync = openDraft()
+        const browse = findChild(dialog, "containerBrowseSubfoldersCheckBox")
+        const syncNote = findChild(dialog, "containerSyncFolderNote")
+        verify(browse !== null)
+        verify(syncNote !== null)
+        // Following the folder enables entering subfolders and explains why the
+        // load action is not needed.
+        verify(sync.checked)
+        compare(browse.enabled, true)
+        verify(syncNote.visible)
+
+        sync.checked = false
+        sync.toggled()
+        // Freezing keeps the subfolder switch usable: choosing it releases the
+        // freeze. Only the note about the live listing stops applying.
+        verify(browse.visible)
+        compare(browse.enabled, true)
+        verify(!syncNote.visible)
+    }
+
+    function test_stored_list_stays_out_of_sight_while_following_the_folder() {
+        dialog.openFor("folder")
+        controller.setDraftValues({name: "Fixture", layout: "grid",
+            sourceType: "folder", sourcePath: testCase.fixture})
+        dialog.refreshEditorFields(true)
+        const editor = findChild(dialog, "itemConfigurationActionEditor")
+        verify(editor !== null)
+        // The live listing replaces the stored one, so its editor is hidden but
+        // keeps being rebuilt: freezing the folder shows it at once.
+        verify(!editor.visible)
+
+        controller.setDraftValues({"syncFolder": false})
+        dialog.refreshEditorFields(true)
+        verify(editor.visible)
     }
 
     function test_synced_container_lists_the_folder() {
