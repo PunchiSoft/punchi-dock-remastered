@@ -1001,7 +1001,9 @@ Item {
     }
 
     Component.onDestruction: {
-        tooltipDialog.visible = false
+        if (tooltipDialogLoader.item) {
+            tooltipDialogLoader.item.visible = false
+        }
     }
 
     onTaskIndicatorCountChanged: minimizeStateEvaluationTimer.restart()
@@ -2079,32 +2081,44 @@ Item {
         }
     }
 
-    PlasmaCore.Dialog {
-        id: tooltipDialog
-        // Plasma places the label against what the item shows on screen, so the
-        // label follows the dock zoom instead of staying on the layout rect.
-        visualParent: tooltipAnchor
-        location: dockItemContainer.tooltipLocation
-        type: PlasmaCore.Dialog.Tooltip
-        // The comic balloon draws its own silhouette. The native tooltip frame
-        // would otherwise paint a second rectangle behind it.
-        backgroundHints: PlasmaCore.Dialog.NoBackground
-        visible: dockItemContainer.visible
-            && dockItemContainer.showAnyTooltip && mouseArea.containsMouse
-            && !tooltipDelayTimer.running
-            && tooltipContentLoader.status === Loader.Ready
-            && tooltipContentLoader.implicitWidth > 0
-            && tooltipContentLoader.implicitHeight > 0
-        flags: Qt.ToolTip | Qt.FramelessWindowHint | Qt.WindowDoesNotAcceptFocus
+    // The tooltip is a native window. Creating one per dock item at load costs
+    // several megabytes even when no tooltip is ever shown, so it is created on
+    // hover and released when the pointer leaves the item.
+    Loader {
+        id: tooltipDialogLoader
+        active: dockItemContainer.showAnyTooltip && mouseArea.containsMouse
+        sourceComponent: tooltipDialogComponent
+    }
 
-        mainItem: Item {
-            implicitWidth: tooltipContentLoader.implicitWidth
-            implicitHeight: tooltipContentLoader.implicitHeight
+    Component {
+        id: tooltipDialogComponent
 
-            Loader {
-                id: tooltipContentLoader
-                anchors.fill: parent
-                sourceComponent: textTooltipComponent
+        PlasmaCore.Dialog {
+            // Plasma places the label against what the item shows on screen, so the
+            // label follows the dock zoom instead of staying on the layout rect.
+            visualParent: tooltipAnchor
+            location: dockItemContainer.tooltipLocation
+            type: PlasmaCore.Dialog.Tooltip
+            // The comic balloon draws its own silhouette. The native tooltip frame
+            // would otherwise paint a second rectangle behind it.
+            backgroundHints: PlasmaCore.Dialog.NoBackground
+            visible: dockItemContainer.visible
+                && dockItemContainer.showAnyTooltip && mouseArea.containsMouse
+                && !tooltipDelayTimer.running
+                && tooltipContentLoader.status === Loader.Ready
+                && tooltipContentLoader.implicitWidth > 0
+                && tooltipContentLoader.implicitHeight > 0
+            flags: Qt.ToolTip | Qt.FramelessWindowHint | Qt.WindowDoesNotAcceptFocus
+
+            mainItem: Item {
+                implicitWidth: tooltipContentLoader.implicitWidth
+                implicitHeight: tooltipContentLoader.implicitHeight
+
+                Loader {
+                    id: tooltipContentLoader
+                    anchors.fill: parent
+                    sourceComponent: textTooltipComponent
+                }
             }
         }
     }
