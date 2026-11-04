@@ -577,6 +577,44 @@ set_tests_properties(dockthemetrash_test PROPERTIES TIMEOUT 30)
 
 
 add_executable(plasmoid_full_load_test plasmoid_full_load_test.cpp)
+add_executable(memory_cycle_test memory_cycle_test.cpp)
+add_dependencies(memory_cycle_test
+    punchidockintegration
+    punchidockintegrationplugin
+)
+target_compile_definitions(memory_cycle_test PRIVATE
+    PUNCHI_PROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
+    PUNCHI_INTEGRATION_LIBRARY="$<TARGET_FILE:punchidockintegration>"
+    PUNCHI_INTEGRATION_PLUGIN="$<TARGET_FILE:punchidockintegrationplugin>"
+    PUNCHI_INTEGRATION_QMLDIR="${CMAKE_BINARY_DIR}/bin/org/punchi/dock/qmldir"
+    PUNCHI_INTEGRATION_QMLTYPES="${CMAKE_BINARY_DIR}/bin/org/punchi/dock/punchidockintegration.qmltypes"
+)
+target_link_libraries(memory_cycle_test PRIVATE
+    Qt6::Gui
+    Qt6::Quick
+    Qt6::Test
+    KF6::ConfigQml
+    KF6::CoreAddons
+    KF6::Package
+    Plasma::Plasma
+    Plasma::PlasmaQuick
+)
+add_test(
+    NAME memory_cycle_test
+    COMMAND ${Python3_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${PUNCHI_DBUS_RUN_SESSION}
+        --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        --
+        $<TARGET_FILE:memory_cycle_test>
+)
+# Twenty-five open and close cycles of two full-screen overlays need more time
+# than a single load check.
+set_tests_properties(memory_cycle_test PROPERTIES
+    ENVIRONMENT "QT_QPA_PLATFORM=offscreen;QT_QUICK_BACKEND=software"
+    TIMEOUT 240
+)
+
 add_executable(recent_applications_full_load_test recent_applications_full_load_test.cpp)
 add_dependencies(recent_applications_full_load_test punchidockintegrationplugin)
 target_include_directories(recent_applications_full_load_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
