@@ -38,12 +38,26 @@ Queda fuera:
 
 | Métrica | Presupuesto | Fuente |
 |---|---|---|
-| `second_instance_mb` | ≤ 97,5 MB | `scripts-dev/memory-baseline.env` |
+| `second_instance_mb` | ≤ 97 MB | `scripts-dev/memory-baseline.env` |
 | `first_instance_mb` | ≤ 137 MB | `scripts-dev/memory-baseline.env` |
-| `retention_mb` tras retirar | ≤ 235 MB | `scripts-dev/memory-baseline.env` |
+| `retention_mb` tras retirar | ≤ 233 MB | `scripts-dev/memory-baseline.env` |
 
 Los valores del archivo son la referencia operativa; esta tabla solo explica su
 sentido.
+
+### Cómo se fija cada cifra
+
+El presupuesto es **el valor más alto observado más 1,0 MB de margen de ruido**,
+nunca el valor medido en una sola pasada. Un presupuesto igual al valor observado
+falla en la ejecución siguiente sin que nada haya empeorado: el 2026-11-04 un
+límite de 95,5 MB se superó con 96,0 MB en la misma versión del árbol.
+
+Reglas:
+
+- si el margen obligaría a **subir** una cifra ya registrada, la cifra se queda
+  como estaba: el baseline solo baja;
+- dos ejecuciones consecutivas son el mínimo para fijar un valor;
+- una mejora real de producto debe superar 3 MB para distinguirse del ruido.
 
 ## Protocolo de medición
 
