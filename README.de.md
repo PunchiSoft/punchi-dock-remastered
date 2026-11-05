@@ -15,13 +15,17 @@
 > [!WARNING]
 > **Installiere aus dem Quellcode oder aus dem neuesten GitHub-Release.** Der Eintrag im KDE Store und das veröffentlichte Paket sind älter als die Plasma-6.8-Korrektur, die in 0.9.7.77 enthalten ist und unter Plasma 6.8 geprüft wurde. Früher erstellte Pakete laden möglicherweise nicht oder verlieren Funktionen. Bis zur nächsten Veröffentlichung hilft die Installation aus dem Quellcode mit `scripts-user/setup.sh --install`.
 
+> [!NOTE]
+> **Auf der Suche nach einem Dock ohne Applet-Grenzen?** [Punchi Dock Quickshell](https://github.com/PunchiSoft/punchi-dock-quickshell) ist das Schwesterprojekt, das diesen Dock als eigenständige Quickshell-Anwendung neu aufbaut: Es besitzt eine eigene Fensterfläche, eigenes Randverhalten und ein eigenes Eingabemodell, statt sie vom Plasma-Panel zu erben. Es befindet sich im Aufbau und hat noch keine Veröffentlichung und kein Paket.
+
 Punchi Dock Remastered vereint Anwendungsstarter, geöffnete Fenster, Ordner,
 Mediensteuerung und Desktop-Werkzeuge in einem anpassbaren Dock für KDE Plasma 6.
 Verwende es als schwebendes Dock oder innerhalb eines Plasma-Panels, horizontal
 oder vertikal, mit dem aktiven Plasma-Design oder einem eigenen Hintergrund.
 
 Es enthält PunchiMenu zum Finden und Organisieren von Anwendungen und ist eine
-modulare Neufassung des ursprünglichen Punchi Dock Plasmoids.
+modulare Neufassung des ursprünglichen Punchi Dock Plasmoids, dessen Repository
+nicht mehr öffentlich ist; Punchi Dock Remastered ersetzt es.
 Das Projekt wird aktiv auf dem Weg zu Version 1.0 weiterentwickelt.
 
 [Funktionen](#funktionen) · [Screenshots](#screenshots) · [Installation](#installation) · [Kompatibilität](#kompatibilität) · [Tests](#tests-und-qualität) · [Support](#support-und-mitwirkung)
@@ -404,14 +408,6 @@ Dies führt die konfigurierte CTest-Suite aus; der vollständige Wartungsablauf
 wendet zusätzlich die getrennten Prüfungen für Lint, Kataloge, Integrität und
 Paketierung an. Siehe [Entwicklerskripte](scripts-dev/README.md) und
 [Testintegrität](scripts-dev/test-integrity/README.md).
-
-## Verwandte Projekte
-
-- **[Punchi Dock Quickshell](https://github.com/PunchiSoft/punchi-dock-quickshell):** Ein
-  verwandtes Projekt in Entwicklung, das den Dock als eigenständige Quickshell-Anwendung für
-  KDE Plasma unter Wayland neu aufbaut. Anders als ein Plasma-Applet besitzt es eine eigene
-  Fensterfläche, eigenes Randverhalten und ein eigenes Eingabemodell, statt sie vom Panel zu
-  erben. Es gibt noch keine veröffentlichte Version und kein Paket.
 
 ## Support und Mitwirkung
 

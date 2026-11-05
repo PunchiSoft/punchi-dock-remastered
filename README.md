@@ -15,13 +15,17 @@
 > [!WARNING]
 > **Install from source or from the latest GitHub release.** The KDE Store entry and the published package predate the Plasma 6.8 fix, which landed in 0.9.7.77 and is validated on Plasma 6.8. Packages built before it may fail to load or lose functionality. Until the next release, use `scripts-user/setup.sh --install`.
 
+> [!NOTE]
+> **Looking for a dock without applet limits?** [Punchi Dock Quickshell](https://github.com/PunchiSoft/punchi-dock-quickshell) is the sibling project that rebuilds this dock as a standalone Quickshell application: it owns its window surface, edge behavior and input model instead of inheriting them from the Plasma panel. It is under construction, with no release or package yet.
+
 Punchi Dock Remastered brings application launchers, running windows, folders,
 media controls, and desktop utilities together in a customizable dock for KDE
 Plasma 6. Use it as a floating dock or inside a Plasma panel, horizontally or
 vertically, with the active Plasma theme or a custom background.
 
 It includes PunchiMenu for finding and organizing applications and is a modular
-rewrite of the original Punchi Dock Plasmoid.
+rewrite of the original Punchi Dock Plasmoid, whose repository is no longer
+public; Punchi Dock Remastered replaces it.
 The project is in active development toward version 1.0.
 
 [Features](#features) · [Screenshots](#screenshots) · [Installation](#installation) · [Compatibility](#compatibility) · [Testing](#testing-and-quality) · [Support](#support-and-contributing)
@@ -395,14 +399,6 @@ ctest --test-dir build --output-on-failure
 This runs the configured CTest suite; the complete maintenance workflow also
 applies the separate lint, catalog, integrity, and packaging checks. See
 [developer scripts](scripts-dev/README.md) and [test integrity](scripts-dev/test-integrity/README.md).
-
-## Related projects
-
-- **[Punchi Dock Quickshell](https://github.com/PunchiSoft/punchi-dock-quickshell):** A sibling
-  project in development that rebuilds the dock as a standalone Quickshell application for
-  KDE Plasma on Wayland. Unlike a Plasma applet, it owns its window surface, edge behavior
-  and input model instead of inheriting them from the panel. It has no published release or
-  package yet.
 
 ## Support and contributing
 
