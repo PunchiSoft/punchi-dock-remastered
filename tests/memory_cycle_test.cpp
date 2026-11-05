@@ -624,6 +624,37 @@ private Q_SLOTS:
         QVERIFY2(anon > 0.0, "Could not read Pss_Anon for the control applet");
     }
 
+    // Opening latency is what the 20 s prewarm buys. Measured twice per run:
+    // cold, before the warm timer fires, and warm, after the instance exists.
+    void menuOpenLatency()
+    {
+        QQuickWindow hostWindow;
+        QObject *root = createApplet(hostWindow, 2004U);
+        QVERIFY2(root != nullptr, "The applet root object was not created");
+
+        // Stay well below the 20 s warm timer so the first open is cold.
+        settle(2000);
+        const QVariant warmInstance = root->property("punchiMenuDialogInstance");
+        QVERIFY2(!warmInstance.value<QObject *>(),
+                 "The menu instance existed before the measurement; the warm timer fired too early");
+
+        const OpenTiming cold = openAndTime(root);
+        qInfo("latency cold: instance %lld ms, frame %lld ms",
+              static_cast<long long>(cold.instanceMs),
+              static_cast<long long>(cold.frameMs));
+
+        closeMenu(root);
+        settle(1500);
+
+        const OpenTiming warm = openAndTime(root);
+        qInfo("latency warm: instance %lld ms, frame %lld ms",
+              static_cast<long long>(warm.instanceMs),
+              static_cast<long long>(warm.frameMs));
+
+        QVERIFY2(cold.instanceMs >= 0 && warm.instanceMs >= 0,
+                 "The menu never became visible");
+    }
+
     void cleanupTestCase()
     {
         m_containment = nullptr;
@@ -632,6 +663,72 @@ private Q_SLOTS:
     }
 
 private:
+    struct OpenTiming {
+        qint64 instanceMs = -1;
+        qint64 frameMs = -1;
+    };
+
+    static QObject *menuInstance(QObject *root)
+    {
+        const QVariant value = root->property("punchiMenuDialogInstance");
+        QObject *dialog = qvariant_cast<QObject *>(value);
+        if (!dialog && value.canConvert<QJSValue>()) {
+            dialog = value.value<QJSValue>().toQObject();
+        }
+        return dialog;
+    }
+
+    OpenTiming openAndTime(QObject *root)
+    {
+        OpenTiming timing;
+        QElapsedTimer timer;
+        timer.start();
+        if (!QMetaObject::invokeMethod(root, "togglePunchiMenu",
+                                       Q_ARG(QVariant, QVariant()))) {
+            qWarning("Could not invoke togglePunchiMenu");
+            return timing;
+        }
+        QObject *dialog = nullptr;
+        while (timer.elapsed() < 8000) {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 5);
+            dialog = menuInstance(root);
+            if (dialog && dialog->property("visible").toBool()) {
+                break;
+            }
+        }
+        if (!dialog || !dialog->property("visible").toBool()) {
+            return timing;
+        }
+        timing.instanceMs = timer.elapsed();
+
+        auto *window = qobject_cast<QQuickWindow *>(dialog);
+        if (window) {
+            bool rendered = false;
+            auto connection = QObject::connect(window, &QQuickWindow::frameSwapped,
+                                               [&rendered]() { rendered = true; });
+            QElapsedTimer frameTimer;
+            frameTimer.start();
+            while (!rendered && frameTimer.elapsed() < 3000) {
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 5);
+            }
+            QObject::disconnect(connection);
+            timing.frameMs = rendered ? timer.elapsed() : -1;
+        }
+        return timing;
+    }
+
+    void closeMenu(QObject *root)
+    {
+        QObject *dialog = menuInstance(root);
+        if (!dialog) {
+            return;
+        }
+        if (!QMetaObject::invokeMethod(dialog, "closeImmediately")) {
+            dialog->setProperty("visible", false);
+        }
+        settle(200);
+    }
+
     QQuickWindow &rootWindow(QQuickWindow &window)
     {
         window.resize(1920, 1080);
