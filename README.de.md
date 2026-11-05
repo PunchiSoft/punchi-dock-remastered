@@ -44,7 +44,18 @@ als in Entwicklung gekennzeichnete Funktionen können in der neuesten Veröffent
   oder Terminalbefehle hinzu, ordne Elemente um und zeige einen optionalen Bereich
   für geöffnete Anwendungen an.
 - **Fenstersteuerung:** Nutze gruppierte Fenster, Anwendungsaktionen,
-  Fensteranzahl-Anzeigen, Arbeitsflächenfilter und konfigurierbare Karten oder Live-Vorschaubilder.
+  Fensteranzahl-Anzeigen und konfigurierbare Karten oder Live-Vorschaubilder.
+- **Aufgabenfilter:** Kombiniere in den Fenstereinstellungen unabhängige Filter
+  für die aktuelle virtuelle Arbeitsfläche, die aktuelle Aktivität und den
+  Bildschirm des Docks. Schalte einen Filter aus, um alle Arbeitsflächen,
+  Aktivitäten oder Bildschirme dieser Kategorie einzubeziehen.
+
+  Aktivierte Filter werden kombiniert. Angeheftete Starter bleiben sichtbar;
+  nur ihre zugeordneten Fenster werden gefiltert.
+
+  Bestehende Arbeitsflächeneinstellungen bleiben erhalten; die neuen Filter für
+  Aktivität und Bildschirm sind standardmäßig ausgeschaltet. Klicke auf Anwenden,
+  um das Dock ohne Neustart von Plasma zu aktualisieren.
 - **Zuletzt verwendete Anwendungen:** Zeige zuletzt verwendete Anwendungen als
   Dock-Symbole oder in einem Container an. Neue Konfigurationen aktivieren einen
   Fächer-Container mit Platz für fünf Anwendungen. Angeheftete Anwendungen und

@@ -44,8 +44,19 @@ recursos marcados como em desenvolvimento podem não estar incluídos na versão
   personalizados ou comandos de terminal, reordene itens e exiba uma seção
   opcional de aplicativos abertos.
 - **Controles de janelas:** Trabalhe com janelas agrupadas, ações de aplicativos,
-  indicadores de quantidade de janelas, filtros por área de trabalho e cartões
-  configuráveis ou miniaturas de janelas ao vivo.
+  indicadores de quantidade de janelas e cartões configuráveis ou miniaturas de
+  janelas ao vivo.
+- **Filtros de tarefas:** Nas configurações de Janelas, combine filtros
+  independentes para a área de trabalho virtual atual, a Activity atual e o
+  monitor do dock. Desative um filtro para incluir todas as áreas de trabalho,
+  Activities ou monitores daquela categoria.
+
+  Os filtros ativados são combinados. Os lançadores fixados permanecem visíveis;
+  somente suas janelas correspondentes são filtradas.
+
+  As preferências de área de trabalho existentes são preservadas; os novos
+  filtros de Activity e monitor ficam desativados por padrão. Clique em Aplicar
+  para atualizar o dock sem reiniciar o Plasma.
 - **Aplicativos recentes:** Exiba aplicativos recentes como ícones na dock ou em
   um contêiner. Novas configurações ativam um contêiner Leque com capacidade para
   cinco aplicativos. Aplicativos fixados e aqueles com janelas abertas são
