@@ -2150,6 +2150,10 @@ PlasmoidItem {
         dockItems: dockItemsController.dockItems
         showActiveTasks: Plasmoid.configuration.showActiveTasks
         currentDesktopOnly: Plasmoid.configuration.showTasksCurrentDesktopOnly
+        currentActivityOnly: Plasmoid.configuration.showTasksCurrentActivityOnly
+        currentScreenOnly: Plasmoid.configuration.showTasksCurrentScreenOnly
+        screenGeometry: Plasmoid.containment
+            ? Plasmoid.containment.screenGeometry : Qt.rect(0, 0, 0, 0)
         windowGroupingMode: String(Plasmoid.configuration.windowGroupingMode || "application")
         maxDynamicGroups: Math.max(1, Math.min(20,
             Number(Plasmoid.configuration.maxDynamicTaskGroups || 8)))

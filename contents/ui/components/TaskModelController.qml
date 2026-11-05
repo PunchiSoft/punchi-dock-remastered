@@ -11,6 +11,9 @@ Item {
     property var dockItems: []
     property bool showActiveTasks: true
     property bool currentDesktopOnly: true
+    property bool currentActivityOnly: false
+    property bool currentScreenOnly: false
+    property rect screenGeometry: Qt.rect(0, 0, 0, 0)
     property string windowGroupingMode: "application"
     property int maxDynamicGroups: 8
     // Flexible panel mode can derive the direct group limit from its visual
@@ -33,6 +36,9 @@ Item {
 
     TaskManager.VirtualDesktopInfo {
         id: virtualDesktopInfo
+    }
+    TaskManager.ActivityInfo {
+        id: activityInfo
     }
     readonly property bool virtualDesktopInfoAvailable:
         TaskManagerCompatibility.supportsVirtualDesktopInfo(Qt.platform.pluginName)
@@ -66,12 +72,17 @@ Item {
 
     TaskManager.TasksModel {
         id: tasksModel
+        objectName: "tasksModel"
         groupMode: TaskManager.TasksModel.GroupDisabled
         sortMode: TaskManager.TasksModel.SortDisabled
         virtualDesktop: root.virtualDesktopInfoAvailable
             ? virtualDesktopInfo.currentDesktop
             : ""
         filterByVirtualDesktop: root.useLegacyCurrentDesktopFilter
+        activity: activityInfo.currentActivity
+        filterByActivity: root.showActiveTasks && root.currentActivityOnly
+        screenGeometry: root.screenGeometry
+        filterByScreen: root.showActiveTasks && root.currentScreenOnly
 
         Component.onCompleted: root.updateCurrentDesktopFilter()
     }
@@ -136,6 +147,9 @@ Item {
         updateCurrentDesktopFilter()
         scheduleRefresh(true)
     }
+    onCurrentActivityOnlyChanged: scheduleRefresh(true)
+    onCurrentScreenOnlyChanged: scheduleRefresh(true)
+    onScreenGeometryChanged: scheduleRefresh(true)
     onWindowGroupingModeChanged: scheduleRefresh(true)
     onMaxDynamicGroupsChanged: scheduleRefresh(true)
     onAutomaticDynamicGroupsChanged: scheduleRefresh(true)
@@ -151,9 +165,8 @@ Item {
     function updateCurrentDesktopFilter() {
         const enabled = root.virtualDesktopInfoAvailable
             && root.showActiveTasks && root.currentDesktopOnly
-        const nativeFilterApplied = enabled
-            && TaskManagerCompatibility.setOptionalProperty(
-                tasksModel, "filterByCurrentVirtualDesktop", true)
+        const nativeFilterApplied = TaskManagerCompatibility.setOptionalProperty(
+            tasksModel, "filterByCurrentVirtualDesktop", enabled)
         root.useLegacyCurrentDesktopFilter = enabled && !nativeFilterApplied
     }
 

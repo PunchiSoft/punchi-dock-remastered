@@ -44,7 +44,18 @@ las funciones marcadas como desarrollo pueden no estar incluidas en la última v
   personalizados o comandos de terminal, reordena elementos y muestra una sección
   opcional de aplicaciones abiertas.
 - **Controles de ventanas:** Trabaja con ventanas agrupadas, acciones de aplicación,
-  indicadores de cantidad de ventanas, filtros por escritorio y tarjetas o miniaturas en vivo.
+  indicadores de cantidad de ventanas y tarjetas o miniaturas en vivo.
+- **Filtros de tareas:** En la configuración de Ventanas, combina filtros
+  independientes para el escritorio virtual actual, la actividad actual y la
+  pantalla del dock. Desactiva un filtro para incluir todos los escritorios,
+  actividades o pantallas de esa categoría.
+
+  Los filtros activados se combinan. Los lanzadores fijados permanecen visibles;
+  solo se filtran sus ventanas correspondientes.
+
+  Se conservan las preferencias de escritorio existentes; los nuevos filtros de
+  actividad y pantalla están desactivados por defecto. Pulsa Aplicar para
+  actualizar el dock sin reiniciar Plasma.
 - **Aplicaciones recientes:** Muestra aplicaciones recientes como iconos del dock
   o dentro de un contenedor. Las configuraciones nuevas activan un contenedor
   Abanico con capacidad para cinco. Se excluyen las aplicaciones ancladas y las

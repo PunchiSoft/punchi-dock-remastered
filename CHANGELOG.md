@@ -1,5 +1,14 @@
 ## Unreleased
 
+### Filtros de tareas
+
+- Añadidos tres interruptores independientes en Ventanas para combinar filtros por escritorio virtual actual, actividad actual y pantalla del dock. Los filtros activados se aplican conjuntamente; al desactivar uno se incluyen todas las ubicaciones de esa categoría.
+- Los lanzadores fijados permanecen visibles; sus ventanas asociadas y las tareas dinámicas siguen los mismos filtros. La pantalla de referencia es la del dock, no la del cursor ni la ventana enfocada.
+- Se conserva la preferencia de escritorio guardada; los nuevos filtros de actividad y pantalla están desactivados por defecto. Aplicar actualiza el dock sin reiniciar Plasma.
+- Corregida la desactivación del filtro opcional moderno de escritorio: ahora recibe también el valor `false` al mostrar tareas de todos los escritorios.
+- Añadidas pruebas de las ocho combinaciones, reactividad de la geometría de pantalla, desactivación y reactivación, operación por teclado y destrucción y recreación del controlador. Completada la preparación aislada del menú de aplicaciones en la prueba del adaptador de aplicaciones recientes, sin cambiar sus aserciones.
+- Actualizados los cuatro README y los catálogos español, alemán y portugués brasileño. Validación local en Ubuntu 26.04, Qt 6.10.2, Plasma 6.6.6 y KF 6.24.0: CTest completo 189/189, sin diagnósticos nuevos de qmllint y 1434 mensajes completos por idioma. La build local se instaló y cargó en Wayland; la matriz manual de filtros y la compatibilidad efectiva con Plasma 6.0 siguen pendientes.
+
 ### Carpetas del dock
 
 - Añadido el submenú «Contenido» al menú contextual de un contenedor de carpeta, con un par «Activar»/«Desactivar» para «Contenido de la carpeta en vivo» y otro para «Navegar por subcarpetas», para cambiar ambas decisiones sin abrir la configuración. El título incluye el nombre de la carpeta a la que pertenecen los ajustes.

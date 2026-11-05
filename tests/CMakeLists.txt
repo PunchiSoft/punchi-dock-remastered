@@ -1076,6 +1076,25 @@ punchi_add_qml_test(
     folder_fan_view_test.qml
 )
 punchi_add_qml_test(task_popup_surface_test task_popup_surface_test.qml)
+add_test(NAME task_scope_config_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/task_scope_config_test.py)
+add_executable(task_scope_qml_test_runner task_scope_qml_test_runner.cpp)
+target_link_libraries(task_scope_qml_test_runner PRIVATE Qt6::DBus Qt6::Qml Qt6::QuickTest KF6::I18n)
+if(TARGET KF6::I18nQml)
+    target_link_libraries(task_scope_qml_test_runner PRIVATE KF6::I18nQml)
+    target_compile_definitions(task_scope_qml_test_runner PRIVATE PUNCHI_HAS_KLOCALIZED_QML_CONTEXT)
+endif()
+add_test(NAME task_scope_filters_test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
+        ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
+        -- ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_qml_tooltip_test.py
+        $<TARGET_FILE:task_scope_qml_test_runner>
+        -import ${CMAKE_BINARY_DIR}/bin
+        -input ${CMAKE_CURRENT_SOURCE_DIR}/task_scope_filters_test.qml)
+set_tests_properties(task_scope_filters_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT};LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/bin:$ENV{LD_LIBRARY_PATH}"
+    FAIL_REGULAR_EXPRESSION "QWARN[ ]*:|TypeError:|ReferenceError:"
+    TIMEOUT 30)
 punchi_add_qml_test(
     app_actions_popup_runtime_test
     app_actions_popup_runtime_test.qml

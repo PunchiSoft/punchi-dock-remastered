@@ -43,7 +43,17 @@ features marked as development may not be included in the latest release.
 - **Launchers and running applications:** Pin applications, add custom launchers
   or terminal commands, reorder items, and display an optional running-app section.
 - **Window controls:** Work with grouped windows, application actions, window-count
-  badges, desktop filtering, and configurable cards or live window thumbnails.
+  badges, and configurable cards or live window thumbnails.
+- **Task filters:** In Windows settings, combine independent filters for the
+  current virtual desktop, current Activity, and the dock's screen. Turn a filter
+  off to include all desktops, Activities, or screens for that category.
+
+  Enabled filters are combined. Pinned launchers remain visible; only their
+  matching windows are filtered.
+
+  Existing desktop preferences are preserved; the new Activity and screen
+  filters are off by default. Click Apply to update the dock without restarting
+  Plasma.
 - **Recent applications:** Show recent applications as dock icons or in a
   container. New configurations enable a Fan container with a capacity of five.
   Pinned applications and those with open windows are excluded. The feature uses

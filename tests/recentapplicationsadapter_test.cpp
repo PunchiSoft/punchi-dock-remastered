@@ -20,6 +20,18 @@ private Q_SLOTS:
     void init() { QTest::failOnWarning(); }
     void initTestCase()
     {
+        const QString menuDirectory = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation)
+            + QStringLiteral("/menus");
+        const QString menuPrefix = QString::fromLocal8Bit(qgetenv("XDG_MENU_PREFIX"));
+        QVERIFY(!menuPrefix.contains(QLatin1Char('/')));
+        QVERIFY(!menuPrefix.contains(QLatin1Char('\\')));
+        QVERIFY(QDir().mkpath(menuDirectory));
+        QFile menu(menuDirectory + QLatin1Char('/') + menuPrefix + QStringLiteral("applications.menu"));
+        QVERIFY(menu.open(QIODevice::WriteOnly));
+        const QByteArray menuContent =
+            "<Menu><Name>Applications</Name><DefaultAppDirs/><Include><All/></Include></Menu>\n";
+        QCOMPARE(menu.write(menuContent), menuContent.size());
+        menu.close();
         const QString applications = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
         QVERIFY(QDir().mkpath(applications));
         for (const auto &id : {"Visible", "NoDisplay", "Hidden"}) {

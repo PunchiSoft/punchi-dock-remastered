@@ -55,6 +55,12 @@
     <entry name="showTasksCurrentDesktopOnly" type="Bool">
       <default>true</default>
     </entry>
+    <entry name="showTasksCurrentActivityOnly" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="showTasksCurrentScreenOnly" type="Bool">
+      <default>false</default>
+    </entry>
     <entry name="panelLengthMode" type="String">
       <default>system</default>
     </entry>
