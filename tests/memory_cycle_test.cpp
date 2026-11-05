@@ -16,6 +16,8 @@
 #include <QJSValue>
 #include <QQuickItem>
 #include <QGuiApplication>
+#include <QQmlContext>
+#include <QQmlEngine>
 #include <QHash>
 #include <QQuickWindow>
 #include <QSet>
@@ -143,6 +145,64 @@ QString censusDelta(const QHash<QString, int> &first, const QHash<QString, int> 
     }
     std::sort(parts.begin(), parts.end());
     return parts.isEmpty() ? QStringLiteral("none") : parts.join(QStringLiteral(", "));
+}
+
+int censusItemsByClass(QQuickItem *item, QHash<QString, int> *counts)
+{
+    if (!item) {
+        return 0;
+    }
+    int total = 1;
+    const QString name = QString::fromLatin1(item->metaObject()->className());
+    (*counts)[name] += 1;
+    const auto children = item->childItems();
+    for (QQuickItem *child : children) {
+        total += censusItemsByClass(child, counts);
+    }
+    return total;
+}
+
+void printItemTree(QQuickItem *item, int depth, int maxDepth, int threshold,
+                   const QString &prefix)
+{
+    if (!item || depth > maxDepth) {
+        return;
+    }
+    const auto children = item->childItems();
+    for (QQuickItem *child : children) {
+        if (!child) {
+            continue;
+        }
+        QHash<QString, int> classes;
+        const int total = censusItemsByClass(child, &classes);
+        if (total < threshold) {
+            continue;
+        }
+        const QString name = child->objectName().isEmpty()
+            ? QString::fromLatin1(child->metaObject()->className())
+            : child->objectName();
+        qInfo("  %s+ %s items=%d visible=%d", qPrintable(prefix), qPrintable(name),
+              total, child->isVisible() ? 1 : 0);
+        printItemTree(child, depth + 1, maxDepth, threshold,
+                      prefix + QStringLiteral("  "));
+    }
+}
+
+QString topEntries(const QHash<QString, int> &counts, int limit)
+{
+    QList<QPair<int, QString>> ordered;
+    for (auto it = counts.cbegin(); it != counts.cend(); ++it) {
+        ordered.append({it.value(), it.key()});
+    }
+    std::sort(ordered.begin(), ordered.end(), [](const auto &left, const auto &right) {
+        return left.first > right.first;
+    });
+    QStringList parts;
+    for (int index = 0; index < ordered.size() && index < limit; ++index) {
+        parts.append(QStringLiteral("%1=%2").arg(ordered.at(index).second)
+                         .arg(ordered.at(index).first));
+    }
+    return parts.join(QLatin1Char(' '));
 }
 
 double median(QList<double> values)
@@ -421,6 +481,53 @@ private Q_SLOTS:
             }
         }
 
+        if (qEnvironmentVariableIsSet("PUNCHI_MEMORY_MENU_CENSUS")) {
+            const QVariant dialogValue =
+                root->property("punchiMenuDialogInstance");
+            QObject *dialog = qvariant_cast<QObject *>(dialogValue);
+            if (!dialog && dialogValue.canConvert<QJSValue>()) {
+                dialog = dialogValue.value<QJSValue>().toQObject();
+            }
+            if (!dialog) {
+                qInfo("menu census: no PunchiMenu instance was created");
+            } else {
+                auto *window = qobject_cast<QQuickWindow *>(dialog);
+                QQuickItem *content = window ? window->property("mainItem").value<QQuickItem *>()
+                                             : nullptr;
+                if (!content && window) {
+                    content = window->contentItem();
+                }
+                QHash<QString, int> itemClasses;
+                const int menuItems = censusItemsByClass(content, &itemClasses);
+                qInfo("menu census: %s %dx%d items=%d classes=%d",
+                      qPrintable(dialog->objectName().isEmpty()
+                                     ? QString::fromLatin1(dialog->metaObject()->className())
+                                     : dialog->objectName()),
+                      window ? window->width() : 0, window ? window->height() : 0,
+                      menuItems, static_cast<int>(itemClasses.size()));
+                const auto topChildren = content ? content->childItems() : QList<QQuickItem *>();
+                for (QQuickItem *child : topChildren) {
+                    if (!child) {
+                        continue;
+                    }
+                    QHash<QString, int> childClasses;
+                    const int childItems = censusItemsByClass(child, &childClasses);
+                    if (childItems < 20) {
+                        continue;
+                    }
+                    qInfo("  piece %s items=%d visible=%d",
+                          qPrintable(child->objectName().isEmpty()
+                                         ? QString::fromLatin1(
+                                               child->metaObject()->className())
+                                         : child->objectName()),
+                          childItems, child->isVisible() ? 1 : 0);
+                }
+                qInfo("  tree (items >= 40, depth 3):");
+                printItemTree(content, 1, 3, 40, QStringLiteral("  "));
+                qInfo("  classes: %s", qPrintable(topEntries(itemClasses, 18)));
+            }
+        }
+
         if (qEnvironmentVariableIsSet("PUNCHI_MEMORY_CENSUS")) {
             QStringList windows;
             const auto tops = QGuiApplication::topLevelWindows();
@@ -439,6 +546,10 @@ private Q_SLOTS:
                                                   .value<QObject *>()
                                                   ->objectName()
                                             : QString())
+                                   + QStringLiteral(" qml=%1").arg(
+                                         qmlContext(window)
+                                             ? qmlContext(window)->baseUrl().fileName()
+                                             : QStringLiteral("<no-context>"))
                                    + QStringLiteral(" items=%1")
                                          .arg(qobject_cast<QQuickWindow *>(window)
                                                   ? countItems(qobject_cast<QQuickWindow *>(window)
