@@ -53,6 +53,11 @@ python3 ./scripts-dev/check-version.py
   canonical CTest names, the per-profile test floor and the gate contracts. The
   policy lives in `AGENTS.md`; the operation is documented in
   [test-integrity/README.md](test-integrity/README.md).
+- `pr-surface-guard.py`: inspects how a pull request delivers its change and
+  rejects binaries, symlinks, new executables and edits to the build, packaging
+  or review tooling. It runs in the `PR guard` workflow for every pull request;
+  same-repository branches receive those infrastructure edits as notices, while
+  a fork must have each one authorized by a maintainer.
 - `instalar-plasmoide.sh`: selector for locally produced packages.
 - `universal-package-validation-test.sh`: manual check of the universal package
   validation used by `scripts-user/setup-universal.sh`; run it before publishing.

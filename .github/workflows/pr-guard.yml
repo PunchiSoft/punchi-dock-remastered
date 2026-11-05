@@ -1,0 +1,57 @@
+name: PR guard
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-guard-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  guard:
+    name: Reviewable diff and repository gates
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the pull request
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Reject binaries, symlinks, executables and infrastructure edits
+        env:
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPOSITORY: ${{ github.repository }}
+        run: |
+          if [ "$HEAD_REPOSITORY" = "$BASE_REPOSITORY" ]; then
+            python3 scripts-dev/pr-surface-guard.py \
+              --base "${{ github.event.pull_request.base.sha }}" \
+              --sensitive-paths warn
+          else
+            python3 scripts-dev/pr-surface-guard.py \
+              --base "${{ github.event.pull_request.base.sha }}"
+          fi
+
+      - name: Protect the existing tests
+        run: python3 scripts-dev/test-integrity-guard.py --check
+
+      - name: Verify the version declarations
+        run: python3 scripts-dev/check-version.py
+
+      - name: Verify the KConfig contract
+        run: >-
+          python3 scripts-dev/audit-plasma-config.py
+          --project-root "${{ github.workspace }}"
+
+      - name: Verify the translation catalogs
+        run: |
+          if ! command -v msgfmt >/dev/null; then
+            sudo apt-get update -qq
+            sudo apt-get install -y --no-install-recommends gettext
+          fi
+          for catalog in po/*.po; do
+            msgfmt --check --check-format -o /dev/null "$catalog"
+          done
