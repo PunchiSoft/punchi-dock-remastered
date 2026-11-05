@@ -963,8 +963,16 @@ def main() -> int:
     )
     require(
         main_qml,
-        "profileFanScrollEnabled: dockConfig.folderFanScrollEnabled",
-        "main.qml must hand the fan scroll preference to the folder popup",
+        "profileFanScrollEnabled: ConfigItemsJS.fanScrollFor(",
+        "main.qml must hand the fan scroll preference to the folder popup "
+        "through the single precedence resolver, so a container may override "
+        "it",
+    )
+    require(
+        main_qml,
+        "dockConfig.folderFanScrollEnabled)",
+        "The dock value must stay as the fallback of the fan scroll "
+        "preference",
     )
     for fragment, message in (
         ("animationStyle: folderPopupAnimatedContent.animationStyle",

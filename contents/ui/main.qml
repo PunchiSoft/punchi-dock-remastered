@@ -2236,6 +2236,7 @@ PlasmoidItem {
             && dockConfig.recentApplicationsMode === "container"
         recentApplicationsActive: dockConfig.showRecentApplications
         verticalDock: dockGeometry.verticalPanel
+        folderFanScrollEnabled: dockConfig.folderFanScrollEnabled
         disableRecentApplicationsHandler: function() {
             return dockConfig.disableRecentApplications()
         }
@@ -4296,7 +4297,9 @@ PlasmoidItem {
                         profileAutoLayout: dockConfig.folderGridAutoLayout
                         profileColumns: dockConfig.folderGridColumns
                         profileRows: folderPopupContent.layoutMode === "fan"
-                            ? dockConfig.folderFanRows
+                            ? ConfigItemsJS.fanRowLimitFor(
+                                folderPopupContent.folderItem,
+                                dockConfig.folderFanRows)
                             : (folderPopupContent.layoutMode === "list"
                             ? dockConfig.folderListRows
                             : (folderPopupContent.layoutMode === "detailed"
@@ -4323,7 +4326,11 @@ PlasmoidItem {
                             : (folderPopupContent.layoutMode === "detailed"
                                 ? dockConfig.folderDetailedFontSize
                                 : dockConfig.folderGridFontSize))
-                        profileFanScrollEnabled: dockConfig.folderFanScrollEnabled
+                        // The dock value is the fallback; a container may
+                        // choose its own scrolling instead.
+                        profileFanScrollEnabled: ConfigItemsJS.fanScrollFor(
+                            folderPopupContent.folderItem,
+                            dockConfig.folderFanScrollEnabled)
                         profileScale: dockConfig.folderPopupScale
                         showHeaderLabel: dockConfig.folderPopupShowHeader
                         textShadowsEnabled: dockConfig.popupTextShadowsEnabled

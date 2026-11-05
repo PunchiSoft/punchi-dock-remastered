@@ -470,9 +470,12 @@ Item {
             Kirigami.FormData.label: page.activeProfile === "fan"
                 ? i18n("Items before the opening row:")
                 : i18n("Visible rows:")
-            from: 1
+            // The fan is a preview and its closing row is one of its rows, so it
+            // keeps a safe range of three to eight; the other profiles still
+            // allow a single row.
+            from: page.activeProfile === "fan" ? 3 : 1
             to: 8
-            value: page.activeRows
+            value: Math.max(from, page.activeRows)
             onValueModified: page.setActiveRows(value)
             Layout.preferredWidth: page.selectorWidthHint
             Accessible.name: page.activeProfile === "fan"

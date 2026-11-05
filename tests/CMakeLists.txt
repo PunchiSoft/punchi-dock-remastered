@@ -1162,6 +1162,10 @@ punchi_add_qml_test(
     dock_folder_view_context_test.qml
 )
 punchi_add_qml_test(
+    folder_fan_visible_rows_test
+    folder_fan_visible_rows_test.qml
+)
+punchi_add_qml_test(
     dock_dynamic_applications_context_test
     dock_dynamic_applications_context_test.qml
 )

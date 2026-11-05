@@ -190,7 +190,9 @@ QtObject {
 
     readonly property int folderFanIconSize: Math.max(24, Math.min(64,
         Number(Plasmoid.configuration.folderFanIconSize || 42)))
-    readonly property int folderFanRows: Math.max(1, Math.min(8,
+    // The fan is a preview and its closing row is one of its rows, so the dock
+    // value keeps the same safe range the containers use: three to eight.
+    readonly property int folderFanRows: Math.max(3, Math.min(8,
         Number(Plasmoid.configuration.folderFanRows || 6)))
     readonly property bool folderFanShowLabels:
         Plasmoid.configuration.folderFanShowLabels !== false

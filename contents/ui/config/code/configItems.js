@@ -1024,6 +1024,61 @@ function normalizedFolderSortMode(value) {
     return "modified"
 }
 
+// Items the fan shows before its opening row. Zero means «no override»: the
+// container follows the dock value, so an absent or unusable stored value is
+// removed instead of replaced with a copy of that value.
+function normalizedFanVisibleRows(value) {
+    if (value === undefined || value === null || value === "") {
+        return 0
+    }
+    var rows = Math.round(Number(value))
+    if (!Number.isFinite(rows) || rows < 1) {
+        return 0
+    }
+    return Math.max(minimumFanVisibleRows(),
+        Math.min(maximumFanVisibleRows(), rows))
+}
+
+// The fan is a preview, and its closing row is one of its rows: below three
+// entries that row dominates the popup and a list or detailed presentation
+// serves the container better. Above eight the available height truncates the
+// amount anyway, so a larger number would promise what the fan cannot show.
+function minimumFanVisibleRows() {
+    return 3
+}
+
+function maximumFanVisibleRows() {
+    return 8
+}
+
+// Single source of truth for the amount the fan consumes: the container
+// override wins, the dock value follows, and six stays as the historical
+// default for a dock that has not stored one yet.
+function fanRowLimitFor(item, dockRows) {
+    var itemRows = normalizedFanVisibleRows(item ? item.fanVisibleRows : 0)
+    if (itemRows > 0) {
+        return itemRows
+    }
+    var dockValue = normalizedFanVisibleRows(dockRows)
+    return dockValue > 0 ? dockValue : 6
+}
+
+// Whether the fan scrolls through every entry, or shows the configured amount
+// and closes with the count of what it left out. Absent means «follow the dock
+// value»: a false stored here is a real choice, so the absence of the key is
+// what distinguishes it from choosing not to scroll.
+function normalizedFanScroll(value) {
+    return typeof value === "boolean" ? value : null
+}
+
+function fanScrollFor(item, dockValue) {
+    var itemValue = normalizedFanScroll(item ? item.fanScrollEnabled : null)
+    if (itemValue !== null) {
+        return itemValue
+    }
+    return dockValue === true
+}
+
 // The fan draws its band from a horizontal dock edge, so a vertical dock
 // resolves it to the canonical grid. The stored preference is never rewritten:
 // turning the dock horizontal again brings the fan back.
@@ -1054,6 +1109,15 @@ function pruneFolder(item) {
     item.layout = item.layout === "list" || item.layout === "detailed"
             || item.layout === "fan" ? item.layout : "grid"
     item.sortMode = normalizedFolderSortMode(item.sortMode)
+    var fanRows = normalizedFanVisibleRows(item.fanVisibleRows)
+    if (fanRows > 0) {
+        item.fanVisibleRows = fanRows
+    } else {
+        delete item.fanVisibleRows
+    }
+    if (normalizedFanScroll(item.fanScrollEnabled) === null) {
+        delete item.fanScrollEnabled
+    }
     item.columns = Math.max(0, item.columns || 0)
     item.rows = Math.max(0, item.rows || 0)
     item.innerIconSize = Math.max(16, item.innerIconSize || 48)
@@ -1243,6 +1307,62 @@ function setFolderBrowseSubfolders(items, targetIndex, enabled) {
     return { "items": nextItems, "changed": true, "status": "updated" }
 }
 
+// `rows` is how many entries the fan shows before its opening row. A value the
+// fan cannot use removes the override, which is how the container returns to
+// the dock value without storing a copy of it.
+function setFolderFanVisibleRows(items, targetIndex, rows) {
+    var source = items instanceof Array ? items : []
+    var index = Number(targetIndex)
+    if (!Number.isInteger(index) || index < 0 || index >= source.length) {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+
+    var currentFolder = source[index]
+    if (!currentFolder || currentFolder.type !== "folder") {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+
+    var nextRows = normalizedFanVisibleRows(rows)
+    if (normalizedFanVisibleRows(currentFolder.fanVisibleRows) === nextRows) {
+        return { "items": source, "changed": false, "status": "unchanged" }
+    }
+
+    var nextItems = clone(source)
+    if (nextRows > 0) {
+        nextItems[index].fanVisibleRows = nextRows
+    } else {
+        delete nextItems[index].fanVisibleRows
+    }
+    return { "items": nextItems, "changed": true, "status": "updated" }
+}
+
+// `value` is the container choice. It is a real boolean, so the stored key never
+// mirrors the dock value and a container keeps deciding for itself.
+function setFolderFanScroll(items, targetIndex, value) {
+    var source = items instanceof Array ? items : []
+    var index = Number(targetIndex)
+    if (!Number.isInteger(index) || index < 0 || index >= source.length) {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+
+    var currentFolder = source[index]
+    if (!currentFolder || currentFolder.type !== "folder") {
+        return { "items": source, "changed": false, "status": "invalid-target" }
+    }
+
+    if (typeof value !== "boolean") {
+        return { "items": source, "changed": false, "status": "invalid-value" }
+    }
+
+    if (normalizedFanScroll(currentFolder.fanScrollEnabled) === value) {
+        return { "items": source, "changed": false, "status": "unchanged" }
+    }
+
+    var nextItems = clone(source)
+    nextItems[index].fanScrollEnabled = value
+    return { "items": nextItems, "changed": true, "status": "updated" }
+}
+
 function newItem(type, defaultTrashEmptySound) {
     if (type === "dynamic-applications") {
         return {
@@ -1423,6 +1543,12 @@ function setActionsEnabled(items, selectedIndex, enabled) {
 function setItemMode(items, selectedIndex, mode) {
     var nextItems = clone(items)
     var item = nextItems[selectedIndex]
+    // The fan amount belongs to a folder container, so leaving the container
+    // drops it instead of carrying it into a type that cannot show a fan.
+    if (mode !== "container") {
+        delete item.fanVisibleRows
+        delete item.fanScrollEnabled
+    }
     if (mode === "separator") {
         item.type = "separator"
         pruneSeparator(item)
