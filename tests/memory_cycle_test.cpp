@@ -425,15 +425,31 @@ private Q_SLOTS:
             QStringList windows;
             const auto tops = QGuiApplication::topLevelWindows();
             for (QWindow *window : tops) {
-                windows.append(QStringLiteral("%1(%2)")
+                windows.append(QStringLiteral("%1(%2 %3x%4 main=%5)")
                                    .arg(window->objectName().isEmpty()
                                             ? QString::fromLatin1(window->metaObject()->className())
                                             : window->objectName())
                                    .arg(window->isVisible() ? QStringLiteral("visible")
-                                                            : QStringLiteral("hidden")));
+                                                            : QStringLiteral("hidden"))
+                                   .arg(window->width())
+                                   .arg(window->height())
+                                   .arg(window->property("mainItem")
+                                            .value<QObject *>()
+                                            ? window->property("mainItem")
+                                                  .value<QObject *>()
+                                                  ->objectName()
+                                            : QString())
+                                   + QStringLiteral(" items=%1")
+                                         .arg(qobject_cast<QQuickWindow *>(window)
+                                                  ? countItems(qobject_cast<QQuickWindow *>(window)
+                                                                   ->contentItem())
+                                                  : -1));
             }
-            qInfo("windows at load: %d [%s]", static_cast<int>(tops.size()),
-                  qPrintable(windows.join(QLatin1Char(' '))));
+            qInfo("windows at load: %d", static_cast<int>(tops.size()));
+            for (const QString &entry : windows) {
+                qInfo("  window %s", qPrintable(entry));
+            }
+            qInfo("applet root items: %d", countItems(hostWindow.contentItem()));
             QList<QPair<int, QString>> ordered;
             for (auto it = firstCensus.cbegin(); it != firstCensus.cend(); ++it) {
                 ordered.append({it.value(), it.key()});
@@ -468,6 +484,33 @@ private Q_SLOTS:
                  qPrintable(QStringLiteral("Idle use accumulated %1 visual items over %2 s")
                                 .arg(lastItems - firstItems)
                                 .arg(seconds)));
+    }
+
+    // Control for the cost measurements: an official applet loaded by the same
+    // harness in a process that never created Punchi Dock. Run it filtered so
+    // the dock's own objects are not already in the process.
+    void officialAppletLoadsAsControl()
+    {
+        const double before = privateAnonymousMb();
+        QQuickWindow hostWindow;
+        hostWindow.resize(1920, 1080);
+        hostWindow.show();
+
+        Plasma::Applet *applet =
+            Plasma::PluginLoader::self()->loadApplet(QStringLiteral("org.kde.plasma.minimizeall"), 2003U);
+        QVERIFY2(applet, "The official control applet was not found");
+        m_containment->addApplet(applet);
+        PlasmaQuick::AppletQuickItem *item = PlasmaQuick::AppletQuickItem::itemForApplet(applet);
+        QVERIFY2(item, "The official control applet produced no quick item");
+        item->setParentItem(hostWindow.contentItem());
+        settle(6000);
+
+        const double anon = privateAnonymousMb();
+        // The absolute figure is only comparable when this slot runs alone, so
+        // the delta is reported as well.
+        qInfo("control applet org.kde.plasma.minimizeall: anon %.1f -> %.1f MB (%+.1f) items=%d",
+              before, anon, anon - before, countItems(hostWindow.contentItem()));
+        QVERIFY2(anon > 0.0, "Could not read Pss_Anon for the control applet");
     }
 
     void cleanupTestCase()
