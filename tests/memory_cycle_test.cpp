@@ -15,6 +15,7 @@
 #include <QIcon>
 #include <QJSValue>
 #include <QQuickItem>
+#include <QGuiApplication>
 #include <QHash>
 #include <QQuickWindow>
 #include <QSet>
@@ -420,6 +421,36 @@ private Q_SLOTS:
             }
         }
 
+        if (qEnvironmentVariableIsSet("PUNCHI_MEMORY_CENSUS")) {
+            QStringList windows;
+            const auto tops = QGuiApplication::topLevelWindows();
+            for (QWindow *window : tops) {
+                windows.append(QStringLiteral("%1(%2)")
+                                   .arg(window->objectName().isEmpty()
+                                            ? QString::fromLatin1(window->metaObject()->className())
+                                            : window->objectName())
+                                   .arg(window->isVisible() ? QStringLiteral("visible")
+                                                            : QStringLiteral("hidden")));
+            }
+            qInfo("windows at load: %d [%s]", static_cast<int>(tops.size()),
+                  qPrintable(windows.join(QLatin1Char(' '))));
+            QList<QPair<int, QString>> ordered;
+            for (auto it = firstCensus.cbegin(); it != firstCensus.cend(); ++it) {
+                ordered.append({it.value(), it.key()});
+            }
+            std::sort(ordered.begin(), ordered.end(),
+                      [](const auto &left, const auto &right) {
+                          return left.first > right.first;
+                      });
+            QStringList top;
+            for (int index = 0; index < ordered.size() && index < 15; ++index) {
+                top.append(QStringLiteral("%1=%2").arg(ordered.at(index).second)
+                               .arg(ordered.at(index).first));
+            }
+            qInfo("census composition (%d classes, %d objects): %s", ordered.size(),
+                  censusTotal(firstCensus), qPrintable(top.join(QLatin1Char(' '))));
+        }
+
         const int objectGrowth = censusTotal(lastCensus) - censusTotal(firstCensus);
         qInfo("idle result: %ds anon %.1f -> %.1f MB (%+.1f), items %d -> %d (%+d), "
               "objects %d -> %d (%+d)",
@@ -456,6 +487,19 @@ private:
 
     QObject *createApplet(QQuickWindow &window, uint appletId = 2001U)
     {
+        // The dock items live in the applet configuration, so they must be
+        // written before the applet is created. Passing them here is how the
+        // cost probe measures a specific item list without restarting a shell.
+        const QByteArray requestedItems = qgetenv("PUNCHI_MEMORY_ITEMS_JSON");
+        if (!requestedItems.isEmpty()) {
+            auto general = m_containment->config().group(QStringLiteral("Applets"))
+                               .group(QString::number(appletId))
+                               .group(QStringLiteral("Configuration"))
+                               .group(QStringLiteral("General"));
+            general.writeEntry("dockItemsJson", QString::fromUtf8(requestedItems));
+            general.sync();
+        }
+
         Plasma::Applet *applet =
             Plasma::PluginLoader::self()->loadApplet(QString::fromLatin1(s_pluginId), appletId);
         if (!applet) {
