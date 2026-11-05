@@ -16,6 +16,8 @@
 #include <QJSValue>
 #include <QQuickItem>
 #include <QGuiApplication>
+#include <QQmlContext>
+#include <QQmlEngine>
 #include <QHash>
 #include <QQuickWindow>
 #include <QSet>
@@ -143,6 +145,64 @@ QString censusDelta(const QHash<QString, int> &first, const QHash<QString, int> 
     }
     std::sort(parts.begin(), parts.end());
     return parts.isEmpty() ? QStringLiteral("none") : parts.join(QStringLiteral(", "));
+}
+
+int censusItemsByClass(QQuickItem *item, QHash<QString, int> *counts)
+{
+    if (!item) {
+        return 0;
+    }
+    int total = 1;
+    const QString name = QString::fromLatin1(item->metaObject()->className());
+    (*counts)[name] += 1;
+    const auto children = item->childItems();
+    for (QQuickItem *child : children) {
+        total += censusItemsByClass(child, counts);
+    }
+    return total;
+}
+
+void printItemTree(QQuickItem *item, int depth, int maxDepth, int threshold,
+                   const QString &prefix)
+{
+    if (!item || depth > maxDepth) {
+        return;
+    }
+    const auto children = item->childItems();
+    for (QQuickItem *child : children) {
+        if (!child) {
+            continue;
+        }
+        QHash<QString, int> classes;
+        const int total = censusItemsByClass(child, &classes);
+        if (total < threshold) {
+            continue;
+        }
+        const QString name = child->objectName().isEmpty()
+            ? QString::fromLatin1(child->metaObject()->className())
+            : child->objectName();
+        qInfo("  %s+ %s items=%d visible=%d", qPrintable(prefix), qPrintable(name),
+              total, child->isVisible() ? 1 : 0);
+        printItemTree(child, depth + 1, maxDepth, threshold,
+                      prefix + QStringLiteral("  "));
+    }
+}
+
+QString topEntries(const QHash<QString, int> &counts, int limit)
+{
+    QList<QPair<int, QString>> ordered;
+    for (auto it = counts.cbegin(); it != counts.cend(); ++it) {
+        ordered.append({it.value(), it.key()});
+    }
+    std::sort(ordered.begin(), ordered.end(), [](const auto &left, const auto &right) {
+        return left.first > right.first;
+    });
+    QStringList parts;
+    for (int index = 0; index < ordered.size() && index < limit; ++index) {
+        parts.append(QStringLiteral("%1=%2").arg(ordered.at(index).second)
+                         .arg(ordered.at(index).first));
+    }
+    return parts.join(QLatin1Char(' '));
 }
 
 double median(QList<double> values)
@@ -421,6 +481,53 @@ private Q_SLOTS:
             }
         }
 
+        if (qEnvironmentVariableIsSet("PUNCHI_MEMORY_MENU_CENSUS")) {
+            const QVariant dialogValue =
+                root->property("punchiMenuDialogInstance");
+            QObject *dialog = qvariant_cast<QObject *>(dialogValue);
+            if (!dialog && dialogValue.canConvert<QJSValue>()) {
+                dialog = dialogValue.value<QJSValue>().toQObject();
+            }
+            if (!dialog) {
+                qInfo("menu census: no PunchiMenu instance was created");
+            } else {
+                auto *window = qobject_cast<QQuickWindow *>(dialog);
+                QQuickItem *content = window ? window->property("mainItem").value<QQuickItem *>()
+                                             : nullptr;
+                if (!content && window) {
+                    content = window->contentItem();
+                }
+                QHash<QString, int> itemClasses;
+                const int menuItems = censusItemsByClass(content, &itemClasses);
+                qInfo("menu census: %s %dx%d items=%d classes=%d",
+                      qPrintable(dialog->objectName().isEmpty()
+                                     ? QString::fromLatin1(dialog->metaObject()->className())
+                                     : dialog->objectName()),
+                      window ? window->width() : 0, window ? window->height() : 0,
+                      menuItems, static_cast<int>(itemClasses.size()));
+                const auto topChildren = content ? content->childItems() : QList<QQuickItem *>();
+                for (QQuickItem *child : topChildren) {
+                    if (!child) {
+                        continue;
+                    }
+                    QHash<QString, int> childClasses;
+                    const int childItems = censusItemsByClass(child, &childClasses);
+                    if (childItems < 20) {
+                        continue;
+                    }
+                    qInfo("  piece %s items=%d visible=%d",
+                          qPrintable(child->objectName().isEmpty()
+                                         ? QString::fromLatin1(
+                                               child->metaObject()->className())
+                                         : child->objectName()),
+                          childItems, child->isVisible() ? 1 : 0);
+                }
+                qInfo("  tree (items >= 40, depth 3):");
+                printItemTree(content, 1, 3, 40, QStringLiteral("  "));
+                qInfo("  classes: %s", qPrintable(topEntries(itemClasses, 18)));
+            }
+        }
+
         if (qEnvironmentVariableIsSet("PUNCHI_MEMORY_CENSUS")) {
             QStringList windows;
             const auto tops = QGuiApplication::topLevelWindows();
@@ -439,6 +546,10 @@ private Q_SLOTS:
                                                   .value<QObject *>()
                                                   ->objectName()
                                             : QString())
+                                   + QStringLiteral(" qml=%1").arg(
+                                         qmlContext(window)
+                                             ? qmlContext(window)->baseUrl().fileName()
+                                             : QStringLiteral("<no-context>"))
                                    + QStringLiteral(" items=%1")
                                          .arg(qobject_cast<QQuickWindow *>(window)
                                                   ? countItems(qobject_cast<QQuickWindow *>(window)
@@ -513,6 +624,37 @@ private Q_SLOTS:
         QVERIFY2(anon > 0.0, "Could not read Pss_Anon for the control applet");
     }
 
+    // Opening latency is what the 20 s prewarm buys. Measured twice per run:
+    // cold, before the warm timer fires, and warm, after the instance exists.
+    void menuOpenLatency()
+    {
+        QQuickWindow hostWindow;
+        QObject *root = createApplet(hostWindow, 2004U);
+        QVERIFY2(root != nullptr, "The applet root object was not created");
+
+        // Stay well below the 20 s warm timer so the first open is cold.
+        settle(2000);
+        const QVariant warmInstance = root->property("punchiMenuDialogInstance");
+        QVERIFY2(!warmInstance.value<QObject *>(),
+                 "The menu instance existed before the measurement; the warm timer fired too early");
+
+        const OpenTiming cold = openAndTime(root);
+        qInfo("latency cold: instance %lld ms, frame %lld ms",
+              static_cast<long long>(cold.instanceMs),
+              static_cast<long long>(cold.frameMs));
+
+        closeMenu(root);
+        settle(1500);
+
+        const OpenTiming warm = openAndTime(root);
+        qInfo("latency warm: instance %lld ms, frame %lld ms",
+              static_cast<long long>(warm.instanceMs),
+              static_cast<long long>(warm.frameMs));
+
+        QVERIFY2(cold.instanceMs >= 0 && warm.instanceMs >= 0,
+                 "The menu never became visible");
+    }
+
     void cleanupTestCase()
     {
         m_containment = nullptr;
@@ -521,6 +663,72 @@ private Q_SLOTS:
     }
 
 private:
+    struct OpenTiming {
+        qint64 instanceMs = -1;
+        qint64 frameMs = -1;
+    };
+
+    static QObject *menuInstance(QObject *root)
+    {
+        const QVariant value = root->property("punchiMenuDialogInstance");
+        QObject *dialog = qvariant_cast<QObject *>(value);
+        if (!dialog && value.canConvert<QJSValue>()) {
+            dialog = value.value<QJSValue>().toQObject();
+        }
+        return dialog;
+    }
+
+    OpenTiming openAndTime(QObject *root)
+    {
+        OpenTiming timing;
+        QElapsedTimer timer;
+        timer.start();
+        if (!QMetaObject::invokeMethod(root, "togglePunchiMenu",
+                                       Q_ARG(QVariant, QVariant()))) {
+            qWarning("Could not invoke togglePunchiMenu");
+            return timing;
+        }
+        QObject *dialog = nullptr;
+        while (timer.elapsed() < 8000) {
+            QCoreApplication::processEvents(QEventLoop::AllEvents, 5);
+            dialog = menuInstance(root);
+            if (dialog && dialog->property("visible").toBool()) {
+                break;
+            }
+        }
+        if (!dialog || !dialog->property("visible").toBool()) {
+            return timing;
+        }
+        timing.instanceMs = timer.elapsed();
+
+        auto *window = qobject_cast<QQuickWindow *>(dialog);
+        if (window) {
+            bool rendered = false;
+            auto connection = QObject::connect(window, &QQuickWindow::frameSwapped,
+                                               [&rendered]() { rendered = true; });
+            QElapsedTimer frameTimer;
+            frameTimer.start();
+            while (!rendered && frameTimer.elapsed() < 3000) {
+                QCoreApplication::processEvents(QEventLoop::AllEvents, 5);
+            }
+            QObject::disconnect(connection);
+            timing.frameMs = rendered ? timer.elapsed() : -1;
+        }
+        return timing;
+    }
+
+    void closeMenu(QObject *root)
+    {
+        QObject *dialog = menuInstance(root);
+        if (!dialog) {
+            return;
+        }
+        if (!QMetaObject::invokeMethod(dialog, "closeImmediately")) {
+            dialog->setProperty("visible", false);
+        }
+        settle(200);
+    }
+
     QQuickWindow &rootWindow(QQuickWindow &window)
     {
         window.resize(1920, 1080);
