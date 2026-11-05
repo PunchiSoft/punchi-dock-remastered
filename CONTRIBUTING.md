@@ -122,10 +122,39 @@ python3 scripts-dev/test-integrity-guard.py --check
 - Describe the observable result, the validation actually performed, and what
   remains unverified.
 - Remove personal paths, usernames, tokens, logs and private file contents.
+- Every pull request runs the `PR guard` workflow. It rejects binaries,
+  symlinks, new executable files and edits to the build or review tooling, and
+  re-runs the repository gates. A workflow run from a fork waits for maintainer
+  approval before it starts.
+- Expect a reply within seven days. If a pull request has none by then, a
+  comment on the thread is welcome; opening a duplicate is not.
 - Pull requests are squash-merged and the delivery branch is deleted afterwards,
   only when the maintainer asks for it.
 - Draft the pull request while the change still awaits review or a real Plasma
   check.
+
+## Reviewing contributions
+
+The same bar applies to a patch written here and to one sent from a fork.
+
+- Read a contribution before approving anything it triggers. Approving a
+  workflow run executes the pull request's own workflow definition, so check the
+  diff first, especially `.github/`, and never run a fork's code outside an
+  approved run.
+- Authorize a change to a protected test only after deciding that it is
+  legitimate, and record the decision and its motive with
+  `--update --authorized`.
+- Say no explicitly. Thank the person, explain why the change does not fit, and
+  link to the document that states the rule. One or two sentences are enough;
+  leaving a pull request unanswered is worse than closing it.
+- Review the code, not the person. Prefix each comment with its intent —
+  `issue:`, `suggestion:`, `question:`, `nitpick:` — and state whether it blocks
+  the merge. Praise what deserves it; invented praise is worse than none.
+- Squash merging preserves authorship. When a patch is rewritten or completed
+  here, add a `Co-authored-by` trailer, and thank the contributor on the pull
+  request once the change is in.
+- Merging grants no permissions. Collaborator access is a separate, deliberate
+  decision.
 
 ## Licensing and attribution
 
