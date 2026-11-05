@@ -124,6 +124,9 @@ FocusScope {
     // cached once the surface is already on screen, which keeps paging instant
     // without paying the whole grid construction inside the opening gesture.
     property real pagesCacheBuffer: 0
+    // The sections view lives inside a Loader, so every external use goes
+    // through this property and tolerates it being null.
+    readonly property var sectionsView: categorySectionsLoader.item
     readonly property string safeApplicationOrderMode:
         applicationOrderMode === "alphabetical"
             || applicationOrderMode === "categories"
@@ -1449,38 +1452,38 @@ FocusScope {
 
         if (root.categoryGroupingActive) {
             if (event.key === Qt.Key_Left) {
-                categorySectionsView.moveHorizontal(-1)
+                root.sectionsView?.moveHorizontal(-1)
                 event.accepted = true
             } else if (event.key === Qt.Key_Right) {
-                categorySectionsView.moveHorizontal(1)
+                root.sectionsView?.moveHorizontal(1)
                 event.accepted = true
             } else if (event.key === Qt.Key_Up) {
-                categorySectionsView.moveVertical(-1)
+                root.sectionsView?.moveVertical(-1)
                 event.accepted = true
             } else if (event.key === Qt.Key_Down) {
-                categorySectionsView.moveVertical(1)
+                root.sectionsView?.moveVertical(1)
                 event.accepted = true
             } else if (event.key === Qt.Key_PageUp) {
-                categorySectionsView.moveVertical(-3)
+                root.sectionsView?.moveVertical(-3)
                 event.accepted = true
             } else if (event.key === Qt.Key_PageDown) {
-                categorySectionsView.moveVertical(3)
+                root.sectionsView?.moveVertical(3)
                 event.accepted = true
             } else if (event.key === Qt.Key_Home) {
-                categorySectionsView.selectFirstItem()
+                root.sectionsView?.selectFirstItem()
                 event.accepted = true
             } else if (event.key === Qt.Key_End) {
-                categorySectionsView.selectLastItem()
+                root.sectionsView?.selectLastItem()
                 event.accepted = true
             } else if (event.key === Qt.Key_Menu
                     || (event.key === Qt.Key_F10
                         && (event.modifiers & Qt.ShiftModifier))) {
-                categorySectionsView.openCurrentContextMenu()
+                root.sectionsView?.openCurrentContextMenu()
                 event.accepted = true
             } else if (event.key === Qt.Key_Return
                     || event.key === Qt.Key_Enter
                     || event.key === Qt.Key_Space) {
-                categorySectionsView.launchCurrentItem()
+                root.sectionsView?.launchCurrentItem()
                 event.accepted = true
             }
             return
@@ -2129,7 +2132,7 @@ FocusScope {
                     ? sessionViewLoader.item
                     : (root.favoritesSectionVisible && favoritesView.count > 0
                         ? favoritesView
-                        : (root.categoryGroupingActive ? categorySectionsView : pagesView))
+                        : (root.categoryGroupingActive ? root.sectionsView : pagesView))
                 // qmllint enable incompatible-type
 
                 contentItem: Item {
@@ -2644,78 +2647,92 @@ FocusScope {
                 }
             }
 
-            PunchiMenuCategorySectionsView {
-                id: categorySectionsView
-                anchors.fill: parent
-                anchors.leftMargin: root.applicationGridHorizontalInset
-                anchors.rightMargin: root.applicationGridHorizontalInset
-                visible: root.applicationViewActive
-                    && root.categoryGroupingActive
-                enabled: visible && !root.modeTransitionActive
-                    && !root.applicationLaunchPending
-                categoryGroups: applicationLayoutModel.categoryGroups
-                folderNodes: root.categoryFolderNodes
-                showApplicationLabels: root.showApplicationLabels
-                motionEnabled: root.motionEnabled
-                hoverEnabled: root.applicationHoverAllowed
-                hoverAnimation: root.hoverAnimation
-                iconScale: root.safeApplicationIconScale
-                baseIconSize: root.responsiveApplicationIconBase
+            // The sections view is only meaningful with category grouping, which is
+            // off by default: 507 items were measured while hidden in that case.
+            Component {
+                id: categorySectionsComponent
 
-                isDragActive: internalDragLayer.active
-                dragSourceNodeId: String(internalDragLayer.nodeId || "")
-                isDragFolder: Boolean(internalDragLayer.folder)
-                dragKey: internalDragLayer.dragKey
-                suppressDragReleaseClick: root.suppressDragReleaseClick
+                PunchiMenuCategorySectionsView {
+                    id: categorySectionsView
+                    anchors.fill: parent
+                    anchors.leftMargin: root.applicationGridHorizontalInset
+                    anchors.rightMargin: root.applicationGridHorizontalInset
+                    visible: root.applicationViewActive
+                        && root.categoryGroupingActive
+                    enabled: visible && !root.modeTransitionActive
+                        && !root.applicationLaunchPending
+                    categoryGroups: applicationLayoutModel.categoryGroups
+                    folderNodes: root.categoryFolderNodes
+                    showApplicationLabels: root.showApplicationLabels
+                    motionEnabled: root.motionEnabled
+                    hoverEnabled: root.applicationHoverAllowed
+                    hoverAnimation: root.hoverAnimation
+                    iconScale: root.safeApplicationIconScale
+                    baseIconSize: root.responsiveApplicationIconBase
 
-                onDragBeginRequested: function(application, sourceItem, x, y) {
-                    root.beginInternalLayoutDrag(application, sourceItem, x, y)
-                }
-                onDragUpdateRequested: function(sourceItem, x, y) {
-                    root.updateInternalLayoutDrag(sourceItem, x, y)
-                }
-                onDragFinishRequested: root.finishInternalLayoutDrag()
-                onDragCancelRequested: root.cancelInternalLayoutDrag()
-                onDropOntoNodeRequested: function(targetNode) {
-                    return root.handleDraggedNodeDrop(targetNode)
-                }
+                    isDragActive: internalDragLayer.active
+                    dragSourceNodeId: String(internalDragLayer.nodeId || "")
+                    isDragFolder: Boolean(internalDragLayer.folder)
+                    dragKey: internalDragLayer.dragKey
+                    suppressDragReleaseClick: root.suppressDragReleaseClick
 
-                onLaunchRequested: function(storageId) {
-                    if (root.applicationLaunchPending
-                            || storageId.length === 0) {
-                        return
+                    onDragBeginRequested: function(application, sourceItem, x, y) {
+                        root.beginInternalLayoutDrag(application, sourceItem, x, y)
                     }
-                    root.applicationErrorMessage = ""
-                    root.applicationLaunchPending = true
-                    root.systemDiscovery.launchApplication(storageId)
-                }
-                onApplicationContextRequested: function(sourceItem,
-                        application, x, y) {
-                    root.openApplicationContextMenu(sourceItem,
-                        String(application.appStorageId || ""),
-                        String(application.appName || ""),
-                        String(application.appIcon || ""), "", x, y)
-                }
-                onFolderOpenRequested: function(folderId) {
-                    folderSurface.openFolder(folderId)
-                }
-                onFolderContextRequested: function(sourceItem, folder, x, y) {
-                    root.openFolderContextMenu(sourceItem, folder, x, y)
-                }
-                onFolderRenameRequested: function(folderId) {
-                    folderSurface.beginRename(folderId)
-                }
-                onReturnToSearchRequested: function() {
-                    searchField.forceActiveFocus()
-                }
-                onBottomReached: {
-                    if (root.favoritesSectionVisible && favoritesView.count > 0) {
-                        favoritesView.forceActiveFocus()
-                        if (favoritesView.currentIndex < 0) {
-                            favoritesView.currentIndex = 0
+                    onDragUpdateRequested: function(sourceItem, x, y) {
+                        root.updateInternalLayoutDrag(sourceItem, x, y)
+                    }
+                    onDragFinishRequested: root.finishInternalLayoutDrag()
+                    onDragCancelRequested: root.cancelInternalLayoutDrag()
+                    onDropOntoNodeRequested: function(targetNode) {
+                        return root.handleDraggedNodeDrop(targetNode)
+                    }
+
+                    onLaunchRequested: function(storageId) {
+                        if (root.applicationLaunchPending
+                                || storageId.length === 0) {
+                            return
+                        }
+                        root.applicationErrorMessage = ""
+                        root.applicationLaunchPending = true
+                        root.systemDiscovery.launchApplication(storageId)
+                    }
+                    onApplicationContextRequested: function(sourceItem,
+                            application, x, y) {
+                        root.openApplicationContextMenu(sourceItem,
+                            String(application.appStorageId || ""),
+                            String(application.appName || ""),
+                            String(application.appIcon || ""), "", x, y)
+                    }
+                    onFolderOpenRequested: function(folderId) {
+                        folderSurface.openFolder(folderId)
+                    }
+                    onFolderContextRequested: function(sourceItem, folder, x, y) {
+                        root.openFolderContextMenu(sourceItem, folder, x, y)
+                    }
+                    onFolderRenameRequested: function(folderId) {
+                        folderSurface.beginRename(folderId)
+                    }
+                    onReturnToSearchRequested: function() {
+                        searchField.forceActiveFocus()
+                    }
+                    onBottomReached: {
+                        if (root.favoritesSectionVisible && favoritesView.count > 0) {
+                            favoritesView.forceActiveFocus()
+                            if (favoritesView.currentIndex < 0) {
+                                favoritesView.currentIndex = 0
+                            }
                         }
                     }
                 }
+            }
+
+            Loader {
+                id: categorySectionsLoader
+                anchors.fill: parent
+                // The view inside applies its own grid insets.
+                active: root.categoryGroupingActive
+                sourceComponent: categorySectionsComponent
             }
 
             Kirigami.WheelHandler {
@@ -3093,7 +3110,7 @@ FocusScope {
                         if (event.key === Qt.Key_Up) {
                             searchField.forceActiveFocus()
                             if (root.categoryGroupingActive) {
-                                categorySectionsView.selectLastItem()
+                                root.sectionsView?.selectLastItem()
                             } else {
                                 if (root.visibleApplications.length > 0) {
                                     root.setCurrentApplication(root.visibleApplications.length - 1)
