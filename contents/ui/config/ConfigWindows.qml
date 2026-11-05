@@ -18,6 +18,8 @@ KCM.SimpleKCM {
 
     property alias cfg_showActiveTasks: showActiveTasksCheck.checked
     property alias cfg_showTasksCurrentDesktopOnly: currentDesktopOnlyCheck.checked
+    property alias cfg_showTasksCurrentActivityOnly: currentActivityOnlySwitch.checked
+    property alias cfg_showTasksCurrentScreenOnly: currentScreenOnlySwitch.checked
     property string cfg_windowGroupingMode: "application"
     property alias cfg_maxDynamicTaskGroups: maxDynamicTaskGroupsSpin.value
     readonly property bool inPanel: Plasmoid.formFactor === PlasmaCore.Types.Horizontal || Plasmoid.formFactor === PlasmaCore.Types.Vertical
@@ -98,18 +100,37 @@ KCM.SimpleKCM {
             enabled: showActiveTasksCheck.checked
         }
 
-        Controls.CheckBox {
+        Controls.Switch {
             id: currentDesktopOnlyCheck
+            objectName: "currentDesktopOnlySwitch"
             Kirigami.FormData.label: i18n("Scope:")
             text: i18n("Show only windows from the current virtual desktop")
+            Accessible.name: text
+            Accessible.description: taskScopeHelp.text
             enabled: showActiveTasksCheck.checked
+        }
 
+        Controls.Switch {
+            id: currentActivityOnlySwitch
+            objectName: "currentActivityOnlySwitch"
+            text: i18n("Show only windows from the current Activity")
+            Accessible.name: text
+            Accessible.description: taskScopeHelp.text
+            enabled: showActiveTasksCheck.checked
+        }
+
+        Controls.Switch {
+            id: currentScreenOnlySwitch
+            objectName: "currentScreenOnlySwitch"
+            text: i18n("Show only windows from the dock's screen")
+            Accessible.name: text
+            Accessible.description: taskScopeHelp.text
+            enabled: showActiveTasksCheck.checked
         }
 
         Controls.Label {
-            text: currentDesktopOnlyCheck.checked
-                ? i18n("Only tasks on the current desktop will appear.")
-                : i18n("Tasks from all virtual desktops can appear.")
+            id: taskScopeHelp
+            text: i18n("Enabled filters are combined. Pinned launchers remain visible; only their matching windows are filtered.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.maximumWidth: page.contentWidthHint

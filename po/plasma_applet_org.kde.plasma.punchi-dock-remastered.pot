@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Punchi Dock Remastered 0.9.7.84\n"
 "Report-Msgid-Bugs-To: https://github.com/PunchiSoft/punchi-dock-remastered/"
 "issues\n"
-"POT-Creation-Date: 2026-11-04 05:20-0300\n"
+"POT-Creation-Date: 2026-11-05 00:14-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -221,7 +221,7 @@ msgid_plural "%1 more in %2"
 msgstr[0] ""
 msgstr[1] ""
 
-#: contents/ui/main.qml:4009
+#: contents/ui/main.qml:4013
 msgid "%1 more window group"
 msgid_plural "%1 more window groups"
 msgstr[0] ""
@@ -662,7 +662,7 @@ msgctxt "@info:status"
 msgid "A desktop shortcut for %1 was created."
 msgstr ""
 
-#: contents/ui/main.qml:2314
+#: contents/ui/main.qml:2318
 msgctxt "@info:status"
 msgid "A file location is too long to open safely."
 msgstr ""
@@ -881,7 +881,7 @@ msgstr ""
 msgid "All Arch build packages are already installed"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:870
+#: contents/ui/components/TaskModelController.qml:883
 msgid "All Desktops"
 msgstr ""
 
@@ -1792,7 +1792,7 @@ msgstr ""
 #: contents/ui/components/ConfirmTrashEmptyPopup.qml:219
 #: contents/ui/components/DecorationCloseButton.qml:26
 #: contents/ui/components/NotePopup.qml:259
-#: contents/ui/components/TaskModelController.qml:887
+#: contents/ui/components/TaskModelController.qml:900
 msgid "Close"
 msgstr ""
 
@@ -1805,7 +1805,7 @@ msgctxt "@action:button"
 msgid "Close"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:1020
+#: contents/ui/components/TaskModelController.qml:1033
 msgid "Close %1 window"
 msgid_plural "Close all %1 windows"
 msgstr[0] ""
@@ -2474,11 +2474,11 @@ msgctxt "@action:button"
 msgid "Do Not Disturb"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:880
+#: contents/ui/components/TaskModelController.qml:893
 msgid "Do not keep above"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:882
+#: contents/ui/components/TaskModelController.qml:895
 msgid "Do not keep below"
 msgstr ""
 
@@ -2577,11 +2577,11 @@ msgstr ""
 msgid "Dry run: post-install command verification skipped"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:82
+#: contents/ui/config/ConfigWindows.qml:84
 msgid "Dynamic groups:"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:153
+#: contents/ui/config/ConfigWindows.qml:174
 msgid ""
 "Dynamic task entries share one dock item per application, while pinned "
 "launchers keep their current grouped behavior."
@@ -2591,7 +2591,7 @@ msgstr ""
 msgid "EQ theme:"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:154
+#: contents/ui/config/ConfigWindows.qml:175
 msgid ""
 "Each dynamic window gets its own dock item, while pinned launchers still "
 "accumulate their matching windows by application."
@@ -2694,6 +2694,12 @@ msgstr ""
 
 #: contents/ui/config/ConfigAudioVisualizer.qml:107
 msgid "Enable the audio visualizer"
+msgstr ""
+
+#: contents/ui/config/ConfigWindows.qml:133
+msgid ""
+"Enabled filters are combined. Pinned launchers remain visible; only their "
+"matching windows are filtered."
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuFolderActionState.qml:311
@@ -2853,7 +2859,7 @@ msgstr ""
 msgid "Estimated panel-safe maximum: %1 px"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:884
+#: contents/ui/components/TaskModelController.qml:897
 msgid "Exit full screen"
 msgstr ""
 
@@ -3138,7 +3144,7 @@ msgstr ""
 msgid "Full icon:"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:883
+#: contents/ui/components/TaskModelController.qml:896
 msgid "Full screen"
 msgstr ""
 
@@ -3231,11 +3237,11 @@ msgctxt "@info:short description of the container item type"
 msgid "Group applications in a folder"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:28
+#: contents/ui/config/ConfigWindows.qml:30
 msgid "Group by application"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:127
+#: contents/ui/config/ConfigWindows.qml:148
 msgid "Grouping and limits"
 msgstr ""
 
@@ -3278,7 +3284,7 @@ msgctxt "@action:button"
 msgid "Hide Plasma volume indicator"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:886
+#: contents/ui/components/TaskModelController.qml:899
 msgid "Hide from Screencast"
 msgstr ""
 
@@ -3592,11 +3598,11 @@ msgctxt "@label"
 msgid "KDE recent files options:"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:879
+#: contents/ui/components/TaskModelController.qml:892
 msgid "Keep above"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:881
+#: contents/ui/components/TaskModelController.qml:894
 msgid "Keep below"
 msgstr ""
 
@@ -3696,7 +3702,7 @@ msgstr ""
 msgid "Limit:"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:92
+#: contents/ui/config/ConfigWindows.qml:94
 msgid ""
 "Limits the number of dynamic task groups shown directly in the dock. "
 "Additional groups that exceed this limit or available space remain "
@@ -3843,7 +3849,7 @@ msgctxt "@option:application-order"
 msgid "Manual"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:875
+#: contents/ui/components/TaskModelController.qml:888
 msgid "Maximize"
 msgstr ""
 
@@ -3862,7 +3868,7 @@ msgstr ""
 msgid "Maximum application rows inside folders"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:87
+#: contents/ui/config/ConfigWindows.qml:89
 msgid "Maximum dynamic groups shown in the dock"
 msgstr ""
 
@@ -4033,7 +4039,7 @@ msgstr ""
 msgid "Middle-click:"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:877
+#: contents/ui/components/TaskModelController.qml:890
 msgid "Minimize"
 msgstr ""
 
@@ -4047,7 +4053,7 @@ msgstr ""
 msgid "Missing pacman packages: %s\\n"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:872
+#: contents/ui/components/TaskModelController.qml:885
 msgid "More"
 msgstr ""
 
@@ -4079,7 +4085,7 @@ msgctxt "@info:status Bluetooth device type"
 msgid "Mouse"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:873
+#: contents/ui/components/TaskModelController.qml:886
 msgid "Move"
 msgstr ""
 
@@ -4111,11 +4117,11 @@ msgstr ""
 msgid "Move themes to the Trash…"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:869
+#: contents/ui/components/TaskModelController.qml:882
 msgid "Move to Current Desktop"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:868
+#: contents/ui/components/TaskModelController.qml:881
 msgid "Move to Desktop"
 msgstr ""
 
@@ -4215,11 +4221,11 @@ msgctxt "@option:media-auto-collapse"
 msgid "Never"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:871
+#: contents/ui/components/TaskModelController.qml:884
 msgid "New Desktop"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:1000
+#: contents/ui/components/TaskModelController.qml:1013
 msgid "New window"
 msgstr ""
 
@@ -4279,7 +4285,7 @@ msgctxt "@info:accessible"
 msgid "No MPRIS player is active"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:885
+#: contents/ui/components/TaskModelController.qml:898
 msgid "No Titlebar and Frame"
 msgstr ""
 
@@ -4329,7 +4335,7 @@ msgid ""
 "available."
 msgstr ""
 
-#: contents/ui/main.qml:2300
+#: contents/ui/main.qml:2304
 msgctxt "@info:status"
 msgid "No local files were found in this drop."
 msgstr ""
@@ -4521,7 +4527,7 @@ msgstr ""
 msgid "Only applies when this dock item starts a closed application."
 msgstr ""
 
-#: contents/ui/main.qml:2311
+#: contents/ui/main.qml:2315
 msgctxt "@info:status"
 msgid "Only local files can be opened with an application."
 msgstr ""
@@ -4556,10 +4562,6 @@ msgstr ""
 
 #: contents/ui/config/ConfigFiles.qml:108
 msgid "Only one open applications item is allowed in the dock configuration."
-msgstr ""
-
-#: contents/ui/config/ConfigWindows.qml:111
-msgid "Only tasks on the current desktop will appear."
 msgstr ""
 
 #: contents/ui/config/ConfigMenus.qml:313
@@ -4927,7 +4929,7 @@ msgctxt "@action:inmenu"
 msgid "Pin to Dock"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:71
+#: contents/ui/config/ConfigWindows.qml:73
 msgid ""
 "Pinned launchers can act as task entries when their application is already "
 "open."
@@ -5401,7 +5403,7 @@ msgstr ""
 msgid "Required commands are missing:"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:874
+#: contents/ui/components/TaskModelController.qml:887
 msgid "Resize"
 msgstr ""
 
@@ -5430,11 +5432,11 @@ msgstr ""
 msgid "Restarting Plasma Shell..."
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:878
+#: contents/ui/components/TaskModelController.qml:891
 msgid "Restore"
 msgstr ""
 
-#: contents/ui/components/TaskModelController.qml:876
+#: contents/ui/components/TaskModelController.qml:889
 msgid "Restore from maximized"
 msgstr ""
 
@@ -5527,7 +5529,7 @@ msgctxt "@action:button"
 msgid "Scan for networks"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:103
+#: contents/ui/config/ConfigWindows.qml:106
 msgid "Scope:"
 msgstr ""
 
@@ -5697,7 +5699,7 @@ msgstr ""
 msgid "Show a themed background behind items"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:66
+#: contents/ui/config/ConfigWindows.qml:68
 msgid "Show active windows in the dock"
 msgstr ""
 
@@ -5734,7 +5736,7 @@ msgstr ""
 msgid "Show distribution name in full screen"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:29
+#: contents/ui/config/ConfigWindows.qml:31
 msgid "Show each window"
 msgstr ""
 
@@ -5770,8 +5772,16 @@ msgctxt "@item:inlistbox Media player hover mode"
 msgid "Show media card below window previews"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:104
+#: contents/ui/config/ConfigWindows.qml:116
+msgid "Show only windows from the current Activity"
+msgstr ""
+
+#: contents/ui/config/ConfigWindows.qml:107
 msgid "Show only windows from the current virtual desktop"
+msgstr ""
+
+#: contents/ui/config/ConfigWindows.qml:125
+msgid "Show only windows from the dock's screen"
 msgstr ""
 
 #: contents/ui/components/punchimenu/PunchiMenuFullScreenSettingsView.qml:272
@@ -6017,15 +6027,11 @@ msgstr ""
 msgid "Target desktop:"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:59
+#: contents/ui/config/ConfigWindows.qml:61
 msgid "Task visibility"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:112
-msgid "Tasks from all virtual desktops can appear."
-msgstr ""
-
-#: contents/ui/config/ConfigWindows.qml:65
+#: contents/ui/config/ConfigWindows.qml:67
 msgid "Tasks:"
 msgstr ""
 
@@ -6179,17 +6185,17 @@ msgid ""
 "appearance here."
 msgstr ""
 
-#: contents/ui/main.qml:2308
+#: contents/ui/main.qml:2312
 msgctxt "@info:status"
 msgid "The drop contains an invalid local file location."
 msgstr ""
 
-#: contents/ui/main.qml:2317
+#: contents/ui/main.qml:2321
 msgctxt "@info:status"
 msgid "The dropped file list is too large to open safely."
 msgstr ""
 
-#: contents/ui/main.qml:2322
+#: contents/ui/main.qml:2326
 msgctxt "@info:status"
 msgid "The dropped files could not be opened."
 msgstr ""
@@ -6373,7 +6379,7 @@ msgstr ""
 msgid "This action cannot be undone."
 msgstr ""
 
-#: contents/ui/main.qml:2320
+#: contents/ui/main.qml:2324
 msgctxt "@info:status"
 msgid "This application cannot be resolved safely for file opening."
 msgstr ""
@@ -6938,7 +6944,7 @@ msgstr ""
 msgid "Window"
 msgstr ""
 
-#: contents/ui/config/ConfigWindows.qml:131
+#: contents/ui/config/ConfigWindows.qml:152
 msgid "Window behavior:"
 msgstr ""
 
@@ -7027,7 +7033,7 @@ msgstr ""
 msgid "Write a quick note"
 msgstr ""
 
-#: contents/ui/main.qml:2304
+#: contents/ui/main.qml:2308
 msgctxt "@info:status"
 msgid "You can open up to %1 local files at once."
 msgstr ""
