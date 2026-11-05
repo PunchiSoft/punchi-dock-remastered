@@ -15,6 +15,7 @@
 #include <QIcon>
 #include <QJSValue>
 #include <QQuickItem>
+#include <QGuiApplication>
 #include <QHash>
 #include <QQuickWindow>
 #include <QSet>
@@ -420,6 +421,52 @@ private Q_SLOTS:
             }
         }
 
+        if (qEnvironmentVariableIsSet("PUNCHI_MEMORY_CENSUS")) {
+            QStringList windows;
+            const auto tops = QGuiApplication::topLevelWindows();
+            for (QWindow *window : tops) {
+                windows.append(QStringLiteral("%1(%2 %3x%4 main=%5)")
+                                   .arg(window->objectName().isEmpty()
+                                            ? QString::fromLatin1(window->metaObject()->className())
+                                            : window->objectName())
+                                   .arg(window->isVisible() ? QStringLiteral("visible")
+                                                            : QStringLiteral("hidden"))
+                                   .arg(window->width())
+                                   .arg(window->height())
+                                   .arg(window->property("mainItem")
+                                            .value<QObject *>()
+                                            ? window->property("mainItem")
+                                                  .value<QObject *>()
+                                                  ->objectName()
+                                            : QString())
+                                   + QStringLiteral(" items=%1")
+                                         .arg(qobject_cast<QQuickWindow *>(window)
+                                                  ? countItems(qobject_cast<QQuickWindow *>(window)
+                                                                   ->contentItem())
+                                                  : -1));
+            }
+            qInfo("windows at load: %d", static_cast<int>(tops.size()));
+            for (const QString &entry : windows) {
+                qInfo("  window %s", qPrintable(entry));
+            }
+            qInfo("applet root items: %d", countItems(hostWindow.contentItem()));
+            QList<QPair<int, QString>> ordered;
+            for (auto it = firstCensus.cbegin(); it != firstCensus.cend(); ++it) {
+                ordered.append({it.value(), it.key()});
+            }
+            std::sort(ordered.begin(), ordered.end(),
+                      [](const auto &left, const auto &right) {
+                          return left.first > right.first;
+                      });
+            QStringList top;
+            for (int index = 0; index < ordered.size() && index < 15; ++index) {
+                top.append(QStringLiteral("%1=%2").arg(ordered.at(index).second)
+                               .arg(ordered.at(index).first));
+            }
+            qInfo("census composition (%d classes, %d objects): %s", ordered.size(),
+                  censusTotal(firstCensus), qPrintable(top.join(QLatin1Char(' '))));
+        }
+
         const int objectGrowth = censusTotal(lastCensus) - censusTotal(firstCensus);
         qInfo("idle result: %ds anon %.1f -> %.1f MB (%+.1f), items %d -> %d (%+d), "
               "objects %d -> %d (%+d)",
@@ -439,6 +486,33 @@ private Q_SLOTS:
                                 .arg(seconds)));
     }
 
+    // Control for the cost measurements: an official applet loaded by the same
+    // harness in a process that never created Punchi Dock. Run it filtered so
+    // the dock's own objects are not already in the process.
+    void officialAppletLoadsAsControl()
+    {
+        const double before = privateAnonymousMb();
+        QQuickWindow hostWindow;
+        hostWindow.resize(1920, 1080);
+        hostWindow.show();
+
+        Plasma::Applet *applet =
+            Plasma::PluginLoader::self()->loadApplet(QStringLiteral("org.kde.plasma.minimizeall"), 2003U);
+        QVERIFY2(applet, "The official control applet was not found");
+        m_containment->addApplet(applet);
+        PlasmaQuick::AppletQuickItem *item = PlasmaQuick::AppletQuickItem::itemForApplet(applet);
+        QVERIFY2(item, "The official control applet produced no quick item");
+        item->setParentItem(hostWindow.contentItem());
+        settle(6000);
+
+        const double anon = privateAnonymousMb();
+        // The absolute figure is only comparable when this slot runs alone, so
+        // the delta is reported as well.
+        qInfo("control applet org.kde.plasma.minimizeall: anon %.1f -> %.1f MB (%+.1f) items=%d",
+              before, anon, anon - before, countItems(hostWindow.contentItem()));
+        QVERIFY2(anon > 0.0, "Could not read Pss_Anon for the control applet");
+    }
+
     void cleanupTestCase()
     {
         m_containment = nullptr;
@@ -456,6 +530,19 @@ private:
 
     QObject *createApplet(QQuickWindow &window, uint appletId = 2001U)
     {
+        // The dock items live in the applet configuration, so they must be
+        // written before the applet is created. Passing them here is how the
+        // cost probe measures a specific item list without restarting a shell.
+        const QByteArray requestedItems = qgetenv("PUNCHI_MEMORY_ITEMS_JSON");
+        if (!requestedItems.isEmpty()) {
+            auto general = m_containment->config().group(QStringLiteral("Applets"))
+                               .group(QString::number(appletId))
+                               .group(QStringLiteral("Configuration"))
+                               .group(QStringLiteral("General"));
+            general.writeEntry("dockItemsJson", QString::fromUtf8(requestedItems));
+            general.sync();
+        }
+
         Plasma::Applet *applet =
             Plasma::PluginLoader::self()->loadApplet(QString::fromLatin1(s_pluginId), appletId);
         if (!applet) {
