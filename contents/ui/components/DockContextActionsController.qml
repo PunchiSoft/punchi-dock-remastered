@@ -20,6 +20,9 @@ QtObject {
     // The fan is a horizontal-only presentation: a vertical dock cannot select
     // it, but the stored preference stays visible in the menu.
     property bool verticalDock: false
+    // Whether the dock scrolls its fans. A container with a folder may choose
+    // for itself; this is the value the menu marks until it does.
+    property bool folderFanScrollEnabled: false
 
     function removablePinnedItem(item) {
         if (!item) {
@@ -586,6 +589,111 @@ QtObject {
                     }
                 }
                 itemActions.push(folderViewAction)
+                // The fan is the only presentation that declares how many
+                // entries it leaves out, so it is also the only one whose
+                // amount a single container may choose here. The stored value
+                // stays untouched: switching to another view and coming back
+                // restores it, the same way the fan survives a vertical dock.
+                const fanLayoutActive = !recentContainer
+                    && ConfigItemsJS.effectiveFolderLayout(item.layout,
+                        root.verticalDock) === "fan"
+                if (fanLayoutActive) {
+                    const itemFanRows = ConfigItemsJS.normalizedFanVisibleRows(
+                        item.fanVisibleRows)
+                    // The marked row is the one the container stores. A container
+                    // that never chose an amount keeps the dock value, and says
+                    // so with the first row instead of repeating that value here.
+                    const canSetFanRows = typeof root.dockItemsController
+                        .setFolderFanVisibleRows === "function"
+                    const fanRowChildren = [{
+                        // qmllint disable unqualified
+                        "name": i18nc("@option:radio folder fan", "Default"),
+                        // qmllint enable unqualified
+                        "kind": "setFolderFanVisibleRows",
+                        "enabled": canSetFanRows,
+                        "checked": itemFanRows === 0,
+                        "exclusive": true,
+                        "rows": 0,
+                        "targetIndex": persistentIndex,
+                        "expectedFolderText": expectedFolderText
+                    }]
+                    for (let rows = ConfigItemsJS.minimumFanVisibleRows();
+                            rows <= ConfigItemsJS.maximumFanVisibleRows();
+                            rows++) {
+                        fanRowChildren.push({
+                            // qmllint disable unqualified
+                            "name": i18ncp("@option:radio folder fan", "%1 item", "%1 items", rows),
+                            // qmllint enable unqualified
+                            "kind": "setFolderFanVisibleRows",
+                            "enabled": canSetFanRows,
+                            "checked": itemFanRows === rows,
+                            "exclusive": true,
+                            "rows": rows,
+                            "targetIndex": persistentIndex,
+                            "expectedFolderText": expectedFolderText
+                        })
+                    }
+                    itemActions.push({
+                        // qmllint disable unqualified
+                        "name": i18nc("@title:menu", "Visible items"),
+                        // qmllint enable unqualified
+                        "icon": "view-list-icons",
+                        "kind": "submenu",
+                        "enabled": true,
+                        "children": fanRowChildren
+                    })
+                    // The fan scrolls through every entry, or shows the amount
+                    // and closes with the count of what it left out. Only a
+                    // container with a folder can choose: that closing row is
+                    // what opens the entries a static fan omits. Without it the
+                    // fan must scroll, so the choice is absent rather than a
+                    // disabled control. The marked row is the behaviour in
+                    // force: the container choice, or the dock value while the
+                    // container has not chosen yet.
+                    const fanHasClosingRow = String(item.sourcePath || "")
+                        .trim().length > 0
+                    const canSetFanScroll = fanHasClosingRow
+                        && typeof root.dockItemsController.setFolderFanScroll
+                            === "function"
+                    if (canSetFanScroll) {
+                        const fanScrollNow = ConfigItemsJS.fanScrollFor(item,
+                            root.folderFanScrollEnabled)
+                        const scrollChoices = [{
+                            // qmllint disable unqualified
+                            "name": i18nc("@option:radio folder fan", "Allow"),
+                            // qmllint enable unqualified
+                            "scroll": true
+                        }, {
+                            // qmllint disable unqualified
+                            "name": i18nc("@option:radio folder fan", "Don't allow"),
+                            // qmllint enable unqualified
+                            "scroll": false
+                        }]
+                        const fanScrollChildren = []
+                        for (let index = 0; index < scrollChoices.length; index++) {
+                            fanScrollChildren.push({
+                                "name": scrollChoices[index].name,
+                                "kind": "setFolderFanScroll",
+                                "enabled": true,
+                                "checked": fanScrollNow
+                                    === scrollChoices[index].scroll,
+                                "exclusive": true,
+                                "scroll": scrollChoices[index].scroll,
+                                "targetIndex": persistentIndex,
+                                "expectedFolderText": expectedFolderText
+                            })
+                        }
+                        itemActions.push({
+                            // qmllint disable unqualified
+                            "name": i18nc("@title:menu", "Scrolling"),
+                            // qmllint enable unqualified
+                            "icon": "arrow-down-double",
+                            "kind": "submenu",
+                            "enabled": true,
+                            "children": fanScrollChildren
+                        })
+                    }
+                }
                 if (!recentContainer) {
                     // Presentation comes first: the sort choice is what the
                     // folder shows, and the behaviour follows it.
@@ -1076,6 +1184,24 @@ QtObject {
         if (action.kind === "setFolderBrowseSubfolders") {
             return root.dockItemsController.setFolderBrowseSubfolders(
                 action.targetIndex, action.browseSubfolders === true,
+                String(action.expectedFolderText || ""))
+        }
+        if (action.kind === "setFolderFanVisibleRows") {
+            return typeof root.dockItemsController.setFolderFanVisibleRows
+                    === "function"
+                ? root.dockItemsController.setFolderFanVisibleRows(
+                    action.targetIndex, Number(action.rows) || 0,
+                    String(action.expectedFolderText || ""))
+                : false
+        }
+        if (action.kind === "setFolderFanScroll") {
+            if (typeof action.scroll !== "boolean"
+                    || typeof root.dockItemsController.setFolderFanScroll
+                        !== "function") {
+                return false
+            }
+            return root.dockItemsController.setFolderFanScroll(
+                action.targetIndex, action.scroll,
                 String(action.expectedFolderText || ""))
         }
         if (action.kind === "setFolderSortMode") {

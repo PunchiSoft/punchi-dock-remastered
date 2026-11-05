@@ -888,6 +888,46 @@ Item {
         return true
     }
 
+    // `rows` is how many entries the fan shows before its opening row. Zero
+    // removes the container override, so it follows the dock value again.
+    function setFolderFanVisibleRows(targetIndex, rows, expectedFolderText) {
+        const index = Number(targetIndex)
+        if (!Number.isInteger(index) || index < 0
+                || index >= root.dockItems.length) {
+            return false
+        }
+
+        const expectedText = String(expectedFolderText || "")
+        const currentFolder = root.dockItems[index]
+        if (expectedText.length === 0
+                || root.canonicalJsonText(currentFolder) !== expectedText) {
+            return false
+        }
+
+        return root.commitDockItemsUpdate(ConfigItemsJS.setFolderFanVisibleRows(
+            root.dockItems, index, rows))
+    }
+
+    // `value` is `true` or `false` for a container choice, or `null` to follow
+    // the dock value again.
+    function setFolderFanScroll(targetIndex, value, expectedFolderText) {
+        const index = Number(targetIndex)
+        if (!Number.isInteger(index) || index < 0
+                || index >= root.dockItems.length) {
+            return false
+        }
+
+        const expectedText = String(expectedFolderText || "")
+        const currentFolder = root.dockItems[index]
+        if (expectedText.length === 0
+                || root.canonicalJsonText(currentFolder) !== expectedText) {
+            return false
+        }
+
+        return root.commitDockItemsUpdate(ConfigItemsJS.setFolderFanScroll(
+            root.dockItems, index, value))
+    }
+
     function punchiMenuApplicationLayout() {
         const itemIndex = root.punchiMenuItemIndex(root.dockItems)
         if (itemIndex < 0) {

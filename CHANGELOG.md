@@ -20,6 +20,14 @@
 - Corregido el par «Activar»/«Desactivar» de «Sincronizar carpeta» en el submenú «Contenido» del contenedor: la opción de activar guardaba el contenedor como congelado, así que el menú solo podía desactivar la sincronización y nunca volver a activarla.
 - Corregido el estado de navegación al desactivar «Abrir subcarpetas» con una subcarpeta abierta: el historial se libera, así que volver a activarlo empieza en la carpeta del contenedor y no dentro de la subcarpeta abandonada.
 
+### Abanico de carpeta
+
+- Añadido el submenú «Elementos visibles» al menú contextual de un contenedor con abanico: cada contenedor elige cuántos elementos muestra antes de la fila de apertura, entre tres y ocho, o vuelve al valor del dock con «Predeterminado». La fila de apertura sigue declarando cuántos elementos quedaron fuera.
+- Añadido el submenú «Desplazamiento» con «Permitir» y «No permitir» para decidir si el abanico recorre todos los elementos o muestra la cantidad configurada. La fila marcada es el comportamiento en vigor; el submenú se oculta cuando el contenedor no tiene carpeta, porque entonces el abanico desplaza siempre para que ningún elemento quede inalcanzable.
+- El rango del abanico pasa a ser 3-8 en la configuración del dock y en el panel, porque la fila de apertura es una fila más del abanico y por debajo de tres domina el popup. Un valor guardado de 1 o 2 se eleva a 3 al leerlo.
+- Corregido el submenú de desplazamiento, que se desactivaba en contenedores que sí podían decidir: la condición exigía el tipo de origen «carpeta» mientras el abanico solo necesita una ruta.
+- Añadida la prueba `folder_fan_visible_rows_test` con el rango, la precedencia entre contenedor y dock, el marcado, el despacho y las puertas de vista y de dock vertical. Actualizados los catálogos español, alemán y portugués brasileño.
+
 ### Menú contextual
 
 - Corregida la barra de desplazamiento que aparecía en el menú contextual del dock cuando los márgenes del marco temático traían fracciones de píxel: los márgenes efectivos se cuantizan a píxeles enteros, de modo que la lista recibe exactamente la altura de su viewport y su contenido nunca la supera por una fracción.
