@@ -68,6 +68,9 @@ python3 scripts-dev/memory-budget.py --soak 40            # busca crecimiento en
 python3 scripts-dev/memory-budget.py --soak 20 --soak-instances 0   # control sin dock
 ```
 
+`QTEST_FUNCTION_TIMEOUT` se expresa en **milisegundos**. Pasar `1800` no son 30
+minutos, son 1,8 segundos, y el test aborta con «Received a fatal error».
+
 El arnés:
 
 1. lanza `kwin_wayland --virtual` y un `plasmashell` con `DBUS_SESSION_BUS_ADDRESS`,
@@ -90,8 +93,15 @@ Son dos preguntas distintas y se miden distinto:
   Un soak sin el dock (`--soak-instances 0`) es el control obligatorio: el shell
   también puede crecer y atribuirle al plasmoide lo que no es suyo cuesta caro.
 
-Una pendiente distinta de cero no basta para declarar fuga; hace falta que el
-crecimiento sea monótono y que el control esté plano. Y un crecimiento pequeño
+Una pendiente distinta de cero no basta para declarar fuga. Hacen falta tres
+cosas: que el crecimiento sea monótono, que el control sin el dock esté plano y
+que un **applet oficial en la misma sesión** no muestre la misma pendiente. El
+2026-11-04 el reloj digital creció 0,096 MB/min donde el dock crecía 0,08: el
+crecimiento era del motor QML de `plasmashell`, no del plasmoide.
+
+Antes de atribuir nada, aislar: la sonda de inactividad de `memory_cycle_test`
+mantiene el applet 21 minutos con censo de objetos QML. Si ahí no crece nada, el
+crecimiento vive en el shell. Y un crecimiento pequeño
 debe atribuirse por configuración antes de tocar código: el 2026-11-04, quitar 33
 de los 34 elementos redujo la pendiente a la mitad, no a cero.
 

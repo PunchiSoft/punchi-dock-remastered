@@ -15,6 +15,7 @@
 #include <QIcon>
 #include <QJSValue>
 #include <QQuickItem>
+#include <QHash>
 #include <QQuickWindow>
 #include <QSet>
 #include <QTest>
@@ -99,6 +100,48 @@ int countItems(QQuickItem *item)
         total += countItems(child);
     }
     return total;
+}
+
+void censusObjects(QObject *object, QHash<QString, int> *counts)
+{
+    if (!object) {
+        return;
+    }
+    const QString name = QString::fromLatin1(object->metaObject()->className());
+    (*counts)[name] += 1;
+    const auto children = object->children();
+    for (QObject *child : children) {
+        censusObjects(child, counts);
+    }
+}
+
+int censusTotal(const QHash<QString, int> &counts)
+{
+    int total = 0;
+    for (auto it = counts.cbegin(); it != counts.cend(); ++it) {
+        total += it.value();
+    }
+    return total;
+}
+
+QString censusDelta(const QHash<QString, int> &first, const QHash<QString, int> &last)
+{
+    QStringList parts;
+    QSet<QString> names;
+    for (auto it = first.cbegin(); it != first.cend(); ++it) {
+        names.insert(it.key());
+    }
+    for (auto it = last.cbegin(); it != last.cend(); ++it) {
+        names.insert(it.key());
+    }
+    for (const QString &name : names) {
+        const int delta = last.value(name) - first.value(name);
+        if (delta != 0) {
+            parts.append(QStringLiteral("%1 %+2").arg(name).arg(delta));
+        }
+    }
+    std::sort(parts.begin(), parts.end());
+    return parts.isEmpty() ? QStringLiteral("none") : parts.join(QStringLiteral(", "));
 }
 
 double median(QList<double> values)
@@ -336,6 +379,66 @@ private Q_SLOTS:
                                 .arg(finalItems)));
     }
 
+    // Idle use (no interaction at all) is where the 2026-11-04 audit measured a
+    // slow rise. Memory alone cannot say what grows, so this slot also censuses
+    // the QObject tree every sample and reports which classes gained instances.
+    void idleUseDoesNotAccumulateObjects()
+    {
+        const int seconds = qEnvironmentVariableIntValue("PUNCHI_MEMORY_IDLE_SECONDS") > 0
+            ? qEnvironmentVariableIntValue("PUNCHI_MEMORY_IDLE_SECONDS")
+            : 45;
+        QQuickWindow hostWindow;
+        QObject *root = createApplet(hostWindow, 2002U);
+        QVERIFY2(root != nullptr, "The applet root object was not created");
+
+        // The applet builds several popups and menus lazily on first use. Wait
+        // for that ramp before taking the baseline census, otherwise it looks
+        // like 1400 leaked objects.
+        settle(45000);
+        QHash<QString, int> firstCensus;
+        censusObjects(root, &firstCensus);
+        const int firstItems = countItems(hostWindow.contentItem());
+        const double firstAnon = privateAnonymousMb();
+        QHash<QString, int> lastCensus = firstCensus;
+        int lastItems = firstItems;
+        double lastAnon = firstAnon;
+
+        QElapsedTimer timer;
+        timer.start();
+        int nextReport = 60;
+        while (timer.elapsed() / 1000 < seconds) {
+            settle(1000);
+            lastAnon = privateAnonymousMb();
+            lastItems = countItems(hostWindow.contentItem());
+            lastCensus.clear();
+            censusObjects(root, &lastCensus);
+            const int elapsed = timer.elapsed() / 1000;
+            if (elapsed >= nextReport) {
+                qInfo("idle t=%ds anon=%.1f MB items=%d objects=%d", elapsed, lastAnon,
+                      lastItems, censusTotal(lastCensus));
+                nextReport += 60;
+            }
+        }
+
+        const int objectGrowth = censusTotal(lastCensus) - censusTotal(firstCensus);
+        qInfo("idle result: %ds anon %.1f -> %.1f MB (%+.1f), items %d -> %d (%+d), "
+              "objects %d -> %d (%+d)",
+              seconds, firstAnon, lastAnon, lastAnon - firstAnon, firstItems, lastItems,
+              lastItems - firstItems, censusTotal(firstCensus), censusTotal(lastCensus),
+              objectGrowth);
+        qInfo("idle object delta: %s", qPrintable(censusDelta(firstCensus, lastCensus)));
+
+        QVERIFY2(objectGrowth <= s_objectGrowthLimit,
+                 qPrintable(QStringLiteral("Idle use accumulated %1 QObjects over %2 s: %3")
+                                .arg(objectGrowth)
+                                .arg(seconds)
+                                .arg(censusDelta(firstCensus, lastCensus))));
+        QVERIFY2(lastItems - firstItems <= s_objectGrowthLimit,
+                 qPrintable(QStringLiteral("Idle use accumulated %1 visual items over %2 s")
+                                .arg(lastItems - firstItems)
+                                .arg(seconds)));
+    }
+
     void cleanupTestCase()
     {
         m_containment = nullptr;
@@ -351,10 +454,10 @@ private:
         return window;
     }
 
-    QObject *createApplet(QQuickWindow &window)
+    QObject *createApplet(QQuickWindow &window, uint appletId = 2001U)
     {
         Plasma::Applet *applet =
-            Plasma::PluginLoader::self()->loadApplet(QString::fromLatin1(s_pluginId), 2001U);
+            Plasma::PluginLoader::self()->loadApplet(QString::fromLatin1(s_pluginId), appletId);
         if (!applet) {
             return nullptr;
         }
