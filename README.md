@@ -13,7 +13,7 @@
 [English](README.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt_BR.md)
 
 > [!WARNING]
-> **The published 0.9.7.74 package does not support Plasma 6.8; building from source does.** The Plasma 6.8 fix landed in 0.9.7.77 and has been validated on Plasma 6.8. Packages built before it may fail to load or lose functionality. Until the next release is published, install from source with `scripts-user/setup.sh --install`.
+> **Install from source or from the latest GitHub release.** The KDE Store entry and the published package predate the Plasma 6.8 fix, which landed in 0.9.7.77 and is validated on Plasma 6.8. Packages built before it may fail to load or lose functionality. Until the next release, use `scripts-user/setup.sh --install`.
 
 Punchi Dock Remastered brings application launchers, running windows, folders,
 media controls, and desktop utilities together in a customizable dock for KDE
@@ -162,11 +162,7 @@ based on desktop captures from October 1, 2026.
 
 ### Prebuilt package
 
-> [!NOTE]
-> Punchi Dock Remastered is also published on the [KDE Store](https://store.kde.org/p/2364290/).
-> The versions available there are older than the GitHub releases; use
-> [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases) or a source
-> build for the current version.
+Punchi Dock Remastered is also available on the [KDE Store](https://store.kde.org/p/2364290/), which lags behind the GitHub releases.
 
 For a prebuilt package, choose an asset for your system from
 [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases).

@@ -13,7 +13,7 @@
 [English](README.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [Português (Brasil)](README.pt_BR.md)
 
 > [!WARNING]
-> **O pacote publicado 0.9.7.74 não é compatível com o Plasma 6.8; compilar a partir do código-fonte é.** A correção do Plasma 6.8 chegou na 0.9.7.77 e foi validada no Plasma 6.8. Pacotes compilados antes disso podem não carregar ou perder funcionalidades. Até o próximo release ser publicado, instale a partir do código-fonte com `scripts-user/setup.sh --install`.
+> **Instale a partir do código-fonte ou do release mais recente do GitHub.** A entrada na KDE Store e o pacote publicado são anteriores à correção do Plasma 6.8, que chegou na 0.9.7.77 e foi validada no Plasma 6.8. Pacotes compilados antes disso podem não carregar ou perder funcionalidades. Até o próximo release, use `scripts-user/setup.sh --install`.
 
 O Punchi Dock Remastered reúne lançadores de aplicativos, janelas abertas,
 pastas, controles de mídia e utilitários do desktop em uma dock personalizável
@@ -167,11 +167,7 @@ baseada em capturas do desktop de 1 de outubro de 2026.
 
 ### Pacote pré-compilado
 
-> [!NOTE]
-> O Punchi Dock Remastered também está publicado na [KDE Store](https://store.kde.org/p/2364290/).
-> As versões disponíveis lá são mais antigas que as do GitHub; use as
-> [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases) ou uma
-> compilação a partir do código-fonte para obter a versão atual.
+O Punchi Dock Remastered também está disponível na [KDE Store](https://store.kde.org/p/2364290/), que fica atrás dos releases do GitHub.
 
 Para usar um pacote pré-compilado, escolha um arquivo para seu sistema no
 [GitHub Releases](https://github.com/PunchiSoft/punchi-dock-remastered/releases).
