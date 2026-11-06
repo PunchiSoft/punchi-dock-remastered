@@ -2996,6 +2996,20 @@ Module {
             Parameter { name: "storageId"; type: "QString" }
         }
         Method {
+            name: "defaultApplicationForMimeTypes"
+            type: "QVariantMap"
+            isMethodConstant: true
+            lineNumber: 59
+            Parameter { name: "mimeTypes"; type: "QStringList" }
+        }
+        Method {
+            name: "resolvedFolderPath"
+            type: "QString"
+            isMethodConstant: true
+            lineNumber: 63
+            Parameter { name: "path"; type: "QString" }
+        }
+        Method {
             name: "applicationActions"
             type: "QVariantList"
             isMethodConstant: true

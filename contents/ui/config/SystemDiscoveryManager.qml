@@ -67,6 +67,14 @@ Item {
         return systemDiscovery.iconForCategory(category)
     }
 
+    function resolvedFolderPath(path) {
+        if (!systemDiscovery
+                || typeof systemDiscovery.resolvedFolderPath !== "function") {
+            return String(path || "")
+        }
+        return systemDiscovery.resolvedFolderPath(String(path || ""))
+    }
+
     Punchi.SystemDiscovery {
         id: systemDiscovery
 

@@ -12,6 +12,7 @@
 #include "desktopshortcutwriter.h"
 #include "dropurlpolicy.h"
 #include "folderentryicon.h"
+#include "localpath.h"
 
 #include <KApplicationTrader>
 #include <KFileItem>
@@ -540,18 +541,12 @@ bool SystemDiscovery::kwinBlurSafe() const
 
 namespace {
 // Qt does not expand a leading tilde in QUrl::fromUserInput, and no shell is
-// involved here, so resolve it against the home directory first. Relative paths
-// keep resolving against the home directory, which is what the folder picker
-// expects.
+// involved here, so the XDG tokens and the home directory are resolved first.
+// Relative paths keep resolving against the home directory, which is what the
+// folder picker expects.
 QUrl localUrlForPath(const QString &path)
 {
-    const QString trimmed = path.trimmed();
-    QString resolved = trimmed;
-    if (resolved == QLatin1String("~")) {
-        resolved = QDir::homePath();
-    } else if (resolved.startsWith(QLatin1String("~/"))) {
-        resolved = QDir::homePath() + resolved.mid(1);
-    }
+    const QString resolved = PunchiPath::expandUserPath(path);
     return QUrl::fromUserInput(resolved, QDir::homePath(), QUrl::AssumeLocalFile);
 }
 
@@ -712,6 +707,26 @@ QVariantMap SystemDiscovery::resolveApplication(const QString &storageId, const 
     const QString &launcherUrl) const
 {
     return resolveApplicationService(storageId, command, launcherUrl);
+}
+
+QVariantMap SystemDiscovery::defaultApplicationForMimeTypes(const QStringList &mimeTypes) const
+{
+    for (const QString &mimeType : mimeTypes) {
+        const QString trimmed = mimeType.trimmed();
+        if (trimmed.isEmpty()) {
+            continue;
+        }
+        const KService::Ptr service = KApplicationTrader::preferredService(trimmed);
+        if (service && service->isApplication() && !service->noDisplay()) {
+            return resolutionResult(QStringLiteral("resolved"), service);
+        }
+    }
+    return resolutionResult(QStringLiteral("not-found"));
+}
+
+QString SystemDiscovery::resolvedFolderPath(const QString &path) const
+{
+    return PunchiPath::expandUserPath(path);
 }
 
 QString SystemDiscovery::desktopFileUrl(const QString &storageId, const QString &command) const

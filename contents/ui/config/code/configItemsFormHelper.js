@@ -77,7 +77,10 @@ function refreshItemForm() {
     actionDialog.setContainerLayoutValue(item.layout || "grid")
     actionDialog.spacerSizeValue = item.size || 24
     actionDialog.containerSourceIndex = actionDialog.sourceIndexFor(item.sourceType || "manual")
-    actionDialog.containerPathText = item.sourcePath || ""
+    actionDialog.storedContainerPath = String(item.sourcePath || "")
+    actionDialog.containerPathText = typeof actionDialog.resolvedContainerPath === "function"
+        ? String(actionDialog.resolvedContainerPath(actionDialog.storedContainerPath))
+        : actionDialog.storedContainerPath
     if (actionDialog.containerBrowseSubfoldersChecked !== undefined) {
         actionDialog.containerBrowseSubfoldersChecked = item.browseSubfolders === true
     }
@@ -231,7 +234,9 @@ function applyItemForm(force) {
         item.icon = actionDialog.appIconText || "folder"
         item.layout = actionDialog.containerLayoutValue || "grid"
         item.sourceType = actionDialog.containerSourceValue || "manual"
-        item.sourcePath = actionDialog.containerPathText || ""
+        item.sourcePath = typeof actionDialog.editedContainerPath === "function"
+            ? String(actionDialog.editedContainerPath())
+            : String(actionDialog.containerPathText || "")
         item.browseSubfolders = actionDialog.containerBrowseSubfoldersChecked === true
         item.syncFolder = actionDialog.containerSyncFolderChecked !== false
         item.sourceCategory = actionDialog.containerCategoryValue || "Development"

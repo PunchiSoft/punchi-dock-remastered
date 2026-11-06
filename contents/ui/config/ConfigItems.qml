@@ -938,6 +938,9 @@ KCM.SimpleKCM {
             Kirigami.Units.gridUnit * 26)
         draftController: itemDraftController
         verticalDock: page.verticalDock
+        folderPathResolver: function(path) {
+            return systemDiscovery.resolvedFolderPath(path)
+        }
         applicationLauncherDropValidator: function(urls) {
             return page.validateApplicationLauncherDrop(urls)
         }
@@ -1035,6 +1038,9 @@ KCM.SimpleKCM {
         objectName: "itemActionsDialog"
         title: page.selectedConfigureTitle()
         width: Math.min(page.width - Kirigami.Units.largeSpacing * 2, Kirigami.Units.gridUnit * 32)
+        folderPathResolver: function(path) {
+            return systemDiscovery.resolvedFolderPath(path)
+        }
         actionModel: actionModel
         selectedActionIndex: page.selectedActionIndex
         selectedItemIndex: page.selectedIndex

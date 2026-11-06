@@ -53,6 +53,14 @@ public:
     Q_INVOKABLE QVariantMap applicationForLauncher(const QString &applicationId, const QString &launcherUrl) const;
     Q_INVOKABLE QVariantMap resolveApplication(const QString &storageId, const QString &command = QString(),
         const QString &launcherUrl = QString()) const;
+    // Application the session prefers for the first type it can handle. A Dock
+    // item with `defaultMimeTypes` uses it as a role, so the launcher follows
+    // the system default instead of pinning one browser.
+    [[nodiscard]] Q_INVOKABLE QVariantMap defaultApplicationForMimeTypes(
+        const QStringList &mimeTypes) const;
+    // Expands the XDG token or leading tilde a shipped container stores, so the
+    // configuration dialog can show the real folder without losing the token.
+    [[nodiscard]] Q_INVOKABLE QString resolvedFolderPath(const QString &path) const;
     // File URL of the launcher behind a Dock item, so dragging it to the desktop
     // offers the native copy/link menu.
     Q_INVOKABLE QString desktopFileUrl(const QString &storageId = QString(),

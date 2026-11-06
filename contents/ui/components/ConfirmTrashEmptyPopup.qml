@@ -13,38 +13,19 @@ Item {
     property bool progressDeterminate: false
     property int processedItems: 0
     property int totalItems: 0
-    property string errorMessage: ""
     property bool canConfirm: false
     property int rowHeight: 46
     property int iconSize: 26
     property bool busyIndicatorReady: false
     readonly property bool emptying: operationState === "emptying"
-    readonly property bool succeeded: operationState === "succeeded"
-    readonly property bool failed: operationState === "failed"
     readonly property int effectiveRowHeight: Math.max(32, Math.min(36,
         Number(rowHeight || 46)))
     readonly property int effectiveIconSize: Kirigami.Units.iconSizes.huge
-    readonly property string primaryText: {
-        if (emptying) {
-            return i18n("Emptying trash…")
-        }
-        if (succeeded) {
-            return i18n("Trash emptied successfully.")
-        }
-        if (failed) {
-            return i18n("The trash could not be emptied.")
-        }
-        return i18n("Do you want to empty the trash?")
-    }
-    readonly property string secondaryText: {
-        if (operationState === "idle") {
-            return i18n("This action cannot be undone.")
-        }
-        if (succeeded) {
-            return i18n("All items were permanently removed.")
-        }
-        return ""
-    }
+    readonly property string primaryText: emptying
+        ? i18n("Emptying trash…")
+        : i18n("Do you want to empty the trash?")
+    readonly property string secondaryText: operationState === "idle"
+        ? i18n("This action cannot be undone.") : ""
 
     implicitWidth: 300
     implicitHeight: contentColumn.implicitHeight
@@ -53,15 +34,10 @@ Item {
 
     signal confirmRequested()
     signal cancelRequested()
-    signal dismissRequested()
 
     function focusPrimaryAction() {
         if (operationState === "idle") {
             cancelButton.forceActiveFocus(Qt.TabFocusReason)
-        } else if (operationState === "failed") {
-            closeButton.forceActiveFocus(Qt.TabFocusReason)
-        } else if (operationState === "succeeded") {
-            closeButton.forceActiveFocus(Qt.TabFocusReason)
         }
     }
 
@@ -78,11 +54,6 @@ Item {
             busyIndicatorReady = false
         } else if (emptying) {
             busyIndicatorDelay.restart()
-        }
-    }
-    onOperationStateChanged: {
-        if (succeeded || failed) {
-            Qt.callLater(root.focusPrimaryAction)
         }
     }
 
@@ -119,16 +90,8 @@ Item {
                 visible: !(root.emptying && !root.progressDeterminate
                     && root.busyIndicatorReady)
                 anchors.centerIn: parent
-                source: root.succeeded
-                    ? "dialog-ok-symbolic"
-                    : (root.failed
-                        ? "dialog-error-symbolic"
-                        : (root.emptying ? "user-trash-full" : "user-trash"))
-                color: root.succeeded
-                    ? Kirigami.Theme.positiveTextColor
-                    : (root.failed
-                        ? Kirigami.Theme.negativeTextColor
-                        : Kirigami.Theme.textColor)
+                source: root.emptying ? "user-trash-full" : "user-trash"
+                color: Kirigami.Theme.textColor
                 width: root.effectiveIconSize
                 height: root.effectiveIconSize
             }
@@ -171,18 +134,6 @@ Item {
             color: Kirigami.Theme.disabledTextColor
         }
 
-        PlasmaComponents.Label {
-            visible: root.failed && root.errorMessage.length > 0
-            Layout.fillWidth: true
-            wrapMode: Text.WordWrap
-            elide: Text.ElideRight
-            maximumLineCount: 4
-            text: root.errorMessage
-            color: Kirigami.Theme.negativeTextColor
-            Accessible.role: Accessible.StaticText
-            Accessible.name: i18n("Trash error: %1", root.errorMessage)
-        }
-
         RowLayout {
             visible: !root.emptying
             Layout.fillWidth: true
@@ -191,7 +142,6 @@ Item {
 
             Controls.Button {
                 id: cancelButton
-                visible: root.operationState === "idle"
                 Layout.fillWidth: true
                 Layout.preferredHeight: root.effectiveRowHeight
                 text: i18n("Cancel")
@@ -199,7 +149,6 @@ Item {
             }
 
             Controls.Button {
-                visible: root.operationState === "idle"
                 Layout.fillWidth: true
                 Layout.preferredHeight: root.effectiveRowHeight
                 text: i18n("Empty Trash")
@@ -208,24 +157,6 @@ Item {
                 palette.buttonText: Kirigami.Theme.negativeTextColor
                 enabled: root.canConfirm
                 Accessible.description: i18n("Permanently remove all trashed items")
-                onClicked: root.confirmRequested()
-            }
-
-            Controls.Button {
-                id: closeButton
-                visible: root.succeeded || root.failed
-                Layout.fillWidth: true
-                Layout.preferredHeight: root.effectiveRowHeight
-                text: i18n("Close")
-                onClicked: root.dismissRequested()
-            }
-
-            Controls.Button {
-                visible: root.failed
-                Layout.fillWidth: true
-                Layout.preferredHeight: root.effectiveRowHeight
-                text: i18n("Try Again")
-                icon.name: "view-refresh"
                 onClicked: root.confirmRequested()
             }
         }

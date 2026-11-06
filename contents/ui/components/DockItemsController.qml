@@ -98,7 +98,7 @@ Item {
             // A write that already matches the loaded items must not rebuild
             // the dock with an identical list.
             if (raw !== JSON.stringify(root.dockItems)) {
-                root.dockItems = Logic.loadItems(raw)
+                root.dockItems = root.withResolvedDefaultApplications(Logic.loadItems(raw))
             }
             root.scheduleDynamicApplicationsMarker()
             root.scheduleRecentApplicationsPlacement()
@@ -144,16 +144,21 @@ Item {
     // which is what marks a first install. An empty answer keeps the shipped
     // fallback list, so a container is never left blank, and the seeded list
     // becomes a normal editable container.
+    //
+    // This is also the single place where a launcher role is resolved: the
+    // items are exposed once, so resolving them here keeps the dock from
+    // rebuilding its delegates with an identical list.
     function seedCategoryItems(items, storedJson) {
-        const result = { "items": items, "changed": false }
+        const resolvedItems = root.withResolvedDefaultApplications(items)
+        const result = { "items": resolvedItems, "changed": false }
         if (String(storedJson || "").length > 0 || !root.systemDiscovery
-                || !(items instanceof Array)) {
+                || !(resolvedItems instanceof Array)) {
             return result
         }
 
         const seeded = []
-        for (let index = 0; index < items.length; index++) {
-            const item = items[index]
+        for (let index = 0; index < resolvedItems.length; index++) {
+            const item = resolvedItems[index]
             if (!item || item.type !== "folder"
                     || item.sourceType !== "category"
                     || String(item.sourceCategory || "").length === 0) {
@@ -216,6 +221,16 @@ Item {
                 root.trashIntegration.openTrash()
             } else {
                 console.warn("Punchi Dock: Trash integration is unavailable.")
+            }
+            return
+        }
+
+        const roleApplication = root.defaultApplicationRole(item)
+        if (roleApplication) {
+            if (roleApplication.storageId) {
+                root.systemDiscovery.launchApplication(roleApplication.storageId)
+            } else {
+                console.warn("Punchi Dock: No application handles this launcher type.")
             }
             return
         }
@@ -1243,6 +1258,63 @@ Item {
         }
         return root.systemDiscovery.resolveApplication(
             String(storageId || ""), String(command || ""), "")
+    }
+
+    function mimeTypeList(value) {
+        const entries = value instanceof Array ? value : String(value || "").split(/\s+/)
+        const types = []
+        for (let index = 0; index < entries.length; index++) {
+            const entry = String(entries[index] || "").trim()
+            if (entry.length > 0) {
+                types.push(entry)
+            }
+        }
+        return types
+    }
+
+    // A Dock item that declares `defaultMimeTypes` is a role, not an
+    // application: the session decides which application fills it, so a first
+    // run never pins a browser the distribution did not choose.
+    function defaultApplicationRole(item) {
+        if (!item || item.type !== "app" || !root.systemDiscovery
+                || typeof root.systemDiscovery.defaultApplicationForMimeTypes !== "function") {
+            return null
+        }
+        const mimeTypes = root.mimeTypeList(item.defaultMimeTypes)
+        if (mimeTypes.length === 0) {
+            return null
+        }
+        const resolved = root.systemDiscovery.defaultApplicationForMimeTypes(mimeTypes)
+        return resolved && resolved.resolved ? resolved : null
+    }
+
+    // Resolves the role in memory only. The stored item keeps its MIME types,
+    // so the launcher follows a later change of the system default instead of
+    // freezing the application that happened to be preferred at first run.
+    function withResolvedDefaultApplications(items) {
+        if (!(items instanceof Array)) {
+            return items
+        }
+        let changed = false
+        const resolvedItems = items.map(function(item) {
+            const resolved = root.defaultApplicationRole(item)
+            if (!resolved) {
+                return item
+            }
+            changed = true
+            const role = JSON.parse(JSON.stringify(item))
+            if (!role.name || role.name === "Browser") {
+                role.name = String(resolved.name || role.name || "")
+            }
+            if (!role.icon || role.icon === "internet-web-browser") {
+                role.icon = String(resolved.icon || role.icon || "")
+            }
+            role.storageId = String(resolved.storageId || "")
+            role.appId = String(resolved.appId || "")
+            role.launcherUrl = String(resolved.launcherUrl || "")
+            return role
+        })
+        return changed ? resolvedItems : items
     }
 
     function findDockItemIndexForResolvedApplication(resolved) {

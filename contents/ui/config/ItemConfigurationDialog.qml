@@ -27,6 +27,9 @@ Controls.Dialog {
     // instantiable on its own; a real use always injects one.
     property var draftController: null
     property var applicationLauncherDropValidator: null
+    // Resolves an XDG token a shipped container stores into the folder this
+    // session uses, so the path field shows a real directory.
+    property var folderPathResolver: null
     // Type the user asked for after editing the draft; while it is not empty the
     // dialog shows the confirmation instead of replacing the draft. The
     // confirmation is inline on purpose: a second Controls.Dialog must not be
@@ -679,6 +682,7 @@ Controls.Dialog {
                         Layout.fillWidth: true
                         visible: root.formEditorVisible
                         showTypeSelector: false
+                        folderPathResolver: root.folderPathResolver
                         containerLoadStatusText: root.containerLoadStatusText
                         containerLoadStatusType: root.containerLoadStatusType
                         // qmllint disable unqualified
