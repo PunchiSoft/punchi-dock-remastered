@@ -2573,19 +2573,20 @@ PlasmoidItem {
                     return
                 }
                 runtimeService.playSound(popupCoordinator.activeTrashEmptySound, "trash-empty")
-                if (trashConfirmationDialog.visible
-                        && trashConfirmationSurface.confirmationContent.succeeded) {
-                    trashSuccessCloseTimer.restart()
+                if (trashConfirmationDialog.visible) {
+                    trashConfirmationDialog.closeSafely()
                 }
+                trashIntegration.resetOperationState()
             }
-        }
 
-        Timer {
-            id: trashSuccessCloseTimer
-            interval: 1200
-            repeat: false
-            onTriggered: {
-                trashConfirmationDialog.closeSafely()
+            function onOperationFailed(operation, message) {
+                if (operation !== "emptyTrash") {
+                    return
+                }
+                console.warn("Punchi Dock: Emptying the trash failed:", message)
+                if (trashConfirmationDialog.visible) {
+                    trashConfirmationDialog.closeSafely()
+                }
                 trashIntegration.resetOperationState()
             }
         }
@@ -4519,7 +4520,6 @@ PlasmoidItem {
                             trashIntegration.openTrash()
                         }
                         onEmptyTrashRequested: {
-                            trashSuccessCloseTimer.stop()
                             trashIntegration.resetOperationState()
                             popupCoordinator.closeAllPopups(trashConfirmationDialog)
                             trashMenuDialog.closeSafely()
@@ -4530,7 +4530,6 @@ PlasmoidItem {
                             })
                         }
                         onCloseRequested: {
-                            trashSuccessCloseTimer.stop()
                             trashMenuDialog.closeSafely()
                             if (!trashIntegration.emptying) {
                                 trashIntegration.resetOperationState()
@@ -4565,7 +4564,6 @@ PlasmoidItem {
                     trashIntegration.progressDeterminate
                 confirmationContent.processedItems: trashIntegration.processedItems
                 confirmationContent.totalItems: trashIntegration.totalItems
-                confirmationContent.errorMessage: trashIntegration.errorMessage
                 confirmationContent.canConfirm: trashIntegration.hasItems
                     && !trashIntegration.emptying
                 confirmationContent.rowHeight: dockConfig.contextMenuRowHeight
@@ -4573,10 +4571,6 @@ PlasmoidItem {
                 confirmationContent.onConfirmRequested:
                     trashIntegration.emptyTrash()
                 confirmationContent.onCancelRequested: {
-                    trashConfirmationDialog.closeSafely()
-                    trashIntegration.resetOperationState()
-                }
-                confirmationContent.onDismissRequested: {
                     trashConfirmationDialog.closeSafely()
                     trashIntegration.resetOperationState()
                 }
@@ -4626,7 +4620,6 @@ PlasmoidItem {
                         trashConfirmationSurface.confirmationContent.focusPrimaryAction()
                     })
                 } else if (!trashIntegration.emptying) {
-                    trashSuccessCloseTimer.stop()
                     trashIntegration.resetOperationState()
                 }
             }

@@ -52,6 +52,16 @@ Controls.Dialog {
     readonly property string containerSourceValue: itemEditor.containerSourceValue
     property alias containerSourceIndex: itemEditor.containerSourceIndex
     property alias containerPathText: itemEditor.containerPathText
+    // Path as stored and as shown, so an XDG token a shipped container carries
+    // survives an edit of another value while this dialog shows a real folder.
+    property alias storedContainerPath: itemEditor.storedContainerPath
+    property var folderPathResolver: null
+    function resolvedContainerPath(path) {
+        return itemEditor.resolvedContainerPath(path)
+    }
+    function editedContainerPath() {
+        return itemEditor.editedContainerPath()
+    }
     property alias containerBrowseSubfoldersChecked: itemEditor.containerBrowseSubfoldersChecked
     property alias containerSyncFolderChecked: itemEditor.containerSyncFolderChecked
     readonly property string containerCategoryValue: itemEditor.containerCategoryValue
@@ -183,6 +193,7 @@ Controls.Dialog {
         ItemEditorPanel {
             id: itemEditor
             selectedItemType: root.selectedItemType
+            folderPathResolver: root.folderPathResolver
             nameLabel: root.nameLabel
             aliasLabel: root.aliasLabel
             descLabel: root.descLabel

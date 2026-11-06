@@ -48,6 +48,11 @@ GridLayout {
     readonly property string containerSourceValue: containerSource.currentValue || "manual"
     property alias containerSourceIndex: containerSource.currentIndex
     property alias containerPathText: containerPath.text
+    // Folder path as stored and as shown. A shipped container may store an XDG
+    // token (for example `xdg:DOWNLOAD`); the field shows the resolved folder
+    // and writes the token back while the text still matches that folder.
+    property string storedContainerPath: ""
+    property var folderPathResolver: null
     property alias containerBrowseSubfoldersChecked: browseSubfolders.checked
     property alias containerSyncFolderChecked: syncFolder.checked
     // True while the container follows its folder: the listing is live, so the
@@ -112,6 +117,23 @@ GridLayout {
 
     function layoutIndexFor(value) {
         return Math.max(0, containerLayout.indexOfValue(value || "grid"))
+    }
+
+    function resolvedContainerPath(path) {
+        return folderPathResolver
+            ? String(folderPathResolver(String(path || "")))
+            : String(path || "")
+    }
+
+    // The field text the draft should store: an unchanged XDG token survives an
+    // edit of another value, and any other text is taken as typed.
+    function editedContainerPath() {
+        const typed = String(containerPathText || "")
+        if (storedContainerPath.length > 0
+                && typed === resolvedContainerPath(storedContainerPath)) {
+            return storedContainerPath
+        }
+        return typed
     }
 
     // Population path used by the draft adapter.

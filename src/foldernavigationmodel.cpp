@@ -2,6 +2,7 @@
 #include "foldernavigationmodel.h"
 #include "desktoplauncherresolver.h"
 #include "folderentryicon.h"
+#include "localpath.h"
 
 #include <KIO/ListJob>
 #include <KIO/UDSEntry>
@@ -19,13 +20,9 @@ namespace {
 constexpr int MaximumEntries = 80;
 QString localDirectory(const QString &input)
 {
-    QString path = input.trimmed();
+    QString path = PunchiPath::expandUserPath(input);
     if (path.isEmpty()) { return {}; }
-    if (path == QLatin1String("~")) {
-        path = QDir::homePath();
-    } else if (path.startsWith(QLatin1String("~/"))) {
-        path = QDir::homePath() + path.mid(1);
-    } else if (path.startsWith(QLatin1String("file:"))) {
+    if (path.startsWith(QLatin1String("file:"))) {
         const QUrl url(path);
         if (!url.isLocalFile() || !url.host().isEmpty()) { return {}; }
         path = url.toLocalFile();

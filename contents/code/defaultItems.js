@@ -27,16 +27,14 @@ var items = [
         "icon": "emblem-music-symbolic"
     },
     {
-        "_comment": "Pinned application. Runs command and can expose optional right-click actions.",
+        "_comment": "Browser launcher. It names no application: the session picks the one that handles these MIME types, so the first run never pins a browser the distribution did not choose and the item follows a later change of the default.",
         "type": "app",
-        "name": "Mozilla Firefox",
-        "icon": "firefox",
-        "command": "firefox",
-        "actions": [
-            { "name": "New Window", "icon": "window-new-symbolic", "command": "firefox --new-window" },
-            { "name": "New Tab", "icon": "tab-new-symbolic", "command": "firefox --new-tab about:newtab" },
-            { "name": "Private Window", "icon": "view-private-symbolic", "command": "firefox --private-window" },
-            { "name": "Profile Manager", "icon": "preferences-desktop-user", "command": "firefox --ProfileManager" }
+        "name": "Browser",
+        "icon": "internet-web-browser",
+        "defaultMimeTypes": [
+            "x-scheme-handler/https",
+            "x-scheme-handler/http",
+            "text/html"
         ]
     },
     {
@@ -142,15 +140,6 @@ var items = [
         ]
     },
     {
-        "_comment": "Trash item. Opens the trash, can show empty/full state, and can accept dropped files.",
-        "type": "trash",
-        "name": "Trash",
-        "icon": "user-trash",
-        "fullIcon": "user-trash-full",
-        "showState": true,
-        "acceptDrops": true
-    },
-    {
         "_comment": "Welcome note. Demonstrates the editable note item and can be removed by the user.",
         "type": "note",
         "name": "Welcome note",
@@ -181,6 +170,39 @@ var items = [
         "_comment": "Persistent marker that selects where open applications are rendered without storing dynamic tasks.",
         "type": "dynamic-applications",
         "name": "Open applications"
+    },
+    {
+        "_comment": "Downloads container. It follows the XDG Downloads folder as a live grid: the token resolves to the folder of the session, so the shipped item works in any language and moves with a changed user-dirs configuration. Subfolder browsing stays off.",
+        "type": "folder",
+        "name": "Downloads",
+        "icon": "folder-downloads",
+        "layout": "grid",
+        "sourceType": "folder",
+        "sourcePath": "xdg:DOWNLOAD",
+        "browseSubfolders": false,
+        "sortMode": "modified",
+        "columns": 0,
+        "rows": 0,
+        "popupMaxWidth": 0,
+        "popupMaxHeight": 0,
+        "innerIconSize": 48,
+        "showLabels": true,
+        "closeOnLaunch": true,
+        "apps": []
+    },
+    {
+        "_comment": "Placement marker for recent applications. The launcher list itself never enters this data.",
+        "type": "recent-applications",
+        "name": "Recent applications"
+    },
+    {
+        "_comment": "Trash item. Opens the trash, can show empty/full state, and can accept dropped files.",
+        "type": "trash",
+        "name": "Trash",
+        "icon": "user-trash",
+        "fullIcon": "user-trash-full",
+        "showState": true,
+        "acceptDrops": true
     }
 ]
 

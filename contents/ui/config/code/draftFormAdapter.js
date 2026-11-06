@@ -67,7 +67,9 @@ function fieldsFor(draft, panel, type) {
             "icon": String(panel.appIconText || "folder"),
             "layout": String(panel.containerLayoutValue || "grid"),
             "sourceType": String(panel.containerSourceValue || "manual"),
-            "sourcePath": String(panel.containerPathText || ""),
+            "sourcePath": typeof panel.editedContainerPath === "function"
+                ? panel.editedContainerPath()
+                : String(panel.containerPathText || ""),
             "browseSubfolders": panel.containerBrowseSubfoldersChecked === true,
             "syncFolder": panel.containerSyncFolderChecked !== false,
             "sourceCategory": String(panel.containerCategoryValue || "Development")
@@ -271,7 +273,10 @@ function applyToPanel(draft, panel, type) {
     panel.appIconText = String(item.icon || "")
     panel.appDescriptionText = String(item.description || "")
     panel.appCommandText = String(item.command || "")
-    panel.containerPathText = String(item.sourcePath || "")
+    panel.storedContainerPath = String(item.sourcePath || "")
+    panel.containerPathText = typeof panel.resolvedContainerPath === "function"
+        ? panel.resolvedContainerPath(panel.storedContainerPath)
+        : panel.storedContainerPath
     if (panel.containerBrowseSubfoldersChecked !== undefined) {
         panel.containerBrowseSubfoldersChecked = item.browseSubfolders === true
     }

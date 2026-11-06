@@ -1,5 +1,13 @@
 ## Unreleased
 
+### Perfil inicial y papelera
+
+- Reordenados los elementos de fábrica: la papelera pasa al final, la nota de bienvenida queda antes del separador y las aplicaciones abiertas preceden a Descargas y a las aplicaciones recientes. El marcador de aplicaciones recientes forma parte de los valores iniciales, así que su posición se conserva al desactivar y reactivar la opción. El cambio alcanza solo a instalaciones nuevas y a «Restaurar elementos predeterminados».
+- Añadido el contenedor Descargas de fábrica: cuadrícula, seguimiento de la carpeta y navegación por subcarpetas desactivada. La ruta se guarda como token `xdg:DOWNLOAD` y se resuelve contra la carpeta XDG de la sesión, de modo que funciona con carpetas traducidas.
+- El elemento de navegador deja de fijar Mozilla Firefox. Un elemento con tipos MIME y sin aplicación concreta resuelve en tiempo de ejecución el navegador predeterminado del sistema, muestra su nombre, su icono y sus acciones, y sigue un cambio posterior de esa preferencia sin editar la configuración.
+- La papelera deja de mostrar la pantalla final de resultado: al terminar el vaciado, el popup se cierra en lugar de presentar «Trash emptied successfully» o su error. La confirmación, el progreso y el contador de elementos se conservan; un fallo queda registrado en el journal.
+- Validación local: CTest completo 190/190, sin diagnósticos nuevos de qmllint, catálogos español, alemán y portugués brasileño completos e integridad de pruebas correcta. La comprobación en Plasma real de los cuatro cambios sigue pendiente.
+
 ### Filtros de tareas
 
 - Añadidos tres interruptores independientes en Ventanas para combinar filtros por escritorio virtual actual, actividad actual y pantalla del dock. Los filtros activados se aplican conjuntamente; al desactivar uno se incluyen todas las ubicaciones de esa categoría.

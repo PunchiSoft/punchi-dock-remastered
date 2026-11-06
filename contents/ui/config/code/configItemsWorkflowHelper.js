@@ -34,7 +34,9 @@ function setContainerSource(source) {
     }
 
     item.sourceType = nextSource
-    item.sourcePath = actionDialog.containerPathText || item.sourcePath || ""
+    item.sourcePath = typeof actionDialog.editedContainerPath === "function"
+        ? String(actionDialog.editedContainerPath() || item.sourcePath || "")
+        : String(actionDialog.containerPathText || item.sourcePath || "")
     item.sourceCategory = actionDialog.containerCategoryValue || item.sourceCategory || "Development"
     ConfigItemsJS.pruneFolder(item)
     items = nextItems
@@ -80,6 +82,7 @@ function openContainerFolderPicker() {
 function setContainerFolder(path) {
     var selected = selectedItem()
     var previousPath = selected ? String(selected.sourcePath || "") : ""
+    actionDialog.storedContainerPath = ""
     actionDialog.containerPathText = path || ""
     applyItemForm()
     var item = selectedItem()
