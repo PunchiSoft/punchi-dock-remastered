@@ -184,6 +184,11 @@ Installiere oder aktualisiere sie aus einer lokalen Kopie dieses Repositorys:
 
 Alternativ installierst du mit `kpackagetool6 --type Plasma/Applet --install path/to/package.plasmoid`;
 verwende `--upgrade` statt `--install`, um eine bestehende Installation zu aktualisieren.
+
+Das universelle Asset ist die Option für Systeme ohne die Build-Abhängigkeiten.
+Es wird in einer anderen Umgebung kompiliert und ist auf die im Paket enthaltenen
+Kompatibilitätsbibliotheken angewiesen.
+
 ### Quellcode herunterladen, kompilieren und installieren
 
 1. **Quellcode herunterladen**
@@ -310,14 +315,24 @@ sudo zypper install \
 
 - **Desktop:** Linux mit KDE Plasma 6; Wayland ist das primäre Ziel, X11 wird über
   einen sekundären Pfad unterstützt.
+- **Empfohlene Installation:** Baue das Dock mit
+  `./scripts-user/setup.sh --install` auf dem System, auf dem du es verwendest.
+  Das native Modul entspricht dann den installierten Qt- und Plasma-Bibliotheken,
+  und eine spätere Plasma-Aktualisierung erfordert nur einen Neubau und eine
+  Neuinstallation.
 - **Deklarierte Mindestanforderungen für Builds:** CMake 3.22, ein C++20-Compiler,
   Qt 6.6, KDE Frameworks 6.0 und Plasma 6.0 sowie die erforderlichen Entwicklungsbibliotheken.
 - **Native Builds:** Quellcode-Builds verwenden die Qt- und KDE-Bibliotheken des Hostsystems. Entwicklungsprofile sind für Fedora, Debian und Arch Linux verfügbar.
-- **Universelles Paket:** Offizielle universelle Builds werden unter Debian 13 gegen die niedrigsten unterstützten Versionen von Qt und KDE Frameworks kompiliert. Die niedrigste Version als Ziel begünstigt die Kompatibilität mit neueren Systemen, während neuere APIs in diesem Build fehlen. Die Binärkompatibilität muss mit demselben Paket auf jedem Zielsystem geprüft werden.
 - **Qualitätsprüfungen:** Lokale Validierungen wurden unter Fedora 44, Debian 13 und Arch Linux aufgezeichnet. Die folgende Tabelle unterscheidet getestete Umgebungen von weiteren Distributionen, deren Paketversionen geprüft wurden.
 - **Native Pakete:** Verwende das für deine Umgebung bestimmte Paket. Deklarierte
   Mindestversionen bestätigen nicht jede Kombination; distributionsübergreifende
   Binärkompatibilität erfordert Tests desselben Artefakts auf jedem Zielsystem.
+- **Plasma-Aktualisierungen:** Das native Modul wird gegen die
+  Plasma-Bibliotheken des Systems kompiliert, auf dem das Paket gebaut wird.
+  Ändert eine Plasma-Aktualisierung den Soname von `libplasma`, lädt das
+  installierte Modul nicht mehr und das Widget bleibt leer. Baue das Dock auf
+  dem aktualisierten System neu und installiere es erneut; ein für eine frühere
+  Plasma-Version kompiliertes Paket lädt nicht.
 - **Audio:** Der optionale Visualizer verarbeitet PipeWire-Audio; Quellcode-Builds
   benötigen dessen Entwicklungsdateien.
 - **Sprachen:** Englisch ist Quellsprache und Fallback; Spanisch wird gepflegt.
@@ -375,7 +390,7 @@ Die Spalte Lokale Kompilierung (Repo-Skript) dokumentiert einen Build aus dem ge
 
 **Beobachtungen**
 
-- **Warum ein Paket fehlschlagen kann:** Die ❌-Markierungen stammen aus Versionsunterschieden: Ein gegen neuere Qt- und KDE-Frameworks-Versionen kompiliertes Paket läuft nicht auf Systemen mit älteren Versionen. Das universelle Paket vermeidet das, indem es gegen die niedrigste unterstützte Version kompiliert.
+- **Warum ein Paket fehlschlagen kann:** Die ❌-Markierungen stammen aus Versionsunterschieden: Ein gegen neuere Qt- und KDE-Frameworks-Versionen kompiliertes Paket läuft nicht auf Systemen mit älteren Versionen. Ein Build gegen die niedrigste unterstützte Version verringert dieses Risiko für Qt und KDE Frameworks, schützt aber nicht vor einer Plasma-Aktualisierung, die den Soname von `libplasma` ändert.
 - **Arch Linux:** Geprüft am 10. Oktober 2026 mit Plasma 6.7.5 unter Verwendung des Fedora-44-Pakets, des unter Debian 13 erstellten universellen Pakets und einer nativen Kompilierung innerhalb von Arch. In allen drei Fällen ließ sich das Applet installieren, laden und blieb funktionsfähig. Am 19. Oktober 2026 wurde der Quellcode-Build zusätzlich unter Arch mit Plasma 6.8.0 geprüft und lief ohne Laufzeitfehler; Nutzer bestätigten die Installation aus dem Repository auf Arch-basierten Distributionen. Veröffentlichte Pakete wurden vor 0.9.7.77 erstellt und zielen weiterhin auf ältere Plasma-Versionen.
 
 Repository-Quellen: [Debian 14 Qt](https://packages.debian.org/forky/qt6-base-dev) · [Debian 14 Plasma](https://packages.debian.org/forky/plasma-desktop) · [Debian 14 Frameworks](https://packages.debian.org/forky/libkf6coreaddons6) · [Kubuntu Qt](https://packages.ubuntu.com/resolute/libdevel/qt6-base-dev) · [Kubuntu-Plasma-Aktualisierungen](https://packages.ubuntu.com/resolute-updates/kde/plasma-desktop) · [Kubuntu Frameworks](https://packages.ubuntu.com/resolute/libs/libkf6coreaddons6) · [Arch Qt](https://archlinux.org/packages/extra/x86_64/qt6-base/) · [Arch Plasma](https://archlinux.org/packages/extra/x86_64/plasma-desktop/) · [Arch Frameworks](https://archlinux.org/packages/extra/x86_64/kcoreaddons/) · [Paketmetadaten von Manjaro stable](https://repo.manjaro.org/repo/stable/extra/x86_64/extra.db) · [Paketmetadaten von KDE neon User Edition](https://archive.neon.kde.org/user/dists/noble/main/binary-amd64/Packages.gz) · [openSUSE-Leap-16.0-Pakete](https://download.opensuse.org/distribution/leap/16.0/repo/oss/x86_64/) · [openSUSE Tumbleweed Qt](https://news.opensuse.org/2026/09/02/tw-monthly-update-august/) · [openSUSE Tumbleweed Plasma / Frameworks](https://news.opensuse.org/2026/10/01/tw-monthly-update-september/).

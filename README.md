@@ -178,6 +178,11 @@ Install or update it from a checkout of this repository:
 
 Alternatively, install with `kpackagetool6 --type Plasma/Applet --install path/to/package.plasmoid`;
 use `--upgrade` instead of `--install` to update an existing installation.
+
+The universal asset is the option for systems without the build dependencies. It
+is compiled in another environment and relies on the compatibility libraries
+included in the package.
+
 ### Download, build, and install from source
 
 1. **Download the source code**
@@ -303,14 +308,22 @@ sudo zypper install \
 
 - **Desktop:** Linux with KDE Plasma 6; Wayland is the primary target, with a
   secondary X11 path.
+- **Recommended installation:** Build the dock with
+  `./scripts-user/setup.sh --install` on the system where you use it. The native
+  module then matches the installed Qt and Plasma libraries, and a later Plasma
+  update only requires rebuilding and reinstalling.
 - **Declared build minimums:** CMake 3.22, a C++20 compiler, Qt 6.6, KDE Frameworks
   6.0, and Plasma 6.0, plus the required development libraries.
 - **Native builds:** Source builds use the host system’s Qt and KDE libraries. Developer profiles are available for Fedora, Debian and Arch Linux.
-- **Universal package:** Official universal builds are compiled on Debian 13 against the lowest supported Qt and KDE Frameworks versions. Targeting the lowest version favors forward compatibility with newer systems, while newer APIs stay out of this build. Binary compatibility must be checked with the same package on each target system.
 - **Quality checks:** Local validation has been recorded on Fedora 44, Debian 13 and Arch Linux. The table below distinguishes tested environments from other distributions whose package versions were checked.
 - **Native packages:** Use the package intended for your environment. Declared
   minimums do not certify every combination, and cross-distribution binary
   compatibility requires testing the same artifact on each target system.
+- **Plasma updates:** The native module is compiled against the Plasma libraries
+  of the system where the package is built. When a Plasma update changes the
+  soname of `libplasma`, the installed module no longer loads and the widget
+  stays empty. Rebuild and reinstall the dock on the updated system; a package
+  compiled for an earlier Plasma release does not load.
 - **Audio:** The optional visualizer consumes PipeWire; source builds require
   its development files.
 - **Languages:** English is the source and fallback; Spanish is maintained.
@@ -368,7 +381,7 @@ The Local build (repo script) column records a build from the cloned repository 
 
 **Observations**
 
-- **Why a package can fail:** the ❌ marks come from version differences: a package built against newer Qt and KDE Frameworks does not run on systems with older ones. The universal package avoids this by building against the lowest supported version.
+- **Why a package can fail:** the ❌ marks come from version differences: a package built against newer Qt and KDE Frameworks does not run on systems with older ones. Building against the lowest supported version reduces this risk for Qt and KDE Frameworks, but it does not protect against a Plasma update that changes the soname of `libplasma`.
 - **Arch Linux:** Tested on October 10, 2026 with Plasma 6.7.5 using the Fedora 44 package, the universal package built on Debian 13, and a native build inside Arch. In all three cases the applet installed, loaded and stayed functional. On October 19, 2026 the source build was also tested on Arch with Plasma 6.8.0 and ran without runtime errors, and users confirmed the repository install on Arch-based distributions. Published packages were built before 0.9.7.77 and still target older Plasma.
 
 Repository sources: [Debian 14 Qt](https://packages.debian.org/forky/qt6-base-dev) · [Debian 14 Plasma](https://packages.debian.org/forky/plasma-desktop) · [Debian 14 Frameworks](https://packages.debian.org/forky/libkf6coreaddons6) · [Kubuntu Qt](https://packages.ubuntu.com/resolute/libdevel/qt6-base-dev) · [Kubuntu Plasma updates](https://packages.ubuntu.com/resolute-updates/kde/plasma-desktop) · [Kubuntu Frameworks](https://packages.ubuntu.com/resolute/libs/libkf6coreaddons6) · [Arch Qt](https://archlinux.org/packages/extra/x86_64/qt6-base/) · [Arch Plasma](https://archlinux.org/packages/extra/x86_64/plasma-desktop/) · [Arch Frameworks](https://archlinux.org/packages/extra/x86_64/kcoreaddons/) · [Manjaro stable package metadata](https://repo.manjaro.org/repo/stable/extra/x86_64/extra.db) · [KDE neon User Edition package metadata](https://archive.neon.kde.org/user/dists/noble/main/binary-amd64/Packages.gz) · [openSUSE Leap 16.0 packages](https://download.opensuse.org/distribution/leap/16.0/repo/oss/x86_64/) · [openSUSE Tumbleweed Qt](https://news.opensuse.org/2026/09/02/tw-monthly-update-august/) · [openSUSE Tumbleweed Plasma / Frameworks](https://news.opensuse.org/2026/10/01/tw-monthly-update-september/).
