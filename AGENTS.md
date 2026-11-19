@@ -924,7 +924,7 @@ Cualquier asistente de IA o agente autónomo (ej. Antigravity, Codex, Copilot) d
 1. **Escribir la Bitácora**: Antes de tocar Git, crear un resumen técnico del progreso del día en `bitacora/YYYY-MM-DD-resumen-sesion.md`.
 2. **Revisar estado**: Ejecutar `git status`, comprobar la rama actual y confirmar que la base es `main` actualizado; si el trabajo está sobre `main`, crear la rama de entrega antes de preparar nada.
 3. **Añadir cambios**: Ejecutar `git add -- <rutas concretas>` únicamente para los archivos del alcance autorizado y revisar el diff preparado antes del commit para evitar incluir cambios ajenos. No usar `git add .`.
-4. **Commit Profesional**: Delegar en `commit-push-versioning` y ejecutar `git commit -m "<tipo>(<ámbito>): <resumen claro del trabajo>"` con el trailer de coautoría del proyecto.
+4. **Commit Profesional**: Delegar en `commit-push-versioning` y ejecutar `git commit -m "<tipo>(<ámbito>): <resumen claro del trabajo>"`. Si el commit lleva trailer de coautoría, usar `Co-authored-by: PunchiSoft <cristian.munoz.jimenez@gmail.com>`; no usar `OpenCode`. Omitirlo cuando el autor ya sea PunchiSoft. No reescribir commits fusionados solo para cambiar la atribución.
 5. **Sincronización**: Empujar la rama de entrega con `git push`; después, `pr-delivery` abre o actualiza la pull request salvo que el usuario pida detenerse en el push.
 
 Nunca se debe usar git para forzar la subida de binarios u ocultar errores. Este proceso automatiza el fin del día del usuario.

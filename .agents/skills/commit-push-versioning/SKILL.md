@@ -18,6 +18,19 @@ apply `branch-baseline` and create the branch before staging anything. One branc
 per change; never reuse a branch that was already merged. Report the branch
 alongside the commit and let the user decide when to merge.
 
+## Co-author trailer
+
+Never rewrite a merged commit just to correct attribution. When a commit declares
+a co-author, use:
+
+```text
+Co-authored-by: PunchiSoft <cristian.munoz.jimenez@gmail.com>
+```
+
+Do not use `OpenCode` as the co-author name. Omit the trailer when the commit
+author is already PunchiSoft; adding the same identity twice does not add
+information.
+
 ## Version and changelog
 
 Versions identify releases, not commits. Pending work accumulates under
