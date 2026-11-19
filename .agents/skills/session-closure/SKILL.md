@@ -58,9 +58,16 @@ Cuando se solicite el cierre de sesión, el agente **debe ejecutar en orden estr
    - Si el usuario solo cierra una etapa sin declarar version, no cambiar la
      version, no crear tag ni release.
 
-7. **Mensaje de Cierre y Reporte al Usuario**
+7. **Inventario de limpieza**
+   - Activar `cleanup-review` y presentar el inventario de ramas, worktrees,
+     contenedores, artefactos de CI, `build/`, `dist/` y logs.
+   - No borrar ramas, PR, worktrees, contenedores, artefactos ni evidencia sin
+     autorización explícita del usuario.
+
+8. **Mensaje de Cierre y Reporte al Usuario**
    - Informar al usuario que la bitácora fue redactada y que los cambios están respaldados en Git.
    - **Presentar de forma explícita el resumen de Baseline, CTests, traducciones y versión** para que nunca se pierda en el hilo de conversación.
+   - Incluir qué limpieza se autorizó, qué se retiró y qué queda pendiente.
 
 > [!IMPORTANT]
 > Nunca uses git para subir archivos basura, logs o archivos `.plasmoid`. Confía en el `.gitignore` existente. Si hay dudas sobre un archivo grande o extraño detectado en el `git status`, detente y pregúntale al usuario antes de hacer el commit.

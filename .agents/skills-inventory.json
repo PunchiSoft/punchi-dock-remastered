@@ -42,7 +42,7 @@
     }
   ],
   "schema_version": 1,
-  "skill_count": 64,
+  "skill_count": 65,
   "skills": [
     {
       "aliases": [],
@@ -295,6 +295,75 @@
         "preflight-security-review",
         "review-cycle",
         "testing"
+      ],
+      "resources": {
+        "assets": [],
+        "other": [],
+        "references": [],
+        "scripts": []
+      },
+      "role": "orchestrator"
+    },
+    {
+      "aliases": [],
+      "canonical": null,
+      "description": "Revisar y ejecutar limpieza local y remota de ramas, worktrees, contenedores, artefactos de CI y archivos generados, con inventario previo, autorización explícita y verificación posterior. Usar al cerrar sesión, después de fusionar un PR o cuando el usuario pida limpieza.",
+      "family": "delivery",
+      "front_matter": {
+        "keys": [
+          "description",
+          "name"
+        ],
+        "status": "valid"
+      },
+      "is_alias": false,
+      "name": "cleanup-review",
+      "openai": {
+        "allow_implicit_invocation": "unspecified",
+        "default_prompt_skill_ref": null,
+        "display_name": null,
+        "exists": false,
+        "short_description": null
+      },
+      "path": ".agents/skills/cleanup-review",
+      "paths": [
+        {
+          "exists": null,
+          "kind": "generated",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "build/"
+        },
+        {
+          "exists": null,
+          "kind": "generated",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "dist/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/deuda-qmllint",
+          "source": "SKILL.md",
+          "value": "docs/deuda-qmllint/"
+        },
+        {
+          "exists": true,
+          "kind": "repo_root",
+          "origin": "inline_code",
+          "resolved": "docs/logs",
+          "source": "SKILL.md",
+          "value": "docs/logs"
+        }
+      ],
+      "references": [
+        "git",
+        "pr-delivery",
+        "safe-removal-review"
       ],
       "resources": {
         "assets": [],
@@ -1055,6 +1124,7 @@
       ],
       "references": [
         "branch-baseline",
+        "cleanup-review",
         "commit-push-versioning",
         "pr-delivery",
         "verification-before-completion"
@@ -2668,6 +2738,7 @@
       "path": ".agents/skills/pr-delivery",
       "paths": [],
       "references": [
+        "cleanup-review",
         "commit-push-versioning",
         "verification-before-completion"
       ],
@@ -3518,6 +3589,22 @@
           "value": "CMakeLists.txt"
         },
         {
+          "exists": null,
+          "kind": "generated",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "build/"
+        },
+        {
+          "exists": null,
+          "kind": "generated",
+          "origin": "inline_code",
+          "resolved": null,
+          "source": "SKILL.md",
+          "value": "dist/"
+        },
+        {
           "exists": true,
           "kind": "repo_root",
           "origin": "inline_code",
@@ -3551,6 +3638,7 @@
         }
       ],
       "references": [
+        "cleanup-review",
         "git",
         "release"
       ],
