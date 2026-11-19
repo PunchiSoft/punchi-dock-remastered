@@ -52,9 +52,9 @@ if [[ -e "$ci_build_root" ]]; then
     exit 1
 fi
 
-# The container is disposable. DNF installs the same declared dependencies as
-# the maintainer setup script; the build and tests then run as the checkout owner.
-dnf install --assumeyes sudo shadow-utils
+# The container is disposable. `util-linux` provides `runuser`; DNF then installs
+# the project's declared dependencies through the maintainer setup script.
+dnf install --assumeyes sudo shadow-utils util-linux
 useradd --uid "$ci_uid" --user-group --create-home --shell /bin/bash punchi-ci
 dnf_path="$(command -v dnf)"
 sudoers_file="/etc/sudoers.d/punchi-ci-dnf"
