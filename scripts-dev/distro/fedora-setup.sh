@@ -28,6 +28,7 @@ DNF_PACKAGES=(
     kf6-kpackage
     kf6-kservice-devel
     libplasma-devel
+    plasma-workspace
     plasma-workspace-devel
     plasma-activities-devel
     plasma-activities-stats-devel
