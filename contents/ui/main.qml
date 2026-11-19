@@ -1026,6 +1026,7 @@ PlasmoidItem {
 
     property var punchiMenuDialogInstance: null
     property var punchiMenuAnchorItem: null
+    property bool punchiMenuOpenPending: false
 
     // Native launchers never build their surface inside the first click: KDE
     // keeps the dashboard window alive and toggles its visibility, and GNOME
@@ -1061,6 +1062,10 @@ PlasmoidItem {
     }
 
     function togglePunchiMenu(anchorItem) {
+        if (punchiMenuOpenPending) {
+            punchiMenuOpenPending = false
+            return
+        }
         if (controlCenterDialogInstance
                 && controlCenterDialogInstance.visible) {
             controlCenterDialogInstance.closeImmediately()
@@ -1074,6 +1079,7 @@ PlasmoidItem {
             punchiMenuDialogInstance.closeImmediately()
             punchiMenuDialogInstance.destroy()
             punchiMenuDialogInstance = null
+            punchiMenuOpenPending = false
         }
 
         if ((requestedMode === "normal" || requestedMode === "compact") && anchorItem
@@ -1084,6 +1090,7 @@ PlasmoidItem {
             return
         }
 
+        const createdNow = !punchiMenuDialogInstance
         if (!punchiMenuDialogInstance) {
             const component = requestedMode === "normal"
                 ? punchiMenuNormalDialogComponent
@@ -1102,12 +1109,26 @@ PlasmoidItem {
         }
 
         if (punchiMenuDialogInstance.visible) {
+            punchiMenuOpenPending = false
             if (typeof punchiMenuDialogInstance.closeWithFade === "function") {
                 punchiMenuDialogInstance.closeWithFade()
             } else {
                 punchiMenuDialogInstance.closeImmediately()
             }
+        } else if (createdNow) {
+            punchiMenuOpenPending = true
+            Qt.callLater(function() {
+                if (!punchiMenuOpenPending) {
+                    return
+                }
+                punchiMenuOpenPending = false
+                if (punchiMenuDialogInstance
+                        && !punchiMenuDialogInstance.visible) {
+                    punchiMenuDialogInstance.openWithReveal()
+                }
+            })
         } else {
+            punchiMenuOpenPending = false
             punchiMenuDialogInstance.openWithReveal()
         }
     }
@@ -1116,6 +1137,7 @@ PlasmoidItem {
     property var controlCenterAnchorItem: null
 
     function toggleControlCenter(anchorItem) {
+        punchiMenuOpenPending = false
         if (punchiMenuDialogInstance && punchiMenuDialogInstance.visible) {
             punchiMenuDialogInstance.closeImmediately()
         }
@@ -2173,6 +2195,7 @@ PlasmoidItem {
     }
     function invalidatePunchiMenuInstance() {
         if (punchiMenuDialogInstance && !punchiMenuDialogInstance.visible) {
+            punchiMenuOpenPending = false
             punchiMenuDialogInstance.destroy()
             punchiMenuDialogInstance = null
             punchiMenuWarmTimer.restart()

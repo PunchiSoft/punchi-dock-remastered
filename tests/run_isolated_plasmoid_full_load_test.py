@@ -34,6 +34,38 @@ def stop_process_group(process):
         process.wait(timeout=2)
 
 
+def expose_host_wayland_socket(environment_root, environment):
+    """Make the host Wayland socket reachable from the isolated runtime.
+
+    Plasma 6.8's Theme creates a Wayland client extension even when the test
+    runs with the offscreen QPA. The fixture rewrites XDG_RUNTIME_DIR, so the
+    socket must be linked into that directory; otherwise the extension reports
+    a connection failure that the warning gate correctly treats as an error.
+    The link lives inside the temporary tree and is removed with it.
+    """
+
+    wayland_display = environment.get("WAYLAND_DISPLAY", "")
+    host_runtime = environment.get("XDG_RUNTIME_DIR", "")
+    if not wayland_display or not host_runtime:
+        return
+    host_socket = Path(wayland_display)
+    if not host_socket.is_absolute():
+        host_socket = Path(host_runtime) / wayland_display
+    if not host_socket.exists():
+        return
+    runtime = environment_root / "wayland"
+    runtime.mkdir(parents=True, exist_ok=True)
+    runtime.chmod(0o700)
+    link = runtime / host_socket.name
+    if link.exists() or link.is_symlink():
+        return
+    link.symlink_to(host_socket)
+    # An absolute WAYLAND_DISPLAY survives the fixture rewriting
+    # XDG_RUNTIME_DIR, and avoids creating the runtime directory before the
+    # child wrapper owns it.
+    environment["WAYLAND_DISPLAY"] = str(link)
+
+
 def main():
     if len(sys.argv) < 2:
         print("Error: an isolated test command is required.", file=sys.stderr)
@@ -43,6 +75,7 @@ def main():
     environment_root = Path(temporary.name)
     environment = os.environ.copy()
     environment["PUNCHI_TEST_ENVIRONMENT_ROOT"] = str(environment_root)
+    expose_host_wayland_socket(environment_root, environment)
     process = None
     result = 1
     cleanup_error = None

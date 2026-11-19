@@ -11,6 +11,7 @@
 #include <Plasma/Corona>
 #include <PlasmaQuick/AppletQuickItem>
 #include <KPackage/PackageLoader>
+#include "plasma_fixture_compat.h"
 #include <QDir>
 #include <QFile>
 #include <QGuiApplication>
@@ -38,8 +39,16 @@ void offscreenPlatformMessageHandler(QtMsgType type, const QMessageLogContext &c
 class FixtureCorona : public Plasma::Corona
 {
 public:
+#if PLASMA_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    uint numScreens() const override { return 1; }
+#else
     int numScreens() const override { return 1; }
+#endif
+#if PLASMA_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    QRect screenGeometry(uint screen) const override { return screen == 0 ? QRect(0, 0, 1920, 1080) : QRect(); }
+#else
     QRect screenGeometry(int screen) const override { return screen == 0 ? QRect(0, 0, 1920, 1080) : QRect(); }
+#endif
 };
 
 class RecentGeneralTestSupport : public QObject
@@ -60,14 +69,21 @@ public:
             if (previous != offscreenPlatformMessageHandler) { previousMessageHandler = previous; }
         }
         auto fixture = std::make_unique<Fixture>();
-        fixture->applet.reset(Plasma::PluginLoader::self()->loadApplet(
-            QStringLiteral("org.example.punchi.recent-config-fixture")));
+        fixture->applet = PunchiTest::loadOwnedApplet(
+            QStringLiteral("org.example.punchi.recent-config-fixture"));
         if (!fixture->applet || !containment) {
             qWarning("Could not create the isolated configuration applet");
             return nullptr;
         }
-        containment->addApplet(fixture->applet.get());
-        auto *item = PlasmaQuick::AppletQuickItem::itemForApplet(fixture->applet.get());
+        auto *applet = PunchiTest::adoptApplet(containment, fixture->applet);
+        if (!applet) {
+            qWarning("Could not add the isolated configuration applet");
+            return nullptr;
+        }
+#if PLASMA_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+        fixture->releasedApplet = applet;
+#endif
+        auto *item = PlasmaQuick::AppletQuickItem::itemForApplet(applet);
         if (!item) { return nullptr; }
         QQmlComponent component(qmlEngine(item), QUrl::fromLocalFile(QStringLiteral(PUNCHI_PROJECT_SOURCE_DIR)
             + QStringLiteral("/contents/ui/config/ConfigGeneral.qml")));
@@ -118,7 +134,16 @@ private:
     struct Fixture {
         std::unique_ptr<Plasma::Applet> applet;
         QPointer<QQuickItem> page;
-        ~Fixture() { delete page; }
+#if PLASMA_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+        Plasma::Applet *releasedApplet = nullptr;
+#endif
+        ~Fixture()
+        {
+            delete page;
+#if PLASMA_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+            delete releasedApplet;
+#endif
+        }
     };
     FixtureCorona corona;
     Plasma::Containment *containment = nullptr;

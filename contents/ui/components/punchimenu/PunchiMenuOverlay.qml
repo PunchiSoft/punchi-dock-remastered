@@ -124,6 +124,8 @@ FocusScope {
     // cached once the surface is already on screen, which keeps paging instant
     // without paying the whole grid construction inside the opening gesture.
     property real pagesCacheBuffer: 0
+    property bool pagesReady: false
+    property bool pagesFullyBuilt: false
     // The sections view lives inside a Loader, so every external use goes
     // through this property and tolerates it being null.
     readonly property var sectionsView: categorySectionsLoader.item
@@ -1019,6 +1021,9 @@ FocusScope {
             return
         }
         const safePage = Math.max(0, Math.min(pageCount - 1, pageIndex))
+        if (safePage > 0 && !root.pagesFullyBuilt) {
+            root.pagesFullyBuilt = true
+        }
         pagesView.currentIndex = safePage
         ensureSelectionOnPage(safePage)
     }
@@ -1118,7 +1123,7 @@ FocusScope {
             Math.min(visibleApplications.length - 1, index))
         const targetPage = pageForApplication(currentApplicationIndex)
         if (targetPage !== pagesView.currentIndex) {
-            pagesView.currentIndex = targetPage
+            root.goToPage(targetPage)
         }
     }
 
@@ -1185,7 +1190,7 @@ FocusScope {
         const targetPage = Math.max(0, Math.min(pageCount - 1,
             pageForApplication(currentApplicationIndex)))
         if (pagesView.currentIndex !== targetPage) {
-            pagesView.currentIndex = targetPage
+            root.goToPage(targetPage)
         }
     }
 
@@ -1297,6 +1302,10 @@ FocusScope {
     function showSettingsPersistenceError() {
         settingsErrorMessage = i18nc("@info", "Changes could not be saved.")
     }
+
+    Component.onCompleted: Qt.callLater(function() {
+        root.pagesReady = true
+    })
 
     function openOverlay() {
         closeTimer.stop()
@@ -1635,6 +1644,7 @@ FocusScope {
         onTriggered: {
             if (root.menuOpen) {
                 root.pagesCacheBuffer = pagesView.width
+                root.pagesFullyBuilt = true
             }
         }
     }
@@ -2204,9 +2214,14 @@ FocusScope {
                 anchors.leftMargin: root.applicationGridHorizontalInset
                 anchors.rightMargin: root.applicationGridHorizontalInset
                 orientation: ListView.Horizontal
-                model: root.pageCount
+                model: root.pagesReady
+                    && pagesView.width > 0 && pagesView.height > 0
+                    ? (root.pagesFullyBuilt
+                        ? root.pageCount : Math.min(root.pageCount, 1))
+                    : 0
                 clip: true
                 interactive: root.pageCount > 1 && !internalDragLayer.active
+                    && root.pagesFullyBuilt
                 boundsBehavior: Flickable.StopAtBounds
                 snapMode: ListView.SnapOneItem
                 highlightRangeMode: ListView.StrictlyEnforceRange
@@ -2344,34 +2359,40 @@ FocusScope {
                                 Accessible.focused: isSelected
                                 Accessible.onPressAction: root.launchApplicationAt(globalIndex)
 
-                                PunchiMenuFolderTile {
+                                Loader {
                                     anchors.fill: parent
                                     anchors.margins: Kirigami.Units.smallSpacing
-                                    visible: appDelegate.isFolder
-                                    enabled: visible
-                                    activeFocusOnTab: false
-                                    folderId: String(appDelegate.modelData.folderId || "")
-                                    folderLabel: String(appDelegate.modelData
-                                        .folderLabel || "")
-                                    previewIcons: appDelegate.modelData
-                                        .folderPreviewIcons || []
-                                    memberCount: Number(appDelegate.modelData
-                                        .folderMemberCount || 0)
-                                    selected: appDelegate.highlighted
-                                        || appDelegate.dropGroupingActive
-                                    motionEnabled: root.motionEnabled
-                                    requestedIconSize: appDelegate.safeIconSize
-                                    hoverAnimation: root.hoverAnimation
-                                    onActivated: root.launchApplicationAt(
-                                        appDelegate.globalIndex)
-                                    onContextRequested: function(sourceItem, x, y) {
-                                        root.setCurrentApplication(
+                                    active: appDelegate.isFolder
+                                    visible: active
+                                    sourceComponent:
+                                    PunchiMenuFolderTile {
+                                        anchors.fill: parent
+                                        visible: appDelegate.isFolder
+                                        enabled: visible
+                                        activeFocusOnTab: false
+                                        folderId: String(appDelegate.modelData.folderId || "")
+                                        folderLabel: String(appDelegate.modelData
+                                            .folderLabel || "")
+                                        previewIcons: appDelegate.modelData
+                                            .folderPreviewIcons || []
+                                        memberCount: Number(appDelegate.modelData
+                                            .folderMemberCount || 0)
+                                        selected: appDelegate.highlighted
+                                            || appDelegate.dropGroupingActive
+                                        motionEnabled: root.motionEnabled
+                                        requestedIconSize: appDelegate.safeIconSize
+                                        hoverAnimation: root.hoverAnimation
+                                        onActivated: root.launchApplicationAt(
                                             appDelegate.globalIndex)
-                                        root.openFolderContextMenu(sourceItem,
-                                            appDelegate.modelData, x, y)
+                                        onContextRequested: function(sourceItem, x, y) {
+                                            root.setCurrentApplication(
+                                                appDelegate.globalIndex)
+                                            root.openFolderContextMenu(sourceItem,
+                                                appDelegate.modelData, x, y)
+                                        }
+                                        onRenameRequested: folderSurface.beginRename(
+                                            String(appDelegate.modelData.folderId || ""))
                                     }
-                                    onRenameRequested: folderSurface.beginRename(
-                                        String(appDelegate.modelData.folderId || ""))
                                 }
 
                                 PunchiMenuItemHighlight {

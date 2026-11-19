@@ -11,6 +11,8 @@
 #include <Plasma/Corona>
 #include <Plasma/PluginLoader>
 #include <PlasmaQuick/AppletQuickItem>
+
+#include "plasma_fixture_compat.h"
 #include <QDirIterator>
 #include <QFile>
 #include <QGuiApplication>
@@ -55,8 +57,16 @@ void capture(QtMsgType type, const QMessageLogContext &context, const QString &m
 }
 class TestCorona final : public Plasma::Corona {
 public:
+#if PLASMA_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    uint numScreens() const override { return 1; }
+#else
     int numScreens() const override { return 1; }
+#endif
+#if PLASMA_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    QRect screenGeometry(uint screen) const override { return screen == 0 ? QRect(0, 0, 1920, 1080) : QRect(); }
+#else
     QRect screenGeometry(int screen) const override { return screen == 0 ? QRect(0, 0, 1920, 1080) : QRect(); }
+#endif
 };
 bool copyFile(const QString &source, const QString &target)
 {
@@ -142,10 +152,10 @@ private Q_SLOTS:
             containment->setFormFactor(floating ? Plasma::Types::Planar
                 : vertical ? Plasma::Types::Vertical : Plasma::Types::Horizontal);
             containment->setLocation(vertical ? Plasma::Types::LeftEdge : Plasma::Types::BottomEdge);
-            auto *applet = Plasma::PluginLoader::self()->loadApplet(QStringLiteral("org.kde.plasma.punchi-dock-remastered"), id);
+            auto *applet = PunchiTest::createApplet(containment,
+                QStringLiteral("org.kde.plasma.punchi-dock-remastered"), id);
             QVERIFY(applet);
             QPointer<Plasma::Applet> guard(applet);
-            containment->addApplet(applet);
             QVERIFY(applet->launchErrorMessage().isEmpty());
             auto *config = applet->configuration();
             const QString base = QStringLiteral("[{\"type\":\"app\",\"name\":\"Pinned Fixture\",\"icon\":\"system-run\",\"storageId\":\"org.example.Recent1.desktop\"},{\"type\":\"dynamic-applications\",\"name\":\"Open applications\"},{\"type\":\"trash\",\"name\":\"Trash\"}]");
@@ -289,9 +299,9 @@ private Q_SLOTS:
             QCoreApplication::sendPostedEvents(nullptr, QEvent::DeferredDelete);
             QCoreApplication::processEvents();
             QVERIFY(guard.isNull());
-            auto *saved = Plasma::PluginLoader::self()->loadApplet(QStringLiteral("org.kde.plasma.punchi-dock-remastered"), id);
+            auto *saved = PunchiTest::createApplet(containment,
+                QStringLiteral("org.kde.plasma.punchi-dock-remastered"), id);
             QVERIFY(saved);
-            containment->addApplet(saved);
             QCOMPARE(saved->configuration()->value(QStringLiteral("recentApplicationsPosition")).toString(), memory);
             auto *savedItem = PlasmaQuick::AppletQuickItem::itemForApplet(saved);
             QVERIFY(savedItem);

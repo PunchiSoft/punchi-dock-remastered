@@ -35,6 +35,8 @@
 #include <Plasma/Theme>
 #include <PlasmaQuick/AppletQuickItem>
 
+#include "plasma_fixture_compat.h"
+
 #include <algorithm>
 #include <memory>
 
@@ -312,12 +314,20 @@ public:
     {
     }
 
+#if PLASMA_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    uint numScreens() const override
+#else
     int numScreens() const override
+#endif
     {
         return 1;
     }
 
+#if PLASMA_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    QRect screenGeometry(uint screen) const override
+#else
     QRect screenGeometry(int screen) const override
+#endif
     {
         return screen == 0 ? QRect(0, 0, 1920, 1080) : QRect();
     }
@@ -607,10 +617,9 @@ private Q_SLOTS:
         hostWindow.resize(1920, 1080);
         hostWindow.show();
 
-        Plasma::Applet *applet =
-            Plasma::PluginLoader::self()->loadApplet(QStringLiteral("org.kde.plasma.minimizeall"), 2003U);
+        Plasma::Applet *applet = PunchiTest::createApplet(m_containment,
+            QStringLiteral("org.kde.plasma.minimizeall"), 2003U);
         QVERIFY2(applet, "The official control applet was not found");
-        m_containment->addApplet(applet);
         PlasmaQuick::AppletQuickItem *item = PlasmaQuick::AppletQuickItem::itemForApplet(applet);
         QVERIFY2(item, "The official control applet produced no quick item");
         item->setParentItem(hostWindow.contentItem());
@@ -751,12 +760,11 @@ private:
             general.sync();
         }
 
-        Plasma::Applet *applet =
-            Plasma::PluginLoader::self()->loadApplet(QString::fromLatin1(s_pluginId), appletId);
+        Plasma::Applet *applet = PunchiTest::createApplet(m_containment,
+            QString::fromLatin1(s_pluginId), appletId);
         if (!applet) {
             return nullptr;
         }
-        m_containment->addApplet(applet);
         PlasmaQuick::AppletQuickItem *item = PlasmaQuick::AppletQuickItem::itemForApplet(applet);
         if (!item) {
             return nullptr;
