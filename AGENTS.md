@@ -525,6 +525,14 @@ La entrega se reparte entre cuatro skills y no se improvisa en el hilo:
 | Pull request | `pr-delivery` | título desde el commit principal, cuerpo estructurado con la evidencia real, rebase en vez de merge commit |
 | Evidencia | `verification-before-completion` | qué niveles se ejecutaron y qué queda sin verificar |
 
+La CI de PR se divide en dos comprobaciones: `PR guard` valida la superficie del
+diff, integridad, versión, KConfig y catálogos; `CI / validation` clasifica el
+diff y ejecuta el gate Fedora completo para código o `git diff --check` y el
+contrato de versión para documentación permitida. La ruta desconocida siempre
+pertenece al gate de código. El ruleset de `main` debe requerir ambos checks antes
+de afirmar que el gate bloquea PR no validados; confirmar esa protección en
+GitHub, no inferirla de los workflows.
+
 Reglas derivadas:
 
 - nunca se trabaja ni se hace commit sobre `main`; una rama por cambio con
@@ -542,6 +550,10 @@ Reglas derivadas:
   se rellena con «ninguno»;
 - `main` recibe pull requests squash-merge; el borrado de la rama de entrega se
   hace solo cuando el usuario lo pide.
+- Antes de entregar un PR, esperar `gh pr checks --watch` y comprobar base, head,
+  SHA revisado, archivos cambiados, `state` y `mergedAt`. Después de una fusión
+  confirmada, actualizar `main` con fast-forward y preguntar antes de limpiar la
+  rama local o remota.
 
 Los documentos publicados del proyecto son `README*.md`, `CHANGELOG.md`,
 `CONTRIBUTING.md`, `SECURITY.md`, `SUPPORT.md`, `NOTICE`, `LICENSE`, `metadata.json`,

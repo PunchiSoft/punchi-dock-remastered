@@ -1,0 +1,151 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches:
+      - main
+      - 'feat/**'
+      - 'fix/**'
+      - 'docs/**'
+      - 'refactor/**'
+      - 'chore/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pin the OS image. Fedora's RPM repositories still resolve their current
+  # packages; the baseline gate detects toolchain drift instead of hiding it.
+  FEDORA_IMAGE: fedora:44@sha256:43b29f65a41eb9c35e1cd5323e3bdf3b655c2357a9f4f1ff2f9c2798e5045d80
+
+jobs:
+  classify:
+    name: classify
+    runs-on: ubuntu-latest
+    outputs:
+      kind: ${{ steps.classify.outputs.kind }}
+    steps:
+      - name: Check out the change
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Test the fail-closed path classifier
+        run: python3 scripts-dev/test_pr_ci_paths.py
+
+      - name: Classify changed paths
+        id: classify
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+          PUSH_HEAD_SHA: ${{ github.sha }}
+        shell: bash
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            kind=code
+          elif [[ "$EVENT_NAME" == "push" ]]; then
+            if [[ "$PUSH_BEFORE_SHA" =~ ^0+$ ]]; then
+              kind=code
+            else
+              kind="$(python3 scripts-dev/pr_ci_paths.py \
+                --base "$PUSH_BEFORE_SHA" --head "$PUSH_HEAD_SHA" | tail -n 1)"
+            fi
+          else
+            kind="$(python3 scripts-dev/pr_ci_paths.py --base "$BASE_SHA" --head "$HEAD_SHA" | tail -n 1)"
+          fi
+          case "$kind" in
+            code|docs) ;;
+            *)
+              printf 'Invalid change classification: %s\n' "$kind" >&2
+              exit 1
+              ;;
+          esac
+          printf 'kind=%s\n' "$kind" >>"$GITHUB_OUTPUT"
+          printf 'Change class: %s\n' "$kind"
+
+  validation:
+    name: validation
+    needs: classify
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Fail closed if classification failed
+        if: always()
+        env:
+          CLASSIFY_RESULT: ${{ needs.classify.result }}
+          CHANGE_KIND: ${{ needs.classify.outputs.kind }}
+        run: |
+          if [[ "$CLASSIFY_RESULT" != "success" ]]; then
+            echo "The path-classification job did not succeed." >&2
+            exit 1
+          fi
+          case "$CHANGE_KIND" in
+            code|docs) ;;
+            *)
+              echo "The path classifier returned no known class." >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Check out the change
+        if: needs.classify.result == 'success'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate documentation-only changes
+        if: needs.classify.outputs.kind == 'docs'
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+          PUSH_HEAD_SHA: ${{ github.sha }}
+        run: |
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            git diff --check "$PR_BASE_SHA...$PR_HEAD_SHA"
+          elif [[ "$EVENT_NAME" == "push" ]]; then
+            git diff --check "$PUSH_BEFORE_SHA...$PUSH_HEAD_SHA"
+          else
+            echo "Unexpected docs-only event: $EVENT_NAME" >&2
+            exit 1
+          fi
+          python3 scripts-dev/check-version.py
+          echo "Full build and CTest skipped: the diff contains only allow-listed documentation paths."
+          echo "On pull requests, the separate PR guard checks diff surface, KConfig, translations and test integrity."
+
+      - name: Run the full Fedora package and test gate
+        if: needs.classify.outputs.kind == 'code'
+        run: |
+          docker run --rm \
+            --volume "$GITHUB_WORKSPACE:/src" \
+            --workdir /src \
+            --env PUNCHI_CI_CONTAINER=1 \
+            --env PUNCHI_CI_UID="$(id -u)" \
+            "$FEDORA_IMAGE" \
+            bash scripts-dev/ci/fedora-pr-gate.sh
+
+      - name: Upload build and test logs
+        if: always() && needs.classify.outputs.kind == 'code'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: pr-ci-logs-${{ github.run_id }}
+          path: |
+            build/ci-fedora44/setup-logs/*.log
+            build/ci-fedora44/build/qmllint.log
+            build/ci-fedora44/build/Testing/Temporary/LastTest.log
+            build/ci-fedora44/build/Testing/Temporary/LastTestsFailed.log
+          if-no-files-found: warn
+          retention-days: 7
