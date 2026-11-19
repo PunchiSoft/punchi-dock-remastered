@@ -39,6 +39,9 @@ Cuando se solicite el cierre de sesión, el agente **debe ejecutar en orden estr
      `git diff --cached --check` y crear el mensaje semantico con
      `feat(scope):`, `fix(scope):`, `docs(scope):`, `refactor(scope):` o
      `chore(scope):` segun aplique.
+   - Si el commit lleva trailer de coautoría, usar
+     `Co-authored-by: PunchiSoft <cristian.munoz.jimenez@gmail.com>`; no usar
+     `OpenCode`. Omitirlo cuando el autor ya sea PunchiSoft.
 
 5. **Subida (Git Push)**
    - Delegar en `commit-push-versioning` para empujar la rama sin forzar y
