@@ -14,11 +14,13 @@ DRY_RUN=0
 
 DNF_PACKAGES=(
     binutils
+    bluedevil
     cmake
     extra-cmake-modules
     gcc-c++
     gettext
     git
+    kf6-bluez-qt
     kf6-kconfig-devel
     kf6-kcoreaddons-devel
     kf6-kglobalaccel-devel
@@ -28,12 +30,14 @@ DNF_PACKAGES=(
     kf6-kpackage
     kf6-kservice-devel
     libplasma-devel
-    plasma-workspace
-    plasma-workspace-devel
-    plasma-activities-devel
-    plasma-activities-stats-devel
     ninja-build
     pipewire-devel
+    plasma-activities-devel
+    plasma-activities-stats-devel
+    plasma-nm
+    plasma-pa
+    plasma-workspace
+    plasma-workspace-devel
     pkgconf-pkg-config
     qt6-qtbase-devel
     qt6-qtdeclarative-devel
