@@ -14,6 +14,7 @@ of improvising a flow here.
 | Commit and push | `commit-push-versioning` | the user asks to commit, push, or both; version and changelog decision |
 | Pull request | `pr-delivery` | opening, updating or checking the delivery pull request |
 | Delivery evidence | `verification-before-completion` | deciding whether the collected evidence is enough to call it done |
+| Cleanup | `cleanup-review` | local or remote branches, worktrees, containers, CI artifacts or generated files |
 
 ## Rules that hold in every stage
 

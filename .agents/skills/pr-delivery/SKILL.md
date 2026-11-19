@@ -91,6 +91,9 @@ Wayland or packaging check was not performed.
 - Pull requests are squash-merged and the delivery branch is deleted afterwards,
   but only when the user asks: do not merge, tag, release or delete a branch on
   your own, and never delete a branch that still has unmerged commits.
+- Use `cleanup-review` for the post-merge inventory and batch cleanup. This skill
+  verifies delivery; branch, worktree, container and artifact removal follows the
+  cleanup gates and requires the user's explicit authorization.
 
 ## Anti-patterns
 

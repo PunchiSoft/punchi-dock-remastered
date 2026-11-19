@@ -43,6 +43,10 @@ skills:
     family: workflow
     role: orchestrator
     references: [review-cycle, git, preflight-security-review, testing]
+  - name: cleanup-review
+    family: delivery
+    role: orchestrator
+    references: [git, pr-delivery, safe-removal-review]
   - name: code-review
     family: governance
     role: domain
@@ -86,7 +90,7 @@ skills:
   - name: git
     family: delivery
     role: domain
-    references: [branch-baseline, commit-push-versioning, pr-delivery, verification-before-completion]
+    references: [branch-baseline, cleanup-review, commit-push-versioning, pr-delivery, verification-before-completion]
   - name: github-issue-response
     family: workflow
     role: domain
@@ -198,7 +202,7 @@ skills:
   - name: pr-delivery
     family: delivery
     role: domain
-    references: [commit-push-versioning, verification-before-completion]
+    references: [cleanup-review, commit-push-versioning, verification-before-completion]
   - name: preflight-security-review
     family: governance
     role: domain
@@ -256,7 +260,7 @@ skills:
   - name: session-closure
     family: workflow
     role: orchestrator
-    references: [git, release]
+    references: [cleanup-review, git, release]
   - name: taskmanager-api
     family: kde-platform
     role: domain
