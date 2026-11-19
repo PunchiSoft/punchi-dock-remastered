@@ -34,6 +34,8 @@
 #include <Plasma/Theme>
 #include <PlasmaQuick/AppletQuickItem>
 
+#include "plasma_fixture_compat.h"
+
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -256,12 +258,20 @@ class TestCorona final : public Plasma::Corona
 public:
     using Plasma::Corona::Corona;
 
+#if PLASMA_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    uint numScreens() const override
+#else
     int numScreens() const override
+#endif
     {
         return 1;
     }
 
+#if PLASMA_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+    QRect screenGeometry(uint screen) const override
+#else
     QRect screenGeometry(int screen) const override
+#endif
     {
         return screen == 0 ? QRect(0, 0, 1920, 1080) : QRect();
     }
@@ -425,7 +435,8 @@ private:
             stored.sync();
         }
 
-        Plasma::Applet *applet = Plasma::PluginLoader::self()->loadApplet(QString::fromLatin1(s_pluginId), appletId);
+        Plasma::Applet *applet = PunchiTest::createApplet(m_containment,
+            QString::fromLatin1(s_pluginId), appletId);
         QPointer<Plasma::Applet> appletGuard(applet);
         result.appletLoaded = applet != nullptr;
 
@@ -433,7 +444,6 @@ private:
         QQuickWindow panelHostWindow;
         panelHostWindow.setProperty("visibilityMode", 1);
         if (applet) {
-            m_containment->addApplet(applet);
             auto *configuration = applet->configuration();
             result.initialIconSizeCorrect = configuration
                 && configuration->value(QStringLiteral("iconSize")).toInt() == expectedIconSize

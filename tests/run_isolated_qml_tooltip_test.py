@@ -29,6 +29,10 @@ def main() -> int:
         path = root / folder
         path.mkdir(mode=0o700)
         environment[variable] = str(path)
+    (root / "config" / "kdeglobals").write_text(
+        "[Icons]\nTheme=breeze\n", encoding="utf-8")
+    (root / "config" / "plasmarc").write_text(
+        "[Theme]\nname=default\n", encoding="utf-8")
     os.execvpe(arguments.command[0], arguments.command, environment)
     return 1
 

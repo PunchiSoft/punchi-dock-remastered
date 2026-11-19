@@ -1,5 +1,12 @@
 ## Unreleased
 
+### Apertura de PunchiMenu
+
+- Reducida la primera apertura de PunchiMenu en pantalla completa: la vista construye solo la página visible antes de revelar y difiere las páginas vecinas después del primer fotograma. La medición aislada pasa de 2752–2961 ms a 318–376 ms en frío y de 23 ms a 10–13 ms con la instancia precalentada.
+- La navegación por teclado, rueda y botones amplía el modelo antes de cambiar a una página no construida; el arrastre directo espera a que existan las páginas vecinas.
+- Las fichas de carpeta dejan de construirse para aplicaciones que no son carpetas.
+- Adaptados los fixtures de pruebas a Plasma 6.8 (`screenGeometry`, `numScreens`, `loadApplet` y `addApplet`) y aislado el socket Wayland que `Plasma::Theme` intenta abrir en pruebas `offscreen`. La suite completa queda en 190/190.
+
 ### Perfil inicial y papelera
 
 - Reordenados los elementos de fábrica: la papelera pasa al final, la nota de bienvenida queda antes del separador y las aplicaciones abiertas preceden a Descargas y a las aplicaciones recientes. El marcador de aplicaciones recientes forma parte de los valores iniciales, así que su posición se conserva al desactivar y reactivar la opción. El cambio alcanza solo a instalaciones nuevas y a «Restaurar elementos predeterminados».
