@@ -65,13 +65,18 @@ visudo --check --file="$sudoers_file"
 runuser --user punchi-ci -- mkdir -p "$ci_build_root/setup-logs"
 runuser --user punchi-ci -- env \
     HOME=/home/punchi-ci \
-    PUNCHI_LOG_DIR="$ci_build_root/setup-logs" \
+    PUNCHI_SETUP_LOG_ACTIVE=1 \
+    PUNCHI_PROGRESS_PRESENTATION=static \
     bash "$project_root/scripts-dev/distro/fedora-setup.sh" \
-    --dependencies-only --yes --jobs 2
+    --dependencies-only --yes --jobs 2 \
+    2>&1 | tee "$ci_build_root/setup-logs/dependencies.log"
 
 runuser --user punchi-ci -- env \
     HOME=/home/punchi-ci \
+    PUNCHI_SETUP_LOG_ACTIVE=1 \
+    PUNCHI_PROGRESS_PRESENTATION=static \
     BUILD_DIR="$ci_build_root/build" \
     PACKAGE_OUTPUT_FILE="$ci_build_root/punchi-dock-remastered-ci.plasmoid" \
     QMLLINT_BASELINE_FILE="$project_root/scripts-dev/qmllint-baseline-fedora.env" \
-    bash "$project_root/scripts-dev/distro/fedora-package.sh"
+    bash "$project_root/scripts-dev/distro/fedora-package.sh" \
+    2>&1 | tee "$ci_build_root/setup-logs/package.log"
