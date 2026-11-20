@@ -631,7 +631,9 @@ add_test(NAME recent_applications_full_load_test
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/run_isolated_plasmoid_full_load_test.py
         ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
         -- $<TARGET_FILE:recent_applications_full_load_test>)
-set_tests_properties(recent_applications_full_load_test PROPERTIES TIMEOUT 30)
+set_tests_properties(recent_applications_full_load_test PROPERTIES
+    ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT}"
+    TIMEOUT 30)
 
 add_executable(recent_applications_placement_full_load_test recent_applications_placement_full_load_test.cpp)
 add_dependencies(recent_applications_placement_full_load_test punchidockintegrationplugin)
@@ -652,7 +654,9 @@ function(punchi_add_recent_placement_case test_name scenario)
             ${PUNCHI_DBUS_RUN_SESSION} --config-file=${CMAKE_CURRENT_SOURCE_DIR}/dbus-session-isolated.conf
             -- $<TARGET_FILE:recent_applications_placement_full_load_test>
                 placementAndContainerDragAcrossOrientations:${scenario})
-    set_tests_properties(${test_name} PROPERTIES TIMEOUT 30)
+    set_tests_properties(${test_name} PROPERTIES
+        ENVIRONMENT "${PUNCHI_QML_TEST_ENVIRONMENT}"
+        TIMEOUT 30)
 endfunction()
 punchi_add_recent_placement_case(recent_applications_placement_full_load_test horizontal-panel)
 foreach(scenario vertical-panel horizontal-floating vertical-floating
@@ -719,7 +723,7 @@ set(PUNCHI_QML_TEST_PLATFORM "offscreen" CACHE STRING
     "Qt platform plugin used by Punchi Dock QML runtime tests"
 )
 set(PUNCHI_QML_TEST_ENVIRONMENT
-    "LANGUAGE=en;QT_QPA_PLATFORM=${PUNCHI_QML_TEST_PLATFORM};QT_QUICK_CONTROLS_STYLE=org.kde.desktop"
+    "LANGUAGE=en;QT_QPA_PLATFORM=${PUNCHI_QML_TEST_PLATFORM};QT_QUICK_CONTROLS_STYLE=org.kde.desktop;XDG_CURRENT_DESKTOP=KDE"
 )
 
 function(punchi_add_qml_test test_name qml_file)

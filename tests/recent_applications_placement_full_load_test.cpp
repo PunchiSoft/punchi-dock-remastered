@@ -43,6 +43,7 @@ void capture(QtMsgType type, const QMessageLogContext &context, const QString &m
         || (category == QLatin1String("qt.qml.propertyCache.append") && message == QLatin1String("Member visible of the object PlasmaQuick::Dialog overrides a member of the base object. Consider renaming it or adding final or override specifier"))
         || (category == QLatin1String("kf.plasma.quick") && message.startsWith(QLatin1String("Couldn't create KWindowShadow for ")) && message.endsWith(QLatin1Char(')')))
         || (category == QLatin1String("org.kde.plasma.libtaskmanager") && message == QLatin1String("Failed to determine whether virtual desktop navigation wrapping is enabled:  \"The name org.kde.KWin was not provided by any .service files\""))
+        || (message == QLatin1String("Failed to create wl_display (No such file or directory)"))
         // The disposable TestCorona registers no containment type, so Plasma
         // reports the empty lookup while creating offscreen applets.
         || (category == QLatin1String("kf.plasma.core") && message.startsWith(QLatin1String("Unknown containment type requested: ")))

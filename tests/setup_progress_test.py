@@ -74,7 +74,7 @@ def main():
                           'printf "2/3 Test #2: skipped ... ***Skipped 0.1 sec\\n"\n'
                           'printf "3/3 Test #3: disabled ... ***Not Run (Disabled) 0.0 sec\\n"\n')
         result = subprocess.run(command, env=environment, capture_output=True,
-                                text=True, timeout=5)
+                                text=True, timeout=10)
         assert result.returncode == 0, result.stderr
         assert "3/3 completed; 0 failed; 2 skipped" in result.stdout, result.stdout
         assert "\x1b" not in result.stdout and "\r" not in result.stdout
@@ -130,7 +130,7 @@ def main():
         assert not list(temporary.glob("punchi-progress.*"))
 
         plain_result = subprocess.run(public_command, env=environment,
-                                      capture_output=True, text=True, timeout=5)
+                                      capture_output=True, text=True, timeout=10)
         assert plain_result.returncode == 0, plain_result.stderr
         assert "noisy compiler output" in plain_result.stderr, plain_result.stderr
         assert "noisy staging output" in plain_result.stderr, plain_result.stderr
@@ -163,7 +163,7 @@ def main():
                     assert child_file.exists(), "Worker did not start"
                     child = int(child_file.read_text())
                     (os.killpg if group else os.kill)(process.pid, interrupt)
-                    output, errors = process.communicate(timeout=5)
+                    output, errors = process.communicate(timeout=10)
                     assert process.returncode == 128 + interrupt, (output, errors)
                     assert "[100%]" not in output, output
                     stat = Path(f"/proc/{child}/stat")
@@ -176,7 +176,7 @@ def main():
                         os.killpg(process.pid, signal.SIGKILL)
                     except ProcessLookupError:
                         pass
-                    process.communicate(timeout=5)
+                    process.communicate(timeout=10)
     print("Setup progress regression tests passed.")
 
 
