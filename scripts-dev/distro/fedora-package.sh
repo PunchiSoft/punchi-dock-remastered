@@ -32,7 +32,14 @@ platform_label="fedora${platform_version}-${package_arch}"
 
 export BUILD_DIR="${BUILD_DIR:-$PROJECT_ROOT/build/$platform_label}"
 export PACKAGE_OUTPUT_FILE="${PACKAGE_OUTPUT_FILE:-$PROJECT_ROOT/dist/punchi-dock-remastered-${package_version}-${platform_label}.plasmoid}"
-export QMLLINT_BASELINE_FILE="${QMLLINT_BASELINE_FILE:-$SCRIPTS_DIR/qmllint-baseline-fedora.env}"
+if [[ -n "${QMLLINT_BASELINE_FILE:-}" ]]; then
+    export QMLLINT_BASELINE_FILE
+elif [[ "${VERSION_ID:-}" == "45" \
+    && -f "$SCRIPTS_DIR/qmllint-baseline-fedora45.env" ]]; then
+    export QMLLINT_BASELINE_FILE="$SCRIPTS_DIR/qmllint-baseline-fedora45.env"
+else
+    export QMLLINT_BASELINE_FILE="$SCRIPTS_DIR/qmllint-baseline-fedora.env"
+fi
 export QMLLINT_BIN="${QMLLINT_BIN:-/usr/lib64/qt6/bin/qmllint}"
 export PUNCHI_PACKAGE_CORE=1
 

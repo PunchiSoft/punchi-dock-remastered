@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Run the repository's existing full Fedora gate in an ephemeral container.
+# Run Fedora 44 lint, build, packaging and the stable headless test subset.
 set -euo pipefail
 
 project_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -52,6 +52,24 @@ if [[ -e "$ci_build_root" ]]; then
     exit 1
 fi
 
+# The minimal Fedora 44 image does not provide a Plasma session. Keep lint,
+# build, package and the stable headless test subset here; the full CTest suite
+# runs on Fedora 45 in a real session through the same package profile.
+headless_selection_file="$project_root/scripts-dev/ci/fedora-headless-tests.txt"
+[[ -r "$headless_selection_file" ]] || {
+    echo "Error: missing headless test selection: $headless_selection_file" >&2
+    exit 1
+}
+headless_regex="$(awk '
+    /^[[:space:]]*#/ { next }
+    NF { printf "%s%s", separator, $1; separator = "|" }
+' "$headless_selection_file")"
+[[ -n "$headless_regex" ]] || {
+    echo "Error: the headless test selection is empty." >&2
+    exit 1
+}
+headless_regex="^($headless_regex)$"
+
 # The container is disposable. `util-linux` provides `runuser`; DNF then installs
 # the project's declared dependencies through the maintainer setup script.
 dnf install --assumeyes sudo shadow-utils util-linux
@@ -78,5 +96,6 @@ runuser --user punchi-ci -- env \
     BUILD_DIR="$ci_build_root/build" \
     PACKAGE_OUTPUT_FILE="$ci_build_root/punchi-dock-remastered-ci.plasmoid" \
     QMLLINT_BASELINE_FILE="$project_root/scripts-dev/qmllint-baseline-fedora.env" \
+    PUNCHI_CTEST_SELECTION="$headless_regex" \
     bash "$project_root/scripts-dev/distro/fedora-package.sh" \
     2>&1 | tee "$ci_build_root/setup-logs/package.log"

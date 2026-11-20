@@ -527,11 +527,13 @@ La entrega se reparte entre cuatro skills y no se improvisa en el hilo:
 
 La CI de PR se divide en dos comprobaciones: `PR guard` valida la superficie del
 diff, integridad, versión, KConfig y catálogos; `CI / validation` clasifica el
-diff y ejecuta el gate Fedora completo para código o `git diff --check` y el
-contrato de versión para documentación permitida. La ruta desconocida siempre
-pertenece al gate de código. El ruleset de `main` debe requerir ambos checks antes
-de afirmar que el gate bloquea PR no validados; confirmar esa protección en
-GitHub, no inferirla de los workflows.
+diff y, para código, ejecuta en Fedora 44 `qmllint`, build, empaquetado y el
+subconjunto headless declarado en `scripts-dev/ci/fedora-headless-tests.txt`.
+El CTest completo se ejecuta en Fedora 45 con sesión Plasma, usando su baseline
+propio; no se presenta el subconjunto headless como suite completa. La ruta
+desconocida siempre pertenece al gate de código. El ruleset de `main` debe
+requerir ambos checks antes de afirmar que el gate bloquea PR no validados;
+confirmar esa protección en GitHub, no inferirla de los workflows.
 
 Reglas derivadas:
 

@@ -56,6 +56,21 @@ python3 ./scripts-dev/check-version.py
   de paquetes universales que usa `scripts-user/setup-universal.sh`; ejecutarla
   antes de publicar.
 
+## Perfiles Fedora
+
+- **CI Fedora 44:** la imagen desechable fijada ejecuta `qmllint`, build,
+  empaquetado, integridad y el subconjunto estable de
+  `ci/fedora-headless-tests.txt`. La imagen no tiene sesión Plasma, así que el
+  CTest completo no es el gate autoritativo allí.
+- **Fedora 45:** el CTest completo se ejecuta en una sesión Plasma real y usa
+  `qmllint-baseline-fedora45.env`; `fedora-package.sh` selecciona ese baseline
+  automáticamente. Usar `./scripts-dev/setup.sh --local-test` para el flujo
+  completo de build, pruebas, instalación y reinicio local.
+
+Ambos perfiles conservan el manifiesto completo de nombres CTest y su suelo. El
+subconjunto del CI es una selección explícita de smoke tests, no un sustituto de
+la ejecución completa en Fedora 45.
+
 ## Auditor del contrato KConfig
 
 `audit-plasma-config.py` comprueba la ruta estática desde el esquema KConfig
