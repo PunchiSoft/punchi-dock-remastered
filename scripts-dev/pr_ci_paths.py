@@ -3,8 +3,8 @@
 """Classify a pull-request diff for the Remastered CI gate.
 
 Only a small, explicit set of prose files may skip the native build. Unknown,
-empty and mixed diffs take the full gate; a malformed Git comparison fails the
-classifier and therefore blocks the gate.
+empty and mixed diffs take the full gate. A malformed or unavailable Git range
+also takes the full gate, so a force-pushed branch cannot bypass validation.
 """
 
 from __future__ import annotations
@@ -83,7 +83,9 @@ def main() -> int:
         paths = changed_paths(args.base, args.head)
     except (OSError, RuntimeError) as error:
         print(f"pr-ci-paths: {error}", file=sys.stderr)
-        return 2
+        print("code: Git comparison unavailable; failing closed")
+        print("code")
+        return 0
 
     kind = classify_paths(paths)
     print(f"{kind}: {len(paths)} changed path(s)")

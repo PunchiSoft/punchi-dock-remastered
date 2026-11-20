@@ -3,6 +3,7 @@
 """Tests for the fail-closed PR path classifier."""
 
 import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -47,6 +48,26 @@ class PullRequestPathClassifierTest(unittest.TestCase):
     def test_absolute_and_parent_paths_fail_closed(self) -> None:
         self.assertEqual(classify_paths(["/README.md"]), "code")
         self.assertEqual(classify_paths(["../README.md"]), "code")
+
+    def test_unavailable_git_range_fails_closed_to_code(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="punchi-ci-paths-") as directory:
+            repository = Path(directory)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(Path(__file__).with_name("pr_ci_paths.py")),
+                    "--base",
+                    "missing-base",
+                    "--head",
+                    "missing-head",
+                ],
+                cwd=repository,
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout.strip().splitlines()[-1], "code")
 
     def test_renaming_runtime_code_to_readme_stays_code(self) -> None:
         with tempfile.TemporaryDirectory(prefix="punchi-ci-paths-") as directory:
