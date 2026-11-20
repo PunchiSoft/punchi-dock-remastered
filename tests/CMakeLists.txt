@@ -615,6 +615,13 @@ set_tests_properties(memory_cycle_test PROPERTIES
     TIMEOUT 240
 )
 
+set(PUNCHI_QML_TEST_PLATFORM "offscreen" CACHE STRING
+    "Qt platform plugin used by Punchi Dock QML runtime tests"
+)
+set(PUNCHI_QML_TEST_ENVIRONMENT
+    "LANGUAGE=en;QT_QPA_PLATFORM=${PUNCHI_QML_TEST_PLATFORM};QT_QUICK_CONTROLS_STYLE=org.kde.desktop;XDG_CURRENT_DESKTOP=KDE"
+)
+
 add_executable(recent_applications_full_load_test recent_applications_full_load_test.cpp)
 add_dependencies(recent_applications_full_load_test punchidockintegrationplugin)
 target_include_directories(recent_applications_full_load_test PRIVATE ${CMAKE_SOURCE_DIR}/src)
@@ -718,13 +725,6 @@ if(TARGET KF6::I18nQml)
         PUNCHI_HAS_KLOCALIZED_QML_CONTEXT
     )
 endif()
-
-set(PUNCHI_QML_TEST_PLATFORM "offscreen" CACHE STRING
-    "Qt platform plugin used by Punchi Dock QML runtime tests"
-)
-set(PUNCHI_QML_TEST_ENVIRONMENT
-    "LANGUAGE=en;QT_QPA_PLATFORM=${PUNCHI_QML_TEST_PLATFORM};QT_QUICK_CONTROLS_STYLE=org.kde.desktop;XDG_CURRENT_DESKTOP=KDE"
-)
 
 function(punchi_add_qml_test test_name qml_file)
     add_test(
