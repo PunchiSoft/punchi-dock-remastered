@@ -14,13 +14,18 @@ def main():
     with (tempfile.TemporaryDirectory(prefix="punchi-theme-trash-", dir=Path.cwd()) as directory,
           tempfile.TemporaryDirectory(prefix="punchi-kio-") as runtime):
         env = os.environ.copy()
-        for variable, folder in (
-            ("XDG_DATA_HOME", "data"),
-            ("XDG_CONFIG_HOME", "config"),
-            ("XDG_CACHE_HOME", "cache"),
+        home = Path(directory) / "home"
+        home.mkdir(mode=0o700)
+        # KIO may resolve Trash through HOME instead of XDG_DATA_HOME. Keep both
+        # views on the same disposable tree so the test never reaches the user
+        # Trash and the payload assertion sees the real KIO destination.
+        env["HOME"] = str(home)
+        for variable, path in (
+            ("XDG_DATA_HOME", home / ".local/share"),
+            ("XDG_CONFIG_HOME", home / ".config"),
+            ("XDG_CACHE_HOME", home / ".cache"),
         ):
-            path = Path(directory) / folder
-            path.mkdir(mode=0o700)
+            path.mkdir(mode=0o700, parents=True)
             env[variable] = str(path)
         # Unix socket paths must fit sockaddr_un even with a long checkout path.
         env["XDG_RUNTIME_DIR"] = runtime

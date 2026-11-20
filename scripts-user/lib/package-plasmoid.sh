@@ -367,7 +367,12 @@ if [[ "$PACKAGE_VALIDATION_MODE" == "full" ]]; then
         --build-dir "$BUILD_DIR"
     python3 "$PROJECT_ROOT/scripts-dev/test-preflight.py" --build-dir "$BUILD_DIR"
     punchi_progress_update 60 tests
-    ctest --test-dir "$BUILD_DIR" --parallel "$parallel_jobs" --output-on-failure
+    ctest_selection=()
+    if [[ -n "${PUNCHI_CTEST_SELECTION:-}" ]]; then
+        ctest_selection=(-R "$PUNCHI_CTEST_SELECTION")
+    fi
+    ctest --test-dir "$BUILD_DIR" "${ctest_selection[@]}" \
+        --parallel "$parallel_jobs" --output-on-failure
 fi
 
 punchi_progress_update 70 stage

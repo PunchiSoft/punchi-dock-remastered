@@ -8,10 +8,12 @@
 
 ## Validation
 
-<!-- Report what actually ran. Offscreen or lint results are not desktop behaviour. -->
+<!-- Report what actually ran. For docs-only changes say so; offscreen or lint results are not desktop behaviour. -->
 
 | Check | Result |
 |---|---|
+| PR validation CI (state docs-only when applicable) | |
+| PR surface guard | |
 | Full CTest | |
 | qmllint baseline | |
 | Translations | |

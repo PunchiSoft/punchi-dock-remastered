@@ -87,6 +87,11 @@ void runtimeMessageHandler(QtMsgType type, const QMessageLogContext &context, co
                 && message == QLatin1StringView("Failed to determine whether virtual desktop navigation wrapping is enabled:  \"The name org.kde.KWin was not provided by any .service files\""))
             || (category == QLatin1StringView("org.kde.applets.brightness")
                 && message == QLatin1StringView("D-Bus service not available: \"org.kde.ScreenBrightness\""))
+            // The headless container has no /dev/rfkill. BluezQt reports this
+            // external backend failure; project QML warnings remain fatal.
+            || (category == QLatin1StringView("kf.bluezqt")
+                && (message == QLatin1StringView("Cannot open /dev/rfkill for reading!")
+                    || message == QLatin1StringView("InitManagerJob Error: Job was deleted before finished!")))
             || (category == QLatin1StringView("default")
                 && (message == QLatin1StringView("This plugin does not support setting window masks")
                     || message == QLatin1StringView("This plugin does not support raise()")

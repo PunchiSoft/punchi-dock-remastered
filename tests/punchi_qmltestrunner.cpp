@@ -5,12 +5,32 @@
 #else
 #include <KLocalizedContext>
 #endif
+#include <QCoreApplication>
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QtQuickTest>
 
 namespace {
+const bool s_disableSessionManager = [] {
+    QCoreApplication::setAttribute(Qt::AA_DisableSessionManager);
+    return true;
+}();
 QtMessageHandler previousMessageHandler = nullptr;
+QtMessageHandler previousSessionHandler = nullptr;
+
+void sessionBackendMessageHandler(QtMsgType type, const QMessageLogContext &context,
+                                  const QString &message)
+{
+    // Qt cannot initialize session management under the offscreen platform.
+    // This exact setup warning is external to the QML component under test.
+    if (type == QtWarningMsg
+        && message == QLatin1StringView("Could not load a session backend. Session management operations such as shutdown will not be operational. This is a setup issue.")) {
+        return;
+    }
+    if (previousSessionHandler) {
+        previousSessionHandler(type, context, message);
+    }
+}
 
 void nativePopupMessageHandler(QtMsgType type, const QMessageLogContext &context,
                                const QString &message)
@@ -60,6 +80,11 @@ public Q_SLOTS:
 
     void qmlEngineAvailable(QQmlEngine *engine)
     {
+        static bool sessionHandlerInstalled = false;
+        if (!sessionHandlerInstalled) {
+            previousSessionHandler = qInstallMessageHandler(sessionBackendMessageHandler);
+            sessionHandlerInstalled = true;
+        }
         if (qEnvironmentVariableIntValue("PUNCHI_TEST_NATIVE_POPUP") == 1) {
             engine->rootContext()->setContextProperty(
                 QStringLiteral("nativePopupTestSupport"), this);

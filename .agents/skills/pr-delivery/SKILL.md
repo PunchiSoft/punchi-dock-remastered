@@ -20,6 +20,10 @@ request.
 - The evidence exists: the validation the change required, including full CTest
   and any real Plasma session check actually performed. Never present offscreen,
   static or lint results as desktop behaviour.
+- The branch-push `CI / validation` completed successfully for the exact head
+  commit, if the workflow is already available on the branch. The PR-only
+  `PR guard` runs after the PR opens; do not claim it passed before then. A
+  docs-only classification must be stated as such, not as a full CTest result.
 - `verification-before-completion` settled which evidence levels were executed;
   the body reports those and names what was not executed.
 - `git status` contains no unrelated or ignored material, the branch is pushed,
@@ -42,6 +46,8 @@ describing observed behaviour instead of a file list:
 ## Validation
 | Check | Result |
 |---|---|
+| PR validation CI | <code gate passed, or docs-only contracts passed> |
+| PR surface guard | <result> |
 | Full CTest | <n>/<n> passed |
 | qmllint baseline | <total>/<unqualified>/<missing-property>/<layout>/<import> |
 | Translations | <catalogs state> |
@@ -74,9 +80,17 @@ Wayland or packaging check was not performed.
 
 ## Verify
 
-- Read `gh pr view --json url,mergeable,mergeStateStatus,baseRefName,headRefName`
-  and confirm the base is `main`, the head is the delivery branch, and the
-  changed files match the reviewed scope.
+- Read the PR metadata and confirm the base is `main`, the head branch and SHA
+  match the reviewed commit, the state is `OPEN`, and the changed files match the
+  reviewed scope:
+
+  ```bash
+  gh pr view --json url,state,mergedAt,mergeable,mergeStateStatus,baseRefName,headRefName,headRefOid,files
+  git rev-parse HEAD
+  ```
+- Run `gh pr checks --watch` and confirm every required check is successful. If
+  the active `main` ruleset does not require the CI and PR-guard contexts, report
+  that enforcement gap; do not claim the checks are required by GitHub.
 - When the base moved, rebase onto `origin/main`; never create a merge commit from
   the delivery branch. Resolve conflicts preserving the behaviour already
   validated, re-run the affected checks, then publish with `--force-with-lease`
@@ -88,9 +102,10 @@ Wayland or packaging check was not performed.
 
 - Report the URL, the state and any check that remains; update the modification
   or review note with the final evidence.
-- Pull requests are squash-merged and the delivery branch is deleted afterwards,
-  but only when the user asks: do not merge, tag, release or delete a branch on
-  your own, and never delete a branch that still has unmerged commits.
+- Pull requests are squash-merged by the owner. After the owner confirms the
+  merge, fast-forward local `main`, check whether GitHub already deleted the
+  remote branch, and ask before deleting either remaining branch. Never delete a
+  branch with unmerged commits; do not merge, tag, release or clean up on your own.
 - Use `cleanup-review` for the post-merge inventory and batch cleanup. This skill
   verifies delivery; branch, worktree, container and artifact removal follows the
   cleanup gates and requires the user's explicit authorization.

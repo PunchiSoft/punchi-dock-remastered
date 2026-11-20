@@ -29,9 +29,14 @@ QtMessageHandler previousMessageHandler = nullptr;
 void offscreenPlatformMessageHandler(QtMsgType type, const QMessageLogContext &context, const QString &message)
 {
     // The offscreen backend has no KWindowSystem platform integration.
-    // Match the exact environment limitation used by the full-load tests.
-    if (type == QtWarningMsg && QByteArray(context.category) == "kf.windowsystem"
-        && message == QLatin1String("Could not find any platform plugin")) { return; }
+    // Match the exact environment limitations used by the full-load tests.
+    if (type == QtWarningMsg
+        && ((QByteArray(context.category) == "kf.windowsystem"
+                && message == QLatin1String("Could not find any platform plugin"))
+            || message == QLatin1String("Failed to create wl_display (No such file or directory)")
+            || message == QLatin1String("Could not connect to org.kde.KWin.VirtualDesktopManager.navigationWrappingAroundChanged signal"))) {
+        return;
+    }
     if (previousMessageHandler) { previousMessageHandler(type, context, message); }
 }
 }

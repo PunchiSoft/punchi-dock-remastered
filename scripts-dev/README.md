@@ -62,6 +62,20 @@ python3 ./scripts-dev/check-version.py
 - `universal-package-validation-test.sh`: manual check of the universal package
   validation used by `scripts-user/setup-universal.sh`; run it before publishing.
 
+## Fedora profiles
+
+- **Fedora 44 CI:** the pinned disposable image runs `qmllint`, build,
+  packaging, integrity checks and the stable subset in
+  `ci/fedora-headless-tests.txt`. The image has no Plasma session, so the full
+  CTest suite is not the authoritative gate there.
+- **Fedora 45:** the full CTest suite runs in a real Plasma session and uses
+  `qmllint-baseline-fedora45.env`; `fedora-package.sh` selects that baseline
+  automatically. Use `./scripts-dev/setup.sh --local-test` for the complete
+  local build, test, install and restart flow.
+
+Both profiles keep the full CTest name manifest and floor. The CI subset is an
+explicit smoke selection, not a replacement for the Fedora 45 run.
+
 ## KConfig contract auditor
 
 `audit-plasma-config.py` verifies the static path from the KConfig schema to

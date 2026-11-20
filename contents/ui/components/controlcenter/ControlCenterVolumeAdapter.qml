@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 import QtQml
+// plasma-pa's qmltypes omit the private GlobalConfigSkeleton prototype.
 import org.kde.plasma.private.volume as PlasmaVolume
 
 QtObject {
@@ -148,6 +149,9 @@ QtObject {
         return true
     }
 
+    // The linter associates plasma-pa's missing private prototype with this location.
+    // The module is installed; this diagnostic comes from its incomplete qmltypes.
+    // qmllint disable import
     function percentageFor(audioObject) {
         if (!audioObject || normalVolume <= 0) {
             return 0
@@ -155,6 +159,7 @@ QtObject {
         return Math.max(0, Math.min(maximumPercentage,
             Math.round(Number(audioObject.volume) / normalVolume * 100.0)))
     }
+    // qmllint enable import
 
     function setObjectValue(audioObject, percentage) {
         if (!audioObject || normalVolume <= 0) {
