@@ -16,10 +16,14 @@ DNF_PACKAGES=(
     binutils
     bluedevil
     cmake
+    dbus-daemon
     extra-cmake-modules
     gcc-c++
     gettext
     git
+    glibc-langpack-de
+    glibc-langpack-es
+    glibc-langpack-pt
     kf6-bluez-qt
     kf6-kconfig-devel
     kf6-kcoreaddons-devel
@@ -50,6 +54,7 @@ REQUIRED_COMMANDS=(
     cmake
     ctest
     c++
+    dbus-run-session
     kpackagetool6
     msgattrib
     msgfmt
